@@ -467,7 +467,7 @@
 										<WidgetGroup>
 											<Style>
 												QGroupBox {
-													margin: 2px 0px 6px 3px;
+													margin: 2px 0px 4px 3px;
 													padding: 0px;
 													background: transparent;
 												}
@@ -488,7 +488,7 @@
 											<Size>e,me</Size>
 											<Style></Style>
 											<SplitSizes>1,e</SplitSizes>
-                                            <Collapsible>0,0</Collapsible>
+                      <Collapsible>0,0</Collapsible>
 											<Children>
 												<LibrarySidebar></LibrarySidebar>
 												<!--Cover Art-->

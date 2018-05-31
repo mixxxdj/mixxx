@@ -249,6 +249,7 @@ QTreeView::item:!selected {
 /* library search text box */
 WSearchLineEdit {
   padding: 2px;
+  margin-top: 2px;
   border: 1px solid #656565;
   font-size: 10pt;
   font-family: "Open Sans";
