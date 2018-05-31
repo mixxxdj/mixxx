@@ -26,6 +26,7 @@ WSearchLineEdit:focus {
 
 QHeaderView {
   color: #000;
+  background-color: #5C5B5D;
 }
 /*	Library header 'buttons'	*/
 QHeaderView::section {

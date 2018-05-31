@@ -18,6 +18,7 @@ WEffectSelector {
 
 QHeaderView {
   color: #0f0f0f;
+  background-color: #998A3D;
 }
 /*	Library header 'buttons'	*/
 QHeaderView::section {
