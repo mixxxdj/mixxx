@@ -40,7 +40,7 @@ class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures,
-                        const EffectChainInsertionType insertionType);
+                        const EffectChainMixMode mixMode);
   private:
     EngineEffectParameter* m_pBpmParameter;
     EngineEffectParameter* m_pSyncParameter;

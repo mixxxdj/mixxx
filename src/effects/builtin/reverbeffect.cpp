@@ -66,7 +66,8 @@ EffectManifestPointer ReverbEffect::getManifest() {
     send->setDescription(QObject::tr(
         "How much of the signal to send in to the effect\n"
         "Lowering this fades out the effect smoothly\n"
-        "Use this to adjust the amount of the effect when the effect unit is in D/W mode\n"));
+        "Use this to adjust the amount of the effect when the effect unit is in D/W mode\n"
+        "When the effect unit is in D+W mode, keep this turned up all the way"));
     send->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -112,10 +113,10 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
                                 const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
                                 const GroupFeatureState& groupFeatures,
-                                const EffectChainInsertionType insertionType) {
+                                const EffectChainMixMode mixMode) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(insertionType);
+    Q_UNUSED(mixMode);
 
     if (!pState || !m_pDecayParameter || !m_pBandWidthParameter || !m_pDampingParameter || !m_pSendParameter) {
         qWarning() << "Could not retrieve all effect parameters";

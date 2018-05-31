@@ -67,9 +67,9 @@ void MetronomeEffect::processChannel(
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures,
-        const EffectChainInsertionType insertionType) {
+        const EffectChainMixMode mixMode) {
     Q_UNUSED(handle);
-    Q_UNUSED(insertionType);
+    Q_UNUSED(mixMode);
     Q_UNUSED(pInput);
 
     MetronomeGroupState* gs = pGroupState;

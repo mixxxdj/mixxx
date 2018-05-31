@@ -41,7 +41,7 @@ class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures,
-                        const EffectChainInsertionType insertionType);
+                        const EffectChainMixMode mixMode);
 
   private:
 

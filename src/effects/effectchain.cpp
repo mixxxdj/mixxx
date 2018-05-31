@@ -20,7 +20,7 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id,
           m_bEnabled(true),
           m_id(id),
           m_name(""),
-          m_insertionType(EffectChainInsertionType::Insert),
+          m_mixMode(EffectChainMixMode::DrySlashWet),
           m_dMix(0),
           m_pEngineEffectChain(nullptr),
           m_bAddedToEngine(false) {
@@ -240,14 +240,14 @@ void EffectChain::setMix(const double& dMix) {
     emit(mixChanged(dMix));
 }
 
-EffectChainInsertionType EffectChain::insertionType() const {
-    return m_insertionType;
+EffectChainMixMode EffectChain::mixMode() const {
+    return m_mixMode;
 }
 
-void EffectChain::setInsertionType(EffectChainInsertionType insertionType) {
-    m_insertionType = insertionType;
+void EffectChain::setMixMode(EffectChainMixMode mixMode) {
+    m_mixMode = mixMode;
     sendParameterUpdate();
-    emit(insertionTypeChanged(insertionType));
+    emit(mixModeChanged(mixMode));
 }
 
 void EffectChain::addEffect(EffectPointer pEffect) {
@@ -327,7 +327,7 @@ void EffectChain::sendParameterUpdate() {
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;
     pRequest->pTargetChain = m_pEngineEffectChain;
     pRequest->SetEffectChainParameters.enabled = m_bEnabled;
-    pRequest->SetEffectChainParameters.insertion_type = m_insertionType;
+    pRequest->SetEffectChainParameters.mix_mode = m_mixMode;
     pRequest->SetEffectChainParameters.mix = m_dMix;
     m_pEffectsManager->writeRequest(pRequest);
 }
@@ -346,15 +346,15 @@ EffectChainPointer EffectChain::createFromXml(EffectsManager* pEffectsManager,
                                                EffectXml::ChainName);
     QString description = XmlParse::selectNodeQString(element,
                                                       EffectXml::ChainDescription);
-    QString insertionTypeStr = XmlParse::selectNodeQString(element,
-                                                           EffectXml::ChainInsertionType);
+    QString mixModeStr = XmlParse::selectNodeQString(element,
+                                                           EffectXml::ChainMixMode);
 
     EffectChainPointer pChain(new EffectChain(pEffectsManager, id));
     pChain->setName(name);
     pChain->setDescription(description);
-    EffectChainInsertionType insertionType = insertionTypeFromString(insertionTypeStr);
-    if (insertionType != EffectChainInsertionType::Num_Insertion_Types) {
-        pChain->setInsertionType(insertionType);
+    EffectChainMixMode mixMode = mixModeFromString(mixModeStr);
+    if (mixMode != EffectChainMixMode::NumMixModes) {
+        pChain->setMixMode(mixMode);
     }
 
     QDomElement effects = XmlParse::selectElement(element, EffectXml::EffectsRoot);

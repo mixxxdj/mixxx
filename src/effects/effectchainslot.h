@@ -99,7 +99,7 @@ class EffectChainSlot : public QObject {
     void slotChainNameChanged(const QString& name);
     void slotChainEnabledChanged(bool enabled);
     void slotChainMixChanged(double mix);
-    void slotChainInsertionTypeChanged(EffectChainInsertionType type);
+    void slotChainMixModeChanged(EffectChainMixMode mixMode);
     void slotChainChannelStatusChanged(const QString& group, bool enabled);
 
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
@@ -110,7 +110,7 @@ class EffectChainSlot : public QObject {
     void slotControlChainEnabled(double v);
     void slotControlChainMix(double v);
     void slotControlChainSuperParameter(double v, bool force = false);
-    void slotControlChainInsertionType(double v);
+    void slotControlChainMixMode(double v);
     void slotControlChainSelector(double v);
     void slotControlChainNextPreset(double v);
     void slotControlChainPrevPreset(double v);
@@ -134,7 +134,7 @@ class EffectChainSlot : public QObject {
     ControlPushButton* m_pControlChainEnabled;
     ControlObject* m_pControlChainMix;
     ControlObject* m_pControlChainSuperParameter;
-    ControlPushButton* m_pControlChainInsertionType;
+    ControlPushButton* m_pControlChainMixMode;
     ControlEncoder* m_pControlChainSelector;
     ControlPushButton* m_pControlChainNextPreset;
     ControlPushButton* m_pControlChainPrevPreset;

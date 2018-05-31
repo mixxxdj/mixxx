@@ -103,10 +103,10 @@ void MoogLadder4FilterEffect::processChannel(
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures,
-        const EffectChainInsertionType insertionType) {
+        const EffectChainMixMode mixMode) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(insertionType);
+    Q_UNUSED(mixMode);
 
 
     double resonance = m_pResonance->value();

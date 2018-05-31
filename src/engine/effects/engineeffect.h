@@ -49,7 +49,7 @@ class EngineEffect : public EffectsRequestHandler {
                  const unsigned int sampleRate,
                  const EffectEnableState chainEnableState,
                  const GroupFeatureState& groupFeatures,
-                 const EffectChainInsertionType insertionType);
+                 const EffectChainMixMode mixMode);
 
   private:
     QString debugString() const {

@@ -91,7 +91,7 @@ class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures,
-            const EffectChainInsertionType insertionType);
+            const EffectChainMixMode mixMode);
 
     double computeLawCoefficient(double position);
 

@@ -82,7 +82,7 @@ class EffectProcessor {
                          const mixxx::EngineParameters& bufferParameters,
                          const EffectEnableState enableState,
                          const GroupFeatureState& groupFeatures,
-                         const EffectChainInsertionType insertionType) = 0;
+                         const EffectChainMixMode mixMode) = 0;
 };
 
 // EffectProcessorImpl manages a separate EffectState for every routing of
@@ -137,14 +137,14 @@ class EffectProcessorImpl : public EffectProcessor {
                                 const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
                                 const GroupFeatureState& groupFeatures,
-                                const EffectChainInsertionType insertionType) = 0;
+                                const EffectChainMixMode mixMode) = 0;
 
     void process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const mixxx::EngineParameters& bufferParameters,
                          const EffectEnableState enableState,
                          const GroupFeatureState& groupFeatures,
-                         const EffectChainInsertionType insertionType) final {
+                         const EffectChainMixMode mixMode) final {
         EffectSpecificState* pState = m_channelStateMatrix[inputHandle][outputHandle];
         VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
             if (kEffectDebugOutput) {
@@ -158,7 +158,7 @@ class EffectProcessorImpl : public EffectProcessor {
             m_channelStateMatrix[inputHandle][outputHandle] = pState;
         }
         processChannel(inputHandle, pState, pInput, pOutput, bufferParameters,
-                       enableState, groupFeatures, insertionType);
+                       enableState, groupFeatures, mixMode);
     }
 
     void initialize(const QSet<ChannelHandleAndGroup>& activeInputChannels,

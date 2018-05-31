@@ -111,10 +111,10 @@ void BalanceEffect::processChannel(const ChannelHandle& handle,
                                const mixxx::EngineParameters& bufferParameters,
                                const EffectEnableState enableState,
                                const GroupFeatureState& groupFeatures,
-                               const EffectChainInsertionType insertionType) {
+                               const EffectChainMixMode mixMode) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(insertionType);
+    Q_UNUSED(mixMode);
 
     CSAMPLE_GAIN balance = 0;
     CSAMPLE_GAIN midSide = 0;

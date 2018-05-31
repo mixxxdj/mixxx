@@ -48,7 +48,7 @@ class LoudnessContourEffect
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState,
-                        const EffectChainInsertionType insertionType);
+                        const EffectChainMixMode mixMode);
 
   private:
     LoudnessContourEffect(const LoudnessContourEffect&) = delete;

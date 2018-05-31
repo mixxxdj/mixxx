@@ -72,10 +72,10 @@ void BitCrusherEffect::processChannel(const ChannelHandle& handle,
                                       const mixxx::EngineParameters& bufferParameters,
                                       const EffectEnableState enableState,
                                       const GroupFeatureState& groupFeatures,
-                                      const EffectChainInsertionType insertionType) {
+                                      const EffectChainMixMode mixMode) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(insertionType);
+    Q_UNUSED(mixMode);
     Q_UNUSED(enableState); // no need to ramp, it is just a bitcrusher ;-)
 
     const CSAMPLE downsample = m_pDownsampleParameter ?

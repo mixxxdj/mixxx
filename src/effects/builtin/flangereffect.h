@@ -62,7 +62,7 @@ class FlangerEffect : public EffectProcessorImpl<FlangerGroupState> {
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures,
-                        const EffectChainInsertionType insertionType);
+                        const EffectChainMixMode mixMode);
 
   private:
     QString debugString() const {

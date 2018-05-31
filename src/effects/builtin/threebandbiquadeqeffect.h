@@ -59,7 +59,7 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatureState,
-                        const EffectChainInsertionType insertionType);
+                        const EffectChainMixMode mixMode);
 
   private:
     ThreeBandBiquadEQEffect(const ThreeBandBiquadEQEffect&) = delete;

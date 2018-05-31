@@ -112,7 +112,7 @@ Variables:
             <SetVariable name="Size">35f,20f</SetVariable>
             <SetVariable name="state_0_text">D/W</SetVariable>
             <SetVariable name="state_1_text">D+W</SetVariable>
-            <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],insertion_type</SetVariable>
+            <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
           </Template>
 
           <WidgetGroup>

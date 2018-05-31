@@ -135,7 +135,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                                 const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
                                 const GroupFeatureState& groupFeatures,
-                                const EffectChainInsertionType insertionType) {
+                                const EffectChainMixMode mixMode) {
     Q_UNUSED(handle);
 
     EchoGroupState& gs = *pGroupState;
@@ -185,7 +185,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
             bufferParameters.framesPerBuffer();
     const CSAMPLE_GAIN feedback_start = gs.prev_feedback + feedback_delta;
 
-    const bool addDry = insertionType == EffectChainInsertionType::Insert;
+    const bool addDry = mixMode == EffectChainMixMode::DrySlashWet;
 
     //TODO: rewrite to remove assumption of stereo buffer
     for (unsigned int i = 0;
