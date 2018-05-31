@@ -389,6 +389,14 @@ WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
 /* Additional space for the first QRadionButton in the row*/
 WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
 
+WLibrary QRadioButton::indicator:checked {
+  background: url(skin:btn_lib_radio_button_on.svg);
+}
+
+WLibrary QRadioButton::indicator:unchecked {
+  background: url(skin:btn_lib_radio_button_off.svg);
+}
+
 WLibrary QPushButton {
   text-align: center;
   font-size: 9pt;
