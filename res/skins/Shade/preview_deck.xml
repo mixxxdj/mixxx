@@ -35,6 +35,7 @@
 							    <WidgetGroup>
 							     	<Size>0e,18f</Size>
 								    <Style>QGroupBox {border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+								    <Layout>horizontal</Layout>
 								    <Children>
 							        <Text>
 								        <TooltipId>text</TooltipId>
@@ -47,7 +48,7 @@
 										        padding-top: 2px;}
 								        </Style>
 								        <Group>[PreviewDeck1]</Group>
-								        <SizePolicy>me,max</SizePolicy>
+								        <SizePolicy>me,min</SizePolicy>
 								        <Elide>right</Elide>
 							        </Text>
 								    </Children>
