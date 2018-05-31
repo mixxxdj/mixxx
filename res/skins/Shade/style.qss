@@ -102,18 +102,6 @@ QTreeView {
   selection-color: #e6e6e6;
   selection-background-color: #666;
 }
-
-QTreeView {
-  min-height: 90px;
-  min-width: 90px;
-  border-width: 1px 1px 1px 0px;
-  border-style: solid;
-  border-color: #585858;
-  show-decoration-selected: 0;
-  /* Don't define top margin here, it won't shift ScrollBar.
-  Defined by SearchBox	*/
-  margin: 0px;
-  }
   QTreeView:focus,
   QTableView:focus { /*
     New Library navigation COs only work if TreeView or TableView have focus.
@@ -253,6 +241,7 @@ QTreeView::item:!selected {
 
 /* library search text box */
 WSearchLineEdit {
+  margin-top: 2px;
   padding: 2px;
   border: 1px solid #656565;
   border-left: 0px;
@@ -281,7 +270,6 @@ QHeaderView {
   font-size: 10pt;
   font-weight: bold;
   color: #0f0f0f;
-  border-right: 1px solid #0f0f0f;
   background-color: #8D98A3;
   border-radius: 0px;
 }
