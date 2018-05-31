@@ -26,11 +26,10 @@ inline uint qHash(SignalProcessingStage stage) {
     return static_cast<uint>(stage);
 };
 
-enum class EffectChainInsertionType {
-    Insert = 0,
-    Send,
-    // The number of insertion types. Also used to represent "unknown".
-    Num_Insertion_Types
+enum class EffectChainMixMode {
+    DrySlashWet = 0,
+    DryPlusWet,
+    NumMixModes // The number of mix modes. Also used to represent "unknown".
 };
 
 constexpr int kNumEffectsPerUnit = 4;

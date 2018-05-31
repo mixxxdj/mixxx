@@ -30,7 +30,7 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
           m_pLoEqFreq(NULL),
           m_pHiEqFreq(NULL),
           m_underDestruction(false) {
-    qRegisterMetaType<EffectChainInsertionType>("EffectChainInsertionType");
+    qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
                 kEffectMessagPipeFifoSize, kEffectMessagPipeFifoSize, false, false);

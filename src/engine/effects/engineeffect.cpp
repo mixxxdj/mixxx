@@ -142,7 +142,8 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
                            const unsigned int numSamples,
                            const unsigned int sampleRate,
                            const EffectEnableState chainEnableState,
-                           const GroupFeatureState& groupFeatures) {
+                           const GroupFeatureState& groupFeatures,
+                           const EffectChainMixMode mixMode) {
     // Compute the effective enable state from the combination of the effect's state
     // for the channel and the state passed from the EngineEffectChain.
 
@@ -196,7 +197,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
 
         m_pProcessor->process(inputHandle, outputHandle, pInput, pOutput,
                               bufferParameters,
-                              effectiveEffectEnableState, groupFeatures);
+                              effectiveEffectEnableState, groupFeatures, mixMode);
 
         processingOccured = true;
 

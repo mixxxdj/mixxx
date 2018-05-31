@@ -500,9 +500,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Super Knob (control effects' Meta Knobs)"),
                                descriptionPrefix,
                                effectUnitMenu, true);
-            addPrefixedControl(effectUnitGroup, "insertion_type",
-                               tr("Insert/Send Toggle"),
-                               tr("Insert/Send Toggle"),
+            addPrefixedControl(effectUnitGroup, "Mix Mode",
+                               tr("Mix Mode Toggle"),
+                               tr("Toggle effect unit between D/W and D+W modes"),
                                descriptionPrefix,
                                effectUnitMenu);
             addPrefixedControl(effectUnitGroup, "next_chain",

@@ -9,7 +9,7 @@ EngineEffectChain::EngineEffectChain(const QString& id,
                                      const QSet<ChannelHandleAndGroup>& registeredOutputChannels)
         : m_id(id),
           m_enableState(EffectEnableState::Enabled),
-          m_insertionType(EffectChainInsertionType::Insert),
+          m_mixMode(EffectChainMixMode::DrySlashWet),
           m_dMix(0),
           m_buffer1(MAX_BUFFER_LEN),
           m_buffer2(MAX_BUFFER_LEN) {
@@ -76,7 +76,7 @@ bool EngineEffectChain::removeEffect(EngineEffect* pEffect, int iIndex) {
 // this is called from the engine thread onCallbackStart()
 bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     // TODO(rryan): Parameter interpolation.
-    m_insertionType = message.SetEffectChainParameters.insertion_type;
+    m_mixMode = message.SetEffectChainParameters.mix_mode;
     m_dMix = message.SetEffectChainParameters.mix;
 
     if (m_enableState != EffectEnableState::Disabled && !message.SetEffectParameters.enabled) {
@@ -252,8 +252,8 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         }
     }
 
-    CSAMPLE currentWetGain = m_dMix;
-    CSAMPLE lastCallbackWetGain = channelStatus.old_gain;
+    CSAMPLE currentMixKnob = m_dMix;
+    CSAMPLE lastCallbackMixKnob = channelStatus.old_gain;
 
     bool processingOccured = false;
     if (effectiveChainEnableState != EffectEnableState::Disabled) {
@@ -276,7 +276,8 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                 if (pEffect->process(inputHandle, outputHandle,
                                      pIntermediateInput, pIntermediateOutput,
                                      numSamples, sampleRate,
-                                     effectiveChainEnableState, groupFeatures)) {
+                                     effectiveChainEnableState, groupFeatures,
+                                     m_mixMode)) {
                     processingOccured = true;
                     // Output of this effect becomes the input of the next effect
                     pIntermediateInput = pIntermediateOutput;
@@ -287,25 +288,25 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         if (processingOccured) {
             // pIntermediateInput is the output of the last processed effect. It would be the
             // intermediate input of the next effect if there was one.
-            if (m_insertionType == EffectChainInsertionType::Insert) {
-                // INSERT mode: output = input * (1-wet) + effect(input) * wet
+            if (m_mixMode == EffectChainMixMode::DrySlashWet) {
+                // Dry/Wet mode: output = (input * (1-mix knob)) + (wet * mix knob)
                 SampleUtil::copy2WithRampingGain(
                         pOut,
-                        pIn, 1.0 - lastCallbackWetGain, 1.0 - currentWetGain,
-                        pIntermediateInput, lastCallbackWetGain, currentWetGain,
+                        pIn, 1.0 - lastCallbackMixKnob, 1.0 - currentMixKnob,
+                        pIntermediateInput, lastCallbackMixKnob, currentMixKnob,
                         numSamples);
             } else {
-                // SEND mode: output = input + effect(input) * wet
+                // Dry+Wet mode: output = input + (wet * mix knob)
                 SampleUtil::copy2WithRampingGain(
                         pOut,
                         pIn, 1.0, 1.0,
-                        pIntermediateInput, lastCallbackWetGain, currentWetGain,
+                        pIntermediateInput, lastCallbackMixKnob, currentMixKnob,
                         numSamples);
             }
         }
     }
 
-    channelStatus.old_gain = currentWetGain;
+    channelStatus.old_gain = currentMixKnob;
 
     // If the EffectProcessors have been sent a signal for the intermediate
     // enabling/disabling state, set the channel state or chain state

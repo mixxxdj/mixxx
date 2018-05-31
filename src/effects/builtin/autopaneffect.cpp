@@ -91,8 +91,10 @@ void AutoPanEffect::processChannel(
           const CSAMPLE* pInput, CSAMPLE* pOutput,
           const mixxx::EngineParameters& bufferParameters,
           const EffectEnableState enableState,
-          const GroupFeatureState& groupFeatures) {
+          const GroupFeatureState& groupFeatures,
+          const EffectChainMixMode mixMode) {
     Q_UNUSED(handle);
+    Q_UNUSED(mixMode);
 
     if (enableState == EffectEnableState::Disabled) {
         return;

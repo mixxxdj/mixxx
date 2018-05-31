@@ -41,7 +41,8 @@ class MoogLadder4FilterEffect : public EffectProcessorImpl<MoogLadder4FilterGrou
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatures);
+                        const GroupFeatureState& groupFeatures,
+                        const EffectChainMixMode mixMode);
 
   private:
     QString debugString() const {

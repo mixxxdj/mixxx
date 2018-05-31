@@ -37,7 +37,8 @@ class Bessel4LVMixEQEffect : public EffectProcessorImpl<Bessel4LVMixEQEffectGrou
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState);
+                        const GroupFeatureState& groupFeatureState,
+                        const EffectChainMixMode mixMode);
 
   private:
     QString debugString() const {

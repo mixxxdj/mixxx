@@ -58,7 +58,8 @@ class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatures) override;
+                        const GroupFeatureState& groupFeatures,
+                        const EffectChainMixMode mixMode) override;
 
   private:
     QString debugString() const {

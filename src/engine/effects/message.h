@@ -136,7 +136,7 @@ struct EffectsRequest {
         } RemoveEffectFromChain;
         struct {
             bool enabled;
-            EffectChainInsertionType insertion_type;
+            EffectChainMixMode mix_mode;
             double mix;
         } SetEffectChainParameters;
         struct {

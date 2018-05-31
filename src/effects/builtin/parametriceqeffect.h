@@ -50,7 +50,8 @@ class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupSta
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState);
+                        const GroupFeatureState& groupFeatureState,
+                        const EffectChainMixMode mixMode);
 
   private:
     QString debugString() const {
