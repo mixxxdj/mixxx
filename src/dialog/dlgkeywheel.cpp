@@ -24,6 +24,7 @@ DlgKeywheel::DlgKeywheel(QWidget *parent, UserSettingsPointer pConfig) :
     QSizePolicy qsp = ui->graphic->sizePolicy(); //.setHeightForWidth(true);
     qsp.setWidthForHeight(true);
     ui->graphic->setSizePolicy(qsp);
+    installEventFilter(this);
     ui->graphic->installEventFilter(this);
 
     // load the user configured setting as default
@@ -34,28 +35,40 @@ DlgKeywheel::DlgKeywheel(QWidget *parent, UserSettingsPointer pConfig) :
 
 bool DlgKeywheel::eventFilter(QObject *obj, QEvent *event)
 {
-    if (event->type() == QEvent::MouseButtonPress) {
-        switchDisplay();
+    if (event->type() == QEvent::KeyPress) {
+        // we handle TAB + Shift TAB to cycle through the display types
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        if (keyEvent->key() == Qt::Key_Tab) {
+            switchDisplay(+1);
+            return true;
+        } else if (keyEvent->key() == Qt::Key_Backtab) {
+            switchDisplay(-1);
+            return true;
+        }
+    } else if (event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent *>(event);
+        // first button forward, other buttons backward cycle
+        switchDisplay(mouseEvent->button() == Qt::LeftButton ? +1 : -1);
         return true;
-    } else {
-        // standard event processing
-        return QObject::eventFilter(obj, event);
     }
+    // standard event processing
+    return QObject::eventFilter(obj, event);
 }
 
-void DlgKeywheel::switchDisplay() {
-    m_notation = static_cast<KeyUtils::KeyNotation>(static_cast<int>(m_notation) + 1);
+void DlgKeywheel::switchDisplay(int dir) {
+    m_notation = static_cast<KeyUtils::KeyNotation>(static_cast<int>(m_notation) + dir);
     if (m_notation >= KeyUtils::KeyNotation::KEY_NOTATION_MAX) {
         m_notation = KeyUtils::KeyNotation::CUSTOM;
+    } else if (m_notation <= KeyUtils::KeyNotation::INVALID) {
+        m_notation = static_cast<KeyUtils::KeyNotation>(static_cast<int>(KeyUtils::KeyNotation::KEY_NOTATION_MAX) - 1);
     }
-    qDebug() << "notion: " << m_notation;
 
     // we update the SVG nodes with the new value
     updateDisplay();
 }
 
 void DlgKeywheel::updateDisplay() {
-
+    /* update the svg with new values to display, then cause a an update on the widget */
     QDomElement topElement = m_domDocument.documentElement();
     QDomNode domNode = topElement.firstChild();
 

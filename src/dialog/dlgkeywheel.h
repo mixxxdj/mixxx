@@ -20,7 +20,7 @@ class DlgKeywheel : public QDialog
 
 public:
     explicit DlgKeywheel(QWidget *parent, UserSettingsPointer pConfig);
-    void switchDisplay();
+    void switchDisplay(int dir = 1);
     void updateDisplay();
     ~DlgKeywheel();
 
