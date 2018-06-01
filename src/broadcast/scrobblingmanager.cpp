@@ -5,62 +5,51 @@
 #include "control/controlproxy.h"
 #include "engine/enginexfader.h"
 #include "mixer/deck.h"
+#include "mixer/playermanager.h"
 #include "moc_scrobblingmanager.cpp"
 
-ScrobblingManager::ScrobblingManager()
+ScrobblingManager::ScrobblingManager(PlayerManager* pManager)
         : m_CPGuiTick("[Master]", "guiTick50ms", this),
           m_CPCrossfader("[Master]", "crossfader", this),
           m_CPXFaderCurve(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"), this),
           m_CPXFaderCalibration(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCalibration"), this),
           m_CPXFaderMode(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"), this),
-          m_CPXFaderReverse(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"), this) {
+          m_CPXFaderReverse(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"), this),
+          m_pManager(pManager) {
     m_CPGuiTick.connectValueChanged(this, &ScrobblingManager::slotGuiTick);
     startTimer(1000);
 }
 
 void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
-    //Extra functional decision to only track main decks.            
-    Deck* pSourceDeck = qobject_cast<Deck*>(sender());    
-    if (pSourceDeck == 0) {
-        qDebug() << "Didn't load track in a deck yet scrobbling "
-                    "received paused signal.";
-        return;
-    }
-    // QMutexLocker locker(&m_mutex);
+    QMutexLocker locker(&m_mutex);
     bool allPaused = true;
-    TrackInfo* pPausedTrackInfo;
+    TrackInfo* pPausedTrackInfo = nullptr;
     for (TrackInfo* pTrackInfo : m_trackList) {
         if (pTrackInfo->m_pTrack == pPausedTrack) {
             pPausedTrackInfo = pTrackInfo;
-            for (BaseTrackPlayer* pPlayer : pTrackInfo->m_players) {
-                BaseTrackPlayerImpl* pPlayerImpl = 
-                    qobject_cast<BaseTrackPlayerImpl*>(pPlayer);
-                if (!pPlayerImpl) {
-                    qDebug() << "Track player interface isn't a "
-                                "BaseTrackPlayerImpl";
-                    return;
-                }
-                if (!pPlayerImpl->isTrackPaused())
+            for (QString playerGroup : pTrackInfo->m_players) {
+                BaseTrackPlayer* pPlayer = m_pManager->getPlayer(playerGroup);
+                if (!pPlayer->isTrackPaused())
                     allPaused = false;
             }
             break;
-        }                   
+        }
     }
-    if (allPaused) {
+    if (allPaused && pPausedTrackInfo) {
         pPausedTrackInfo->m_trackInfo.pausePlayedTime();
     }
 }
 
 void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack) {
-    //Extra functional decision to only track main decks.
-    Deck* pSourceDeck = qobject_cast<Deck*>(sender());    
-    if (pSourceDeck == 0) {
+    BaseTrackPlayer* pPlayer = qobject_cast<Deck*>(sender());
+    DEBUG_ASSERT(pPlayer);
+    if (!pPlayer) {
         qDebug() << "Didn't load track in a deck yet scrobbling "
                     "received resumed signal.";
         return;
     }
-    if (isTrackAudible(pResumedTrack, pSourceDeck)) {
-        // QMutexLocker locker(&m_mutex);
+    if (isTrackAudible(pResumedTrack, pPlayer)) {
+        QMutexLocker locker(&m_mutex);
         for (TrackInfo* pTrackInfo : m_trackList) {
             if (pTrackInfo->m_pTrack == pResumedTrack) {
                 pTrackInfo->m_trackInfo.resumePlayedTime();
@@ -72,78 +61,78 @@ void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack) {
 
 void ScrobblingManager::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pNewTrack);
-    // Extra functional decision to only track main decks.
-    Deck* pSourceDeck = qobject_cast<Deck*>(sender());    
-    if (pSourceDeck == 0) {
-        qDebug() << "Didn't load track in a deck yet scrobbling "
-                    "received loading signal.";
-        return;
-    }
+    BaseTrackPlayer* pSourcePlayer =
+            qobject_cast<BaseTrackPlayer*>(sender());
+    DEBUG_ASSERT(pSourcePlayer);
     if (pOldTrack) {
-        m_tracksToBeReset.append(TrackToBeReset(pOldTrack, pSourceDeck));
+        m_tracksToBeReset.append(TrackToBeReset(pOldTrack,
+                pSourcePlayer->getGroup()));
     }
 }
 
 void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack) {
-    // Empty deck gives a null pointer.
-    if (!pNewTrack)
-        return;
-    //Extra functional decision to only track main decks.        
-    Deck* pNewDeck = qobject_cast<Deck*>(sender());    
-    if (pNewDeck == 0) {
-        qDebug() << "Didn't load track in a deck yet scrobbling "
-                    "received loaded signal.";
+    // Empty player gives a null pointer.
+    if (!pNewTrack) {
         return;
     }
-    // QMutexLocker locker(&m_mutex); 
+    BaseTrackPlayer* pPlayer = qobject_cast<BaseTrackPlayer*>(sender());
+    DEBUG_ASSERT(pPlayer);
+    QMutexLocker locker(&m_mutex);
     bool trackAlreadyAdded = false;
     for (TrackInfo* pTrackInfo : m_trackList) {
         if (pTrackInfo->m_pTrack == pNewTrack) {
-        	pTrackInfo->m_players.append(pNewDeck);
+            pTrackInfo->m_players.append(pPlayer->getGroup());
             trackAlreadyAdded = true;
             break;
         }
     }
     if (!trackAlreadyAdded) {
-        TrackInfo* pNewTrackInfo = new TrackInfo(pNewTrack, pNewDeck);
-        pNewTrackInfo->m_players.append(pNewDeck);
+        TrackInfo* pNewTrackInfo = new TrackInfo(pNewTrack);
+        pNewTrackInfo->m_players.append(pPlayer->getGroup());
         m_trackList.append(pNewTrackInfo);
-        connect(&m_trackList.last()->m_trackInfo,SIGNAL(readyToBeScrobbled(TrackPointer)),
-                this,SLOT(slotReadyToBeScrobbled(TrackPointer)));
+        connect(&m_trackList.last()->m_trackInfo, SIGNAL(readyToBeScrobbled(TrackPointer)), this, SLOT(slotReadyToBeScrobbled(TrackPointer)));
     }
     // A new track has been loaded so must unload old one.
     resetTracks();
 }
 
 void ScrobblingManager::slotPlayerEmpty() {
-    // QMutexLocker locker(&m_mutex);
+    QMutexLocker locker(&m_mutex);
     resetTracks();
 }
 
 void ScrobblingManager::resetTracks() {
     for (TrackToBeReset candidateTrack : m_tracksToBeReset) {
-        for (TrackInfo* pTrackInfo : m_trackList) {
+        QLinkedList<TrackInfo*>::Iterator trackListIterator =
+                m_trackList.begin();
+        for (; trackListIterator != m_trackList.end(); ++trackListIterator) {
+            TrackInfo* pTrackInfo = *trackListIterator;
             if (pTrackInfo->m_pTrack == candidateTrack.m_pTrack) {
-                if (!pTrackInfo->m_players.contains(candidateTrack.m_pPlayer)) {
+                if (!pTrackInfo->m_players.contains(candidateTrack.m_playerGroup)) {
                     qDebug() << "Track doesn't contain player"
                                 "yet is requested for deletion.";
-                    return;
+                    break;
                 }
-                // Load error, stray from engine buffer.
-                if (candidateTrack.m_pPlayer->getLoadedTrack() ==
-                    candidateTrack.m_pTrack) 
-                    break;                    
-                QLinkedList<BaseTrackPlayer*>::iterator it = 
-                    pTrackInfo->m_players.begin();
-                while (it != pTrackInfo->m_players.end()) {
-                    if (*it == candidateTrack.m_pPlayer) {
-                        pTrackInfo->m_players.erase(it);
-                    }
+                //Load error, stray from engine buffer.
+                BaseTrackPlayer* pPlayer =
+                        m_pManager->getPlayer(candidateTrack.m_playerGroup);
+                if (pPlayer->getLoadedTrack() ==
+                        candidateTrack.m_pTrack)
+                    break;
+                QLinkedList<QString>::iterator it =
+                        pTrackInfo->m_players.begin();
+                while (it != pTrackInfo->m_players.end() &&
+                        *it != candidateTrack.m_playerGroup) {
+                    ++it;
+                }
+                if (*it == candidateTrack.m_playerGroup) {
+                    pTrackInfo->m_players.erase(it);
                 }
                 if (pTrackInfo->m_players.empty()) {
                     pTrackInfo->m_trackInfo.pausePlayedTime();
                     pTrackInfo->m_trackInfo.resetPlayedTime();
                     delete pTrackInfo;
+                    m_trackList.erase(trackListIterator);
                 }
                 break;
             }
@@ -197,8 +186,9 @@ void ScrobblingManager::timerEvent(QTimerEvent* timerEvent) {
     Q_UNUSED(timerEvent);
     for (TrackInfo* pTrackInfo : m_trackList) {
         bool inaudible = true;
-        for (BaseTrackPlayer *player : pTrackInfo->m_players) {
-            if (isTrackAudible(pTrackInfo->m_pTrack,player)) {
+        for (QString playerGroup : pTrackInfo->m_players) {
+            BaseTrackPlayer* pPlayer = m_pManager->getPlayer(playerGroup);
+            if (isTrackAudible(pTrackInfo->m_pTrack, pPlayer)) {
                 inaudible = false;
                 break;
             }

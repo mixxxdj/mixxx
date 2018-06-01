@@ -25,7 +25,7 @@ void TrackTimers::GUITickTimer::stop() {
 }
 
 void TrackTimers::GUITickTimer::slotTick(double timeSinceLastTick) {
-    if (not m_timeoutSent and m_isActive) {
+    if (!m_timeoutSent && m_isActive) {
         m_msSoFar += timeSinceLastTick;
         if (m_msSoFar >= m_msTarget) {
             m_timeoutSent = true;
