@@ -204,6 +204,7 @@ Variables:
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_focus_button.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">3</SetVariable></Template>
+                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_parameter_row.xml">

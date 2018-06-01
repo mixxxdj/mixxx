@@ -122,7 +122,7 @@
 
             <!-- Decks, Effects ... Library -->
             <Splitter>
-              <ObjectName>CoverArtSplitter</ObjectName>
+              <ObjectName>HorizontalSplitter</ObjectName>
               <Orientation>vertical</Orientation>
               <SizePolicy>me,min</SizePolicy>
               <SplitSizes>1,5</SplitSizes>

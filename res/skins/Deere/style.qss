@@ -213,21 +213,52 @@ QTableView::indicator:unchecked {
   image: url(:/images/library/ic_library_unchecked.png);
 }
 
+#LibraryBPMSpinBox {
+  color: #fff;
+  selection-color: #0f0f0f;
+  background-color: #0f0f0f;
+  selection-background-color: #888;
+  /* This combination of negative top/bottom padding & margin
+    creates a 1px border around the spinbox' text area.
+    Increased left/right padding/margin removes the overlap of
+    text of activated spinbox and left-over text from regular
+    BPM value display. */
+  padding: -1px -8px -1px -4px;
+  margin: -2px 0px -2px -2px;
+  /* As soon as any border property is set, the up/down buttons
+    lose their style & icons
+  border: 0px;
+  border-radius: 2px; */
+}
+
 /* button in library "Preview" column */
 QPushButton#LibraryPreviewButton {
   width: 23px;
   height: 12px;
   border: none;
+  border-radius: 2px;
+  background: transparent;
+  margin: 0px;
+  padding: 0px;
 }
 
 QPushButton#LibraryPreviewButton:!checked {
   image: url(skin:/image/style_library_preview_play.png);
+}
+
+QPushButton#LibraryPreviewButton:!checked:hover {
   background-color: #1A1A1A;
+  border: 1px solid #00ABFD;
 }
 
 QPushButton#LibraryPreviewButton:checked {
   image: url(skin:/image/style_library_preview_pause.png);
-  background-color: #006596;
+  background-color: #0f0f0f;
+  border: 1px solid #006596;
+}
+
+QPushButton#LibraryPreviewButton:checked:hover {
+  border: 1px solid #00ABFD;
 }
 
 /* library header row */
@@ -271,18 +302,19 @@ QHeaderView::down-arrow {
 WSearchLineEdit {
   margin: 0px 0px 0px 1px;
   padding: 2px;
-  border: 1px solid #1A1A1A;
-  background-color: #4B4B4B;
+  border: 1px solid #4B4B4B;
+  background-color: #1e1e1e;
   color: #d2d2d2;
 }
 
 WSearchLineEdit:focus {
-  margin: 2px 0px 0px 1px;
+  margin: 0px 0px 0px 1px;
   padding: 2px;
   border: 1px solid #FF6600;
-  background-color: #4B4B4B;
+  background-color: #1e1e1e;
   color: #D6D6D6;
   selection-color: #222222;
+  selection-background-color: #d2d2d2;
 }
 
 /* library preview deck */
@@ -336,6 +368,15 @@ QTreeView::branch:closed:has-children:has-siblings {
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings {
   border-image: none; image: url(skin:/image/style_branch_open.png);
+}
+
+/* space left of selected child item */
+QTreeView::branch:!has-children:!has-siblings:closed:selected,
+QTreeView::branch:closed:!has-children:has-siblings:selected,
+QTreeView::branch:open:!has-children:!has-siblings:selected,
+QTreeView::branch:open:!has-children:has-siblings:selected {
+  border-image: none;
+  background-color: #1F1F1F;
 }
 
 /* QSplitter between LibrarySidebar and Library */
