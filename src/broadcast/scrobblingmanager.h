@@ -9,26 +9,30 @@
 #include "track/tracktiminginfo.h"
 
 class BaseTrackPlayer;
+class PlayerManager;
 
 class ScrobblingManager : public QObject {
     Q_OBJECT
   public:
-    ScrobblingManager();
+    ScrobblingManager(PlayerManager *manager);
   private:
     struct TrackInfo {
         TrackPointer m_pTrack;
         TrackTimingInfo m_trackInfo;
-        QLinkedList<BaseTrackPlayer*> m_players;
-        TrackInfo(TrackPointer pTrack, BaseTrackPlayer *player) : 
+        QLinkedList<QString> m_players;
+        TrackInfo(TrackPointer pTrack) : 
         m_pTrack(pTrack), m_trackInfo(pTrack)
         {} 
     };
     struct TrackToBeReset {
         TrackPointer m_pTrack;
-        BaseTrackPlayer *m_pPlayer;
-        TrackToBeReset(TrackPointer pTrack, BaseTrackPlayer *player) :
-        m_pTrack(pTrack),m_pPlayer(player) {}
-    };    
+        QString m_playerGroup;
+        TrackToBeReset(TrackPointer pTrack, const QString &playerGroup) :
+        m_pTrack(pTrack), m_playerGroup(playerGroup) {}
+    };   
+
+    PlayerManager *m_pManager;
+
     QMutex m_mutex;
     QLinkedList<TrackInfo*> m_trackList;
     QLinkedList<TrackToBeReset> m_tracksToBeReset;
@@ -38,6 +42,7 @@ class ScrobblingManager : public QObject {
     ControlProxy m_CPXFaderCalibration;
     ControlProxy m_CPXFaderMode;
     ControlProxy m_CPXFaderReverse;
+
     
     void resetTracks();    
     bool isTrackAudible(TrackPointer pTrack, BaseTrackPlayer * pPlayer);
