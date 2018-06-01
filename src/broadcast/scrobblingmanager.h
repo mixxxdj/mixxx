@@ -8,28 +8,33 @@
 #include "track/tracktiminginfo.h"
 
 class BaseTrackPlayer;
+class PlayerManager;
 
 class ScrobblingManager : public QObject {
     Q_OBJECT
   public:
-    ScrobblingManager();
+    ScrobblingManager(PlayerManager* pManager);
 
   private:
     struct TrackInfo {
         TrackPointer m_pTrack;
         TrackTimingInfo m_trackInfo;
-        QLinkedList<BaseTrackPlayer*> m_players;
-        TrackInfo(TrackPointer pTrack, BaseTrackPlayer* pPlayer) :
-        m_pTrack(pTrack), m_trackInfo(pTrack)
-        {} 
+        QLinkedList<QString> m_players;
+        TrackInfo(TrackPointer pTrack)
+                : m_pTrack(pTrack), m_trackInfo(pTrack) {
+        }
     };
     struct TrackToBeReset {
         TrackPointer m_pTrack;
-        BaseTrackPlayer* m_pPlayer;
-        TrackToBeReset(TrackPointer pTrack, BaseTrackPlayer* pPlayer)
-                : m_pTrack(pTrack), m_pPlayer(pPlayer) {
+        QString m_playerGroup;
+        TrackToBeReset(TrackPointer pTrack, const QString& playerGroup)
+                : m_pTrack(pTrack),
+                  m_playerGroup(playerGroup) {
         }
     };
+
+    PlayerManager* m_pManager;
+
     QMutex m_mutex;
     QLinkedList<TrackInfo*> m_trackList;
     QLinkedList<TrackToBeReset> m_tracksToBeReset;
@@ -45,7 +50,7 @@ class ScrobblingManager : public QObject {
     double getPlayerVolume(BaseTrackPlayer* pPlayer);
 
   protected:
-    void timerEvent(QTimerEvent* timerEvent) override;
+    void timerEvent(QTimerEvent* pTimerEvent) override;
   public slots:
     void slotTrackPaused(TrackPointer pPausedTrack);
     void slotTrackResumed(TrackPointer pResumedTrack);

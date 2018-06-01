@@ -48,6 +48,10 @@ class BaseTrackPlayer : public BasePlayer {
         return false;
     };
 
+    virtual bool isTrackPaused() const {
+        return false;
+    }
+
   public slots:
 #ifdef __STEM__
     virtual void slotLoadTrack(TrackPointer pTrack,
@@ -109,7 +113,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     /// For testing, loads a fake track.
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
 
-    bool isTrackPaused() const;
+    bool isTrackPaused() const override;
 
   public slots:
 #ifdef __STEM__
