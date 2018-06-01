@@ -117,13 +117,11 @@ CueControl::CueControl(QString group,
     m_pAutoDJStartSource = new ControlObject(ConfigKey(group, "autodj_start_source"));
 
     m_pAutoDJStartSet = new ControlPushButton(ConfigKey(group, "autodj_start_set"));
-    m_pAutoDJStartSet->setButtonMode(ControlPushButton::TRIGGER);
     connect(m_pAutoDJStartSet, SIGNAL(valueChanged(double)),
             this, SLOT(autoDJStartSet(double)),
             Qt::DirectConnection);
 
     m_pAutoDJStartClear = new ControlPushButton(ConfigKey(group, "autodj_start_clear"));
-    m_pAutoDJStartClear->setButtonMode(ControlPushButton::TRIGGER);
     connect(m_pAutoDJStartClear, SIGNAL(valueChanged(double)),
             this, SLOT(autoDJStartClear(double)),
             Qt::DirectConnection);
@@ -134,13 +132,11 @@ CueControl::CueControl(QString group,
     m_pAutoDJEndSource = new ControlObject(ConfigKey(group, "autodj_end_source"));
 
     m_pAutoDJEndSet = new ControlPushButton(ConfigKey(group, "autodj_end_set"));
-    m_pAutoDJEndSet->setButtonMode(ControlPushButton::TRIGGER);
     connect(m_pAutoDJEndSet, SIGNAL(valueChanged(double)),
             this, SLOT(autoDJEndSet(double)),
             Qt::DirectConnection);
 
     m_pAutoDJEndClear = new ControlPushButton(ConfigKey(group, "autodj_end_clear"));
-    m_pAutoDJEndClear->setButtonMode(ControlPushButton::TRIGGER);
     connect(m_pAutoDJEndClear, SIGNAL(valueChanged(double)),
             this, SLOT(autoDJEndClear(double)),
             Qt::DirectConnection);
