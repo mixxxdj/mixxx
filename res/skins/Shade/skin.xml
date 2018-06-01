@@ -464,215 +464,17 @@
 									<Style>QGroupBox {}</Style>
 									<Layout>vertical</Layout>
 									<Children>
-										<!-- Preview Deck-->
 										<WidgetGroup>
 											<Style>
 												QGroupBox {
-													margin: 2px 0px 2px 3px;
+													margin: 2px 0px 4px 3px;
 													padding: 0px;
-													border: 1px solid #656565;
 													background: transparent;
 												}
 											</Style>
 											<Layout>horizontal</Layout>
 											<Children>
-												<!-- Preview Deck Column 1 Row 1-->
-												<WidgetGroup>
-												<Layout>vertical</Layout>
-												<Children>
-												<WidgetGroup>
-													<Style> QGroupBox {
-														margin: 0px;
-														padding: 0px 0px 0px 0px;
-														border-left: 0px solid #656565;
-														border-right: 0px solid #2B2B2B;
-														border-top: 0px solid #656565;
-														border-bottom: 1px solid #2B2B2B;
-														background: transparent;
-													}
-													</Style>
-													<Layout>horizontal</Layout>
-													<Children>
-														<!--
-														**********************************************
-														Text- Track Title
-														**********************************************
-														-->
-														<Text>
-															<TooltipId>text</TooltipId>
-															<Style> QLabel {
-																font: 11px/13px sans-serif;
-																font-family: "Open Sans";
-																background-color: transparent;
-																color: #ACACAC;
-																text-align: left;
-																padding-left: 1px;
-															}
-															</Style>
-															<Group>[PreviewDeck1]</Group>
-															<Size>50me,15f</Size>
-															<Elide>right</Elide>
-														</Text>
-														<!--
-														**********************************************
-														Button- Eject
-														**********************************************
-														-->
-														<PushButton>
-															<TooltipId>eject</TooltipId>
-															<Style></Style>
-															<NumberStates>1</NumberStates>
-															<State>
-																<Number>0</Number>
-																<Pressed>btn_eject1_over.png</Pressed>
-																<Unpressed>btn_eject1.png</Unpressed>
-															</State>
-															<Connection>
-																<ConfigKey>[PreviewDeck1],eject</ConfigKey>
-																<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-																<ButtonState>LeftButton</ButtonState>
-																<ConnectValueToWidget>false</ConnectValueToWidget>
-															</Connection>
-														</PushButton>
-													</Children>
-												</WidgetGroup>
-												<!-- Preview Deck Column 1 Row 2-->
-												<WidgetGroup>
-													<Style>
-														QGroupBox {
-															padding: 0px;
-															margin: 0px;
-															border: 0px;
-														}
-													</Style>
-													<Layout>horizontal</Layout>
-													<Children>
-														<PushButton>
-															<TooltipId>play_start</TooltipId>
-															<Style></Style>
-															<NumberStates>2</NumberStates>
-															<RightClickIsPushButton>true</RightClickIsPushButton>
-															<State>
-																<Number>0</Number>
-																<Pressed>btn_play_sampler_down.png</Pressed>
-																<Unpressed>btn_play_sampler.png</Unpressed>
-															</State>
-															<State>
-																<Number>1</Number>
-																<Pressed>btn_play_sampler_overdown.png</Pressed>
-																<Unpressed>btn_play_sampler_over.png</Unpressed>
-															</State>
-																<Connection>
-																<ConfigKey>[PreviewDeck1],play</ConfigKey>
-																<EmitOnDownPress>true</EmitOnDownPress>
-																<ButtonState>LeftButton</ButtonState>
-															</Connection>
-															<Connection>
-																<ConfigKey>[PreviewDeck1],start</ConfigKey>
-																<EmitOnDownPress>true</EmitOnDownPress>
-																<ButtonState>RightButton</ButtonState>
-																<ConnectValueToWidget>false</ConnectValueToWidget>
-															</Connection>
-														</PushButton>
-														<WidgetGroup>
-															<ObjectName>SamplerLeftBorder</ObjectName>
-															<Size>3f,37f</Size>
-															<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-														</WidgetGroup>
-														<Overview>
-															<TooltipId>waveform_overview</TooltipId>
-															<Style></Style>
-															<Group>[PreviewDeck1]</Group>
-															<Size>me,37f</Size>
-															<PlayedOverlayColor>#40FFFFFF</PlayedOverlayColor>
-															<SignalHighColor>#FFE300</SignalHighColor>
-															<SignalMidColor>#0099FF</SignalMidColor>
-															<SignalLowColor>#FF0035</SignalLowColor>
-															<SignalColor>#FF8000</SignalColor>
-															<PlayPosColor>#00FF00</PlayPosColor>
-															<DefaultMark>
-																<Align>bottom</Align>
-																<Color>#FFFFFF</Color>
-																<TextColor>#00FF00</TextColor>
-																<Text> %1 </Text>
-															</DefaultMark>
-															<Mark>
-																<Control>cue_point</Control>
-																<Text> C </Text>
-																<Align>top</Align>
-																<Color>#FF001C</Color>
-																<TextColor>#00FF00</TextColor>
-															</Mark>
-															<Connection>
-																<ConfigKey>[PreviewDeck1],playposition</ConfigKey>
-																<EmitOnDownPress>false</EmitOnDownPress>
-															</Connection>
-														</Overview>
-													</Children>
-												</WidgetGroup>
-												</Children>
-												</WidgetGroup>
-
-											<!-- Preview Deck Column 2-->
-												<WidgetGroup>
-													<MinimumSize>20,62</MinimumSize>
-													<Children>
-													<!--
-													**********************************************
-													Visual- Volume peak indicator
-													**********************************************
-													-->
-													<StatusLight>
-														<TooltipId>preview_PeakIndicator</TooltipId>
-														<Style></Style>
-														<PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
-														<PathBack>btn_clipping_previewdeck.png</PathBack>
-														<Pos>0,3</Pos>
-														<Connection>
-															<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
-														</Connection>
-													</StatusLight>
-
-													<!--
-													**********************************************
-													Visual - Volume level display
-													**********************************************
-													-->
-													<VuMeter>
-														<TooltipId>channel_VuMeter</TooltipId>
-														<Style></Style>
-														<PathVu>btn_volume_display_previewdeck_over.png</PathVu>
-														<PathBack>btn_volume_display_previewdeck.png</PathBack>
-														<Pos>0,14</Pos>
-														<Horizontal>false</Horizontal>
-														<PeakHoldSize>3</PeakHoldSize>
-														<PeakHoldTime>250</PeakHoldTime>
-														<PeakFallTime>50</PeakFallTime>
-														<PeakFallStep>3</PeakFallStep>
-														<Connection>
-															<ConfigKey>[PreviewDeck1],VuMeter</ConfigKey>
-														</Connection>
-													</VuMeter>
-
-													<!--
-													**********************************************
-													Slider- Channel Volume
-													**********************************************
-													-->
-													<SliderComposed>
-														<TooltipId>pregain</TooltipId>
-														<Style></Style>
-														<Handle>knob_volume_previewdeck.png</Handle>
-														<Slider>slider_volume_previewdeck.png</Slider>
-														<Pos>10,2</Pos>
-														<Horizontal>false</Horizontal>
-														<Connection>
-															<ConfigKey>[PreviewDeck1],pregain</ConfigKey>
-															<EmitOnDownPress>false</EmitOnDownPress>
-														</Connection>
-													</SliderComposed>
-													</Children>
-												</WidgetGroup>
+                        <Template src="skin:preview_deck.xml"/>
 											</Children>
 											<Connection>
 												<ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
@@ -686,7 +488,7 @@
 											<Size>e,me</Size>
 											<Style></Style>
 											<SplitSizes>1,e</SplitSizes>
-                                            <Collapsible>0,0</Collapsible>
+                      <Collapsible>0,0</Collapsible>
 											<Children>
 												<LibrarySidebar></LibrarySidebar>
 												<!--Cover Art-->
