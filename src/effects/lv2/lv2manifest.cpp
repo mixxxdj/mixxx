@@ -1,6 +1,6 @@
 #include "effects/lv2/lv2manifest.h"
 #include "effects/effectmanifestparameter.h"
-#include <math.h>
+#include "util/math.h"
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                          QHash<QString, LilvNode*>& properties)
@@ -122,19 +122,19 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             // Some plugins don't specify minimum, maximum and default values
             // In this case set the minimum and default values to 0 and
             // the maximum to the number of scale points
-            if (std::isnan(m_default[i])) {
+            if (isnan(m_default[i])) {
                 param->setDefault(0);
             } else {
                 param->setDefault(m_default[i]);
             }
 
-            if (std::isnan(m_minimum[i])) {
+            if (isnan(m_minimum[i])) {
                 param->setMinimum(0);
             } else {
                 param->setMinimum(m_minimum[i]);
             }
 
-            if (std::isnan(m_maximum[i])) {
+            if (isnan(m_maximum[i])) {
                 param->setMaximum(param->getSteps().size() - 1);
             } else {
                 param->setMaximum(m_maximum[i]);
