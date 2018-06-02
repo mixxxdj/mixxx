@@ -1,7 +1,7 @@
 #ifndef MIXXX_SOUNDSOURCEPLUGINAPI_H
 #define MIXXX_SOUNDSOURCEPLUGINAPI_H
 
-#define MIXXX_SOUNDSOURCEPLUGINAPI_VERSION 17
+#define MIXXX_SOUNDSOURCEPLUGINAPI_VERSION 18
 // SoundSource Plugin API version history:
 //  18 - Mixxx 2.1.1 - Add log level parameters for plugin initialization
 //  17 - Mixxx 2.1.0 - Bump version number after ABI breaking changes (lp1737815)
