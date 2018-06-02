@@ -111,6 +111,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           m_pSoundManager(pSoundManager),
           m_pEffectsManager(pEffectsManager),
           m_pEngine(pEngine),
+          m_scrobblingManager(this),
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
           m_pCONumDecks(std::make_unique<ControlObject>(
@@ -123,7 +124,6 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                   ConfigKey(kAppGroup, QStringLiteral("num_microphones")), true, true)),
           m_pCONumAuxiliaries(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries")), true, true)),
-          m_scrobblingManager(this),
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_decks")));
     m_pCONumDecks->connectValueChangeRequest(this,
