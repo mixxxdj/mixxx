@@ -91,7 +91,7 @@ bool SoundSourcePluginLibrary::init() {
     }
 
     m_pSoundSourceProvider = SoundSourceProviderPointer(
-            (*createSoundSourceProviderFunc)(),
+            (*createSoundSourceProviderFunc)(static_cast<int>(g_logLevel), static_cast<int>(g_logFlushLevel)),
             destroySoundSourceProviderFunc);
     if (m_pSoundSourceProvider) {
         return true;
