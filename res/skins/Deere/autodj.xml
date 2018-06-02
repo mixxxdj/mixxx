@@ -1,0 +1,43 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A stack of AutoDJ controls for setting and clearing AutoDJ cues.
+  Variables:
+    group: The group for the controls.
+-->
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <MinimumSize>46,46</MinimumSize>
+    <MaximumSize>46,46</MaximumSize>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <Template src="skin:left_right_1state_button.xml">
+        <SetVariable name="MinimumSize"><Variable name="VerticalStretchButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="VerticalStretchButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="VerticalStretchButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_pressed">icon/ic_autodj_start_48px.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">icon/ic_autodj_start_48px.svg</SetVariable>
+        <SetVariable name="left_connection_control"><Variable name="group"/>,autodj_start_set</SetVariable>
+        <SetVariable name="right_connection_control"><Variable name="group"/>,autodj_start_clear</SetVariable>
+      </Template>
+
+      <!-- Workaround for layout spacing -->
+      <Template src="skin:spacer_hx.xml">
+        <SetVariable name="width">2f,</SetVariable>
+      </Template>
+
+      <Template src="skin:left_right_1state_button.xml">
+        <SetVariable name="MinimumSize"><Variable name="VerticalStretchButtonMinimumSize"/></SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="VerticalStretchButtonMaximumSize"/></SetVariable>
+        <SetVariable name="SizePolicy"><Variable name="VerticalStretchButtonSizePolicy"/></SetVariable>
+        <SetVariable name="state_0_pressed">icon/ic_autodj_end_48px.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">icon/ic_autodj_end_48px.svg</SetVariable>
+        <SetVariable name="left_connection_control"><Variable name="group"/>,autodj_end_set</SetVariable>
+        <SetVariable name="right_connection_control"><Variable name="group"/>,autodj_end_clear</SetVariable>
+      </Template>
+
+    </Children>
+  </WidgetGroup>
+</Template>

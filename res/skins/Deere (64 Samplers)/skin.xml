@@ -115,8 +115,8 @@
     <SetVariable name="HorizontalStretchButtonMaximumSize">-1,22</SetVariable>
     <SetVariable name="HorizontalStretchButtonSizePolicy">me,f</SetVariable>
 
-    <SetVariable name="VerticalStretchButtonMinimumSize">20,-1</SetVariable>
-    <SetVariable name="VerticalStretchButtonMaximumSize">20,-1</SetVariable>
+    <SetVariable name="VerticalStretchButtonMinimumSize">22,-1</SetVariable>
+    <SetVariable name="VerticalStretchButtonMaximumSize">22,-1</SetVariable>
     <SetVariable name="VerticalStretchButtonSizePolicy">f,me</SetVariable>
 
     <!-- The waveforms (zoomed and overview) use a lot of memory. They appear in multiple places in

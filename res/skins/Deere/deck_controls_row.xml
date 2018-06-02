@@ -13,6 +13,8 @@
     <Children>
       <!-- Expanding spacers in between control contexts -->
       <WidgetGroup><Size>3me,1min</Size></WidgetGroup>
+      <Template src="skin:autodj.xml"/>
+      <WidgetGroup><Size>3me,1min</Size></WidgetGroup>
       <Template src="skin:loop.xml"/>
       <WidgetGroup><Size>3me,1min</Size></WidgetGroup>
       <Template src="skin:beatjump.xml"/>
