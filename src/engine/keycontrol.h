@@ -50,15 +50,14 @@ class KeyControl : public EngineControl {
     void updatePitchAdjust();
     void updateRate();
 
-    // ControlObjects that come from EngineBuffer
-    ControlObject* m_pRateSlider;
-    ControlObject* m_pRateRange;
-    ControlObject* m_pRateDir;
+    ControlProxy* m_pRateSlider;
+    ControlProxy* m_pRateRange;
+    ControlProxy* m_pRateDir;
 
-    ControlObject* m_pVCRate;
-    ControlObject* m_pVCEnabled;
+    ControlProxy* m_pVCRate;
+    ControlProxy* m_pVCEnabled;
 
-    ControlObject* m_pKeylock;
+    ControlProxy* m_pKeylock;
     ControlPotmeter* m_pPitch;
     ControlPotmeter* m_pPitchAdjust;
     ControlPushButton* m_pButtonSyncKey;

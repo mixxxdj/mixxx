@@ -63,9 +63,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
                   EngineMaster* pEngine);
     virtual ~PlayerManager();
 
-    // Add a deck to the PlayerManager
-    void addDeck();
-
     // Add number of decks according to configuration.
     void addConfiguredDecks();
 
@@ -192,11 +189,11 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Loads the location to the sampler. samplerNumber is 1-indexed
     void slotLoadToSampler(QString location, int samplerNumber);
 
-    void slotNumDecksControlChanged(double v);
-    void slotNumSamplersControlChanged(double v);
-    void slotNumPreviewDecksControlChanged(double v);
-    void slotNumMicrophonesControlChanged(double v);
-    void slotNumAuxiliariesControlChanged(double v);
+    void slotChangeNumDecks(double v);
+    void slotChangeNumSamplers(double v);
+    void slotChangeNumPreviewDecks(double v);
+    void slotChangeNumMicrophones(double v);
+    void slotChangeNumAuxiliaries(double v);
 
   signals:
     void loadLocationToPlayer(QString location, QString group);
