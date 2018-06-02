@@ -882,6 +882,23 @@ QImage importCoverImageFromVorbisCommentPictureList(
     return QImage();
 }
 
+template<typename T>
+const T* downcastID3v2Frame(TagLib::ID3v2::Frame* frame) {
+    DEBUG_ASSERT(frame);
+    // We need to use a safe dynamic_cast at runtime instead of an unsafe
+    // static_cast at compile time to detect unexpected frame subtypes!
+    // See also: https://bugs.launchpad.net/mixxx/+bug/1774790
+    const T* downcastFrame = dynamic_cast<T*>(frame);
+    VERIFY_OR_DEBUG_ASSERT(downcastFrame) {
+        // This should only happen when reading corrupt or malformed files
+        kLogger.warning()
+                << "Unexpected ID3v2"
+                << frame->frameID().data()
+                << "frame type";
+    }
+    return downcastFrame;
+}
+
 void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& tag) {
     if (!pCoverArt) {
         return; // nothing to do
@@ -898,10 +915,9 @@ void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& t
     const TagLib::ID3v2::FrameList pFrames = iterAPIC->second;
     for (const auto coverArtType: kPreferredID3v2PictureTypes) {
         for (const auto pFrame: pFrames) {
-            const TagLib::ID3v2::AttachedPictureFrame* pApicFrame =
-                    static_cast<const TagLib::ID3v2::AttachedPictureFrame*>(pFrame);
-            DEBUG_ASSERT(pApicFrame); // trust TagLib
-            if (pApicFrame->type() == coverArtType) {
+            const auto* pApicFrame =
+                    downcastID3v2Frame<TagLib::ID3v2::AttachedPictureFrame>(pFrame);
+            if (pApicFrame && (pApicFrame->type() == coverArtType)) {
                 QImage image(loadImageFromID3v2PictureFrame(*pApicFrame));
                 if (image.isNull()) {
                     kLogger.warning()
@@ -918,18 +934,19 @@ void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& t
 
     // Fallback: No best match -> Simply select the 1st loadable image
     for (const auto pFrame: pFrames) {
-        const TagLib::ID3v2::AttachedPictureFrame* pApicFrame =
-                static_cast<const TagLib::ID3v2::AttachedPictureFrame*>(pFrame);
-        DEBUG_ASSERT(pApicFrame); // trust TagLib
-        const QImage image(loadImageFromID3v2PictureFrame(*pApicFrame));
-        if (image.isNull()) {
-            kLogger.warning()
-                    << "Failed to load image from ID3v2 APIC frame of type"
-                    << pApicFrame->type();
-            continue;
-        } else {
-            *pCoverArt = image;
-            return; // success
+        const auto* pApicFrame =
+                downcastID3v2Frame<TagLib::ID3v2::AttachedPictureFrame>(pFrame);
+        if (pApicFrame) {
+            const QImage image(loadImageFromID3v2PictureFrame(*pApicFrame));
+            if (image.isNull()) {
+                kLogger.warning()
+                        << "Failed to load image from ID3v2 APIC frame of type"
+                        << pApicFrame->type();
+                continue;
+            } else {
+                *pCoverArt = image;
+                return; // success
+            }
         }
     }
 }
