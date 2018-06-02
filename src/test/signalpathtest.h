@@ -79,7 +79,7 @@ class BaseSignalPathTest : public MixxxTest {
         m_pPreview1 = new PreviewDeck(NULL, m_pConfig,
                                       m_pEngineMaster, m_pEffectsManager,
                                       EngineChannel::CENTER, m_sPreviewGroup);
-        ControlObject::getControl(ConfigKey(m_sPreviewGroup, "file_bpm"))->set(2.0);
+        ControlObject::set(ConfigKey(m_sPreviewGroup, "file_bpm"), 2.0);
 
         // TODO(owilliams) Tests fail with this turned on because EngineSync is syncing
         // to this sampler.  FIX IT!
@@ -113,12 +113,9 @@ class BaseSignalPathTest : public MixxxTest {
     }
 
     void addDeck(EngineDeck* pDeck) {
-        ControlObject::getControl(ConfigKey(pDeck->getGroup(), "master"))
-                ->set(1.0);
-        ControlObject::getControl(ConfigKey(pDeck->getGroup(), "rate_dir"))
-                ->set(kDefaultRateDir);
-        ControlObject::getControl(ConfigKey(pDeck->getGroup(), "rateRange"))
-                ->set(kDefaultRateRange);
+        ControlObject::set(ConfigKey(pDeck->getGroup(), "master"), 1.0);
+        ControlObject::set(ConfigKey(pDeck->getGroup(), "rate_dir"), kDefaultRateDir);
+        ControlObject::set(ConfigKey(pDeck->getGroup(), "rateRange"), kDefaultRateRange);
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
