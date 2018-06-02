@@ -2,21 +2,28 @@
 
 #include <QObject>
 
+#include "broadcast/filelistener.h"
+#include "broadcast/scrobblingmanager.h"
 #include "control/controlproxy.h"
 #include "engine/enginexfader.h"
 #include "mixer/deck.h"
+#include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_scrobblingmanager.cpp"
 
 ScrobblingManager::ScrobblingManager(PlayerManager* pManager)
-        : m_CPGuiTick("[Master]", "guiTick50ms", this),
+        : m_pManager(pManager),
+          m_broadcaster(new TrackTimers::ElapsedTimerQt),
+          m_CPGuiTick("[Master]", "guiTick50ms", this),
           m_CPCrossfader("[Master]", "crossfader", this),
           m_CPXFaderCurve(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"), this),
           m_CPXFaderCalibration(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCalibration"), this),
           m_CPXFaderMode(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"), this),
-          m_CPXFaderReverse(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"), this),
-          m_pManager(pManager) {
+          m_CPXFaderReverse(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"), this) {
     m_CPGuiTick.connectValueChanged(this, &ScrobblingManager::slotGuiTick);
+    connect(&PlayerInfo::instance(), &PlayerInfo::currentPlayingTrackChanged, &m_broadcaster, &MetadataBroadcaster::slotNowListening);
+    m_broadcaster
+            .addNewScrobblingService(new FileListener("nowListening.txt"));
     startTimer(1000);
 }
 
@@ -90,7 +97,7 @@ void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack) {
         TrackInfo* pNewTrackInfo = new TrackInfo(pNewTrack);
         pNewTrackInfo->m_players.append(pPlayer->getGroup());
         m_trackList.append(pNewTrackInfo);
-        connect(&m_trackList.last()->m_trackInfo, SIGNAL(readyToBeScrobbled(TrackPointer)), this, SLOT(slotReadyToBeScrobbled(TrackPointer)));
+        connect(&m_trackList.last()->m_trackInfo, SIGNAL(readyToBeScrobbled(TrackPointer)), &m_broadcaster, SLOT(slotReadyToBeScrobbled(TrackPointer)));
     }
     // A new track has been loaded so must unload old one.
     resetTracks();
@@ -197,9 +204,4 @@ void ScrobblingManager::timerEvent(QTimerEvent* timerEvent) {
             pTrackInfo->m_trackInfo.pausePlayedTime();
         }
     }
-}
-
-void ScrobblingManager::slotReadyToBeScrobbled(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
-    qDebug() << "Track ready to be scrobbled";
 }
