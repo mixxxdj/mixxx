@@ -4,6 +4,7 @@
 #include <QMutex>
 #include <QLinkedList>
 
+#include "broadcast/metadatabroadcast.h"
 #include "mixer/basetrackplayer.h"
 #include "track/track.h"
 #include "track/tracktiminginfo.h"
@@ -33,6 +34,8 @@ class ScrobblingManager : public QObject {
 
     PlayerManager *m_pManager;
 
+    MetadataBroadcaster m_broadcaster;
+
     QMutex m_mutex;
     QLinkedList<TrackInfo*> m_trackList;
     QLinkedList<TrackToBeReset> m_tracksToBeReset;
@@ -57,5 +60,4 @@ class ScrobblingManager : public QObject {
     void slotPlayerEmpty();
   private slots:
     void slotGuiTick(double timeSinceLastTick);
-    void slotReadyToBeScrobbled(TrackPointer pTrack);
 };
