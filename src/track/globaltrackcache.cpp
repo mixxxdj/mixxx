@@ -581,8 +581,8 @@ TrackRef GlobalTrackCache::initTrackId(
 }
 
 void GlobalTrackCache::evictAndSave(
-        GlobalTrackCacheEntryPointer chacheEntryPtr) {
-    DEBUG_ASSERT(chacheEntryPtr);
+        GlobalTrackCacheEntryPointer cacheEntryPtr) {
+    DEBUG_ASSERT(cacheEntryPtr);
 
     // We need to besure this is always called from the main thread
     // because we can only access the DB from it and we must not loose the
@@ -592,33 +592,33 @@ void GlobalTrackCache::evictAndSave(
 
     GlobalTrackCacheLocker cacheLocker;
 
-    if (!chacheEntryPtr->getSavingWeakPtr().expired()) {
+    if (!cacheEntryPtr->getSavingWeakPtr().expired()) {
         // We have handed out (revived) this track again after our reference count
         // drops to zero and before acquire the lock at the beginning of this function
         if (debugLogEnabled()) {
             kLogger.debug()
                     << "Skip to evict and save a revived or reallocated track"
-                    << chacheEntryPtr->getPlainPtr();
+                    << cacheEntryPtr->getPlainPtr();
         }
         return;
     }
 
-    if (!evict(chacheEntryPtr->getPlainPtr())) {
+    if (!evict(cacheEntryPtr->getPlainPtr())) {
         // A scond deleter has already evict the track from cache after our
         // reference count drops to zero and before acquire the lock at the
         // beginning of this function
         if (debugLogEnabled()) {
             kLogger.debug()
                     << "Skip to save an already evicted track"
-                    << chacheEntryPtr->getPlainPtr();
+                    << cacheEntryPtr->getPlainPtr();
         }
         return;
     }
 
-    DEBUG_ASSERT(isEvicted(chacheEntryPtr->getPlainPtr()));
-    m_pSaver->saveCachedTrack(chacheEntryPtr->getPlainPtr());
+    DEBUG_ASSERT(isEvicted(cacheEntryPtr->getPlainPtr()));
+    m_pSaver->saveCachedTrack(cacheEntryPtr->getPlainPtr());
 
-    // here the chacheEntryPtr goes out of scope, the cache is deleted
+    // here the cacheEntryPtr goes out of scope, the cache is deleted
     // including the owned track
 }
 

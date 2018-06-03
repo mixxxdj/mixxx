@@ -31,7 +31,7 @@ http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 // of values for the slider.
 // The threshold of bitrate at which the encoder
 // with switch to mono encoding
-const int EncoderVorbis::MONO_BITRATE_TRESHOLD = 70;
+const int EncoderVorbis::MONO_BITRATE_THRESHOLD = 70;
 
 
 EncoderVorbis::EncoderVorbis(EncoderCallback* pCallback)
@@ -65,7 +65,7 @@ void EncoderVorbis::setEncoderSettings(const EncoderSettings& settings)
         case EncoderSettings::ChannelMode::STEREO: m_channels = 2; break;
         case EncoderSettings::ChannelMode::AUTOMATIC: // fallthrough
         default: 
-            if (m_bitrate > MONO_BITRATE_TRESHOLD ) {
+            if (m_bitrate > MONO_BITRATE_THRESHOLD ) {
                 m_channels = 2;
             }
             else {
