@@ -43,6 +43,11 @@ template<class T> static void safeRelease(T **ppT) {
 
 namespace mixxx {
 
+// TODO(XXX): Remove this ugly "extern" hack after getting rid of
+// the broken plugin architecture.
+LogLevel g_logLevel;
+LogLevel g_logFlushLevel;
+
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
           m_hrCoInitialize(E_FAIL),
@@ -803,9 +808,11 @@ SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl
 } // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider(int logLevel, int logFlushLevel) {
     // SoundSourceProviderMediaFoundation is stateless and a single instance
     // can safely be shared
+    mixxx::g_logLevel = static_cast<mixxx::LogLevel>(logLevel);
+    mixxx::g_logFlushLevel = static_cast<mixxx::LogLevel>(logFlushLevel);
     static mixxx::SoundSourceProviderMediaFoundation singleton;
     return &singleton;
 }

@@ -18,9 +18,11 @@ bool beginTransaction(QSqlDatabase database) {
         return false;
     }
     if (database.transaction()) {
-        kLogger.debug()
-                << "Started new SQL database transaction on"
-                << database.connectionName();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Started new SQL database transaction on"
+                    << database.connectionName();
+        }
         return true;
     } else {
         kLogger.warning()
@@ -63,9 +65,11 @@ bool SqlTransaction::commit() {
         return false;
     }
     if (m_database.commit()) {
-        kLogger.debug()
-                << "Committed SQL database transaction on"
-                << m_database.connectionName();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Committed SQL database transaction on"
+                    << m_database.connectionName();
+        }
         release(); // commit/rollback only once
         return true;
     } else {
@@ -84,9 +88,11 @@ bool SqlTransaction::rollback() {
         return false;
     }
     if (m_database.rollback()) {
-        kLogger.debug()
-                << "Rolled back SQL database transaction on"
-                << m_database.connectionName();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Rolled back SQL database transaction on"
+                    << m_database.connectionName();
+        }
         release(); // commit/rollback only once
         return true;
     } else {

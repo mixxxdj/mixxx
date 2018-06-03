@@ -249,7 +249,7 @@ bool parseReplayGainGain(
         // the replay gain.
         if (ratio == ReplayGain::kRatio0dB) {
             // special case
-            kLogger.debug() << "Ignoring possibly undefined gain:" << dbGain;
+            kLogger.info() << "Ignoring possibly undefined gain:" << dbGain;
             ratio = ReplayGain::kRatioUndefined;
         }
         pReplayGain->setRatio(ratio);
@@ -564,7 +564,11 @@ int removeUserTextIdentificationFrames(
                         toQString(pFrame->description()));
                 if (0 == frameDescription.compare(
                         description, Qt::CaseInsensitive)) {
-                    kLogger.debug() << "Removing ID3v2 TXXX frame:" << toQString(pFrame->description());
+                    if (kLogger.debugEnabled()) {
+                        kLogger.debug()
+                                << "Removing ID3v2 TXXX frame:"
+                                << toQString(pFrame->description());
+                    }
                     // After removing a frame the result of frameListMap()
                     // is no longer valid!!
                     pTag->removeFrame(pFrame, false); // remove an unowned frame
@@ -838,7 +842,9 @@ bool readAudioProperties(
 QImage importCoverImageFromVorbisCommentPictureList(
         const TagLib::List<TagLib::FLAC::Picture*>& pictures) {
     if (pictures.isEmpty()) {
-        kLogger.debug() << "VorbisComment picture list is empty";
+        if (kLogger.debugEnabled()) {
+            kLogger.debug() << "VorbisComment picture list is empty";
+        }
         return QImage();
     }
 
@@ -900,8 +906,9 @@ void importCoverImageFromID3v2Tag(QImage* pCoverArt, const TagLib::ID3v2::Tag& t
 
     const auto iterAPIC = tag.frameListMap().find("APIC");
     if ((iterAPIC == tag.frameListMap().end()) || iterAPIC->second.isEmpty()) {
-        kLogger.debug()
-                << "No cover art: None or empty list of ID3v2 APIC frames";
+        if (kLogger.debugEnabled()) {
+            kLogger.debug() << "No cover art: None or empty list of ID3v2 APIC frames";
+        }
         return; // abort
     }
 
@@ -1043,9 +1050,9 @@ void importCoverImageFromVorbisCommentTag(QImage* pCoverArt, TagLib::Ogg::XiphCo
             }
         }
     }
-
-    kLogger.debug()
-            << "No cover art found in VorbisComment tag";
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "No cover art found in VorbisComment tag";
+    }
 }
 
 void importCoverImageFromMP4Tag(QImage* pCoverArt, const TagLib::MP4::Tag& tag) {
