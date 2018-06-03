@@ -6,17 +6,19 @@ FileListener::FileListener(const QString& path)
     QFileInfo fileInfo(path);
     qDebug() << "Absolute path " << fileInfo.absoluteFilePath();
     qDebug() << "File exists: " << fileInfo.exists();
-    if (!m_file.exists()) {
-        m_file.open(QIODevice::WriteOnly);
-    }
+    m_file.open(QIODevice::WriteOnly |
+                QIODevice::Text |
+                QIODevice::Unbuffered);
+    
 }
 
 void FileListener::broadcastCurrentTrack(TrackPointer pTrack) {
+    if (!pTrack)
+        return;
     QTextStream stream(&m_file);
     m_file.resize(0);
     stream << "Now listening " << pTrack->getTitle();
     stream << " by " << pTrack->getArtist();
-    qDebug() << "Text stream status: " << stream.status();
 }
 
 void FileListener::scrobbleTrack(TrackPointer pTrack) {
