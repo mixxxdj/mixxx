@@ -56,11 +56,6 @@ class EffectRack : public QObject {
     void slotClearRack(double v);
 
   private slots:
-    void loadNextChain(const unsigned int iChainSlotNumber,
-                       EffectChainPointer pLoadedChain);
-    void loadPrevChain(const unsigned int iChainSlotNumber,
-                       EffectChainPointer pLoadedChain);
-
     void loadNextEffect(const unsigned int iChainSlotNumber,
                         const unsigned int iEffectSlotNumber,
                         EffectPointer pEffect);

@@ -5,8 +5,6 @@
 #include <QScopedPointer>
 
 #include "test/mixxxtest.h"
-#include "effects/effectchain.h"
-#include "effects/effectchainslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
 

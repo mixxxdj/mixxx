@@ -35,14 +35,12 @@ void WEffectChain::setEffectChainSlot(EffectChainSlotPointer pEffectChainSlot) {
 }
 
 void WEffectChain::chainUpdated() {
+    // qDebug() << "chainUpdated()";
     QString name = tr("None");
     QString description = tr("No effect chain loaded.");
     if (m_pEffectChainSlot) {
-        EffectChainPointer pChain = m_pEffectChainSlot->getEffectChain();
-        if (pChain) {
-            name = pChain->name();
-            description = pChain->description();
-        }
+        name = m_pEffectChainSlot->name();
+        description = m_pEffectChainSlot->description();
     }
     setText(name);
     setBaseTooltip(description);

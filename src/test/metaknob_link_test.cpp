@@ -25,15 +25,12 @@ class MetaLinkTest : public BaseEffectTest {
         m_pEffectsManager->registerInputChannel(m_headphone);
         registerTestBackend();
 
-        EffectChainPointer pChain(new EffectChain(m_pEffectsManager.data(),
-                                                  "org.mixxx.test.chain1"));
         int iRackNumber = 0;
         int iChainNumber = 0;
         int iEffectNumber = 0;
 
         StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
         m_pChainSlot = pRack->getEffectChainSlot(iChainNumber);
-        m_pChainSlot->loadEffectChainToSlot(pChain);
         m_pEffectSlot = m_pChainSlot->getEffectSlot(iEffectNumber);
 
         QString group = StandardEffectRack::formatEffectSlotGroupString(

@@ -6,7 +6,6 @@
 
 #include "mixxxtest.h"
 #include "control/controlobject.h"
-#include "effects/effectchain.h"
 #include "effects/effectchainslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
@@ -32,15 +31,12 @@ class EffectSlotTest : public BaseEffectTest {
 };
 
 TEST_F(EffectSlotTest, ControlsReflectSlotState) {
-    EffectChainPointer pChain(new EffectChain(m_pEffectsManager.data(),
-                                              "org.mixxx.test.chain1"));
     int iRackNumber = 0;
     int iChainNumber = 0;
     int iEffectNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
     EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
-    pChainSlot->loadEffectChainToSlot(pChain);
     // StandardEffectRack::addEffectChainSlot automatically adds 4 effect
     // slots. In the future we will probably remove this so this will just start
     // segfaulting.

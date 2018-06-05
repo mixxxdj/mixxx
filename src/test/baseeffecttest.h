@@ -6,7 +6,6 @@
 
 #include <QScopedPointer>
 
-#include "effects/effectchain.h"
 #include "effects/effect.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"

@@ -458,7 +458,7 @@ void DlgPrefEQ::applySelections() {
             // group name instead.
             EffectChainSlotPointer chainslot =
                     m_pEQEffectRack->getGroupEffectChainSlot(group);
-            if (chainslot && chainslot->numSlots()) {
+            if (chainslot) {
                 EffectPointer effectpointer =
                         chainslot->getEffectSlot(0)->getEffect();
                 if (effectpointer &&
@@ -502,7 +502,7 @@ void DlgPrefEQ::applySelections() {
             // group name instead.
             EffectChainSlotPointer chainslot =
                     m_pQuickEffectRack->getGroupEffectChainSlot(group);
-            if (chainslot && chainslot->numSlots()) {
+            if (chainslot) {
                 EffectPointer effectpointer =
                         chainslot->getEffectSlot(0)->getEffect();
                 if (effectpointer &&
@@ -722,12 +722,8 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
     EffectChainSlotPointer pChainSlot = m_pOutputEffectRack->getEffectChainSlot(0);
 
     if (pChainSlot) {
-        EffectChainPointer pChain = pChainSlot->getEffectChain();
-        VERIFY_OR_DEBUG_ASSERT(pChain) {
-            pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
-        }
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-        pChain->replaceEffect(0, pEffect);
+        pChainSlot->replaceEffect(0, pEffect);
 
         if (pEffect) {
             pEffect->setEnabled(true);
@@ -764,7 +760,6 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                     QString valueText = QString::number((double)slider->value() / 100);
                     valueLabel->setText(valueText);
                     slidersGridLayout->addWidget(valueLabel, 2, i + 1, Qt::AlignCenter);
-
                 }
             }
         }

@@ -6,7 +6,6 @@
 #include <QHash>
 
 #include "preferences/usersettings.h"
-#include "effects/effectchain.h"
 #include "effects/effectrack.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
@@ -48,18 +47,19 @@ class EffectChainManager : public QObject {
 
     EffectRackPointer getEffectRack(const QString& group);
 
-    void addEffectChain(EffectChainPointer pEffectChain);
-    void removeEffectChain(EffectChainPointer pEffectChain);
+    void addEffectChain(EffectChainSlotPointer pEffectChainSlot);
+    void removeEffectChain(EffectChainSlotPointer pEffectChainSlot);
 
     // To support cycling through effect chains, there is a global ordering of
     // chains. These methods allow you to get the next or previous chain given
     // your current chain.
     // TODO(rryan): Prevent double-loading of a chain into a slot?
-    EffectChainPointer getNextEffectChain(EffectChainPointer pEffectChain);
-    EffectChainPointer getPrevEffectChain(EffectChainPointer pEffectChain);
+    EffectChainSlotPointer getNextEffectChain(EffectChainSlotPointer pEffectChainSlot);
+    EffectChainSlotPointer getPrevEffectChain(EffectChainSlotPointer pEffectChainSlot);
 
-    bool saveEffectChains();
-    void loadEffectChains();
+    // NOTE(Kshitij) : New functions for saving and loading
+    // bool saveEffectChains();
+    // void loadEffectChains();
 
     // Reloads all effect to the slots to update parameter assignments
     void refeshAllRacks();
@@ -80,7 +80,7 @@ class EffectChainManager : public QObject {
     QList<QuickEffectRackPointer> m_quickEffectRacks;
     OutputEffectRackPointer m_pOutputEffectRack;
     QHash<QString, EffectRackPointer> m_effectRacksByGroup;
-    QList<EffectChainPointer> m_effectChains;
+    QList<EffectChainSlotPointer> m_effectChainSlots;
     QSet<ChannelHandleAndGroup> m_registeredInputChannels;
     QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
     DISALLOW_COPY_AND_ASSIGN(EffectChainManager);

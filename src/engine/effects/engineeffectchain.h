@@ -12,7 +12,6 @@
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
-#include "effects/effectchain.h"
 
 class EngineEffect;
 

@@ -63,7 +63,8 @@ class EffectsManager : public QObject {
     OutputEffectRackPointer addOutputsEffectRack();
     OutputEffectRackPointer getOutputsEffectRack();
 
-    void loadEffectChains();
+    // NOTE(Kshitij) : Use new functions 
+    // void loadEffectChains();
 
     EffectRackPointer getEffectRack(const QString& group);
     EffectSlotPointer getEffectSlot(const QString& group);
@@ -94,7 +95,7 @@ class EffectsManager : public QObject {
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
     bool getEffectVisibility(EffectManifestPointer pManifest); 
 
-    // Temporary, but for setting up all the default EffectChains and EffectRacks
+    void setupPerGroupRacks();
     void setup();
 
     // Reloads all effect to the slots to update parameter assignments
@@ -139,6 +140,20 @@ class EffectsManager : public QObject {
     ControlPotmeter* m_pHiEqFreq;
 
     bool m_underDestruction;
+
+    // START EFFECTCHAINMANAGER
+    // UserSettingsPointer m_pConfig;
+    // EffectsManager* m_pEffectsManager;
+    // QList<StandardEffectRackPointer> m_standardEffectRacks;
+    // QList<EqualizerRackPointer> m_equalizerEffectRacks;
+    // QList<QuickEffectRackPointer> m_quickEffectRacks;
+    // OutputEffectRackPointer m_pOutputEffectRack;
+    // QHash<QString, EffectRackPointer> m_effectRacksByGroup;
+    // QList<EffectChainPointer> m_effectChains;
+    // QSet<ChannelHandleAndGroup> m_registeredInputChannels;
+    // QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
+    // END EFFECTCHAINMANAGER
+
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

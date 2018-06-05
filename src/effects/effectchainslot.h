@@ -5,10 +5,13 @@
 #include <QMap>
 #include <QList>
 #include <QSignalMapper>
+#include <QDomDocument>
 
+#include "effects/defs.h"
+#include "effects/effect.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
-#include "effects/effectchain.h"
+
 
 class ControlObject;
 class ControlPushButton;
@@ -20,20 +23,16 @@ class EffectChainSlot : public QObject {
   public:
     EffectChainSlot(EffectRack* pRack,
                     const QString& group,
-                    const unsigned int iChainNumber);
+                    const unsigned int iChainNumber,
+                    EffectsManager* pEffectsManager,
+                    const QString& id = QString());
     virtual ~EffectChainSlot();
 
     // Get the ID of the loaded EffectChain
     QString id() const;
 
-    unsigned int numSlots() const;
     EffectSlotPointer addEffectSlot(const QString& group);
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
-
-    void loadEffectChainToSlot(EffectChainPointer pEffectChain);
-    void updateRoutingSwitches();
-    EffectChainPointer getEffectChain() const;
-    EffectChainPointer getOrCreateEffectChain(EffectsManager* pEffectsManager);
 
     void registerInputChannel(const ChannelHandleAndGroup& handle_group);
 
@@ -53,30 +52,68 @@ class EffectChainSlot : public QObject {
     QDomElement toXml(QDomDocument* doc) const;
     void loadChainSlotFromXml(const QDomElement& effectChainElement);
 
-  signals:
-    // Indicates that the effect pEffect has been loaded into slotNumber of
-    // EffectChainSlot chainNumber. pEffect may be an invalid pointer, which
-    // indicates that a previously loaded effect was removed from the slot.
-    void effectLoaded(EffectPointer pEffect, unsigned int chainNumber,
-                      unsigned int slotNumber);
 
+    // Activates EffectChain processing for the provided channel.
+    // TODO(Kshitij) : Make this function private once EffectRack layer is removed
+    void enableForInputChannel(const ChannelHandleAndGroup& handle_group);
+    void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
+
+    // Get the human-readable name of the EffectChain
+    const QString& name() const;
+    void setName(const QString& name);
+
+    // Get the human-readable description of the EffectChain
+    QString description() const;
+    void setDescription(const QString& description);
+
+    // TODO(Kshitij) : Remove this setter function once the EffectRack layer is removed
+    void setMix(const double& dMix);
+
+    static QString mixModeToString(EffectChainMixMode type) {
+        switch (type) {
+            case EffectChainMixMode::DrySlashWet:
+                return "DRY/WET";
+            case EffectChainMixMode::DryPlusWet:
+                return "DRY+WET";
+            default:
+                return "UNKNOWN";
+        }
+    }
+    static EffectChainMixMode mixModeFromString(const QString& typeStr) {
+        if (typeStr == "DRY/WET") {
+            return EffectChainMixMode::DrySlashWet;
+        } else if (typeStr == "DRY+WET") {
+            return EffectChainMixMode::DryPlusWet;
+        } else {
+            return EffectChainMixMode::NumMixModes;
+        }
+    }
+
+    void addEffect(EffectPointer pEffect);
+    void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
+    void removeEffect(unsigned int effectSlotNumber);
+    void refreshAllEffects();
+
+    const QList<EffectPointer>& effects() const;
+
+  signals:
     // Indicates that the given EffectChain was loaded into this
     // EffectChainSlot
-    void effectChainLoaded(EffectChainPointer pEffectChain);
+    void effectChainLoaded(EffectChainSlotPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // next EffectChain into it.
     void nextChain(unsigned int iChainSlotNumber,
-                   EffectChainPointer pEffectChain);
+                   EffectChainSlotPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // previous EffectChain into it.
     void prevChain(unsigned int iChainSlotNumber,
-                   EffectChainPointer pEffectChain);
+                   EffectChainSlotPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should clear
     // this EffectChain (by removing the chain from this EffectChainSlot).
-    void clearChain(unsigned int iChainNumber, EffectChainPointer pEffectChain);
+    void clearChain(unsigned int iChainNumber, EffectChainSlotPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // next Effect into the specified EffectSlot.
@@ -95,22 +132,13 @@ class EffectChainSlot : public QObject {
 
 
   private slots:
-    void slotChainEffectChanged(unsigned int effectSlotNumber, bool shouldEmit=true);
-    void slotChainNameChanged(const QString& name);
-    void slotChainEnabledChanged(bool enabled);
-    void slotChainMixChanged(double mix);
-    void slotChainMixModeChanged(EffectChainMixMode mixMode);
-    void slotChainChannelStatusChanged(const QString& group, bool enabled);
-
-    void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
+    void sendParameterUpdate();
+    void slotChainEffectChanged(unsigned int effectSlotNumber);
     // Clears the effect in the given position in the loaded EffectChain.
     void slotClearEffect(unsigned int iEffectSlotNumber);
 
     void slotControlClear(double v);
-    void slotControlChainEnabled(double v);
-    void slotControlChainMix(double v);
     void slotControlChainSuperParameter(double v, bool force = false);
-    void slotControlChainMixMode(double v);
     void slotControlChainSelector(double v);
     void slotControlChainNextPreset(double v);
     void slotControlChainPrevPreset(double v);
@@ -121,11 +149,12 @@ class EffectChainSlot : public QObject {
         return QString("EffectChainSlot(%1)").arg(m_group);
     }
 
+    void addToEngine(EngineEffectRack* pRack, int iIndex);
+    void removeFromEngine(EngineEffectRack* pRack, int iIndex);
+
     const unsigned int m_iChainSlotNumber;
     const QString m_group;
     EffectRack* m_pEffectRack;
-
-    EffectChainPointer m_pEffectChain;
 
     ControlPushButton* m_pControlClear;
     ControlObject* m_pControlNumEffects;
@@ -164,10 +193,17 @@ class EffectChainSlot : public QObject {
         ChannelHandleAndGroup handle_group;
         ControlObject* pEnabled;
     };
-    QMap<QString, ChannelInfo*> m_channelInfoByName;
 
+    QMap<QString, ChannelInfo*> m_channelInfoByName;
     QList<EffectSlotPointer> m_slots;
     QSignalMapper m_channelStatusMapper;
+    EffectsManager* m_pEffectsManager;
+    QString m_id;
+    QString m_name;
+    QString m_description;
+    QSet<ChannelHandleAndGroup> m_enabledInputChannels;
+    QList<EffectPointer> m_effects;
+    EngineEffectChain* m_pEngineEffectChain;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };

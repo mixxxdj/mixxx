@@ -40,11 +40,17 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
 
     m_pNumEffectsAvailable = new ControlObject(ConfigKey("[Master]", "num_effectsavailable"));
     m_pNumEffectsAvailable->setReadOnly();
+
+    // These controls are used inside EQ Effects
+    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
+    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
 }
 
 EffectsManager::~EffectsManager() {
     m_underDestruction = true;
-    m_pEffectChainManager->saveEffectChains();
+
+    // NOTE(Kshitij) : Use new functions for saving XML files
+    // m_pEffectChainManager->saveEffectChains();
     delete m_pEffectChainManager;
     // This must be done here, since the engineRacks are deleted via
     // the queue
@@ -333,78 +339,26 @@ bool EffectsManager::getEffectVisibility(EffectManifestPointer pManifest) {
     return m_visibleEffectManifests.contains(pManifest);
 }
 
-void EffectsManager::setup() {
-    // These controls are used inside EQ Effects
-    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
-    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
-
+// TODO: remove this when removing EffectRack layer. The EQs and QuickEffects
+// should be EffectChainSlot subclasses that get initialized by PlayerManager
+// with each deck
+void EffectsManager::setupPerGroupRacks() {
     // NOTE(Be): Effect racks are processed in the order they are added here.
-
-    // Add prefader effect racks
     addEqualizerRack();
     addQuickEffectRack();
+}
 
+void EffectsManager::setup() {
     // Add postfader effect racks
     addStandardEffectRack();
     addOutputsEffectRack();
-
-    EffectChainPointer pChain(new EffectChain(
-           this, "org.mixxx.effectchain.flanger"));
-    pChain->setName(tr("Flanger"));
-    EffectPointer pEffect = instantiateEffect(
-           "org.mixxx.effects.flanger");
-    pChain->addEffect(pEffect);
-    m_pEffectChainManager->addEffectChain(pChain);
-
-    pChain = EffectChainPointer(new EffectChain(
-            this, "org.mixxx.effectchain.bitcrusher"));
-    pChain->setName(tr("BitCrusher"));
-    pEffect = instantiateEffect("org.mixxx.effects.bitcrusher");
-    pChain->addEffect(pEffect);
-    m_pEffectChainManager->addEffectChain(pChain);
-
-    pChain = EffectChainPointer(new EffectChain(
-            this, "org.mixxx.effectchain.filter"));
-    pChain->setName(tr("Filter"));
-    pEffect = instantiateEffect("org.mixxx.effects.filter");
-    pChain->addEffect(pEffect);
-    m_pEffectChainManager->addEffectChain(pChain);
-
-#ifndef __MACAPPSTORE__
-    pChain = EffectChainPointer(new EffectChain(
-            this, "org.mixxx.effectchain.reverb"));
-    pChain->setName(tr("Reverb"));
-    pEffect = instantiateEffect("org.mixxx.effects.reverb");
-    pChain->addEffect(pEffect);
-    m_pEffectChainManager->addEffectChain(pChain);
-#endif
-
-    pChain = EffectChainPointer(new EffectChain(
-            this, "org.mixxx.effectchain.echo"));
-    pChain->setName(tr("Echo"));
-    pEffect = instantiateEffect("org.mixxx.effects.echo");
-    pChain->addEffect(pEffect);
-    m_pEffectChainManager->addEffectChain(pChain);
-
-    pChain = EffectChainPointer(new EffectChain(
-            this, "org.mixxx.effectchain.autopan"));
-    pChain->setName(tr("AutoPan"));
-    pEffect = instantiateEffect("org.mixxx.effects.autopan");
-    pChain->addEffect(pEffect);
-    m_pEffectChainManager->addEffectChain(pChain);
-
-    pChain = EffectChainPointer(new EffectChain(
-            this, "org.mixxx.effectchain.tremolo"));
-    pChain->setName(tr("Tremolo"));
-    pEffect = instantiateEffect("org.mixxx.effects.tremolo");
-    pChain->addEffect(pEffect);
-    m_pEffectChainManager->addEffectChain(pChain);
 }
 
-void EffectsManager::loadEffectChains() {
-    // populate rack and restore state from effects.xml
-    m_pEffectChainManager->loadEffectChains();
-}
+// NOTE(Kshitij) : Use new functions for effect loading using Effect Preset
+// void EffectsManager::loadEffectChains() {
+//     // populate rack and restore state from effects.xml
+//     m_pEffectChainManager->loadEffectChains();
+// }
 
 void EffectsManager::refeshAllRacks() {
     m_pEffectChainManager->refeshAllRacks();
