@@ -58,4 +58,4 @@ lib/*/lib/*.lib
 
 lib/qtscript-bytearray/*.cc
 
-*.vscode
+nowListening.txt

@@ -14,6 +14,10 @@ FileListener::FileListener(const QString &path) :
     
 }
 
+FileListener::~FileListener() {
+    m_file.resize(0);
+}
+
 void FileListener::broadcastCurrentTrack(TrackPointer pTrack) {
     if (!pTrack)
         return;
