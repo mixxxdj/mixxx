@@ -47,10 +47,6 @@ void StarDelegate::paintItem(QPainter* painter, const QStyleOptionViewItem& opti
         return;
     }
 
-    // Populate the correct colors based on the styling
-    QStyleOptionViewItemV4 newOption = option;
-    initStyleOption(&newOption, index);
-
     StarRating starRating = qVariantValue<StarRating>(index.data());
     starRating.paint(painter, option.rect);
 }
