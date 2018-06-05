@@ -18,6 +18,7 @@ class TrackTimingInfo : public QObject {
     void setMsPlayed(qint64 ms);
     bool isScrobbable() const;
     void setTrackPointer(TrackPointer pTrack);
+    bool isTimerPaused() const;
   public slots:
     void slotCheckIfScrobbable();
     void slotGuiTick(double timeSinceLastTick);
@@ -30,4 +31,5 @@ class TrackTimingInfo : public QObject {
     TrackPointer m_pTrackPtr;
     qint64 m_playedMs;
     bool m_isTrackScrobbable;
+    bool m_isTimerPaused;
 };

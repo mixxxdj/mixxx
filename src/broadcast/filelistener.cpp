@@ -7,9 +7,12 @@ FileListener::FileListener(const QString& path)
     qDebug() << "Absolute path " << fileInfo.absoluteFilePath();
     qDebug() << "File exists: " << fileInfo.exists();
     m_file.open(QIODevice::WriteOnly |
-                QIODevice::Text |
-                QIODevice::Unbuffered);
-    
+            QIODevice::Text |
+            QIODevice::Unbuffered);
+}
+
+FileListener::~FileListener() {
+    m_file.resize(0);
 }
 
 void FileListener::broadcastCurrentTrack(TrackPointer pTrack) {
