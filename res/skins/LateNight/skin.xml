@@ -126,7 +126,9 @@
               <SizePolicy>me,min</SizePolicy>
               <SplitSizes>1,5</SplitSizes>
               <SplitSizesConfigKey>[LateNight],waveform_splitSize</SplitSizesConfigKey>
-              <Collapsible>1,0</Collapsible>
+          <!-- Prohibit collapsing of waveform container to prevent
+              massive GUI lag with hidden waveforms lp:1758660 -->
+              <Collapsible>0,0</Collapsible>
               <Children>
 
                 <Template src="skin:waveforms.xml"/>

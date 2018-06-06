@@ -80,83 +80,98 @@ Variables:
         </Mark>
       </Visual>
 
-      <WidgetGroup><!-- Transparent container for beatgrid buttons -->
+      <!-- Only show the beatgrid buttons if scrolling waveforms are enabled.
+           Otherwise waveforms' Singleton is shown 1x20px left to MIXXX logo
+           to workaround LP1758660 "GUI lag with hidden waveforms in Tango & Deere,
+                                    using integrated Intel graphics" -->
+      <WidgetGroup>
         <ObjectName>BeatgridButtons</ObjectName>
         <Layout>vertical</Layout>
-        <!-- Horizontal size is 82px and we'll add the WaveformContainer's negative margin
-            (shifts waveform center mark) so that all buttons are visible -->
-        <Size>99f,50me</Size>
+        <SizePolicy>min,me</SizePolicy>
         <Children>
-          <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
-          <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
-
-          <WidgetGroup><!-- beat grid buttons row -->
-            <ObjectName>Spacer0f</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>f,f</SizePolicy>
+          <WidgetGroup><!-- Transparent container for beatgrid buttons -->
+            <ObjectName>BeatgridButtons</ObjectName>
+            <Layout>vertical</Layout>
+            <!-- Horizontal size is 82px and we'll add the WaveformContainer's negative margin
+                (shifts waveform center mark) so that all buttons are visible -->
+            <Size>99f,50me</Size>
             <Children>
-              <Template src="skin:button_1state.xml">
-                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                <SetVariable name="ObjectName">BeatgridCurpos</SetVariable>
-                <SetVariable name="Size">24f,49f</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
-              </Template>
+              <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
+              <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
 
-              <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-
-              <WidgetGroup><!-- beats earlier & faster -->
-                <Layout>vertical</Layout>
+              <WidgetGroup><!-- beat grid buttons row -->
+                <ObjectName>Spacer0f</ObjectName>
+                <Layout>horizontal</Layout>
                 <SizePolicy>f,f</SizePolicy>
                 <Children>
                   <Template src="skin:button_1state.xml">
-                    <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
-                    <SetVariable name="ObjectName">BeatgridEarlier</SetVariable>
-                    <SetVariable name="Size">28f,24f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_earlier</SetVariable>
+                    <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+                    <SetVariable name="ObjectName">BeatgridCurpos</SetVariable>
+                    <SetVariable name="Size">24f,49f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
                   </Template>
 
                   <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
-                  <Template src="skin:button_1state.xml">
-                    <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
-                    <SetVariable name="ObjectName">BeatgridFaster</SetVariable>
-                    <SetVariable name="Size">28f,24f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_faster</SetVariable>
-                  </Template>
+                  <WidgetGroup><!-- beats earlier & faster -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>f,f</SizePolicy>
+                    <Children>
+                      <Template src="skin:button_1state.xml">
+                        <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
+                        <SetVariable name="ObjectName">BeatgridEarlier</SetVariable>
+                        <SetVariable name="Size">28f,24f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_earlier</SetVariable>
+                      </Template>
+
+                      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+
+                      <Template src="skin:button_1state.xml">
+                        <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
+                        <SetVariable name="ObjectName">BeatgridFaster</SetVariable>
+                        <SetVariable name="Size">28f,24f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_faster</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup><!-- /beats earlier & faster -->
+
+                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- beats later & slower -->
+                    <Layout>vertical</Layout>
+                    <SizePolicy>f,f</SizePolicy>
+                    <Children>
+                      <Template src="skin:button_1state.xml">
+                        <SetVariable name="TooltipId">beats_translate_later</SetVariable>
+                        <SetVariable name="ObjectName">BeatgridLater</SetVariable>
+                        <SetVariable name="Size">28f,24f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_later</SetVariable>
+                      </Template>
+
+                      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+
+                      <Template src="skin:button_1state.xml">
+                        <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
+                        <SetVariable name="ObjectName">BeatgridSlower</SetVariable>
+                        <SetVariable name="Size">28f,24f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_slower</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup><!-- /beats later & slower -->
                 </Children>
-              </WidgetGroup><!-- /beats earlier & faster -->
+              </WidgetGroup><!-- /beat grid buttons row -->
 
-              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
-              <WidgetGroup><!-- beats later & slower -->
-                <Layout>vertical</Layout>
-                <SizePolicy>f,f</SizePolicy>
-                <Children>
-                  <Template src="skin:button_1state.xml">
-                    <SetVariable name="TooltipId">beats_translate_later</SetVariable>
-                    <SetVariable name="ObjectName">BeatgridLater</SetVariable>
-                    <SetVariable name="Size">28f,24f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_later</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-
-                  <Template src="skin:button_1state.xml">
-                    <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
-                    <SetVariable name="ObjectName">BeatgridSlower</SetVariable>
-                    <SetVariable name="Size">28f,24f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_slower</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup><!-- /beats later & slower -->
+              <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
+              <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
             </Children>
-          </WidgetGroup><!-- /beat grid buttons row -->
-
-          <WidgetGroup><Size>1me,0me</Size></WidgetGroup>
-          <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
+            <Connection>
+              <ConfigKey persist="true">[Tango],beatgrid_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],beatgrid_buttons</ConfigKey>
+          <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Transparent container for beatgrid buttons -->

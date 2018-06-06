@@ -197,6 +197,9 @@
           <Orientation>vertical</Orientation>
           <SplitSizesConfigKey>[Deere],StackedWaveformSplitter</SplitSizesConfigKey>
           <SplitSizes>90,540</SplitSizes>
+      <!-- Prohibit collapsing of waveform container to prevent
+          massive GUI lag with hidden waveforms lp:1758660 -->
+          <Collapsible>0,0</Collapsible>
           <Size>-1me,-1me</Size>
           <Connection>
             <ConfigKey>[Master],maximize_library</ConfigKey>
@@ -208,12 +211,21 @@
             <WidgetGroup><!-- Parallel Waveforms -->
               <ObjectName>Waveforms</ObjectName>
               <Layout>vertical</Layout>
-              <Size>-1me,4min</Size>
+          <!-- Set min-height to 1px to prevent
+              massive GUI lag with hidden waveforms lp:1758660 -->
+              <Size>-1me,1min</Size>
               <Connection>
                 <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
                 <BindProperty>visible</BindProperty>
               </Connection>
               <Children>
+
+            <!-- If waveforms' container is dragged to minimal height (1px) we need
+                a 1px spacer here so the waveforms aren't visible -->
+                <WidgetGroup>
+                  <ObjectName>Spacer22</ObjectName>
+                  <Size>0me,1f</Size>
+                </WidgetGroup>
 
                 <WidgetGroup>
                   <Connection>

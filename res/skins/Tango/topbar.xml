@@ -16,6 +16,34 @@ Description:
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
+
+      <!-- Show 1x1px scrolling waveforms here if they are hidden by topbar toggle.
+      This prevents massive GUI lag with hidden waveforms lp:1758660 -->
+      <WidgetGroup>
+        <ObjectName>AlignTop</ObjectName>
+        <Layout>vertical</Layout>
+        <Size>1f,28f</Size>
+        <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>1f,1f</Size>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>Waveforms_Singleton</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+      <!-- layout alignment isn't respected, so we need a spacer here to push
+          the flashing waveform pixel to the top -->
+          <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
   <!-- Put Mixerbar & Logo in a container to achieve top alignment
       when Crossfader is enabled. 'qproperty-layoutAlignment' for Topbar
       wouldn't work... -->

@@ -1,14 +1,19 @@
 <Template>
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+<!-- Set min-height to 1px to prevent
+    massive GUI lag with hidden waveforms lp:1758660 -->
+    <Size>1me,1min</Size>
     <Children>
 
       <!-- Waveforms -->
       <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <Size>100me,40me</Size>
+        <Layout>vertical</Layout>
+        <Size>100me,1me</Size>
         <Children>
+      <!-- If waveforms' container is dragged to minimal height (1px) we need
+          a 1px spacer here so the waveforms aren't visible -->
+          <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
           <SingletonContainer>
             <ObjectName>WaveformsSingleton</ObjectName>
           </SingletonContainer>
@@ -17,7 +22,7 @@
 
       <PushButton>
         <ObjectName>BeatgridButtonsToggle</ObjectName>
-        <Size>28f,40me</Size>
+        <Size>28f,1me</Size>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
