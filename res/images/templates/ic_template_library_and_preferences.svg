@@ -1432,7 +1432,7 @@
            rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
         <dc:date>2014-04-18</dc:date>
         <dc:source>www.mixxx.org</dc:source>
-        <dc:description>Iconset for use in Mixxx 1.12s+. Optimized for 48px (16px)icon size. Contains icons for preference menue and  library widget
+        <dc:description>Iconset for use in Mixxx 1.12s+. Optimized for 48px (16px) icon size. Contains icons for preference menu and library widget
 
 Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc:description>
         <dc:coverage />
@@ -1641,7 +1641,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:role="line"
            x="16.290226"
            y="39.046482"
-           id="tspan5610">automatic naming according to objects propertys</tspan><tspan
+           id="tspan5610">automatic naming according to objects properties</tspan><tspan
            sodipodi:role="line"
            x="16.290226"
            y="40.879322"

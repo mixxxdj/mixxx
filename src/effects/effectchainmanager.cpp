@@ -18,17 +18,22 @@ EffectChainManager::~EffectChainManager() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void EffectChainManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
-    if (m_registeredChannels.contains(handle_group)) {
-        qWarning() << debugString() << "WARNING: Channel already registered:"
-                   << handle_group.name();
+void EffectChainManager::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
+    VERIFY_OR_DEBUG_ASSERT(!m_registeredInputChannels.contains(handle_group)) {
         return;
     }
-    m_registeredChannels.insert(handle_group);
+    m_registeredInputChannels.insert(handle_group);
 
-    foreach (StandardEffectRackPointer pRack, m_standardEffectRacks) {
-        pRack->registerChannel(handle_group);
+    for (auto& pRack : m_standardEffectRacks) {
+        pRack->registerInputChannel(handle_group);
     }
+}
+
+void EffectChainManager::registerOutputChannel(const ChannelHandleAndGroup& handle_group) {
+    VERIFY_OR_DEBUG_ASSERT(!m_registeredOutputChannels.contains(handle_group)) {
+        return;
+    }
+    m_registeredOutputChannels.insert(handle_group);
 }
 
 StandardEffectRackPointer EffectChainManager::addStandardEffectRack() {
@@ -74,6 +79,18 @@ QuickEffectRackPointer EffectChainManager::getQuickEffectRack(int i) {
         return QuickEffectRackPointer();
     }
     return m_quickEffectRacks[i];
+}
+
+OutputEffectRackPointer EffectChainManager::addOutputsEffectRack() {
+    OutputEffectRackPointer pRack(new OutputEffectRack(
+        m_pEffectsManager, this));
+    m_pOutputEffectRack = pRack;
+    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
+    return m_pOutputEffectRack;
+}
+
+OutputEffectRackPointer EffectChainManager::getMasterEffectRack() {
+    return m_pOutputEffectRack;
 }
 
 EffectRackPointer EffectChainManager::getEffectRack(const QString& group) {
@@ -126,6 +143,18 @@ EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEf
     return m_effectChains[(indexOf - 1 + m_effectChains.size()) % m_effectChains.size()];
 }
 
+void EffectChainManager::refeshAllRacks() {
+    for (const auto& pRack: m_standardEffectRacks) {
+        pRack->refresh();
+    }
+    for (const auto& pRack: m_equalizerEffectRacks) {
+        pRack->refresh();
+    }
+    for (const auto& pRack: m_quickEffectRacks) {
+        pRack->refresh();
+    }
+}
+
 bool EffectChainManager::saveEffectChains() {
     QDomDocument doc("MixxxEffects");
 
@@ -164,8 +193,7 @@ bool EffectChainManager::saveEffectChains() {
     return true;
 }
 
-void EffectChainManager::loadEffectChains(
-        StandardEffectRack* pRack) {
+void EffectChainManager::loadEffectChains() {
     QDir settingsPath(m_pConfig->getSettingsPath());
     QFile file(settingsPath.absoluteFilePath("effects.xml"));
     QDomDocument doc;
@@ -189,12 +217,19 @@ void EffectChainManager::loadEffectChains(
             EffectChainPointer pChain = EffectChain::createFromXml(
                     m_pEffectsManager, chainElement);
             if (pChain) { // null = ejected chains.
-                EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(i);
+                EffectChainSlotPointer pChainSlot = getStandardEffectRack(0)->getEffectChainSlot(i);
                 if (pChainSlot) {
-                    pChainSlot->loadEffectChain(pChain);
+                    pChainSlot->loadEffectChainToSlot(pChain);
                     pChainSlot->loadChainSlotFromXml(chainElement);
+                    pChain->addToEngine(getStandardEffectRack(0)->getEngineEffectRack(), i);
+                    pChain->updateEngineState();
+                    pChainSlot->updateRoutingSwitches();
                 }
             }
         }
     }
+}
+
+bool EffectChainManager::isAdoptMetaknobValueEnabled() const {
+    return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
 }

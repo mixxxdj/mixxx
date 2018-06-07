@@ -28,8 +28,6 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     void clicked();
     void selectAll();
     void selectionChanged(const QItemSelection&, const QItemSelection&);
-    void setTrackTableFont(const QFont& font);
-    void setTrackTableRowHeight(int rowHeight);
 
   signals:
     void trackSelected(TrackPointer pTrack);

@@ -21,9 +21,9 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfo&,
+        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfoRelative&,
                                           QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, const CoverInfo&,
+                this, SLOT(slotCoverFound(const QObject*, const CoverInfoRelative&,
                                           QPixmap, bool)));
     }
 
@@ -69,7 +69,7 @@ void CoverArtDelegate::slotOnlyCachedCoverArt(bool b) {
 }
 
 void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
-                                      const CoverInfo& info,
+                                      const CoverInfoRelative& info,
                                       QPixmap pixmap, bool fromCache) {
     if (pRequestor == this && !pixmap.isNull() && !fromCache) {
         // qDebug() << "CoverArtDelegate::slotCoverFound" << pRequestor << info

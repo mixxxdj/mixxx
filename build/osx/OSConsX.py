@@ -207,7 +207,7 @@ def build_app(target, source, env):
 
     def relative(emb):
         "compute the path of the given embedded binary relative to the binary, i.e. @executable_path/../+..."
-        # assume that we start in X.app/Contents/, since we know neccessarily that @executable_path/../ gives us that
+        # assume that we start in X.app/Contents/, since we know necessarily that @executable_path/../ gives us that
         # so then we only need
         base = os.path.abspath(str(installed_bin))
         emb = os.path.abspath(emb) #XXX is abspath really necessary?
@@ -233,7 +233,7 @@ def build_app(target, source, env):
 
 
 
-    #Workarounds for a bug/feature in SCons such that it doesn't neccessarily run the source builders before the target builders (wtf scons??)
+    #Workarounds for a bug/feature in SCons such that it doesn't necessarily run the source builders before the target builders (wtf scons??)
     Execute(Mkdir(contents))
     Execute(Mkdir(MacOS))
     Execute(Mkdir(frameworks))
@@ -250,7 +250,7 @@ def build_app(target, source, env):
         locals[ref] = (path, embed_lib(path))
 
     plugins_l = [] #XXX bad name #list of tuples (source, embed) of plugins to stick under the plugins/ dir
-    for p in env['PLUGINS']: #build any neccessary dirs for plugins (siiiigh)
+    for p in env['PLUGINS']: #build any necessary dirs for plugins (siiiigh)
         embedded_p = os.path.join(str(plugins), os.path.basename(str(p)))
         plugins_l.append(  (str(p), embedded_p)  )
 
@@ -283,7 +283,7 @@ def build_app(target, source, env):
 
 
     print "Installing embedded libs:"
-    for ref, (abs, embedded) in locals.iteritems():
+    for ref, (abs, embedded) in locals.items():
         real_abs = os.path.realpath(abs)
         print "installing", real_abs, "to", embedded
         # NOTE(rryan): abs can be a symlink. we want to copy the binary it is
@@ -438,7 +438,7 @@ def emit_app(target, source, env):
             target = Dir(os.path.join(str(target), path))
         if isinstance(i, SCons.Node.FS.Dir):
             InstallDir(target, i, env)
-        elif isinstance(i, SCons.Node.FS.File) or isinstance(i, basestring):
+        elif isinstance(i, SCons.Node.FS.File) or isinstance(i, str):
             env.Install(target, i)
 
     plugins = env['PLUGINS']
@@ -522,7 +522,7 @@ def build_plist(target, source, env):
     </plist>"""
     inner_template = """<key>%s</key><string>%s</string>"""
 
-    inner = str.join('\n', [inner_template % (k,v) for k,v in d.iteritems()])
+    inner = str.join('\n', [inner_template % (k,v) for k,v in d.items()])
     plist = outer_template % inner
 
     f = open(str(target), "w")

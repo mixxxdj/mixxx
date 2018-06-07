@@ -42,6 +42,8 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotSetFrameRate(int)));
     connect(endOfTrackWarningTimeSpinBox, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetWaveformEndRender(int)));
+    connect(beatGridAlphaSpinBox, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSetBeatGridAlpha(int)));
     connect(frameRateSlider, SIGNAL(valueChanged(int)),
             frameRateSpinBox, SLOT(setValue(int)));
     connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
@@ -50,6 +52,10 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             endOfTrackWarningTimeSpinBox, SLOT(setValue(int)));
     connect(endOfTrackWarningTimeSpinBox, SIGNAL(valueChanged(int)),
             endOfTrackWarningTimeSlider, SLOT(setValue(int)));
+    connect(beatGridAlphaSlider, SIGNAL(valueChanged(int)),
+            beatGridAlphaSpinBox, SLOT(setValue(int)));
+    connect(beatGridAlphaSpinBox, SIGNAL(valueChanged(int)),
+            beatGridAlphaSlider, SLOT(setValue(int)));
 
     connect(waveformTypeComboBox, SIGNAL(activated(int)),
             this, SLOT(slotSetWaveformType(int)));
@@ -104,6 +110,8 @@ void DlgPrefWaveform::slotUpdate() {
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
+    beatGridAlphaSpinBox->setValue(factory->beatGridAlpha());
+    beatGridAlphaSlider->setValue(factory->beatGridAlpha());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
@@ -161,6 +169,10 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Waveform caching enabled.
     enableWaveformCaching->setChecked(true);
     enableWaveformGenerationWithAnalysis->setChecked(false);
+
+    // Beat grid alpha default is 90
+    beatGridAlphaSlider->setValue(90);
+    beatGridAlphaSpinBox->setValue(90);
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
@@ -224,6 +236,11 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
     analysisDao.deleteAnalysesByType(dbConnection, AnalysisDao::TYPE_WAVEFORM);
     analysisDao.deleteAnalysesByType(dbConnection, AnalysisDao::TYPE_WAVESUMMARY);
     calculateCachedWaveformDiskUsage();
+}
+
+void DlgPrefWaveform::slotSetBeatGridAlpha(int alpha) {
+    m_pConfig->setValue(ConfigKey("[Waveform]", "beatGridAlpha"), alpha);
+    WaveformWidgetFactory::instance()->setDisplayBeatGridAlpha(alpha);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

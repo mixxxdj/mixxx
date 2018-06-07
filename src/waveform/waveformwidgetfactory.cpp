@@ -67,6 +67,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_overviewNormalized(false),
         m_openGLAvailable(false),
         m_openGLShaderAvailable(false),
+        m_beatGridAlpha(90),
         m_vsyncThread(NULL),
         m_frameCnt(0),
         m_actualFrameRate(0),
@@ -223,6 +224,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
     }
 
+    int beatGridAlpha = m_config->getValue(ConfigKey("[Waveform]", "beatGridAlpha"), m_beatGridAlpha);
+    setDisplayBeatGridAlpha(beatGridAlpha);
+
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
             m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
     if (!ok || !setWidgetType(type)) {
@@ -296,6 +300,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
     }
 
     viewer->setZoom(m_defaultZoom);
+    viewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
     viewer->update();
 
     qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory, index" << index;
@@ -308,7 +313,7 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
-    m_vsyncThread->setUsSyncIntervalTime(1e6 / m_frameRate);
+    m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
 }
 
 void WaveformWidgetFactory::setEndOfTrackWarningTime(int endTime) {
@@ -430,6 +435,18 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     for (int i = 1; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
     }
+}
+
+void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
+    m_beatGridAlpha = alpha;
+    if (m_waveformWidgetHolders.size() == 0) {
+        return;
+    }
+
+    for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
+    }
+
 }
 
 void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {

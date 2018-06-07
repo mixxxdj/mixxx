@@ -36,7 +36,7 @@ class BaseTrackPlayer : public BasePlayer {
     virtual TrackPointer getLoadedTrack() const = 0;
 
   public slots:
-    virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay=false) = 0;
+    virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -59,7 +59,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
                         bool defaultHeadphones);
     virtual ~BaseTrackPlayerImpl();
 
-    TrackPointer getLoadedTrack() const override;
+    TrackPointer getLoadedTrack() const final;
 
     // TODO(XXX): Only exposed to let the passthrough AudioInput get
     // connected. Delete me when EngineMaster supports AudioInput assigning.
@@ -71,7 +71,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     TrackPointer loadFakeTrack(bool bPlay, double filebpm);
 
   public slots:
-    void slotLoadTrack(TrackPointer track, bool bPlay) override;
+    void slotLoadTrack(TrackPointer track, bool bPlay) final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, QString reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
@@ -87,6 +87,12 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
   private:
     void setReplayGain(double value);
+
+    void loadTrack(TrackPointer pTrack);
+    TrackPointer unloadTrack();
+
+    void connectLoadedTrack();
+    void disconnectLoadedTrack();
 
     UserSettingsPointer m_pConfig;
     EngineMaster* m_pEngineMaster;

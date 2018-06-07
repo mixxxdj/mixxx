@@ -50,7 +50,7 @@ void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
 
         if (m_pEffectParameter) {
             // Set the number of states
-            int numStates = math_max(m_pEffectParameter->manifest().getSteps().size(), 2);
+            int numStates = math_max(m_pEffectParameter->manifest()->getSteps().size(), 2);
             m_pControlValue->setStates(numStates);
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
             double dValue = m_pEffectParameter->getValue();
@@ -136,7 +136,9 @@ void EffectButtonParameterSlot::loadParameterSlotFromXml(const QDomElement&
                                                   EffectXml::ParameterValue,
                                                   &conversionWorked);
         if (conversionWorked) {
-            m_pControlValue->set(value);
+            // Need to use setParameterFrom(..., nullptr) here to
+            // trigger valueChanged() signal emission and execute slotValueChanged()
+            m_pControlValue->setParameterFrom(value, nullptr);
         }
         // If the conversion failed, the default value is kept.
     }

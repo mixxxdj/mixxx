@@ -32,7 +32,10 @@
 #include "dialog/dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
-#include "effects/native/nativebackend.h"
+#include "effects/builtin/builtinbackend.h"
+#ifdef __LILV__
+#include "effects/lv2/lv2backend.h"
+#endif
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -125,7 +128,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     // Only record stats in developer mode.
     if (m_cmdLineArgs.getDeveloper()) {
-        StatsManager::create();
+        StatsManager::createInstance();
     }
 
     m_pSettingsManager = new SettingsManager(this, args.getSettingsPath());
@@ -184,34 +187,42 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
+    m_pChannelHandleFactory = new ChannelHandleFactory();
+
     // Create the Effects subsystem.
-    m_pEffectsManager = new EffectsManager(this, pConfig);
+    m_pEffectsManager = new EffectsManager(this, pConfig, m_pChannelHandleFactory);
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(pConfig, "[Master]", m_pEffectsManager,
-                                 true, true);
+                                 m_pChannelHandleFactory, true);
 
     // Create effect backends. We do this after creating EngineMaster to allow
     // effect backends to refer to controls that are produced by the engine.
-    NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
-    m_pEffectsManager->addEffectsBackend(pNativeBackend);
+    BuiltInBackend* pBuiltInBackend = new BuiltInBackend(m_pEffectsManager);
+    m_pEffectsManager->addEffectsBackend(pBuiltInBackend);
+#ifdef __LILV__
+    LV2Backend* pLV2Backend = new LV2Backend(m_pEffectsManager);
+    m_pEffectsManager->addEffectsBackend(pLV2Backend);
+#else
+    LV2Backend* pLV2Backend = nullptr;
+#endif
 
     // Sets up the EffectChains and EffectRacks (long)
     m_pEffectsManager->setup();
 
     launchProgress(8);
 
-    // Initialize player device
-    // while this is created here, setupDevices needs to be called sometime
-    // after the players are added to the engine (as is done currently) -- bkgood
-    // (long)
+    // Although m_pSoundManager is created here, m_pSoundManager->setupDevices()
+    // needs to be called after m_pPlayerManager registers sound IO for each EngineChannel.
     m_pSoundManager = new SoundManager(pConfig, m_pEngine);
+    m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager);
 
     m_pRecordingManager = new RecordingManager(pConfig, m_pEngine);
 
 
 #ifdef __BROADCAST__
-    m_pBroadcastManager = new BroadcastManager(pConfig, m_pSoundManager);
+    m_pBroadcastManager = new BroadcastManager(m_pSettingsManager,
+                                               m_pSoundManager);
 #endif
 
     launchProgress(11);
@@ -252,6 +263,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(30);
 
+    m_pEffectsManager->loadEffectChains();
+
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
 #endif
@@ -264,7 +277,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     delete pModplugPrefs; // not needed anymore
 #endif
 
-    CoverArtCache::create();
+    CoverArtCache::createInstance();
 
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
     if (!m_pDbConnectionPool) {
@@ -286,6 +299,15 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pDbConnectionPool,
             m_pPlayerManager,
             m_pRecordingManager);
+    // Create the singular GlobalTrackCache instance immediately after
+    // the Library has been created and BEFORE binding the
+    // PlayerManager to it!
+    GlobalTrackCache::createInstance(m_pLibrary);
+
+    // Binding the PlayManager to the Library may already trigger
+    // loading of tracks which requires that the GlobalTrackCache has
+    // been created. Otherwise Mixxx might hang when accessing
+    // the uninitialized singleton instance!
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
     launchProgress(40);
@@ -322,7 +344,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(47);
 
-    WaveformWidgetFactory::create(); // takes a long time
+    WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
     WaveformWidgetFactory::instance()->setConfig(pConfig);
 
@@ -344,8 +366,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                    m_pControllerManager, m_pVCManager, m_pEffectsManager,
-                                    pConfig, m_pLibrary);
+                                    m_pControllerManager, m_pVCManager, pLV2Backend, m_pEffectsManager,
+                                    m_pSettingsManager, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
@@ -367,13 +389,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(this, m_pKeyboard,
-                                                           m_pPlayerManager,
-                                                           m_pControllerManager,
-                                                           m_pLibrary,
-                                                           m_pVCManager,
-                                                           m_pEffectsManager,
-                                                           m_pRecordingManager))) {
+    if (!(m_pWidgetParent = m_pSkinLoader->loadConfiguredSkin(this, m_pKeyboard,
+                                                              m_pPlayerManager,
+                                                              m_pControllerManager,
+                                                              m_pLibrary,
+                                                              m_pVCManager,
+                                                              m_pEffectsManager,
+                                                              m_pRecordingManager))) {
         reportCriticalErrorAndQuit(
                 "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
@@ -431,6 +453,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         m_pLibrary->scan();
     }
 
+    // This has to be done before m_pSoundManager->setupDevices()
+    // https://bugs.launchpad.net/mixxx/+bug/1758189
+    m_pPlayerManager->loadSamplers();
+
     // Try open player device If that fails, the preference panel is opened.
     bool retryClicked;
     do {
@@ -473,8 +499,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pPlayerManager->slotLoadToDeck(musicFiles.at(i), i+1);
         }
     }
-
-    m_pPlayerManager->loadSamplers();
 
     connect(&PlayerInfo::instance(),
             SIGNAL(currentPlayingTrackChanged(TrackPointer)),
@@ -561,6 +585,18 @@ void MixxxMainWindow::finalize() {
     // CoverArtCache is fairly independent of everything else.
     CoverArtCache::destroy();
 
+    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
+    // The player manager has to be deleted before the library to ensure
+    // that all modified track metadata of loaded tracks is saved.
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
+    delete m_pPlayerManager;
+
+    // Evict all remaining tracks from the cache to trigger
+    // updating of modified tracks. We assume that no other
+    // components are accessing those files at this point.
+    qDebug() << t.elapsed(false) << "deactivating GlobalTrackCache";
+    GlobalTrackCacheLocker().deactivateCache();
+
     // Delete the library after the view so there are no dangling pointers to
     // the data models.
     // Depends on RecordingManager and PlayerManager
@@ -570,10 +606,6 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
     m_pDbConnectionPool->destroyThreadLocalConnection();
     m_pDbConnectionPool.reset(); // should drop the last reference
-
-    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
-    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting PlayerManager";
-    delete m_pPlayerManager;
 
     // RecordingManager depends on config, engine
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
@@ -648,7 +680,6 @@ void MixxxMainWindow::finalize() {
     Sandbox::shutdown();
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SettingsManager";
-    delete m_pSettingsManager;
 
     delete m_pKeyboard;
     delete m_pKbdConfig;
@@ -1179,10 +1210,14 @@ void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
 
     QPoint initPosition = pos();
-    // this->frameSize()  : Window size including all borders and only if the window manager works.
-    // this->size() : Window without the borders nor title, but including the Menu!
-    // this->centralWidget()->size() : Size of the internal window Widget.
-    QSize initSize = this->centralWidget()->size();
+    // frameSize()  : Window size including all borders and only if the window manager works.
+    // size() : Window without the borders nor title, but including the Menu!
+    // centralWidget()->size() : Size of the internal window Widget.
+    QSize initSize;
+    QWidget* pWidget = centralWidget(); // can be null if previous skin loading fails
+    if (pWidget) {
+        initSize = centralWidget()->size();
+    }
 
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
@@ -1206,14 +1241,14 @@ void MixxxMainWindow::rebootMixxxView() {
 
     // Load skin to a QWidget that we set as the central widget. Assignment
     // intentional in next line.
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(this,
-                                                           m_pKeyboard,
-                                                           m_pPlayerManager,
-                                                           m_pControllerManager,
-                                                           m_pLibrary,
-                                                           m_pVCManager,
-                                                           m_pEffectsManager,
-                                                           m_pRecordingManager))) {
+    if (!(m_pWidgetParent = m_pSkinLoader->loadConfiguredSkin(this,
+                                                              m_pKeyboard,
+                                                              m_pPlayerManager,
+                                                              m_pControllerManager,
+                                                              m_pLibrary,
+                                                              m_pVCManager,
+                                                              m_pEffectsManager,
+                                                              m_pRecordingManager))) {
 
         QMessageBox::critical(this,
                               tr("Error in skin file"),
@@ -1227,7 +1262,7 @@ void MixxxMainWindow::rebootMixxxView() {
 
     if (wasFullScreen) {
         slotViewFullScreen(true);
-    } else {
+    } else if (!initSize.isEmpty()) {
         // Not all OSs and/or window managers keep the window inside of the screen, so force it.
         int newX = initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2;
         int newY = initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2;

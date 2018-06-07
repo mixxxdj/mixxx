@@ -18,10 +18,12 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
           m_pConfig(pConfig),
           m_vScrollBarPosKey(vScrollBarPosKey) {
 
+    loadVScrollBarPosState();
+
     // Setup properties for table
 
     // Editing starts when clicking on an already selected item.
-    setEditTriggers(QAbstractItemView::SelectedClicked);
+    setEditTriggers(QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
 
     //Enable selection by rows and extended selection (ctrl/shift click)
     setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -42,8 +44,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setAlternatingRowColors(true);
 
-    loadVScrollBarPosState();
-
     connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
             this, SIGNAL(scrollValueChanged(int)));
 
@@ -51,7 +51,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 }
 
 WLibraryTableView::~WLibraryTableView() {
-    saveVScrollBarPosState();
 }
 
 void WLibraryTableView::loadVScrollBarPosState() {
@@ -112,6 +111,21 @@ void WLibraryTableView::moveSelection(int delta) {
     }
 }
 
+void WLibraryTableView::saveVScrollBarPos(TrackModel* key){
+    m_vScrollBarPosValues[key] = verticalScrollBar()->value();
+}
+
+void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
+    updateGeometries();
+
+    if (m_vScrollBarPosValues.contains(key)){
+        verticalScrollBar()->setValue(m_vScrollBarPosValues[key]);
+    }else{
+        m_vScrollBarPosValues[key] = 0;
+        verticalScrollBar()->setValue(0);
+    }
+}
+
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
     setFont(font);
     setTrackTableRowHeight(verticalHeader()->defaultSectionSize());
@@ -121,5 +135,13 @@ void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
     QFontMetrics metrics(font());
     int fontHeightPx = metrics.height();
     verticalHeader()->setDefaultSectionSize(math_max(
-            rowHeight, fontHeightPx));
+                                                rowHeight, fontHeightPx));
+}
+
+void WLibraryTableView::setSelectedClick(bool enable) {
+    if (enable) {
+        setEditTriggers(QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
+    } else {
+        setEditTriggers(QAbstractItemView::EditKeyPressed);
+    }
 }

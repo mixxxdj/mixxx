@@ -15,9 +15,6 @@ class ControlPushButton;
 class ControlEffectKnob;
 class SoftTakeover;
 
-class EffectParameterSlot;
-typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
-
 class EffectParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:

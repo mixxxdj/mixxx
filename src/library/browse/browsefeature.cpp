@@ -19,6 +19,7 @@
 #include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "util/sandbox.h"
+#include "util/memory.h"
 
 const QString kQuickLinksSeparator = "-+-";
 
@@ -133,7 +134,14 @@ void BrowseFeature::slotAddQuickLink() {
     QVariant vpath = m_pLastRightClickedItem->getData();
     QString spath = vpath.toString();
     QString name = extractNameFromPath(spath);
-    m_pQuickLinkItem->appendChild(name, vpath);
+
+    QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
+    auto pNewChild = std::make_unique<TreeItem>(this, name, vpath);
+    QList<TreeItem*> rows;
+    rows.append(pNewChild.get());
+    pNewChild.release();
+    m_childModel.insertTreeItemRows(rows, m_pQuickLinkItem->childRows(), parent);
+
     m_quickLinkList.append(spath);
     saveQuickLinks();
 }
@@ -182,7 +190,10 @@ void BrowseFeature::slotRemoveQuickLink() {
     if (index == -1) {
         return;
     }
-    m_pQuickLinkItem->removeChild(index);
+
+    QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
+    m_childModel.removeRow(index, parent);
+
     m_quickLinkList.removeAt(index);
     saveQuickLinks();
 }
@@ -275,8 +286,20 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
 void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
+    // The selected item might have been removed just before this function
+    // is invoked!
+    // NOTE(2018-04-21, uklotzde): The following checks prevent a crash
+    // that would otherwise occur after a quick link has been removed.
+    // Especially the check of QVariant::isValid() seems to be essential.
+    // See also: https://bugs.launchpad.net/mixxx/+bug/1510068
+    // After migration to Qt5 the implementation of all LibraryFeatures
+    // should be revisited, because I consider these checks only as a
+    // temporary workaround.
+    if (!index.isValid()) {
+        return;
+    }
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    if (!item) {
+    if (!(item && item->getData().isValid())) {
         return;
     }
 
@@ -286,7 +309,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     QString path = item->getData().toString();
 
     // If the item is a build-in node, e.g., 'QuickLink' return
-    if (path == QUICK_LINK_NODE) {
+    if (path.isEmpty() || path == QUICK_LINK_NODE) {
         return;
     }
 
@@ -360,9 +383,7 @@ QString BrowseFeature::getRootViewHtml() const {
 
     QString html;
     html.append(QString("<h2>%1</h2>").arg(browseTitle));
-    html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
     html.append(QString("<p>%1</p>").arg(browseSummary));
-    html.append("</td></tr></table>");
     return html;
 }
 

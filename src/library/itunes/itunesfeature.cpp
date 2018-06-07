@@ -156,7 +156,7 @@ void ITunesFeature::activate(bool forceReload) {
             settings.setValue(ITDB_PATH_KEY, m_dbfile);
         }
         m_isActivated =  true;
-        // Ususally the maximum number of threads
+        // Usually the maximum number of threads
         // is > 2 depending on the CPU cores
         // Unfortunately, within VirtualBox
         // the maximum number of allowed threads
@@ -170,7 +170,7 @@ void ITunesFeature::activate(bool forceReload) {
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) iTunes");
         // calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
-        emit (featureIsLoading(this, true));
+        emit(featureIsLoading(this, true));
     }
 
     emit(showTrackModel(m_pITunesTrackModel));

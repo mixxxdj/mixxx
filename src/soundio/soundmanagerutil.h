@@ -57,12 +57,13 @@ public:
     enum AudioPathType {
         MASTER,
         HEADPHONES,
+        BOOTH,
         BUS,
         DECK,
         VINYLCONTROL,
         MICROPHONE,
         AUXILIARY,
-        SIDECHAIN,
+        RECORD_BROADCAST,
         INVALID, // if this isn't last bad things will happen -bkgood
     };
     AudioPath(unsigned char channelBase, unsigned char channels);

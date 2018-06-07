@@ -24,7 +24,7 @@
 #include "errordialoghandler.h"
 
 // Automatic thresholds for switching the encoder to mono
-// They have been choosen by testing and to keep the same number
+// They have been chosen by testing and to keep the same number
 // of values for the slider.
 // The threshold of bitrate (CBR/ABR) at which the encoder
 // with switch to mono encoding
@@ -180,27 +180,27 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
      *
      * Should not happen on Linux, but many lame binaries for Windows are modified.
      */
-    if(!lame_init ||
-       !lame_set_num_channels ||
-       !lame_set_in_samplerate ||
-       !lame_set_out_samplerate ||
-       !lame_close ||
-       !lame_set_brate ||
-       !lame_set_mode ||
-       !lame_set_quality ||
-       !lame_set_bWriteVbrTag ||
-       !lame_encode_buffer_float ||
-       !lame_init_params ||
-       !lame_encode_flush ||
-       !lame_set_VBR ||
-       !lame_set_VBR_q ||
-       !lame_set_VBR_mean_bitrate_kbps ||
-       !lame_get_lametag_frame ||
-       !get_lame_version ||
-       !id3tag_init ||
-       !id3tag_set_title ||
-       !id3tag_set_artist ||
-       !id3tag_set_album)
+    if (!lame_init ||
+        !lame_set_num_channels ||
+        !lame_set_in_samplerate ||
+        !lame_set_out_samplerate ||
+        !lame_close ||
+        !lame_set_brate ||
+        !lame_set_mode ||
+        !lame_set_quality ||
+        !lame_set_bWriteVbrTag ||
+        !lame_encode_buffer_float ||
+        !lame_init_params ||
+        !lame_encode_flush ||
+        !lame_set_VBR ||
+        !lame_set_VBR_q ||
+        !lame_set_VBR_mean_bitrate_kbps ||
+        !lame_get_lametag_frame ||
+        !get_lame_version ||
+        !id3tag_init ||
+        !id3tag_set_title ||
+        !id3tag_set_artist ||
+        !id3tag_set_album)
     {
         m_library->unload();
         delete m_library;
@@ -393,7 +393,7 @@ int EncoderMp3::initEncoder(int samplerate, QString errorMessage) {
     }
 
     unsigned long samplerate_in = samplerate;
-    // samplerate_out 0 means "let LAME pick the appropiate one"
+    // samplerate_out 0 means "let LAME pick the appropriate one"
     unsigned long samplerate_out = (samplerate_in > 48000 ? 48000 : 0);
 
     m_lameFlags = lame_init();

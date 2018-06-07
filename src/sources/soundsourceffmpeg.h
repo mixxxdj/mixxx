@@ -37,11 +37,11 @@ namespace {
         virtual AVMediaType getMediaTypeOfStream(AVStream* pStream) = 0;
         virtual AVCodec* findDecoderForStream(AVStream* pStream) = 0;
         virtual SINT getChannelCountOfStream(AVStream* pStream) = 0;
-        virtual SINT getSamplingRateOfStream(AVStream* pStream) = 0;
+        virtual SINT getSampleRateOfStream(AVStream* pStream) = 0;
         virtual AVSampleFormat getSampleFormatOfStream(AVStream* pStream) = 0;
   };
 
-  // Implement classes for version befor 3.1 and after that
+  // Implement classes for version before 3.1 and after that
 #if AVSTREAM_FROM_API_VERSION_3_1
   // This is after version 3.1
   class AVStreamWrapperImpl : public AVStreamWrapper {
@@ -58,7 +58,7 @@ namespace {
             return pStream->codecpar->channels;
         }
 
-        SINT getSamplingRateOfStream(AVStream* pStream) {
+        SINT getSampleRateOfStream(AVStream* pStream) {
             return pStream->codecpar->sample_rate;
         }
 
@@ -81,7 +81,7 @@ namespace {
             return pStream->codec->channels;
         }
 
-        SINT getSamplingRateOfStream(AVStream* pStream) {
+        SINT getSampleRateOfStream(AVStream* pStream) {
             return pStream->codec->sample_rate;
         }
 
@@ -111,19 +111,21 @@ struct ffmpegCacheObject {
     quint8 *bytes;
 };
 
-class SoundSourceFFmpeg : public SoundSource {
+class SoundSourceFFmpeg: public SoundSource {
   public:
     explicit SoundSourceFFmpeg(const QUrl& url);
     ~SoundSourceFFmpeg() override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
-
-    SINT readSampleFrames(SINT numberOfFrames, CSAMPLE* sampleBuffer) override;
+  protected:
+    ReadableSampleFrames readSampleFramesClamped(
+            WritableSampleFrames sampleFrames) override;
 
   private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override;
 
     bool readFramesToCache(unsigned int count, SINT offset);
     bool getBytesFromCache(CSAMPLE* buffer, SINT offset, SINT size);

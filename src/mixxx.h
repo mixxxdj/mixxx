@@ -19,6 +19,7 @@
 #define MIXXX_H
 
 #include <QMainWindow>
+#include <QSharedPointer>
 #include <QString>
 
 #include "preferences/configobject.h"
@@ -30,6 +31,7 @@
 #include "util/db/dbconnectionpool.h"
 #include "soundio/sounddeviceerror.h"
 
+class ChannelHandleFactory;
 class ControlPushButton;
 class ControllerManager;
 class DlgDeveloperTools;
@@ -49,6 +51,8 @@ class SoundManager;
 class VinylControlManager;
 class WMainMenuBar;
 
+typedef QSharedPointer<SettingsManager> SettingsManagerPointer;
+
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
 // For the main view, an instance of class MixxxView is
@@ -56,7 +60,7 @@ class WMainMenuBar;
 class MixxxMainWindow : public QMainWindow {
     Q_OBJECT
   public:
-    // Construtor. files is a list of command line arguments
+    // Constructor. files is a list of command line arguments
     MixxxMainWindow(QApplication *app, const CmdlineArgs& args);
     ~MixxxMainWindow() override;
 
@@ -77,13 +81,13 @@ class MixxxMainWindow : public QMainWindow {
     void rebootMixxxView();
 
     void slotFileLoadSongPlayer(int deck);
-    // toogle keyboard on-off
+    // toggle keyboard on-off
     void slotOptionsKeyboard(bool toggle);
     // Preference dialog
     void slotOptionsPreferences();
     // shows an about dlg
     void slotHelpAbout();
-    // toogle full screen mode
+    // toggle full screen mode
     void slotViewFullScreen(bool toggle);
     // Open the developer tools dialog.
     void slotDeveloperTools(bool enable);
@@ -136,6 +140,8 @@ class MixxxMainWindow : public QMainWindow {
     LaunchImage* m_pLaunchImage;
 
     SettingsManager* m_pSettingsManager;
+
+    ChannelHandleFactory* m_pChannelHandleFactory;
 
     // The effects processing system
     EffectsManager* m_pEffectsManager;

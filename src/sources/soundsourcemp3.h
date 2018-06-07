@@ -18,25 +18,20 @@
 namespace mixxx {
 
 class SoundSourceMp3: public SoundSource {
-public:
+  public:
     explicit SoundSourceMp3(const QUrl& url);
     ~SoundSourceMp3() override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
+  protected:
+    ReadableSampleFrames readSampleFramesClamped(
+            WritableSampleFrames sampleFrames) override;
 
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
-    SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
-
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize,
-            bool readStereoSamples);
-
-private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+  private:
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override;
 
     QFile m_file;
     quint64 m_fileSize;
@@ -51,7 +46,7 @@ private:
     /** It is not possible to make a precise seek in an mp3 file without decoding the whole stream.
      * To have precise seek within a limited range from the current decode position, we keep track
      * of past decoded frame, and their exact position. If a seek occurs and it is within the
-     * range of frames we keep track of a precise seek occurs, otherwise an unprecise seek is performed
+     * range of frames we keep track of a precise seek occurs, otherwise an imprecise seek is performed
      */
     typedef std::vector<SeekFrameType> SeekFrameList;
     SeekFrameList m_seekFrameList; // ordered-by frameIndex
@@ -81,7 +76,7 @@ private:
 };
 
 class SoundSourceProviderMp3: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

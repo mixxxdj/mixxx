@@ -4,7 +4,8 @@
       <name>American Audio VMS4/4.1</name>
       <author>Anders Gunnarsson &amp; Sean M. Pappalardo</author>
       <wiki>http://mixxx.org/wiki/doku.php/american_audio_vms4</wiki>
-      <description>2-deck control/4-deck mixer preset for Mixxx 2.0. Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
+      <description>2-deck control/4-deck mixer preset for Mixxx 2.1. 
+Assumes "Post EQ" mode. (See Wiki for full setup instructions.)</description>
    </info>
    <controller id="American Audio VMS4">
       <scriptfiles>
@@ -270,25 +271,37 @@
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
+            <key>cue_gotoandplay</key>
+            <status>0x91</status>
+            <midino>0x0C</midino>
+         </control>
+         <control><!-- off -->
+            <group>[Channel1]</group>
+            <key>cue_gotoandplay</key>
+            <status>0x81</status>
+            <midino>0x0C</midino>
+         </control>
+         <control><!-- on -->
+            <group>[Channel1]</group>
             <key>play</key>
             <status>0x90</status>
             <midino>0x0D</midino>
          </control>
          <control><!-- off -->
-             <group>[Channel1]</group>
-             <key>play</key>
-             <status>0x80</status>
-             <midino>0x0D</midino>
+            <group>[Channel1]</group>
+            <key>play</key>
+            <status>0x80</status>
+            <midino>0x0D</midino>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel1]</group>
-            <key>start_play</key>
+            <key>sync_master</key>
             <status>0x91</status>
             <midino>0x0D</midino>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel1]</group>
-            <key>start_play</key>
+            <key>sync_master</key>
             <status>0x81</status>
             <midino>0x0D</midino>
          </control>
@@ -487,7 +500,7 @@
          </control>
          <control><!-- on -->
             <group>[Channel1]</group>
-            <key>reloop_exit</key>
+            <key>reloop_toggle</key>
             <status>0x90</status>
             <midino>0x21</midino>
             <options>
@@ -496,7 +509,7 @@
          </control>
          <control><!-- off -->
             <group>[Channel1]</group>
-            <key>reloop_exit</key>
+            <key>reloop_toggle</key>
             <status>0x80</status>
             <midino>0x21</midino>
             <options>
@@ -693,10 +706,55 @@
             </options>
          </control>
          <control>
-            <group>[Channel1]</group>
-            <key>VMS4.touch_strip</key>
+            <group>[Library]</group>
+            <key>VMS4.strip_scroll</key>
             <status>0xB0</status>
             <midino>0x28</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control>  <!-- Shifted -->
+            <group>[Channel1]</group>
+            <key>VMS4.strip_fx_dw</key>
+            <status>0xB1</status>
+            <midino>0x28</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+        <control>
+            <group>[Channel1]</group>
+            <key>VMS4.strip_touch</key>
+            <status>0x90</status>
+            <midino>0x57</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+        <control>
+            <group>[Channel1]</group>
+            <key>VMS4.strip_touch</key>
+            <status>0x80</status>
+            <midino>0x57</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control> <!-- Shifted -->
+            <group>[Channel1]</group>
+            <key>VMS4.strip_touch</key>
+            <status>0x91</status>
+            <midino>0x57</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+        <control>
+            <group>[Channel1]</group>
+            <key>VMS4.strip_touch</key>
+            <status>0x81</status>
+            <midino>0x57</midino>
             <options>
                <Script-Binding/>
             </options>
@@ -924,19 +982,31 @@
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
+            <key>cue_gotoandplay</key>
+            <status>0x91</status>
+            <midino>0x2E</midino>
+         </control>
+         <control><!-- off -->
+            <group>[Channel2]</group>
+            <key>cue_gotoandplay</key>
+            <status>0x81</status>
+            <midino>0x2E</midino>
+         </control>
+         <control><!-- on -->
+            <group>[Channel2]</group>
             <key>play</key>
             <status>0x90</status>
             <midino>0x2F</midino>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel2]</group>
-            <key>start_play</key>
+            <key>sync_master</key>
             <status>0x91</status>
             <midino>0x2F</midino>
          </control>
          <control><!-- Shifted Play -->
             <group>[Channel2]</group>
-            <key>start_play</key>
+            <key>sync_master</key>
             <status>0x81</status>
             <midino>0x2F</midino>
          </control>
@@ -1136,7 +1206,7 @@
          </control>
          <control><!-- on -->
             <group>[Channel2]</group>
-            <key>reloop_exit</key>
+            <key>reloop_toggle</key>
             <status>0x90</status>
             <midino>0x43</midino>
             <options>
@@ -1145,7 +1215,7 @@
          </control>
          <control><!-- off -->
             <group>[Channel2]</group>
-            <key>reloop_exit</key>
+            <key>reloop_toggle</key>
             <status>0x80</status>
             <midino>0x43</midino>
             <options>
@@ -1342,26 +1412,61 @@
             </options>
          </control>
          <control>
-            <group>[Channel2]</group>
-            <key>VMS4.touch_strip</key>
+            <group>[Library]</group>
+            <key>VMS4.strip_scroll</key>
             <status>0xB0</status>
             <midino>0x2D</midino>
             <options>
                <Script-Binding/>
             </options>
          </control>
-
-         <!-- Mixer main-->
-         <control>
-            <group>[Master]</group>
-            <key>crossfader</key>
-            <status>0xB0</status>
-            <midino>0x1F</midino>
+         <control>  <!-- Shifted -->
+            <group>[Channel2]</group>
+            <key>VMS4.strip_fx_dw</key>
+            <status>0xB1</status>
+            <midino>0x2D</midino>
             <options>
-               <invert/>
-               <soft-takeover/>
+               <Script-Binding/>
             </options>
          </control>
+        <control>
+            <group>[Channel2]</group>
+            <key>VMS4.strip_touch</key>
+            <status>0x90</status>
+            <midino>0x58</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+        <control>
+            <group>[Channel2]</group>
+            <key>VMS4.strip_touch</key>
+            <status>0x80</status>
+            <midino>0x58</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+         <control> <!-- Shifted -->
+            <group>[Channel2]</group>
+            <key>VMS4.strip_touch</key>
+            <status>0x91</status>
+            <midino>0x58</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+        <control>
+            <group>[Channel2]</group>
+            <key>VMS4.strip_touch</key>
+            <status>0x81</status>
+            <midino>0x58</midino>
+            <options>
+               <Script-Binding/>
+            </options>
+         </control>
+
+         <!-- Mixer main-->
          <control>
             <group>[Master]</group>
             <key>headMix</key>
@@ -1436,15 +1541,6 @@
                 <soft-takeover />
             </options>
          </control>
-         <control>
-            <group>[Channel1]</group>
-            <key>volume</key>
-            <status>0xB0</status>
-            <midino>0x09</midino>
-            <options>
-                <soft-takeover />
-            </options>
-         </control>
          <control><!-- on -->
             <group>[Channel1]</group>
             <key>pfl</key>
@@ -1497,15 +1593,6 @@
             <key>parameter1</key>
             <status>0xB0</status>
             <midino>0x0D</midino>
-            <options>
-                <soft-takeover />
-            </options>
-         </control>
-         <control>
-            <group>[Channel2]</group>
-            <key>volume</key>
-            <status>0xB0</status>
-            <midino>0x0E</midino>
             <options>
                 <soft-takeover />
             </options>
@@ -1566,15 +1653,6 @@
                  <soft-takeover />
              </options>
          </control>
-         <control>
-             <group>[Channel3]</group>
-             <key>volume</key>
-             <status>0xB0</status>
-             <midino>0x04</midino>
-             <options>
-                 <soft-takeover />
-             </options>
-         </control>
          <control><!-- on -->
              <group>[Channel3]</group>
              <key>pfl</key>
@@ -1627,15 +1705,6 @@
              <key>parameter1</key>
              <status>0xB0</status>
              <midino>0x12</midino>
-             <options>
-                 <soft-takeover />
-             </options>
-         </control>
-         <control>
-             <group>[Channel4]</group>
-             <key>volume</key>
-             <status>0xB0</status>
-             <midino>0x13</midino>
              <options>
                  <soft-takeover />
              </options>

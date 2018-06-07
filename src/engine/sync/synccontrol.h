@@ -22,7 +22,7 @@ class SyncControl : public EngineControl, public Syncable {
     static const double kBpmDouble;
     SyncControl(const QString& group, UserSettingsPointer pConfig,
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
-    virtual ~SyncControl();
+    ~SyncControl() override;
 
     const QString& getGroup() const { return m_sGroup; }
     EngineChannel* getChannel() const { return m_pChannel; }

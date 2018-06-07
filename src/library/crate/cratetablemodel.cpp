@@ -88,7 +88,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     QList<TrackId> trackIds;
     trackIds.append(pTrack->getId());
     if (m_pTrackCollection->addCrateTracks(m_selectedCrate, trackIds)) {
-        // TODO(rryan) just add the track dont select
+        // TODO(rryan) just add the track don't select
         select();
         return true;
     } else {
@@ -107,7 +107,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_ADDTOPLAYLIST
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_RELOADMETADATA
+            | TRACKMODELCAPS_IMPORTMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_LOADTOPREVIEWDECK

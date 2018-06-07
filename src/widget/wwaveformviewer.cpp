@@ -215,6 +215,10 @@ void WWaveformViewer::setZoom(int zoom) {
     }
 }
 
+void WWaveformViewer::setDisplayBeatGridAlpha(int alpha) {
+    m_waveformWidget->setDisplayBeatGridAlpha(alpha);
+}
+
 void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {
     if (m_waveformWidget) {
         QWidget* pWidget = m_waveformWidget->getWidget();

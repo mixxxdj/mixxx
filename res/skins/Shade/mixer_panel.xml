@@ -1,96 +1,18 @@
 <Template>
 		<WidgetGroup>
-			<Pos>2,6</Pos>
-			<Size>255,255</Size>
+			<Pos>3,2</Pos>
+			<Size>255,229</Size>
 			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 			<BackPath>style/style_bg_mixer_panel.png</BackPath>
 			<Children>
-				<!-- if we dont put all this in an extra child widget, the <NumberRate> will somehow
+				<!-- if we don't put all this in an extra child widget, the <NumberRate> will somehow
 				break the parent widgetgroup dimensions
 				-->
 				<WidgetGroup>
 					<Pos>0,0</Pos>
-					<Size>250,250</Size>
+					<Size>250,224</Size>
 					<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; } </Style>
 					<Children>
-						<!--
-						**********************************************
-						Tab- Show/hide Microphone widget group
-						**********************************************
-						-->
-						<PushButton>
-							<TooltipId>show_microphone</TooltipId>
-							<Style></Style>
-							<NumberStates>2</NumberStates>
-							<State>
-								<Number>0</Number>
-								<Pressed>tab_microphone.png</Pressed>
-								<Unpressed>tab_microphone.png</Unpressed>
-							</State>
-							<State>
-								<Number>1</Number>
-								<Pressed>tab_microphone_over.png</Pressed>
-								<Unpressed>tab_microphone_over.png</Unpressed>
-							</State>
-							<Pos>68,77</Pos>
-							<Connection>
-								<ConfigKey>[Microphone],show_microphone</ConfigKey>
-							</Connection>
-						</PushButton>
-
-						<!--
-						**********************************************
-						Tab- Show/hide Sampler widget group
-						**********************************************
-						-->
-						<PushButton>
-							<TooltipId>show_samplers</TooltipId>
-							<Style></Style>
-							<NumberStates>2</NumberStates>
-							<State>
-								<Number>0</Number>
-								<Pressed>tab_sampler.png</Pressed>
-								<Unpressed>tab_sampler.png</Unpressed>
-							</State>
-							<State>
-								<Number>1</Number>
-								<Pressed>tab_sampler_over.png</Pressed>
-								<Unpressed>tab_sampler_over.png</Unpressed>
-							</State>
-							<Pos>105,77</Pos>
-							<Connection>
-								<ConfigKey>[Samplers],show_samplers</ConfigKey>
-							</Connection>
-						</PushButton>
-
-						<!--
-						**********************************************
-						Tab- Show/hide Vinyl Control widget group
-						**********************************************
-						-->
-						<!-- The Mac App Store Version of Mixxx does not support vinyl control.
-						Comment out this tabs that no broken widget are displayed to the user
-						-->
-						<PushButton>
-							<TooltipId></TooltipId>
-							<Style></Style>
-							<NumberStates>2</NumberStates>
-							<State>
-								<Number>0</Number>
-								<Pressed>tab_effectrack.png</Pressed>
-								<Unpressed>tab_effectrack.png</Unpressed>
-							</State>
-							<State>
-								<Number>1</Number>
-								<Pressed>tab_effectrack_over.png</Pressed>
-								<Unpressed>tab_effectrack_over.png</Unpressed>
-							</State>
-							<Pos>160,77</Pos>
-							<Connection>
-								<ConfigKey>[EffectRack1],show</ConfigKey>
-							</Connection>
-						</PushButton>
-
 						<!--
 						**********************************************
 						Slider- Channel Volume
@@ -101,7 +23,7 @@
 							<Style></Style>
 							<Handle>knob_volume1.png</Handle>
 							<Slider>slider_volume1.png</Slider>
-							<Pos>72,91</Pos>
+							<Pos>72,55</Pos>
 							<Horizontal>false</Horizontal>
 							<Connection>
 								<ConfigKey>[Channel1],volume</ConfigKey>
@@ -113,7 +35,7 @@
 							<Style></Style>
 							<Handle>knob_volume2.png</Handle>
 							<Slider>slider_volume2.png</Slider>
-							<Pos>168,91</Pos>
+							<Pos>168,55</Pos>
 							<Horizontal>false</Horizontal>
 							<Connection>
 								<ConfigKey>[Channel2],volume</ConfigKey>
@@ -131,7 +53,7 @@
 							<Style></Style>
 							<Handle>knob_crossfader.png</Handle>
 							<Slider>slider_crossfader.png</Slider>
-							<Pos>72,230</Pos>
+							<Pos>72,200</Pos>
 							<Horizontal>true</Horizontal>
 							<Connection>
 								<ConfigKey>[Master],crossfader</ConfigKey>
@@ -158,7 +80,7 @@
 								<Pressed>btn_play1_overdown.png</Pressed>
 								<Unpressed>btn_play1_over.png</Unpressed>
 							</State>
-							<Pos>11,226</Pos>
+							<Pos>11,200</Pos>
 							<Connection>
 								<ConfigKey>[Channel1],play</ConfigKey>
 								<ButtonState>LeftButton</ButtonState>
@@ -185,7 +107,7 @@
 								<Pressed>btn_play2_overdown.png</Pressed>
 								<Unpressed>btn_play2_over.png</Unpressed>
 							</State>
-							<Pos>203,226</Pos>
+							<Pos>203,200</Pos>
 							<Connection>
 								<ConfigKey>[Channel2],play</ConfigKey>
 								<ButtonState>LeftButton</ButtonState>
@@ -218,7 +140,7 @@
 								<Pressed>btn_cue1_overdown.png</Pressed>
 								<Unpressed>btn_cue1_over.png</Unpressed>
 							</State>
-							<Pos>11,205</Pos>
+							<Pos>11,179</Pos>
 							<Connection>
 								<ConfigKey>[Channel1],cue_default</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -247,7 +169,7 @@
 								<Pressed>btn_cue2_overdown.png</Pressed>
 								<Unpressed>btn_cue2_over.png</Unpressed>
 							</State>
-							<Pos>203,205</Pos>
+							<Pos>203,179</Pos>
 							<Connection>
 								<ConfigKey>[Channel2],cue_default</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -282,7 +204,7 @@
 								<Pressed>btn_pfl1_overdown.png</Pressed>
 								<Unpressed>btn_pfl1_over.png</Unpressed>
 							</State>
-							<Pos>64,197</Pos>
+							<Pos>64,161</Pos>
 							<Connection>
 								<ConfigKey>[Channel1],pfl</ConfigKey>
 							</Connection>
@@ -301,7 +223,7 @@
 								<Pressed>btn_pfl2_overdown.png</Pressed>
 								<Unpressed>btn_pfl2_over.png</Unpressed>
 							</State>
-							<Pos>160,197</Pos>
+							<Pos>160,161</Pos>
 							<Connection>
 								<ConfigKey>[Channel2],pfl</ConfigKey>
 							</Connection>
@@ -309,107 +231,10 @@
 
 						<!--
 						**********************************************
-						FX Button
-						**********************************************
-						-->
-						<PushButton>
-							<TooltipId></TooltipId>
-							<Style></Style>
-							<NumberStates>2</NumberStates>
-							<State>
-								<Number>0</Number>
-								<Pressed>btn_kill_down.png</Pressed>
-								<Unpressed>btn_kill.png</Unpressed>
-							</State>
-							<State>
-								<Number>1</Number>
-								<Pressed>btn_kill_overdown.png</Pressed>
-								<Unpressed>btn_kill_over.png</Unpressed>
-							</State>
-							<Pos>11,57</Pos>
-							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit1],group_[BusLeft]_enable</ConfigKey>
-								<ButtonState>LeftButton</ButtonState>
-							</Connection>
-						</PushButton>
-
-						<PushButton>
-							<TooltipId></TooltipId>
-							<Style></Style>
-							<NumberStates>2</NumberStates>
-							<State>
-								<Number>0</Number>
-								<Pressed>btn_kill_down.png</Pressed>
-								<Unpressed>btn_kill.png</Unpressed>
-							</State>
-							<State>
-								<Number>1</Number>
-								<Pressed>btn_kill_overdown.png</Pressed>
-								<Unpressed>btn_kill_over.png</Unpressed>
-							</State>
-							<Pos>230,57</Pos>
-							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit2],group_[BusRight]_enable</ConfigKey>
-								<ButtonState>LeftButton</ButtonState>
-							</Connection>
-						</PushButton>
-
-						<!--
-						**********************************************
-						PLF FX Button
-						**********************************************
-						-->
-						<PushButton>
-							<TooltipId></TooltipId>
-							<Style></Style>
-							<NumberStates>2</NumberStates>
-							<State>
-								<Number>0</Number>
-								<Pressed>btn_pfl_fx_down.png</Pressed>
-								<Unpressed>btn_pfl_fx.png</Unpressed>
-							</State>
-							<State>
-								<Number>1</Number>
-								<Pressed>btn_pfl_fx_overdown.png</Pressed>
-								<Unpressed>btn_pfl_fx_over.png</Unpressed>
-							</State>
-							<Pos>95,57</Pos>
-							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit1],group_[Headphone]_enable</ConfigKey>
-								<ButtonState>LeftButton</ButtonState>
-							</Connection>
-						</PushButton>
-
-						<PushButton>
-							<TooltipId></TooltipId>
-							<Style></Style>
-							<NumberStates>2</NumberStates>
-							<State>
-								<Number>0</Number>
-								<Pressed>btn_pfl_fx_down.png</Pressed>
-								<Unpressed>btn_pfl_fx.png</Unpressed>
-							</State>
-							<State>
-								<Number>1</Number>
-								<Pressed>btn_pfl_fx_overdown.png</Pressed>
-								<Unpressed>btn_pfl_fx_over.png</Unpressed>
-							</State>
-							<Pos>145,57</Pos>
-							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit2],group_[Headphone]_enable</ConfigKey>
-								<ButtonState>LeftButton</ButtonState>
-							</Connection>
-						</PushButton>
-
-
-						<!--
-						**********************************************
 						Button- Frequency Kill
 						**********************************************
 						-->
-						<PushButton>
-							<TooltipId>filterHighKill</TooltipId>
-							<Style></Style>
+						<EffectPushButton>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
@@ -421,20 +246,18 @@
 								<Pressed>btn_kill_overdown.png</Pressed>
 								<Unpressed>btn_kill_over.png</Unpressed>
 							</State>
-							<Pos>11,120</Pos>
+							<Pos>11,84</Pos>
 							<Connection>
-								<ConfigKey>[Channel1],filterHighKill</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],button_parameter3</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[Channel1],filterHighKill_loaded</ConfigKey>
+						        <ConfigKey>[EqualizerRack1_[Channel1]_Effect1],button_parameter3_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
-						</PushButton>
-						<PushButton>
-							<TooltipId>filterMidKill</TooltipId>
-							<Style></Style>
+						</EffectPushButton>
+						<EffectPushButton>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
@@ -446,20 +269,18 @@
 								<Pressed>btn_kill_overdown.png</Pressed>
 								<Unpressed>btn_kill_over.png</Unpressed>
 							</State>
-							<Pos>11,149</Pos>
+							<Pos>11,113</Pos>
 							<Connection>
-								<ConfigKey>[Channel1],filterMidKill</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],button_parameter2</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
-						        <ConfigKey>[Channel1],filterMidKill_loaded</ConfigKey>
+						        <ConfigKey>[EqualizerRack1_[Channel1]_Effect1],button_parameter2_loaded</ConfigKey>
 						        <BindProperty>visible</BindProperty>
 					        </Connection>
-						</PushButton>
-						<PushButton>
-							<TooltipId>filterLowKill</TooltipId>
-							<Style></Style>
+						</EffectPushButton>
+						<EffectPushButton>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
@@ -471,21 +292,19 @@
 								<Pressed>btn_kill_overdown.png</Pressed>
 								<Unpressed>btn_kill_over.png</Unpressed>
 							</State>
-							<Pos>11,178</Pos>
+							<Pos>11,142</Pos>
 							<Connection>
-								<ConfigKey>[Channel1],filterLowKill</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],button_parameter1</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
-								<ConfigKey>[Channel1],filterLowKill_loaded</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],button_parameter1_loaded</ConfigKey>
 								<BindProperty>visible</BindProperty>
 							</Connection>
-						</PushButton>
+						</EffectPushButton>
 
-						<PushButton>
-							<TooltipId>filterHighKill</TooltipId>
-							<Style></Style>
+						<EffectPushButton>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
@@ -497,20 +316,18 @@
 								<Pressed>btn_kill_overdown.png</Pressed>
 								<Unpressed>btn_kill_over.png</Unpressed>
 							</State>
-							<Pos>229,120</Pos>
+							<Pos>229,84</Pos>
 							<Connection>
-								<ConfigKey>[Channel2],filterHighKill</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],button_parameter3</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
-								<ConfigKey>[Channel2],filterHighKill_loaded</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],button_parameter3_loaded</ConfigKey>
 								<BindProperty>visible</BindProperty>
 							</Connection>
-						</PushButton>
-						<PushButton>
-							<TooltipId>filterMidKill</TooltipId>
-							<Style></Style>
+						</EffectPushButton>
+						<EffectPushButton>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
@@ -522,20 +339,18 @@
 								<Pressed>btn_kill_overdown.png</Pressed>
 								<Unpressed>btn_kill_over.png</Unpressed>
 							</State>
-							<Pos>229,149</Pos>
+							<Pos>229,113</Pos>
 							<Connection>
-								<ConfigKey>[Channel2],filterMidKill</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],button_parameter2</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
-								<Connection>
-						        	<ConfigKey>[Channel2],filterMidKill_loaded</ConfigKey>
-						        	<BindProperty>visible</BindProperty>
-					        	</Connection>
-						</PushButton>
-						<PushButton>
-							<TooltipId>filterLowKill</TooltipId>
-							<Style></Style>
+							<Connection>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],button_parameter2_loaded</ConfigKey>
+						        <BindProperty>visible</BindProperty>
+							</Connection>
+						</EffectPushButton>
+						<EffectPushButton>
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
@@ -547,17 +362,17 @@
 								<Pressed>btn_kill_overdown.png</Pressed>
 								<Unpressed>btn_kill_over.png</Unpressed>
 							</State>
-							<Pos>229,178</Pos>
+							<Pos>229,142</Pos>
 							<Connection>
-								<ConfigKey>[Channel2],filterLowKill</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],button_parameter1</ConfigKey>
 								<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 								<ButtonState>LeftButton</ButtonState>
 							</Connection>
 							<Connection>
-								<ConfigKey>[Channel2],filterLowKill_loaded</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],button_parameter1_loaded</ConfigKey>
 								<BindProperty>visible</BindProperty>
 							</Connection>
-						</PushButton>
+						</EffectPushButton>
 
 						<!--
 						**********************************************
@@ -615,7 +430,7 @@
 						
 					    <PushButton>
 							<Style></Style>
-							<NumberStates>4</NumberStates>
+							<NumberStates>5</NumberStates>
 							<State>
 								<Number>0</Number>
 								<Pressed>btn_broadcast_unconnected.png</Pressed>
@@ -635,6 +450,11 @@
 								<Number>3</Number>
 								<Pressed>btn_broadcast_failure.png</Pressed>
 								<Unpressed>btn_broadcast_failure.png</Unpressed>
+							</State>
+							<State>
+								<Number>4</Number>
+								<Pressed>btn_broadcast_warning.png</Pressed>
+								<Unpressed>btn_broadcast_warning.png</Unpressed>
 							</State>
 							<Pos>113,30</Pos>
 							<Connection>
@@ -698,47 +518,6 @@
 							</Connection>
 						</Knob>
 
-						<Knob>
-							<TooltipId></TooltipId>
-							<Style></Style>
-							<NumberStates>63</NumberStates>
-							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>32,51</Pos>
-							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit1],mix</ConfigKey>
-							</Connection>
-						</Knob>
-						<Knob>
-							<TooltipId></TooltipId>
-							<Style></Style>
-							<NumberStates>63</NumberStates>
-							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>65,51</Pos>
-							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit1],super1</ConfigKey>
-							</Connection>
-						</Knob>
-						<Knob>
-							<TooltipId></TooltipId>
-							<Style></Style>
-							<NumberStates>63</NumberStates>
-							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>163,51</Pos>
-							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit2],super1</ConfigKey>
-							</Connection>
-						</Knob>
-						<Knob>
-							<TooltipId></TooltipId>
-							<Style></Style>
-							<NumberStates>63</NumberStates>
-							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>196,51</Pos>
-							<Connection>
-								<ConfigKey>[EffectRack1_EffectUnit2],mix</ConfigKey>
-							</Connection>
-						</Knob>
-
 						<!--
 						**********************************************
 						RotaryFader- Channel filter and gain
@@ -749,106 +528,98 @@
 							<Style></Style>
 							<NumberStates>64</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>32,83</Pos>
+							<Pos>32,47</Pos>
 							<Connection>
 								<ConfigKey>[Channel1],pregain</ConfigKey>
 							</Connection>
 						</Knob>
-						<Knob>
-							<TooltipId>filterHigh</TooltipId>
-							<Style></Style>
+						<EffectParameterKnob>
 							<NumberStates>64</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>32,112</Pos>
+							<Pos>32,76</Pos>
 							<Connection>
-								<ConfigKey>[Channel1],filterHigh</ConfigKey>
-							</Connection>
-								<Connection>
-						        	<ConfigKey>[Channel1],filterHigh_loaded</ConfigKey>
-						        	<BindProperty>visible</BindProperty>
-					        	</Connection>
-						</Knob>
-						<Knob>
-							<TooltipId>filterMid</TooltipId>
-							<Style></Style>
-							<NumberStates>64</NumberStates>
-							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>32,141</Pos>
-							<Connection>
-								<ConfigKey>[Channel1],filterMid</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter3</ConfigKey>
 							</Connection>
 							<Connection>
-						        	<ConfigKey>[Channel1],filterMid_loaded</ConfigKey>
-						        	<BindProperty>visible</BindProperty>
-					        	</Connection>
-						</Knob>
-						<Knob>
-							<TooltipId>filterLow</TooltipId>
-							<Style></Style>
-							<NumberStates>64</NumberStates>
-							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>32,170</Pos>
-							<Connection>
-								<ConfigKey>[Channel1],filterLow</ConfigKey>
-							</Connection>
-							<Connection>
-								<ConfigKey>[Channel1],filterLow_loaded</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter3_loaded</ConfigKey>
 								<BindProperty>visible</BindProperty>
 							</Connection>
-						</Knob>
+						</EffectParameterKnob>
+						<EffectParameterKnob>
+							<NumberStates>64</NumberStates>
+							<Path>knobs/knob_rotary_s%1.png</Path>
+							<Pos>32,105</Pos>
+							<Connection>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter2</ConfigKey>
+							</Connection>
+							<Connection>
+							<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter2_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
+							</Connection>
+						</EffectParameterKnob>
+						<EffectParameterKnob>
+							<NumberStates>64</NumberStates>
+							<Path>knobs/knob_rotary_s%1.png</Path>
+							<Pos>32,134</Pos>
+							<Connection>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter1</ConfigKey>
+							</Connection>
+							<Connection>
+								<ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter1_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
+							</Connection>
+						</EffectParameterKnob>
 
 						<Knob>
 							<TooltipId>pregain</TooltipId>
 							<Style></Style>
 							<NumberStates>64</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>196,83</Pos>
+							<Pos>196,47</Pos>
 							<Connection>
 								<ConfigKey>[Channel2],pregain</ConfigKey>
 							</Connection>
 						</Knob>
-						<Knob>
-							<TooltipId>filterHigh</TooltipId>
-							<Style></Style>
+						<EffectParameterKnob>
 							<NumberStates>64</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>196,112</Pos>
+							<Pos>196,76</Pos>
 							<Connection>
-								<ConfigKey>[Channel2],filterHigh</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter3</ConfigKey>
 							</Connection>
 							<Connection>
-						        	<ConfigKey>[Channel2],filterHigh_loaded</ConfigKey>
-						        	<BindProperty>visible</BindProperty>
-					        	</Connection>
-						</Knob>
-						<Knob>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter3_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
+							</Connection>
+						</EffectParameterKnob>
+						<EffectParameterKnob>
 							<TooltipId>filterMid</TooltipId>
 							<Style></Style>
 							<NumberStates>64</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>196,141</Pos>
+							<Pos>196,105</Pos>
 							<Connection>
-								<ConfigKey>[Channel2],filterMid</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter2</ConfigKey>
 							</Connection>
 							<Connection>
-						        	<ConfigKey>[Channel2],filterMid_loaded</ConfigKey>
-						        	<BindProperty>visible</BindProperty>
-					        	</Connection>
-						</Knob>
-						<Knob>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter2_loaded</ConfigKey>
+								<BindProperty>visible</BindProperty>
+							</Connection>
+						</EffectParameterKnob>
+						<EffectParameterKnob>
 							<TooltipId>filterLow</TooltipId>
 							<Style></Style>
 							<NumberStates>64</NumberStates>
 							<Path>knobs/knob_rotary_s%1.png</Path>
-							<Pos>196,170</Pos>
+							<Pos>196,134</Pos>
 							<Connection>
-								<ConfigKey>[Channel2],filterLow</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter1</ConfigKey>
 							</Connection>
 							<Connection>
-								<ConfigKey>[Channel2],filterLow_loaded</ConfigKey>
+								<ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter1_loaded</ConfigKey>
 								<BindProperty>visible</BindProperty>
 							</Connection>
-						</Knob>
+						</EffectParameterKnob>
 
 						<!--
 						**********************************************
@@ -860,7 +631,7 @@
 							<Style></Style>
 							<PathVu>btn_volume_display1_over.png</PathVu>
 							<PathBack>btn_volume_display1.png</PathBack>
-							<Pos>107,112</Pos>
+							<Pos>107,76</Pos>
 							<Horizontal>false</Horizontal>
 							<PeakHoldSize>5</PeakHoldSize>
 							<PeakHoldTime>500</PeakHoldTime>
@@ -875,7 +646,7 @@
 							<Style></Style>
 							<PathVu>btn_volume_display2_over.png</PathVu>
 							<PathBack>btn_volume_display2.png</PathBack>
-							<Pos>143,112</Pos>
+							<Pos>143,76</Pos>
 							<Horizontal>false</Horizontal>
 							<PeakHoldSize>5</PeakHoldSize>
 							<PeakHoldTime>500</PeakHoldTime>
@@ -891,7 +662,7 @@
 							<Style></Style>
 							<PathVu>btn_volume_display_master1_over.png</PathVu>
 							<PathBack>btn_volume_display_master1.png</PathBack>
-							<Pos>122,112</Pos>
+							<Pos>122,76</Pos>
 							<PeakHoldSize>5</PeakHoldSize>
 							<PeakHoldTime>500</PeakHoldTime>
 							<PeakFallTime>50</PeakFallTime>
@@ -905,7 +676,7 @@
 							<Style></Style>
 							<PathVu>btn_volume_display_master2_over.png</PathVu>
 							<PathBack>btn_volume_display_master2.png</PathBack>
-							<Pos>128,112</Pos>
+							<Pos>128,76</Pos>
 							<PeakHoldSize>5</PeakHoldSize>
 							<PeakHoldTime>500</PeakHoldTime>
 							<PeakFallTime>50</PeakFallTime>
@@ -925,7 +696,7 @@
 							<Style></Style>
 							<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
 							<PathBack>btn_clipping1.png</PathBack>
-							<Pos>107,93</Pos>
+							<Pos>107,57</Pos>
 							<Connection>
 								<ConfigKey>[Channel1],PeakIndicator</ConfigKey>
 							</Connection>
@@ -935,7 +706,7 @@
 							<Style></Style>
 							<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
 							<PathBack>btn_clipping2.png</PathBack>
-							<Pos>143,93</Pos>
+							<Pos>143,57</Pos>
 							<Connection>
 								<ConfigKey>[Channel2],PeakIndicator</ConfigKey>
 							</Connection>
@@ -945,7 +716,7 @@
 							<Style></Style>
 							<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
 							<PathBack>btn_clipping_master.png</PathBack>
-							<Pos>122,93</Pos>
+							<Pos>122,57</Pos>
 							<Connection>
 								<ConfigKey>[Master],PeakIndicatorL</ConfigKey>
 							</Connection>
@@ -955,7 +726,7 @@
 							<Style></Style>
 							<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
 							<PathBack>btn_clipping_master.png</PathBack>
-							<Pos>128,93</Pos>
+							<Pos>128,57</Pos>
 							<Connection>
 								<ConfigKey>[Master],PeakIndicatorR</ConfigKey>
 							</Connection>
