@@ -40,7 +40,7 @@ QLinkedList<TrackId> MetadataBroadcaster::getTrackedTracks() {
     return QLinkedList<TrackId>();
 }
 
-MetadataBroadcaster& MetadataBroadcaster::addNewScrobblingService(ScrobblingService *service) {
+MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService(ScrobblingService *service) {
     m_scrobblingServices.push_back(
         std::move(std::unique_ptr<ScrobblingService>(service)));
     return *this;    
@@ -66,7 +66,7 @@ void MetadataBroadcaster::trackUnloaded(TrackPointer pTrack) {
     }   
 }
 
-void MetadataBroadcaster::slotGuiTick(double timeSinceLastTick) {
+void MetadataBroadcaster::guiTick(double timeSinceLastTick) {
     for (auto it = m_trackedTracks.begin();
          it != m_trackedTracks.end();
          ++it) {

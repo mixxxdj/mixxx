@@ -11,9 +11,9 @@ namespace TrackTimers {
       ElapsedTimer() = default;
       virtual ~ElapsedTimer() = default;
       virtual void invalidate() = 0;
-      virtual bool isValid() = 0;
+      virtual bool isValid() const = 0;
       virtual void start() = 0;
-      virtual qint64 elapsed() = 0;
+      virtual qint64 elapsed() const = 0;
   };
 
   class RegularTimer : public QObject {
@@ -22,7 +22,7 @@ namespace TrackTimers {
       RegularTimer() = default;
       virtual ~RegularTimer() = default;
       virtual void start(int msec) = 0;
-      virtual bool isActive() = 0;
+      virtual bool isActive() const = 0;
     public slots:
       virtual void stop() = 0;
     signals:
@@ -35,7 +35,7 @@ namespace TrackTimers {
       GUITickTimer();
       ~GUITickTimer() override = default;
       void start(int msec) override;
-      bool isActive() override;
+      bool isActive() const override;
       void stop() override;
     private:
       double m_msSoFar;
@@ -51,9 +51,9 @@ namespace TrackTimers {
       ElapsedTimerQt() = default;
       ~ElapsedTimerQt() override = default;
       void invalidate() override;
-      bool isValid() override;
+      bool isValid() const override;
       void start() override;
-      qint64 elapsed() override;
+      qint64 elapsed() const override;
     private:
       QElapsedTimer m_elapsedTimer;
   };

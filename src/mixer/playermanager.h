@@ -26,7 +26,6 @@ class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
-class MetadataBroadcast;
 
 // For mocking PlayerManager.
 class PlayerManagerInterface {
