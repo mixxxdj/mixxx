@@ -10,6 +10,6 @@ class TimerMock : public TrackTimers::RegularTimer {
   public:
     ~TimerMock() = default;
     MOCK_METHOD1(start, void(int msec));
-    MOCK_METHOD0(isActive, bool());
+    MOCK_CONST_METHOD0(isActive, bool());
     MOCK_METHOD0(stop, void());
 };

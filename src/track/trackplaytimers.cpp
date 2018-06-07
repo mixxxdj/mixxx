@@ -16,7 +16,7 @@ void TrackTimers::GUITickTimer::start(int msec) {
     m_timeoutSent = false;
 }
 
-bool TrackTimers::GUITickTimer::isActive() {
+bool TrackTimers::GUITickTimer::isActive() const {
     return m_isActive;
 }
 
@@ -38,7 +38,7 @@ void TrackTimers::ElapsedTimerQt::invalidate() {
     m_elapsedTimer.invalidate();
 }
 
-bool TrackTimers::ElapsedTimerQt::isValid() {
+bool TrackTimers::ElapsedTimerQt::isValid() const {
     return m_elapsedTimer.isValid();
 }
 
@@ -46,6 +46,6 @@ void TrackTimers::ElapsedTimerQt::start() {
     m_elapsedTimer.start();
 }
 
-qint64 TrackTimers::ElapsedTimerQt::elapsed() {
+qint64 TrackTimers::ElapsedTimerQt::elapsed() const {
     return m_elapsedTimer.elapsed();
 }
