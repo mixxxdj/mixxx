@@ -112,7 +112,7 @@
 			</Knob>
 
 		    <PushButton>
-			    <TooltipId></TooltipId>
+			    <TooltipId>EffectUnit_mix_mode</TooltipId>
 			    <Style></Style>
 			    <NumberStates>2</NumberStates>
 			    <State>
