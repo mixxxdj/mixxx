@@ -11,8 +11,8 @@ class ElapsedTimerMock : public TrackTimers::ElapsedTimer {
     ~ElapsedTimerMock() = default;
     MOCK_METHOD0(invalidate, void());
     MOCK_METHOD0(start, void());
-    MOCK_METHOD0(isValid, bool());
-    MOCK_METHOD0(elapsed, qint64());
+    MOCK_CONST_METHOD0(isValid, bool());
+    MOCK_CONST_METHOD0(elapsed, qint64());
 };
 
 class TrackTimingInfoTest : public testing::Test {
