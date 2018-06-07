@@ -1,0 +1,152 @@
+<!DOCTYPE template>
+
+<Template>	
+
+	<!-- WIDGETGROUP: -->	
+	<WidgetGroup>
+	<ObjectName>BigDecksRack</ObjectName>
+	<MinimumSize>0,0</MinimumSize><!-- 0 == Forces to redraw the full row height, after we show/hide a module -->
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>	
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>
+	
+	<WidgetGroup>
+	<ObjectName>DecksOptions</ObjectName>
+	<MinimumSize>-1,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>	
+	<Children>
+	<Template src="skin:templates/bigdecks/deck_toolbar.xml"></Template>	
+	</Children>
+	</WidgetGroup>
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>
+	
+		<!-- WIDGETGROUP: -->	
+		<WidgetGroup>
+		<ObjectName>BigDecksMaximize</ObjectName>
+		<Layout>vertical</Layout>
+		<Children>
+		
+		<!-- WIDGETGROUP: -->	
+		<WidgetGroup>
+		<ObjectName>DeckModule1</ObjectName>
+		<MinimumSize>0,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>
+		<Children>		
+		
+		<Splitter>
+		<ObjectName>SplittersBigs</ObjectName>
+		<SplitSizes>1,1,1</SplitSizes>
+		<Orientation>horizontal</Orientation>
+		<Collapsible>0,0,0</Collapsible>
+		<Children>
+		
+			<!-- WIDGETGROUP: Deck -->			  
+			<Template src="skin:templates/bigdecks/deck_left.xml">
+			<SetVariable name="audiochannel">1</SetVariable>
+			<SetVariable name="decktohide">2</SetVariable>
+			<SetVariable name="position">Left</SetVariable>
+			</Template>
+			<!-- WIDGETGROUP: Mixer Panel -->
+			<Template src="skin:templates/bigdecks/mixer.xml">
+			<SetVariable name="audiochannel_a">1</SetVariable>
+			<SetVariable name="audiochannel_b">2</SetVariable>	
+			</Template>	
+			<!-- WIDGETGROUP: Deck -->	
+			<Template src="skin:templates/bigdecks/deck_right.xml">
+			<SetVariable name="audiochannel">2</SetVariable>
+			<SetVariable name="decktohide">1</SetVariable>
+			<SetVariable name="position">Right</SetVariable>
+			</Template>
+			
+		</Children>
+		</Splitter>
+		
+		</Children>	
+		<Connection>
+		<ConfigKey>[DeckModule1],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>
+		</WidgetGroup>
+		
+		<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+		<ObjectName>HorizontalLineDarker</ObjectName>
+		<MinimumSize>0,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>DeckModule2</ObjectName>
+		<MinimumSize>0,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>
+		<Children>
+
+		<Splitter>
+		<ObjectName>SplittersBigs</ObjectName>
+		<SplitSizes>1,1,1</SplitSizes>
+		<Orientation>horizontal</Orientation>
+		<Collapsible>0,0,0</Collapsible>
+		<Children>
+		
+			<!-- WIDGETGROUP: Deck -->			  
+			<Template src="skin:templates/bigdecks/deck_left.xml">
+			<SetVariable name="audiochannel">3</SetVariable>
+			<SetVariable name="decktohide">4</SetVariable>
+			<SetVariable name="position">Left</SetVariable>
+			</Template>
+			<!-- WIDGETGROUP: Mixer Panel -->
+			<Template src="skin:templates/bigdecks/mixer.xml">
+			<SetVariable name="audiochannel_a">3</SetVariable>
+			<SetVariable name="audiochannel_b">4</SetVariable>	
+			</Template>	
+			<!-- WIDGETGROUP: Deck -->	
+			<Template src="skin:templates/bigdecks/deck_right.xml">
+			<SetVariable name="audiochannel">4</SetVariable>
+			<SetVariable name="decktohide">3</SetVariable>
+			<SetVariable name="position">Right</SetVariable>
+			</Template>
+
+		</Children>
+		</Splitter>
+		
+		</Children>	
+		<Connection>
+		<ConfigKey>[DeckModule2],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>
+		</WidgetGroup>
+		
+		</Children>	
+		<Connection>
+		<ConfigKey>[BigDecksMaximize],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>
+		</WidgetGroup>
+	
+	</Children>	
+	<Connection>
+	<ConfigKey>[BigDecksRack],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>
+	
+</Template>

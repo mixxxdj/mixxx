@@ -6,11 +6,13 @@
 	<!--
 	##################################################################################################################
 
-	DARK METAL skin by Jorge Rosa (Portugal - With love to ASCR)
+	DARK METAL - Skin by Jorge Rosa (Portugal - With love to ASCR)
 	Email: jorge.bigarte@gmail.com
 	Portfolio: http://sites.google.com/site/jorgerosaportfolio
+	Facebook: https://www.facebook.com/jorge.bigarte
+	Youtube: https://www.youtube.com/user/jorgeerosa/videos
 
-	DARK METAL skin at Mixxx forums:
+	DARK METAL - Skin at Mixxx forums:
 	http://www.mixxx.org/forums/viewtopic.php?t=6052
 
 	##################################################################################################################
@@ -21,152 +23,255 @@
 
 	##################################################################################################################
 
-	INSTALL:
+	INSTALL: (IMPORTANT: Don´t forget to backup any "logo_x.svg" file(s)... IF you already have created any logo before)
 	1 • Remove any older version of "DarkMetal" (Just delete the "DarkMetal" folder), if you already have one.
 	2 • Download and unzip the "DarkMetal.zip" archive.
-	3 • Move the new folder (with all contents), to your Mixxx skins folder.
-	( An path example, in Windows OS: C:\Program Files\Mixxx\skins\DarkMetal )
+	3 • Move the new folder (with all contents), to Mixxx skins folder.
+	( Examples: in Windows OS: "C:\Program Files\Mixxx\skins\DarkMetal" -OR- in GNU/Linux Ubuntu OS: "usr\share\Mixxx\skins\DarkMetal" )
 	4 • Double click in the included "digital.otf" to install that font.
-	5 • Start your Mixxx, then go to "Options" > "Preferences" > "Interface" > "Skin" > select the "DarkMetal" option.
+	5 • Start Mixxx, then go to "Options" > "Preferences" > "Interface" > "Skin" > select the "DarkMetal" option.
 	6 • Done!...
 
 	THE DEVELOPER´S SKIN SCHEME:
 	- All skin files are designed to be "human readable".
 	- EVERYTHING is divided by ROWS (racks) for simplicity (instead a long hierarchy of templates after templates after templates...).
 	- For example, if we want to fix something on the "deck 1", EVERYTHING related (except graphics, of course) is in that row´s directory!
-	  So, in the above case, the path would be: "DarkMetal\templates\decksmixer_12".
-	- This way we can search and update things very fast and easy, and without open a bunch of files first!
+	  So, in the above case, the path would be: "DarkMetal\templates\bigdecks".
+	- This way we can search and update things very fast and easy, and without needed to open a bunch of files!
 
 	##################################################################################################################
 
-	Mixxx: (All the lattest releases)
-	http://downloads.mixxx.org/builds/master/release/
+	Mixxx binaries: (All the lattest releases)
+	http://downloads.mixxx.org/builds/master/release
 	
-	Mixxx skin change log: (Important to read)
+	Mixxx skin change log: (Important!)
 	https://www.mixxx.org/wiki/doku.php/skin_system_changelog
 
 	Mixxx skin documentation:
 	http://mixxx.org/wiki/doku.php/creating_skins
+	
+	Mixxx skin color scheme:
+	https://mixxx.org/wiki/doku.php/skin_colour_scheme_architecture
 
-	List of Mixxx controls:
+	Mixxx controls list:
 	http://mixxx.org/wiki/doku.php/mixxxcontrols
 
+	Mixxx ToolTips list:
+	https://github.com/mixxxdj/mixxx/blob/master/src/skin/tooltips.cpp
+	
 	Qt Style Sheets documentation:
 	https://qt-project.org/doc/qt-4.8/stylesheet.html
 	
-	To know...	
-	To reset the skin (and all the other Mixxx) settings to its defaults, in WINDOWS7, delete all contents in this "Mixxx" folder:
-	"C:\Users\<UserName>\AppData\Local\Mixxx"
-	
-	ToolTips list at:
-	https://github.com/mixxxdj/mixxx/blob/master/src/skin/tooltips.cpp
+	RESET - To know...	
+	To reset the skin (and all the other Mixxx) settings and variables to its defaults (Tested only in MS Windows7)
+	delete all contents in this "Mixxx" folder: "C:\Users\<UserName>\AppData\Local\Mixxx" (Note: Some directories may be hidden)
 
 	##################################################################################################################
 	-->
 
 	<manifest>
-	<title>Dark Metal V.2.9.2</title>
+	<title>Dark Metal v.2.9.7</title>
 	<author>Jorge Rosa - jorge.bigarte@gmail.com</author>
-	<version>V.2.9.2</version>
-	<description>Dark Metal - Color Schemes - SVG - Resizable</description>
+	<version>2.9.7</version>
+	<description>Dark Metal - Colors - SVG - Resizable</description>
 	<language>en</language>
 	<license>Creative Commons - Attribution 3.0 Unported</license>
 	<attributes>
 	
 	<!-- Define main settings: -->
 	<attribute config_key="[Master],num_decks">4</attribute>
-	<attribute config_key="[Master],num_samplers">8</attribute>
+	<attribute config_key="[Master],num_samplers">64</attribute>
 	<attribute config_key="[Master],num_preview_decks">1</attribute>
-	<attribute config_key="[EffectRack1],num_effectunits">4</attribute>
+	<!-- <attribute config_key="[EffectRack1],num_effectunits">4</attribute> -->
+	
+	<!-- Mixxx CORE stuff: (Not used in this skin) -->
+	<!-- 
+	<attribute config_key="[Samplers],show_samplers">0</attribute>
+	<attribute config_key="[Microphone],show_microphone">0</attribute> 
+	<attribute config_key="[VinylControl],show_vinylcontrol">0</attribute> 
+	<attribute config_key="[PreviewDeck],show_previewdeck">0</attribute> 
+	<attribute config_key="[EffectRack1],show">0</attribute> 
+	<attribute config_key="[Master],maximize_library">0</attribute>
+	--> 
 
-	<!-- Make these FULL ROWS (racks) visible, or not, at start: -->
+
+	<!-- Make these FULL ROWS (racks) visible, or not, by default: -->
 	<attribute persist="true" config_key="[ToolBar1],show">1</attribute>
 	<attribute persist="true" config_key="[ToolBar2],show">1</attribute>	
-	<attribute persist="true" config_key="[ToolBarMicros],show">0</attribute>
-	<attribute persist="true" config_key="[DecksAndMixerRack1],show">1</attribute>
-	<attribute persist="true" config_key="[DecksAndMixerRack2],show">0</attribute>
-	<attribute persist="true" config_key="[MiniPlayer1],show">0</attribute>
-	<attribute persist="true" config_key="[MiniPlayer2],show">0</attribute>
-	<attribute persist="true" config_key="[ToolBarAuxiliaries],show">0</attribute>
-	<attribute persist="true" config_key="[LongWavesRack1],show">1</attribute>
-	<attribute persist="true" config_key="[LongWavesRack2],show">0</attribute>
 	<attribute persist="true" config_key="[Hifi],show">1</attribute>
 	
-	<!-- Make these ITEMS visible, or not, by default: -->
-	<attribute persist="true" config_key="[DarkMetal],deck1_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],deck2_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],deck3_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],deck4_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],mini_deck1_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],mini_deck2_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],mini_deck3_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],mini_deck4_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],vinylcontrols_deck1_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],vinylcontrols_deck2_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],vinylcontrols_deck3_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],vinylcontrols_deck4_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],buttons_row_deck1_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],buttons_row_deck2_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],buttons_row_deck3_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],buttons_row_deck4_show">1</attribute>
+	<!-- Make these ITEMS (elements) visible, or not, by default: -->
+	<attribute persist="true" config_key="[Deck1],show">1</attribute>
+	<attribute persist="true" config_key="[Deck2],show">1</attribute>
+	<attribute persist="true" config_key="[Deck3],show">1</attribute>
+	<attribute persist="true" config_key="[Deck4],show">1</attribute>
+	<attribute persist="true" config_key="[SmallDeck1],show">1</attribute>
+	<attribute persist="true" config_key="[SmallDeck2],show">1</attribute>
+	<attribute persist="true" config_key="[SmallDeck3],show">1</attribute>
+	<attribute persist="true" config_key="[SmallDeck4],show">1</attribute>
+	
+	<attribute persist="true" config_key="[VinylControlsDeck1],show">0</attribute>
+	<attribute persist="true" config_key="[VinylControlsDeck2],show">0</attribute>
+	<attribute persist="true" config_key="[VinylControlsDeck3],show">0</attribute>
+	<attribute persist="true" config_key="[VinylControlsDeck4],show">0</attribute>	
+	<attribute persist="true" config_key="[BeatButtonsDeck1],show">0</attribute>
+	<attribute persist="true" config_key="[BeatButtonsDeck2],show">0</attribute>
+	<attribute persist="true" config_key="[BeatButtonsDeck3],show">0</attribute>
+	<attribute persist="true" config_key="[BeatButtonsDeck4],show">0</attribute>
+	<attribute persist="true" config_key="[KeyButtonsDeck1],show">0</attribute>
+	<attribute persist="true" config_key="[KeyButtonsDeck2],show">0</attribute>
+	<attribute persist="true" config_key="[KeyButtonsDeck3],show">0</attribute>
+	<attribute persist="true" config_key="[KeyButtonsDeck4],show">0</attribute>	
+	<attribute persist="true" config_key="[ButtonsRowDeck1],show">1</attribute>
+	<attribute persist="true" config_key="[ButtonsRowDeck2],show">1</attribute>
+	<attribute persist="true" config_key="[ButtonsRowDeck3],show">1</attribute>
+	<attribute persist="true" config_key="[ButtonsRowDeck4],show">1</attribute>	
 	<attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
 	<attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
 	<attribute persist="true" config_key="[Spinny3],show_spinny">1</attribute>
 	<attribute persist="true" config_key="[Spinny4],show_spinny">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],coverart_big_deck1_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],coverart_big_deck2_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],coverart_big_deck3_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],coverart_big_deck4_show">0</attribute>
-	<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],search_text_box1_show">1</attribute>
+	<attribute persist="true" config_key="[CoverArtBigDeck1],show">0</attribute>
+	<attribute persist="true" config_key="[CoverArtBigDeck2],show">0</attribute>
+	<attribute persist="true" config_key="[CoverArtBigDeck3],show">0</attribute>
+	<attribute persist="true" config_key="[CoverArtBigDeck4],show">0</attribute>
+	
+	<attribute persist="true" config_key="[PreviewD1],show">0</attribute>
+	<attribute persist="true" config_key="[SearchTextBox1],show">1</attribute>
 	<attribute persist="true" config_key="[Library],show_coverart">1</attribute>
 	<attribute persist="true" config_key="[Library],show_current">1</attribute>	
-	<attribute config_key="[Library],show_library">1</attribute>
+	<!-- <attribute persist="true" config_key="[Library],show_library">1</attribute> -->
+
+	<!-- Logo: (Your own logos) -->
+	<attribute persist="true" config_key="[Logo],show">0</attribute>	
 	
-	<!-- Samplers: (Racks + Modules) -->
-	<attribute persist="true" config_key="[DarkMetal],samplers_rack1_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],samplers_rack2_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],sampler_module1_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],sampler_module2_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],sampler_module3_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],sampler_module4_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],sampler_module5_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],sampler_module6_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],sampler_module7_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],sampler_module8_show">0</attribute>
+	<!-- Big Decks: (Rack + Modules) -->
+	<attribute persist="true" config_key="[BigDecksRack],show">1</attribute>
+	<attribute persist="true" config_key="[BigDecksMaximize],show">1</attribute>
+	<attribute persist="true" config_key="[DeckModule1],show">1</attribute>
+	<attribute persist="true" config_key="[DeckModule2],show">0</attribute>	
+	
+	<!-- Small Decks: (Rack + Modules) -->	
+	<attribute persist="true" config_key="[SmallDecks],show">0</attribute>
+	<attribute persist="true" config_key="[SmallDecksMaximize],show">1</attribute>
+	<attribute persist="true" config_key="[SmallModule1],show">1</attribute>
+	<attribute persist="true" config_key="[SmallModule2],show">0</attribute>	
+	
+	<!-- Strobes: (Racks + Modules) -->
+	<attribute persist="true" config_key="[StrobesRack],show">1</attribute>
+	<attribute persist="true" config_key="[StrobesMaximize],show">1</attribute>
+	<!-- <attribute persist="true" config_key="[StrobesModule0],show">1</attribute> --> <!-- Channel: Master -->
+	<attribute persist="true" config_key="[StrobesModule1],show">1</attribute>
+	<attribute persist="true" config_key="[StrobesModule2],show">1</attribute>
+	<attribute persist="true" config_key="[StrobesModule3],show">0</attribute>
+	<attribute persist="true" config_key="[StrobesModule4],show">0</attribute>
+	
+	<!-- Microphones: (Rack + Modules) -->
+	<attribute persist="true" config_key="[ToolBarMicros],show">0</attribute>
+	<attribute persist="true" config_key="[MicMaximize],show">1</attribute>
+	<attribute persist="true" config_key="[MicModule1],show">1</attribute>
+	<attribute persist="true" config_key="[MicModule2],show">1</attribute>
+	<attribute persist="true" config_key="[MicModule3],show">1</attribute>
+	<attribute persist="true" config_key="[MicModule4],show">1</attribute>
+	
+	<!-- Auxiliaries: (Rack + Modules) -->
+	<attribute persist="true" config_key="[ToolBarAuxiliaries],show">0</attribute>
+	<attribute persist="true" config_key="[AuxMaximize],show">1</attribute>
+	<attribute persist="true" config_key="[AuxModule1],show">1</attribute>
+	<attribute persist="true" config_key="[AuxModule2],show">1</attribute>
+	<attribute persist="true" config_key="[AuxModule3],show">1</attribute>
+	<attribute persist="true" config_key="[AuxModule4],show">1</attribute>
+	
+	<!-- Long Waves: (Rack + Modules) -->
+	<attribute persist="true" config_key="[LongWavesRack],show">0</attribute>
+	<attribute persist="true" config_key="[LongWavesMaximize],show">1</attribute>
+	<attribute persist="true" config_key="[LongWaveModule1],show">1</attribute>
+	<attribute persist="true" config_key="[LongWaveModule2],show">1</attribute>
+	<attribute persist="true" config_key="[LongWaveModule3],show">0</attribute>
+	<attribute persist="true" config_key="[LongWaveModule4],show">0</attribute>		
 	
 	<!-- Effects: (Racks + Modules) -->
-	<attribute persist="true" config_key="[DarkMetal],effects_rack1_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],effects_rack2_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],effects_modules_row1_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],effects_modules_row2_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],effects_module1_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],effects_module2_show">0</attribute>
-	<attribute persist="true" config_key="[DarkMetal],effects_module3_show">1</attribute>
-	<attribute persist="true" config_key="[DarkMetal],effects_module4_show">0</attribute>	
-
-	<!-- Effects: (By default, the ON/OFF buttons are off) - Not used! -->
-	<!--
-	<attribute config_key="[EffectRack1_EffectUnit1_Effect1],enabled">0</attribute>
-	<attribute config_key="[EffectRack1_EffectUnit2_Effect1],enabled">0</attribute>
-	<attribute config_key="[EffectRack1_EffectUnit3_Effect1],enabled">0</attribute>
-	<attribute config_key="[EffectRack1_EffectUnit4_Effect1],enabled">0</attribute>
-	-->
+	<attribute persist="true" config_key="[EffectsRack],show">0</attribute>
+	<attribute persist="true" config_key="[EffectsModulesRow],show">1</attribute>
+	<attribute persist="true" config_key="[EffectsMaximize],show">1</attribute>
+	<attribute persist="true" config_key="[EffectsModule1],show">1</attribute>
+	<attribute persist="true" config_key="[EffectsModule2],show">0</attribute>
+	<attribute persist="true" config_key="[EffectsModule3],show">0</attribute>
+	<attribute persist="true" config_key="[EffectsModule4],show">0</attribute>
 	
-	<!-- Effects: (By default, the master channel is enabled in all modules) - Not used! -->
-	<!--
-	<attribute config_key="[EffectRack1_EffectUnit1],group_[Master]_enable">0</attribute>
-	<attribute config_key="[EffectRack1_EffectUnit2],group_[Master]_enable">0</attribute>
-	<attribute config_key="[EffectRack1_EffectUnit3],group_[Master]_enable">0</attribute>
-	<attribute config_key="[EffectRack1_EffectUnit4],group_[Master]_enable">0</attribute>
-	-->	
-		
+	<!-- Samplers: (Racks + Modules) -->
+	<attribute persist="true" config_key="[SamplersRack],show">0</attribute>
+	<attribute persist="true" config_key="[SamplersMaximize],show">1</attribute>
+	<attribute persist="true" config_key="[SamplerModule1],show">1</attribute>
+	<attribute persist="true" config_key="[SamplerModule2],show">1</attribute>
+	<attribute persist="true" config_key="[SamplerModule3],show">1</attribute>
+	<attribute persist="true" config_key="[SamplerModule4],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule5],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule6],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule7],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule8],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule9],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule10],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule11],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule12],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule13],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule14],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule15],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule16],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule17],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule18],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule19],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule20],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule21],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule22],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule23],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule24],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule25],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule26],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule27],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule28],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule29],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule30],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule31],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule32],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule33],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule34],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule35],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule36],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule37],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule38],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule39],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule40],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule41],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule42],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule43],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule44],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule45],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule46],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule47],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule48],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule49],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule50],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule51],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule52],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule53],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule54],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule55],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule56],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule57],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule58],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule59],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule60],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule61],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule62],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule63],show">0</attribute>
+	<attribute persist="true" config_key="[SamplerModule64],show">0</attribute>
+	
 	</attributes>
 	</manifest>
 
-	<!-- START: (The intro splash screen) -->
+	<!-- START: (The mixxx intro | splash screen) -->
 	<LaunchImageStyle>
-    LaunchImage { qproperty-layoutAlignment:AlignCenter; background-color:#000000; }
+    LaunchImage { background-color:#000000; }
     QLabel { image:url(skin:graphics/start.svg); padding:0px; margin:0px; margin-bottom:20px; border:none; min-width:400px; max-width:400px; min-height:50px; max-height:50px; }
     QProgressBar { background-color:#000000; padding:2px; border:1px solid #111111; min-width:400px; max-width:400px; min-height:4px; max-height:4px; }
     QProgressBar::chunk { background-color:#a1a1a1; }
@@ -175,21 +280,31 @@
 	<!--
 	SCHEMES COLORS:	
 	The "best" color to start is "light purple": (HSV) 265,45,219 == (HEX) #c4b4db (Mixxx HUE values are from 0 to 359)
-	Tool: http://www.mrfloresreads.info/remixes/mixxxschemeutil.html#tool	
+	Online tool: http://www.mrfloresreads.info/remixes/mixxxschemeutil.html#tool
+	
+	NOTE: Hue values in Inkscape are from 0-255 in Mixxx are from 0-359
 
-	General guide of HSV values for this skin: 
+	General guide of HSV values for DARK METAL SKIN ONLY: 
 	<HConst>: 0 purples original, +30 purples dark, +50 purples bright, +70 magentas, +90 browns, + 180 greens, +280 blues , +359 pinks ...
 	<SConst>: ...
-	<VConst>: 0 is always the best.
+	<VConst>: 0 is, in most of the times, the best.
+	
+	General guide of HSV values: 
+	<HSVTweak>
+	<HMin> 29 = colors range = change only orange (if an image as orange on it, as example)
+	<HMax> 31 = colors range
+	<SConst> -255 = take out colors
+	<VConst> -255 = take out brightness
+	</HSVTweak>
 	-->	
 	
 	<Schemes>
 	
 	<Scheme>
-	<Name>Grey 1 - Dark Metal - Metropolis</Name>
+	<Name>Grey 1 - Dark Metal</Name>
 	<Filters>
 	<HSVTweak>
-	<HConst>-3</HConst><SConst>-365</SConst><VConst>-3</VConst>
+	<HConst>0</HConst><!-- color range --><SConst>-359</SConst><!-- saturation --><VConst>0</VConst><!-- brightness -->
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -198,7 +313,7 @@
 	<Name>Purple 1 - Normal</Name>
 	<Filters>
 	<HSVTweak>	
-	<HConst>0</HConst><SConst>0</SConst><VConst>0</VConst>
+	<HConst>0</HConst><SConst>0</SConst><VConst>0</VConst><!-- Colors as they are in SVG -->
 	</HSVTweak>
 	</Filters>
 	</Scheme>
@@ -433,62 +548,54 @@
 	<!-- LAYOUT GLOBALS -->
 	<ObjectName>Mixxx</ObjectName>
 	<Background><BgColor>#000000</BgColor></Background>
-	<BackPath>skin:graphics/background_main.svg</BackPath>
-	<Style src="skin:styles.qss"/> <!-- Includes the QT styles file -->
+	<Style src="skin:styles.qss"/> <!-- Including the QT styles file -->
 	<MinimumSize>1024,550</MinimumSize>
 	<SizePolicy>me,me</SizePolicy>
 	<Layout>vertical</Layout>
 	<!-- STARTS - ALL THE LAYOUT: -->
-	<Children>		
+	<Children>
 	
-	<!-- WIDGETGROUP ROW: Rack for TEST/DEBUG PURPOSES only. To "show/hide", you have to "comment/uncomment" the next line: -->
+	<!-- ROW: Rack for TEST/DEBUG PURPOSES only. To "show/hide", you have to "comment/uncomment" the next line: -->
 	<!-- <Template src="skin:templates/tests/start.xml"></Template> -->
-	<!-- WIDGETGROUP ROW: Show/Hide Racks buttons -->
+	<!-- ROW: Show/Hide Racks buttons -->
 	<Template src="skin:templates/toolbar/start.xml"></Template>
-	<!-- WIDGETGROUP ROW: Global Volume + Analog VUs + Latency + Clock + Battery (...) -->
+	<!-- ROW: Your logo goes here. The variable "mylogo" could be set to: "1", "2", "3", "4", "5", etc, etc... -->
+	<!-- Just set the variable to the number of the "logo_x.svg" file that you intend to be displayed -->
+    <Template src="skin:templates/logo/start.xml"><SetVariable name="mylogo">1</SetVariable></Template>
+	<!-- ROW: Global Volume + Analog VUs + Latency + Clock + Battery (...) -->
     <Template src="skin:templates/globals/start.xml"></Template>
 	
-	<!-- WIDGETGROUP: HIFI - Contains all the needed rows to hide, when maximizing the library -->
+	<!-- ROWS: HIFI - Contains all the needed rows to hide, when maximizing the library -->
 	<WidgetGroup>
 	<ObjectName>Hifi</ObjectName>
     <Layout>vertical</Layout>
     <Children>
-	<!-- WIDGETGROUP ROW: Microphones -->
+	<!-- ROW: Strobes (The variable "strobetype" could be set to: "1", "2" or "3") -->
+    <Template src="skin:templates/strobes/start.xml"><SetVariable name="strobetype">1</SetVariable></Template>
+	<!-- ROW: Microphones -->
     <Template src="skin:templates/microphones/start.xml"></Template>
-	<!-- WIDGETGROUP ROW: Deck A + Mixer + Deck B -->
-	<Template src="skin:templates/decksmixer_12/start.xml"></Template>
-	<!-- WIDGETGROUP ROW: Deck C + Mixer + Deck D -->
-    <Template src="skin:templates/decksmixer_34/start.xml"></Template>	
-	<!-- WIDGETGROUP ROW: Mini Player AB -->
-    <Template src="skin:templates/miniplayer_12/start.xml"></Template>
-	<!-- WIDGETGROUP ROW: Mini Player CD -->
-    <Template src="skin:templates/miniplayer_34/start.xml"></Template>
-	<!-- WIDGETGROUP ROW: Auxiliaries -->
+	<!-- ROW: Big Decks (The variable "spinnytype" could be set to: "1", "2" or "3") -->
+	<Template src="skin:templates/bigdecks/start.xml"><SetVariable name="spinnytype">1</SetVariable></Template>
+	<!-- ROW: Small Decks -->
+    <Template src="skin:templates/smalldecks/start.xml"></Template>
+	<!-- ROW: Auxiliaries -->
     <Template src="skin:templates/auxiliaries/start.xml"></Template>
-	<!-- WIDGETGROUP ROW: Long waves for AB -->
-	<Template src="skin:templates/longwaves_12/start.xml"><SetVariable name="audiochannel">1</SetVariable></Template>
-	<Template src="skin:templates/longwaves_12/start.xml"><SetVariable name="audiochannel">2</SetVariable></Template>	
-	<!-- WIDGETGROUP ROW: Long waves for CD -->
-	<Template src="skin:templates/longwaves_34/start.xml"><SetVariable name="audiochannel">3</SetVariable></Template>
-	<Template src="skin:templates/longwaves_34/start.xml"><SetVariable name="audiochannel">4</SetVariable></Template>
-	<!-- WIDGETGROUP ROW: Effects 1 -->
-	<Template src="skin:templates/effects_1/start.xml"></Template>
-	<!-- WIDGETGROUP ROW: Effects 2 -->
-	<Template src="skin:templates/effects_2/start.xml"></Template>
-	<!-- WIDGETGROUP ROW: Samplers 1 -->
-	<Template src="skin:templates/samplers_1/start.xml"></Template>
-	<!-- WIDGETGROUP ROW: Samplers 2 -->
-	<Template src="skin:templates/samplers_2/start.xml"></Template>	
+	<!-- ROW: Long Waves -->
+	<Template src="skin:templates/longwaves/start.xml"></Template>
+	<!-- ROW: Effects -->
+	<Template src="skin:templates/effects/start.xml"></Template>
+	<!-- ROW: Samplers (From 01 to 64) -->
+	<Template src="skin:templates/samplers/start.xml"></Template>
 	</Children>
 	<Connection>
-	<ConfigKey>[DarkMetal],hifi_show</ConfigKey>
+	<ConfigKey>[Hifi],show</ConfigKey>
 	<BindProperty>visible</BindProperty>
 	</Connection>
 	</WidgetGroup>	
 	
-	<!-- WIDGETGROUP ROW: Library + Preview Deck + Search Text Box + Tree view (...) -->
+	<!-- ROW: Library + Preview Deck + Search Text Box + Tree view (...) -->
 	<Template src="skin:templates/library/start.xml"></Template>	
-	
+		
 	<!-- ENDS - ALL THE LAYOUT: -->
 	</Children>
 

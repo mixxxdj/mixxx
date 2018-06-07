@@ -1,0 +1,1722 @@
+<!DOCTYPE template>
+
+<Template>
+<WidgetGroup>
+<ObjectName>HoldsEverything</ObjectName>
+<MinimumSize>me,90</MinimumSize>
+<SizePolicy>me,f</SizePolicy>
+<Layout>vertical</Layout>
+<Children>	
+
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>	
+
+	<WidgetGroup>
+	<ObjectName>SamplersOptions</ObjectName>
+	<MinimumSize>me,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+	
+	<!-- Start: For Samplers from 1 to 32 -->
+	
+	<!-- Texts -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>65,30</MinimumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font:10px/12px; background:transparent; color:#787878;</Style>
+	<Text>Samplers</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>
+	
+	<!-- Button: Show/Hide this Row -->
+	<PushButton>
+	<Tooltip>Close</Tooltip><!-- Tooltip -->	
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view1.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view1.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view1_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view1_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplersRack],show</ConfigKey>
+	</Connection>
+	</PushButton>
+	
+	<!-- Button: Minimize/Maximize this Row -->
+	<PushButton>
+	<Tooltip>Maximize</Tooltip><!-- Tooltip -->	
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_row_maximize.svg</Pressed>
+	<Unpressed>skin:graphics/btn_row_maximize.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_row_minimize.svg</Pressed>
+	<Unpressed>skin:graphics/btn_row_minimize.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplersMaximize],show</ConfigKey>
+	</Connection>
+	</PushButton>
+
+	<!-- Ends: For Samplers from 1 to 32 -->
+
+	
+
+	<!-- Texts: Options -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>60,30</MinimumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font:10px/12px; background:transparent; color:#484848;</Style>
+	<Text>Options</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>
+	
+	<!-- Button: Clear Bank -->
+	<PushButton>
+	<Tooltip>Clears All Samplers Bank</Tooltip><!-- Tooltip -->
+	<NumberStates>1</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_options_clear.svg</Pressed>
+	<Unpressed>skin:graphics/btn_options_clear.svg</Unpressed>
+	</State>
+	<Connection>
+	<ConfigKey>[Sampler1],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler2],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler3],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler4],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler5],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler6],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler7],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler8],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler9],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler10],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler11],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler12],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler13],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler14],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler15],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler16],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler17],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler18],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler19],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler20],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler21],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler22],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler23],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler24],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler25],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler26],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler27],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler28],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler29],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler30],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler31],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler32],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler33],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler34],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler35],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler36],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler37],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler38],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler39],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler40],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler41],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler42],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler43],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler44],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler45],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler46],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler47],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler48],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler49],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler50],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler51],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler52],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler53],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler54],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler55],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler56],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler57],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler58],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler59],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler60],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler61],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler62],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler63],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler64],eject</ConfigKey>
+	</Connection>
+	<Connection>
+	<ConfigKey>[Sampler65],eject</ConfigKey> <!-- Overload needed (64+1) BUG?... -->
+	</Connection>	
+	</PushButton>
+		
+	<!-- Button: Load Bank -->
+	<PushButton>
+	<Tooltip>Loads Samplers Bank</Tooltip><!-- Tooltip -->
+	<NumberStates>1</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_options_load.svg</Pressed>
+	<Unpressed>skin:graphics/btn_options_load.svg</Unpressed>
+	</State>
+	<Connection>
+	<ConfigKey>[Sampler],LoadSamplerBank</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- Button: Save Bank -->	
+	<PushButton>
+	<Tooltip>Saves Samplers Bank</Tooltip><!-- Tooltip -->
+	<NumberStates>1</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_options_save.svg</Pressed>
+	<Unpressed>skin:graphics/btn_options_save.svg</Unpressed>
+	</State>
+	<Connection>
+	<ConfigKey>[Sampler],SaveSamplerBank</ConfigKey>
+	</Connection>	
+	</PushButton>	
+	
+	</Children>
+	</WidgetGroup>		
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>	
+	
+	<WidgetGroup>
+	<ObjectName>SamplersOptions</ObjectName>
+	<MinimumSize>me,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>	
+	
+	<!-- Texts: Row 1 -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>35,30</MinimumSize>
+	<MaximumSize>35,30</MaximumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font:10px/12px; background:transparent; color:#484848;</Style>
+	<Text>01-08</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>
+	
+	<!-- 1st Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 1</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule1],show</ConfigKey>
+	</Connection>	
+	</PushButton>		
+
+	<!-- 1st Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 2</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule2],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 1st Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 3</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule3],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 1st Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 4</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule4],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 1st Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 5</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule5],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 1st Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 6</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule6],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 1st Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 7</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule7],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+
+	<!-- 1st Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 8</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule8],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- Texts: Row 2 -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>35,30</MinimumSize>
+	<MaximumSize>35,30</MaximumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font:10px/12px; background:transparent; color:#484848;</Style>
+	<Text>09-16</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>	
+	
+	<!-- 2nd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 9</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule9],show</ConfigKey>
+	</Connection>	
+	</PushButton>		
+
+	<!-- 2nd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 10</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule10],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 2nd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 11</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule11],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 2nd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 12</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule12],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 2nd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 13</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule13],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 2nd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 14</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule14],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 2nd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 15</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule15],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+
+	<!-- 2nd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 16</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule16],show</ConfigKey>
+	</Connection>	
+	</PushButton>	
+
+	<!-- Texts: Row 3 -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>35,30</MinimumSize>
+	<MaximumSize>35,30</MaximumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font:10px/12px; background:transparent; color:#484848;</Style>
+	<Text>17-24</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>
+	
+	<!-- 3rd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 17</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule17],show</ConfigKey>
+	</Connection>	
+	</PushButton>		
+
+	<!-- 3rd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 18</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule18],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 3rd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 19</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule19],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 3rd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 20</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule20],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 3rd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 21</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule21],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 3rd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 22</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule22],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 3rd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 23</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule23],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+
+	<!-- 3rd Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 24</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule24],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+
+	<!-- Texts: Row 4 -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>35,30</MinimumSize>
+	<MaximumSize>35,30</MaximumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font:10px/12px; background:transparent; color:#484848;</Style>
+	<Text>25-32</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>	
+	
+	<!-- 4th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 25</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule25],show</ConfigKey>
+	</Connection>	
+	</PushButton>		
+
+	<!-- 4th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 26</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule26],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 4th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 27</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule27],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 4th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 28</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule28],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 4th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 29</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule29],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 4th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 30</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule30],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 4th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 31</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule31],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+
+	<!-- 4th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 32</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule32],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	
+	</Children>
+	</WidgetGroup>	
+	
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>
+
+	<WidgetGroup>
+	<ObjectName>SamplersOptions</ObjectName>
+	<MinimumSize>me,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+
+	
+	<!-- Texts: Row 5 -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>35,30</MinimumSize>
+	<MaximumSize>35,30</MaximumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font:10px/12px; background:transparent; color:#484848;</Style>
+	<Text>33-40</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>
+	
+	<!-- 5th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 33</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule33],show</ConfigKey>
+	</Connection>	
+	</PushButton>		
+
+	<!-- 5th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 34</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule34],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 5th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 35</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule35],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 5th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 36</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule36],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 5th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 37</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule37],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 5th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 38</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule38],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 5th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 39</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule39],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+
+	<!-- 5th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 40</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule40],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- Texts: Row 6 -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>35,30</MinimumSize>
+	<MaximumSize>35,30</MaximumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font:10px/12px; background:transparent; color:#484848;</Style>
+	<Text>41-48</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>	
+	
+	<!-- 6th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 41</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule41],show</ConfigKey>
+	</Connection>	
+	</PushButton>		
+
+	<!-- 6th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 42</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule42],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 6th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 43</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule43],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 6th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 44</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule44],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 6th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 45</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule45],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 6th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 46</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule46],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 6th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 47</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule47],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+
+	<!-- 6th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 48</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule48],show</ConfigKey>
+	</Connection>	
+	</PushButton>	
+
+	<!-- Texts: Row 7 -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>35,30</MinimumSize>
+	<MaximumSize>35,30</MaximumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font:10px/12px; background:transparent; color:#484848;</Style>
+	<Text>49-56</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>
+	
+	<!-- 7th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 49</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule49],show</ConfigKey>
+	</Connection>	
+	</PushButton>		
+
+	<!-- 7th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 50</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule50],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 7th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 51</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule51],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 7th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 52</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule52],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 7th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 53</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule53],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 7th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 54</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule54],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 7th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 55</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule55],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+
+	<!-- 7th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 56</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule56],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+
+	<!-- Texts: Row 8 -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>35,30</MinimumSize>
+	<MaximumSize>35,30</MaximumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font:10px/12px; background:transparent; color:#484848;</Style>
+	<Text>57-64</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>	
+	
+	<!-- 8th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 57</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule57],show</ConfigKey>
+	</Connection>	
+	</PushButton>		
+
+	<!-- 8th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 58</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule58],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 8th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 59</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule59],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 8th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 60</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule60],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 8th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 61</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule61],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 8th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 62</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule62],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- 8th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 63</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule63],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+
+	<!-- 8th Row - Button: Show/Hide Sampler Module -->	
+	<PushButton>
+	<Tooltip>Sampler 64</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[SamplerModule64],show</ConfigKey>
+	</Connection>	
+	</PushButton>	
+
+	
+	</Children>
+	</WidgetGroup>
+	
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>	
+	
+</Children>			
+</WidgetGroup>	
+</Template>

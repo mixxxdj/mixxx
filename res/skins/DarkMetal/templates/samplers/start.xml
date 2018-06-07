@@ -1,0 +1,265 @@
+<!DOCTYPE template>
+
+<Template>	
+	
+	<WidgetGroup>
+	<ObjectName>SamplersRack</ObjectName>	
+	<MinimumSize>0,0</MinimumSize><!-- 0 == Forces to redraw the full row height, after we show/hide a module -->
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout> 
+	<Children>
+	
+	<WidgetGroup>
+	<ObjectName>SamplersOptionsBg</ObjectName>
+	<MinimumSize>-1,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>	
+	<Children>
+	<Template src="skin:templates/samplers/sampler_toolbar.xml"></Template>	
+	</Children>
+	</WidgetGroup>	
+	
+	<!-- WIDGETGROUP: Row of Samplers -->
+	<WidgetGroup>
+	<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides the row, if no module is visible -->
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>	
+	<Children>
+
+
+	<WidgetGroup>
+	<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides these 2 rows, if no module is visible -->
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout>	
+	<Children>		
+		
+		<WidgetGroup>
+		<ObjectName>SamplersRowBackground</ObjectName>
+		<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides this row, if no module is visible -->
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>	
+		<Children>
+		
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">1</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">2</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">3</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">4</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">5</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">6</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">7</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">8</SetVariable></Template> <!-- Height: 110 -->
+		
+		</Children>
+		</WidgetGroup>
+		
+		<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+		<ObjectName>HorizontalLineDarker</ObjectName>
+		<MinimumSize>0,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>SamplersRowBackground</ObjectName>	
+		<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides this row, if no module is visible -->
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>	
+		<Children>
+		
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">9</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">10</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">11</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">12</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">13</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">14</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">15</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">16</SetVariable></Template> <!-- Height: 110 -->
+		
+		</Children>
+		</WidgetGroup>		
+
+		<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+		<ObjectName>HorizontalLineDarker</ObjectName>
+		<MinimumSize>0,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>SamplersRowBackground</ObjectName>	
+		<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides this row, if no module is visible -->
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>	
+		<Children>
+		
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">17</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">18</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">19</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">20</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">21</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">22</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">23</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">24</SetVariable></Template> <!-- Height: 110 -->
+		
+		</Children>
+		</WidgetGroup>	
+
+		<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+		<ObjectName>HorizontalLineDarker</ObjectName>
+		<MinimumSize>0,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>SamplersRowBackground</ObjectName>	
+		<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides this row, if no module is visible -->
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>	
+		<Children>
+		
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">25</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">26</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">27</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">28</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">29</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">30</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">31</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">32</SetVariable></Template> <!-- Height: 110 -->
+		
+		</Children>
+		</WidgetGroup>
+
+		<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+		<ObjectName>HorizontalLineDarker</ObjectName>
+		<MinimumSize>0,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>SamplersRowBackground</ObjectName>	
+		<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides this row, if no module is visible -->
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>	
+		<Children>
+		
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">33</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">34</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">35</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">36</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">37</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">38</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">39</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">40</SetVariable></Template> <!-- Height: 110 -->
+		
+		</Children>
+		</WidgetGroup>
+
+		<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+		<ObjectName>HorizontalLineDarker</ObjectName>
+		<MinimumSize>0,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>SamplersRowBackground</ObjectName>	
+		<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides this row, if no module is visible -->
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>	
+		<Children>
+		
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">41</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">42</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">43</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">44</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">45</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">46</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">47</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">48</SetVariable></Template> <!-- Height: 110 -->
+		
+		</Children>
+		</WidgetGroup>
+
+		<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+		<ObjectName>HorizontalLineDarker</ObjectName>
+		<MinimumSize>0,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>SamplersRowBackground</ObjectName>	
+		<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides this row, if no module is visible -->
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>	
+		<Children>
+		
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">49</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">50</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">51</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">52</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">53</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">54</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">55</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">56</SetVariable></Template> <!-- Height: 110 -->
+		
+		</Children>
+		</WidgetGroup>
+
+		<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+		<ObjectName>HorizontalLineDarker</ObjectName>
+		<MinimumSize>0,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>SamplersRowBackground</ObjectName>	
+		<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides this row, if no module is visible -->
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>	
+		<Children>
+		
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">57</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">58</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">59</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">60</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">61</SetVariable></Template> <!-- Height: 110 -->	
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">62</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">63</SetVariable></Template> <!-- Height: 110 -->
+		<Template src="skin:templates/samplers/sampler_module.xml"><SetVariable name="samplernum">64</SetVariable></Template> <!-- Height: 110 -->
+		
+		</Children>
+		</WidgetGroup>
+
+		
+	</Children>
+	</WidgetGroup>
+
+	
+	</Children>
+	<!-- Maximize/Minimize -->
+	<Connection>
+	<ConfigKey>[SamplersMaximize],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>
+	
+	</Children>	
+	<!-- Show/Hide this Group: -->
+	<Connection>
+	<ConfigKey>[SamplersRack],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>					
+	</WidgetGroup>	
+
+</Template>

@@ -23,11 +23,11 @@
        inkscape:collect="always"
        id="linearGradient857">
       <stop
-         style="stop-color:#6f3cbb;stop-opacity:1;"
+         style="stop-color:#8b5dd0;stop-opacity:1"
          offset="0"
          id="stop853" />
       <stop
-         style="stop-color:#6f3cbb;stop-opacity:0.6"
+         style="stop-color:#6f3cbb;stop-opacity:1"
          offset="1"
          id="stop855" />
     </linearGradient>
@@ -202,16 +202,17 @@
        width="6"
        patternUnits="userSpaceOnUse"
        id="EMFhbasepattern" />
-    <linearGradient
+    <radialGradient
        inkscape:collect="always"
        xlink:href="#linearGradient857"
-       id="linearGradient859"
-       x1="12.450951"
-       y1="1034.9835"
-       x2="12.450951"
-       y2="1030.976"
+       id="radialGradient4519"
+       cx="15.677632"
+       cy="1034.868"
+       fx="15.677632"
+       fy="1034.868"
+       r="2.4425931"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.79570307,0,0,0.79570307,2.5619916,211.86487)" />
+       gradientTransform="matrix(-0.84827678,1.6930215e-5,-1.7077982e-5,-0.85568055,25.784488,1920.9648)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -220,9 +221,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="32.688267"
-     inkscape:cx="7.2263883"
-     inkscape:cy="12.551145"
+     inkscape:zoom="46.228191"
+     inkscape:cx="14.989863"
+     inkscape:cy="14.820193"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -238,11 +239,6 @@
        position="38.903399,3981.4657"
        orientation="0,1"
        id="guide4179"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="14.71476,23.18875"
-       orientation="0,1"
-       id="guide847"
        inkscape:locked="false" />
     <sodipodi:guide
        position="12.450951,12.114439"
@@ -268,10 +264,10 @@
      id="layer1"
      transform="translate(0,-1027.3622)">
     <circle
-       style="opacity:1;fill:url(#linearGradient859);fill-opacity:1;stroke:#000000;stroke-width:0.56092328"
+       style="opacity:1;fill:url(#radialGradient4519);fill-opacity:1;stroke:#000000;stroke-width:0.36772951"
        id="path851"
-       cy="1033.9196"
+       cy="1035.4656"
        cx="12.5"
-       r="2.1621315" />
+       r="1.417448" />
   </g>
 </svg>

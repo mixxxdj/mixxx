@@ -1,0 +1,66 @@
+<!DOCTYPE template>
+
+<Template>	
+
+	<WidgetGroup>
+	<ObjectName>LongWavesRack</ObjectName>
+	<MinimumSize>0,0</MinimumSize><!-- 0 == Forces to redraw the full row height, after we show/hide a module -->
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>	
+
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>	
+
+	<!-- WIDGETGROUP: Long Waves Tool Bar  -->		
+	<WidgetGroup>
+	<ObjectName>Options</ObjectName>
+	<MinimumSize>-1,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>	
+	<Children>
+	<Template src="skin:templates/longwaves/longwaves_toolbar.xml"></Template>	
+	</Children>
+	</WidgetGroup>	
+
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>
+
+	<WidgetGroup>
+	<MinimumSize>0,0</MinimumSize><!-- 0 == Forces to redraw the full row height, after we show/hide a module -->
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	
+	<!-- WIDGETGROUP: Long Waves Full Rack  -->
+	<Template src="skin:templates/longwaves/longwaves_module.xml"><SetVariable name="audiochannel">1</SetVariable></Template>
+	<Template src="skin:templates/longwaves/longwaves_module.xml"><SetVariable name="audiochannel">2</SetVariable></Template>
+	<Template src="skin:templates/longwaves/longwaves_module.xml"><SetVariable name="audiochannel">3</SetVariable></Template>
+	<Template src="skin:templates/longwaves/longwaves_module.xml"><SetVariable name="audiochannel">4</SetVariable></Template>
+
+	</Children>	
+	<!-- Maximize/Minimize -->
+	<Connection>
+	<ConfigKey>[LongWavesMaximize],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>		
+	
+	</Children>	
+	<Connection>
+	<ConfigKey>[LongWavesRack],show</ConfigKey><!-- Show/Hide -->
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>	
+
+</Template>

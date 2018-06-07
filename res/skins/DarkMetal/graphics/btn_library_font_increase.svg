@@ -56,6 +56,13 @@
        width="6"
        patternUnits="userSpaceOnUse"
        id="EMFhbasepattern-4" />
+    <pattern
+       y="0"
+       x="0"
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern-1" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -64,9 +71,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.12"
-     inkscape:cx="-76.430219"
-     inkscape:cy="15.85883"
+     inkscape:zoom="20.48"
+     inkscape:cx="26.383006"
+     inkscape:cy="10.482068"
      inkscape:document-units="px"
      inkscape:current-layer="g4262"
      showgrid="false"
@@ -119,20 +126,11 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
          width="22.705778"
          id="rect4183-39-0-0-1-8-78"
          style="opacity:1;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.02858019;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-      <g
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:15px;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#8d5fd3;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;opacity:0.755"
-         id="text4148">
-        <g
-           transform="matrix(-0.82623858,0,0,1.2103042,25.989182,0)"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.154562px;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#8d5fd3;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-           id="text4147">
-          <path
-             d="m 19.260255,861.58464 -7.189136,-3.48376 0,-0.851 7.189136,-3.93585 0,1.63108 -4.919815,2.68595 4.919815,2.34024 0,1.61334 z"
-             id="path4152"
-             inkscape:connector-curvature="0"
-             style="fill:#8d5fd3;fill-opacity:1" />
-        </g>
-      </g>
+      <path
+         style="fill:#6f4aa8;fill-opacity:1;fill-rule:nonzero;stroke:none;opacity:0.5"
+         d="M 12.955078 6.3007812 C 9.9951001 6.3007812 7.5136719 8.7802344 7.5136719 11.740234 C 7.5136719 14.780134 9.9951001 17.179688 12.955078 17.179688 C 15.995056 17.179688 18.394531 14.780134 18.394531 11.740234 C 18.394531 8.7802344 15.995055 6.3007812 12.955078 6.3007812 z M 12.955078 7.2597656 C 15.43506 7.2597656 17.513672 9.2602344 17.513672 11.740234 C 17.513672 14.220134 15.43506 16.298828 12.955078 16.298828 C 10.475096 16.298828 8.4746094 14.220134 8.4746094 11.740234 C 8.4746094 9.2602344 10.475096 7.2597656 12.955078 7.2597656 z M 12.234375 8.5390625 L 12.234375 11.019531 L 9.7539062 11.019531 L 9.7539062 12.458984 L 12.234375 12.458984 L 12.234375 14.939453 L 13.673828 14.939453 L 13.673828 12.458984 L 16.154297 12.458984 L 16.154297 11.019531 L 13.673828 11.019531 L 13.673828 8.5390625 L 12.234375 8.5390625 z "
+         transform="translate(0.04558686,1026.3622)"
+         id="path4498" />
     </g>
   </g>
 </svg>

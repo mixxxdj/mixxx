@@ -16,7 +16,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.92.1 r15371"
-   sodipodi:docname="btn_view_over.svg">
+   sodipodi:docname="btn_view_pressed.svg">
   <defs
      id="defs4">
     <linearGradient
@@ -49,6 +49,29 @@
        width="6"
        patternUnits="userSpaceOnUse"
        id="EMFhbasepattern" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4522"
+       id="radialGradient4524"
+       cx="15"
+       cy="1037.3623"
+       fx="15"
+       fy="1037.3623"
+       r="12.857422"
+       gradientTransform="matrix(0.85560637,0,0,0.76534992,2.1659078,243.41706)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       id="linearGradient4522">
+      <stop
+         style="stop-color:#999999;stop-opacity:1"
+         offset="0"
+         id="stop4518" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1"
+         offset="1"
+         id="stop4520" />
+    </linearGradient>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -57,9 +80,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="40.96"
-     inkscape:cx="7.3843193"
-     inkscape:cy="13.805374"
+     inkscape:zoom="28.963094"
+     inkscape:cx="0.56595117"
+     inkscape:cy="15.268853"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -107,11 +130,6 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
        style="opacity:1;fill:url(#radialGradient4178-1);fill-opacity:1;stroke:none;stroke-width:1.32967579;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="m 22.686254,1037.3623 a 7.6862543,7.6862543 0 0 1 -7.686255,7.6862 7.6862543,7.6862543 0 0 1 -7.6862529,-7.6862 7.6862543,7.6862543 0 0 1 7.6862529,-7.6864 7.6862543,7.6862543 0 0 1 7.686255,7.6864 z"
        id="path4170-7" />
-    <path
-       inkscape:connector-curvature="0"
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#1e1e1e;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       d="M 23.18465,1037.3622 A 8.1846505,8.1846505 0 0 1 15,1045.5468 8.1846505,8.1846505 0 0 1 6.8153499,1037.3622 8.1846505,8.1846505 0 0 1 15,1029.1776 a 8.1846505,8.1846505 0 0 1 8.18465,8.1846 z"
-       id="path4180-2" />
     <circle
        r="3.478827"
        cy="1037.3622"
@@ -124,5 +142,10 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
        id="path829"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc" />
+    <path
+       style="color:#000000;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:normal;font-family:sans-serif;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-feature-settings:normal;text-indent:0;text-align:start;text-decoration:none;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000000;letter-spacing:normal;word-spacing:normal;text-transform:none;writing-mode:lr-tb;direction:ltr;text-orientation:mixed;dominant-baseline:auto;baseline-shift:baseline;text-anchor:start;white-space:normal;shape-padding:0;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;vector-effect:none;fill:url(#radialGradient4524);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.51097465;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       d="m 15,1028.362 c -4.961591,0 -8.9994704,4.0379 -8.9995041,8.9995 -8.4e-6,4.9616 4.0378841,9.0009 8.9995041,9.0009 4.96162,0 8.999513,-4.0393 8.999504,-9.0009 -3.3e-5,-4.9616 -4.037913,-8.9995 -8.999504,-8.9995 z m 0,1.5106 c 4.145003,0 7.48885,3.3439 7.488878,7.4889 7e-6,4.1451 -3.34385,7.4903 -7.488878,7.4903 -4.145028,0 -7.488885,-3.3452 -7.488878,-7.4903 2.83e-5,-4.145 3.343875,-7.4889 7.488878,-7.4889 z"
+       id="path4180-2"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>

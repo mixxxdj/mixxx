@@ -193,7 +193,7 @@
        fx="23.8125"
        fy="1024.5006"
        r="2.3747422"
-       gradientTransform="matrix(2.7729386,0,0,3.2739363,-46.030602,-2326.1371)"
+       gradientTransform="matrix(2.8164612,0,0,2.8536819,-47.066982,-1893.3709)"
        gradientUnits="userSpaceOnUse" />
     <pattern
        y="0"
@@ -210,9 +210,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="32"
-     inkscape:cx="15.95596"
-     inkscape:cy="28.311902"
+     inkscape:zoom="16"
+     inkscape:cx="8.2481548"
+     inkscape:cy="25.146017"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -239,16 +239,6 @@
        orientation="1,0"
        id="guide4274"
        inkscape:locked="false" />
-    <sodipodi:guide
-       position="21.308594,33.73047"
-       orientation="0,1"
-       id="guide4186"
-       inkscape:locked="false" />
-    <sodipodi:guide
-       position="23.842757,26.693282"
-       orientation="0,1"
-       id="guide4188"
-       inkscape:locked="false" />
   </sodipodi:namedview>
   <metadata
      id="metadata4227">
@@ -268,13 +258,13 @@
      id="layer1"
      transform="translate(0,-1012.3622)">
     <rect
-       style="opacity:1;fill:url(#radialGradient4237);fill-opacity:1;stroke:#000000;stroke-width:0.83952367;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:1;fill:url(#radialGradient4237);fill-opacity:1;stroke:#000000;stroke-width:0.78991866;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4229"
-       width="3.1604764"
-       height="7.1604762"
-       x="18.419762"
-       y="1019.0829"
-       rx="0.36853009"
-       ry="0.39385599" />
+       width="3.2100816"
+       height="6.2413316"
+       x="18.394958"
+       y="1022.4448"
+       rx="0.37431434"
+       ry="0.34329918" />
   </g>
 </svg>

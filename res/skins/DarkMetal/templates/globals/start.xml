@@ -4,7 +4,6 @@
 
 	<WidgetGroup>
 	<ObjectName>ToolBar2</ObjectName>
-	<BackPath>skin:graphics/background_toolbar2.svg</BackPath>
 	<Pos>0,0</Pos>
 	<MinimumSize>1,51</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
@@ -13,20 +12,14 @@
 	
 	<!-- WIDGETGROUP: Tool Bar 2 -->	
 	<WidgetGroup>
-	<MinimumSize>10,50</MinimumSize>
+	<MinimumSize>0,50</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>horizontal</Layout>
 	<Children>
-		
-	<WidgetGroup>
-	<MinimumSize>1,50</MinimumSize>
-	<SizePolicy>me,f</SizePolicy>
-	<Children><!-- Pusher --></Children>
-	</WidgetGroup>
+
 
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -34,7 +27,6 @@
 		
 		<WidgetGroup>
 		<ObjectName>HeadphoneButtons</ObjectName>
-		<BackPath>skin:graphics/background_global_head.svg</BackPath>
 		<MinimumSize>100,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>
@@ -46,6 +38,7 @@
 		-->
 		
 		<KnobComposed>
+		<Tooltip>Head Volume</Tooltip><!-- Tooltip -->
 		<Pos>6,7</Pos>
 		<Size>40f,40f</Size>
 		<BackPath>skin:graphics/background_knob1.svg</BackPath>
@@ -64,6 +57,7 @@
 		-->
 
 		<KnobComposed>
+		<Tooltip>Head Mix</Tooltip><!-- Tooltip -->
 		<Pos>53,7</Pos>
 		<Size>40f,40f</Size>
 		<BackPath>skin:graphics/background_knob1.svg</BackPath>
@@ -80,7 +74,6 @@
 
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -88,7 +81,6 @@
 
 		<WidgetGroup>
 		<ObjectName>MasterButtons</ObjectName>
-		<BackPath>skin:graphics/background_global_master.svg</BackPath>
 		<MinimumSize>100,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>		
@@ -100,6 +92,7 @@
 		-->
 
 		<KnobComposed>
+		<Tooltip>Master Balance</Tooltip><!-- Tooltip -->
 		<Pos>6,7</Pos>
 		<Size>40f,40f</Size>
 		<BackPath>skin:graphics/background_knob1.svg</BackPath>
@@ -118,6 +111,7 @@
 		-->
 
 		<KnobComposed>
+		<Tooltip>Master Volume</Tooltip><!-- Tooltip -->
 		<Pos>53,7</Pos>
 		<Size>40f,40f</Size>
 		<BackPath>skin:graphics/background_knob1.svg</BackPath>
@@ -135,7 +129,6 @@
 
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -143,8 +136,8 @@
 
 		
 		<WidgetGroup>
+		<Tooltip>Master VU</Tooltip><!-- Tooltip -->
 		<ObjectName>GlobalVUS</ObjectName>
-		<BackPath>skin:graphics/background_global_vus.svg</BackPath>
 		<MinimumSize>36,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>
@@ -215,22 +208,21 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
 		</WidgetGroup>		
 		
 		
-		<WidgetGroup>
+		<WidgetGroup>		
 		<ObjectName>AnalogVUS</ObjectName>
-		<BackPath>skin:graphics/background_analogvus.svg</BackPath>
 		<MinimumSize>181,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Layout>horizontal</Layout>
 		<Children>
 		
 		<WidgetGroup>
+		<Tooltip>Analog VU - Channel 1</Tooltip><!-- Tooltip -->
 		<ObjectName>SetArea</ObjectName>
 		<MinimumSize>43,50</MinimumSize>
 		<MaximumSize>43,50</MaximumSize>
@@ -250,25 +242,58 @@
 		<ButtonState></ButtonState>
 		</Connection>
 		</KnobComposed>
+		<!--
 		<NumberDb>
 		<ObjectName>DBDisplay</ObjectName>
 		<Pos>0,20</Pos>
 		<Size>43f,22f</Size>
 		<Text>%1</Text>
 		<Alignment>center</Alignment>
-		<NumberOfDigits>2</NumberOfDigits>
+		<NumberOfDigits>1</NumberOfDigits>
 		<Connection>
 		<ConfigKey>[Channel1],pregain</ConfigKey>
 		</Connection>
-		</NumberDb>		
+		</NumberDb>	
+		-->
+		<Number>
+		<ObjectName>VUNumberDisplay</ObjectName>
+		<Pos>0,20</Pos>
+		<Size>43f,22f</Size>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>
+		<NumberOfDigits>1</NumberOfDigits>
+		<Connection>
+		<ConfigKey>[Channel1],VuMeter</ConfigKey>
+		</Connection>
+		</Number>		
 		<StatusLight>
 		<PathStatusLight>skin:graphics/background_analogvu_1_peak.svg</PathStatusLight>
 		<PathBack></PathBack>		
 		<Connection>
 		<ConfigKey>[Channel1],PeakIndicator</ConfigKey>
 		</Connection>
-		</StatusLight>
+		</StatusLight>		
 		<PushButton>
+		<ObjectName>BeatIndicator</ObjectName>
+		<Pos>8,41</Pos>
+		<Size>8f,8f</Size>
+		<NumberStates>1</NumberStates>		
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_beat_rounded_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_beat_rounded.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel1],beat_active</ConfigKey>
+		<ConnectValueToWidget>true</ConnectValueToWidget>
+		<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+		<ButtonState></ButtonState>
+		</Connection>		
+		</PushButton>		
+		<PushButton>
+		<Tooltip>Mute</Tooltip><!-- Tooltip -->
 		<Pos>1,39</Pos>
 		<NumberStates>2</NumberStates>
 		<State>
@@ -296,6 +321,7 @@
 		</WidgetGroup>	
 		
 		<WidgetGroup>
+		<Tooltip>Analog VU - Channel 2</Tooltip><!-- Tooltip -->
 		<ObjectName>SetArea</ObjectName>
 		<MinimumSize>43,50</MinimumSize>
 		<MaximumSize>43,50</MaximumSize>
@@ -314,18 +340,31 @@
 		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
 		<ButtonState></ButtonState>
 		</Connection>
-		</KnobComposed>		
+		</KnobComposed>	
+		<!--		
 		<NumberDb>
 		<ObjectName>DBDisplay</ObjectName>
 		<Pos>0,20</Pos>
 		<Size>43f,22f</Size>
 		<Text>%1</Text>
 		<Alignment>center</Alignment>
-		<NumberOfDigits>2</NumberOfDigits>
+		<NumberOfDigits>1</NumberOfDigits>
 		<Connection>
 		<ConfigKey>[Channel2],pregain</ConfigKey>
 		</Connection>
-		</NumberDb>		
+		</NumberDb>	
+		-->
+		<Number>
+		<ObjectName>VUNumberDisplay</ObjectName>
+		<Pos>0,20</Pos>
+		<Size>43f,22f</Size>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>
+		<NumberOfDigits>1</NumberOfDigits>
+		<Connection>
+		<ConfigKey>[Channel2],VuMeter</ConfigKey>
+		</Connection>
+		</Number>		
 		<StatusLight>
 		<PathStatusLight>skin:graphics/background_analogvu_2_peak.svg</PathStatusLight>
 		<PathBack></PathBack>		
@@ -334,6 +373,26 @@
 		</Connection>
 		</StatusLight>
 		<PushButton>
+		<ObjectName>BeatIndicator</ObjectName>
+		<Pos>8,41</Pos>
+		<Size>8f,8f</Size>
+		<NumberStates>1</NumberStates>		
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_beat_rounded_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_beat_rounded.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel2],beat_active</ConfigKey>
+		<ConnectValueToWidget>true</ConnectValueToWidget>
+		<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+		<ButtonState></ButtonState>
+		</Connection>		
+		</PushButton>
+		<PushButton>
+		<Tooltip>Mute</Tooltip><!-- Tooltip -->
 		<Pos>1,39</Pos>
 		<NumberStates>2</NumberStates>
 		<State>
@@ -349,7 +408,7 @@
 		<Connection>
 		<ConfigKey>[Channel2],mute</ConfigKey>
 		</Connection>
-		</PushButton>
+		</PushButton>		
 		</Children>
 		</WidgetGroup>
 		
@@ -361,6 +420,7 @@
 		</WidgetGroup>	
 		
 		<WidgetGroup>
+		<Tooltip>Analog VU - Channel 3</Tooltip><!--  Tooltip -->
 		<ObjectName>SetArea</ObjectName>
 		<MinimumSize>43,50</MinimumSize>
 		<MaximumSize>43,50</MaximumSize>
@@ -379,18 +439,31 @@
 		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
 		<ButtonState></ButtonState>
 		</Connection>
-		</KnobComposed>			
+		</KnobComposed>	
+		<!--		
 		<NumberDb>
 		<ObjectName>DBDisplay</ObjectName>
 		<Pos>0,20</Pos>
 		<Size>43f,22f</Size>
 		<Text>%1</Text>
 		<Alignment>center</Alignment>
-		<NumberOfDigits>2</NumberOfDigits>
+		<NumberOfDigits>1</NumberOfDigits>
 		<Connection>
 		<ConfigKey>[Channel3],pregain</ConfigKey>
 		</Connection>
-		</NumberDb>		
+		</NumberDb>	
+		-->
+		<Number>
+		<ObjectName>VUNumberDisplay</ObjectName>
+		<Pos>0,20</Pos>
+		<Size>43f,22f</Size>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>
+		<NumberOfDigits>1</NumberOfDigits>
+		<Connection>
+		<ConfigKey>[Channel3],VuMeter</ConfigKey>
+		</Connection>
+		</Number>			
 		<StatusLight>
 		<PathStatusLight>skin:graphics/background_analogvu_3_peak.svg</PathStatusLight>
 		<PathBack></PathBack>		
@@ -399,6 +472,26 @@
 		</Connection>
 		</StatusLight>
 		<PushButton>
+		<ObjectName>BeatIndicator</ObjectName>
+		<Pos>8,41</Pos>
+		<Size>8f,8f</Size>
+		<NumberStates>1</NumberStates>		
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_beat_rounded_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_beat_rounded.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel3],beat_active</ConfigKey>
+		<ConnectValueToWidget>true</ConnectValueToWidget>
+		<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+		<ButtonState></ButtonState>
+		</Connection>		
+		</PushButton>
+		<PushButton>
+		<Tooltip>Mute</Tooltip><!-- Tooltip -->
 		<Pos>1,39</Pos>
 		<NumberStates>2</NumberStates>
 		<State>
@@ -426,6 +519,7 @@
 		</WidgetGroup>	
 		
 		<WidgetGroup>
+		<Tooltip>Analog VU - Channel 4</Tooltip><!--  Tooltip -->
 		<ObjectName>SetArea</ObjectName>
 		<MinimumSize>43,50</MinimumSize>
 		<MaximumSize>43,50</MaximumSize>
@@ -444,18 +538,31 @@
 		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
 		<ButtonState></ButtonState>
 		</Connection>
-		</KnobComposed>			
+		</KnobComposed>	
+		<!--
 		<NumberDb>
 		<ObjectName>DBDisplay</ObjectName>
 		<Pos>0,20</Pos>
 		<Size>43f,22f</Size>
 		<Text>%1</Text>
 		<Alignment>center</Alignment>
-		<NumberOfDigits>2</NumberOfDigits>
+		<NumberOfDigits>1</NumberOfDigits>
 		<Connection>
 		<ConfigKey>[Channel4],pregain</ConfigKey>
 		</Connection>
 		</NumberDb>		
+		-->
+		<Number>
+		<ObjectName>VUNumberDisplay</ObjectName>
+		<Pos>0,20</Pos>
+		<Size>43f,22f</Size>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>
+		<NumberOfDigits>1</NumberOfDigits>
+		<Connection>
+		<ConfigKey>[Channel4],VuMeter</ConfigKey>
+		</Connection>
+		</Number>	
 		<StatusLight>
 		<PathStatusLight>skin:graphics/background_analogvu_4_peak.svg</PathStatusLight>
 		<PathBack></PathBack>		
@@ -464,6 +571,26 @@
 		</Connection>
 		</StatusLight>
 		<PushButton>
+		<ObjectName>BeatIndicator</ObjectName>
+		<Pos>8,41</Pos>
+		<Size>8f,8f</Size>
+		<NumberStates>1</NumberStates>		
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_beat_rounded_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_beat_rounded.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel4],beat_active</ConfigKey>
+		<ConnectValueToWidget>true</ConnectValueToWidget>
+		<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+		<ButtonState></ButtonState>
+		</Connection>		
+		</PushButton>
+		<PushButton>
+		<Tooltip>Mute</Tooltip><!-- Tooltip -->
 		<Pos>1,39</Pos>
 		<NumberStates>2</NumberStates>
 		<State>
@@ -489,7 +616,6 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -501,7 +627,8 @@
 		**********************************************
 		-->	
 
-		<WidgetGroup>				
+		<WidgetGroup>
+		<Tooltip>Dark Metal Skin</Tooltip><!--  Tooltip -->
 		<ObjectName>Logos</ObjectName>
 		<MinimumSize>110,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
@@ -524,9 +651,9 @@
 		**********************************************
 		-->
 		
-		<WidgetGroup>				
+		<WidgetGroup>
+		<Tooltip>Broadcast</Tooltip><!--  Tooltip -->		
 		<ObjectName>Broadcast</ObjectName>
-		<BackPath>skin:graphics/background_broadcast.svg</BackPath>
 		<MinimumSize>100,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>			
@@ -566,7 +693,6 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -578,9 +704,9 @@
 		**********************************************
 		-->		
 
-		<WidgetGroup>				
-		<ObjectName>Record</ObjectName>D
-		<BackPath>skin:graphics/background_record.svg</BackPath>
+		<WidgetGroup>
+		<Tooltip>Record</Tooltip><!--  Tooltip -->	
+		<ObjectName>Record</ObjectName>
 		<MinimumSize>50,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Layout><!-- empty, needed for overlap the next elements --></Layout>		
@@ -635,7 +761,6 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -647,9 +772,9 @@
 		**********************************************
 		-->
 
-		<WidgetGroup>				
+		<WidgetGroup>
+		<Tooltip>Auto DJ</Tooltip><!--  Tooltip -->	
 		<ObjectName>AutoDJ</ObjectName>
-		<BackPath>skin:graphics/background_autodj.svg</BackPath>
 		<MinimumSize>30,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>			
@@ -674,7 +799,6 @@
 
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -686,9 +810,9 @@
 		**********************************************
 		-->
 
-		<WidgetGroup>				
+		<WidgetGroup>
+		<Tooltip>Time</Tooltip><!--  Tooltip -->	
 		<ObjectName>Clock</ObjectName>
-		<BackPath>skin:graphics/background_clock.svg</BackPath>
 		<MinimumSize>80,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>			
@@ -704,7 +828,6 @@
 		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -716,9 +839,9 @@
 		**********************************************
 		-->
 		
-		<WidgetGroup>	
+		<WidgetGroup>
+		<Tooltip>Audio Latency</Tooltip><!--  Tooltip -->	
 		<ObjectName>LatencyVumeter</ObjectName>
-		<BackPath>skin:graphics/background_latency.svg</BackPath>
 		<MinimumSize>80,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>						
@@ -736,13 +859,25 @@
 		<Connection>
 		<ConfigKey>[Master],audio_latency_usage</ConfigKey>
 		</Connection>
-		</VuMeter>								
+		</VuMeter>		
+		<Number>
+		<ObjectName>TextsSmallDark</ObjectName>
+		<Pos>40,27</Pos>
+		<Size>30f,10f</Size>
+		<!-- <DisplayUnit></DisplayUnit> -->
+		<NumberOfDigits>2</NumberOfDigits>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>		
+		<Connection>
+		<ConfigKey>[Master],audio_latency_usage</ConfigKey>
+		<!-- <Transform><Add>100.0</Add></Transform> -->
+		</Connection>
+		</Number>
 		</Children>			
 		</WidgetGroup>
 
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_50.svg</BackPath>
 		<MinimumSize>3,50</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -753,25 +888,25 @@
 		Laptop Battery
 		**********************************************
 		-->
-			
-		<WidgetGroup>				
+		
+		<WidgetGroup>
+		<Tooltip>Battery</Tooltip><!--  Tooltip -->	
 		<ObjectName>LaptopBattery</ObjectName>		
 		<MinimumSize>65,50</MinimumSize>
 		<SizePolicy>f,f</SizePolicy>
 		<Children>		
 		<Battery>	
-		<!-- <MaximumSize><Variable name="SquareButtonMaximumSize"/></MaximumSize> -->
-		<Pos>0,0</Pos>		
-		<BackPath><!-- empty --></BackPath>		
+		<Pos>0,0</Pos>
+		<NumberStates>6</NumberStates>
+		<BackPath>skin:graphics/battery_backpath.svg</BackPath>		
 	    <PixmapUnknown>skin:graphics/battery_state_unknown.svg</PixmapUnknown>
-	    <PixmapCharged>skin:graphics/battery_state_full.svg</PixmapCharged>
-		<NumberStates>6</NumberStates>		
+	    <PixmapCharged>skin:graphics/battery_state_full.svg</PixmapCharged>			
 	    <PixmapsCharging>skin:graphics/battery_state_%1.svg</PixmapsCharging>
 	    <PixmapsDischarging>skin:graphics/battery_state_%1.svg</PixmapsDischarging>
 	    </Battery>
 		</Children>
 		</WidgetGroup>
-
+		
 		<WidgetGroup><!-- Design -->
 		<ObjectName>VerticalLine</ObjectName>
 		<MinimumSize>3,50</MinimumSize>
@@ -779,22 +914,13 @@
 		<Children></Children>
 		</WidgetGroup>	
 
-		
-		
-	<WidgetGroup>
-	<MinimumSize>1,50</MinimumSize>
-	<SizePolicy>me,f</SizePolicy>
-	<Children><!-- Pusher --></Children>
-	</WidgetGroup>
-	
 	
 	</Children>
 	</WidgetGroup>
 	
-	<!-- Design only: For creating an horizontal long line: -->
-	<WidgetGroup>
-	<ObjectName>HorizontalLine</ObjectName>
-	<MinimumSize>10,1</MinimumSize>
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>horizontal</Layout>				
 	<Children></Children>

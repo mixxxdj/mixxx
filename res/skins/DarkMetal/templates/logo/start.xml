@@ -1,0 +1,75 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<WidgetGroup>	
+	<ObjectName>MyLogoRow</ObjectName>
+	<Pos>0,0</Pos>
+	<MinimumSize>1,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+	
+	<WidgetGroup>
+	<MinimumSize>1,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>		
+		
+	<WidgetGroup>
+	<ObjectName>ToolBarLogo</ObjectName>
+	<MinimumSize>1,45</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+
+	<WidgetGroup>
+	<ObjectName></ObjectName>
+	<MinimumSize>1,1</MinimumSize>
+	<SizePolicy>me,me</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup>
+		
+		
+		
+		<!-- STARTS: DISPLAY LOGO -->
+		
+		
+		
+		<WidgetGroup>
+		<Tooltip>Logos</Tooltip><!-- Custom Tooltip -->
+		<ObjectName>MyLogo</ObjectName>
+		<MinimumSize>1000,45</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<BackPath>skin:graphics-logos/logo_<Variable name="mylogo"/>.svg</BackPath>
+		<Children><!-- MY LOGO --></Children>
+		</WidgetGroup>
+		
+		
+		
+		<!-- ENDS: DISPLAY LOGO -->
+
+		
+		
+	<WidgetGroup>
+	<ObjectName></ObjectName>
+	<MinimumSize>1,1</MinimumSize>
+	<SizePolicy>me,me</SizePolicy>
+	<Children><!-- Pusher --></Children>
+	</WidgetGroup>
+		
+	</Children>
+	</WidgetGroup>		
+	
+	</Children>
+	</WidgetGroup>
+	
+	</Children>
+	<!-- Show/Hide this Group: -->
+	<Connection>
+	<ConfigKey>[Logo],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>	
+
+</Template>

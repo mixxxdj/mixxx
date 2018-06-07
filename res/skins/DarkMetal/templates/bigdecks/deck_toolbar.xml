@@ -1,0 +1,105 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<WidgetGroup>
+	<ObjectName>BigDecksOptions</ObjectName>
+	<MinimumSize>me,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+	
+	<!-- Texts -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>65,30</MinimumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font:10px/12px; background:transparent; color:#787878;</Style>
+	<Text>Big Decks</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>
+	
+	<!-- Button: Show/Hide this Row -->
+	<PushButton>
+	<Tooltip>Close</Tooltip><!-- Tooltip -->		
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view1.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view1.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view1_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view1_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[BigDecksRack],show</ConfigKey>
+	</Connection>
+	</PushButton>
+	
+	<!-- Button: Minimize/Maximize this Row -->
+	<PushButton>
+	<Tooltip>Maximize</Tooltip><!-- Tooltip -->	
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_row_maximize.svg</Pressed>
+	<Unpressed>skin:graphics/btn_row_maximize.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_row_minimize.svg</Pressed>
+	<Unpressed>skin:graphics/btn_row_minimize.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[BigDecksMaximize],show</ConfigKey>
+	</Connection>
+	</PushButton>	
+	
+	<!-- 1st Row - Button: Show/Hide Big Deck Module -->	
+	<PushButton>
+	<Tooltip>Decks 1 and 2</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[DeckModule1],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+
+	<!-- 2nd Row - Button: Show/Hide Big Deck Module -->	
+	<PushButton>
+	<Tooltip>Decks 3 and 4</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[DeckModule2],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	</Children>
+	</WidgetGroup>
+	
+</Template>

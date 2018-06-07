@@ -1,0 +1,184 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<!-- WIDGETGROUP: Small Player AB -->	
+	<WidgetGroup>
+	<ObjectName>SmallDecks</ObjectName>
+	<MinimumSize>0,0</MinimumSize><!-- 0 == Forces to redraw the full row height, after we show/hide a module -->
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout> 
+	<Children>
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>
+	
+	<WidgetGroup>
+	<ObjectName>SmallOptions</ObjectName>
+	<MinimumSize>-1,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>	
+	<Children>
+	<Template src="skin:templates/smalldecks/smalldeck_toolbar.xml"></Template>	
+	</Children>
+	</WidgetGroup>	
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>
+
+	
+	<WidgetGroup>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>	
+	
+	
+	<WidgetGroup>
+	<ObjectName>MPRow1</ObjectName>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+	
+	<Splitter>
+	<ObjectName>SplittersBigs</ObjectName>
+	<SplitSizes>1,1,1</SplitSizes>
+	<Orientation>horizontal</Orientation>
+	<Collapsible>0,0,0</Collapsible>
+	<Children>
+	
+	<!-- Small 1 -->
+	<Template src="skin:templates/smalldecks/smalldeck_left.xml">
+	<SetVariable name="audiochannel">1</SetVariable>
+	<SetVariable name="smalldecktohide">2</SetVariable>
+	</Template>	
+	
+	<!-- Slider - Crossfader -->
+	<WidgetGroup>
+	<ObjectName>SmallFader</ObjectName>
+	<MinimumSize>200,45</MinimumSize>
+	<MaximumSize>200,45</MaximumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Children>					
+	<SliderComposed>
+	<Pos>20,0</Pos>	
+	<Handle>skin:graphics/knob_crossfader.svg</Handle>
+	<Slider>skin:graphics/slider_crossfader.svg</Slider>
+	<Horizontal>true</Horizontal>
+	<Connection>
+	<ConfigKey>[Master],crossfader</ConfigKey>
+	<EmitOnDownPress>false</EmitOnDownPress>
+	</Connection>
+	</SliderComposed>
+	</Children>
+	</WidgetGroup>		
+	
+	<!-- Small 2 -->
+	<Template src="skin:templates/smalldecks/smalldeck_right.xml">
+	<SetVariable name="audiochannel">2</SetVariable>
+	<SetVariable name="smalldecktohide">1</SetVariable>
+	</Template>	
+	
+	</Children>
+	</Splitter>	
+		
+	</Children>
+	<Connection>
+	<ConfigKey>[SmallModule1],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>	
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>	
+	
+	<WidgetGroup>
+	<ObjectName>MPRow2</ObjectName>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+
+	<Splitter>
+	<ObjectName>SplittersBigs</ObjectName>
+	<SplitSizes>1,1,1</SplitSizes>
+	<Orientation>horizontal</Orientation>
+	<Collapsible>0,0,0</Collapsible>
+	<Children>
+	
+	<!-- Small 3 -->
+	<Template src="skin:templates/smalldecks/smalldeck_left.xml">
+	<SetVariable name="audiochannel">3</SetVariable>
+	<SetVariable name="smalldecktohide">4</SetVariable>
+	</Template>	
+	
+	<!-- Slider - Crossfader -->
+	<WidgetGroup>
+	<ObjectName>SmallFader</ObjectName>
+	<MinimumSize>200,45</MinimumSize>
+	<MaximumSize>200,45</MaximumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Children>					
+	<SliderComposed>
+	<Pos>20,0</Pos>	
+	<Handle>skin:graphics/knob_crossfader.svg</Handle>
+	<Slider>skin:graphics/slider_crossfader.svg</Slider>
+	<Horizontal>true</Horizontal>
+	<Connection>
+	<ConfigKey>[Master],crossfader</ConfigKey>
+	<EmitOnDownPress>false</EmitOnDownPress>
+	</Connection>
+	</SliderComposed>
+	</Children>
+	</WidgetGroup>		
+	
+	<!-- Small 4 -->
+	<Template src="skin:templates/smalldecks/smalldeck_right.xml">
+	<SetVariable name="audiochannel">4</SetVariable>
+	<SetVariable name="smalldecktohide">3</SetVariable>
+	</Template>
+
+	</Children>
+	</Splitter>		
+		
+	</Children>
+	<Connection>
+	<ConfigKey>[SmallModule2],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>	
+	
+	
+	
+	</Children>
+	<!-- Maximize/Minimize -->
+	<Connection>
+	<ConfigKey>[SmallDecksMaximize],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>	
+	
+
+		
+	</Children>
+	<!-- Show/Hide this Group: -->
+	<Connection>
+	<ConfigKey>[SmallDecks],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>
+	
+</Template>

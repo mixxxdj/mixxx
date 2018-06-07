@@ -2,599 +2,77 @@
 
 <Template>
 
-	<!-- WIDGETGROUP: Tool Bar Microphones -->	
 	<WidgetGroup>
-	<ObjectName>ToolBarMicros</ObjectName>
-	<BackPath>skin:graphics/background_toolbar3.svg</BackPath>
-	<MinimumSize>1,45</MinimumSize>
+	<ObjectName>MicrophonesRack</ObjectName>	
+	<!-- <MinimumSize>-1,75</MinimumSize> -->
+	<MinimumSize>0,0</MinimumSize><!-- 0 == Forces to redraw the full row height, after we show/hide a module -->
 	<SizePolicy>me,f</SizePolicy>
-	<Layout>horizontal</Layout>
+	<Layout>vertical</Layout> 
 	<Children>
 	
-	
-	<WidgetGroup>
-	<MinimumSize>1,45</MinimumSize>
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
-	<Children><!-- Pusher --></Children>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>
+
+	<!-- WIDGETGROUP: Microphones Tool Bar  -->		
+	<WidgetGroup>
+	<ObjectName>Options</ObjectName>
+	<MinimumSize>-1,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>	
+	<Children>
+	<Template src="skin:templates/microphones/microphones_toolbar.xml"></Template>	
+	</Children>
+	</WidgetGroup>	
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
 	</WidgetGroup>
 	
-		<WidgetGroup><!-- Design -->
-		<ObjectName>VerticalLineDarker</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_50.svg</BackPath>
-		<MinimumSize>3,45</MinimumSize>
-		<SizePolicy>f,me</SizePolicy>
-		<Children></Children>
-		</WidgetGroup>	
-
-		<!--
-		********************************************************************************************
-		********************************************************************************************
-		Microphone N1 - Group:
-		********************************************************************************************
-		********************************************************************************************
-		-->
-
-		<WidgetGroup>
-		<ObjectName>Microphone</ObjectName>
-		<BackPath>skin:graphics/background_microphone.svg</BackPath>
-		<MinimumSize>210,45</MinimumSize>
-		<SizePolicy>f,f</SizePolicy>
-		<Children>	
-
-		<!--
-		****************************************
-		Button - Talk!
-		****************************************
-		-->
-						
-		<PushButton>
-			<Pos>6,8</Pos>
-			<NumberStates>2</NumberStates>
-			<State>
-			<Number>0</Number>
-			<Pressed>skin:graphics/btn_talk_pressed.svg</Pressed>
-			<Unpressed>skin:graphics/btn_talk.svg</Unpressed>
-			</State>
-			<State>
-			<Number>1</Number>
-			<Pressed>skin:graphics/btn_talk_pressed.svg</Pressed>
-			<Unpressed>skin:graphics/btn_talk_pressed.svg</Unpressed>
-			</State>					
-			<Connection>
-			<ConfigKey>[Microphone],talkover</ConfigKey>
-			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-			<ButtonState>LeftButton</ButtonState>
-			</Connection>
-		</PushButton>
-						
-		<!--
-		**********************************************
-		Button - Mix Orientation (Routing)
-		**********************************************
-		-->
-		
-		<PushButton>
-			<Pos>64,8</Pos>
-			<NumberStates>3</NumberStates>
-			<State>
-			<Number>0</Number>
-			<Pressed>skin:graphics/btn_orientation_left.svg</Pressed>
-			<Unpressed>skin:graphics/btn_orientation_left.svg</Unpressed>
-			</State>
-			<State>
-			<Number>1</Number>
-			<Pressed>skin:graphics/btn_orientation_master.svg</Pressed>
-			<Unpressed>skin:graphics/btn_orientation_master.svg</Unpressed>
-			</State>
-			<State>
-			<Number>2</Number>
-			<Pressed>skin:graphics/btn_orientation_right.svg</Pressed>
-			<Unpressed>skin:graphics/btn_orientation_right.svg</Unpressed>
-			</State>					
-			<Connection>
-			<ConfigKey>[Microphone],orientation</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-			</Connection>
-		</PushButton>
-
-		<!--
-		**********************************************
-		Visual - Volume level display
-		**********************************************
-		-->
-						
-		<VuMeter>
-			<PathVu>skin:graphics/volume_display_microphone_pressed.svg</PathVu>
-			<PathBack>skin:graphics/volume_display_microphone.svg</PathBack>
-			<Pos>70,26</Pos>
-			<Horizontal>true</Horizontal>
-			<PeakHoldSize>5</PeakHoldSize>
-			<PeakHoldTime>600</PeakHoldTime>
-			<PeakFallTime>100</PeakFallTime>
-			<PeakFallStep>1</PeakFallStep>
-			<Connection>
-			<ConfigKey>[Microphone],VuMeter</ConfigKey>
-			</Connection>
-		</VuMeter>
-						
-		<!--
-		**********************************************
-		Visual - Volume peak indicator
-		**********************************************
-		-->
-						
-		<StatusLight>
-			<Pos>140,26</Pos>
-			<PathStatusLight>skin:graphics/volume_clipping_microphone_pressed.svg</PathStatusLight>
-			<PathBack>skin:graphics/volume_clipping_microphone.svg</PathBack>							
-			<Connection>
-			<ConfigKey>[Microphone],PeakIndicator</ConfigKey>
-			</Connection>
-		</StatusLight>
-
-		<!--
-		**********************************************
-		Knob - Channel Volume
-		**********************************************
-		-->
-		
-		<KnobComposed>
-			<Pos>165,3</Pos>
-			<Size>40f,40f</Size>
-			<BackPath>skin:graphics/background_knob1.svg</BackPath>
-			<Knob>skin:graphics/pointer_knob1.svg</Knob>
-			<MinAngle>-130</MinAngle>
-			<MaxAngle>130</MaxAngle>
-			<Connection>
-			<ConfigKey>[Microphone],pregain</ConfigKey>
-			</Connection>
-		</KnobComposed>						
-
-		</Children>
-		</WidgetGroup>	
-		
-		<WidgetGroup><!-- Design -->
-		<ObjectName>VerticalLineDarker</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_50.svg</BackPath>
-		<MinimumSize>3,45</MinimumSize>
-		<SizePolicy>f,me</SizePolicy>
-		<Children></Children>
-		</WidgetGroup>		
-
-
-		<!--
-		********************************************************************************************
-		********************************************************************************************
-		Microphone N2 - Group:
-		********************************************************************************************
-		********************************************************************************************
-		-->
-
-		<WidgetGroup>
-		<ObjectName>Microphone</ObjectName>
-		<MinimumSize>210,45</MinimumSize>
-		<SizePolicy>f,f</SizePolicy>
-		<Children>	
-
-		<!--
-		****************************************
-		Button - Talk!
-		****************************************
-		-->
-						
-		<PushButton>
-			<Pos>6,8</Pos>
-			<NumberStates>2</NumberStates>
-			<State>
-			<Number>0</Number>
-			<Pressed>skin:graphics/btn_talk_pressed.svg</Pressed>
-			<Unpressed>skin:graphics/btn_talk.svg</Unpressed>
-			</State>
-			<State>
-			<Number>1</Number>
-			<Pressed>skin:graphics/btn_talk_pressed.svg</Pressed>
-			<Unpressed>skin:graphics/btn_talk_pressed.svg</Unpressed>
-			</State>					
-			<Connection>
-			<ConfigKey>[Microphone2],talkover</ConfigKey>
-			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-			<ButtonState>LeftButton</ButtonState>
-			</Connection>
-		</PushButton>
-						
-		<!--
-		**********************************************
-		Button - Mix Orientation (Routing)
-		**********************************************
-		-->
-		
-		<PushButton>
-			<Pos>64,8</Pos>
-			<NumberStates>3</NumberStates>
-			<State>
-			<Number>0</Number>
-			<Pressed>skin:graphics/btn_orientation_left.svg</Pressed>
-			<Unpressed>skin:graphics/btn_orientation_left.svg</Unpressed>
-			</State>
-			<State>
-			<Number>1</Number>
-			<Pressed>skin:graphics/btn_orientation_master.svg</Pressed>
-			<Unpressed>skin:graphics/btn_orientation_master.svg</Unpressed>
-			</State>
-			<State>
-			<Number>2</Number>
-			<Pressed>skin:graphics/btn_orientation_right.svg</Pressed>
-			<Unpressed>skin:graphics/btn_orientation_right.svg</Unpressed>
-			</State>					
-			<Connection>
-			<ConfigKey>[Microphone2],orientation</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-			</Connection>
-		</PushButton>
-
-		<!--
-		**********************************************
-		Visual - Volume level display
-		**********************************************
-		-->
-						
-		<VuMeter>
-			<PathVu>skin:graphics/volume_display_microphone_pressed.svg</PathVu>
-			<PathBack>skin:graphics/volume_display_microphone.svg</PathBack>
-			<Pos>70,26</Pos>
-			<Horizontal>true</Horizontal>
-			<PeakHoldSize>5</PeakHoldSize>
-			<PeakHoldTime>600</PeakHoldTime>
-			<PeakFallTime>100</PeakFallTime>
-			<PeakFallStep>1</PeakFallStep>
-			<Connection>
-			<ConfigKey>[Microphone2],VuMeter</ConfigKey>
-			</Connection>
-		</VuMeter>
-						
-		<!--
-		**********************************************
-		Visual - Volume peak indicator
-		**********************************************
-		-->
-						
-		<StatusLight>
-			<Pos>140,26</Pos>
-			<PathStatusLight>skin:graphics/volume_clipping_microphone_pressed.svg</PathStatusLight>
-			<PathBack>skin:graphics/volume_clipping_microphone.svg</PathBack>							
-			<Connection>
-			<ConfigKey>[Microphone2],PeakIndicator</ConfigKey>
-			</Connection>
-		</StatusLight>
-
-		<!--
-		**********************************************
-		Knob - Channel Volume
-		**********************************************
-		-->
-						
-		<KnobComposed>
-			<Pos>165,3</Pos>
-			<Size>40f,40f</Size>
-			<BackPath>skin:graphics/background_knob1.svg</BackPath>
-			<Knob>skin:graphics/pointer_knob1.svg</Knob>
-			<MinAngle>-130</MinAngle>
-			<MaxAngle>130</MaxAngle>
-			<Connection>
-			<ConfigKey>[Microphone2],pregain</ConfigKey>
-			</Connection>
-		</KnobComposed>	
-
-		</Children>
-		</WidgetGroup>	
-		
-		<WidgetGroup><!-- Design -->
-		<ObjectName>VerticalLineDarker</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_50.svg</BackPath>
-		<MinimumSize>3,45</MinimumSize>
-		<SizePolicy>f,me</SizePolicy>
-		<Children></Children>
-		</WidgetGroup>
-		
-		
-<!--
-		********************************************************************************************
-		********************************************************************************************
-		Microphone N3 - Group:
-		********************************************************************************************
-		********************************************************************************************
-		-->
-
-		<WidgetGroup>
-		<ObjectName>Microphone</ObjectName>
-		<MinimumSize>210,45</MinimumSize>
-		<SizePolicy>f,f</SizePolicy>
-		<Children>	
-
-		<!--
-		****************************************
-		Button - Talk!
-		****************************************
-		-->
-						
-		<PushButton>
-			<Pos>6,8</Pos>
-			<NumberStates>2</NumberStates>
-			<State>
-			<Number>0</Number>
-			<Pressed>skin:graphics/btn_talk_pressed.svg</Pressed>
-			<Unpressed>skin:graphics/btn_talk.svg</Unpressed>
-			</State>
-			<State>
-			<Number>1</Number>
-			<Pressed>skin:graphics/btn_talk_pressed.svg</Pressed>
-			<Unpressed>skin:graphics/btn_talk_pressed.svg</Unpressed>
-			</State>					
-			<Connection>
-			<ConfigKey>[Microphone3],talkover</ConfigKey>
-			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-			<ButtonState>LeftButton</ButtonState>
-			</Connection>
-		</PushButton>
-						
-		<!--
-		**********************************************
-		Button - Mix Orientation (Routing)
-		**********************************************
-		-->
-		
-		<PushButton>
-			<Pos>64,8</Pos>
-			<NumberStates>3</NumberStates>
-			<State>
-			<Number>0</Number>
-			<Pressed>skin:graphics/btn_orientation_left.svg</Pressed>
-			<Unpressed>skin:graphics/btn_orientation_left.svg</Unpressed>
-			</State>
-			<State>
-			<Number>1</Number>
-			<Pressed>skin:graphics/btn_orientation_master.svg</Pressed>
-			<Unpressed>skin:graphics/btn_orientation_master.svg</Unpressed>
-			</State>
-			<State>
-			<Number>2</Number>
-			<Pressed>skin:graphics/btn_orientation_right.svg</Pressed>
-			<Unpressed>skin:graphics/btn_orientation_right.svg</Unpressed>
-			</State>					
-			<Connection>
-			<ConfigKey>[Microphone3],orientation</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-			</Connection>
-		</PushButton>
-
-		<!--
-		**********************************************
-		Visual - Volume level display
-		**********************************************
-		-->
-						
-		<VuMeter>
-			<PathVu>skin:graphics/volume_display_microphone_pressed.svg</PathVu>
-			<PathBack>skin:graphics/volume_display_microphone.svg</PathBack>
-			<Pos>70,26</Pos>
-			<Horizontal>true</Horizontal>
-			<PeakHoldSize>5</PeakHoldSize>
-			<PeakHoldTime>600</PeakHoldTime>
-			<PeakFallTime>100</PeakFallTime>
-			<PeakFallStep>1</PeakFallStep>
-			<Connection>
-			<ConfigKey>[Microphone3],VuMeter</ConfigKey>
-			</Connection>
-		</VuMeter>
-						
-		<!--
-		**********************************************
-		Visual - Volume peak indicator
-		**********************************************
-		-->
-						
-		<StatusLight>
-			<Pos>140,26</Pos>
-			<PathStatusLight>skin:graphics/volume_clipping_microphone_pressed.svg</PathStatusLight>
-			<PathBack>skin:graphics/volume_clipping_microphone.svg</PathBack>							
-			<Connection>
-			<ConfigKey>[Microphone3],PeakIndicator</ConfigKey>
-			</Connection>
-		</StatusLight>
-
-		<!--
-		**********************************************
-		Knob - Channel Volume
-		**********************************************
-		-->
-						
-		<KnobComposed>
-			<Pos>165,3</Pos>
-			<Size>40f,40f</Size>
-			<BackPath>skin:graphics/background_knob1.svg</BackPath>
-			<Knob>skin:graphics/pointer_knob1.svg</Knob>
-			<MinAngle>-130</MinAngle>
-			<MaxAngle>130</MaxAngle>
-			<Connection>
-			<ConfigKey>[Microphone3],pregain</ConfigKey>
-			</Connection>
-		</KnobComposed>	
-
-		</Children>
-		</WidgetGroup>	
-		
-		<WidgetGroup><!-- Design -->
-		<ObjectName>VerticalLineDarker</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_50.svg</BackPath>
-		<MinimumSize>3,45</MinimumSize>
-		<SizePolicy>f,me</SizePolicy>
-		<Children></Children>
-		</WidgetGroup>	
-
-
-<!--
-		********************************************************************************************
-		********************************************************************************************
-		Microphone N4 - Group:
-		********************************************************************************************
-		********************************************************************************************
-		-->
-
-		<WidgetGroup>
-		<ObjectName>Microphone</ObjectName>
-		<MinimumSize>210,45</MinimumSize>
-		<SizePolicy>f,f</SizePolicy>
-		<Children>	
-
-		<!--
-		****************************************
-		Button - Talk!
-		****************************************
-		-->
-						
-		<PushButton>
-			<Pos>6,8</Pos>
-			<NumberStates>2</NumberStates>
-			<State>
-			<Number>0</Number>
-			<Pressed>skin:graphics/btn_talk_pressed.svg</Pressed>
-			<Unpressed>skin:graphics/btn_talk.svg</Unpressed>
-			</State>
-			<State>
-			<Number>1</Number>
-			<Pressed>skin:graphics/btn_talk_pressed.svg</Pressed>
-			<Unpressed>skin:graphics/btn_talk_pressed.svg</Unpressed>
-			</State>					
-			<Connection>
-			<ConfigKey>[Microphone4],talkover</ConfigKey>
-			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-			<ButtonState>LeftButton</ButtonState>
-			</Connection>
-		</PushButton>
-						
-		<!--
-		**********************************************
-		Button - Mix Orientation (Routing)
-		**********************************************
-		-->
-		
-		<PushButton>
-			<Pos>64,8</Pos>
-			<NumberStates>3</NumberStates>
-			<State>
-			<Number>0</Number>
-			<Pressed>skin:graphics/btn_orientation_left.svg</Pressed>
-			<Unpressed>skin:graphics/btn_orientation_left.svg</Unpressed>
-			</State>
-			<State>
-			<Number>1</Number>
-			<Pressed>skin:graphics/btn_orientation_master.svg</Pressed>
-			<Unpressed>skin:graphics/btn_orientation_master.svg</Unpressed>
-			</State>
-			<State>
-			<Number>2</Number>
-			<Pressed>skin:graphics/btn_orientation_right.svg</Pressed>
-			<Unpressed>skin:graphics/btn_orientation_right.svg</Unpressed>
-			</State>					
-			<Connection>
-			<ConfigKey>[Microphone4],orientation</ConfigKey>
-			<EmitOnDownPress>true</EmitOnDownPress>
-			<ButtonState>LeftButton</ButtonState>
-			</Connection>
-		</PushButton>
-
-		<!--
-		**********************************************
-		Visual - Volume level display
-		**********************************************
-		-->
-						
-		<VuMeter>
-			<PathVu>skin:graphics/volume_display_microphone_pressed.svg</PathVu>
-			<PathBack>skin:graphics/volume_display_microphone.svg</PathBack>
-			<Pos>70,26</Pos>
-			<Horizontal>true</Horizontal>
-			<PeakHoldSize>5</PeakHoldSize>
-			<PeakHoldTime>600</PeakHoldTime>
-			<PeakFallTime>100</PeakFallTime>
-			<PeakFallStep>1</PeakFallStep>
-			<Connection>
-			<ConfigKey>[Microphone4],VuMeter</ConfigKey>
-			</Connection>
-		</VuMeter>
-						
-		<!--
-		**********************************************
-		Visual - Volume peak indicator
-		**********************************************
-		-->
-						
-		<StatusLight>
-			<Pos>140,26</Pos>
-			<PathStatusLight>skin:graphics/volume_clipping_microphone_pressed.svg</PathStatusLight>
-			<PathBack>skin:graphics/volume_clipping_microphone.svg</PathBack>							
-			<Connection>
-			<ConfigKey>[Microphone4],PeakIndicator</ConfigKey>
-			</Connection>
-		</StatusLight>
-
-		<!--
-		**********************************************
-		Knob - Channel Volume
-		**********************************************
-		-->
-						
-		<KnobComposed>
-			<Pos>165,3</Pos>
-			<Size>40f,40f</Size>
-			<BackPath>skin:graphics/background_knob1.svg</BackPath>
-			<Knob>skin:graphics/pointer_knob1.svg</Knob>
-			<MinAngle>-130</MinAngle>
-			<MaxAngle>130</MaxAngle>
-			<Connection>
-			<ConfigKey>[Microphone4],pregain</ConfigKey>
-			</Connection>
-		</KnobComposed>	
-
-		</Children>
-		</WidgetGroup>	
-		
-		<WidgetGroup><!-- Design -->
-		<ObjectName>VerticalLineDarker</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_50.svg</BackPath>
-		<MinimumSize>3,45</MinimumSize>
-		<SizePolicy>f,me</SizePolicy>
-		<Children></Children>
-		</WidgetGroup>		
-
-
-		
-		
-		
-		
+	<!-- WIDGETGROUP: Microphones Full Rack -->	
 	<WidgetGroup>
-	<MinimumSize>1,45</MinimumSize>
+	<ObjectName>Microphones</ObjectName>
+	<!-- <MinimumSize>1,45</MinimumSize> -->
+	<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides the row, if no module is visible -->
 	<SizePolicy>me,f</SizePolicy>
-	<Children><!-- Pusher --></Children>
+	<Layout>horizontal</Layout>
+	<Children>	
+	
+	<Template src="skin:templates/microphones/microphones_module.xml"><SetVariable name="audiochannel">1</SetVariable></Template>
+	<Template src="skin:templates/microphones/microphones_module.xml"><SetVariable name="audiochannel">2</SetVariable></Template>	
+	<Template src="skin:templates/microphones/microphones_module.xml"><SetVariable name="audiochannel">3</SetVariable></Template>	
+	<Template src="skin:templates/microphones/microphones_module.xml"><SetVariable name="audiochannel">4</SetVariable></Template>
+	
+	</Children>	
+	<!-- Maximize/Minimize -->
+	<Connection>
+	<ConfigKey>[MicMaximize],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>	
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
 	</WidgetGroup>
 	
 	</Children>	
 	<!-- Show/Hide -->
 	<Connection>
-	<ConfigKey>[DarkMetal],tool_bar_micros_show</ConfigKey>
+	<ConfigKey>[ToolBarMicros],show</ConfigKey>
 	<BindProperty>visible</BindProperty>
 	</Connection>
-	</WidgetGroup>
-	
-	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
-	<ObjectName>HorizontalLineDarker</ObjectName>
-	<MinimumSize>-1,1</MinimumSize>
-	<SizePolicy>me,f</SizePolicy>
-	<Layout>horizontal</Layout>				
-	<Children></Children>
 	</WidgetGroup>
 	
 </Template>

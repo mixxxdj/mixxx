@@ -1,0 +1,124 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<WidgetGroup>
+	<ObjectName>EffectsRack</ObjectName>
+	<MinimumSize>0,0</MinimumSize><!-- 0 == Forces to redraw the full row height, after we show/hide a module -->
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout> 
+	<Children>
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>
+	
+	<WidgetGroup>
+	<ObjectName>EffectsOptions</ObjectName>
+	<MinimumSize>0,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout> 
+	<Children>
+	
+	<!-- WIDGETGROUP: Toolbar -->
+	<Template src="skin:templates/effects/effect_toolbar.xml"></Template>	
+		
+	</Children>
+	</WidgetGroup>
+	
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>				
+	<Children></Children>
+	</WidgetGroup>
+
+	<WidgetGroup>
+	<Layout>horizontal</Layout> 
+	<Children>	
+	
+	
+	<WidgetGroup>
+	<ObjectName>EffectsModulesRow</ObjectName>	
+	<!-- <MinimumSize>-1,85</MinimumSize> -->
+	<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides the row, if no module is visible -->
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>vertical</Layout> 
+	<Children>
+
+		<!-- WIDGETGROUP: The full row (2 units) -->		
+		<WidgetGroup>
+		<ObjectName>EffectsMaximize</ObjectName>
+		<!-- <MinimumSize>-1,85</MinimumSize> -->
+		<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides both rows, if no module is visible -->
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>vertical</Layout>
+		<Children>		
+		
+		<WidgetGroup>
+		<ObjectName>EffectsRowBackground</ObjectName>
+		<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides the 1st row, if no module is visible -->
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>
+		<Children>		
+		
+		<Template src="skin:templates/effects/effect_module.xml"><SetVariable name="unit">1</SetVariable></Template> <!-- Height: 85 -->
+		<Template src="skin:templates/effects/effect_module.xml"><SetVariable name="unit">2</SetVariable></Template> <!-- Height: 85 -->
+		
+		</Children>
+		</WidgetGroup>
+		
+		<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+		<ObjectName>HorizontalLineDarker</ObjectName>
+		<MinimumSize>0,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<WidgetGroup>
+		<ObjectName>EffectsRowBackground</ObjectName>
+		<MinimumSize>1,-1</MinimumSize><!-- -1f == Hides the 2nd row, if no module is visible -->
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>
+		<Children>
+
+		<Template src="skin:templates/effects/effect_module.xml"><SetVariable name="unit">3</SetVariable></Template> <!-- Height: 85 -->		
+		<Template src="skin:templates/effects/effect_module.xml"><SetVariable name="unit">4</SetVariable></Template> <!-- Height: 85 -->
+		
+		</Children>
+		</WidgetGroup>
+		
+		</Children>
+		<!-- Maximize/Minimize -->
+		<Connection>
+		<ConfigKey>[EffectsMaximize],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>
+		</WidgetGroup>
+	
+	</Children>
+	<Connection>
+	<ConfigKey>[EffectsModulesRow],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>
+	
+	
+	</Children>
+	</WidgetGroup>	
+	
+	</Children>
+	<!-- Show/Hide this Group: -->
+	<Connection>
+	<ConfigKey>[EffectsRack],show</ConfigKey>
+	<BindProperty>visible</BindProperty>
+	</Connection>
+	</WidgetGroup>
+
+</Template>

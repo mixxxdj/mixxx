@@ -5,7 +5,6 @@
 	<!-- WIDGETGROUP: Toolbar -->	
 	<WidgetGroup>
 	<ObjectName>ToolBar1</ObjectName>
-	<BackPath>skin:graphics/background_toolbar1.svg</BackPath>
 	<Pos>0,0</Pos>
 	<MinimumSize>1,31</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
@@ -20,35 +19,50 @@
 	
 	<WidgetGroup>
 	<ObjectName>ToolBar1Metal</ObjectName>
-	<BackPath>skin:graphics/background_toolbar1.svg</BackPath>
 	<MinimumSize>1,30</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Children><!-- Design --></Children>
 	</WidgetGroup>
-
 	
 	
 		<WidgetGroup>
 		<Layout>horizontal</Layout>
 		<Children>
-		
-		<!-- Texts -->
-		<WidgetGroup>
-		<ObjectName>Texts</ObjectName>	
-		<MinimumSize>60,30</MinimumSize>
-		<SizePolicy>f,f</SizePolicy>
-		<Layout>vertical</Layout>
-		<Children>
-		<Label>
-		<Style>font:10px/12px; background:transparent; color:#707070;</Style>
-		<Text>Rows</Text>
-		</Label>
-		</Children>			
-		</WidgetGroup>
-		
+			
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+
+		<!--
+		**************************************************
+		Tab - Show/hide widget group: Logo
+		**************************************************
+		-->	
+		
+		<PushButton>
+		<Tooltip>Logos</Tooltip><!-- Tooltip -->
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/tab_logo.svg</Pressed>
+		<Unpressed>skin:graphics/tab_logo.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/tab_logo_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_logo_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Logo],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		
+		<WidgetGroup>
+		<ObjectName>VerticalLineDarker30</ObjectName>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -56,12 +70,45 @@
 		</WidgetGroup>
 		
 		<!--
-		**********************************************
-		Tab - Show/hide widget group: Microphones
-		**********************************************
+		**************************************************
+		Tab - Show/hide widget group: Strobes (Under Construction)
+		**************************************************
 		-->	
 		
 		<PushButton>
+		<Tooltip>Strobes</Tooltip><!-- Tooltip -->
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/tab_strobes.svg</Pressed>
+		<Unpressed>skin:graphics/tab_strobes.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/tab_strobes_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_strobes_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[StrobesRack],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		
+		<WidgetGroup>
+		<ObjectName>VerticalLineDarker30</ObjectName>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		**************************************************
+		Tab - Show/hide widget group: Microphones
+		**************************************************
+		-->	
+		
+		<PushButton>
+		<Tooltip>Microphones</Tooltip><!-- Tooltip -->
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
@@ -74,13 +121,12 @@
 		<Unpressed>skin:graphics/tab_microphones_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[DarkMetal],tool_bar_micros_show</ConfigKey>
+		<ConfigKey>[ToolBarMicros],show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -88,12 +134,13 @@
 		</WidgetGroup>
 		
 		<!--
-		**********************************************
+		**************************************************
 		Tab - Show/hide widget group: Auxiliaries
-		**********************************************
+		**************************************************
 		-->	
 		
 		<PushButton>
+		<Tooltip>Auxiliaries</Tooltip><!-- Tooltip -->
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
@@ -106,13 +153,12 @@
 		<Unpressed>skin:graphics/tab_auxiliaries_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[DarkMetal],tool_bar_auxiliaries_show</ConfigKey>
+		<ConfigKey>[ToolBarAuxiliaries],show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -120,31 +166,31 @@
 		</WidgetGroup>
 		
 		<!--
-		**********************************************
-		Tab - Show/hide widget group: Decks AB + Mixer
-		**********************************************
+		**************************************************
+		Tab - Show/hide widget group: Big Decks + Mixer
+		**************************************************
 		-->
 		
 		<PushButton>
+		<Tooltip>Big Decks</Tooltip><!-- Tooltip -->
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>skin:graphics/tab_decks_12.svg</Pressed>
-		<Unpressed>skin:graphics/tab_decks_12.svg</Unpressed>
+		<Pressed>skin:graphics/tab_decks.svg</Pressed>
+		<Unpressed>skin:graphics/tab_decks.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>skin:graphics/tab_decks_12_pressed.svg</Pressed>
-		<Unpressed>skin:graphics/tab_decks_12_pressed.svg</Unpressed>
+		<Pressed>skin:graphics/tab_decks_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_decks_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[DarkMetal],decks_and_mixer_rack1_show</ConfigKey>
+		<ConfigKey>[BigDecksRack],show</ConfigKey>
 		</Connection>	
 		</PushButton>
-		
+				
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -152,223 +198,96 @@
 		</WidgetGroup>
 		
 		<!--
-		**********************************************
-		Tab - Show/hide widget group: Decks CD + Mixer
-		**********************************************
-		-->
-		
-		<PushButton>
-		<NumberStates>2</NumberStates>
-		<State>
-		<Number>0</Number>
-		<Pressed>skin:graphics/tab_decks_34.svg</Pressed>
-		<Unpressed>skin:graphics/tab_decks_34.svg</Unpressed>
-		</State>
-		<State>
-		<Number>1</Number>
-		<Pressed>skin:graphics/tab_decks_34_pressed.svg</Pressed>
-		<Unpressed>skin:graphics/tab_decks_34_pressed.svg</Unpressed>
-		</State>		
-		<Connection>
-		<ConfigKey>[DarkMetal],decks_and_mixer_rack2_show</ConfigKey>
-		</Connection>	
-		</PushButton>
-		
-		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
-		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
-		<MinimumSize>1,30</MinimumSize>
-		<SizePolicy>f,me</SizePolicy>
-		<Layout>horizontal</Layout>				
-		<Children></Children>
-		</WidgetGroup>
-		
-		<!--
-		**********************************************
-		Tab - Show/hide widget group: MiniPlayer 1
-		**********************************************
+		**************************************************
+		Tab - Show/hide widget group: SmallPlayer 1
+		**************************************************
 		-->	
 		
 		<PushButton>
+		<Tooltip>Small Decks</Tooltip><!-- Tooltip -->
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>skin:graphics/tab_miniplayer1.svg</Pressed>
-		<Unpressed>skin:graphics/tab_miniplayer1.svg</Unpressed>
+		<Pressed>skin:graphics/tab_smalldeck.svg</Pressed>
+		<Unpressed>skin:graphics/tab_smalldeck.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>skin:graphics/tab_miniplayer1_pressed.svg</Pressed>
-		<Unpressed>skin:graphics/tab_miniplayer1_pressed.svg</Unpressed>
+		<Pressed>skin:graphics/tab_smalldeck_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_smalldeck_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[DarkMetal],mini_player1_show</ConfigKey>
+		<ConfigKey>[SmallDecks],show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
+		<MinimumSize>1,30</MinimumSize>
+		<SizePolicy>f,me</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		<!--
+		**************************************************
+		Tab - Show/hide widget group: Long Waves
+		**************************************************
+		-->
+		
+		<PushButton>
+		<Tooltip>Long Waves</Tooltip><!-- Tooltip -->
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/tab_longwaves.svg</Pressed>
+		<Unpressed>skin:graphics/tab_longwaves.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/tab_longwaves_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_longwaves_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[LongWavesRack],show</ConfigKey>
+		</Connection>	
+		</PushButton>
+		
+		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
+		<ObjectName>VerticalLineDarker30</ObjectName>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
 		<Children></Children>
 		</WidgetGroup>
 
-		<!--
-		**********************************************
-		Tab - Show/hide widget group: MiniPlayer 2
-		**********************************************
-		-->	
-		
-		<PushButton>
-		<NumberStates>2</NumberStates>
-		<State>
-		<Number>0</Number>
-		<Pressed>skin:graphics/tab_miniplayer2.svg</Pressed>
-		<Unpressed>skin:graphics/tab_miniplayer2.svg</Unpressed>
-		</State>
-		<State>
-		<Number>1</Number>
-		<Pressed>skin:graphics/tab_miniplayer2_pressed.svg</Pressed>
-		<Unpressed>skin:graphics/tab_miniplayer2_pressed.svg</Unpressed>
-		</State>		
-		<Connection>
-		<ConfigKey>[DarkMetal],mini_player2_show</ConfigKey>
-		</Connection>	
-		</PushButton>
-		
-		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
-		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
-		<MinimumSize>1,30</MinimumSize>
-		<SizePolicy>f,me</SizePolicy>
-		<Layout>horizontal</Layout>				
-		<Children></Children>
-		</WidgetGroup>
 		
 		<!--
-		**********************************************
-		Tab - Show/hide widget group: Long Waves AB
-		**********************************************
-		-->
-		
-		<PushButton>
-		<NumberStates>2</NumberStates>
-		<State>
-		<Number>0</Number>
-		<Pressed>skin:graphics/tab_longwaves1.svg</Pressed>
-		<Unpressed>skin:graphics/tab_longwaves1.svg</Unpressed>
-		</State>
-		<State>
-		<Number>1</Number>
-		<Pressed>skin:graphics/tab_longwaves1_pressed.svg</Pressed>
-		<Unpressed>skin:graphics/tab_longwaves1_pressed.svg</Unpressed>
-		</State>		
-		<Connection>
-		<ConfigKey>[DarkMetal],long_waves_rack1_show</ConfigKey>
-		</Connection>	
-		</PushButton>
-		
-		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
-		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
-		<MinimumSize>1,30</MinimumSize>
-		<SizePolicy>f,me</SizePolicy>
-		<Layout>horizontal</Layout>				
-		<Children></Children>
-		</WidgetGroup>
-
-		<!--
-		**********************************************
-		Tab - Show/hide widget group: Long Waves CD
-		**********************************************
-		-->
-		
-		<PushButton>
-		<NumberStates>2</NumberStates>
-		<State>
-		<Number>0</Number>
-		<Pressed>skin:graphics/tab_longwaves2.svg</Pressed>
-		<Unpressed>skin:graphics/tab_longwaves2.svg</Unpressed>
-		</State>
-		<State>
-		<Number>1</Number>
-		<Pressed>skin:graphics/tab_longwaves2_pressed.svg</Pressed>
-		<Unpressed>skin:graphics/tab_longwaves2_pressed.svg</Unpressed>
-		</State>		
-		<Connection>
-		<ConfigKey>[DarkMetal],long_waves_rack2_show</ConfigKey>
-		</Connection>	
-		</PushButton>
-		
-		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
-		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
-		<MinimumSize>1,30</MinimumSize>
-		<SizePolicy>f,me</SizePolicy>
-		<Layout>horizontal</Layout>				
-		<Children></Children>
-		</WidgetGroup>
-		
-		<!--
-		**********************************************
+		**************************************************
 		Tab - Show/hide widget group: Effects 
-		**********************************************
+		**************************************************
 		-->
 		
 		<PushButton>
+		<Tooltip>Effects</Tooltip><!-- Tooltip -->
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>skin:graphics/tab_effects1.svg</Pressed>
-		<Unpressed>skin:graphics/tab_effects1.svg</Unpressed>
+		<Pressed>skin:graphics/tab_effects.svg</Pressed>
+		<Unpressed>skin:graphics/tab_effects.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>skin:graphics/tab_effects1_pressed.svg</Pressed>
-		<Unpressed>skin:graphics/tab_effects1_pressed.svg</Unpressed>
+		<Pressed>skin:graphics/tab_effects_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_effects_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[DarkMetal],effects_rack1_show</ConfigKey>
+		<ConfigKey>[EffectsRack],show</ConfigKey>
 		</Connection>
 		</PushButton>
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
-		<MinimumSize>1,30</MinimumSize>
-		<SizePolicy>f,me</SizePolicy>
-		<Layout>horizontal</Layout>				
-		<Children></Children>
-		</WidgetGroup>		
-		
-		<!--
-		**********************************************
-		Tab - Show/hide widget group: Effects 
-		**********************************************
-		-->
-		
-		<PushButton>
-		<NumberStates>2</NumberStates>
-		<State>
-		<Number>0</Number>
-		<Pressed>skin:graphics/tab_effects2.svg</Pressed>
-		<Unpressed>skin:graphics/tab_effects2.svg</Unpressed>
-		</State>
-		<State>
-		<Number>1</Number>
-		<Pressed>skin:graphics/tab_effects2_pressed.svg</Pressed>
-		<Unpressed>skin:graphics/tab_effects2_pressed.svg</Unpressed>
-		</State>		
-		<Connection>
-		<ConfigKey>[DarkMetal],effects_rack2_show</ConfigKey>
-		</Connection>
-		</PushButton>
-		
-		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
-		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
@@ -376,77 +295,44 @@
 		</WidgetGroup>
 	
 		<!--
-		**********************************************
-		Tab - Show/hide widget group: Samplers 1
-		**********************************************
+		**************************************************
+		Tab - Show/hide widget group: Samplers - 01 to 64
+		**************************************************
 		-->
 
-		<PushButton>	
+		<PushButton>
+		<Tooltip>Samplers</Tooltip><!-- Tooltip -->
 		<NumberStates>2</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>skin:graphics/tab_samplers_1.svg</Pressed>
-		<Unpressed>skin:graphics/tab_samplers_1.svg</Unpressed>
+		<Pressed>skin:graphics/tab_samplers.svg</Pressed>
+		<Unpressed>skin:graphics/tab_samplers.svg</Unpressed>
 		</State>
 		<State>
 		<Number>1</Number>
-		<Pressed>skin:graphics/tab_samplers_1_pressed.svg</Pressed>
-		<Unpressed>skin:graphics/tab_samplers_1_pressed.svg</Unpressed>
+		<Pressed>skin:graphics/tab_samplers_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/tab_samplers_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[DarkMetal],samplers_rack1_show</ConfigKey>
+		<ConfigKey>[SamplersRack],show</ConfigKey>
 		</Connection>
 		</PushButton>
 		
 		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
 		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Layout>horizontal</Layout>				
 		<Children></Children>
 		</WidgetGroup>
 		
-		<!--
-		**********************************************
-		Tab - Show/hide widget group: Samplers 2
-		**********************************************
-		-->
-
-		<PushButton>	
-		<NumberStates>2</NumberStates>
-		<State>
-		<Number>0</Number>
-		<Pressed>skin:graphics/tab_samplers_2.svg</Pressed>
-		<Unpressed>skin:graphics/tab_samplers_2.svg</Unpressed>
-		</State>
-		<State>
-		<Number>1</Number>
-		<Pressed>skin:graphics/tab_samplers_2_pressed.svg</Pressed>
-		<Unpressed>skin:graphics/tab_samplers_2_pressed.svg</Unpressed>
-		</State>		
-		<Connection>
-		<ConfigKey>[DarkMetal],samplers_rack2_show</ConfigKey>
-		</Connection>
-		</PushButton>
-
-		<WidgetGroup><!-- Design only: For creating an vertical separator line -->
-		<ObjectName>VerticalLineDarker30</ObjectName>
-		<BackPath>skin:graphics/background_vertical_line_darker_30.svg</BackPath>
-		<MinimumSize>1,30</MinimumSize>
-		<SizePolicy>f,me</SizePolicy>
-		<Layout>horizontal</Layout>				
-		<Children></Children>
-		</WidgetGroup>		
-		
-
+	
 
 		</Children>
 		</WidgetGroup>
 
 		<WidgetGroup>
 		<ObjectName>ToolBar1Metal</ObjectName>
-		<BackPath>skin:graphics/background_toolbar1.svg</BackPath>
 		<MinimumSize>1,30</MinimumSize>
 		<SizePolicy>me,f</SizePolicy>
 		<Children><!-- Design --></Children>
@@ -455,10 +341,9 @@
 	</Children>
 	</WidgetGroup>
 	
-	<!-- Design only: For creating an horizontal long line: -->
-	<WidgetGroup>
-	<ObjectName>HorizontalLine</ObjectName>
-	<MinimumSize>10,1</MinimumSize>
+	<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+	<ObjectName>HorizontalLineDarker</ObjectName>
+	<MinimumSize>0,1</MinimumSize>
 	<SizePolicy>me,f</SizePolicy>
 	<Layout>horizontal</Layout>				
 	<Children></Children>

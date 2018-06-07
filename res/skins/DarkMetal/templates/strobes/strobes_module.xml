@@ -1,0 +1,171 @@
+<!DOCTYPE template>
+
+<Template>
+				
+		<WidgetGroup>
+		<Tooltip>Strobe <Variable name="audiochannel"/></Tooltip><!-- Tooltip -->
+		<ObjectName>Strobe</ObjectName>
+		<MinimumSize>250,45</MinimumSize>
+		<MaximumSize>250,45</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+
+		<!--
+		*************************************************************************************************
+		Visual - Volume level display - More Info at https://www.mixxx.org/wiki/doku.php/creating_skins
+		*************************************************************************************************
+		-->
+		
+		<!--
+		<VuMeter>
+		<Pos>0,0</Pos>
+		<MinimumSize>250,45</MinimumSize>
+		<MaximumSize>250,45</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<PathVu>skin:graphics/strobe_display.svg</PathVu>
+		<PathBack></PathBack>
+		<Horizontal>false</Horizontal>
+		<PeakHoldSize>180</PeakHoldSize>
+		<PeakHoldTime>0</PeakHoldTime>
+		<PeakFallTime>0</PeakFallTime>
+		<PeakFallStep>720</PeakFallStep>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],VuMeter</ConfigKey>
+		</Connection>
+		</VuMeter>
+		-->
+		
+		<!--
+		<StatusLight>
+		<Pos>0,0</Pos>
+		<MinimumSize>250,45</MinimumSize>
+		<MaximumSize>250,45</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Path>skin:graphics/strobe_display.svg</Path>
+		<PathStatusLight>skin:graphics/strobe_display.svg</PathStatusLight>
+		<PathBack></PathBack>
+		<Text>STROBE %1</Text>
+		<Connection>
+		<ConfigKey>[Master],VuMeter</ConfigKey>
+		</Connection>
+		</StatusLight>
+		-->
+		
+		<!--
+		<Transform>
+		<Invert></Invert>
+		<Not></Not>
+		<Add>0.5</Add>
+		<IsEqual></IsEqual>
+		</Transform>
+		-->	
+
+		<!--
+		*************************************************************************************************
+		Strobe (The middle lights) - Syncronized with the current music BEAT (Working OK)
+		*************************************************************************************************
+		-->
+		
+		<PushButton>
+		<Pos>0,0</Pos>
+		<MinimumSize>250,45</MinimumSize>
+		<MaximumSize>250,45</MaximumSize>
+		<NumberStates>1</NumberStates>		
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/strobe_beat_<Variable name="strobetype"/>.svg</Pressed>
+		<Unpressed></Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],beat_active</ConfigKey>
+		<ConnectValueToWidget>true</ConnectValueToWidget>
+		<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+		<ButtonState>1</ButtonState>
+		</Connection>		
+		</PushButton>
+		
+		<!--
+		*************************************************************************************************
+		Strobe (Both sides lights) - Acording with current music GAIN (Works only with high values... not OK!)
+		*************************************************************************************************
+		-->
+		
+		<PushButton>
+		<Pos>0,0</Pos>
+		<MinimumSize>250,45</MinimumSize>
+		<MaximumSize>250,45</MaximumSize>
+		<NumberStates>1</NumberStates>		
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/strobe_vumeter_<Variable name="strobetype"/>.svg</Pressed>
+		<Unpressed></Unpressed>
+		</State>		
+		<Connection>
+		
+		<!-- INFO at: https://www.mixxx.org/wiki/doku.php/creating_skins?s[]=bindproperty -->
+
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],VuMeter</ConfigKey>
+ 
+		<!-- <BindProperty>visible</BindProperty> -->
+		<!--
+		<Transform>
+		<Invert/>
+		<Not/>
+		<Add>0.5</Add>
+		<IsEqual>2</IsEqual>
+		</Transform>
+		-->
+		
+		<!-- <ConfigKey>[Channel<Variable name="audiochannel"/>],VuMeter</ConfigKey> -->
+		<!-- <ConfigKey>[Channel<Variable name="audiochannel"/>],PeakIndicator</ConfigKey> -->
+		<ConnectValueToWidget>true</ConnectValueToWidget>
+		<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+		<ButtonState>1</ButtonState>
+		</Connection>		
+		</PushButton>		
+		
+		
+		<!--
+		<NumberDb>
+		<ObjectName>VUNumberDisplay</ObjectName>
+		<Pos>0,0</Pos>
+		<Size>43f,22f</Size>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>
+		<NumberOfDigits>0</NumberOfDigits>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],VuMeter</ConfigKey>
+		<Transform>
+		<Invert/>
+		</Transform>
+		</Connection>
+		</NumberDb>		
+		-->
+		
+		
+		<!--
+		**********************************************
+		Text - Channel Number
+		**********************************************
+		-->
+		
+		<Label>
+		<ObjectName>StrobeLabel</ObjectName>
+		<Pos>47,16</Pos>
+		<Size>10,10</Size>
+		<Text><Variable name="audiochannel"/></Text>
+		</Label>
+
+
+		</Children>
+		<Connection>
+		<ConfigKey>[StrobesModule<Variable name="audiochannel"/>],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>		
+		</WidgetGroup>
+	
+</Template>

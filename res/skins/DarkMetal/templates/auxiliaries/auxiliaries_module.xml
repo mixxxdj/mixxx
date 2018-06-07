@@ -1,0 +1,135 @@
+<!DOCTYPE template>
+
+<Template>
+
+		
+		<WidgetGroup>
+		<Tooltip>Auxiliary <Variable name="audiochannel"/></Tooltip><!-- Tooltip -->	
+		<ObjectName>Auxiliary</ObjectName>
+		<MinimumSize>180,45</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+			
+			<!-- VUMeter: -->
+			<VuMeter>
+			<PathVu>skin:graphics/volume_display_microphone_pressed.svg</PathVu>
+			<PathBack>skin:graphics/volume_display_microphone.svg</PathBack>
+			<Pos>15,29</Pos>
+			<Horizontal>true</Horizontal>
+			<PeakHoldSize>5</PeakHoldSize>
+			<PeakHoldTime>600</PeakHoldTime>
+			<PeakFallTime>100</PeakFallTime>
+			<PeakFallStep>1</PeakFallStep>
+			<Connection>
+			<ConfigKey>[Auxiliary<Variable name="audiochannel"/>],VuMeter</ConfigKey>
+			</Connection>
+			</VuMeter>
+			
+			<!-- Peak indicator: -->						
+			<StatusLight>
+			<Pos>85,29</Pos>
+			<PathStatusLight>skin:graphics/volume_clipping_microphone_pressed.svg</PathStatusLight>
+			<PathBack>skin:graphics/volume_clipping_microphone.svg</PathBack>							
+			<Connection>
+			<ConfigKey>[Auxiliary<Variable name="audiochannel"/>],PeakIndicator</ConfigKey>
+			</Connection>
+			</StatusLight>
+			
+			<!-- Volume: -->			
+			<KnobComposed>
+			<TooltipId>pregain</TooltipId><!-- Tooltip -->	
+			<Pos>107,3</Pos>
+			<Size>40f,40f</Size>
+			<BackPath>skin:graphics/background_knob5.svg</BackPath>
+			<Knob>skin:graphics/pointer_knob1.svg</Knob>
+			<MinAngle>-130</MinAngle>
+			<MaxAngle>130</MaxAngle>
+			<Connection>
+			<ConfigKey>[Auxiliary<Variable name="audiochannel"/>],pregain</ConfigKey>
+			</Connection>
+			</KnobComposed>	
+			
+			<!-- Mute: -->
+			<PushButton>
+			<Tooltip>Mute</Tooltip><!-- Tooltip -->
+			<Pos>12,6</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>skin:graphics/btn_mute_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_mute_1.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>skin:graphics/btn_mute_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_mute_1_pressed.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary<Variable name="audiochannel"/>],mute</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+	
+			<!-- Headphones: -->
+			<PushButton>
+			<Tooltip>Headphones</Tooltip><!-- Tooltip -->
+			<Pos>34,6</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>skin:graphics/btn_headphones_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_headphones_1.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>skin:graphics/btn_headphones_1_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_headphones_1_pressed.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary<Variable name="audiochannel"/>],pfl</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>
+				  
+			<!-- M,L,R: -->			
+			<PushButton>
+			<TooltipId>orientation</TooltipId><!-- Tooltip -->
+			<Pos>53,8</Pos>
+			<NumberStates>3</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>skin:graphics/btn_orientation_left.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_left.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>skin:graphics/btn_orientation_master.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_master.svg</Unpressed>
+			</State>
+			<State>
+			<Number>2</Number>
+			<Pressed>skin:graphics/btn_orientation_right.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_right.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Auxiliary<Variable name="audiochannel"/>],orientation</ConfigKey>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+			</PushButton>	
+			
+			<!-- Label: Channel Number -->	
+			<Label>
+			<ObjectName>AuxiliaryLabel</ObjectName>
+			<Pos>80,11</Pos>
+			<Size>10,10</Size>
+			<Text>AU <Variable name="audiochannel"/></Text>
+			</Label>			
+
+		</Children>
+		<Connection>
+		<ConfigKey>[AuxModule<Variable name="audiochannel"/>],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>		
+		</WidgetGroup>
+	
+</Template>

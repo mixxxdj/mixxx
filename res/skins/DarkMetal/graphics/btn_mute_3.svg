@@ -47,7 +47,7 @@
        fx="747.81494"
        fy="150.94176"
        r="24.596836"
-       gradientTransform="matrix(0.4869073,3.0089088e-7,1.8728265e-5,0.26978732,-343.72581,1005.7698)"
+       gradientTransform="matrix(0.29689468,3.0089088e-7,1.1419673e-5,0.26978732,-193.5889,1005.7698)"
        gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
@@ -58,7 +58,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="17.677182"
-     inkscape:cx="21.777932"
+     inkscape:cx="12.58529"
      inkscape:cy="1.3482544"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -95,13 +95,13 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
      id="layer1"
      transform="translate(0,-1041.3622)">
     <path
-       style="opacity:1;fill:url(#radialGradient4725-4-0-0-5-7);fill-opacity:1;stroke:none;stroke-width:1.01626146;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 41,1041.2687 v 11.187 H 0 v -11.187 z"
+       style="opacity:1;fill:url(#radialGradient4725-4-0-0-5-7);fill-opacity:1;stroke:none;stroke-width:0.79356688;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 41,1041.2687 v 11.187 H 16 v -11.187 z"
        id="rect4183-39-0-0-1-8-1-0-1"
        inkscape:connector-curvature="0" />
     <g
        id="g4147-9"
-       transform="matrix(0.47524176,0,0,0.41674275,13.516677,614.78661)"
+       transform="matrix(0.47524176,0,0,0.41674275,21.516677,614.82878)"
        style="opacity:0.5;fill:#8d5fd3;fill-opacity:1">
       <polygon
          transform="matrix(0.29250639,0,0,0.3323336,2.4515346,1023.976)"

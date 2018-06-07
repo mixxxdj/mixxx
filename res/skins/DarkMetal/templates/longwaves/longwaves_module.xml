@@ -1,0 +1,261 @@
+<!DOCTYPE template>
+
+<Template>
+
+
+		<WidgetGroup>
+		<ObjectName>LongWaveRack</ObjectName>
+		<MinimumSize>-1,30</MinimumSize>
+		<MaximumSize>-1,30</MaximumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>vertical</Layout>
+		<Children>
+		
+		
+		<WidgetGroup>
+		<Tooltip>Wave <Variable name="audiochannel"/></Tooltip><!-- Tooltip -->
+		<ObjectName>LongWave</ObjectName>
+		<MinimumSize>-1,29</MinimumSize>
+		<MaximumSize>-1,29</MaximumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>
+		<Children>
+		
+		
+		<WidgetGroup> <!-- Button: Play + Display: Deck X -->
+		<MinimumSize>29,29</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>		
+		<PushButton>	
+		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>.svg</Pressed>
+		<Unpressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>_pressed.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],play</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],cue_set</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],play_indicator</ConfigKey>
+		</Connection>
+		</PushButton>
+		</Children>
+		</WidgetGroup>		
+
+		<WidgetGroup> <!-- Button: To start -->
+		<MinimumSize>29,29</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>		
+		<PushButton>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_longwave_start_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_longwave_start.svg</Unpressed>
+		</State>						
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],start_stop</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		</Children>
+		</WidgetGroup>	
+		
+		<WidgetGroup> <!-- Button: Fast rewind -->
+		<MinimumSize>29,29</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>		
+		<PushButton>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_longwave_rewind_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_longwave_rewind.svg</Unpressed>
+		</State>						
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],back</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],start</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+		</Children>
+		</WidgetGroup>		
+						
+		<Visual>
+		<Channel><Variable name="audiochannel"/></Channel>		
+		<BgColor></BgColor>
+		<BgPixmap>skin:graphics/wave_background_medium.svg</BgPixmap> <!-- bg image must be set here, not in "style.qss" -->
+		<SignalHighColor>#5f4d75</SignalHighColor><!-- highs - clear -->
+		<SignalMidColor>#229d44</SignalMidColor>  <!-- mediums - dark -->
+		<SignalLowColor>#180831</SignalLowColor>  <!-- lows - darker -->
+		<SignalColor>#7c708f</SignalColor>        <!-- "main wave" -->
+		<PlayPosColor>#99ece7f5</PlayPosColor>    <!-- color format: #AARRGGBB -->
+		<PlayedOverlayColor>#99684e8c</PlayedOverlayColor> <!-- played wave - color format: #AARRGGBB -->
+		<BeatColor>#d8cbec</BeatColor>
+		<EndOfTrackColor>#6e4aaa</EndOfTrackColor>					
+		<AxesColor>#99580078</AxesColor>  <!-- color format: #AARRGGBB -->
+		<DefaultMark> <!-- Applies to numbers 1 to 8 -->
+		<Align>top</Align>
+		<Color>#dbb7ff</Color>
+		<TextColor>#ffffff</TextColor>
+		<Text> %1 </Text>
+		</DefaultMark>
+		<MarkRange> <!-- ... -->
+		<StartControl>loop_start_position</StartControl>
+		<EndControl>loop_end_position</EndControl>
+		<EnabledControl>loop_enabled</EnabledControl>
+		<Color>#dbb7ff</Color>
+		<DisabledColor>#ffffff</DisabledColor>
+		</MarkRange>
+		<Mark>
+		<Control>loop_start_position</Control>
+		<Pixmap></Pixmap>
+		<Text> START </Text>
+		<Align>top</Align>
+		<Color>#cb97fb</Color>
+		<TextColor>#ffffff</TextColor>
+		</Mark>
+		<Mark>
+		<Control>loop_end_position</Control>
+		<Pixmap></Pixmap>
+		<Text> END </Text>
+		<Align>top</Align>
+		<Color>#cb97fb</Color>
+		<TextColor>#ffffff</TextColor>
+		</Mark>	
+		<Mark> <!-- Cue -->
+		<Control>cue_point</Control>
+		<Pixmap></Pixmap>
+		<Text> CUE </Text>
+		<Align>top</Align>
+		<Color>#cb97fb</Color>
+		<TextColor>#ffffff</TextColor>
+		</Mark>							
+		</Visual>		
+
+
+		<WidgetGroup> <!-- Button: Fast forward -->
+		<MinimumSize>29,29</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>		
+		<PushButton>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_longwave_forward_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_longwave_forward.svg</Unpressed>
+		</State>						
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],fwd</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],end</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+		</Children>
+		</WidgetGroup>
+		
+		<WidgetGroup> <!-- Button: To end -->
+		<MinimumSize>29,29</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>		
+		<PushButton>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_longwave_end_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_longwave_end.svg</Unpressed>
+		</State>						
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],end</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		</Children>
+		</WidgetGroup>
+		
+		<WidgetGroup> <!-- Button: Play + Display: Deck X -->
+		<MinimumSize>29,29</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+		<PushButton>	
+		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>.svg</Pressed>
+		<Unpressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_longwave_<Variable name="audiochannel"/>_pressed.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],play</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],cue_set</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel"/>],play_indicator</ConfigKey>
+		</Connection>
+		</PushButton>
+		</Children>
+		</WidgetGroup>		
+
+		</Children>	
+		</WidgetGroup>
+		
+		
+		<WidgetGroup><!-- Design only: For creating an horizontal long line -->
+		<ObjectName>HorizontalLineDarker</ObjectName>
+		<MinimumSize>0,1</MinimumSize>
+		<SizePolicy>me,f</SizePolicy>
+		<Layout>horizontal</Layout>				
+		<Children></Children>
+		</WidgetGroup>
+		
+		
+		</Children>
+		<Connection>
+		<ConfigKey>[LongWaveModule<Variable name="audiochannel"/>],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>	
+		</WidgetGroup>		
+	
+</Template>
+
+
+
+
+
+
+
+
+	

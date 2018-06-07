@@ -1,0 +1,143 @@
+<!DOCTYPE template>
+
+<Template>
+
+	<WidgetGroup>
+	<ObjectName>MicrophonesOptions</ObjectName>
+	<MinimumSize>me,30</MinimumSize>
+	<SizePolicy>me,f</SizePolicy>
+	<Layout>horizontal</Layout>
+	<Children>
+	
+	<!-- Texts -->
+	<WidgetGroup>
+	<ObjectName>Texts</ObjectName>	
+	<MinimumSize>85,30</MinimumSize>
+	<SizePolicy>f,f</SizePolicy>
+	<Layout>vertical</Layout>
+	<Children>
+	<Label>
+	<Style>font:10px/12px; background:transparent; color:#787878;</Style>
+	<Text>Microphones</Text>
+	</Label>
+	</Children>			
+	</WidgetGroup>
+	
+	<!-- Button: Show/Hide this Row -->
+	<PushButton>
+	<Tooltip>Close</Tooltip><!-- Tooltip -->	
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view1.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view1.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view1_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view1_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[ToolBarMicros],show</ConfigKey>
+	</Connection>
+	</PushButton>
+	
+	<!-- Button: Minimize/Maximize this Row -->
+	<PushButton>
+	<Tooltip>Maximize</Tooltip><!-- Tooltip -->	
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_row_maximize.svg</Pressed>
+	<Unpressed>skin:graphics/btn_row_maximize.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_row_minimize.svg</Pressed>
+	<Unpressed>skin:graphics/btn_row_minimize.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[MicMaximize],show</ConfigKey>
+	</Connection>
+	</PushButton>	
+
+	<!-- Button: Show/Hide Microphone Module -->	
+	<PushButton>
+	<Tooltip>Microphone 1</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[MicModule1],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- Button: Show/Hide Microphone Module -->	
+	<PushButton>
+	<Tooltip>Microphone 2</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[MicModule2],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	<!-- Button: Show/Hide Microphone Module -->	
+	<PushButton>
+	<Tooltip>Microphone 3</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[MicModule3],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+
+	<!-- Button: Show/Hide Microphone Module -->	
+	<PushButton>
+	<Tooltip>Microphone 4</Tooltip><!-- Tooltip -->
+	<NumberStates>2</NumberStates>
+	<State>
+	<Number>0</Number>
+	<Pressed>skin:graphics/btn_view.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view.svg</Unpressed>
+	</State>
+	<State>
+	<Number>1</Number>
+	<Pressed>skin:graphics/btn_view_pressed.svg</Pressed>
+	<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
+	</State>		
+	<Connection>
+	<ConfigKey>[MicModule4],show</ConfigKey>
+	</Connection>	
+	</PushButton>
+	
+	</Children>
+	</WidgetGroup>
+	
+</Template>

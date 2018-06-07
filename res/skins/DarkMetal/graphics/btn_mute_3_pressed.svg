@@ -16,14 +16,14 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.92.1 r15371"
-   sodipodi:docname="btn_mute_3_over.svg">
+   sodipodi:docname="btn_mute_3_pressed.svg">
   <defs
      id="defs4">
     <linearGradient
        inkscape:collect="always"
        id="linearGradient4733">
       <stop
-         style="stop-color:#8d5fd3;stop-opacity:1"
+         style="stop-color:#6437aa;stop-opacity:1"
          offset="0"
          id="stop4735" />
       <stop
@@ -43,11 +43,11 @@
        xlink:href="#linearGradient4733"
        id="radialGradient4725-4-0-0-5-7"
        cx="747.81494"
-       cy="150.83488"
+       cy="150.79663"
        fx="747.81494"
-       fy="150.83463"
+       fy="150.79637"
        r="24.596836"
-       gradientTransform="matrix(0.86110931,-6.287726e-7,2.2066586e-5,0.21831679,-623.56006,1013.5256)"
+       gradientTransform="matrix(0.31690271,-4.2903611e-7,4.3009524e-6,0.15644546,-208.55002,1022.8568)"
        gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
@@ -57,9 +57,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="8.838591"
-     inkscape:cx="-29.218794"
-     inkscape:cy="6.3346928"
+     inkscape:zoom="12.499655"
+     inkscape:cx="27.825812"
+     inkscape:cy="-1.345347"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -95,18 +95,18 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
      id="layer1"
      transform="translate(0,-1041.3622)">
     <path
-       style="opacity:1;fill:url(#radialGradient4725-4-0-0-5-7);fill-opacity:1;stroke:none;stroke-width:1.01626146;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 41,1041.2687 v 11.187 H 0 v -11.187 z"
+       style="opacity:1;fill:url(#radialGradient4725-4-0-0-5-7);fill-opacity:1;stroke:none;stroke-width:0.79356688;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       d="m 41,1041.2687 v 11.187 H 16 v -11.187 z"
        id="rect4183-39-0-0-1-8-1-0-1"
        inkscape:connector-curvature="0" />
     <g
        id="g4190"
        style="opacity:0.9"
-       transform="translate(-0.48596104)">
+       transform="translate(7.514039,0.04215031)">
       <polygon
          transform="matrix(0.13901125,0,0,0.13849762,15.181749,1041.5212)"
          style="fill:#e5d5ff;fill-opacity:1;stroke:#e5d5ff;stroke-width:5;stroke-linejoin:round;stroke-opacity:1"
-         points="39.389,62.75 39.389,13.769 39.389,13.769 22.235,28.606 6,28.606 6,47.699 21.989,47.699 "
+         points="6,28.606 6,47.699 21.989,47.699 39.389,62.75 39.389,13.769 22.235,28.606 "
          id="polygon1-1" />
       <path
          sodipodi:nodetypes="cc"

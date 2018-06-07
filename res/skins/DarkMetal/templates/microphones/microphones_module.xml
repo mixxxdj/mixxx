@@ -1,0 +1,205 @@
+<!DOCTYPE template>
+
+<Template>
+
+				
+		<WidgetGroup>
+		<Tooltip>Microphone <Variable name="audiochannel"/></Tooltip><!-- Tooltip -->
+		<ObjectName>Microphone</ObjectName>
+		<MinimumSize>255,45</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>	
+
+		<!--
+		****************************************
+		Button - Talk!
+		****************************************
+		-->
+						
+		<PushButton>
+			<Pos>27,8</Pos>
+			<NumberStates>2</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>skin:graphics/btn_talk_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_talk.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>skin:graphics/btn_talk_pressed.svg</Pressed>
+			<Unpressed>skin:graphics/btn_talk_pressed.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Microphone<Variable name="audiochannel"/>],talkover</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+		
+		<!--
+		**********************************************
+		Text - Channel Number
+		**********************************************
+		-->
+		
+		<Label>
+			<ObjectName>MicrophoneLabel</ObjectName>
+			<Pos>93,10</Pos>
+			<Size>10,10</Size>
+			<Text><Variable name="audiochannel"/></Text>
+		</Label>
+						
+		<!--
+		**********************************************
+		Button - Mix Orientation (Routing)
+		**********************************************
+		-->
+		
+		<PushButton>
+			<Pos>103,8</Pos>
+			<NumberStates>3</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Pressed>skin:graphics/btn_orientation_left.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_left.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Pressed>skin:graphics/btn_orientation_master.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_master.svg</Unpressed>
+			</State>
+			<State>
+			<Number>2</Number>
+			<Pressed>skin:graphics/btn_orientation_right.svg</Pressed>
+			<Unpressed>skin:graphics/btn_orientation_right.svg</Unpressed>
+			</State>					
+			<Connection>
+			<ConfigKey>[Microphone<Variable name="audiochannel"/>],orientation</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+		
+		<!--
+		**********************************************
+		Button - Ducking Off / Auto / Manual
+		**********************************************
+		-->
+		
+		<PushButton>
+			<Tooltip>Ducking</Tooltip><!-- Tooltip -->
+			<ObjectName>MicrophoneDucking</ObjectName>
+			<Pos>130,9</Pos>
+			<MinimumSize>51,15</MinimumSize>
+			<MaximumSize>51,15</MaximumSize>
+			<TooltipId></TooltipId>
+			<Style></Style>
+			<NumberStates>3</NumberStates>
+			<State>
+			<Number>0</Number>
+			<Text>OFF</Text>
+			<Pressed>skin:graphics/btn_ducking.svg</Pressed>
+			<Unpressed>skin:graphics/btn_ducking.svg</Unpressed>
+			</State>
+			<State>
+			<Number>1</Number>
+			<Text>AUTO</Text>
+			<Pressed>skin:graphics/btn_ducking.svg</Pressed>
+			<Unpressed>skin:graphics/btn_ducking.svg</Unpressed>
+			</State>
+			<State>
+			<Number>2</Number>
+			<Text>MANUAL</Text>
+			<Pressed>skin:graphics/btn_ducking.svg</Pressed>
+			<Unpressed>skin:graphics/btn_ducking.svg</Unpressed>
+			</State>
+			<Connection>
+			<ConfigKey>[Microphone<Variable name="audiochannel"/>],talkoverDucking</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>LeftButton</ButtonState>
+			</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Knob - Ducking Strength
+		**********************************************
+		-->		
+
+		<KnobComposed>
+			<Tooltip>Duck Strength</Tooltip><!-- Tooltip -->
+			<Pos>181,3</Pos>
+			<Size>40f,40f</Size>
+			<BackPath>skin:graphics/background_knob2.svg</BackPath>
+			<Knob>skin:graphics/pointer_knob2.svg</Knob>
+			<MinAngle>-130</MinAngle>
+			<MaxAngle>130</MaxAngle>
+			<Connection>
+			<ConfigKey>[Channel<Variable name="audiochannel"/>],duckStrength</ConfigKey>
+			</Connection>
+		</KnobComposed>		
+		
+		<!--
+		**********************************************
+		Knob - Channel Gain
+		**********************************************
+		-->
+		
+		<KnobComposed>
+			<Tooltip>Gain</Tooltip><!-- Tooltip -->
+			<Pos>211,3</Pos>
+			<Size>40f,40f</Size>
+			<BackPath>skin:graphics/background_knob5.svg</BackPath>
+			<Knob>skin:graphics/pointer_knob1.svg</Knob>
+			<MinAngle>-130</MinAngle>
+			<MaxAngle>130</MaxAngle>
+			<Connection>
+			<ConfigKey>[Microphone<Variable name="audiochannel"/>],pregain</ConfigKey>
+			</Connection>
+		</KnobComposed>			
+		
+
+		<!--
+		**********************************************
+		Visual - Volume level display
+		**********************************************
+		-->
+						
+		<VuMeter>
+			<PathVu>skin:graphics/volume_display_microphone_pressed.svg</PathVu>
+			<PathBack>skin:graphics/volume_display_microphone.svg</PathBack>
+			<Pos>92,26</Pos>
+			<Horizontal>true</Horizontal>
+			<PeakHoldSize>5</PeakHoldSize>
+			<PeakHoldTime>600</PeakHoldTime>
+			<PeakFallTime>100</PeakFallTime>
+			<PeakFallStep>1</PeakFallStep>
+			<Connection>
+			<ConfigKey>[Microphone<Variable name="audiochannel"/>],VuMeter</ConfigKey>
+			</Connection>
+		</VuMeter>
+						
+		<!--
+		**********************************************
+		Visual - Volume peak indicator
+		**********************************************
+		-->
+						
+		<StatusLight>
+			<Pos>162,26</Pos>
+			<PathStatusLight>skin:graphics/volume_clipping_microphone_pressed.svg</PathStatusLight>
+			<PathBack>skin:graphics/volume_clipping_microphone.svg</PathBack>							
+			<Connection>
+			<ConfigKey>[Microphone<Variable name="audiochannel"/>],PeakIndicator</ConfigKey>
+			</Connection>
+		</StatusLight>
+	
+
+		</Children>
+		<Connection>
+		<ConfigKey>[MicModule<Variable name="audiochannel"/>],show</ConfigKey>
+		<BindProperty>visible</BindProperty>
+		</Connection>		
+		</WidgetGroup>
+	
+</Template>

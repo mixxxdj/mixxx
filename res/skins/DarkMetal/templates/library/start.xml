@@ -1,11 +1,10 @@
 <!DOCTYPE template>
 
 <Template>
-	
+
 	<WidgetGroup>
     <ObjectName>LibraryArea</ObjectName>	
 	<MinimumSize>1,65</MinimumSize>
-	<MaximumSize>-1,-1</MaximumSize>
 	<SizePolicy>me,me</SizePolicy>
 	<Layout>vertical</Layout> 
 	<Children>
@@ -23,7 +22,6 @@
 		<!-- Library: Starts - settings buttons -->	
 		<WidgetGroup>
 		<ObjectName>LibrarySettings</ObjectName>
-		<BackPath>skin:graphics/background_library_settings.svg</BackPath>
 		<Size>me,30</Size>
 		<SizePolicy>me,f</SizePolicy>
 		<Layout>horizontal</Layout>		
@@ -31,14 +29,22 @@
 		
 		<WidgetGroup> <!-- Design only: Visual Rack Left -->
 		<ObjectName>Rack30</ObjectName>
-		<BackPath>skin:graphics/rack_30.svg</BackPath>
 		<MinimumSize>15,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children><!-- Design --></Children>
 		</WidgetGroup>
+
+		<WidgetGroup> <!-- Pusher -->
+		<Size>5,30</Size>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		</Children>
+		</WidgetGroup>	
 		
 		<!-- Button: Show/Hide Preview Deck -->	
 		<WidgetGroup>
+		<Tooltip>Preview Deck</Tooltip><!-- Tooltip -->
 		<Size>30,30</Size>
 		<SizePolicy>f,f</SizePolicy>
 		<Layout>horizontal</Layout>		
@@ -64,6 +70,7 @@
 	
 		<!-- Button: Show/Hide Search Box-->	
 		<WidgetGroup>
+		<Tooltip>Search Box</Tooltip><!-- Tooltip -->
 		<Size>30,30</Size>
 		<SizePolicy>f,f</SizePolicy>
 		<Layout>horizontal</Layout>		
@@ -81,18 +88,20 @@
 		<Unpressed>skin:graphics/btn_view_pressed.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[DarkMetal],search_text_box1_show</ConfigKey>
+		<ConfigKey>[SearchTextBox1],show</ConfigKey>
 		</Connection>	
 		</PushButton>
 		</Children>
 		</WidgetGroup>
 		
-		<WidgetGroup> <!-- Spacer (To center Library Button) -->
-		<Size>48,30</Size>
+		<WidgetGroup> <!-- Pusher -->		
+		<Size>495,30</Size><!-- == 60 + 105 + 105 + 105 + 105 -->
 		<SizePolicy>f,f</SizePolicy>
 		<Layout>horizontal</Layout>		
-		<Children></Children>
+		<Children>
+		</Children>
 		</WidgetGroup>
+
 		
 		<WidgetGroup> <!-- Pusher -->
 		<Size>me,30</Size>
@@ -104,6 +113,7 @@
 
 		<!-- Button: Show/Hide Hifi (Expands the library) -->	
 		<WidgetGroup>
+		<Tooltip>Expand Library</Tooltip><!-- Tooltip -->
 		<Size>100,30</Size>
 		<SizePolicy>f,f</SizePolicy>
 		<Layout>horizontal</Layout>		
@@ -121,12 +131,21 @@
 		<Unpressed>skin:graphics/btn_library_more.svg</Unpressed>
 		</State>		
 		<Connection>
-		<ConfigKey>[DarkMetal],hifi_show</ConfigKey>
+		<ConfigKey>[Hifi],show</ConfigKey>
 		<!-- <ConfigKey>[Library],show_library</ConfigKey> -->
 		</Connection>	
 		</PushButton>
 		</Children>
-		</WidgetGroup>		
+		</WidgetGroup>	
+
+		<!--
+		<WidgetGroup> Spacer (To center Library Button)
+		<Size>18,30</Size>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children></Children>
+		</WidgetGroup>
+		-->		
 
 		<WidgetGroup> <!-- Pusher -->
 		<Size>me,30</Size>
@@ -134,11 +153,524 @@
 		<Layout>horizontal</Layout>		
 		<Children>
 		</Children>
-		</WidgetGroup>			
+		</WidgetGroup>
+		
+		
+		
+		
+		<!-- =================================== Start: Drop Music to Deck 1 =================================== -->
 		
 		<WidgetGroup>
+		<Tooltip>Drop Audio for Deck 1</Tooltip><!-- Tooltip -->
+		<ObjectName>DropMusicForDeck</ObjectName>
+		<MinimumSize>112,30</MinimumSize>
+		<MaximumSize>112,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		
+		<!--
+		**********************************************
+		Pusher:
+		**********************************************
+		-->			
+		<WidgetGroup> <!-- Pusher -->
+		<MinimumSize>4,30</MinimumSize>
+		<MaximumSize>4,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		</Children>
+		</WidgetGroup>			
+		<!--
+		**********************************************
+		Text - Channel Number:
+		**********************************************
+		-->		
+		<Label>
+		<ObjectName>DropLabel</ObjectName>
+		<MinimumSize>8,30</MinimumSize>
+		<MaximumSize>8,30</MaximumSize><!-- WARNING: if long text, it pushes the "mixer" layout to the right -->
+		<SizePolicy>f,f</SizePolicy>
+		<Text>1</Text><!-- Channel Number -->
+		</Label>		
+		<!--
+		**********************************************
+		Text - Title:
+		**********************************************
+		-->		
+		<TrackProperty>		
+		<ObjectName>SmallTitle</ObjectName>
+		<MinimumSize>50,30</MinimumSize>
+		<MaximumSize>50,30</MaximumSize><!-- WARNING: if long text, it pushes the "mixer" layout to the right -->
+		<SizePolicy>f,f</SizePolicy>
+		<Alignment>left</Alignment>
+		<Elide>right</Elide> <!-- Adds "..." -->
+		<Property>title</Property>
+		<Channel>1</Channel><!-- Channel Number -->
+		</TrackProperty>
+		<!--
+		**********************************************
+		Pusher:
+		**********************************************
+		-->			
+		<WidgetGroup> <!-- Pusher -->
+		<MinimumSize>6,30</MinimumSize>
+		<MaximumSize>6,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		</Children>
+		</WidgetGroup>		
+		<!--
+		**********************************************
+		Button - Eject:
+		**********************************************
+		-->					
+		<PushButton>
+		<Tooltip>Eject</Tooltip><!-- Tooltip -->
+		<MinimumSize>20,30</MinimumSize>
+		<MaximumSize>20,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_eject_pressed_small.svg</Pressed>
+		<Unpressed>skin:graphics/btn_eject_small.svg</Unpressed>
+		</State>						
+		<Connection>
+		<ConfigKey>[Channel1],eject</ConfigKey><!-- Channel Number -->
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		</PushButton>		
+		<!--
+		****************************************
+		Buttons - Play:
+		****************************************
+		-->					
+		<PushButton>
+		<Tooltip>Play</Tooltip><!-- Tooltip -->
+		<MinimumSize>20,30</MinimumSize>
+		<MaximumSize>20,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_play_small.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_small.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_play_small_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_small_pressed.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel1],play</ConfigKey><!-- Channel Number -->
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel1],cue_set</ConfigKey><!-- Channel Number -->
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel1],play_indicator</ConfigKey><!-- Channel Number -->
+		</Connection>
+		</PushButton>
+		
+		</Children>
+		</WidgetGroup>
+		
+		<!-- =================================== Ends: Drop Music to Deck 1 =================================== -->
+		
+		<!-- =================================== Start: Drop Music to Deck 2 =================================== -->
+		
+		<WidgetGroup>
+		<Tooltip>Drop Audio for Deck 2</Tooltip><!-- Tooltip -->
+		<ObjectName>DropMusicForDeck</ObjectName>
+		<MinimumSize>112,30</MinimumSize>
+		<MaximumSize>112,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		
+		<!--
+		**********************************************
+		Pusher:
+		**********************************************
+		-->			
+		<WidgetGroup> <!-- Pusher -->
+		<MinimumSize>4,30</MinimumSize>
+		<MaximumSize>4,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		</Children>
+		</WidgetGroup>			
+		<!--
+		**********************************************
+		Text - Channel Number:
+		**********************************************
+		-->		
+		<Label>
+		<ObjectName>DropLabel</ObjectName>
+		<MinimumSize>8,30</MinimumSize>
+		<MaximumSize>8,30</MaximumSize><!-- WARNING: if long text, it pushes the "mixer" layout to the right -->
+		<SizePolicy>f,f</SizePolicy>
+		<Text>2</Text><!-- Channel Number -->
+		</Label>		
+		<!--
+		**********************************************
+		Text - Title:
+		**********************************************
+		-->		
+		<TrackProperty>		
+		<ObjectName>SmallTitle</ObjectName>
+		<MinimumSize>50,30</MinimumSize>
+		<MaximumSize>50,30</MaximumSize><!-- WARNING: if long text, it pushes the "mixer" layout to the right -->
+		<SizePolicy>f,f</SizePolicy>
+		<Alignment>left</Alignment>
+		<Elide>right</Elide> <!-- Adds "..." -->
+		<Property>title</Property>
+		<Channel>2</Channel><!-- Channel Number -->
+		</TrackProperty>
+		<!--
+		**********************************************
+		Pusher:
+		**********************************************
+		-->			
+		<WidgetGroup> <!-- Pusher -->
+		<MinimumSize>6,30</MinimumSize>
+		<MaximumSize>6,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		</Children>
+		</WidgetGroup>		
+		<!--
+		**********************************************
+		Button - Eject:
+		**********************************************
+		-->					
+		<PushButton>
+		<Tooltip>Eject</Tooltip><!-- Tooltip -->
+		<MinimumSize>20,30</MinimumSize>
+		<MaximumSize>20,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_eject_pressed_small.svg</Pressed>
+		<Unpressed>skin:graphics/btn_eject_small.svg</Unpressed>
+		</State>						
+		<Connection>
+		<ConfigKey>[Channel2],eject</ConfigKey><!-- Channel Number -->
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		</PushButton>		
+		<!--
+		****************************************
+		Buttons - Play:
+		****************************************
+		-->					
+		<PushButton>
+		<Tooltip>Play</Tooltip><!-- Tooltip -->
+		<MinimumSize>20,30</MinimumSize>
+		<MaximumSize>20,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_play_small.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_small.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_play_small_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_small_pressed.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel2],play</ConfigKey><!-- Channel Number -->
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel2],cue_set</ConfigKey><!-- Channel Number -->
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel2],play_indicator</ConfigKey><!-- Channel Number -->
+		</Connection>
+		</PushButton>
+		
+		</Children>
+		</WidgetGroup>
+		
+		<!-- =================================== Ends: Drop Music to Deck 2 =================================== -->		
+		
+		<!-- =================================== Start: Drop Music to Deck 3 =================================== -->
+		
+		<WidgetGroup>
+		<Tooltip>Drop Audio for Deck 3</Tooltip><!-- Tooltip -->
+		<ObjectName>DropMusicForDeck</ObjectName>
+		<MinimumSize>112,30</MinimumSize>
+		<MaximumSize>112,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		
+		<!--
+		**********************************************
+		Pusher:
+		**********************************************
+		-->			
+		<WidgetGroup> <!-- Pusher -->
+		<MinimumSize>4,30</MinimumSize>
+		<MaximumSize>4,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		</Children>
+		</WidgetGroup>			
+		<!--
+		**********************************************
+		Text - Channel Number:
+		**********************************************
+		-->		
+		<Label>
+		<ObjectName>DropLabel</ObjectName>
+		<MinimumSize>8,30</MinimumSize>
+		<MaximumSize>8,30</MaximumSize><!-- WARNING: if long text, it pushes the "mixer" layout to the right -->
+		<SizePolicy>f,f</SizePolicy>
+		<Text>3</Text><!-- Channel Number -->
+		</Label>		
+		<!--
+		**********************************************
+		Text - Title:
+		**********************************************
+		-->		
+		<TrackProperty>		
+		<ObjectName>SmallTitle</ObjectName>
+		<MinimumSize>50,30</MinimumSize>
+		<MaximumSize>50,30</MaximumSize><!-- WARNING: if long text, it pushes the "mixer" layout to the right -->
+		<SizePolicy>f,f</SizePolicy>
+		<Alignment>left</Alignment>
+		<Elide>right</Elide> <!-- Adds "..." -->
+		<Property>title</Property>
+		<Channel>3</Channel><!-- Channel Number -->
+		</TrackProperty>
+		<!--
+		**********************************************
+		Pusher:
+		**********************************************
+		-->			
+		<WidgetGroup> <!-- Pusher -->
+		<MinimumSize>6,30</MinimumSize>
+		<MaximumSize>6,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		</Children>
+		</WidgetGroup>		
+		<!--
+		**********************************************
+		Button - Eject:
+		**********************************************
+		-->					
+		<PushButton>
+		<Tooltip>Eject</Tooltip><!-- Tooltip -->
+		<MinimumSize>20,30</MinimumSize>
+		<MaximumSize>20,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_eject_pressed_small.svg</Pressed>
+		<Unpressed>skin:graphics/btn_eject_small.svg</Unpressed>
+		</State>						
+		<Connection>
+		<ConfigKey>[Channel3],eject</ConfigKey><!-- Channel Number -->
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		</PushButton>		
+		<!--
+		****************************************
+		Buttons - Play:
+		****************************************
+		-->					
+		<PushButton>
+		<Tooltip>Play</Tooltip><!-- Tooltip -->
+		<MinimumSize>20,30</MinimumSize>
+		<MaximumSize>20,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_play_small.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_small.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_play_small_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_small_pressed.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel3],play</ConfigKey><!-- Channel Number -->
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel3],cue_set</ConfigKey><!-- Channel Number -->
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel3],play_indicator</ConfigKey><!-- Channel Number -->
+		</Connection>
+		</PushButton>
+		
+		</Children>
+		</WidgetGroup>
+		
+		<!-- =================================== Ends: Drop Music to Deck 3 =================================== -->
+		
+		<!-- =================================== Start: Drop Music to Deck 4 =================================== -->
+		
+		<WidgetGroup>
+		<Tooltip>Drop Audio for Deck 4</Tooltip><!-- Tooltip -->
+		<ObjectName>DropMusicForDeck</ObjectName>
+		<MinimumSize>112,30</MinimumSize>
+		<MaximumSize>112,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		
+		<!--
+		**********************************************
+		Pusher:
+		**********************************************
+		-->			
+		<WidgetGroup> <!-- Pusher -->
+		<MinimumSize>4,30</MinimumSize>
+		<MaximumSize>4,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		</Children>
+		</WidgetGroup>			
+		<!--
+		**********************************************
+		Text - Channel Number:
+		**********************************************
+		-->		
+		<Label>
+		<ObjectName>DropLabel</ObjectName>
+		<MinimumSize>8,30</MinimumSize>
+		<MaximumSize>8,30</MaximumSize><!-- WARNING: if long text, it pushes the "mixer" layout to the right -->
+		<SizePolicy>f,f</SizePolicy>
+		<Text>4</Text><!-- Channel Number -->
+		</Label>		
+		<!--
+		**********************************************
+		Text - Title:
+		**********************************************
+		-->		
+		<TrackProperty>		
+		<ObjectName>SmallTitle</ObjectName>
+		<MinimumSize>50,30</MinimumSize>
+		<MaximumSize>50,30</MaximumSize><!-- WARNING: if long text, it pushes the "mixer" layout to the right -->
+		<SizePolicy>f,f</SizePolicy>
+		<Alignment>left</Alignment>
+		<Elide>right</Elide> <!-- Adds "..." -->
+		<Property>title</Property>
+		<Channel>4</Channel><!-- Channel Number -->
+		</TrackProperty>
+		<!--
+		**********************************************
+		Pusher:
+		**********************************************
+		-->			
+		<WidgetGroup> <!-- Pusher -->
+		<MinimumSize>6,30</MinimumSize>
+		<MaximumSize>6,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>horizontal</Layout>		
+		<Children>
+		</Children>
+		</WidgetGroup>		
+		<!--
+		**********************************************
+		Button - Eject:
+		**********************************************
+		-->					
+		<PushButton>
+		<Tooltip>Eject</Tooltip><!-- Tooltip -->
+		<MinimumSize>20,30</MinimumSize>
+		<MaximumSize>20,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_eject_pressed_small.svg</Pressed>
+		<Unpressed>skin:graphics/btn_eject_small.svg</Unpressed>
+		</State>						
+		<Connection>
+		<ConfigKey>[Channel4],eject</ConfigKey><!-- Channel Number -->
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		</PushButton>		
+		<!--
+		****************************************
+		Buttons - Play:
+		****************************************
+		-->					
+		<PushButton>
+		<Tooltip>Play</Tooltip><!-- Tooltip -->
+		<MinimumSize>20,30</MinimumSize>
+		<MaximumSize>20,30</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_play_small.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_small.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_play_small_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_small_pressed.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel4],play</ConfigKey><!-- Channel Number -->
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel4],cue_set</ConfigKey><!-- Channel Number -->
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel4],play_indicator</ConfigKey><!-- Channel Number -->
+		</Connection>
+		</PushButton>
+		
+		</Children>
+		</WidgetGroup>
+		
+		<!-- =================================== Ends: Drop Music to Deck 4 =================================== -->
+
+		
+		
+		<WidgetGroup>
+		<Tooltip>Fonts Size</Tooltip><!-- Tooltip -->
 		<ObjectName>LibrarySetFonts</ObjectName>
-		<BackPath>skin:graphics/background_library_fonts.svg</BackPath>
 		<Size>108,30</Size>
 		<SizePolicy>f,f</SizePolicy>
 		<Layout>horizontal</Layout>		
@@ -147,7 +679,7 @@
 		<!--
 		<Knob>	
 		<NumberStates>64</NumberStates>
-		<Path>skin:graphics/knob_rotary_s%1.svg</Path>
+		<Path>gfx_knobs/knob_rotary_s%1.svg</Path>
 		<Connection>
 		<ConfigKey>[Library],font_size_increment</ConfigKey>
 		</Connection>
@@ -155,7 +687,7 @@
 
 		<Knob>	
 		<NumberStates>64</NumberStates>
-		<Path>skin:graphics/knob_rotary_s%1.svg</Path>
+		<Path>gfx_knobs/knob_rotary_s%1.svg</Path>
 		<Connection>
 		<ConfigKey>[Playlist],SelectTrackKnob</ConfigKey>
 		</Connection>
@@ -198,7 +730,6 @@
 		
 		<WidgetGroup> <!-- Design only: Visual Rack Left -->
 		<ObjectName>Rack30</ObjectName>
-		<BackPath>skin:graphics/rack_30.svg</BackPath>
 		<MinimumSize>15,30</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children><!-- Design --></Children>
@@ -228,7 +759,6 @@
 		
 		<WidgetGroup> <!-- Design only: Visual Rack Left -->
 		<ObjectName>Rack500</ObjectName>
-		<BackPath>skin:graphics/rack_500.svg</BackPath>
 		<MinimumSize>15,1</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>
@@ -237,7 +767,7 @@
 		<Splitter>
 		<ObjectName>SplitterVertical</ObjectName>
 		<Orientation>horizontal</Orientation>  
-        <MinimumSize>-1,-1</MinimumSize>
+        <MinimumSize>0,0</MinimumSize>
 		<SizePolicy>me,me</SizePolicy>	
 		<SplitSizes>1,9</SplitSizes> <!-- eg: 1 == 10%, 9 == 90% -->
 		<Children>
@@ -385,7 +915,7 @@
 		<NumberStates>1</NumberStates>
 		<State>
 		<Number>0</Number>
-		<Pressed>skin:graphics/btn_eject_pressed.svg</Pressed>
+		<Pressed>skin:graphics/btn_eject_pressed_small.svg</Pressed>
 		<Unpressed>skin:graphics/btn_eject.svg</Unpressed>
 		</State>
 		<Pos></Pos>
@@ -463,7 +993,7 @@
 		
 		</Children>
 		<Connection>
-		<ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+		<ConfigKey>[PreviewD1],show</ConfigKey>
 		<BindProperty>visible</BindProperty>
 		</Connection>
 		</WidgetGroup>		
@@ -479,7 +1009,7 @@
 		<SearchBox> <!-- THE Search Box !!! --> </SearchBox>
 		</Children>
 		<Connection>
-		<ConfigKey>[DarkMetal],search_text_box1_show</ConfigKey>
+		<ConfigKey>[SearchTextBox1],show</ConfigKey>
 		<BindProperty>visible</BindProperty>
 		</Connection>
 		</WidgetGroup>		 
@@ -541,7 +1071,6 @@
 		
 		<WidgetGroup> <!-- Design only: Visual Rack Left -->
 		<ObjectName>Rack500</ObjectName>
-		<BackPath>skin:graphics/rack_500.svg</BackPath>
 		<MinimumSize>15,1</MinimumSize>
 		<SizePolicy>f,me</SizePolicy>
 		<Children></Children>

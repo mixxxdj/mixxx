@@ -1,0 +1,1252 @@
+<!DOCTYPE template>
+
+<Template>
+	
+	<WidgetGroup>
+	<ObjectName>MixerPanel</ObjectName>
+		<!-- <BackPath>skin:graphics/background_mixer.svg</BackPath> -->
+		<!-- <Pos>735,0</Pos> -->
+		<MinimumSize>450,300</MinimumSize>
+		<MaximumSize>450,300</MaximumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Children>
+		
+		<!-- Texts Shadows -->
+		<WidgetGroup>
+		<ObjectName>Texts</ObjectName>
+		<Pos>210,11</Pos>		
+		<MinimumSize>30,30</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>vertical</Layout>
+		<Children>
+		<Label>
+		<Style>font:18px/20px; background:transparent; color:#000000;</Style>
+		<Text><Variable name="audiochannel_a"/>|<Variable name="audiochannel_b"/></Text>
+		</Label>
+		</Children>			
+		</WidgetGroup>
+		
+		<!-- Texts -->
+		<WidgetGroup>
+		<ObjectName>Texts</ObjectName>
+		<Pos>210,10</Pos>		
+		<MinimumSize>30,30</MinimumSize>
+		<SizePolicy>f,f</SizePolicy>
+		<Layout>vertical</Layout>
+		<Children>
+		<Label>
+		<Style>font:18px/20px; background:transparent; color:#777777;</Style>
+		<Text><Variable name="audiochannel_a"/>|<Variable name="audiochannel_b"/></Text>
+		</Label>
+		</Children>			
+		</WidgetGroup>	
+
+		<!--
+		**********************************************
+		Texts - Gains
+		**********************************************
+		-->
+				
+		<NumberDb>
+		<ObjectName>DBNumberDisplay</ObjectName>
+		<Pos>143,15</Pos>
+		<Size>43f,22f</Size>
+		<DisplayUnit></DisplayUnit>
+		<NumberOfDigits>1</NumberOfDigits>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],pregain</ConfigKey>
+		</Connection>
+		</NumberDb>
+		
+		<NumberDb>
+		<ObjectName>DBNumberDisplay</ObjectName>
+		<Pos>264,15</Pos>
+		<Size>43f,22f</Size>
+		<DisplayUnit></DisplayUnit>
+		<NumberOfDigits>1</NumberOfDigits>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],pregain</ConfigKey>
+		</Connection>
+		</NumberDb>	
+
+		<!--
+		**********************************************
+		Texts - Volumes
+		**********************************************
+		-->
+		
+		<Number>
+		<ObjectName>VolumeNumberDisplay</ObjectName>
+		<Pos>166,61</Pos>
+		<Size>43f,22f</Size>
+		<DisplayUnit></DisplayUnit>
+		<NumberOfDigits>2</NumberOfDigits>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],volume</ConfigKey>
+		</Connection>
+		</Number>	
+
+		<Number>
+		<ObjectName>VolumeNumberDisplay</ObjectName>
+		<Pos>241,61</Pos>
+		<Size>43f,22f</Size>
+		<DisplayUnit></DisplayUnit>
+		<NumberOfDigits>2</NumberOfDigits>
+		<Text>%1</Text>
+		<Alignment>center</Alignment>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],volume</ConfigKey>
+		</Connection>
+		</Number>	
+		
+		<!--
+		**********************************************
+		Texts - Beat Sync
+		**********************************************
+		-->
+		
+		<NumberBpm>		
+		<ObjectName>BeatSyncDisplay</ObjectName>		
+		<Pos>19,23</Pos>
+		<Size>40f,14</Size>
+		<Alignment>right</Alignment>
+		<NumberOfDigits>1</NumberOfDigits>
+		<Channel><Variable name="audiochannel_a"/></Channel>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],visual_bpm</ConfigKey>
+		</Connection>
+		</NumberBpm>	
+
+		<PushButton>
+		<Tooltip>Beat</Tooltip><!-- Tooltip -->
+		<Pos>28,96</Pos>
+		<Size>8f,8f</Size>
+		<NumberStates>1</NumberStates>		
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_beat_rounded_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_beat_rounded.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],beat_active</ConfigKey>
+		<ConnectValueToWidget>true</ConnectValueToWidget>
+		<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+		<ButtonState></ButtonState>
+		</Connection>		
+		</PushButton>		
+
+		<NumberBpm>
+		<ObjectName>BeatSyncDisplay</ObjectName>		
+		<Pos>405,23</Pos>
+		<Size>40f,14</Size>
+		<Alignment>right</Alignment>
+		<NumberOfDigits>1</NumberOfDigits>
+		<Channel><Variable name="audiochannel_b"/></Channel>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],visual_bpm</ConfigKey>
+		</Connection>
+		</NumberBpm>
+		
+		<PushButton>
+		<Tooltip>Beat</Tooltip><!-- Tooltip -->
+		<Pos>414,96</Pos>
+		<Size>8f,8f</Size>
+		<NumberStates>1</NumberStates>		
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_beat_rounded_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_beat_rounded.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],beat_active</ConfigKey>
+		<ConnectValueToWidget>true</ConnectValueToWidget>
+		<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		<EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+		<ButtonState></ButtonState>
+		</Connection>		
+		</PushButton>
+		
+		<!--
+		**********************************************
+		Texts - Pitchs rates display
+		**********************************************
+		-->
+		
+		<NumberRate>
+		<Tooltip>Pitch</Tooltip><!-- Tooltip -->
+		<ObjectName>PitchRateDisplay</ObjectName>
+		<Channel><Variable name="audiochannel_a"/></Channel>
+		<Pos>19,46</Pos>
+		<Size>40f,14</Size>
+		<Alignment>right</Alignment>
+		<NumberOfDigits>1</NumberOfDigits>
+		</NumberRate>
+
+		<NumberRate>
+		<Tooltip>Pitch</Tooltip><!-- Tooltip -->
+		<ObjectName>PitchRateDisplay</ObjectName>
+		<Channel><Variable name="audiochannel_b"/></Channel>
+		<Pos>405,46</Pos>
+		<Size>40f,14</Size>
+		<Alignment>right</Alignment>
+		<NumberOfDigits>1</NumberOfDigits>
+		</NumberRate>
+		
+		
+		<!--
+		**********************************************
+		Texts - Key number display
+		**********************************************
+		-->
+						
+		<Key>
+		<Tooltip>Key</Tooltip><!-- Tooltip -->
+		<ObjectName>KeyNumberDisplay</ObjectName>
+		<Channel><Variable name="audiochannel_a"/></Channel>
+		<Pos>19,69</Pos>
+		<Size>40f,14</Size>
+		<Alignment>right</Alignment>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],visual_key</ConfigKey>
+		</Connection>
+		</Key>
+
+		<Key>
+		<Tooltip>Key</Tooltip><!-- Tooltip -->
+		<ObjectName>KeyNumberDisplay</ObjectName>
+		<Channel><Variable name="audiochannel_b"/></Channel>
+		<Pos>405,69</Pos>
+		<Size>40f,14</Size>
+		<Alignment>right</Alignment>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],visual_key</ConfigKey>
+		</Connection>
+		</Key>
+		
+		<!--
+		**********************************************
+		Buttons - Sync selectors:
+		**********************************************
+		-->
+
+		<PushButton> <!-- Left -->
+		<Tooltip>Beat</Tooltip><!-- Tooltip -->
+		<Pos>2,22</Pos>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_sync_small1_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small1.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],beatsync</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],beatsync_tempo</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton> <!-- Left -->
+		<Tooltip>Pitch</Tooltip><!-- Tooltip -->
+		<Pos>2,45</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_sync_small2_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small2.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_sync_small2_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small2_pressed.svg</Unpressed>
+		</State>							
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],sync_enabled</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],beatsync_tempo</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>		
+		
+		<PushButton> <!-- Left -->
+		<Tooltip>Key</Tooltip><!-- Tooltip -->
+		<Pos>2,68</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_sync_small3_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small3.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_sync_small3_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small3_pressed.svg</Unpressed>
+		</State>							
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],sync_key</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],reset_key</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>		
+
+
+		<PushButton> <!-- Right -->
+		<Tooltip>Beat</Tooltip><!-- Tooltip -->
+		<Pos>388,22</Pos>
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_sync_small1_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small1.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],beatsync</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],beatsync_tempo</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton> <!-- Right -->
+		<Tooltip>Pitch</Tooltip><!-- Tooltip -->
+		<Pos>388,45</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_sync_small2_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small2.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_sync_small2_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small2_pressed.svg</Unpressed>
+		</State>							
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],sync_enabled</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],beatsync_tempo</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>		
+		
+		<PushButton> <!-- Right -->
+		<Tooltip>Key</Tooltip><!-- Tooltip -->
+		<Pos>388,68</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_sync_small3_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small3.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_sync_small3_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_sync_small3_pressed.svg</Unpressed>
+		</State>							
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],sync_key</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],reset_key</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>			
+		
+		
+	
+		<!--
+		**********************************************
+		Sliders - Pitch control
+		**********************************************
+		-->
+		
+		<SliderComposed>
+		<Tooltip>Sync Slider</Tooltip><!-- Tooltip -->		
+		<Handle>skin:graphics/knob_pitch.svg</Handle>
+		<Slider>skin:graphics/slider_pitch.svg</Slider>
+		<Pos>13,113</Pos>
+		<Horizontal>false</Horizontal>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+		</SliderComposed>
+
+		<SliderComposed>
+		<Tooltip>Sync Slider</Tooltip><!-- Tooltip -->
+		<Handle>skin:graphics/knob_pitch.svg</Handle>
+		<Slider>skin:graphics/slider_pitch.svg</Slider>
+		<Pos>399,113</Pos>
+		<Horizontal>false</Horizontal>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+		</SliderComposed>
+
+		<!--
+		**********************************************
+		Button - Pitch control
+		**********************************************
+		-->
+		
+		<PushButton>
+		<Tooltip>Sync</Tooltip><!-- Tooltip -->
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_pitch_up_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_pitch_up.svg</Unpressed>
+		</State>
+		<Pos>33,199</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_perm_up</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_perm_up_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Tooltip>Sync</Tooltip><!-- Tooltip -->
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_pitch_down_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_pitch_down.svg</Unpressed>
+		</State>
+		<Pos>7,199</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_perm_down</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_perm_down_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+
+		<PushButton>
+		<Tooltip>Sync</Tooltip><!-- Tooltip -->
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_pitch_up_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_pitch_up.svg</Unpressed>
+		</State>
+		<Pos>418,199</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_perm_up</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_perm_up_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Tooltip>Sync</Tooltip><!-- Tooltip -->
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_pitch_down_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_pitch_down.svg</Unpressed>
+		</State>
+		<Pos>392,199</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_perm_down</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_perm_down_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Button - Pitch bend (Nudge)
+		**********************************************
+		-->
+		
+		<PushButton><!-- Label: > -->
+		<Tooltip>Sync</Tooltip><!-- Tooltip -->
+		<Pos>33,225</Pos>		
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_nudge_up_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_nudge_up.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_temp_up</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_temp_up_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton><!-- Label: < -->
+		<Tooltip>Sync</Tooltip><!-- Tooltip -->		
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_nudge_down_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_nudge_down.svg</Unpressed>
+		</State>
+		<Pos>7,225</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_temp_down</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],rate_temp_down_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+
+		<PushButton>
+		<Tooltip>Sync</Tooltip><!-- Tooltip -->
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_nudge_up_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_nudge_up.svg</Unpressed>
+		</State>
+		<Pos>418,225</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_temp_up</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_temp_up_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Tooltip>Sync</Tooltip><!-- Tooltip -->
+		<NumberStates>1</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_nudge_down_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_nudge_down.svg</Unpressed>
+		</State>
+		<Pos>392,225</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_temp_down</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],rate_temp_down_small</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		</PushButton>		
+
+		<!--
+		****************************************
+		Buttons - Play
+		****************************************
+		-->
+		
+		<PushButton>
+		<Tooltip>Play</Tooltip><!-- Tooltip -->
+		<Pos>75,260</Pos>
+		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_play.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_play_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_pressed.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],play</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],cue_set</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],play_indicator</ConfigKey>
+		</Connection>
+		</PushButton>
+
+		<PushButton>
+		<Tooltip>Play</Tooltip><!-- Tooltip -->
+		<Pos>314,260</Pos>		
+		<NumberStates>2</NumberStates>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_play.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_play_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_play_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],play</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],cue_set</ConfigKey>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],play_indicator</ConfigKey>
+		</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Buttons - Cues:
+		**********************************************
+		-->
+		
+		<PushButton>
+		<Tooltip>Cue</Tooltip><!-- Tooltip -->
+		<Pos>7,260</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_cue_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_cue.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_cue_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_cue_pressed.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],cue_default</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],cue_gotoandstop</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],cue_indicator</ConfigKey>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Tooltip>Cue</Tooltip><!-- Tooltip -->
+		<Pos>392,260</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_cue_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_cue.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_cue_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_cue_pressed.svg</Unpressed>
+		</State>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],cue_default</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],cue_gotoandstop</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>RightButton</ButtonState>
+		</Connection>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],cue_indicator</ConfigKey>
+		</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Button - Prelisten / Monitoring (Headphones)
+		**********************************************
+		-->
+		
+		<PushButton>
+		<Tooltip>Headphones</Tooltip><!-- Tooltip -->
+		<Pos>75,225</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_headphones_3_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_headphones_3.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_headphones_3_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_headphones_3_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],pfl</ConfigKey>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Tooltip>Headphones</Tooltip><!-- Tooltip -->
+		<Pos>314,225</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_headphones_3_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_headphones_3.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_headphones_3_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_headphones_3_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],pfl</ConfigKey>
+		</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Buttons = Quick Effect Button + Frequency Kill (Left row)
+		**********************************************
+		-->
+		
+		<PushButton><!-- Effects: apply -->
+		<Tooltip>Effects</Tooltip><!-- Tooltip -->
+		<Pos>73,63</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_kill_rounded.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_rounded.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_kill_rounded_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_rounded_pressed.svg</Unpressed>
+		</State>							
+		<Connection>
+		<!-- <ConfigKey>[EffectRack1_EffectUnit<Variable name="audiochannel_a"/>],group_[BusRight]_enable</ConfigKey> -->
+		<ConfigKey>[EffectRack1_EffectUnit<Variable name="audiochannel_a"/>],group_[Channel<Variable name="audiochannel_a"/>]_enable</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton><!-- Effects: on/off -->
+		<Tooltip>Effects</Tooltip><!-- Tooltip -->
+		<Pos>93,63</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_effect_deck_left.svg</Pressed>
+		<Unpressed>skin:graphics/btn_effect_deck_left.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_effect_deck_left_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_effect_deck_left_pressed.svg</Unpressed>
+		</State>							
+		<Connection>
+		<ConfigKey>[EffectRack1_EffectUnit<Variable name="audiochannel_a"/>_Effect1],enabled</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Tooltip>Filter</Tooltip><!-- Tooltip -->
+		<Pos>73,111</Pos>		
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterHighKill</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Tooltip>Filter</Tooltip><!-- Tooltip -->
+		<Pos>73,151</Pos>		
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterMidKill</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Tooltip>Filter</Tooltip><!-- Tooltip -->
+		<Pos>73,191</Pos>		
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterLowKill</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+
+		<!--
+		**********************************************
+		Buttons = Quick Effect Button + Frequency Kill (right row)
+		**********************************************
+		-->		
+		
+		<PushButton><!-- Effects: apply -->
+		<Tooltip>Effects</Tooltip><!-- Tooltip -->
+		<Pos>358,63</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_kill_rounded.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_rounded.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_kill_rounded_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_rounded_pressed.svg</Unpressed>
+		</State>							
+		<Connection>
+		<!-- <ConfigKey>[EffectRack1_EffectUnit<Variable name="audiochannel_b"/>],group_[BusRight]_enable</ConfigKey> -->
+		<ConfigKey>[EffectRack1_EffectUnit<Variable name="audiochannel_b"/>],group_[Channel<Variable name="audiochannel_b"/>]_enable</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton><!-- Effects: on/off -->
+		<Tooltip>Effects</Tooltip><!-- Tooltip -->
+		<Pos>308,63</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_effect_deck_right.svg</Pressed>
+		<Unpressed>skin:graphics/btn_effect_deck_right.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_effect_deck_right_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_effect_deck_right_pressed.svg</Unpressed>
+		</State>							
+		<Connection>
+		<ConfigKey>[EffectRack1_EffectUnit<Variable name="audiochannel_b"/>_Effect1],enabled</ConfigKey>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Tooltip>Filter</Tooltip><!-- Tooltip -->
+		<Pos>358,111</Pos>		
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterHighKill</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Tooltip>Filter</Tooltip><!-- Tooltip -->
+		<Pos>358,151</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterMidKill</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<PushButton>
+		<Tooltip>Filter</Tooltip><!-- Tooltip -->
+		<Pos>358,191</Pos>
+		<NumberStates>2</NumberStates>
+		<State>
+		<Number>0</Number>
+		<Pressed>skin:graphics/btn_kill.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill.svg</Unpressed>
+		</State>
+		<State>
+		<Number>1</Number>
+		<Pressed>skin:graphics/btn_kill_pressed.svg</Pressed>
+		<Unpressed>skin:graphics/btn_kill_pressed.svg</Unpressed>
+		</State>		
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterLowKill</ConfigKey>
+		<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+		<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		</PushButton>
+		
+		<!--
+		**********************************************
+		Others...
+		**********************************************
+		-->
+		
+		<KnobComposed>
+		<Tooltip>Gain</Tooltip><!-- Tooltip -->
+		<Pos>101,6</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>skin:graphics/background_knob1.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],pregain</ConfigKey>
+		</Connection>
+		</KnobComposed>	
+		
+		<KnobComposed>
+		<Tooltip>Filter</Tooltip><!-- Tooltip -->
+		<Pos>101,102</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>skin:graphics/background_knob2.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob2.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterHigh</ConfigKey>
+		</Connection>
+		</KnobComposed>			
+
+		<KnobComposed>
+		<Tooltip>Filter</Tooltip><!-- Tooltip -->
+		<Pos>101,142</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>skin:graphics/background_knob2.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob2.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterMid</ConfigKey>
+		</Connection>
+		</KnobComposed>			
+
+		<KnobComposed>
+		<Tooltip>Filter</Tooltip><!-- Tooltip -->
+		<Pos>101,182</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>skin:graphics/background_knob2.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob2.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],filterLow</ConfigKey>
+		</Connection>
+		</KnobComposed>
+
+		<KnobComposed>
+		<Tooltip>Gain</Tooltip><!-- Tooltip -->
+		<Pos>310,6</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>skin:graphics/background_knob1.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob1.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],pregain</ConfigKey>
+		</Connection>
+		</KnobComposed>
+			
+		<KnobComposed>
+		<Tooltip>Filter</Tooltip><!-- Tooltip -->
+		<Pos>310,102</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>skin:graphics/background_knob2.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob2.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterHigh</ConfigKey>
+		</Connection>
+		</KnobComposed>		
+
+		<KnobComposed>
+		<Tooltip>Filter</Tooltip><!-- Tooltip -->
+		<Pos>310,142</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>skin:graphics/background_knob2.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob2.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterMid</ConfigKey>
+		</Connection>
+		</KnobComposed>		
+
+		<KnobComposed>
+		<Tooltip>Filter</Tooltip><!-- Tooltip -->
+		<Pos>310,182</Pos>
+		<Size>40f,40f</Size>
+		<BackPath>skin:graphics/background_knob2.svg</BackPath>
+		<Knob>skin:graphics/pointer_knob2.svg</Knob>
+		<MinAngle>-130</MinAngle>
+		<MaxAngle>130</MaxAngle>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],filterLow</ConfigKey>
+		</Connection>
+		</KnobComposed>
+		
+		<!--
+		**********************************************
+		**********************************************
+		Sliders - Channels Volume
+		**********************************************
+		**********************************************
+		-->
+		
+		<SliderComposed>
+		<Tooltip>Volume</Tooltip><!-- Tooltip -->		
+		<Handle>skin:graphics/knob_volume.svg</Handle>
+		<Slider>skin:graphics/slider_volume.svg</Slider>
+		<Pos>166,91</Pos>
+		<Horizontal>false</Horizontal>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],volume</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+		</SliderComposed>
+		
+		<SliderComposed>
+		<Tooltip>Volume</Tooltip><!-- Tooltip -->			
+		<Handle>skin:graphics/knob_volume.svg</Handle>
+		<Slider>skin:graphics/slider_volume.svg</Slider>
+		<Pos>241,91</Pos>
+		<Horizontal>false</Horizontal>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],volume</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+		</SliderComposed>
+
+		<!--
+		**********************************************
+		Slider - Crossfader
+		**********************************************
+		-->
+		
+		<SliderComposed>
+		<Tooltip>Crossfader</Tooltip><!-- Tooltip -->		
+		<Handle>skin:graphics/knob_crossfader.svg</Handle>
+		<Slider>skin:graphics/slider_crossfader.svg</Slider>
+		<Pos>145,253</Pos>
+		<Horizontal>true</Horizontal>
+		<Connection>
+		<ConfigKey>[Master],crossfader</ConfigKey>
+		<EmitOnDownPress>false</EmitOnDownPress>
+		</Connection>
+		</SliderComposed>
+
+		<!--
+		**********************************************
+		**********************************************
+		Visual - Volume level display
+		**********************************************
+		**********************************************
+		-->
+		
+		<VuMeter>
+		<ObjectName>VuMeterCh1</ObjectName>
+		<PathVu>skin:graphics/volume_display_big_pressed.svg</PathVu>
+		<PathBack>skin:graphics/volume_display_big.svg</PathBack>
+		<Pos>152,105</Pos>
+		<Horizontal>false</Horizontal>
+		<PeakHoldSize>5</PeakHoldSize>
+		<PeakHoldTime>600</PeakHoldTime>
+		<PeakFallTime>100</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],VuMeter</ConfigKey>
+		</Connection>
+		</VuMeter>
+		
+		<VuMeter>
+		<ObjectName>VuMeterCh2</ObjectName>
+		<PathVu>skin:graphics/volume_display_big_pressed.svg</PathVu>
+		<PathBack>skin:graphics/volume_display_big.svg</PathBack>
+		<Pos>290,105</Pos>
+		<Horizontal>false</Horizontal>
+		<PeakHoldSize>5</PeakHoldSize>
+		<PeakHoldTime>600</PeakHoldTime>
+		<PeakFallTime>100</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],VuMeter</ConfigKey>
+		</Connection>
+		</VuMeter>
+
+		<VuMeter>	
+		<ObjectName>VuMeterL1</ObjectName>
+		<PathVu>skin:graphics/volume_display_big_pressed.svg</PathVu>
+		<PathBack>skin:graphics/volume_display_big.svg</PathBack>
+		<Pos>216,105</Pos>
+		<PeakHoldSize>5</PeakHoldSize>
+		<PeakHoldTime>600</PeakHoldTime>
+		<PeakFallTime>100</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
+		<Connection>
+		<ConfigKey>[Master],VuMeterL</ConfigKey>
+		</Connection>
+		</VuMeter>
+		
+		<VuMeter>
+		<ObjectName>VuMeterR1</ObjectName>
+		<PathVu>skin:graphics/volume_display_big_pressed.svg</PathVu>
+		<PathBack>skin:graphics/volume_display_big.svg</PathBack>
+		<Pos>225,105</Pos>
+		<PeakHoldSize>5</PeakHoldSize>
+		<PeakHoldTime>600</PeakHoldTime>
+		<PeakFallTime>100</PeakFallTime>
+		<PeakFallStep>1</PeakFallStep>
+		<Connection>
+		<ConfigKey>[Master],VuMeterR</ConfigKey>
+		</Connection>
+		</VuMeter>
+
+		<!--
+		**********************************************
+		Visual - Volume peak indicator
+		**********************************************
+		-->
+		
+		<StatusLight><!-- left peak indicator -->
+		<PathStatusLight>skin:graphics/volume_clipping_big_pressed.svg</PathStatusLight>
+		<PathBack>skin:graphics/volume_clipping_big.svg</PathBack>
+		<Pos>152,91</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_a"/>],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+
+		<StatusLight><!-- MASTER peaks indicators -->	
+		<PathStatusLight>skin:graphics/volume_clipping_big_pressed.svg</PathStatusLight>
+		<PathBack>skin:graphics/volume_clipping_big.svg</PathBack>
+		<Pos>216,91</Pos>
+		<Connection>
+		<ConfigKey>[Master],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+		
+		<StatusLight><!-- MASTER peaks indicators -->	
+		<PathStatusLight>skin:graphics/volume_clipping_big_pressed.svg</PathStatusLight>
+		<PathBack>skin:graphics/volume_clipping_big.svg</PathBack>
+		<Pos>225,91</Pos>
+		<Connection>
+		<ConfigKey>[Master],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+		
+		<StatusLight><!-- right peak indicator -->	
+		<PathStatusLight>skin:graphics/volume_clipping_big_pressed.svg</PathStatusLight>
+		<PathBack>skin:graphics/volume_clipping_big.svg</PathBack>
+		<Pos>290,91</Pos>
+		<Connection>
+		<ConfigKey>[Channel<Variable name="audiochannel_b"/>],PeakIndicator</ConfigKey>
+		</Connection>
+		</StatusLight>
+		
+
+		</Children>
+	</WidgetGroup>	
+
+</Template>

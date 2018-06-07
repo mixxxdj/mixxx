@@ -23,12 +23,12 @@
        inkscape:collect="always"
        xlink:href="#linearGradient5282"
        id="radialGradient4196-1"
-       cx="770.22101"
-       cy="229.94469"
-       fx="770.22101"
-       fy="229.94467"
+       cx="752.14282"
+       cy="229.95351"
+       fx="752.14282"
+       fy="229.95349"
        r="32.034878"
-       gradientTransform="matrix(-6.6613596e-5,0.95591242,-139.8511,0.00640107,32273.407,293.23137)"
+       gradientTransform="matrix(-6.6613597e-5,0.94729031,-139.8511,0.00616673,32256.282,363.73149)"
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        id="linearGradient5282"
@@ -36,7 +36,7 @@
       <stop
          id="stop5284"
          offset="0"
-         style="stop-color:#414141;stop-opacity:1" />
+         style="stop-color:#323232;stop-opacity:1" />
       <stop
          id="stop5286"
          offset="1"
@@ -54,11 +54,11 @@
        xlink:href="#linearGradient5282-4"
        id="radialGradient4196-1-2"
        cx="767.797"
-       cy="229.94659"
+       cy="229.94496"
        fx="767.797"
-       fy="229.94658"
+       fy="229.94495"
        r="32.034878"
-       gradientTransform="matrix(-6.66136e-5,0.73017988,-139.85111,-6.4035886e-4,32273.407,469.3796)"
+       gradientTransform="matrix(-6.6613601e-5,0.85951366,-139.85111,0.00342589,32273.407,369.14248)"
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        id="linearGradient5282-4"
@@ -66,11 +66,11 @@
       <stop
          id="stop5284-5"
          offset="0"
-         style="stop-color:#b3b3b3;stop-opacity:1" />
+         style="stop-color:#505050;stop-opacity:1" />
       <stop
          id="stop5286-4"
          offset="1"
-         style="stop-color:#1a1a1a;stop-opacity:1" />
+         style="stop-color:#000000;stop-opacity:1" />
     </linearGradient>
   </defs>
   <sodipodi:namedview
@@ -81,8 +81,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="3.6203868"
-     inkscape:cx="77.443513"
-     inkscape:cy="-11.091064"
+     inkscape:cx="114.59424"
+     inkscape:cy="-13.300773"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -122,10 +122,5 @@ Site:https://sites.google.com/site/jorgerosaportfolio</dc:description>
        id="rect4183-9-6"
        d="m 230,1007.3622 v 45 H -1.25e-7 v -44.9999 z"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:13.65747356px;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;opacity:1;fill:url(#radialGradient4196-1-2);fill-opacity:1;stroke:none;stroke-width:0.73520094;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1" />
-    <path
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:medium;line-height:100%;font-family:'Estrangelo Edessa';-inkscape-font-specification:'Estrangelo Edessa, Normal';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;opacity:0.5;fill:url(#radialGradient4196-1);fill-opacity:1;stroke:none;stroke-width:0.51099998;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="m 230,1007.3622 v 45 H 0 v -44.9999 z"
-       id="rect4183-9"
-       inkscape:connector-curvature="0" />
   </g>
 </svg>
