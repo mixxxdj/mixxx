@@ -167,8 +167,8 @@ void SyncControl::requestSync() {
     if (isPlaying() && m_pQuantize->toBool()) {
         // only sync phase if the deck is playing and if quantize is enabled.
         // this way the it is up to the user to decide if a seek is desired or not.
-        // This is helpfull if the beatgrid of the track doe not fit at the current
-        // payposition
+        // This is helpful if the beatgrid of the track doe not fit at the current
+        // playposition
         m_pChannel->getEngineBuffer()->requestSyncPhase();
     }
 }

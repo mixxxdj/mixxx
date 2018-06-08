@@ -1430,7 +1430,7 @@ TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {
               ControlObject::getControl(ConfigKey(m_sGroup1, "local_bpm"))->get());
 }
 
-TEST_F(EngineSyncTest, SyncPhaseToIfQuantize) {
+TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     auto pButtonBeatsync1 = std::make_unique<ControlProxy>(m_sGroup1, "beatsync");
     auto pButtonBeatsyncPhase1 = std::make_unique<ControlProxy>(m_sGroup1, "beatsync_phase");
@@ -1496,6 +1496,4 @@ TEST_F(EngineSyncTest, SyncPhaseToIfQuantize) {
     ASSERT_DOUBLE_EQ(0.19350798541791794, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 
 }
-
-
 
