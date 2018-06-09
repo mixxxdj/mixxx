@@ -91,6 +91,26 @@ Description:
             </Connection>
           </WidgetGroup><!-- 8 -->
 
+          <WidgetGroup><!-- AutoDJ -->
+            <ObjectName>Spacer0f</ObjectName>
+            <Layout>horizontal</Layout>
+            <MinimumSize>32,24</MinimumSize>
+            <MaximumSize>48,24</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Children>
+              <Template src="skin:button_specialcue_deck.xml">
+                <SetVariable name="cue_type">autodj_start</SetVariable>
+                <SetVariable name="label">S</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:button_specialcue_deck.xml">
+                <SetVariable name="cue_type">autodj_end</SetVariable>
+                <SetVariable name="label">E</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
       <!-- Qt is fun to design with...not.
           This spacer is necessary to fill (expanding) container
           when 4 hotcues are enabled. -->

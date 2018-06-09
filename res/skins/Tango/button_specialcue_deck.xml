@@ -1,0 +1,29 @@
+<!--
+Description:
+  Button for setting/clearing cues other than main cue and hotcues (e.g. AutoDJ cues).
+Variables:
+  group: The group for the controls.
+  cue_type: Prefix for COs.
+  label: Button text.
+-->
+<Template>
+  <PushButton>
+    <ObjectName>SpecialCueButton</ObjectName>
+    <MinimumSize>15,24</MinimumSize>
+    <MaximumSize>23,24</MaximumSize>
+    <SizePolicy>me,f</SizePolicy>
+    <NumberStates>1</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="label"/></Text>
+    </State>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_set</ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_clear</ConfigKey>
+      <ButtonState>RightButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>
