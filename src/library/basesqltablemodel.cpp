@@ -3,6 +3,7 @@
 #include <QtAlgorithms>
 #include <QtDebug>
 #include <QUrl>
+#include <QTableView>
 
 #include "library/basesqltablemodel.h"
 
@@ -1049,14 +1050,17 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 }
 
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
+    QTableView* pTableView = qobject_cast<QTableView*>(pParent);
+    DEBUG_ASSERT(pTableView);
+
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-        return new StarDelegate(pParent);
+        return new StarDelegate(pTableView);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
-        return new BPMDelegate(pParent);
+        return new BPMDelegate(pTableView);
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
-        return new PreviewButtonDelegate(pParent, i);
+        return new PreviewButtonDelegate(pTableView, i);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
-        CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pParent);
+        CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pTableView);
         connect(pCoverDelegate, SIGNAL(coverReadyForCell(int, int)),
                 this, SLOT(refreshCell(int, int)));
         return pCoverDelegate;
