@@ -67,6 +67,12 @@ ScrobblingManager::ScrobblingManager(PlayerManagerInterface *manager)
         ->addNewScrobblingService(new FileListener("nowListening.txt"));    
 }
 
+ScrobblingManager::~ScrobblingManager() {
+    for (TrackInfo *info : m_trackList) {
+        delete info;
+    }
+}
+
 void ScrobblingManager::setAudibleStrategy(TrackAudibleStrategy *pStrategy) {
     m_pAudibleStrategy.reset(pStrategy);
 }
@@ -79,11 +85,9 @@ void ScrobblingManager::setTimer(TrackTimers::RegularTimer *timer) {
     m_pTimer.reset(timer);
 }
 
-void ScrobblingManager::setTimersFactory(const std::function
-                                         <std::pair<TrackTimers::RegularTimer*,
-                                         TrackTimers::ElapsedTimer*>
-                                         (TrackPointer)> &factory) {
-    m_timerFactory = factory;
+void ScrobblingManager::setTrackInfoFactory(
+    const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> &factory) {
+    m_trackInfoFactory = factory;
 }
 
 
@@ -103,7 +107,7 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
         }                   
     }
     if (allPaused && pausedTrackInfo)
-        pausedTrackInfo->m_trackInfo.pausePlayedTime();        
+        pausedTrackInfo->m_trackInfo->pausePlayedTime();        
 }
 
 void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack) {
@@ -113,8 +117,8 @@ void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack) {
         for (TrackInfo *trackInfo : m_trackList) {
             VERIFY_OR_DEBUG_ASSERT(trackInfo);
             if (trackInfo->m_pTrack == pResumedTrack && 
-                trackInfo->m_trackInfo.isTimerPaused()) {
-                trackInfo->m_trackInfo.resumePlayedTime();
+                trackInfo->m_trackInfo->isTimerPaused()) {
+                trackInfo->m_trackInfo->resumePlayedTime();
                 break;
             }
         }  
@@ -148,15 +152,11 @@ void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack) {
     if (!trackAlreadyAdded) {
         TrackInfo *newTrackInfo = new TrackInfo(pNewTrack);
         newTrackInfo->m_players.append(player->getGroup());
-        if (m_timerFactory) {
-            std::pair<TrackTimers::RegularTimer*,
-                      TrackTimers::ElapsedTimer*> timerPair;
-            timerPair = m_timerFactory(pNewTrack);
-            newTrackInfo->m_trackInfo.setTimer(timerPair.first);
-            newTrackInfo->m_trackInfo.setElapsedTimer(timerPair.second);
+        if (m_trackInfoFactory) {
+            newTrackInfo->m_trackInfo = m_trackInfoFactory(pNewTrack);
         }
         m_trackList.append(newTrackInfo);                
-        connect(&m_trackList.last()->m_trackInfo,SIGNAL(readyToBeScrobbled(TrackPointer)),
+        connect(m_trackList.last()->m_trackInfo.get(),SIGNAL(readyToBeScrobbled(TrackPointer)),
                 this,SLOT(slotReadyToBeScrobbled(TrackPointer)));
         m_pBroadcaster->newTrackLoaded(pNewTrack);
     }
@@ -215,8 +215,8 @@ void ScrobblingManager::deletePlayerFromList(const QString &player,
 }
 
 void ScrobblingManager::deleteTrackInfoAndNotify(QLinkedList<TrackInfo*>::iterator &it) {
-    (*it)->m_trackInfo.pausePlayedTime();
-    (*it)->m_trackInfo.resetPlayedTime();
+    (*it)->m_trackInfo->pausePlayedTime();
+    (*it)->m_trackInfo->resetPlayedTime();
     m_pBroadcaster->trackUnloaded((*it)->m_pTrack);                
     delete *it;
     m_trackList.erase(it);
@@ -226,7 +226,7 @@ void ScrobblingManager::deleteTrackInfoAndNotify(QLinkedList<TrackInfo*>::iterat
 
 void ScrobblingManager::slotGuiTick(double timeSinceLastTick) {
     for (TrackInfo *trackInfo : m_trackList) {
-        trackInfo->m_trackInfo.slotGuiTick(timeSinceLastTick);
+        trackInfo->m_trackInfo->slotGuiTick(timeSinceLastTick);
     }
 
     MetadataBroadcaster *broadcaster =
@@ -255,10 +255,10 @@ void ScrobblingManager::slotCheckAudibleTracks() {
             }
         }
         if (inaudible) {
-            trackInfo->m_trackInfo.pausePlayedTime();
+            trackInfo->m_trackInfo->pausePlayedTime();
         }
-        else if (trackInfo->m_trackInfo.isTimerPaused()){
-            trackInfo->m_trackInfo.resumePlayedTime();
+        else if (trackInfo->m_trackInfo->isTimerPaused()){
+            trackInfo->m_trackInfo->resumePlayedTime();
         }
     }
     m_pTimer->start(1000);
