@@ -41,6 +41,7 @@ void TrackTimingInfo::resetPlayedTime() {
 
 void TrackTimingInfo::setElapsedTimer(TrackTimers::ElapsedTimer* elapsedTimer) {
     m_pElapsedTimer.reset(elapsedTimer);
+    m_pElapsedTimer->invalidate();
 }
 
 void TrackTimingInfo::setTimer(TrackTimers::RegularTimer* timer) {

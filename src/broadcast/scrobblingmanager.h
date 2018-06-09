@@ -16,6 +16,7 @@ class PlayerManagerInterface;
 
 class TrackAudibleStrategy {
   public:
+    virtual ~TrackAudibleStrategy() = default;
     virtual bool isTrackAudible(TrackPointer pTrack,
             BaseTrackPlayer* pPlayer) const = 0;
 };
@@ -43,11 +44,11 @@ class ScrobblingManager : public QObject {
     Q_OBJECT
   public:
     ScrobblingManager(PlayerManagerInterface* manager);
+    ~ScrobblingManager();
     void setAudibleStrategy(TrackAudibleStrategy* pStrategy);
     void setMetadataBroadcaster(MetadataBroadcasterInterface* pBroadcast);
     void setTimer(TrackTimers::RegularTimer* timer);
-    void setTimersFactory(const std::function<std::pair<TrackTimers::RegularTimer*,
-                    TrackTimers::ElapsedTimer*>(TrackPointer)>& factory);
+    void setTrackInfoFactory(const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)>& factory);
 
   public slots:
     void slotTrackPaused(TrackPointer pPausedTrack);
@@ -60,10 +61,10 @@ class ScrobblingManager : public QObject {
   private:
     struct TrackInfo {
         TrackPointer m_pTrack;
-        TrackTimingInfo m_trackInfo;
+        std::shared_ptr<TrackTimingInfo> m_trackInfo;
         QLinkedList<QString> m_players;
         TrackInfo(TrackPointer pTrack)
-                : m_pTrack(pTrack), m_trackInfo(pTrack) {
+                : m_pTrack(pTrack), m_trackInfo(new TrackTimingInfo(pTrack)) {
         }
     };
     struct TrackToBeReset {
@@ -85,9 +86,7 @@ class ScrobblingManager : public QObject {
 
     std::unique_ptr<TrackTimers::RegularTimer> m_pTimer;
 
-    std::function<std::pair<TrackTimers::RegularTimer*,
-            TrackTimers::ElapsedTimer*>(TrackPointer)>
-            m_timerFactory;
+    std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> m_trackInfoFactory;
 
     void resetTracks();
     bool isStrayFromEngine(TrackPointer pTrack, const QString& group) const;

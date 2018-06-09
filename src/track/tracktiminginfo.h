@@ -9,7 +9,6 @@ class TrackTimingInfo : public QObject {
     Q_OBJECT
   public:
     TrackTimingInfo(TrackPointer pTrack);
-    TrackTimingInfo(const TrackTimingInfo& other) = delete;
     void pausePlayedTime();
     void resumePlayedTime();
     void resetPlayedTime();

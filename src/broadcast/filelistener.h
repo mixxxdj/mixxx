@@ -7,7 +7,7 @@
 class FileListener : public ScrobblingService {
   public:
     FileListener(const QString& path);
-    ~FileListener();
+    ~FileListener() override;
     void broadcastCurrentTrack(TrackPointer pTrack) override;
     void scrobbleTrack(TrackPointer pTrack) override;
   private:

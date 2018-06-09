@@ -34,4 +34,13 @@ class PlayerMock : public BaseTrackPlayer {
     ~PlayerMock() = default;
     MOCK_CONST_METHOD0(getLoadedTrack, TrackPointer());
     MOCK_METHOD2(slotLoadTrack, void(TrackPointer, bool));
+    void emitTrackLoaded(TrackPointer pTrack) {
+        emit(newTrackLoaded(pTrack));
+    }
+    void emitTrackResumed(TrackPointer pTrack) {
+        emit(trackResumed(pTrack));
+    }
+    void emitTrackPaused(TrackPointer pTrack) {
+        emit(trackPaused(pTrack));
+    }
 };
