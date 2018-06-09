@@ -85,7 +85,6 @@ Variables:
            to workaround LP1758660 "GUI lag with hidden waveforms in Tango & Deere,
                                     using integrated Intel graphics" -->
       <WidgetGroup>
-        <ObjectName>BeatgridButtons</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
