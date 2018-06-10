@@ -40,9 +40,9 @@ QLinkedList<TrackId> MetadataBroadcaster::getTrackedTracks() {
     return QLinkedList<TrackId>();
 }
 
-MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService(ScrobblingService *service) {
-    m_scrobblingServices.push_back(
-        std::move(std::unique_ptr<ScrobblingService>(service)));
+MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService
+    (std::unique_ptr<ScrobblingService> &&newService) {
+    m_scrobblingServices.push_back(std::move(newService));
     return *this;    
 }
 

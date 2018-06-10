@@ -25,6 +25,8 @@ TotalVolumeThreshold::TotalVolumeThreshold(QObject *parent, double threshold)
 
 bool TotalVolumeThreshold::isTrackAudible(TrackPointer pTrack, 
                                           BaseTrackPlayer *pPlayer) const {
+    DEBUG_ASSERT(pPlayer);
+    Q_UNUSED(pTrack);
     double finalVolume;
     ControlProxy trackPreGain(pPlayer->getGroup(),"pregain",m_pParent);
     double preGain = trackPreGain.get();
@@ -64,7 +66,10 @@ ScrobblingManager::ScrobblingManager(PlayerManagerInterface *manager)
             this,SLOT(slotCheckAudibleTracks()));
     m_pTimer->start(1000);
     m_pBroadcaster
-        ->addNewScrobblingService(new FileListener("nowListening.txt"));    
+        ->addNewScrobblingService(
+          FileListener::makeFileListener(
+              FileListener::FileListenerType::SAMBroadcaster,
+              "nowListening.txt"));    
 }
 
 ScrobblingManager::~ScrobblingManager() {
@@ -95,7 +100,7 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
     bool allPaused = true;
     TrackInfo *pausedTrackInfo = nullptr;
     for (TrackInfo *trackInfo : m_trackList) {
-        VERIFY_OR_DEBUG_ASSERT(trackInfo);
+        DEBUG_ASSERT(trackInfo);
         if (trackInfo->m_pTrack == pPausedTrack) {
             pausedTrackInfo = trackInfo;
             for (QString playerGroup : trackInfo->m_players) {
@@ -112,10 +117,10 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
 
 void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack) {
     BaseTrackPlayer *player = qobject_cast<Deck*>(sender());
-    VERIFY_OR_DEBUG_ASSERT(player);       
+    DEBUG_ASSERT(player);       
     if (m_pAudibleStrategy->isTrackAudible(pResumedTrack,player)) {       
         for (TrackInfo *trackInfo : m_trackList) {
-            VERIFY_OR_DEBUG_ASSERT(trackInfo);
+            DEBUG_ASSERT(trackInfo);
             if (trackInfo->m_pTrack == pResumedTrack && 
                 trackInfo->m_trackInfo->isTimerPaused()) {
                 trackInfo->m_trackInfo->resumePlayedTime();
@@ -126,6 +131,7 @@ void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack) {
 }
 
 void ScrobblingManager::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
     BaseTrackPlayer *sourcePlayer = 
         qobject_cast<BaseTrackPlayer*>(sender());
     DEBUG_ASSERT(sourcePlayer);
@@ -140,7 +146,7 @@ void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack) {
     if (!pNewTrack)
         return;          
     BaseTrackPlayer *player = qobject_cast<BaseTrackPlayer*>(sender());    
-    VERIFY_OR_DEBUG_ASSERT(player);    
+    DEBUG_ASSERT(player);    
     bool trackAlreadyAdded = false;
     for (TrackInfo *trackInfo : m_trackList) {        
         if (trackInfo->m_pTrack == pNewTrack) {
