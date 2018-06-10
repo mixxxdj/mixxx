@@ -21,8 +21,8 @@
 namespace mixxx {
 
 // Initialize the log level with the default value
-LogLevel Logging::s_logLevel = kLogLevelDefault;
-LogLevel Logging::s_logFlushLevel = kLogFlushLevelDefault;
+LogLevel g_logLevel = kLogLevelDefault;
+LogLevel g_logFlushLevel = kLogFlushLevelDefault;
 
 namespace {
 
@@ -189,8 +189,8 @@ void Logging::initialize(const QDir& settingsDir,
         return;
     }
 
-    s_logLevel = logLevel;
-    s_logFlushLevel = logFlushLevel;
+    g_logLevel = logLevel;
+    g_logFlushLevel = logFlushLevel;
 
     QString logFileName;
 

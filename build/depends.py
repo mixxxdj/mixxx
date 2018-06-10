@@ -581,7 +581,7 @@ class SoundTouch(Dependence):
 
         if build.platform_is_linux:
             # Try using system lib
-            if conf.CheckForPKG('soundtouch', '1.8.0'):
+            if conf.CheckForPKG('soundtouch', '2.0.0'):
                 # System Lib found
                 build.env.ParseConfig('pkg-config soundtouch --silence-errors \
                                       --cflags --libs')
@@ -1059,6 +1059,7 @@ class MixxxCore(Feature):
                    "library/bpmdelegate.cpp",
                    "library/previewbuttondelegate.cpp",
                    "library/coverartdelegate.cpp",
+				   "library/tableitemdelegate.cpp",
 
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",

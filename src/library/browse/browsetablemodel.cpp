@@ -4,6 +4,7 @@
 #include <QMetaType>
 #include <QMessageBox>
 #include <QUrl>
+#include <QTableView>
 
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
@@ -364,8 +365,10 @@ bool BrowseTableModel::isColumnSortable(int column) {
 }
 
 QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
+    QTableView* pTableView = qobject_cast<QTableView*>(pParent);
+    DEBUG_ASSERT(pTableView);
     if (PlayerManager::numPreviewDecks() > 0 && i == COLUMN_PREVIEW) {
-        return new PreviewButtonDelegate(pParent, i);
+        return new PreviewButtonDelegate(pTableView, i);
     }
     return NULL;
 }

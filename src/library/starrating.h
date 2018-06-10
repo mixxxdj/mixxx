@@ -22,8 +22,10 @@
 #include <QMetaType>
 #include <QPointF>
 #include <QVector>
-#include <QPainter>
-#include <QStyledItemDelegate>
+#include <QPolygonF>
+
+class QPainter;
+
 
 /*
  * The StarRating class represents a rating as a number of stars.
