@@ -1,6 +1,5 @@
 <Template>
   <WidgetGroup>
-    <ObjectName>Library</ObjectName>
     <SizePolicy>me,i</SizePolicy>
     <MinimumSize>1270,-</MinimumSize>
     <Layout>vertical</Layout>
@@ -13,12 +12,13 @@
       **********************************************
       -->
       <WidgetGroup>
+        <ObjectName>Library</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
         <Children>
 
           <Splitter>
-            <ObjectName>LibrarySplitter</ObjectName>
+            <ObjectName>VerticalSplitter</ObjectName>
             <SizePolicy>me,me</SizePolicy>
             <SplitSizes>1,10</SplitSizes>
             <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
@@ -36,7 +36,7 @@
                   <SearchBox></SearchBox>
 
                   <Splitter>
-                    <ObjectName>CoverArtSplitter</ObjectName>
+                    <ObjectName>HorizontalSplitter</ObjectName>
                     <Size>me,me</Size>
                     <SplitSizes>1,1</SplitSizes>
                     <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>

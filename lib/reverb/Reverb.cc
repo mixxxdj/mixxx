@@ -434,7 +434,7 @@ Descriptor<PlateX2>::setup()
 
 // (timrae) we have our left / right samples interleaved in the same array, so use slightly modified version of PlateX2::cycle
 void MixxxPlateX2::processBuffer(const sample_t* in, sample_t* out, const uint frames, const sample_t bandwidthParam,
-								const sample_t decayParam, const sample_t dampingParam, const sample_t blendParam) {
+								const sample_t decayParam, const sample_t dampingParam, const sample_t blendParam, double wet) {
 	// set bandwidth
 	input.bandwidth.set(exp(-M_PI * (1. - (.005 + .994*bandwidthParam))));
 	// set decay
@@ -454,7 +454,8 @@ void MixxxPlateX2::processBuffer(const sample_t* in, sample_t* out, const uint f
 		sample_t mono_sample = blend * (in[i] + in[i + 1]) / 2;
 		sample_t xl, xr;
 		PlateStub::process(mono_sample, decay, &xl, &xr);
-		out[i] = xl + in[i];
-		out[i + 1] = xr + in[i + 1];
+		out[i] = (xl * wet) + (in[i] * (1 - wet));
+		out[i + 1] = (xr * wet) + (in[i + 1] * (1 - wet));
 	}
 }
+

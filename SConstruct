@@ -55,6 +55,7 @@ available_features = [features.Mad,
                       features.ColorDiagnostics,
                       features.Sanitizers,
                       features.LocaleCompare,
+                      features.Lilv,
                       features.Battery,
 
                       # "Features" of dubious quality

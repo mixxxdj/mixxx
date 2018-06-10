@@ -8,11 +8,12 @@
 #include "analyzer/vamp/vampanalyzer.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "util/memory.h"
 
 class AnalyzerKey : public Analyzer {
   public:
-    AnalyzerKey(UserSettingsPointer pConfig);
-    virtual ~AnalyzerKey();
+    explicit AnalyzerKey(UserSettingsPointer pConfig);
+    ~AnalyzerKey() override = default;
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
@@ -25,7 +26,7 @@ class AnalyzerKey : public Analyzer {
         QString pluginId, bool bPreferencesFastAnalysis);
 
     UserSettingsPointer m_pConfig;
-    VampAnalyzer* m_pVamp;
+    std::unique_ptr<VampAnalyzer> m_pVamp;
     QString m_pluginId;
     int m_iSampleRate;
     int m_iTotalSamples;

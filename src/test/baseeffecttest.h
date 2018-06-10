@@ -19,14 +19,14 @@
 
 class TestEffectBackend : public EffectsBackend {
   public:
-    TestEffectBackend() : EffectsBackend(NULL, "TestBackend") {
+    TestEffectBackend() : EffectsBackend(NULL, EffectBackendType::Unknown) {
     }
 
     // Expose as public
     void registerEffect(const QString& id,
-                        const EffectManifest& manifest,
+                        EffectManifestPointer pManifest,
                         EffectInstantiatorPointer pInstantiator) {
-        EffectsBackend::registerEffect(id, manifest, pInstantiator);
+        EffectsBackend::registerEffect(id, pManifest, pInstantiator);
     }
 };
 
@@ -41,13 +41,14 @@ class MockEffectProcessor : public EffectProcessor {
     MOCK_METHOD2(loadStatesForInputChannel, bool(const ChannelHandle* inputChannel,
           const EffectStatesMap* pStatesMap));
     MOCK_METHOD1(deleteStatesForInputChannel, void(const ChannelHandle* inputChannel));
-    MOCK_METHOD7(process, void(const ChannelHandle& inputHandle,
+    MOCK_METHOD8(process, void(const ChannelHandle& inputHandle,
                                const ChannelHandle& outputHandle,
                                const CSAMPLE* pInput,
                                CSAMPLE* pOutput,
                                const mixxx::EngineParameters& bufferParameters,
                                const EffectEnableState enableState,
-                               const GroupFeatureState& groupFeatures));
+                               const GroupFeatureState& groupFeatures,
+                               const EffectChainMixMode mixMode));
 
 };
 
@@ -55,7 +56,7 @@ class MockEffectInstantiator : public EffectInstantiator {
   public:
     MockEffectInstantiator() {}
     MOCK_METHOD2(instantiate, EffectProcessor*(EngineEffect* pEngineEffect,
-                                               const EffectManifest& manifest));
+                                               EffectManifestPointer pManifest));
 };
 
 
@@ -72,7 +73,7 @@ class BaseEffectTest : public MixxxTest {
         m_pEffectsManager->addEffectsBackend(m_pTestBackend);
     }
 
-    void registerTestEffect(const EffectManifest& manifest, bool willAddToEngine);
+    void registerTestEffect(EffectManifestPointer pManifest, bool willAddToEngine);
 
     ChannelHandleFactory* m_pChannelHandleFactory;
 
