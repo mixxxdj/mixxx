@@ -72,6 +72,8 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
     m_pEjectButton->connectValueChanged(
             SLOT(slotEjectPushed(double)), Qt::DirectConnection);
 
+    m_pQuantize = new ControlProxy(group, "quantize", this);
+
     // BPMControl and RateControl will be initialized later.
 }
 
@@ -161,12 +163,18 @@ void SyncControl::notifyOnlyPlayingSyncable() {
     m_pBpmControl->resetSyncAdjustment();
 }
 
-void SyncControl::requestSyncPhase() {
-    m_pChannel->getEngineBuffer()->requestSyncPhase();
+void SyncControl::requestSync() {
+    if (isPlaying() && m_pQuantize->toBool()) {
+        // only sync phase if the deck is playing and if quantize is enabled.
+        // this way the it is up to the user to decide if a seek is desired or not.
+        // This is helpful if the beatgrid of the track doe not fit at the current
+        // playposition
+        m_pChannel->getEngineBuffer()->requestSyncPhase();
+    }
 }
 
 bool SyncControl::isPlaying() const {
-    return m_pPlayButton->get() > 0.0;
+    return m_pPlayButton->toBool();
 }
 
 double SyncControl::getBeatDistance() const {
