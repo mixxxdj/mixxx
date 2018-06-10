@@ -117,7 +117,7 @@ QTreeView {
   QTableView:focus { /*
     New Library navigation COs only work if TreeView or TableView have focus.
     Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
-    In conjuction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
+    In conjunction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
     border-color: #ff6600;
   }
 
