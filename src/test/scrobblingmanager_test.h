@@ -12,7 +12,9 @@ class MetadataBroadcasterMock : public MetadataBroadcasterInterface {
     ~MetadataBroadcasterMock() = default;
     MOCK_METHOD1(slotNowListening, void(TrackPointer));
     MOCK_METHOD1(slotAttemptScrobble, void(TrackPointer));
-    MOCK_METHOD1(addNewScrobblingService, MetadataBroadcasterInterface&(ScrobblingService*));
+    MetadataBroadcasterInterface&
+    addNewScrobblingService(std::unique_ptr<ScrobblingService>&& newService) override {
+    }
     MOCK_METHOD1(newTrackLoaded, void(TrackPointer));
     MOCK_METHOD1(trackUnloaded, void(TrackPointer));
     MOCK_METHOD1(guiTick, void(double));
