@@ -31,6 +31,7 @@ TotalVolumeThreshold::TotalVolumeThreshold(QObject* parent, double threshold)
 
 bool TotalVolumeThreshold::isTrackAudible(TrackPointer pTrack,
         BaseTrackPlayer* pPlayer) const {
+    DEBUG_ASSERT(pPlayer);
     Q_UNUSED(pTrack);
     double finalVolume;
     ControlProxy trackPreGain(pPlayer->getGroup(), "pregain", m_pParent);
@@ -71,7 +72,10 @@ ScrobblingManager::ScrobblingManager(PlayerManagerInterface* manager)
     connect(m_pTimer.get(), SIGNAL(timeout()), this, SLOT(slotCheckAudibleTracks()));
     m_pTimer->start(1000);
     m_pBroadcaster
-            ->addNewScrobblingService(new FileListener("nowListening.txt"));
+            ->addNewScrobblingService(
+                    FileListener::makeFileListener(
+                            FileListener::FileListenerType::SAMBroadcaster,
+                            "nowListening.txt"));
 }
 
 ScrobblingManager::~ScrobblingManager() {

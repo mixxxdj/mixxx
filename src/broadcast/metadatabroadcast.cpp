@@ -36,9 +36,8 @@ const QList<TrackId> MetadataBroadcaster::getTrackedTracks() {
     return {};
 }
 
-MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService(ScrobblingService* service) {
-    m_scrobblingServices.push_back(
-            std::move(std::unique_ptr<ScrobblingService>(service)));
+MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService(std::unique_ptr<ScrobblingService>&& newService) {
+    m_scrobblingServices.push_back(std::move(newService));
     return *this;
 }
 

@@ -33,7 +33,8 @@ TEST_F(TrackTimingInfoTest, SendsSignalWhenScrobbable) {
     //we're deleting them twice.
     ElapsedTimerMock* etmock = new ElapsedTimerMock();
     TimerMock* tmock = new TimerMock();
-    EXPECT_CALL(*etmock, invalidate());
+    EXPECT_CALL(*etmock, invalidate())
+            .Times(2);
     EXPECT_CALL(*etmock, isValid())
             .WillOnce(testing::Return(false))
             .WillOnce(testing::Return(true));

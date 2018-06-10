@@ -17,7 +17,8 @@ class MetadataBroadcasterInterface : public QObject {
 
   public:
     virtual ~MetadataBroadcasterInterface() = default;
-    virtual MetadataBroadcasterInterface& addNewScrobblingService(ScrobblingService* service) = 0;
+    virtual MetadataBroadcasterInterface&
+    addNewScrobblingService(std::unique_ptr<ScrobblingService>&& newService) = 0;
     virtual void newTrackLoaded(TrackPointer pTrack) = 0;
     virtual void trackUnloaded(TrackPointer pTrack) = 0;
 };
@@ -41,7 +42,8 @@ class MetadataBroadcaster : public MetadataBroadcasterInterface {
   public:
     MetadataBroadcaster();
     const QList<TrackId> getTrackedTracks();
-    MetadataBroadcasterInterface& addNewScrobblingService(ScrobblingService* service) override;
+    MetadataBroadcasterInterface&
+    addNewScrobblingService(std::unique_ptr<ScrobblingService>&& newService) override;
     void newTrackLoaded(TrackPointer pTrack) override;
     void trackUnloaded(TrackPointer pTrack) override;
     void setGracePeriod(unsigned int seconds);
