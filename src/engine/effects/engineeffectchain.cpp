@@ -152,7 +152,7 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle* inputHandle,
     }
     auto& outputMap = m_chainStatusForChannelMatrix[*inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
-        VERIFY_OR_DEBUG_ASSERT(outputChannelStatus.enable_state !=
+        VERIFY_OR_DEBUG_ASSERT(outputChannelStatus.enableState !=
                 EffectEnableState::Enabled) {
             for (auto&& pStatesMap : *statesForEffectsInChain) {
                 for (auto&& pState : pStatesMap) {
@@ -161,7 +161,7 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle* inputHandle,
             }
             return false;
         }
-        outputChannelStatus.enable_state = EffectEnableState::Enabling;
+        outputChannelStatus.enableState = EffectEnableState::Enabling;
     }
     for (int i = 0; i < m_effects.size(); ++i) {
         if (m_effects[i] != nullptr) {
@@ -182,8 +182,8 @@ bool EngineEffectChain::enableForInputChannel(const ChannelHandle* inputHandle,
 bool EngineEffectChain::disableForInputChannel(const ChannelHandle* inputHandle) {
     auto& outputMap = m_chainStatusForChannelMatrix[*inputHandle];
     for (auto&& outputChannelStatus : outputMap) {
-        if (outputChannelStatus.enable_state != EffectEnableState::Disabled) {
-            outputChannelStatus.enable_state = EffectEnableState::Disabling;
+        if (outputChannelStatus.enableState != EffectEnableState::Disabled) {
+            outputChannelStatus.enableState = EffectEnableState::Disabling;
         }
     }
     // Do not call deleteStatesForInputChannel here because the EngineEffects'
@@ -210,7 +210,7 @@ void EngineEffectChain::deleteStatesForInputChannel(const ChannelHandle* inputCh
     // enableForInputChannel(), or disableForInputChannel().
     auto& outputMap = m_chainStatusForChannelMatrix[*inputChannel];
     for (auto&& outputChannelStatus : outputMap) {
-        outputChannelStatus.enable_state = EffectEnableState::Disabled;
+        outputChannelStatus.enableState = EffectEnableState::Disabled;
     }
     for (EngineEffect* pEffect : m_effects) {
         if (pEffect != nullptr) {
@@ -241,7 +241,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
     // when it gets the intermediate disabling signal.
 
     ChannelStatus& channelStatus = m_chainStatusForChannelMatrix[inputHandle][outputHandle];
-    EffectEnableState effectiveChainEnableState = channelStatus.enable_state;
+    EffectEnableState effectiveChainEnableState = channelStatus.enableState;
 
     // If the channel is fully disabled, do not let intermediate
     // enabling/disabing signals from the chain's enable switch override
@@ -253,7 +253,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
     }
 
     CSAMPLE currentMixKnob = m_dMix;
-    CSAMPLE lastCallbackMixKnob = channelStatus.old_gain;
+    CSAMPLE lastCallbackMixKnob = channelStatus.oldMixKnob;
 
     bool processingOccured = false;
     if (effectiveChainEnableState != EffectEnableState::Disabled) {
@@ -306,13 +306,13 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         }
     }
 
-    channelStatus.old_gain = currentMixKnob;
+    channelStatus.oldMixKnob = currentMixKnob;
 
     // If the EffectProcessors have been sent a signal for the intermediate
     // enabling/disabling state, set the channel state or chain state
     // to the fully enabled/disabled state for the next engine callback.
 
-    EffectEnableState& chainOnChannelEnableState = channelStatus.enable_state;
+    EffectEnableState& chainOnChannelEnableState = channelStatus.enableState;
     if (chainOnChannelEnableState == EffectEnableState::Disabling) {
         chainOnChannelEnableState = EffectEnableState::Disabled;
     } else if (chainOnChannelEnableState == EffectEnableState::Enabling) {

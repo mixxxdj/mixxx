@@ -186,8 +186,6 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
             bufferParameters.framesPerBuffer();
     const CSAMPLE_GAIN feedback_start = gs.prev_feedback + feedback_delta;
 
-    const bool addDry = mixMode == EffectChainMixMode::DrySlashWet;
-
     //TODO: rewrite to remove assumption of stereo buffer
     for (unsigned int i = 0;
             i < bufferParameters.samplesPerBuffer();
@@ -225,21 +223,25 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         if (gs.ping_pong < delay_samples / 2) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
-            pOutput[i] =  (addDry ? pInput[i] : 0) +
-                    ((bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
-                    (1 + pingpong_frac));
+            pOutput[i] = (bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
+                         (1 + pingpong_frac);
             // Right sample reduced by (1 - fraction)
-            pOutput[i + 1] = (addDry ? pInput[i + 1] : 0) +
-                    (bufferedSampleRight * (1 - pingpong_frac));
+            pOutput[i + 1] = bufferedSampleRight * (1 - pingpong_frac);
         } else {
             // Left sample reduced by (1 - fraction)
-            pOutput[i] = (addDry ? pInput[i] : 0) +
-                    (bufferedSampleLeft * (1 - pingpong_frac));
+            pOutput[i] = bufferedSampleLeft * (1 - pingpong_frac);
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
-            pOutput[i + 1] = (addDry ? pInput[i + 1] : 0) +
-                    ((bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
-                    (1 + pingpong_frac));
+            pOutput[i + 1] = (bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
+                             (1 + pingpong_frac);
+        }
+
+        // When the effect unit is in D/W mode, add the dry signal to the output.
+        // In D+W mode this is not needed because it is done when mixing the
+        // effect unit.
+        if (mixMode == EffectChainMixMode::DrySlashWet) {
+            pOutput[i] += pInput[i];
+            pOutput[i + 1] += pInput[i + 1];
         }
 
         incrementRing(&gs.write_position, bufferParameters.channelCount(),

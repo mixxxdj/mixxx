@@ -51,7 +51,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
 
     m_pControlChainMixMode = new ControlPushButton(ConfigKey(m_group, "mix_mode"));
     m_pControlChainMixMode->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlChainMixMode->setStates(static_cast<double>(EffectChainMixMode::NumMixModes));
+    m_pControlChainMixMode->setStates(static_cast<int>(EffectChainMixMode::NumMixModes));
     connect(m_pControlChainMixMode, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlChainMixMode(double)));
 

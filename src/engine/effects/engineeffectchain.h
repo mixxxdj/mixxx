@@ -45,11 +45,11 @@ class EngineEffectChain : public EffectsRequestHandler {
   private:
     struct ChannelStatus {
         ChannelStatus()
-                : old_gain(0),
-                  enable_state(EffectEnableState::Disabled) {
+                : oldMixKnob(0),
+                  enableState(EffectEnableState::Disabled) {
         }
-        CSAMPLE old_gain;
-        EffectEnableState enable_state;
+        CSAMPLE oldMixKnob;
+        EffectEnableState enableState;
     };
 
     QString debugString() const {
