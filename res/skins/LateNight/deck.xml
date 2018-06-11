@@ -281,7 +281,7 @@
                   <ButtonState>LeftButton</ButtonState>
                 </Connection>
                 <Connection>
-                  <ConfigKey><Variable name="group"/>,beatsync</ConfigKey>
+                  <ConfigKey><Variable name="group"/>,beatsync_phase</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
               </PushButton>

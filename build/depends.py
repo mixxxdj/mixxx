@@ -1085,6 +1085,7 @@ class MixxxCore(Feature):
                    "library/bpmdelegate.cpp",
                    "library/previewbuttondelegate.cpp",
                    "library/coverartdelegate.cpp",
+				   "library/tableitemdelegate.cpp",
 
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",

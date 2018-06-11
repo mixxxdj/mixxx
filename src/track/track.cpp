@@ -306,7 +306,9 @@ double Track::setBpm(double bpmValue) {
 
     // Continue with the regular case
     if (m_pBeats->getBpm() != bpmValue) {
-        kLogger.debug() << "Updating BPM:" << getLocation();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug() << "Updating BPM:" << getLocation();
+        }
         m_pBeats->setBpm(bpmValue);
         markDirtyAndUnlock(&lock);
         // Tell the GUI to update the bpm label...
@@ -1007,7 +1009,7 @@ Track::ExportMetadataResult Track::exportMetadata(
             // must be exported explicitly once. This ensures that we don't
             // overwrite existing file tags with completely different
             // information.
-            kLogger.debug()
+            kLogger.info()
                     << "Skip exporting of unsynchronized track metadata:"
                     << getLocation();
             return ExportMetadataResult::Skipped;
@@ -1052,9 +1054,11 @@ Track::ExportMetadataResult Track::exportMetadata(
             if (!m_record.getMetadata().hasBeenModifiedAfterImport(importedFromFile))  {
                 // The file tags are in-sync with the track's metadata and don't need
                 // to be updated.
-                kLogger.debug()
-                        << "Skip exporting of unmodified track metadata into file:"
-                        << getLocation();
+                if (kLogger.debugEnabled()) {
+                    kLogger.debug()
+                                << "Skip exporting of unmodified track metadata into file:"
+                                << getLocation();
+                }
                 return ExportMetadataResult::Skipped;
             }
         } else {
@@ -1085,9 +1089,11 @@ Track::ExportMetadataResult Track::exportMetadata(
         DEBUG_ASSERT(!trackMetadataExported.second.isNull());
         //pTrack->setMetadataSynchronized(trackMetadataExported.second);
         m_record.setMetadataSynchronized(!trackMetadataExported.second.isNull());
-        kLogger.debug()
-                << "Exported track metadata:"
-                << getLocation();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Exported track metadata:"
+                    << getLocation();
+        }
         return ExportMetadataResult::Succeeded;
     } else {
         kLogger.warning()

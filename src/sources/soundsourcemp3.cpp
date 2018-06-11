@@ -393,7 +393,9 @@ void SoundSourceMp3::close() {
 
 void SoundSourceMp3::restartDecoding(
         const SeekFrameType& seekFrame) {
-    kLogger.debug() << "restartDecoding @" << seekFrame.frameIndex;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "restartDecoding @" << seekFrame.frameIndex;
+    }
 
     // Discard decoded output
     m_madSynthCount = 0;
@@ -609,10 +611,13 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                             // Don't bother the user with warnings from recoverable
                             // errors while skipping decoded samples or that even
                             // might occur for files that are perfectly ok.
-                            kLogger.debug() << "Recoverable MP3 frame decoding error:"
-                                    << mad_stream_errorstr(&m_madStream);
+                            if (kLogger.debugEnabled()) {
+                                kLogger.debug()
+                                        << "Recoverable MP3 frame decoding error:"
+                                        << mad_stream_errorstr(&m_madStream);
+                            }
                         } else {
-                            kLogger.warning() << "Recoverable MP3 frame decoding error:"
+                            kLogger.info() << "Recoverable MP3 frame decoding error:"
                                     << mad_stream_errorstr(&m_madStream);
                         }
                     }
@@ -620,7 +625,9 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                 }
             }
             if (pMadThisFrame == m_madStream.this_frame) {
-                kLogger.debug() << "Retry decoding MP3 frame @" << m_curFrameIndex;
+                if (kLogger.debugEnabled()) {
+                    kLogger.debug() << "Retry decoding MP3 frame @" << m_curFrameIndex;
+                }
                 // Retry decoding
                 continue;
             }
@@ -630,7 +637,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
 #ifndef QT_NO_DEBUG_OUTPUT
             const SINT madFrameChannelCount = MAD_NCHANNELS(&m_madFrame.header);
             if (madFrameChannelCount != channelCount()) {
-                kLogger.debug() << "MP3 frame header with mismatching number of channels"
+                kLogger.warning() << "MP3 frame header with mismatching number of channels"
                         << madFrameChannelCount << "<>" << channelCount();
             }
 #endif
@@ -640,7 +647,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
 #ifndef QT_NO_DEBUG_OUTPUT
             const SINT madSynthSampleRate =  m_madSynth.pcm.samplerate;
             if (madSynthSampleRate != sampleRate()) {
-                kLogger.debug() << "Reading MP3 data with different sample rate"
+                kLogger.warning() << "Reading MP3 data with different sample rate"
                         << madSynthSampleRate << "<>" << sampleRate();
             }
 #endif

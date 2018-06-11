@@ -55,7 +55,7 @@ public:
 }  // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider();
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider(int logLevel, int logFlushLevel);
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
 void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*);

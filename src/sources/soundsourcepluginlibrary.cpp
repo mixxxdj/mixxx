@@ -49,7 +49,7 @@ bool SoundSourcePluginLibrary::init() {
                 << ":" << m_library.errorString();
         return false;
     }
-    kLogger.debug() << "Dynamically loaded plugin library"
+    kLogger.info() << "Dynamically loaded plugin library"
             << m_library.fileName();
 
     SoundSourcePluginAPI_getVersionFunc getVersionFunc = (SoundSourcePluginAPI_getVersionFunc)
@@ -91,7 +91,7 @@ bool SoundSourcePluginLibrary::init() {
     }
 
     m_pSoundSourceProvider = SoundSourceProviderPointer(
-            (*createSoundSourceProviderFunc)(),
+            (*createSoundSourceProviderFunc)(static_cast<int>(g_logLevel), static_cast<int>(g_logFlushLevel)),
             destroySoundSourceProviderFunc);
     if (m_pSoundSourceProvider) {
         return true;
