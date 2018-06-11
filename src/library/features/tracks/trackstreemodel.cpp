@@ -111,7 +111,7 @@ QVariant TracksTreeModel::data(const QModelIndex& index, int role) const {
             m_hashToIndex[this].insert(info.type, index);
 
             // Return a temporary icon
-            return QIcon(":/images/library/cover_default.png");
+            return QIcon(":/images/library/cover_default.svg");
         } else {
             // Good luck icon found
             return QIcon(pixmap);
@@ -338,5 +338,5 @@ void TracksTreeModel::addCoverArt(const TracksTreeModel::CoverIndex& index,
     c.source = static_cast<CoverInfo::Source>(source);
     c.type = static_cast<CoverInfo::Type>(type);
     pTree->setCoverInfo(c);
-    pTree->setIcon(QIcon(":/images/templates/cover_default.svg"));
+    pTree->setIcon(QIcon(":/images/library/cover_default.svg"));
 }
