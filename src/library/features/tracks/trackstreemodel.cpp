@@ -338,5 +338,5 @@ void TracksTreeModel::addCoverArt(const TracksTreeModel::CoverIndex& index,
     c.source = static_cast<CoverInfo::Source>(source);
     c.type = static_cast<CoverInfo::Type>(type);
     pTree->setCoverInfo(c);
-    pTree->setIcon(QIcon(":/images/library/cover_default.png"));
+    pTree->setIcon(QIcon(":/images/templates/cover_default.svg"));
 }
