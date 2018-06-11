@@ -1083,7 +1083,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>NumarkN4.Mixer.deckChange.input</key>
+        <key>NumarkN4.Mixer.deckChangeL.input</key>
         <status>0xB0</status>
         <midino>0x50</midino>
         <options>
@@ -1093,7 +1093,7 @@
       </control>
       <control>
         <group>[Master]</group>
-        <key>NumarkN4.Mixer.deckChange.input</key>
+        <key>NumarkN4.Mixer.deckChangeR.input</key>
         <status>0xB0</status>
         <midino>0x51</midino>
         <options>

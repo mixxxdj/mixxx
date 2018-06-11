@@ -185,8 +185,8 @@ NumarkN4.topContainer = function (channel) {
       this.inKey="beatloop_size";
       this.input = function (channel, control, value, status, group) {
         this.currentLoopSizeIndex=
-        Math.min(
-          Math.max(
+        Math.max(
+          Math.min(
             this.currentLoopSizeIndex+(value===0x01?1:-1),
             NumarkN4.loopSizes.length
           ),
@@ -468,8 +468,9 @@ NumarkN4.Deck = function (channel) {
 
   this.jogWheelScratchEnable = new components.Button({
     midi:[0x90+channel,0x2C],
+    scratchEnabled:true,
     input: function (channelmidi, control, value, status, group) {
-      if (this.isPress(channel, control, value, status)) {
+      if (this.isPress(channel, control, value, status)&&this.scratchEnabled) {
         engine.scratchEnable(channel,
                              NumarkN4.scratchSettings.jogResolution,
                              NumarkN4.scratchSettings.vinylSpeed,
@@ -483,9 +484,23 @@ NumarkN4.Deck = function (channel) {
 
   this.searchButton = new components.Button({
     midi: [0x90+channel,0x00,0xB0+channel,0x12],
-    input: function (channelmidi, control, value, status, group) {
-      theDeck.isSearching=!theDeck.isSearching;
-      this.output(theDeck.isSearching?0x7F:0x00)
+    shift: function () {
+      this.input = function (channelmidi, control, value, status, group) {
+        if (this.isPress(channelmidi, control, value, status)) {
+          theDeck.isSearching=!theDeck.isSearching;
+          this.output(theDeck.isSearching?0x7F:0x00);
+        }
+      };
+      this.output(theDeck.isSearching?0x7F:0x00);
+    },
+    unshift: function () {
+      this.input = function (channelmidi, control, value, status, group) {
+        if (this.isPress(channelmidi, control, value, status)) {
+          theDeck.jogWheelScratchEnable.scratchEnabled=!theDeck.jogWheelScratchEnable.scratchEnabled;
+          this.output(theDeck.jogWheelScratchEnable.scratchEnabled?0x7F:0x00);
+        }
+      };
+      this.output(theDeck.jogWheelScratchEnable.scratchEnabled?0x7F:0x00);
     },
   });
   this.jogWheelTurn = new components.Pot({
@@ -532,8 +547,9 @@ NumarkN4.Deck = function (channel) {
   });
   this.tapButton = new components.Button({
     midi: [0x90+channel,0x1E,0xB0+channel,0x16],
+    bpm: [],
     input: function (channelmidi, control, value, status, group) {
-      if (value) {
+      if (this.isPress(channelmidi, control, value, status)) {
         bpm.tapButton(channel);
       }
       this.output(value);
