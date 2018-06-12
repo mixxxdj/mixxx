@@ -6,6 +6,7 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "util/class.h"
 #include "util/defs.h"
+#include "util/rampingvalue.h"
 #include "util/sample.h"
 #include "util/types.h"
 
@@ -14,14 +15,16 @@
 class PhaserGroupState final : public EffectState {
   public:
     PhaserGroupState(const mixxx::EngineParameters& bufferParameters)
-            : EffectState(bufferParameters) {
+            : EffectState(bufferParameters),
+              depth(bufferParameters.framesPerBuffer()),
+              feedback(bufferParameters.framesPerBuffer()) {
         clear();
     }
 
     void clear() {
         leftPhase = 0;
         rightPhase = 0;
-        oldDepth = 0;
+        depth.setCurrentCallbackValue(0);
         SampleUtil::clear(oldInLeft, MAXSTAGES);
         SampleUtil::clear(oldOutLeft, MAXSTAGES);
         SampleUtil::clear(oldInRight, MAXSTAGES);
@@ -34,8 +37,8 @@ class PhaserGroupState final : public EffectState {
     CSAMPLE oldOutRight[MAXSTAGES];
     CSAMPLE leftPhase;
     CSAMPLE rightPhase;
-    CSAMPLE_GAIN oldDepth;
-
+    RampingValue<CSAMPLE_GAIN> depth;
+    RampingValue<CSAMPLE_GAIN> feedback;
 };
 
 class PhaserEffect : public EffectProcessorImpl<PhaserGroupState> {

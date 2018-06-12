@@ -14,6 +14,7 @@ QString PhaserEffect::getId() {
 // static
 EffectManifestPointer PhaserEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setEffectRampsFromDry(true);
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Phaser"));
     pManifest->setShortName(QObject::tr("Phaser"));
@@ -22,7 +23,6 @@ EffectManifestPointer PhaserEffect::getManifest() {
     pManifest->setDescription(QObject::tr(
         "Mixes the input signal with a copy passed through a series of "
         "all-pass filters to create comb filtering"));
-    pManifest->setEffectRampsFromDry(true);
 
     EffectManifestParameterPointer period = pManifest->addParameter();
     period->setId("lfo_period");
@@ -143,13 +143,15 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
                                   const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
-    if (enableState == EffectEnableState::Enabling) {
-        pState->clear();
-    }
+    // FIXME: temporary hack until EffectStates are initialized with the
+    // actual buffer parameters of the engine.
+    pState->depth.setStepsPerCallback(bufferParameters.framesPerBuffer());
+    pState->feedback.setStepsPerCallback(bufferParameters.framesPerBuffer());
 
-    CSAMPLE depth = 0;
-    if (enableState != EffectEnableState::Disabling) {
-        depth = m_pDepthParameter->value();
+    if (enableState == EffectEnableState::Disabling) {
+        pState->clear();
+    } else {
+        pState->depth.setCurrentCallbackValue(m_pDepthParameter->value());
     }
 
     double periodParameter = m_pLFOPeriodParameter->value();
@@ -169,7 +171,7 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     // so do not multiply periodSamples by the number of channels.
     CSAMPLE freqSkip = 1.0 / periodSamples * 2.0 * M_PI;
 
-    CSAMPLE feedback = m_pFeedbackParameter->value();
+    pState->feedback.setCurrentCallbackValue(m_pFeedbackParameter->value());
     CSAMPLE range = m_pRangeParameter->value();
     int stages = 2 * m_pStagesParameter->value();
 
@@ -184,17 +186,13 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
 
     CSAMPLE left = 0, right = 0;
 
-    CSAMPLE_GAIN oldDepth = pState->oldDepth;
-    const CSAMPLE_GAIN depthDelta = (depth - oldDepth)
-            / bufferParameters.framesPerBuffer();
-    const CSAMPLE_GAIN depthStart = oldDepth + depthDelta;
-
     int stereoCheck = m_pStereoParameter->value();
     int counter = 0;
 
     for (unsigned int i = 0;
             i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
+        CSAMPLE_GAIN feedback = pState->feedback.rampedValue();
         left = pInput[i] + tanh(left * feedback);
         right = pInput[i + 1] + tanh(right * feedback);
 
@@ -223,12 +221,11 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
         left = processSample(left, oldInLeft, oldOutLeft, filterCoefLeft, stages);
         right = processSample(right, oldInRight, oldOutRight, filterCoefRight, stages);
 
-        const CSAMPLE_GAIN depth = depthStart + depthDelta * (i / bufferParameters.channelCount());
+        const CSAMPLE_GAIN depth = pState->depth.rampedValue();
 
         // Computing output combining the original and processed sample
         pOutput[i] = pInput[i] * (1.0 - 0.5 * depth) + left * depth * 0.5;
         pOutput[i + 1] = pInput[i + 1] * (1.0 - 0.5 * depth) + right * depth * 0.5;
     }
 
-    pState->oldDepth = depth;
 }
