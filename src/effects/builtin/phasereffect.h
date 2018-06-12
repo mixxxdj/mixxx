@@ -21,20 +21,19 @@ class PhaserGroupState final : public EffectState {
     void clear() {
         leftPhase = 0;
         rightPhase = 0;
-        oldDepth = 0;
-        SampleUtil::clear(oldInLeft, MAXSTAGES);
-        SampleUtil::clear(oldOutLeft, MAXSTAGES);
-        SampleUtil::clear(oldInRight, MAXSTAGES);
-        SampleUtil::clear(oldOutRight, MAXSTAGES);
+        SampleUtil::clear(inLeftPrevious, MAXSTAGES);
+        SampleUtil::clear(outLeftPrevious, MAXSTAGES);
+        SampleUtil::clear(inRightPrevious, MAXSTAGES);
+        SampleUtil::clear(outRightPrevious, MAXSTAGES);
     }
 
-    CSAMPLE oldInLeft[MAXSTAGES];
-    CSAMPLE oldInRight[MAXSTAGES];
-    CSAMPLE oldOutLeft[MAXSTAGES];
-    CSAMPLE oldOutRight[MAXSTAGES];
+    CSAMPLE inLeftPrevious[MAXSTAGES];
+    CSAMPLE inRightPrevious[MAXSTAGES];
+    CSAMPLE outLeftPrevious[MAXSTAGES];
+    CSAMPLE outRightPrevious[MAXSTAGES];
     CSAMPLE leftPhase;
     CSAMPLE rightPhase;
-    CSAMPLE_GAIN oldDepth;
+    CSAMPLE_GAIN depthPrevious;
 
 };
 
