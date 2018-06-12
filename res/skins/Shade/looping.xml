@@ -393,7 +393,7 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <Size>97f,40f</Size>
+        <Size>144f,40f</Size>
         <Style>QGroupBox {
           border: 0px solid green;
           margin: 0px 0px 0px 0px;
@@ -453,6 +453,44 @@
             </Connection>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatjump_1_forward</ConfigKey>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Style></Style>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>btn_loop_in1_overdown.png</Pressed>
+              <Unpressed>btn_loop_in1.png</Unpressed>
+            </State>
+            <Pos>99,10</Pos>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],autodj_start_set</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],autodj_start_clear</ConfigKey>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Style></Style>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>btn_loop_out1_overdown.png</Pressed>
+              <Unpressed>btn_loop_out1.png</Unpressed>
+            </State>
+            <Pos>120,10</Pos>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],autodj_end_set</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],autodj_end_clear</ConfigKey>
               <ButtonState>RightButton</ButtonState>
             </Connection>
           </PushButton>
