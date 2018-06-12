@@ -227,7 +227,8 @@ class PlateX2
                            const sample_t bandwidthParam,
                            const sample_t decayParam,
                            const sample_t dampingParam,
-                           const sample_t blendParam);
+                           const sample_t currentSend,
+                           const sample_t previousSend);
 
         void init(float sampleRate) {
             fs = sampleRate;
