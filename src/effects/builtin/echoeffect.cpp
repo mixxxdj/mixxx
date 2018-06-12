@@ -4,6 +4,7 @@
 
 #include "util/sample.h"
 #include "util/math.h"
+#include "util/rampingvalue.h"
 
 constexpr int EchoGroupState::kMaxDelaySeconds;
 
@@ -29,6 +30,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
 
     pManifest->setAddDryToWet(true);
+    pManifest->setEffectRampsFromDry(true);
 
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Echo"));
@@ -143,8 +145,8 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     EchoGroupState& gs = *pGroupState;
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
     double period = m_pDelayParameter->value();
-    double send_amount = m_pSendParameter->value();
-    double feedback_amount = m_pFeedbackParameter->value();
+    double send_current = m_pSendParameter->value();
+    double feedback_current = m_pFeedbackParameter->value();
     double pingpong_frac = m_pPingPongParameter->value();
 
     int delay_frames;
@@ -178,23 +180,19 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     int read_position = gs.write_position;
     decrementRing(&read_position, delay_samples, gs.delay_buf.size());
 
+    RampingValue<CSAMPLE_GAIN> send(send_current, gs.prev_send,
+                                    bufferParameters.framesPerBuffer());
     // Feedback the delay buffer and then add the new input.
-    const CSAMPLE_GAIN send_delta = (send_amount - gs.prev_send) /
-            bufferParameters.framesPerBuffer();
-    const CSAMPLE_GAIN send_start = gs.prev_send + send_delta;
 
-    const CSAMPLE_GAIN feedback_delta = (feedback_amount - gs.prev_feedback) /
-            bufferParameters.framesPerBuffer();
-    const CSAMPLE_GAIN feedback_start = gs.prev_feedback + feedback_delta;
+    RampingValue<CSAMPLE_GAIN> feedback(feedback_current, gs.prev_feedback,
+                                        bufferParameters.framesPerBuffer());
 
     //TODO: rewrite to remove assumption of stereo buffer
     for (unsigned int i = 0;
             i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
-        CSAMPLE_GAIN send_ramped = send_start
-                + send_delta * i / bufferParameters.channelCount();
-        CSAMPLE_GAIN feedback_ramped = feedback_start
-                + feedback_delta * i / bufferParameters.channelCount();
+        CSAMPLE_GAIN send_ramped = send.getNext();
+        CSAMPLE_GAIN feedback_ramped = feedback.getNext();
 
         CSAMPLE bufferedSampleLeft = gs.delay_buf[read_position];
         CSAMPLE bufferedSampleRight = gs.delay_buf[read_position + 1];
@@ -246,11 +244,17 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         }
     }
 
+    // The ramping of the send parameter handles ramping when enabling, so
+    // this effect must handle ramping to dry when disabling itself (instead
+    // of being handled by EngineEffect::process).
     if (enableState == EffectEnableState::Disabling) {
+        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, bufferParameters.samplesPerBuffer());
         gs.delay_buf.clear();
+        gs.prev_send = 0;
+    } else {
+        gs.prev_send = send_current;
     }
 
-    gs.prev_send = send_amount;
-    gs.prev_feedback = feedback_amount;
+    gs.prev_feedback = feedback_current;
     gs.prev_delay_samples = delay_samples;
 }
