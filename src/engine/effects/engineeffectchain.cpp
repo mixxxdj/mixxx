@@ -263,6 +263,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
         // requires that the input buffer does not get modified.
         CSAMPLE* pIntermediateInput = pIn;
         CSAMPLE* pIntermediateOutput;
+        bool firstAddDryToWetEffectProcessed = false;
 
         for (EngineEffect* pEffect: m_effects) {
             if (pEffect != nullptr) {
@@ -276,8 +277,30 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                 if (pEffect->process(inputHandle, outputHandle,
                                      pIntermediateInput, pIntermediateOutput,
                                      numSamples, sampleRate,
-                                     effectiveChainEnableState, groupFeatures,
-                                     m_mixMode)) {
+                                     effectiveChainEnableState, groupFeatures)) {
+                    if (pEffect->getManifest()->addDryToWet()) {
+                        // Skip adding the dry signal to the effect's wet output
+                        // when it is the first addDryToWet type effect in
+                        // a DryPlusWet mode chain. This allows effects after
+                        // it to process only the wet output. For example,
+                        // when chaining Echo then Reverb in DryPlusWet mode,
+                        // the Reverb effect will get only the wet output of
+                        // Echo to process instead of the echoed signal mixed
+                        // with the input to Echo. The dry signal that entered
+                        // the first effect in the chain will be mixed back in
+                        // below after all effects in the chain have been processed.
+                        bool skipAddingDry = !firstAddDryToWetEffectProcessed
+                                && m_mixMode == EffectChainMixMode::DryPlusWet;
+
+                        if (!skipAddingDry) {
+                            for (int i=0; i <= numSamples; ++i) {
+                                pIntermediateOutput[i] += pIntermediateInput[i];
+                            }
+                        }
+
+                        firstAddDryToWetEffectProcessed = true;
+                    }
+
                     processingOccured = true;
                     // Output of this effect becomes the input of the next effect
                     pIntermediateInput = pIntermediateOutput;

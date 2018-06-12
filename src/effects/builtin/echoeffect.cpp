@@ -27,6 +27,9 @@ QString EchoEffect::getId() {
 // static
 EffectManifestPointer EchoEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
+
+    pManifest->setAddDryToWet(true);
+
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Echo"));
     pManifest->setShortName(QObject::tr("Echo"));
@@ -134,8 +137,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                                 CSAMPLE* pOutput,
                                 const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
-                                const GroupFeatureState& groupFeatures,
-                                const EffectChainMixMode mixMode) {
+                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
     EchoGroupState& gs = *pGroupState;
@@ -233,14 +235,6 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
             // 1 + fraction
             pOutput[i + 1] = (bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
                              (1 + pingpong_frac);
-        }
-
-        // When the effect unit is in D/W mode, add the dry signal to the output.
-        // In D+W mode this is not needed because it is done when mixing the
-        // effect unit.
-        if (mixMode == EffectChainMixMode::DrySlashWet) {
-            pOutput[i] += pInput[i];
-            pOutput[i + 1] += pInput[i + 1];
         }
 
         incrementRing(&gs.write_position, bufferParameters.channelCount(),

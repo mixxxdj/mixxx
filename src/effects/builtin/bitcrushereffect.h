@@ -37,8 +37,7 @@ class BitCrusherEffect : public EffectProcessorImpl<BitCrusherGroupState> {
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState,
-                        const EffectChainMixMode mixMode);
+                        const GroupFeatureState& groupFeatureState);
 
   private:
     QString debugString() const {

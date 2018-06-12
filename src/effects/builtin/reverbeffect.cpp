@@ -12,6 +12,9 @@ QString ReverbEffect::getId() {
 // static
 EffectManifestPointer ReverbEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
+
+    pManifest->setAddDryToWet(true);
+
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Reverb"));
     pManifest->setAuthor("The Mixxx Team, CAPS Plugins");
@@ -93,11 +96,9 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
-                                const GroupFeatureState& groupFeatures,
-                                const EffectChainMixMode mixMode) {
+                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(mixMode);
 
     if (!pState || !m_pDecayParameter || !m_pBandWidthParameter || !m_pDampingParameter || !m_pSendParameter) {
         qWarning() << "Could not retrieve all effect parameters";
