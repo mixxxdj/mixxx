@@ -19,14 +19,18 @@
 class ReverbGroupState : public EffectState {
   public:
     ReverbGroupState(const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters) {
+        : EffectState(bufferParameters),
+          send(bufferParameters.framesPerBuffer()) {
+        engineParametersChanged(bufferParameters);
     }
 
     void engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
         sampleRate = bufferParameters.sampleRate();
+        send = RampingValue<sample_t>(bufferParameters.framesPerBuffer());
     }
 
     float sampleRate;
+    RampingValue<sample_t> send;
     MixxxPlateX2 reverb{};
 };
 

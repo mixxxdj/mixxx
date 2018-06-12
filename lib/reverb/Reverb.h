@@ -220,6 +220,7 @@ class PlateX2
 };
 #endif
 
+#include <util/rampingvalue.h>
 /// (timrae) Define our own interface instead of using the original LADSPA plugin interface
  class MixxxPlateX2 : public PlateStub {
     public:
@@ -227,7 +228,7 @@ class PlateX2
                            const sample_t bandwidthParam,
                            const sample_t decayParam,
                            const sample_t dampingParam,
-                           const sample_t blendParam);
+                           RampingValue<sample_t>* send);
 
         void init(float sampleRate) {
             fs = sampleRate;
