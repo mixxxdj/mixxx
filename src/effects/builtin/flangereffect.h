@@ -29,10 +29,10 @@ struct FlangerGroupState : public EffectState {
               delayPos(0),
               lfoFrames(0),
               previousPeriodFrames(-1),
-              prev_regen(0),
-              prev_mix(0),
-              prev_width(0),
-              prev_manual(kCenterDelayMs) {
+              regen(bufferParameters.framesPerBuffer()),
+              mix(bufferParameters.framesPerBuffer()),
+              width(bufferParameters.framesPerBuffer()),
+              manual(bufferParameters.framesPerBuffer()) {
         SampleUtil::clear(delayLeft, kBufferLenth);
         SampleUtil::clear(delayRight, kBufferLenth);
     }
@@ -41,10 +41,10 @@ struct FlangerGroupState : public EffectState {
     unsigned int delayPos;
     unsigned int lfoFrames;
     double previousPeriodFrames;
-    CSAMPLE_GAIN prev_regen;
-    CSAMPLE_GAIN prev_mix;
-    CSAMPLE_GAIN prev_width;
-    CSAMPLE_GAIN prev_manual;
+    RampingValue<CSAMPLE_GAIN> regen;
+    RampingValue<CSAMPLE_GAIN> mix;
+    RampingValue<CSAMPLE_GAIN> width;
+    RampingValue<CSAMPLE_GAIN> manual;
 };
 
 class FlangerEffect : public EffectProcessorImpl<FlangerGroupState> {

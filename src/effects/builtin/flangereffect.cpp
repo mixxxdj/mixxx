@@ -137,6 +137,13 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
                                    const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
+    // FIXME: temporary hack until EffectStates are initialized with the
+    // actual buffer parameters of the engine.
+    pState->mix.setStepsPerCallback(bufferParameters.framesPerBuffer());
+    pState->regen.setStepsPerCallback(bufferParameters.framesPerBuffer());
+    pState->width.setStepsPerCallback(bufferParameters.framesPerBuffer());
+    pState->manual.setStepsPerCallback(bufferParameters.framesPerBuffer());
+
     double lfoPeriodParameter = m_pSpeedParameter->value();
     double lfoPeriodFrames;
     if (groupFeatures.has_beat_length_sec) {
@@ -160,36 +167,26 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     }
     pState->previousPeriodFrames = lfoPeriodFrames;
 
-
-    // lfoPeriodSamples is used to calculate the delay for each channel
-    // independently in the loop below, so do not multiply lfoPeriodSamples by
-    // the number of channels.
-
-    CSAMPLE_GAIN mix = m_pMixParameter->value();
-    RampingValue<CSAMPLE_GAIN> mixRamped(
-            pState->prev_mix, mix, bufferParameters.framesPerBuffer());
-    pState->prev_mix = mix;
-
-    CSAMPLE_GAIN regen = m_pRegenParameter->value();
-    RampingValue<CSAMPLE_GAIN> regenRamped(
-            pState->prev_regen, regen, bufferParameters.framesPerBuffer());
-    pState->prev_regen = regen;
+    pState->mix.setCurrentCallbackValue(m_pMixParameter->value());
+    pState->regen.setCurrentCallbackValue(m_pRegenParameter->value());
 
     // With and Manual is limited by amount of amplitude that remains from width
     // to kMaxDelayMs
     double width = m_pWidthParameter->value();
+    pState->width.setCurrentCallbackValue(width);
+
     double manual = m_pManualParameter->value();
     double maxManual = kCenterDelayMs + (kMaxLfoWidthMs - width) / 2;
     double minManual = kCenterDelayMs - (kMaxLfoWidthMs - width) / 2;
     manual = math_clamp(manual, minManual, maxManual);
+    pState->manual.setCurrentCallbackValue(manual);
 
-    RampingValue<double> widthRamped(
-            pState->prev_width, width, bufferParameters.framesPerBuffer());
-    pState->prev_width = width;
-
-    RampingValue<double> manualRamped(
-            pState->prev_manual, manual, bufferParameters.framesPerBuffer());
-    pState->prev_manual = manual;
+    // FIXME: temporary hack until EffectStates are initialized with the
+    // actual buffer parameters of the engine.
+    pState->mix.setStepsPerCallback(bufferParameters.framesPerBuffer());
+    pState->regen.setStepsPerCallback(bufferParameters.framesPerBuffer());
+    pState->width.setStepsPerCallback(bufferParameters.framesPerBuffer());
+    pState->manual.setStepsPerCallback(bufferParameters.framesPerBuffer());
 
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
@@ -198,10 +195,10 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
           i < bufferParameters.samplesPerBuffer();
           i += bufferParameters.channelCount()) {
 
-        CSAMPLE_GAIN mix_ramped = mixRamped.getNext();
-        CSAMPLE_GAIN regen_ramped = regenRamped.getNext();
-        double width_ramped = widthRamped.getNext();
-        double manual_ramped = manualRamped.getNext();
+        CSAMPLE_GAIN mix_ramped = pState->mix.rampedValue();
+        CSAMPLE_GAIN regen_ramped = pState->regen.rampedValue();
+        double width_ramped = pState->width.rampedValue();
+        double manual_ramped = pState->manual.rampedValue();
 
         pState->lfoFrames++;
         if (pState->lfoFrames >= lfoPeriodFrames) {
@@ -240,7 +237,5 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
         SampleUtil::clear(delayLeft, kBufferLenth);
         SampleUtil::clear(delayRight, kBufferLenth);
         pState->previousPeriodFrames = -1;
-        pState->prev_regen = 0;
-        pState->prev_mix = 0;
     }
 }
