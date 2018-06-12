@@ -13,7 +13,13 @@ QString ReverbEffect::getId() {
 EffectManifestPointer ReverbEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
 
+    // Refer to EngineEffectChain::process for how this manifest attribute is
+    // handled.
     pManifest->setAddDryToWet(true);
+    // EngineEffect::process cannot appropriately ramp this effect on because
+    // the effect does not start outputting sound immediately. Instead,
+    // ramping on is handled by ramping the Send parameter from 0.
+    pManifest->setEffectRampsFromDry(true);
 
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Reverb"));
@@ -100,15 +106,10 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
-    if (!pState || !m_pDecayParameter || !m_pBandWidthParameter || !m_pDampingParameter || !m_pSendParameter) {
-        qWarning() << "Could not retrieve all effect parameters";
-        return;
-    }
-
     const auto decay = m_pDecayParameter->value();
     const auto bandwidth = m_pBandWidthParameter->value();
     const auto damping = m_pDampingParameter->value();
-    const auto send = m_pSendParameter->value();
+    pState->send.setCurrentCallbackValue(pow(m_pSendParameter->value(), 1.53));
 
     // Reinitialize the effect when turning it on to prevent replaying the old buffer
     // from the last time the effect was enabled.
@@ -116,9 +117,18 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
     if (enableState == EffectEnableState::Enabling
         || pState->sampleRate != bufferParameters.sampleRate()) {
         pState->reverb.init(bufferParameters.sampleRate());
-        pState->sampleRate = bufferParameters.sampleRate();
+        pState->engineParametersChanged(bufferParameters);
     }
+
     pState->reverb.processBuffer(pInput, pOutput,
                                  bufferParameters.samplesPerBuffer(),
-                                 bandwidth, decay, damping, send);
+                                 bandwidth, decay, damping, &pState->send);
+
+    // The ramping of the send parameter handles ramping when enabling, so
+    // this effect must handle ramping to dry when disabling itself (instead
+    // of being handled by EngineEffect::process).
+    if (enableState == EffectEnableState::Disabling) {
+        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, bufferParameters.samplesPerBuffer());
+        pState->send.setCurrentCallbackValue(0);
+    }
 }

@@ -9,6 +9,7 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "util/class.h"
 #include "util/defs.h"
+#include "util/rampingvalue.h"
 #include "util/sample.h"
 #include "util/samplebuffer.h"
 
@@ -19,28 +20,32 @@ class EchoGroupState : public EffectState {
     static constexpr int kMaxDelaySeconds = 3;
 
     EchoGroupState(const mixxx::EngineParameters bufferParameters)
-           : EffectState(bufferParameters) {
-        audioParametersChanged(bufferParameters);
+           : EffectState(bufferParameters),
+             send(bufferParameters.framesPerBuffer()),
+             feedback(bufferParameters.framesPerBuffer()) {
+       audioParametersChanged(bufferParameters);
        clear();
     }
 
     void audioParametersChanged(const mixxx::EngineParameters bufferParameters) {
         delay_buf = mixxx::SampleBuffer(kMaxDelaySeconds
                 * bufferParameters.sampleRate() * bufferParameters.channelCount());
+        send = RampingValue<CSAMPLE_GAIN>(bufferParameters.framesPerBuffer());
+        feedback = RampingValue<CSAMPLE_GAIN>(bufferParameters.framesPerBuffer());
     };
 
     void clear() {
         delay_buf.clear();
-        prev_send = 0.0f;
-        prev_feedback= 0.0f;
+        send.setCurrentCallbackValue(0);
+        feedback.setCurrentCallbackValue(0);
         prev_delay_samples = 0;
         write_position = 0;
         ping_pong = 0;
     };
 
     mixxx::SampleBuffer delay_buf;
-    CSAMPLE_GAIN prev_send;
-    CSAMPLE_GAIN prev_feedback;
+    RampingValue<CSAMPLE_GAIN> send;
+    RampingValue<CSAMPLE_GAIN> feedback;
     int prev_delay_samples;
     int write_position;
     int ping_pong;
