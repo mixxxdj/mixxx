@@ -82,8 +82,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     send->setName(QObject::tr("Send"));
     send->setShortName(QObject::tr("Send"));
     send->setDescription(QObject::tr(
-        "How much of the signal to send into the delay buffer\n"
-        "When the effect unit is in D+W mode, keep this turned up all the way"));
+        "How much of the signal to send into the delay buffer"));
     send->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
