@@ -32,6 +32,12 @@ void MetadataBroadcaster::slotNowListening(TrackPointer pTrack) {
     }
 }
 
+void MetadataBroadcaster::slotAllTracksPaused() {
+    for (auto& service : m_scrobblingServices) {
+        service->allTracksPaused();
+    }
+}
+
 const QList<TrackId> MetadataBroadcaster::getTrackedTracks() {
     return {};
 }

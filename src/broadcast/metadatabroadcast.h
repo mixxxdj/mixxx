@@ -14,6 +14,7 @@ class MetadataBroadcasterInterface : public QObject {
   public slots:
     virtual void slotNowListening(TrackPointer pTrack) = 0;
     virtual void slotAttemptScrobble(TrackPointer pTrack) = 0;
+    virtual void slotAllTracksPaused() = 0;
 
   public:
     virtual ~MetadataBroadcasterInterface() = default;
@@ -49,6 +50,7 @@ class MetadataBroadcaster : public MetadataBroadcasterInterface {
     void setGracePeriod(unsigned int seconds);
     void slotNowListening(TrackPointer pTrack) override;
     void slotAttemptScrobble(TrackPointer pTrack) override;
+    void slotAllTracksPaused() override;
     void guiTick(double timeSinceLastTick);
 
   private:

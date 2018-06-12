@@ -81,7 +81,7 @@ class ScrobblingTest : public ::testing::Test {
     PlayerMock dummyPlayerLeft, dummyPlayerRight;
     TrackPointer dummyTrackLeft, dummyTrackRight;
     RegularTimerMock* timerScrobbler;
-    testing::NiceMock<MetadataBroadcasterMock>* broadcastMock;
+    MetadataBroadcasterMock* broadcastMock;
     AudibleStrategyMock* strategyMock;
 };
 
@@ -108,8 +108,7 @@ TEST_F(ScrobblingTest, SingleTrackAudible) {
             trackInfo->setTimer(tMock);
             trackInfo->setElapsedTimer(etMock);
             return trackInfo;
-        }
-        throw;
+        }        
     };
     scrobblingManager.setTrackInfoFactory(factory);
     EXPECT_CALL(*strategyMock, isTrackAudible(_, _))
@@ -117,4 +116,67 @@ TEST_F(ScrobblingTest, SingleTrackAudible) {
     EXPECT_CALL(*broadcastMock, slotAttemptScrobble(_));
     dummyPlayerLeft.emitTrackLoaded(dummyTrackLeft);
     dummyPlayerLeft.emitTrackResumed(dummyTrackLeft);
+}
+
+//1 Track, inaudible.
+TEST_F(ScrobblingTest, SingleTrackInaudible) {
+    std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> factory;
+    factory = [this](TrackPointer pTrack) -> std::shared_ptr<TrackTimingInfo> {
+        if (pTrack == dummyTrackLeft) {
+            std::shared_ptr<TrackTimingInfo>
+                    trackInfo(new TrackTimingInfo(pTrack));
+            trackInfo->setTimer(new testing::NiceMock<RegularTimerMock>);
+            trackInfo->setElapsedTimer(new testing::NiceMock<ElapsedTimerMock>);
+            return trackInfo;
+        }
+    };
+    scrobblingManager.setTrackInfoFactory(factory);
+    EXPECT_CALL(*strategyMock, isTrackAudible(_, _))
+            .WillOnce(testing::Return(false));
+    dummyPlayerLeft.emitTrackLoaded(dummyTrackLeft);
+    dummyPlayerLeft.emitTrackResumed(dummyTrackLeft);
+    ASSERT_FALSE(scrobblingManager.hasScrobbledAnyTrack());
+}
+
+//2 tracks, one audible, the other not.
+TEST_F(ScrobblingTest, TwoTracksUnbalanced) {
+    std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> factory;
+    factory = [this](TrackPointer pTrack) -> std::shared_ptr<TrackTimingInfo> {
+        if (pTrack == dummyTrackLeft) {
+            std::shared_ptr<TrackTimingInfo>
+                    trackInfo(new TrackTimingInfo(pTrack));
+            trackInfo->setTimer(new testing::NiceMock<RegularTimerMock>);
+            trackInfo->setElapsedTimer(new testing::NiceMock<ElapsedTimerMock>);
+            return trackInfo;
+        } else if (pTrack == dummyTrackRight) {
+            std::shared_ptr<TrackTimingInfo>
+                    trackInfo(new TrackTimingInfo(pTrack));
+            ElapsedTimerMock* etMock = new ElapsedTimerMock;
+            EXPECT_CALL(*etMock, invalidate());
+            EXPECT_CALL(*etMock, isValid())
+                    .WillOnce(testing::Return(false))
+                    .WillOnce(testing::Return(true));
+            EXPECT_CALL(*etMock, start());
+            EXPECT_CALL(*etMock, elapsed())
+                    .WillOnce(testing::Return(60000));
+            RegularTimerMock* tMock = new RegularTimerMock;
+            EXPECT_CALL(*tMock, start(1000))
+                    .WillOnce(testing::InvokeWithoutArgs(
+                            trackInfo.get(),
+                            &TrackTimingInfo::slotCheckIfScrobbable));
+            trackInfo->setTimer(tMock);
+            trackInfo->setElapsedTimer(etMock);
+            return trackInfo;
+        }
+    };
+    scrobblingManager.setTrackInfoFactory(factory);
+    EXPECT_CALL(*strategyMock, isTrackAudible(dummyTrackLeft, _))
+            .WillOnce(testing::Return(false));
+    EXPECT_CALL(*strategyMock, isTrackAudible(dummyTrackRight, _))
+            .WillOnce(testing::Return(true));
+    EXPECT_CALL(*broadcastMock, slotAttemptScrobble(dummyTrackRight));
+    dummyPlayerLeft.emitTrackLoaded(dummyTrackLeft);
+    dummyPlayerRight.emitTrackLoaded(dummyTrackRight);
+    dummyPlayerLeft.emitTrackResumed(dummyTrackLeft);
+    dummyPlayerRight.emitTrackResumed(dummyTrackRight);
 }
