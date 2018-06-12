@@ -23,6 +23,7 @@ QString FlangerEffect::getId() {
 // static
 EffectManifestPointer FlangerEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setEffectRampsFromDry(true);
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Flanger"));
     pManifest->setShortName(QObject::tr("Flanger"));
@@ -167,7 +168,12 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     }
     pState->previousPeriodFrames = lfoPeriodFrames;
 
-    pState->mix.setCurrentCallbackValue(m_pMixParameter->value());
+    if (enableState == EffectEnableState::Disabling) {
+        pState->mix.setCurrentCallbackValue(0);
+    } else {
+        pState->mix.setCurrentCallbackValue(m_pMixParameter->value());
+    }
+
     pState->regen.setCurrentCallbackValue(m_pRegenParameter->value());
 
     // With and Manual is limited by amount of amplitude that remains from width
