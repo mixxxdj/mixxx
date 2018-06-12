@@ -94,11 +94,9 @@ void LV2EffectProcessor::process(const ChannelHandle& inputHandle,
         const CSAMPLE* pInput, CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
-        const GroupFeatureState& groupFeatures,
-        const EffectChainMixMode mixMode) {
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
     Q_UNUSED(enableState);
-    Q_UNUSED(mixMode);
 
     LV2EffectGroupState* pState = m_channelStateMatrix[inputHandle][outputHandle];
     VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {

@@ -41,8 +41,7 @@ class FilterEffect : public EffectProcessorImpl<FilterGroupState> {
                         const CSAMPLE* pInput, CSAMPLE *pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatures,
-                        const EffectChainMixMode mixMode);
+                        const GroupFeatureState& groupFeatures);
 
   private:
     QString debugString() const {

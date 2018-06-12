@@ -27,6 +27,9 @@ QString EchoEffect::getId() {
 // static
 EffectManifestPointer EchoEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
+
+    pManifest->setAddDryToWet(true);
+
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Echo"));
     pManifest->setShortName(QObject::tr("Echo"));
@@ -82,8 +85,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     send->setName(QObject::tr("Send"));
     send->setShortName(QObject::tr("Send"));
     send->setDescription(QObject::tr(
-        "How much of the signal to send into the delay buffer\n"
-        "When the effect unit is in D+W mode, keep this turned up all the way"));
+        "How much of the signal to send into the delay buffer"));
     send->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -135,8 +137,7 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                                 CSAMPLE* pOutput,
                                 const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
-                                const GroupFeatureState& groupFeatures,
-                                const EffectChainMixMode mixMode) {
+                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
     EchoGroupState& gs = *pGroupState;
@@ -186,8 +187,6 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
             bufferParameters.framesPerBuffer();
     const CSAMPLE_GAIN feedback_start = gs.prev_feedback + feedback_delta;
 
-    const bool addDry = mixMode == EffectChainMixMode::DrySlashWet;
-
     //TODO: rewrite to remove assumption of stereo buffer
     for (unsigned int i = 0;
             i < bufferParameters.samplesPerBuffer();
@@ -225,21 +224,17 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         if (gs.ping_pong < delay_samples / 2) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
-            pOutput[i] =  (addDry ? pInput[i] : 0) +
-                    ((bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
-                    (1 + pingpong_frac));
+            pOutput[i] = (bufferedSampleLeft + bufferedSampleRight * pingpong_frac) /
+                         (1 + pingpong_frac);
             // Right sample reduced by (1 - fraction)
-            pOutput[i + 1] = (addDry ? pInput[i + 1] : 0) +
-                    (bufferedSampleRight * (1 - pingpong_frac));
+            pOutput[i + 1] = bufferedSampleRight * (1 - pingpong_frac);
         } else {
             // Left sample reduced by (1 - fraction)
-            pOutput[i] = (addDry ? pInput[i] : 0) +
-                    (bufferedSampleLeft * (1 - pingpong_frac));
+            pOutput[i] = bufferedSampleLeft * (1 - pingpong_frac);
             // Right sample plus fraction of left sample, normalized by
             // 1 + fraction
-            pOutput[i + 1] = (addDry ? pInput[i + 1] : 0) +
-                    ((bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
-                    (1 + pingpong_frac));
+            pOutput[i + 1] = (bufferedSampleRight + bufferedSampleLeft * pingpong_frac) /
+                             (1 + pingpong_frac);
         }
 
         incrementRing(&gs.write_position, bufferParameters.channelCount(),
