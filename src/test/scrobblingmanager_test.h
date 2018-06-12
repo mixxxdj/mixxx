@@ -12,6 +12,7 @@ class MetadataBroadcasterMock : public MetadataBroadcasterInterface {
     ~MetadataBroadcasterMock() = default;
     MOCK_METHOD1(slotNowListening, void(TrackPointer));
     MOCK_METHOD1(slotAttemptScrobble, void(TrackPointer));
+    MOCK_METHOD0(slotAllTracksPaused, void());
     MetadataBroadcasterInterface&
     addNewScrobblingService(std::unique_ptr<ScrobblingService>&& newService) override {
     }

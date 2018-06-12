@@ -67,7 +67,8 @@ ScrobblingManager::ScrobblingManager(PlayerManagerInterface* manager)
         : m_pManager(manager),
           m_pBroadcaster(new MetadataBroadcaster),
           m_pAudibleStrategy(new TotalVolumeThreshold(this, 0.20)),
-          m_pTimer(new TrackTimers::GUITickTimer) {
+          m_pTimer(new TrackTimers::GUITickTimer),
+          m_scrobbledAtLeastOnce(false) {
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)), m_pBroadcaster.get(), SLOT(slotNowListening(TrackPointer)));
     connect(m_pTimer.get(), SIGNAL(timeout()), this, SLOT(slotCheckAudibleTracks()));
     m_pTimer->start(1000);
@@ -101,25 +102,44 @@ void ScrobblingManager::setTrackInfoFactory(
     m_trackInfoFactory = factory;
 }
 
+bool ScrobblingManager::hasScrobbledAnyTrack() const {
+    return m_scrobbledAtLeastOnce;
+}
+
 void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
-    bool allPaused = true;
-    TrackInfo* pPausedTrackInfo = nullptr;
-    for (TrackInfo* pTrackInfo : m_trackList) {
-        VERIFY_OR_DEBUG_ASSERT(pTrackInfo) {
+    bool pausedInAllDecks = true;
+    TrackInfo* pausedTrackInfo = nullptr;
+    for (TrackInfo* trackInfo : m_trackList) {
+        VERIFY_OR_DEBUG_ASSERT(trackInfo) {
             continue;
         }
-        if (pTrackInfo->m_pTrack == pPausedTrack) {
-            pPausedTrackInfo = pTrackInfo;
-            for (QString playerGroup : pTrackInfo->m_players) {
-                BaseTrackPlayer* pPlayer = m_pManager->getPlayer(playerGroup);
-                if (!pPlayer->isTrackPaused())
-                    allPaused = false;
+        if (trackInfo->m_pTrack == pPausedTrack) {
+            pausedTrackInfo = trackInfo;
+            for (QString playerGroup : trackInfo->m_players) {
+                BaseTrackPlayer* player = m_pManager->getPlayer(playerGroup);
+                if (!player->isTrackPaused())
+                    pausedInAllDecks = false;
             }
             break;
         }
     }
-    if (allPaused && pPausedTrackInfo) {
-        pPausedTrackInfo->m_trackInfo->pausePlayedTime();
+    if (pausedInAllDecks && pausedTrackInfo) {
+        pausedTrackInfo->m_trackInfo->pausePlayedTime();
+        bool allTracksPaused = true;
+        for (TrackInfo* info : m_trackList) {
+            for (const QString& player : info->m_players) {
+                if (!m_pManager->getPlayer(player)->isTrackPaused()) {
+                    allTracksPaused = false;
+                    break;
+                }
+            }
+            if (!allTracksPaused) {
+                break;
+            }
+        }
+        if (allTracksPaused) {
+            m_pBroadcaster->slotAllTracksPaused();
+        }
     }
 }
 
@@ -260,6 +280,7 @@ void ScrobblingManager::slotGuiTick(double timeSinceLastTick) {
 }
 
 void ScrobblingManager::slotReadyToBeScrobbled(TrackPointer pTrack) {
+    m_scrobbledAtLeastOnce = true;
     m_pBroadcaster->slotAttemptScrobble(pTrack);
 }
 

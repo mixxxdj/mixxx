@@ -49,6 +49,7 @@ class ScrobblingManager : public QObject {
     void setMetadataBroadcaster(MetadataBroadcasterInterface* pBroadcast);
     void setTimer(TrackTimers::RegularTimer* timer);
     void setTrackInfoFactory(const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)>& factory);
+    bool hasScrobbledAnyTrack() const;
 
   public slots:
     void slotTrackPaused(TrackPointer pPausedTrack);
@@ -87,6 +88,8 @@ class ScrobblingManager : public QObject {
     std::unique_ptr<TrackTimers::RegularTimer> m_pTimer;
 
     std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> m_trackInfoFactory;
+
+    bool m_scrobbledAtLeastOnce;
 
     void resetTracks();
     bool isStrayFromEngine(TrackPointer pTrack, const QString& group) const;
