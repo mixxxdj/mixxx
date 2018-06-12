@@ -1,11 +1,10 @@
 #include "track/trackplaytimers.h"
 
-TrackTimers::GUITickTimer::GUITickTimer() :
-m_msSoFar(0.0),
-m_msTarget(0.0),
-m_isActive(false),
-m_timeoutSent(false)
-{
+TrackTimers::GUITickTimer::GUITickTimer() 
+        :  m_msSoFar(0.0),
+           m_msTarget(0.0),
+           m_isActive(false),
+           m_timeoutSent(false) {
     
 }
 

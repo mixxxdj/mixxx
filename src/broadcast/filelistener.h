@@ -14,6 +14,7 @@ class FileListener: public ScrobblingService {
         makeFileListener(FileListenerType type, const QString &path);
     void broadcastCurrentTrack(TrackPointer pTrack) override;
     void scrobbleTrack(TrackPointer pTrack) override;
+    void allTracksPaused() override;
   protected:
     virtual void writeMetadata(QTextStream &stream,TrackPointer pTrack) = 0;
     FileListener(const QString &path);
