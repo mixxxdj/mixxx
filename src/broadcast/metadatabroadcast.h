@@ -20,7 +20,7 @@ class MetadataBroadcasterInterface : public QObject {
     virtual MetadataBroadcasterInterface& 
         addNewScrobblingService(std::unique_ptr<ScrobblingService> &&newService) = 0;
     virtual void newTrackLoaded(TrackPointer pTrack) = 0;
-    virtual void trackUnloaded(TrackPointer pTrack) = 0;    
+    virtual void trackUnloaded(TrackPointer pTrack) = 0;
 };
 
 class MetadataBroadcaster : public MetadataBroadcasterInterface {
