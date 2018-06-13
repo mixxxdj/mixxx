@@ -3,6 +3,7 @@
 #include <QLinkedList>
 #include <QMutex>
 #include <QObject>
+#include <QString>
 #include <functional>
 
 #include "broadcast/metadatabroadcast.h"
@@ -61,7 +62,7 @@ class ScrobblingManager : public QObject {
 
   private:
     struct TrackInfo {
-        TrackPointer m_pTrack;
+        TrackWeakPointer m_pTrack;
         std::shared_ptr<TrackTimingInfo> m_trackInfo;
         QLinkedList<QString> m_players;
         TrackInfo(TrackPointer pTrack)
@@ -69,7 +70,7 @@ class ScrobblingManager : public QObject {
         }
     };
     struct TrackToBeReset {
-        TrackPointer m_pTrack;
+        TrackWeakPointer m_pTrack;
         QString m_playerGroup;
         TrackToBeReset(TrackPointer pTrack, const QString& playerGroup)
                 : m_pTrack(pTrack), m_playerGroup(playerGroup) {
