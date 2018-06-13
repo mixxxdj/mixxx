@@ -35,6 +35,7 @@
                   <WidgetGroup>
                     <Layout>horizontal</Layout>
                     <Children>
+
                       <WidgetGroup>
                         <ObjectName>LibrarySidebarButtonsContainer</ObjectName>
                         <Layout>vertical</Layout>

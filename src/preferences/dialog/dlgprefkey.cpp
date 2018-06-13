@@ -20,16 +20,13 @@
 #include <QLineEdit>
 #include <QMessageBox>
 
-#include "analyzer/vamp/vamppluginloader.h"
+#include "analyzer/vamp/vamppluginadapter.h"
 #include "control/controlproxy.h"
 #include "track/key_preferences.h"
 #include "util/xml.h"
 
 using Vamp::Plugin;
-using Vamp::PluginHostAdapter;
 using Vamp::HostExt::PluginLoader;
-using Vamp::HostExt::PluginWrapper;
-using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer _config)
         : DlgPreferencePage(parent),
@@ -98,15 +95,15 @@ void DlgPrefKey::loadSettings() {
     qDebug() << "Key plugin ID:" << m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
 
-    if(m_pConfig->getValueString(
+    if (m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID)) == "") {
         slotResetToDefaults();
         slotApply(); // Write to config file so AnalyzerKey can get the data
         return;
     }
 
-   QString pluginid = m_pConfig->getValueString(
-       ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
+    QString pluginid = m_pConfig->getValueString(
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
     m_selectedAnalyzer = pluginid;
 
     m_bAnalyzerEnabled = static_cast<bool>(m_pConfig->getValueString(
@@ -283,19 +280,18 @@ void DlgPrefKey::populate() {
    m_listLibrary.clear();
    plugincombo->clear();
    plugincombo->setDuplicatesEnabled(false);
-   mixxx::VampPluginLoader vampPluginLoader;
-   std::vector<PluginLoader::PluginKey> plugins = vampPluginLoader.listPlugins();
+   const PluginLoader::PluginKeyList plugins = mixxx::VampPluginAdapter::listPlugins();
    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
    for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
        // TODO(XXX): WTF, 48000
-       Plugin* plugin = vampPluginLoader.loadPlugin(plugins[iplugin], 48000);
+       mixxx::VampPluginAdapter pluginAdapter(plugins[iplugin], 48000);
        //TODO(XXX): find a general way to add key detectors only
-       if (plugin) {
-           Plugin::OutputList outputs = plugin->getOutputDescriptors();
+       if (pluginAdapter) {
+           const Plugin::OutputList& outputs = pluginAdapter.getOutputDescriptors();
            for (unsigned int ioutput=0; ioutput < outputs.size(); ioutput++) {
-               QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
+               QString displayname = QString::fromStdString(pluginAdapter.getIdentifier()) + ":"
                                            + QString::number(ioutput);
-               QString displaynametext = QString::fromStdString(plugin->getName());
+               QString displaynametext = QString::fromStdString(pluginAdapter.getName());
                qDebug() << "Plugin output displayname:" << displayname << displaynametext;
                bool goodones = displayname.contains(VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID);
 
@@ -303,14 +299,12 @@ void DlgPrefKey::populate() {
                    m_listName << displaynametext;
                    QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,0);
                    m_listLibrary << pluginlibrary;
-                   QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
+                   QString displayname = QString::fromStdString(pluginAdapter.getIdentifier()) + ":"
                            + QString::number(ioutput);
                    m_listIdentifier << displayname;
                    plugincombo->addItem(displaynametext, displayname);
                }
            }
-           delete plugin;
-           plugin = 0;
        }
    }
 }

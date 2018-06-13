@@ -4,20 +4,20 @@
 #include "util/defs.h"
 #include "util/sample.h"
 
-EngineEffect::EngineEffect(const EffectManifest& manifest,
+EngineEffect::EngineEffect(EffectManifestPointer pManifest,
                            const QSet<ChannelHandleAndGroup>& activeInputChannels,
                            EffectsManager* pEffectsManager,
                            EffectInstantiatorPointer pInstantiator)
-        : m_manifest(manifest),
-          m_parameters(manifest.parameters().size()),
+        : m_pManifest(pManifest),
+          m_parameters(pManifest->parameters().size()),
           m_pEffectsManager(pEffectsManager) {
-    const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
+    const QList<EffectManifestParameterPointer>& parameters = m_pManifest->parameters();
     for (int i = 0; i < parameters.size(); ++i) {
-        const EffectManifestParameter& parameter = parameters.at(i);
+        EffectManifestParameterPointer param = parameters.at(i);
         EngineEffectParameter* pParameter =
-                new EngineEffectParameter(parameter);
+                new EngineEffectParameter(param);
         m_parameters[i] = pParameter;
-        m_parametersById[parameter.id()] = pParameter;
+        m_parametersById[param->id()] = pParameter;
     }
 
     for (const ChannelHandleAndGroup& inputChannel :
@@ -31,13 +31,13 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
     }
 
     // Creating the processor must come last.
-    m_pProcessor = pInstantiator->instantiate(this, manifest);
+    m_pProcessor = pInstantiator->instantiate(this, pManifest);
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
           mixxx::AudioSignal::SampleRate(96000),
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
     m_pProcessor->initialize(activeInputChannels, pEffectsManager, bufferParameters);
-    m_effectRampsFromDry = manifest.effectRampsFromDry();
+    m_effectRampsFromDry = pManifest->effectRampsFromDry();
 }
 
 EngineEffect::~EngineEffect() {
@@ -142,7 +142,8 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
                            const unsigned int numSamples,
                            const unsigned int sampleRate,
                            const EffectEnableState chainEnableState,
-                           const GroupFeatureState& groupFeatures) {
+                           const GroupFeatureState& groupFeatures,
+                           const EffectChainMixMode mixMode) {
     // Compute the effective enable state from the combination of the effect's state
     // for the channel and the state passed from the EngineEffectChain.
 
@@ -196,7 +197,7 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
 
         m_pProcessor->process(inputHandle, outputHandle, pInput, pOutput,
                               bufferParameters,
-                              effectiveEffectEnableState, groupFeatures);
+                              effectiveEffectEnableState, groupFeatures, mixMode);
 
         processingOccured = true;
 

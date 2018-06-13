@@ -135,21 +135,6 @@ WTime {
   background-color: #0f0f0f;
 }
 
-#LibrarySingleton {
-  /* This doesn't work as expected:
-  it appears LibrarySingleton is displayed twice, so
-  padding/margin would double.
-  Placed a plain spacer in library.xml which works reliably
-  padding-top: 5px;*/
-}
-
-#Library {
-  border-left: 0px solid #585858;
-  background-color: #0e0e0e;
-  padding-bottom: 2px;
-  /*border-top: 1px solid #585858;*/
-}
-
 #DeckRow_1_KeyVinylFx {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-bottom: 1px solid #585858;
@@ -657,10 +642,17 @@ WBeatSpinBox,
   selection-color: #0f0f0f;
   selection-background-color: #d2d2d2;
   font-size: 13px/13px;
-  padding: 0px;
-  padding: 1px 2px 1px 1px;
-  margin: 0px -1px 2px 0px;
-}
+  }
+  WBeatSpinBox {
+    padding: 1px 2px 1px 1px;
+    margin: 0px -1px 2px 0px;
+  }
+  /* Eliminate overlapping right border for transition time in Auto DJ tab */
+  #DlgAutoDJ QSpinBox {
+    border-right: 0px;
+    margin: 0px 0px 0px 2px;
+    padding: 1px 2px 1px 1px;
+  }
   WBeatSpinBox:hover,
   #DlgAutoDJ QSpinBox:hover {
     border-color: #888;
@@ -684,7 +676,7 @@ WBeatSpinBox,
     margin: 0px;
     padding: 0px;
     border: 0px;
-    }
+  }
 
   WBeatSpinBox::up-button,
   #DlgAutoDJ QSpinBox::up-button {
@@ -1617,11 +1609,6 @@ QTreeView {
   selection-background-color: #725309;
 }
 
-QTreeView {
-  selection-color: #cfb32c;
-  selection-background-color: #725309;
-}
-
 WLibraryBreadCrumb QLabel {
   margin: 0px 0px 6px 3px;
 }
@@ -1660,17 +1647,77 @@ QTableView::indicator {
     background: url(skin:/style/library_checkbox_unchecked.png);
   }
 
-/* BPM lock icon in the library "BPM" column. */
+/* checkbox in library "Played" column */
+QTableView::indicator {
+  width: 10px;
+  height: 10px;
+  margin: 0px;
+  padding: 0px;
+  color: #cfb32c;
+  /* border is added to size defined above */
+  border: 1px solid transparent;
+  }
+  QTableView::indicator:hover {
+    color: #cfcfcf;
+    border: 1px solid #888;
+  }
+  QTableView::indicator:checked,
+  QTableView::indicator:checked:selected {
+    image: url(skin:/style/library_checkbox_checked.png);
+    border: 1px solid #ff6600;
+    }
+    QTableView::indicator:checked:hover {
+      border: 1px solid #aaa;
+    }
+  QTableView::indicator:unchecked {
+    image: url(skin:/style/library_checkbox_unchecked.png);
+    border: 1px solid #444;
+    }
+    QTableView::indicator:unchecked:hover {
+      border: 1px solid #888;
+    }
+  QTableView::indicator:selected {
+    border: 1px solid #888;
+    }
+    QTableView::indicator:selected:hover {
+      border: 1px solid #aaa;
+    }
+
+/* Entire BPM cell */
+/* Lock icon at the left */
 #LibraryBPMButton::indicator:checked {
   image: url(skin:/style/library_lock_checked.png);
 }
 #LibraryBPMButton::indicator:unchecked {
-  image: url(skin:/style/library_lock_unchecked.png);
-}
-#LibraryBPMButton::item:selected {
+  image: url(skin:/style/library_unlocked.png);
+  }
+/* BPM value */
+#LibraryBPMButton::item {
   color: #cfb32c;
-  background-color: #725309;
-}
+  }
+  /* BPM value in selected row. Should match 'selection-color' &
+  'selection-background-color' of QTableView */
+  #LibraryBPMButton::item:selected {
+    color: #ededed;
+    background-color: #725309;
+    }
+#LibraryBPMSpinBox {
+  color: #cfb32c;
+  background-color: #0f0f0f;
+  selection-color: #0f0f0f;
+  selection-background-color: #d2d2d2;
+  /* This combination of negative top/bottom padding & margin
+    creates a 1px border around the spinbox' text area.
+    Increased left/right padding/margin removes the overlap of
+    text of activated spinbox and left-over text from regular
+    BPM value display. */
+  padding: -1px -8px -1px -4px;
+  margin: -2px 0px -2px -2px;
+  /* As soon as any border property is set, the up/down buttons
+    lose their style & icons
+  border: 0px;
+  border-radius: 2px; */
+  }
 
 /* Button in library "Preview" column */
 #LibraryPreviewButton {
@@ -1679,13 +1726,23 @@ QTableView::indicator {
   image: url(skin:/style/library_preview_play.png); 
   background-color: transparent;
   border: 0px;
+  border-radius: 2px;
   }
-  QPushButton#LibraryPreviewButton:!checked{
+  #LibraryPreviewButton:!checked{
     image: url(skin:/style/library_preview_play.png);
-  }
-  QPushButton#LibraryPreviewButton:checked{
-    image: url(skin:/style/library_preview_pause.png);
-  }
+    }
+    #LibraryPreviewButton:!checked:hover {
+      border: 1px solid #725309;
+      background: #0f0f0f;
+    }
+  #LibraryPreviewButton:checked{
+    image: url(:/images/library/ic_library_preview_pause.png);
+    background-color: #000;
+    border: 1px solid #725309;
+    }
+    #LibraryPreviewButton:checked:hover {
+      border: 1px solid #888;
+    }
 
 QHeaderView {
   font-size: 13px/15px;
@@ -1792,12 +1849,16 @@ WSearchLineEdit {
   padding: 2px; 
   border: 1px solid #656565; 
   background: #181818; 
-  color: #cfb32c; 
+  color: #cfb32c;
   }
   WSearchLineEdit:focus {
     padding: 2px;
     border: 2px solid #FF6600;
     background: #0f0f0f;
+  }
+  /* Clear button next to text field */
+  WSearchLineEdit QToolButton {
+    margin-bottom: 4px;
   }
 
 /* cover art */
@@ -1815,7 +1876,11 @@ WLibraryPane {
 /* HorizontalSplitter
    (the splitter itself is horizontal)
    Used to split
-  - Waveforms & Decks/FX/etc  
+  - Waveforms & Decks/FX/etc
+/* HorizontalSplitter
+   (the splitter itself is horizontal)
+   Used to split
+  - Waveforms & Decks/FX/etc
   - Library feature & Coverart */
 #HorizontalSplitter {
   padding: 0px;
@@ -1838,6 +1903,21 @@ WLibraryPane {
    Used to split Library sidebar & Tracks table */
 #VerticalSplitter::handle {
   image: url(skin:/style/splitter_handle_unchecked.png);
+  }
+  #VerticalSplitter::handle:pressed,
+  #VerticalSplitter::handle:hover {
+    image: url(skin:/style/splitter_handle_checked.png);
+  }
+  #VerticalSplitter::handle:vertical {
+    /* 'height' works although it's actually the width of the handle */
+    height: 10px;
+  }
+
+/* VerticalSplitter
+   (the splitter itself is vertical)
+   Used to split Library sidebar & Tracks table */
+#VerticalSplitter::handle {
+  image: url(skin:/style/splitter_handle_unchecked.png);
 }
 #VerticalSplitter::handle:pressed,
 #VerticalSplitter::handle:hover {
@@ -1852,6 +1932,56 @@ WLibraryPane {
 QLabel, QRadioButton {
   background: transparent;
   color: #cfb32c;
+}
+
+WLibrary QRadioButton::indicator:checked {
+  background: url(skin:/buttons/btn_lib_radio_button_on.svg);
+}
+
+WLibrary QRadioButton::indicator:unchecked {
+  background: url(skin:/buttons/btn_lib_radio_button_off.svg);
+}
+
+/* Library feature pushbuttons
+  Don't use WLibrary QPushButton here, as this would apply padding
+  to the Preview & BPM lock buttons as well.
+  Define the buttons fore every Library feature instead. */
+#DlgMissing > QPushButton,
+#DlgHidden > QPushButton,
+#DlgAutoDJ > QPushButton,
+#DlgRecording > QPushButton,
+#DlgAnalysis > QPushButton {
+  margin: 5px 3px 4px 3px;
+  padding: 3px 8px;
+  min-width: 65px;
+  border: 1px solid #585858;
+  border-radius: 2px;
+  color: #d2d2d2;
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                               stop:0 #252525,
+                               stop:1 #0f0f0f);
+  }
+  /* Interesting though: this WOULDN'T affect Preview & BPM button */
+  WLibrary QPushButton:hover,
+  WLibrary QPushButton:focus {
+    border: 1px solid #888;
+  }
+  WLibrary QPushButton:!enabled {
+    color: #666;
+  }
+
+/* Additional space for the first QPushButton in the row */
+#DlgAutoDJ > QPushButton#pushButtonShuffle {
+  margin: 5px 3px 5px 12px;
+}
+
+/* Additional space for the last QPushButton in the row */
+#DlgMissing > QPushButton#btnPurge,
+#DlgHidden > QPushButton#btnUnhide,
+#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
+#DlgRecording > QPushButton#pushButtonRecording,
+#DlgAnalysis > QPushButton#pushButtonAnalyze {
+  margin: 5px 17px 5px 3px;
 }
 
 /* Additional space for QRadionButtons */
@@ -1873,6 +2003,7 @@ WBaseLibrary QRadioButton {
     background: url(skin:/style/library_radio_button_off_hover.svg);
   }
 
+/* triangle for closed/opened branches in treeview */
 QTreeView {
 /* triangle for closed/opened branches in treeview */
   show-decoration-selected: 0;

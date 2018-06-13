@@ -22,7 +22,8 @@ WLabel,
 WNumber,
 WTrackProperty,
 WBeatSpinBox,
-WEffectSelector, WEffectSelector QAbstractItemView {
+WEffectSelector, WEffectSelector QAbstractItemView,
+WSearchLineEdit {
   font-family: Ubuntu;
   font-weight: normal;
 }
@@ -1024,6 +1025,16 @@ WBeatSpinBox,
   }
   #DlgAutoDJ QSpinBox{
     padding: 1px 0px 0px 0px;
+    margin: 0px 15px 0px 0px;
+  }
+  #DlgAutoDJ QSpinBox {
+    /* Note(ronso0):
+    Individual padding/margin in AutoDJ feature */
+    padding: -1px 3px -1px 3px;
+    margin: 0px 17px 3px 7px;
+  }
+  #DlgAutoDJ QLabel {
+    margin: 0px 0px 3px 2px;
   }
   WBeatSpinBox:hover,
   #DlgAutoDJ QSpinBox:hover {
@@ -2034,8 +2045,10 @@ QToolTip {
   margin: 1px;/*
   background-color: #446971;*/
   }
-  #LibCoverArtButton[displayValue="0"],
-  #LibCoverArtButton[displayValue="1"]:hover {
+  #LibCoverArtButton:hover {
+    background-color: #0f0f0f;
+  }
+  #LibCoverArtButton[displayValue="0"] {
     image: url(skin:/buttons/btn_lib_cover_off.svg) no-repeat center center;
   }
   #LibCoverArtButton[displayValue="1"],
@@ -2055,6 +2068,25 @@ QToolTip {
   #LibLabelButton[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_lib_sideBar_labels_on.svg) no-repeat center center;
   }
+
+/* splitters between treeview and library table */
+#LibrarySplitter::handle:horizontal {
+  image: url(skin:/graphics/splitterHori_handle.png);
+  width: 6px;
+  }
+  #LibrarySplitter::handle:horizontal:hover,
+  #LibrarySplitter::handle:horizontal:pressed {
+    image: url(skin:/graphics/splitterHori_handle_pressed.png);
+  }
+  /* splitter between coverArt and tree view */
+  #LibrarySplitter::handle:vertical {
+    height: 6px;
+    image: url(skin:/graphics/splitterVert_handle.png);
+    }
+    #LibrarySplitter::handle:vertical:hover,
+    #LibrarySplitter::handle:vertical:pressed {
+      image: url(skin:/graphics/splitterVert_handle_pressed.png);
+    }
 
 #SidebarButtonsContainer {
   margin-right: 3px;
@@ -2192,32 +2224,63 @@ QTreeView {
   color: #9e9e9e;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
-  selection-color: #e6e6e6;
-  selection-background-color: #666;
+  /* unfocused Stars in selected row
+  selection-color: #D32323; */
+  /* empty CoverArt cell in selected row until
+    daschuer:lp1773709 402483053e3ebd224cce83f1cb0bde361ada1aa8
+  selection-background-color: #3B9097; */
 }
+
+/* selected table row */
+QTableView::item:selected {
+  color: #fff;
+  background-color: #555;
+  /* overrides color:
+  selection-color: #ff5411;
+  not applied anywhere:
+  selection-background-color: #125454; */
+  }
+  /* focused cell */
+  QTableView::item:focus {/*
+    background-color: #666; */
+    /* overrides font color:
+    selection-color: #ff5411; */
+    /* not applied anywhere:
+    selection-background-color: #125454; */
+    /* this outer border is drawn in addition to inner (dotted)
+      focus border defined by OS theme
+    border: 1px solid #ccc; */
+  }
 
 QTreeView {
   min-height: 90px;
   min-width: 90px;
   show-decoration-selected: 0;
   /* Don't define top margin here, it won't shift ScrollBar.
-  Defined by SearchBox	*/
+  Shift WSearchLineEdit instead */
   margin: 0px;
   }
   QTreeView:focus,
   QTableView:focus { /*
     New Library navigation COs only work if TreeView or TableView have focus.
     Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
-    In conjunction with [Library],MoveFocusBackward/..Forward, this helps a lot. */
+    In conjuction with [Library],MoveFocusBackward/..Forward, some highlight
+    helps a lot. */
     border-color: #ff6600;
   }
 
-/*  Closed branch of tree 	*/
+/*  Closed branch icon in tree */
 QTreeView::branch:has-children:!has-siblings:closed,
 QTreeView::branch:closed:has-children:has-siblings {
   image: url(skin:/graphics/library_branch_closed.png);
 }
 /*  Open branch of tree 	*/
+  QTreeView::branch:has-children:!has-siblings:closed:selected,
+  QTreeView::branch:closed:has-children:has-siblings:selected {
+    background-color: #333;
+  }
+
+/*  Open branch icon in tree */
 QTreeView::branch:open:has-children:!has-siblings,
 QTreeView::branch:open:has-children:has-siblings {
   image: url(skin:/graphics/library_branch_open.png);
@@ -2235,12 +2298,27 @@ QTreeView::branch:open:has-children:has-siblings:selected {
     background-color: #333;
     color: #cfcfcf;
   }
+/* Text label of branch item */
+QTreeView::item:selected {
+  border-image: none;
+  background-image: none;
+  background-color: #333;
+  color: #d2d2d2;
+  }
   /* space left of selected child item */
   QTreeView::branch:!has-children:!has-siblings:closed:selected,
   QTreeView::branch:closed:!has-children:has-siblings:selected,
   QTreeView::branch:open:!has-children:!has-siblings:selected,
   QTreeView::branch:open:!has-children:has-siblings:selected {
+    border-image: none;
     background-color: #0f0f0f;
+  }
+
+QTreeView::item:!selected {
+  border-image: none;
+  background-image: none;
+  background-color: #0f0f0f;
+  color: #999;
   }
 
 QHeaderView {
@@ -2278,14 +2356,28 @@ QHeaderView {
   QHeaderView::down-arrow:hover {
     background-color: #585858;
   }
-  QHeaderView::up-arrow,
-  QHeaderView::up-arrow:hover {
-    image: url(skin:/graphics/library_sort_up.svg)
-  }
   QHeaderView::down-arrow,
   QHeaderView::down-arrow:hover {
-    image: url(skin:/graphics/library_sort_down.svg)
-  }
+    padding-right: 2px;
+    border-right: 1px solid #585858;
+    background-color: #333;
+    }
+    QHeaderView::up-arrow:hover,
+    QHeaderView::down-arrow:hover {
+      background-color: #585858;
+    }
+    QHeaderView::up-arrow {
+      image: url(skin:/graphics/library_sort_up.svg)
+      }
+      QHeaderView::up-arrow:hover {
+        image: url(skin:/graphics/library_sort_down.svg)
+      }
+    QHeaderView::down-arrow {
+      image: url(skin:/graphics/library_sort_down.svg)
+      }
+      QHeaderView::down-arrow:hover {
+        image: url(skin:/graphics/library_sort_up.svg)
+      }
 
 /* Scroll bars */
 QScrollBar:horizontal {
@@ -2386,40 +2478,48 @@ WBaseLibrary QPushButton {
   font-size: 14px/14px;
   Setting height/width here will prevent the buttons being scaled properly
   min-height: 22px;
-  max-height: 22px;	*/
-  height: 22px;
+  max-height: 22px;
+  height: 22px;	*/
   color: #ccc;
   border-radius: 2px;
   margin: 1px 2px 5px 1px;
-  padding: 1px 3px 1px 3px;
+  padding: 1px 3px 1px 3px;/*
+  padding: 3px 6px 3px 6px;*/
   background-color: #333;
   }
   WBaseLibrary QPushButton:hover {
     border: 1px solid #888;
     }
-  WBaseLibrary QPushButton:unchecked {
-    color: #888;
-    background-color: #444;
+    WBaseLibrary QPushButton:unchecked {
+      color: #888;
+      background-color: #444;
     }
-  WBaseLibrary QPushButton:checked {
+  WLibrary QPushButton:checked {
     color: #000;
     font-weight: bold;
     background-color: #ff7b00;
     }
-  WBaseLibrary QPushButton:checked:hover {
-    border: 1px solid #ff3f00;
+    WBaseLibrary QPushButton:checked:hover {
+      border: 1px solid #ff3f00;
     }
     /* Disabled buttons */
     WBaseLibrary QPushButton:!enabled,
     WBaseLibrary QWidget:!enabled {
       color: #666;
     }
+  /* Push 'Start/Stop Recording' button and
+    'Enable AutoDJ' button away from skin border	*/
+  QPushButton#pushButtonAutoDJ,
+  QPushButton#pushButtonRecording {
+    margin: 1px 9px 5px 1px;
+  }
   /* 'Enable AutoDJ' button	*/
   WBaseLibrary QPushButton#pushButtonAutoDJ:unchecked:hover {
     background-color: #ff7b00;
   }
   /* 'Start/Stop Recording' button	*/
   WBaseLibrary QPushButton#pushButtonRecording {
+    border: 1px solid #ff6600;
   }
   WBaseLibrary QPushButton#pushButtonRecording:unchecked {
     color: #888;
@@ -2506,63 +2606,124 @@ WBaseLibrary QTabBar::tab {
 
   /* BPM lock icon in the library "BPM" column. */
   #LibraryBPMButton::indicator:checked {
-    image: url(skin:/buttons/btn_bpm_locked.png);
+    image: url(skin:/graphics/library_locked.png);
     }
-    #LibraryBPMButton::indicator:unchecked {
-      image: url(skin:/buttons/btn_bpm_unlocked.png);
-      }
-    #LibraryBPMButton::item {
-      color: #cfcfcf;
-      }
+  #LibraryBPMButton::indicator:unchecked {
+    image: url(skin:/graphics/library_unlocked.png);
+    }
+  /* BPM value */
+  #LibraryBPMButton::item {
+    color: #cfcfcf;
+    }
+    /* BPM value in selected row. Should match 'selection-color' &
+    'selection-background-color' of QTableView */
     #LibraryBPMButton::item:selected {
       color: #ededed;
-      background-color: #666;
+      background-color: #555;
       }
-  #LibraryTimesPlayed::item {
-    color: #cfcfcf;
+  #LibraryBPMSpinBox {
+    color: #fff;
+    selection-color: #0f0f0f;
+    background-color: #0f0f0f;
+    selection-background-color: #888;
+    /* This combination of negative top/bottom padding & margin
+      creates a 1px border around the spinbox' text area.
+      Increased left/right padding/margin removes the overlap of
+      text of activated spinbox and left-over text from regular
+      BPM value display. */
+    padding: -1px -8px -1px -4px;
+    margin: -2px 0px -2px -2px;
+    /* As soon as any border property is set, the up/down buttons
+      lose their style & icons
+    border: 0px;
+    border-radius: 2px; */
     }
 
   /* Button in library "Preview" column */
-  QPushButton#LibraryPreviewButton {
+  #LibraryPreviewButton {
     width: 23px;
     height: 12px;
     background: transparent;
-    border: 1px solid transparent;
     margin: 0px;
     padding: 0px;
     }
-    QPushButton#LibraryPreviewButton:hover,
-    QPushButton#LibraryPreviewButton:checked:hover {
-      border: 1px solid #eeeeee;
-    }
-    QPushButton#LibraryPreviewButton:!checked {
+    #LibraryPreviewButton:!checked {
       image: url(skin:/graphics/library_preview_play.png);
-      background-color: #0f0f0f;
       }
-    QPushButton#LibraryPreviewButton:checked {
-      image: url(skin:/graphics/library_preview_pause.png);
+      #LibraryPreviewButton:!checked:hover {
+        border: 1px solid #888;
+        background: #0f0f0f;
+      }
+    #LibraryPreviewButton:checked {
+      image: url(:/images/library/ic_library_preview_pause.png);
       background-color: #000;
-      border: 1px solid #ff6600;
+      border: 1px solid #555;
       }
+      #LibraryPreviewButton:checked:hover {
+        border: 1px solid #888;
+      }
+    /* None of these would style the Preview button background if
+      the respective table row is selected:
+    #LibraryPreviewButton {
+      show-decoration-selected: 0;
+    }
+    #LibraryPreviewButton:selected,
+    #LibraryPreviewButton::item,
+    #LibraryPreviewButton::item:selected,
+    #LibraryPreviewButton:focus {
+      background: #451212;
+    }*/
 
   /* checkbox in library "Played" column */
   QTableView::indicator {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     margin: 0px;
     padding: 0px;
     color: #cfcfcf;
+    /* border is added to size defined above */
+    border: 1px solid #444;
+    }
+    QTableView::indicator:hover {
+      color: #cfcfcf;
+      border: 1px solid #888;
     }
     QTableView::indicator:checked {
-      background: transparent url(skin:/graphics/library_checkbox_checked.png) no-repeat center center;
-      color: #cfcfcf;
-      }
+      background: transparent url(skin:/graphics/library_checkbox_checked.png);
+    }
     QTableView::indicator:unchecked {
-      background: transparent url(skin:/graphics/library_checkbox_unchecked.png) no-repeat center center;
+      background: transparent url(skin:/graphics/library_checkbox_unchecked.png);
       color: #cfcfcf;
       }
   /* selected table row */
   QTableView::item:selected {
     color: #fff;
     background-color: #666;
+  }
+
+WLibrary QSpinBox {
+  min-height: 22px;
+  max-height: 22px;
+  min-width: 40px;
+  max-width: 40px;
+}
+
+/* library search text box */
+WSearchLineEdit {
+  padding: 2px;
+  margin-bottom: 5px;
+  border: 1px solid #656565;
+  color: #cfcfcf;
+  background: #0f0f0f;
+  selection-color: #0f0f0f;
+  selection-background-color: #d2d2d2;
+  }
+  WSearchLineEdit:focus {
+    border: 2px solid #ff6600;
+    color: #eeeeee;
+    padding: 2px;
+  }
+  /* Clear button next to text field */
+  WSearchLineEdit QToolButton {
+    margin-bottom: 4px;
   }

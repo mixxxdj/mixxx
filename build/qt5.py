@@ -881,14 +881,18 @@ def enable_modules(self, modules, debug=False, crosscompiling=False, staticdeps=
         'QtWebKitWidgets',
         'QtWidgets',
         # Qt Add-Ons
+        'QtAccessibilitySupport',
         'QtConcurrent',
         'QtDBus',
+        'QtEventDispatcherSupport',
+        'QtFontDatabaseSupport',
         'QtOpenGL',
         'QtPrintSupport',
         'QtDeclarative',
         'QtScript',
         'QtScriptTools',
         'QtSvg',
+        'QtThemeSupport',
         'QtUiTools',
         'QtXml',
         'QtXmlPatterns',
@@ -967,7 +971,7 @@ def enable_modules(self, modules, debug=False, crosscompiling=False, staticdeps=
             modules.append("QtAssistantClient")
         self.AppendUnique(LIBS=['qtmain'+debugSuffix])
         self.AppendUnique(LIBS=[lib.replace("Qt","Qt5")+debugSuffix for lib in modules if lib not in staticModules])
-        self.PrependUnique(LIBS=[lib+debugSuffix for lib in modules if lib in staticModules])
+        self.PrependUnique(LIBS=[lib.replace("Qt", "Qt5")+debugSuffix for lib in modules if lib in staticModules])
         if 'QtOpenGL' in modules:
             self.AppendUnique(LIBS=['opengl32'])
         self.AppendUnique(CPPPATH=[ '$QT5DIR/include/'])

@@ -1,8 +1,9 @@
 #ifndef MIXXX_SOUNDSOURCEPLUGINAPI_H
 #define MIXXX_SOUNDSOURCEPLUGINAPI_H
 
-#define MIXXX_SOUNDSOURCEPLUGINAPI_VERSION 17
+#define MIXXX_SOUNDSOURCEPLUGINAPI_VERSION 18
 // SoundSource Plugin API version history:
+//  18 - Mixxx 2.1.1 - Add log level parameters for plugin initialization
 //  17 - Mixxx 2.1.0 - Bump version number after ABI breaking changes (lp1737815)
 //  16 - Mixxx 2.1.0 - Support 2 different modes for opening files
 //  15 - Mixxx 2.1.0 - AudioSource v2
@@ -44,7 +45,7 @@ typedef int (*SoundSourcePluginAPI_getVersionFunc)();
 const char * const SoundSourcePluginAPI_getVersionFuncName = "Mixxx_SoundSourcePluginAPI_getVersion";
 
 // extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider()
-typedef SoundSourceProvider* (*SoundSourcePluginAPI_createSoundSourceProviderFunc)();
+typedef SoundSourceProvider* (*SoundSourcePluginAPI_createSoundSourceProviderFunc)(int logLevel, int logFlushLevel);
 const char* const SoundSourcePluginAPI_createSoundSourceProviderFuncName = "Mixxx_SoundSourcePluginAPI_createSoundSourceProvider";
 
 // extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*)

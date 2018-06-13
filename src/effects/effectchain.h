@@ -7,8 +7,8 @@
 #include <QDomDocument>
 
 #include "effects/defs.h"
-#include "effects/effect.h"
 #include "engine/channelhandle.h"
+#include "effects/effect.h"
 #include "util/class.h"
 
 class EffectsManager;
@@ -57,32 +57,34 @@ class EffectChain : public QObject {
     double mix() const;
     void setMix(const double& dMix);
 
-    static QString insertionTypeToString(EffectChainInsertionType type) {
+    static QString mixModeToString(EffectChainMixMode type) {
         switch (type) {
-            case EffectChainInsertionType::Insert:
-                return "INSERT";
-            case EffectChainInsertionType::Send:
-                return "SEND";
+            case EffectChainMixMode::DrySlashWet:
+                return "DRY/WET";
+            case EffectChainMixMode::DryPlusWet:
+                return "DRY+WET";
             default:
                 return "UNKNOWN";
         }
     }
-    static EffectChainInsertionType insertionTypeFromString(const QString& typeStr) {
-        if (typeStr == "INSERT") {
-            return EffectChainInsertionType::Insert;
-        } else if (typeStr == "SEND") {
-            return EffectChainInsertionType::Send;
+    static EffectChainMixMode mixModeFromString(const QString& typeStr) {
+        if (typeStr == "DRY/WET") {
+            return EffectChainMixMode::DrySlashWet;
+        } else if (typeStr == "DRY+WET") {
+            return EffectChainMixMode::DryPlusWet;
         } else {
-            return EffectChainInsertionType::Num_Insertion_Types;
+            return EffectChainMixMode::NumMixModes;
         }
     }
 
-    EffectChainInsertionType insertionType() const;
-    void setInsertionType(EffectChainInsertionType type);
+    EffectChainMixMode mixMode() const;
+    void setMixMode(EffectChainMixMode type);
 
     void addEffect(EffectPointer pEffect);
     void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
     void removeEffect(unsigned int effectSlotNumber);
+    void refreshAllEffects();
+
     const QList<EffectPointer>& effects() const;
     unsigned int numEffects() const;
 
@@ -99,7 +101,7 @@ class EffectChain : public QObject {
     void descriptionChanged(const QString& name);
     void enabledChanged(bool enabled);
     void mixChanged(double v);
-    void insertionTypeChanged(EffectChainInsertionType type);
+    void mixModeChanged(EffectChainMixMode type);
     void channelStatusChanged(const QString& group, bool enabled);
 
   private:
@@ -116,7 +118,7 @@ class EffectChain : public QObject {
     QString m_id;
     QString m_name;
     QString m_description;
-    EffectChainInsertionType m_insertionType;
+    EffectChainMixMode m_mixMode;
     double m_dMix;
 
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;

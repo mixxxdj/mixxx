@@ -43,6 +43,11 @@ template<class T> static void safeRelease(T **ppT) {
 
 namespace mixxx {
 
+// TODO(XXX): Remove this ugly "extern" hack after getting rid of
+// the broken plugin architecture.
+LogLevel g_logLevel;
+LogLevel g_logFlushLevel;
+
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
           m_hrCoInitialize(E_FAIL),
@@ -351,10 +356,31 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
         }
         DEBUG_ASSERT(pSample != nullptr);
         SINT readerFrameIndex = m_streamUnitConverter.toFrameIndex(streamPos);
-        DEBUG_ASSERT(
-                (m_currentFrameIndex == kUnknownFrameIndex) || // unknown position after seeking
-                (m_currentFrameIndex == readerFrameIndex));
-        m_currentFrameIndex = readerFrameIndex;
+        if (m_currentFrameIndex == kUnknownFrameIndex) {
+            // Unknown position after seeking
+            m_currentFrameIndex = readerFrameIndex;
+            /*
+            kLogger.debug()
+                    << "Stream position (in sample frames) after seeking:"
+                    << "target =" << writableSampleFrames.frameIndexRange().end()
+                    << "current =" << readerFrameIndex;
+            */
+        } else {
+            // Both positions should match, otherwise readerFrameIndex
+            // is inaccurate due to rounding errors after conversion from
+            // stream units to frames! But if this ever happens we better
+            // trust m_currentFrameIndex that is continuously updated while
+            // reading in forward direction.
+            VERIFY_OR_DEBUG_ASSERT(m_currentFrameIndex == readerFrameIndex) {
+                kLogger.debug()
+                        << "streamPos [100 ns] =" << streamPos
+                        << ", sampleRate [Hz] =" << sampleRate();
+                kLogger.warning()
+                        << "Stream position (in sample frames) while reading is inaccurate:"
+                        << "expected =" << m_currentFrameIndex
+                        << "actual =" << readerFrameIndex;
+            }
+        }
 
         DWORD dwSampleBufferCount = 0;
         HRESULT hrGetBufferCount =
@@ -782,9 +808,11 @@ SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl
 } // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider(int logLevel, int logFlushLevel) {
     // SoundSourceProviderMediaFoundation is stateless and a single instance
     // can safely be shared
+    mixxx::g_logLevel = static_cast<mixxx::LogLevel>(logLevel);
+    mixxx::g_logFlushLevel = static_cast<mixxx::LogLevel>(logFlushLevel);
     static mixxx::SoundSourceProviderMediaFoundation singleton;
     return &singleton;
 }

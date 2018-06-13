@@ -1,13 +1,15 @@
 #include <QApplication>
 #include <QTableView>
+#include <QPainter>
 
 #include "library/coverartdelegate.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
 #include "util/math.h"
 
-CoverArtDelegate::CoverArtDelegate(QObject *parent)
-        : QStyledItemDelegate(parent),
+CoverArtDelegate::CoverArtDelegate(QTableView* parent)
+        : TableItemDelegate(parent),
+          m_pTableView(parent),
           m_bOnlyCachedCover(false),
           m_iCoverColumn(-1),
           m_iCoverSourceColumn(-1),
@@ -82,19 +84,9 @@ void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
     }
 }
 
-void CoverArtDelegate::paint(QPainter* painter,
-                             const QStyleOptionViewItem& option,
-                             const QModelIndex& index) const {
-
-    QStyleOptionViewItemV4 opt = option;
-    initStyleOption(&opt, index);
-
-    // Draw original item without text as background
-    opt.text = QString();
-    const auto widget = opt.widget;
-    QStyle *style = widget ? widget->style() : QApplication::style();
-    style->drawControl(QStyle::CE_ItemViewItem, &opt, painter, widget);
-
+void CoverArtDelegate::paintItem(QPainter *painter,
+                             const QStyleOptionViewItem &option,
+                             const QModelIndex &index) const {
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache == NULL || m_iIdColumn == -1 || m_iCoverSourceColumn == -1 ||
             m_iCoverTypeColumn == -1 || m_iCoverLocationColumn == -1 ||

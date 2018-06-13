@@ -19,14 +19,14 @@
 
 class EngineEffect : public EffectsRequestHandler {
   public:
-    EngineEffect(const EffectManifest& manifest,
+    EngineEffect(EffectManifestPointer pManifest,
                  const QSet<ChannelHandleAndGroup>& activeInputChannels,
                  EffectsManager* pEffectsManager,
                  EffectInstantiatorPointer pInstantiator);
     virtual ~EngineEffect();
 
     const QString& name() const {
-        return m_manifest.name();
+        return m_pManifest->name();
     }
 
     EngineEffectParameter* getParameterById(const QString& id) {
@@ -48,14 +48,15 @@ class EngineEffect : public EffectsRequestHandler {
                  const unsigned int numSamples,
                  const unsigned int sampleRate,
                  const EffectEnableState chainEnableState,
-                 const GroupFeatureState& groupFeatures);
+                 const GroupFeatureState& groupFeatures,
+                 const EffectChainMixMode mixMode);
 
   private:
     QString debugString() const {
-        return QString("EngineEffect(%1)").arg(m_manifest.name());
+        return QString("EngineEffect(%1)").arg(m_pManifest->name());
     }
 
-    EffectManifest m_manifest;
+    EffectManifestPointer m_pManifest;
     EffectProcessor* m_pProcessor;
     ChannelHandleMap<ChannelHandleMap<EffectEnableState>> m_effectEnableStateForChannelMatrix;
     bool m_effectRampsFromDry;

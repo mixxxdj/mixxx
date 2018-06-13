@@ -378,6 +378,9 @@ Select from different types of displays for the waveform, which differ primarily
        <property name="toolTip">
         <string/>
        </property>
+       <property name="suffix">
+        <string> fps</string>
+       </property>
        <property name="minimum">
         <number>10</number>
        </property>
@@ -472,8 +475,11 @@ Select from different types of displays for the waveform, which differ primarily
        <property name="toolTip">
         <string/>
        </property>
+       <property name="midLineWidth">
+        <number>6</number>
+       </property>
        <property name="text">
-        <string>Beat Grid</string>
+        <string>Beat grid opacity</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -481,12 +487,31 @@ Select from different types of displays for the waveform, which differ primarily
       </widget>
      </item>
      <item row="4" column="1">
-      <widget class="QCheckBox" name="beatGridLinesCheckBox">
-       <property name="toolTip">
-        <string>Beat Grid</string>
+      <widget class="QSlider" name="beatGridAlphaSlider">
+       <property name="maximum">
+        <number>100</number>
        </property>
-       <property name="text">
-        <string>Show Beat Markers</string>
+       <property name="value">
+        <number>90</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="3">
+      <widget class="QSpinBox" name="beatGridAlphaSpinBox">
+       <property name="toolTip">
+        <string>Set amount of opacity on beat grid lines.</string>
+       </property>
+       <property name="suffix">
+        <string>%</string>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>90</number>
        </property>
       </widget>
      </item>

@@ -70,6 +70,17 @@ Variables:
 
                   <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
 
+                 <Template src="skin:button_2state.xml">
+                    <SetVariable name="ObjectName">MixModeButtons</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
+                    <SetVariable name="Size">35f,20f</SetVariable>
+                    <SetVariable name="state_0_text">D/W</SetVariable>
+                    <SetVariable name="state_1_text">D+W</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
+                  </Template>
+
+                  <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+
                   <WidgetGroup><!-- Super Knob, if enabled -->
                     <SizePolicy>min,min</SizePolicy>
                     <Layout>vertical</Layout>
@@ -204,6 +215,7 @@ Variables:
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_focus_button.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">3</SetVariable></Template>
+                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_parameter_row.xml">

@@ -1,3 +1,4 @@
+#include <QButtonGroup>
 #include <QtDebug>
 
 #include "preferences/dialog/dlgprefcrossfader.h"
