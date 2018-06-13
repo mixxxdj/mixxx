@@ -395,7 +395,7 @@
            <item row="7" column="0" colspan="2">
             <widget class="QCheckBox" name="enableFileBroadcast">
              <property name="text">
-              <string>Broadcast metadata in file</string>
+              <string>Write nowPlaying.txt file</string>
              </property>
             </widget>
            </item>
@@ -481,7 +481,10 @@
             </widget>
            </item>
            <item row="8" column="0">
-            <widget class="QPushButton" name="changeFilePath">
+            <widget class="QPushButton" name="btnChangeFilePath">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>Change path</string>
              </property>
@@ -856,7 +859,24 @@ p, li { white-space: pre-wrap; }
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>enableFileBroadcast</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>btnChangeFilePath</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>476</x>
+     <y>967</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>448</x>
+     <y>995</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
  <buttongroups>
   <buttongroup name="rbGroupPassword"/>
  </buttongroups>
