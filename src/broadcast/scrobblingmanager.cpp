@@ -63,7 +63,7 @@ void TotalVolumeThreshold::setVolumeThreshold(double volume) {
     m_volumeThreshold = volume;
 }
 
-ScrobblingManager::ScrobblingManager(PlayerManagerInterface* manager)
+ScrobblingManager::ScrobblingManager(PlayerManagerInterface* manager, UserSettingsPointer settings)
         : m_pManager(manager),
           m_pBroadcaster(new MetadataBroadcaster),
           m_pAudibleStrategy(new TotalVolumeThreshold(this, 0.20)),
@@ -76,7 +76,7 @@ ScrobblingManager::ScrobblingManager(PlayerManagerInterface* manager)
             ->addNewScrobblingService(
                     FileListener::makeFileListener(
                             FileListener::FileListenerType::SAMBroadcaster,
-                            "nowListening.txt"));
+                            settings));
 }
 
 ScrobblingManager::~ScrobblingManager() {

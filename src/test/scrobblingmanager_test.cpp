@@ -49,7 +49,7 @@ class ScrobblingTest : public ::testing::Test {
   public:
     ScrobblingTest()
             : playerManagerMock(new PlayerManagerMock),
-              scrobblingManager(playerManagerMock),
+              scrobblingManager(playerManagerMock, UserSettingsPointer()),
               dummyPlayerLeft(nullptr, "DummyPlayerLeft"),
               dummyPlayerRight(nullptr, "DummyPlayerRight"),
               dummyTrackLeft(Track::newDummy(QFileInfo(), TrackId())),
@@ -89,26 +89,25 @@ class ScrobblingTest : public ::testing::Test {
 TEST_F(ScrobblingTest, SingleTrackAudible) {
     std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> factory;
     factory = [this](TrackPointer pTrack) -> std::shared_ptr<TrackTimingInfo> {
-        if (pTrack == dummyTrackLeft) {
-            std::shared_ptr<TrackTimingInfo>
-                    trackInfo(new TrackTimingInfo(pTrack));
-            ElapsedTimerMock* etMock = new ElapsedTimerMock;
-            EXPECT_CALL(*etMock, invalidate());
-            EXPECT_CALL(*etMock, isValid())
-                    .WillOnce(testing::Return(false))
-                    .WillOnce(testing::Return(true));
-            EXPECT_CALL(*etMock, start());
-            EXPECT_CALL(*etMock, elapsed())
-                    .WillOnce(testing::Return(60000));
-            RegularTimerMock* tMock = new RegularTimerMock;
-            EXPECT_CALL(*tMock, start(1000))
-                    .WillOnce(testing::InvokeWithoutArgs(
-                            trackInfo.get(),
-                            &TrackTimingInfo::slotCheckIfScrobbable));
-            trackInfo->setTimer(tMock);
-            trackInfo->setElapsedTimer(etMock);
-            return trackInfo;
-        }        
+        Q_UNUSED(pTrack);
+        std::shared_ptr<TrackTimingInfo>
+                trackInfo(new TrackTimingInfo(pTrack));
+        ElapsedTimerMock* etMock = new ElapsedTimerMock;
+        EXPECT_CALL(*etMock, invalidate());
+        EXPECT_CALL(*etMock, isValid())
+                .WillOnce(testing::Return(false))
+                .WillOnce(testing::Return(true));
+        EXPECT_CALL(*etMock, start());
+        EXPECT_CALL(*etMock, elapsed())
+                .WillOnce(testing::Return(60000));
+        RegularTimerMock* tMock = new RegularTimerMock;
+        EXPECT_CALL(*tMock, start(1000))
+                .WillOnce(testing::InvokeWithoutArgs(
+                        trackInfo.get(),
+                        &TrackTimingInfo::slotCheckIfScrobbable));
+        trackInfo->setTimer(tMock);
+        trackInfo->setElapsedTimer(etMock);
+        return trackInfo;
     };
     scrobblingManager.setTrackInfoFactory(factory);
     EXPECT_CALL(*strategyMock, isTrackAudible(_, _))
@@ -122,13 +121,12 @@ TEST_F(ScrobblingTest, SingleTrackAudible) {
 TEST_F(ScrobblingTest, SingleTrackInaudible) {
     std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> factory;
     factory = [this](TrackPointer pTrack) -> std::shared_ptr<TrackTimingInfo> {
-        if (pTrack == dummyTrackLeft) {
-            std::shared_ptr<TrackTimingInfo>
-                    trackInfo(new TrackTimingInfo(pTrack));
-            trackInfo->setTimer(new testing::NiceMock<RegularTimerMock>);
-            trackInfo->setElapsedTimer(new testing::NiceMock<ElapsedTimerMock>);
-            return trackInfo;
-        }
+        Q_UNUSED(pTrack);
+        std::shared_ptr<TrackTimingInfo>
+                trackInfo(new TrackTimingInfo(pTrack));
+        trackInfo->setTimer(new testing::NiceMock<RegularTimerMock>);
+        trackInfo->setElapsedTimer(new testing::NiceMock<ElapsedTimerMock>);
+        return trackInfo;
     };
     scrobblingManager.setTrackInfoFactory(factory);
     EXPECT_CALL(*strategyMock, isTrackAudible(_, _))
@@ -148,7 +146,7 @@ TEST_F(ScrobblingTest, TwoTracksUnbalanced) {
             trackInfo->setTimer(new testing::NiceMock<RegularTimerMock>);
             trackInfo->setElapsedTimer(new testing::NiceMock<ElapsedTimerMock>);
             return trackInfo;
-        } else if (pTrack == dummyTrackRight) {
+        } else {
             std::shared_ptr<TrackTimingInfo>
                     trackInfo(new TrackTimingInfo(pTrack));
             ElapsedTimerMock* etMock = new ElapsedTimerMock;

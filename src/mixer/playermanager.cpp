@@ -111,7 +111,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
           m_pSoundManager(pSoundManager),
           m_pEffectsManager(pEffectsManager),
           m_pEngine(pEngine),
-          m_scrobblingManager(this),
+          m_scrobblingManager(this, pConfig),
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
           m_pCONumDecks(std::make_unique<ControlObject>(

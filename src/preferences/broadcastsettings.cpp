@@ -5,6 +5,7 @@
 #include <QStringList>
 
 #include "broadcast/defs_broadcast.h"
+#include "broadcast/filelistener.h"
 #include "moc_broadcastsettings.cpp"
 #include "preferences/broadcastsettingsmodel.h"
 #include "util/logger.h"
@@ -188,6 +189,10 @@ void BroadcastSettings::onConnectionStatusChanged(int newStatus) {
 BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
     auto it = std::next(m_profiles.begin(), index);
     return it != m_profiles.end() ? it.value() : nullptr;
+}
+
+void BroadcastSettings::setNowPlayingFilePath(const QString& path) {
+    m_pConfig->set(FileListener::getFilePathConfigKey(), path);
 }
 
 QList<BroadcastProfilePtr> BroadcastSettings::profiles() {

@@ -10,6 +10,7 @@
 #include <shoutidjc/shout.h>
 
 #include "broadcast/defs_broadcast.h"
+#include "broadcast/filelistener.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "encoder/encodersettings.h"
@@ -25,11 +26,12 @@ constexpr int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
 } // namespace
 
-DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
-                                   BroadcastSettingsPointer pBroadcastSettings)
+DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
+        BroadcastSettingsPointer pBroadcastSettings)
         : DlgPreferencePage(parent),
           m_pBroadcastSettings(pBroadcastSettings),
           m_pSettingsModel(new BroadcastSettingsModel()),
+          m_nowPlayingFileChanged(FileListener::getFileModifiedControlKey()),
           m_pProfileListSelection(nullptr) {
     setupUi(this);
 
@@ -661,9 +663,11 @@ void DlgPrefBroadcast::btnChangeNowPlayingFilePathClicked() {
     QString filePath = QFileDialog::getSaveFileName(
             this,
             "Save NowPlaying.txt file",
-            "./",
+            "./NowPlaying.txt",
             "Text files (*.txt)");
     filePathLine->setText(filePath);
+    m_pBroadcastSettings->setNowPlayingFilePath(filePath);
+    m_nowPlayingFileChanged.set(true);
 }
 
 void DlgPrefBroadcast::onSectionResized() {

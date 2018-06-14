@@ -366,7 +366,7 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <layout class="QGridLayout" name="gridLayout">
+          <layout class="QGridLayout" name="gridLayout_1">
            <item row="7" column="0" colspan="2">
             <widget class="QCheckBox" name="enableFileBroadcast">
              <property name="text">

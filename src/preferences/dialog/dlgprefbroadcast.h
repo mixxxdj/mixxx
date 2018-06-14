@@ -1,5 +1,6 @@
 #pragma once
 
+#include "control/controlproxy.h"
 #include "preferences/broadcastsettings.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbroadcastdlg.h"
@@ -56,5 +57,6 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     BroadcastSettingsPointer m_pBroadcastSettings;
     BroadcastSettingsModel* m_pSettingsModel;
     ControlProxy* m_pBroadcastEnabled;
+    ControlProxy m_nowPlayingFileChanged;
     BroadcastProfilePtr m_pProfileListSelection;
 };
