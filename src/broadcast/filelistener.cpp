@@ -2,19 +2,25 @@
 #include "broadcast/filelistener.h"
 
 
-FileListener::FileListener(const QString &path) :
-    m_file(path) {
-    m_file.open(QIODevice::WriteOnly |
+FileListener::FileListener(UserSettingsPointer pConfig)
+        :   m_filePathChanged(getFileModifiedControlKey()),
+            m_pConfig(pConfig) {
+    QString filePath = pConfig->getValue(getFilePathConfigKey(),
+                                         "./NowPlaying.txt");
+    QObject::connect(&m_filePathChanged,SIGNAL(valueChanged(double)),
+                     this,SLOT(slotFilePathChanged(double)));
+    m_file.setFileName(filePath);
+    m_file.open(QIODevice::ReadWrite |
+                QIODevice::Truncate |
                 QIODevice::Text |
                 QIODevice::Unbuffered);
-    
 }
 
 FileListener::~FileListener() {
     m_file.resize(0);
 }
 
-void FileListener::broadcastCurrentTrack(TrackPointer pTrack) {
+void FileListener::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     if (!pTrack)
         return;
     QTextStream stream(&m_file);
@@ -23,28 +29,56 @@ void FileListener::broadcastCurrentTrack(TrackPointer pTrack) {
     writeMetadata(stream, pTrack);    
 }
 
-void FileListener::scrobbleTrack(TrackPointer pTrack) {
+void FileListener::slotScrobbleTrack(TrackPointer pTrack) {
     Q_UNUSED(pTrack);
 }
 
-void FileListener::allTracksPaused() {
+void FileListener::slotAllTracksPaused() {
     m_file.resize(0);
 }
 
 std::unique_ptr<FileListener> 
-    FileListener::makeFileListener(FileListenerType type, 
-                                   const QString &path) {
+    FileListener::makeFileListener(FileListenerType type,
+                                   UserSettingsPointer pConfig) {
     switch (type) {
         case FileListenerType::SAMBroadcaster: 
-            return std::unique_ptr<FileListener>(new SAMFileListener(path));
-        default:
-            qWarning() << "Unrecognised FileListenerType";
-            return std::unique_ptr<FileListener>();
-    };
+            return std::unique_ptr<FileListener>(new SAMFileListener(pConfig));
+    }
 }
 
-SAMFileListener::SAMFileListener(const QString &path) 
-        :  FileListener(path) {}
+void FileListener::slotFilePathChanged(double value) {
+    if (value > 0.0) {
+        QString newPath = m_pConfig->getValueString(getFilePathConfigKey());
+        if (newPath.size() == 0) {
+            qDebug() << "Received value changed from nowPlaying.txt control object"
+                        " yet QString is empty";
+            return;
+        }
+        if (!m_file.seek(0)) {
+            qDebug() << "Couldn't seek start of NowPlaying.txt file";
+            return;
+        }
+        QByteArray fileContents = m_file.readAll();
+        m_file.remove();
+        m_file.setFileName(newPath);
+        m_file.open(QIODevice::ReadWrite |
+                    QIODevice::Truncate |
+                    QIODevice::Text |
+                    QIODevice::Unbuffered);
+        m_file.write(fileContents);
+    }
+}
+
+ConfigKey FileListener::getFileModifiedControlKey() {
+    return ConfigKey("[Livemetadata]","nowPlayingFilePathChanged");
+}
+
+ConfigKey FileListener::getFilePathConfigKey() {
+    return ConfigKey("[Livemetadata]","NowPlayingFilePath");
+}
+
+SAMFileListener::SAMFileListener(UserSettingsPointer pConfig)
+        :  FileListener(pConfig) {}
 
 void SAMFileListener::writeMetadata(QTextStream &stream,TrackPointer pTrack) {
     stream << pTrack->getArtist() << " - " << pTrack->getTitle();

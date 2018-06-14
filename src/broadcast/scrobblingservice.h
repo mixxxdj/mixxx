@@ -2,10 +2,11 @@
 
 #include "track/track.h"
 
-class ScrobblingService {
+class ScrobblingService : public QObject {
   public:
     virtual ~ScrobblingService() = default;
-    virtual void broadcastCurrentTrack(TrackPointer pTrack) = 0;
-    virtual void scrobbleTrack(TrackPointer pTrack) = 0;
-    virtual void allTracksPaused() = 0;
+  public slots:
+    virtual void slotBroadcastCurrentTrack(TrackPointer pTrack) = 0;
+    virtual void slotScrobbleTrack(TrackPointer pTrack) = 0;
+    virtual void slotAllTracksPaused() = 0;
 };

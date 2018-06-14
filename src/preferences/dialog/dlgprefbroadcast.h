@@ -53,7 +53,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
 
     BroadcastSettingsPointer m_pBroadcastSettings;
     BroadcastSettingsModel* m_pSettingsModel;
-    ControlProxy* m_pBroadcastEnabled;
+    ControlProxy* m_pBroadcastEnabled, m_nowPlayingFileChanged;
     BroadcastProfilePtr m_pProfileListSelection;
 };
 
