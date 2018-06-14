@@ -94,7 +94,7 @@
       <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck4">0</attribute>
       <attribute persist="true" config_key="[Tango],vumeter">1</attribute>
-      <attribute persist="true" config_key="[Library],show_icon_text">0</attribute><!--
+      <attribute persist="true" config_key="[Library],show_icon_text">1</attribute><!--
       <attribute persist="true" config_key="[Skin],libSidebar_expanded">1</attribute>-->
 
       <!--Disable hidden effect routing Buttons-->

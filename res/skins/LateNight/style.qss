@@ -1723,10 +1723,11 @@ QTableView::indicator {
 #LibraryPreviewButton {
   width: 23px;
   height: 12px;
-  image: url(skin:/style/library_preview_play.png); 
   background-color: transparent;
   border: 0px;
   border-radius: 2px;
+  margin: 0px;
+  padding: 0px;
   }
   #LibraryPreviewButton:!checked{
     image: url(skin:/style/library_preview_play.png);
