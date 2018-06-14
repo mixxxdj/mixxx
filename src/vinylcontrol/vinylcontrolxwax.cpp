@@ -136,8 +136,8 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, QString group)
         speed = 1.35;
     }
 
-    double latency = ControlObject::getControl(
-            ConfigKey("[Master]", "latency"))->get();
+    double latency = ControlObject::get(
+            ConfigKey("[Master]", "latency"));
     if (latency <= 0 || latency > 200) {
         qDebug() << "Failed to get sane latency, assuming 20 as a reasonable value";
         latency = 20;

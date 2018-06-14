@@ -650,7 +650,7 @@ void EngineBuffer::slotControlPlayRequest(double v) {
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
 
     if (!oldPlay && verifiedPlay) {
-        if (m_pQuantize->get() > 0.0
+        if (m_pQuantize->toBool()
 #ifdef __VINYLCONTROL__
                 && m_pVinylControlControl && !m_pVinylControlControl->isEnabled()
 #endif
@@ -887,7 +887,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // we need to sync phase or we'll be totally out of whack and the sync
         // adjuster will kick in and push the track back in to sync with the
         // master.
-        if (m_scratching_old && !is_scratching && m_pQuantize->get() > 0.0
+        if (m_scratching_old && !is_scratching && m_pQuantize->toBool()
                 && m_pSyncControl->getSyncMode() == SYNC_FOLLOWER && !paused) {
             // TODO() The resulting seek is processed in the following callback
             // That is to late
@@ -1020,13 +1020,13 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         at_start = m_filepos_play <= 0;
         at_end = m_filepos_play >= m_trackSamplesOld;
 
-        bool repeat_enabled = m_pRepeat->get() != 0.0;
+        bool repeat_enabled = m_pRepeat->toBool();
 
         bool end_of_track = //(at_start && backwards) ||
             (at_end && !backwards);
 
         // If playbutton is pressed, check if we are at start or end of track
-        if ((m_playButton->get() || (m_fwdButton->get() || m_backButton->get()))
+        if ((m_playButton->toBool() || (m_fwdButton->toBool() || m_backButton->toBool()))
                 && end_of_track) {
             if (repeat_enabled) {
                 double fractionalPos = at_start ? 1.0 : 0;
