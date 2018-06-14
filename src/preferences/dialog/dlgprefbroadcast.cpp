@@ -14,6 +14,7 @@
 #include "preferences/dialog/dlgprefbroadcast.h"
 #include "encoder/encodersettings.h"
 #include "util/logger.h"
+#include "preferences/configobject.h"
 
 namespace {
 const char* kSettingsGroupHeader = "Settings for %1";
@@ -21,6 +22,7 @@ const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const int kColumnStatus = 2;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
+const ConfigKey keyNowPlayingEnabled = ConfigKey("[Livemetadata]","nowPlayingFileEnabled");
 }
 
 DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
@@ -29,7 +31,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
           m_pBroadcastSettings(pBroadcastSettings),
           m_pSettingsModel(new BroadcastSettingsModel()),
           m_nowPlayingFileChanged(FileListener::getFileModifiedControlKey()),
-          m_pProfileListSelection(nullptr) {
+          m_pProfileListSelection(nullptr),
+          m_bHasFilePathChanged(false) {
     setupUi(this);
 
 #ifndef __QTKEYCHAIN__
@@ -62,6 +65,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
     connect(btnDisconnectAll, SIGNAL(clicked(bool)),
             this, SLOT(btnDisconnectAllClicked()));
 
+    setNowPlayingFileValuesFromSettings();
     connect(btnChangeFilePath, SIGNAL(pressed()),
             this,SLOT(btnChangeNowPlayingFilePathClicked()));
 
@@ -210,6 +214,13 @@ void DlgPrefBroadcast::slotApply() {
     connectOnApply->setEnabled(!enabled);
 
     btnDisconnectAll->setEnabled(enabled);
+
+    UserSettingsPointer pSettings = m_pBroadcastSettings->getUserSettings();
+    pSettings->setValue(keyNowPlayingEnabled,enableFileBroadcast->isChecked());
+    pSettings->setValue(FileListener::getFilePathConfigKey(),filePathLine->text());
+    if (m_bHasFilePathChanged) {
+        m_nowPlayingFileChanged.set(true);
+    }
 }
 
 void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
@@ -565,8 +576,7 @@ void DlgPrefBroadcast::btnChangeNowPlayingFilePathClicked() {
         "Text files (*.txt)"
     );
     filePathLine->setText(filePath);
-    m_pBroadcastSettings->setNowPlayingFilePath(filePath);
-    m_nowPlayingFileChanged.set(true);
+    m_bHasFilePathChanged = true;
 }
 
 void DlgPrefBroadcast::onSectionResized() {
@@ -578,5 +588,27 @@ void DlgPrefBroadcast::onSectionResized() {
     // The last column is automatically resized to fill
     // the remaining width, thanks to stretchLastSection set to true.
     sender()->blockSignals(false);
+}
+
+void DlgPrefBroadcast::slotCancel() {
+    setNowPlayingFileValuesFromSettings();
+}
+
+void DlgPrefBroadcast::setNowPlayingFileValuesFromSettings() {
+    UserSettingsPointer pSettings = m_pBroadcastSettings->getUserSettings();
+    if (pSettings->exists(keyNowPlayingEnabled)) {
+        bool checked = pSettings->getValue(keyNowPlayingEnabled,false);
+        enableFileBroadcast->setChecked(checked);
+    }
+    else {
+        enableFileBroadcast->setChecked(false);
+    }
+    if (pSettings->exists(FileListener::getFilePathConfigKey())) {
+        QString filePath = pSettings->getValueString(FileListener::getFilePathConfigKey());
+        filePathLine->setText(filePath);
+    }
+    else {
+        filePathLine->setText(QDir::currentPath());
+    }
 }
 

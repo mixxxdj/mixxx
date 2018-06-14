@@ -21,7 +21,7 @@ class BroadcastSettings : public QObject {
     BroadcastProfilePtr createProfile(const QString& profileName);
     QList<BroadcastProfilePtr> profiles();
     BroadcastProfilePtr profileAt(int index);
-    void setNowPlayingFilePath(const QString &path);
+    UserSettingsPointer getUserSettings();
     void applyModel(BroadcastSettingsModel* pModel);
 
   signals:

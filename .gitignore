@@ -57,5 +57,3 @@ lib/*/*.lib
 lib/*/lib/*.lib
 
 lib/qtscript-bytearray/*.cc
-
-nowListening.txt

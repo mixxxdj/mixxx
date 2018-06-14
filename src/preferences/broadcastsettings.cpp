@@ -188,8 +188,8 @@ BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
     return m_profiles.values().value(index, BroadcastProfilePtr(nullptr));
 }
 
-void BroadcastSettings::setNowPlayingFilePath(const QString &path) {
-    m_pConfig->set(FileListener::getFilePathConfigKey(),path);
+UserSettingsPointer BroadcastSettings::getUserSettings() {
+    return m_pConfig;
 }
 
 QList<BroadcastProfilePtr> BroadcastSettings::profiles() {
