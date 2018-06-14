@@ -16,7 +16,7 @@ void MetadataBroadcaster::slotAttemptScrobble(TrackPointer pTrack) {
                     trackPeriod.m_msElapsed >
                             m_gracePeriodSeconds * 1000.0) {
                 for (auto& service : m_scrobblingServices) {
-                    service->scrobbleTrack(pTrack);
+                    service->slotScrobbleTrack(pTrack);
                 }
                 trackPeriod.hasBeenEjected = false;
                 trackPeriod.m_numberOfScrobbles++;
@@ -28,13 +28,13 @@ void MetadataBroadcaster::slotAttemptScrobble(TrackPointer pTrack) {
 
 void MetadataBroadcaster::slotNowListening(TrackPointer pTrack) {
     for (auto& service : m_scrobblingServices) {
-        service->broadcastCurrentTrack(pTrack);
+        service->slotBroadcastCurrentTrack(pTrack);
     }
 }
 
 void MetadataBroadcaster::slotAllTracksPaused() {
     for (auto& service : m_scrobblingServices) {
-        service->allTracksPaused();
+        service->slotAllTracksPaused();
     }
 }
 
