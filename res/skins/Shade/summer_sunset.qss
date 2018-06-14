@@ -49,6 +49,21 @@ QScrollBar::handle:horizontal {
   border: 1px solid #524A20;
 }
 
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+QScrollBar {
+  background-color: #0f0f0f;
+}
+QScrollBar::add-page,
+QScrollBar::sub-page {
+  min-width: 14px;
+  min-height: 14px;
+  background-color: #0f0f0f;
+}
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal {
+  background: rgba(218, 195, 80, 170);
+}
+
 WLibrary QPushButton {
   background-color: #9E9048;
   }

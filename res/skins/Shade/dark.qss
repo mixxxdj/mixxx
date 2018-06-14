@@ -45,16 +45,19 @@ QHeaderView::down-arrow {
   image: url(skin:/btn_lib_sort_down_dark.png)
 }
 
-/* Scroll bars */
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
+QScrollBar {
+  background-color: #0f0f0f;
+}
 QScrollBar::add-page,
 QScrollBar::sub-page {
-  background-color: #000;
+  min-width: 14px;
+  min-height: 14px;
+  background-color: #0f0f0f;
 }
 QScrollBar::handle:vertical,
 QScrollBar::handle:horizontal {
-  background: #5C5B5D;
-  border: 1px solid #3F3041;
+  background: rgba(126, 125, 127, 170);
 }
 
 WLibrary QPushButton {
