@@ -370,7 +370,7 @@
            <item row="7" column="0" colspan="2">
             <widget class="QCheckBox" name="enableFileBroadcast">
              <property name="text">
-              <string>Write nowPlaying.txt file</string>
+              <string>Write NowPlaying.txt file</string>
              </property>
             </widget>
            </item>

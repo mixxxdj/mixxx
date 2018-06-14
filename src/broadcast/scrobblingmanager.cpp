@@ -145,7 +145,7 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
 }
 
 void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack) {
-    BaseTrackPlayer* player = qobject_cast<Deck*>(sender());
+    BaseTrackPlayer* player = qobject_cast<BaseTrackPlayer*>(sender());
     VERIFY_OR_DEBUG_ASSERT(player) {
         return;
     }

@@ -7,7 +7,7 @@ FileListener::FileListener(UserSettingsPointer pConfig)
         : m_filePathChanged(getFileModifiedControlKey()),
           m_pConfig(pConfig) {
     QString filePath = pConfig->getValue(getFilePathConfigKey(),
-            "./NowPlaying.txt");
+            "NowPlaying.txt");
     QObject::connect(&m_filePathChanged, SIGNAL(valueChanged(double)), this, SLOT(slotFilePathChanged(double)));
     m_file.setFileName(filePath);
     m_file.open(QIODevice::ReadWrite |
