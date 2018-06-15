@@ -29,7 +29,7 @@ class FileListener : public ScrobblingService {
 
   private:
     QFile m_file;
-    ControlPushButton m_filePathChanged;
+    ControlPushButton m_filePathChanged, m_nowPlayingJustEnabled;
     UserSettingsPointer m_pConfig;
 };
 

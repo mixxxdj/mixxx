@@ -15,6 +15,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     DlgPrefBroadcast(QWidget *parent,
                      BroadcastSettingsPointer pBroadcastSettings);
     virtual ~DlgPrefBroadcast();
+    static ConfigKey keyNowPlayingEnabled();
 
     QUrl helpUrl() const override;
 
@@ -58,8 +59,8 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
 
     BroadcastSettingsPointer m_pBroadcastSettings;
     BroadcastSettingsModel* m_pSettingsModel;
-    ControlProxy* m_pBroadcastEnabled;
-    ControlProxy m_nowPlayingFileChanged;
+    ControlProxy* m_pBroadcastEnabled, m_nowPlayingFileChanged;
+    ControlProxy m_nowPlayingEnabled;
     BroadcastProfilePtr m_pProfileListSelection;
     bool m_bHasFilePathChanged;
 };

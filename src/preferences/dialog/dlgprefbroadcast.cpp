@@ -25,7 +25,6 @@ const char* kSettingsGroupHeader = "Settings for %1";
 constexpr int kColumnEnabled = 0;
 constexpr int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
-const ConfigKey keyNowPlayingEnabled = ConfigKey("[Livemetadata]", "nowPlayingFileEnabled");
 } // namespace
 
 DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
@@ -34,6 +33,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
           m_pBroadcastSettings(pBroadcastSettings),
           m_pSettingsModel(new BroadcastSettingsModel()),
           m_nowPlayingFileChanged(FileListener::getFileModifiedControlKey()),
+          m_nowPlayingEnabled(keyNowPlayingEnabled()),
           m_pProfileListSelection(nullptr),
           m_bHasFilePathChanged(false) {
     setupUi(this);
@@ -187,6 +187,11 @@ DlgPrefBroadcast::~DlgPrefBroadcast() {
 }
 
 void DlgPrefBroadcast::slotResetToDefaults() {
+    UserSettingsPointer pConfig = m_pBroadcastSettings->getUserSettings();
+    QString defaultPath = QDir::currentPath();
+    bool defaultEnabled = false;
+    enableFileBroadcast->setChecked(defaultEnabled);
+    filePathLine->setText(defaultPath);
 }
 
 void DlgPrefBroadcast::slotUpdate() {
@@ -288,8 +293,8 @@ void DlgPrefBroadcast::slotApply() {
     btnDisconnectAll->setEnabled(enabled);
 
     UserSettingsPointer pSettings = m_pBroadcastSettings->getUserSettings();
-    pSettings->setValue(keyNowPlayingEnabled, enableFileBroadcast->isChecked());
-    pSettings->setValue(FileListener::getFilePathConfigKey(), filePathLine->text());
+    pSettings->setValue(keyNowPlayingEnabled(),enableFileBroadcast->isChecked());
+    pSettings->setValue(FileListener::getFilePathConfigKey(),filePathLine->text());
     if (m_bHasFilePathChanged) {
         m_nowPlayingFileChanged.set(true);
     }
@@ -697,16 +702,16 @@ void DlgPrefBroadcast::slotCancel() {
 
 void DlgPrefBroadcast::setNowPlayingFileValuesFromSettings() {
     UserSettingsPointer pSettings = m_pBroadcastSettings->getUserSettings();
-    if (pSettings->exists(keyNowPlayingEnabled)) {
-        bool checked = pSettings->getValue(keyNowPlayingEnabled, false);
-        enableFileBroadcast->setChecked(checked);
-    } else {
-        enableFileBroadcast->setChecked(false);
-    }
-    if (pSettings->exists(FileListener::getFilePathConfigKey())) {
-        QString filePath = pSettings->getValueString(FileListener::getFilePathConfigKey());
-        filePathLine->setText(filePath);
-    } else {
-        filePathLine->setText(QDir::currentPath());
-    }
+    bool checked = pSettings->getValue(keyNowPlayingEnabled(),false);
+    enableFileBroadcast->setChecked(checked);
+    QString filePath = pSettings->getValue(FileListener::getFilePathConfigKey(),
+                                           QDir::currentPath());
+    filePathLine->setText(filePath);
+}
+
+// static
+ConfigKey DlgPrefBroadcast::keyNowPlayingEnabled() {
+    static const ConfigKey keyNowPlayingEnabled =
+            ConfigKey("[Livemetadata]","nowPlayingFileEnabled");
+    return keyNowPlayingEnabled;
 }

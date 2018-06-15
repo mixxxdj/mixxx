@@ -471,7 +471,7 @@
            <item row="8" column="0">
             <widget class="QPushButton" name="btnChangeFilePath">
              <property name="enabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <property name="text">
               <string>Change path</string>
@@ -481,7 +481,7 @@
            <item row="8" column="1">
             <widget class="QLineEdit" name="filePathLine">
              <property name="readOnly">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
             </widget>
            </item>
@@ -926,24 +926,7 @@ p, li { white-space: pre-wrap; }
   <tabstop>enableUtf8Metadata</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>enableFileBroadcast</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>btnChangeFilePath</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>476</x>
-     <y>967</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>448</x>
-     <y>995</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
  <buttongroups>
   <buttongroup name="rbGroupPassword"/>
  </buttongroups>
