@@ -453,6 +453,7 @@ void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handle_
           mixxx::AudioSignal::SampleRate(96000),
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 
+    // TODO: Simplify by defining a method to create an EffectState for the input channel
     for (int i = 0; i < m_effects.size(); ++i) {
         auto& statesMap = (*pEffectStatesMapArray)[i];
         if (m_effects[i] != nullptr) {

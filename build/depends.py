@@ -703,7 +703,6 @@ class MixxxCore(Feature):
                    "effects/effectparameterslot.cpp",
                    "effects/effectbuttonparameterslot.cpp",
                    "effects/effectsmanager.cpp",
-                   "effects/effectchainmanager.cpp",
                    "effects/effectsbackend.cpp",
 
                    "effects/builtin/builtinbackend.cpp",

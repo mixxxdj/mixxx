@@ -12,7 +12,6 @@
 
 class EngineEffectRack;
 class EffectsManager;
-class EffectChainManager;
 
 #include "effects/effectchainslot.h"
 
@@ -21,7 +20,6 @@ class EffectRack : public QObject {
     Q_OBJECT
   public:
     EffectRack(EffectsManager* pEffectsManager,
-               EffectChainManager* pChainManager,
                const unsigned int iRackNumber,
                const QString& group, SignalProcessingStage stage);
     virtual ~EffectRack();
@@ -70,7 +68,6 @@ class EffectRack : public QObject {
 
     // We could make accessors for these for sub-classes. Doesn't really matter.
     EffectsManager* m_pEffectsManager;
-    EffectChainManager* m_pEffectChainManager;
 
   private:
     SignalProcessingStage m_signalProcessingStage;
@@ -85,7 +82,6 @@ class StandardEffectRack : public EffectRack {
     Q_OBJECT
   public:
     StandardEffectRack(EffectsManager* pEffectsManager,
-                       EffectChainManager* pChainManager,
                        const unsigned int iRackNumber);
     virtual ~StandardEffectRack() {}
 
@@ -116,8 +112,7 @@ class StandardEffectRack : public EffectRack {
 class OutputEffectRack : public EffectRack {
     Q_OBJECT
   public:
-    OutputEffectRack(EffectsManager* pEffectsManager,
-                     EffectChainManager* pChainManager);
+    OutputEffectRack(EffectsManager* pEffectsManager);
     virtual ~OutputEffectRack() {};
 };
 
@@ -125,7 +120,6 @@ class PerGroupRack : public EffectRack {
     Q_OBJECT
   public:
     PerGroupRack(EffectsManager* pEffectsManager,
-                 EffectChainManager* pChainManager,
                  const unsigned int iRackNumber,
                  const QString& group);
     virtual ~PerGroupRack() {}
@@ -154,7 +148,6 @@ class QuickEffectRack : public PerGroupRack {
     Q_OBJECT
   public:
     QuickEffectRack(EffectsManager* pEffectsManager,
-                    EffectChainManager* pChainManager,
                     const unsigned int iRackNumber);
     virtual ~QuickEffectRack() {}
 
@@ -208,7 +201,6 @@ class EqualizerRack : public PerGroupRack {
     Q_OBJECT
   public:
     EqualizerRack(EffectsManager* pEffectsManager,
-                  EffectChainManager* pChainManager,
                   const unsigned int iRackNumber);
     virtual ~EqualizerRack() {}
 

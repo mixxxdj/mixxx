@@ -7,13 +7,12 @@
 #include <QSignalMapper>
 #include <QDomDocument>
 
+#include "control/controlobject.h"
 #include "effects/defs.h"
 #include "effects/effect.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
 
-
-class ControlObject;
 class ControlPushButton;
 class ControlEncoder;
 class EffectChainSlot;

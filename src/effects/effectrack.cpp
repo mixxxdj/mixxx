@@ -1,19 +1,16 @@
 #include "effects/effectrack.h"
 
 #include "effects/effectsmanager.h"
-#include "effects/effectchainmanager.h"
 #include "effects/effectslot.h"
 #include "engine/effects/engineeffectrack.h"
 
 #include "util/assert.h"
 
 EffectRack::EffectRack(EffectsManager* pEffectsManager,
-                       EffectChainManager* pEffectChainManager,
                        const unsigned int iRackNumber,
                        const QString& group, SignalProcessingStage stage)
         : m_pEngineEffectRack(nullptr),
           m_pEffectsManager(pEffectsManager),
-          m_pEffectChainManager(pEffectChainManager),
           m_signalProcessingStage(stage),
           m_iRackNumber(iRackNumber),
           m_group(group),
@@ -171,15 +168,14 @@ void EffectRack::refresh() {
 }
 
 bool EffectRack::isAdoptMetaknobValueEnabled() const {
-    return m_pEffectChainManager->isAdoptMetaknobValueEnabled();
+    return m_pEffectsManager->isAdoptMetaknobValueEnabled();
 }
 
 StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
-                                       EffectChainManager* pChainManager,
                                        const unsigned int iRackNumber)
-        : EffectRack(pEffectsManager, pChainManager, iRackNumber,
+        : EffectRack(pEffectsManager, iRackNumber,
                      formatGroupString(iRackNumber), SignalProcessingStage::Postfader) {
-    for (int i = 0; i < EffectChainManager::kNumStandardEffectChains; ++i) {
+    for (int i = 0; i < EffectsManager::kNumStandardEffectChains; ++i) {
         addEffectChainSlot();
     }
 }
@@ -207,7 +203,7 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
 
     // Register all the existing channels with the new EffectChain.
     const QSet<ChannelHandleAndGroup>& registeredChannels =
-            m_pEffectChainManager->registeredInputChannels();
+            m_pEffectsManager->registeredInputChannels();
     for (const ChannelHandleAndGroup& handle_group : registeredChannels) {
         pChainSlot->registerInputChannel(handle_group);
     }
@@ -218,9 +214,8 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     return pChainSlotPointer;
 }
 
-OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
-                                   EffectChainManager* pChainManager)
-        : EffectRack(pEffectsManager, pChainManager, 0,
+OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager)
+        : EffectRack(pEffectsManager, 0,
                      "[OutputEffectRack]", SignalProcessingStage::Postfader) {
 
     const QString unitGroup = "[OutputEffectRack_[Master]]";
@@ -238,7 +233,7 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
 
     // TODO(Be): Remove this hideous hack to get the ChannelHandleAndGroup
     const QSet<ChannelHandleAndGroup>& registeredChannels =
-            m_pEffectChainManager->registeredInputChannels();
+            m_pEffectsManager->registeredInputChannels();
     for (const ChannelHandleAndGroup& handle_group : registeredChannels) {
         if (handle_group.name() == "[MasterOutput]") {
             masterHandleAndGroup = &handle_group;
@@ -259,10 +254,9 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
 }
 
 PerGroupRack::PerGroupRack(EffectsManager* pEffectsManager,
-                           EffectChainManager* pChainManager,
                            const unsigned int iRackNumber,
                            const QString& group)
-        : EffectRack(pEffectsManager, pChainManager, iRackNumber, group,
+        : EffectRack(pEffectsManager, iRackNumber, group,
                      SignalProcessingStage::Prefader) {
 }
 
@@ -291,7 +285,7 @@ void PerGroupRack::setupForGroup(const QString& groupName) {
     // TODO(rryan): remove.
     const ChannelHandleAndGroup* handleAndGroup = nullptr;
     for (const ChannelHandleAndGroup& handle_group :
-             m_pEffectChainManager->registeredInputChannels()) {
+             m_pEffectsManager->registeredInputChannels()) {
         if (handle_group.name() == groupName) {
             handleAndGroup = &handle_group;
             break;
@@ -327,9 +321,8 @@ EffectChainSlotPointer PerGroupRack::getGroupEffectChainSlot(const QString& grou
 }
 
 QuickEffectRack::QuickEffectRack(EffectsManager* pEffectsManager,
-                                 EffectChainManager* pChainManager,
                                  const unsigned int iRackNumber)
-        : PerGroupRack(pEffectsManager, pChainManager, iRackNumber,
+        : PerGroupRack(pEffectsManager, iRackNumber,
                        QuickEffectRack::formatGroupString(iRackNumber)) {
 }
 
@@ -351,9 +344,8 @@ bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
 }
 
 EqualizerRack::EqualizerRack(EffectsManager* pEffectsManager,
-                             EffectChainManager* pChainManager,
                              const unsigned int iRackNumber)
-        : PerGroupRack(pEffectsManager, pChainManager, iRackNumber,
+        : PerGroupRack(pEffectsManager, iRackNumber,
                        EqualizerRack::formatGroupString(iRackNumber)) {
 }
 

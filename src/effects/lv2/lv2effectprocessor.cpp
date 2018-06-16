@@ -11,8 +11,7 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
                                        QList<int> controlPortIndices)
             : m_pPlugin(plugin),
               m_audioPortIndices(audioPortIndices),
-              m_controlPortIndices(controlPortIndices),
-              m_pEffectsManager(nullptr) {
+              m_controlPortIndices(controlPortIndices) {
     m_inputL = new float[MAX_BUFFER_LEN];
     m_inputR = new float[MAX_BUFFER_LEN];
     m_outputL = new float[MAX_BUFFER_LEN];
@@ -60,11 +59,10 @@ LV2EffectProcessor::~LV2EffectProcessor() {
 
 void LV2EffectProcessor::initialize(
         const QSet<ChannelHandleAndGroup>& activeInputChannels,
-        EffectsManager* pEffectsManager,
+        const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
         const mixxx::EngineParameters& bufferParameters) {
-    Q_UNUSED(pEffectsManager);
+    m_registeredOutputChannels = registeredOutputChannels;
     Q_UNUSED(bufferParameters);
-
 
     for (const ChannelHandleAndGroup& inputChannel : activeInputChannels) {
         if (kEffectDebugOutput) {
@@ -72,8 +70,7 @@ void LV2EffectProcessor::initialize(
                         "EffectStates for input" << inputChannel;
         }
         ChannelHandleMap<LV2EffectGroupState*> outputChannelMap;
-        for (const ChannelHandleAndGroup& outputChannel :
-                pEffectsManager->registeredOutputChannels()) {
+        for (const ChannelHandleAndGroup& outputChannel : registeredOutputChannels) {
             LV2EffectGroupState* pGroupState = createGroupState(bufferParameters);
             if (pGroupState) {
                 outputChannelMap.insert(outputChannel.handle(), pGroupState);
@@ -85,8 +82,6 @@ void LV2EffectProcessor::initialize(
         }
         m_channelStateMatrix.insert(inputChannel.handle(), outputChannelMap);
     }
-    m_pEffectsManager = pEffectsManager;
-    DEBUG_ASSERT(m_pEffectsManager != nullptr);
 }
 
 void LV2EffectProcessor::process(const ChannelHandle& inputHandle,
@@ -197,8 +192,8 @@ bool LV2EffectProcessor::loadStatesForInputChannel(const ChannelHandle* inputCha
         }
     }
 
-    for (const ChannelHandleAndGroup& outputChannel :
-            m_pEffectsManager->registeredOutputChannels()) {
+    QSet<ChannelHandleAndGroup> receivedOutputChannels;
+    for (const ChannelHandleAndGroup& outputChannel : m_registeredOutputChannels) {
         if (kEffectDebugOutput) {
             qDebug() << "LV2EffectProcessor::loadStatesForInputChannel"
                      << this << "output" << outputChannel;
@@ -210,7 +205,11 @@ bool LV2EffectProcessor::loadStatesForInputChannel(const ChannelHandle* inputCha
               return false;
         }
         effectSpecificStatesMap.insert(outputChannel.handle(), pState);
+        receivedOutputChannels.insert(outputChannel);
     }
+    // Output channels are hardcoded in EngineMaster and should not
+    // be registered after Mixxx initializes.
+    DEBUG_ASSERT(receivedOutputChannels == m_registeredOutputChannels);
     return true;
 }
 

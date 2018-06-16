@@ -8,16 +8,17 @@
 #include <QScopedPointer>
 #include <QPair>
 
-#include "preferences/usersettings.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
+#include "effects/effectrack.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
+#include "preferences/usersettings.h"
 #include "util/class.h"
 #include "util/fifo.h"
+#include "util/xml.h"
 
 class EngineEffectsManager;
-class EffectChainManager;
 class EffectManifest;
 class EffectsBackend;
 
@@ -34,10 +35,6 @@ class EffectsManager : public QObject {
         return m_pEngineEffectsManager;
     }
 
-    EffectChainManager* getEffectChainManager() {
-        return m_pEffectChainManager;
-    }
-
     const ChannelHandle getMasterHandle() {
         return m_pChannelHandleFactory->getOrCreateHandle("[Master]");
     }
@@ -46,10 +43,36 @@ class EffectsManager : public QObject {
     // takes ownership of the backend, and will delete it when EffectsManager is
     // being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
+
+    // TODO(Kshitij) : Remove these redundant functions
+    void addEffectChain(EffectChainSlotPointer pEffectChainSlot);
+    void removeEffectChain(EffectChainSlotPointer pEffectChainSlot);
+
+    // To support cycling through effect chains, there is a global ordering of
+    // chains. These methods allow you to get the next or previous chain given
+    // your current chain.
+    // TODO(rryan): Prevent double-loading of a chain into a slot?
+    // TODO(Kshitij) : These functions are not being used. Remove
+    EffectChainSlotPointer getNextEffectChain(EffectChainSlotPointer pEffectChainSlot);
+    EffectChainSlotPointer getPrevEffectChain(EffectChainSlotPointer pEffectChainSlot);
+
+    // NOTE(Kshitij) : New functions for saving and loading
+    // bool saveEffectChains();
+    // void loadEffectChains();
+
+    static const int kNumStandardEffectChains = 4;
+
+    bool isAdoptMetaknobValueEnabled() const;
+
     void registerInputChannel(const ChannelHandleAndGroup& handle_group);
+    const QSet<ChannelHandleAndGroup>& registeredInputChannels() const {
+        return m_registeredInputChannels;
+    }
+
     void registerOutputChannel(const ChannelHandleAndGroup& handle_group);
-    const QSet<ChannelHandleAndGroup>& registeredInputChannels() const;
-    const QSet<ChannelHandleAndGroup>& registeredOutputChannels() const;
+    const QSet<ChannelHandleAndGroup>& registeredOutputChannels() const {
+        return m_registeredOutputChannels;
+    }
 
     StandardEffectRackPointer addStandardEffectRack();
     StandardEffectRackPointer getStandardEffectRack(int rack);
@@ -63,7 +86,7 @@ class EffectsManager : public QObject {
     OutputEffectRackPointer addOutputsEffectRack();
     OutputEffectRackPointer getOutputsEffectRack();
 
-    // NOTE(Kshitij) : Use new functions 
+    // NOTE(Kshitij) : Use new functions
     // void loadEffectChains();
 
     EffectRackPointer getEffectRack(const QString& group);
@@ -93,13 +116,13 @@ class EffectsManager : public QObject {
     EffectPointer instantiateEffect(const QString& effectId);
 
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
-    bool getEffectVisibility(EffectManifestPointer pManifest); 
+    bool getEffectVisibility(EffectManifestPointer pManifest);
 
     void setupPerGroupRacks();
     void setup();
 
-    // Reloads all effect to the slots to update parameter assignments
-    void refeshAllRacks();
+    // Reloads all effect to the slots to update parameter assignements
+    void refreshAllRacks();
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
     // ownership of request and deletes it once a response is received.
@@ -123,7 +146,6 @@ class EffectsManager : public QObject {
 
     ChannelHandleFactory* m_pChannelHandleFactory;
 
-    EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;
     QList<EffectManifestPointer> m_availableEffectManifests;
     QList<EffectManifestPointer> m_visibleEffectManifests;
@@ -141,20 +163,15 @@ class EffectsManager : public QObject {
 
     bool m_underDestruction;
 
-    // START EFFECTCHAINMANAGER
-    // UserSettingsPointer m_pConfig;
-    // EffectsManager* m_pEffectsManager;
-    // QList<StandardEffectRackPointer> m_standardEffectRacks;
-    // QList<EqualizerRackPointer> m_equalizerEffectRacks;
-    // QList<QuickEffectRackPointer> m_quickEffectRacks;
-    // OutputEffectRackPointer m_pOutputEffectRack;
-    // QHash<QString, EffectRackPointer> m_effectRacksByGroup;
-    // QList<EffectChainPointer> m_effectChains;
-    // QSet<ChannelHandleAndGroup> m_registeredInputChannels;
-    // QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
-    // END EFFECTCHAINMANAGER
-
-
+    QSet<ChannelHandleAndGroup> m_registeredInputChannels;
+    QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
+    QList<StandardEffectRackPointer> m_standardEffectRacks;
+    UserSettingsPointer m_pConfig;
+    QList<EqualizerRackPointer> m_equalizerEffectRacks;
+    QList<QuickEffectRackPointer> m_quickEffectRacks;
+    OutputEffectRackPointer m_pOutputEffectRack;
+    QHash<QString, EffectRackPointer> m_effectRacksByGroup;
+    QList<EffectChainSlotPointer> m_effectChainSlots;
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };
 

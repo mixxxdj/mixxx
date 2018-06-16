@@ -37,7 +37,7 @@ class LV2EffectProcessor : public EffectProcessor {
 
     void initialize(
             const QSet<ChannelHandleAndGroup>& activeInputChannels,
-            EffectsManager* pEffectsManager,
+            const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
             const mixxx::EngineParameters& bufferParameters) override;
     EffectState* createState(const mixxx::EngineParameters& bufferParameters) final;
     bool loadStatesForInputChannel(const ChannelHandle* inputChannel,
@@ -65,7 +65,7 @@ class LV2EffectProcessor : public EffectProcessor {
     const QList<int> m_audioPortIndices;
     const QList<int> m_controlPortIndices;
 
-    EffectsManager* m_pEffectsManager;
+    QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
     ChannelHandleMap<ChannelHandleMap<LV2EffectGroupState*>> m_channelStateMatrix;
 };
 

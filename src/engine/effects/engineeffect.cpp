@@ -36,7 +36,8 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
     const mixxx::EngineParameters bufferParameters(
           mixxx::AudioSignal::SampleRate(96000),
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
-    m_pProcessor->initialize(activeInputChannels, pEffectsManager, bufferParameters);
+    m_pProcessor->initialize(activeInputChannels,
+                             pEffectsManager->registeredOutputChannels(), bufferParameters);
     m_effectRampsFromDry = pManifest->effectRampsFromDry();
 }
 

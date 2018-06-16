@@ -34,7 +34,7 @@ class MockEffectProcessor : public EffectProcessor {
     MockEffectProcessor() {}
 
     MOCK_METHOD3(initialize, void(const QSet<ChannelHandleAndGroup>& activeInputChannels,
-                                  EffectsManager* pEffectsManager,
+                                  const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
                                   const mixxx::EngineParameters& bufferParameters));
     MOCK_METHOD1(createState, EffectState*(const mixxx::EngineParameters& bufferParameters));
     MOCK_METHOD2(loadStatesForInputChannel, bool(const ChannelHandle* inputChannel,
