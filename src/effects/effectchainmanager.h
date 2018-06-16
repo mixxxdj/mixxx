@@ -61,7 +61,7 @@ class EffectChainManager : public QObject {
     bool saveEffectChains();
     void loadEffectChains();
 
-    // Reloads all effect to the slots to update parameter assignements
+    // Reloads all effect to the slots to update parameter assignments
     void refeshAllRacks();
 
     static const int kNumStandardEffectChains = 4;

@@ -649,7 +649,7 @@ EksOtus.headphones = function (field) {
     }
 }
 
-// Control effects or somethig with XY pad
+// Control effects or something with XY pad
 EksOtus.xypad = function(field) {
     var controller = EksOtus.controller;
     if (controller.activeDeck==undefined)
