@@ -21,7 +21,7 @@ class EncoderCallback;
 
 class EncoderVorbis : public Encoder {
   public:
-    static const int MONO_BITRATE_TRESHOLD;
+    static const int MONO_BITRATE_THRESHOLD;
   
     EncoderVorbis(EncoderCallback* pCallback=nullptr);
     virtual ~EncoderVorbis();
