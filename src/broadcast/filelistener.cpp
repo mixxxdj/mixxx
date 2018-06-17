@@ -1,22 +1,22 @@
 
 #include "broadcast/filelistener.h"
-#include "preferences/dialog/dlgprefbroadcast.h"
 
 #include "moc_filelistener.cpp"
+#include "preferences/dialog/dlgprefbroadcast.h"
 
 FileListener::FileListener(UserSettingsPointer pConfig)
-        :   m_filePathChanged(getFileModifiedControlKey()),
-            m_nowPlayingJustEnabled(DlgPrefBroadcast::keyNowPlayingEnabled()),
-            m_pConfig(pConfig) {
+        : m_filePathChanged(getFileModifiedControlKey()),
+          m_nowPlayingJustEnabled(ConfigKey("[Livemetadata]", "nowPlayingFileEnabled")),
+          m_pConfig(pConfig) {
     QString filePath = pConfig->getValue(getFilePathConfigKey(),
             "NowPlaying.txt");
     QObject::connect(&m_filePathChanged, SIGNAL(valueChanged(double)), this, SLOT(slotFilePathChanged(double)));
     m_file.setFileName(filePath);
-    if (pConfig->getValue(DlgPrefBroadcast::keyNowPlayingEnabled(),false)) {
+    if (pConfig->getValue(ConfigKey("[Livemetadata]", "nowPlayingFileEnabled"), false)) {
         m_file.open(QIODevice::ReadWrite |
-                    QIODevice::Truncate |
-                    QIODevice::Text |
-                    QIODevice::Unbuffered);
+                QIODevice::Truncate |
+                QIODevice::Text |
+                QIODevice::Unbuffered);
     }
 }
 
@@ -52,7 +52,7 @@ FileListener::makeFileListener(FileListenerType type,
 }
 
 void FileListener::slotFilePathChanged(double value) {
-    if (value > 0.0 && m_pConfig->getValue(DlgPrefBroadcast::keyNowPlayingEnabled(),false)) {
+    if (value > 0.0 && m_pConfig->getValue(ConfigKey("[Livemetadata]", "nowPlayingFileEnabled"), false)) {
         QString newPath = m_pConfig->getValueString(getFilePathConfigKey());
         if (newPath.size() == 0) {
             qDebug() << "Received value changed from nowPlaying.txt control object"

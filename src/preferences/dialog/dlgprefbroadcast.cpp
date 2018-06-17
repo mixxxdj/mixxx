@@ -32,10 +32,7 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
         : DlgPreferencePage(parent),
           m_pBroadcastSettings(pBroadcastSettings),
           m_pSettingsModel(new BroadcastSettingsModel()),
-          m_nowPlayingFileChanged(FileListener::getFileModifiedControlKey()),
-          m_nowPlayingEnabled(keyNowPlayingEnabled()),
-          m_pProfileListSelection(nullptr),
-          m_bHasFilePathChanged(false) {
+          m_pProfileListSelection(nullptr) {
     setupUi(this);
 
 #ifndef __QTKEYCHAIN__
@@ -92,9 +89,6 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget* parent,
             &QPushButton::clicked,
             this,
             &DlgPrefBroadcast::btnDisconnectAllClicked);
-
-    setNowPlayingFileValuesFromSettings();
-    connect(btnChangeFilePath, SIGNAL(pressed()), this, SLOT(btnChangeNowPlayingFilePathClicked()));
 
     // Highlight first row
     connectionList->selectRow(0);
@@ -187,11 +181,6 @@ DlgPrefBroadcast::~DlgPrefBroadcast() {
 }
 
 void DlgPrefBroadcast::slotResetToDefaults() {
-    UserSettingsPointer pConfig = m_pBroadcastSettings->getUserSettings();
-    QString defaultPath = QDir::currentPath();
-    bool defaultEnabled = false;
-    enableFileBroadcast->setChecked(defaultEnabled);
-    filePathLine->setText(defaultPath);
 }
 
 void DlgPrefBroadcast::slotUpdate() {
@@ -291,13 +280,6 @@ void DlgPrefBroadcast::slotApply() {
     connectOnApply->setEnabled(!enabled);
 
     btnDisconnectAll->setEnabled(enabled);
-
-    UserSettingsPointer pSettings = m_pBroadcastSettings->getUserSettings();
-    pSettings->setValue(keyNowPlayingEnabled(),enableFileBroadcast->isChecked());
-    pSettings->setValue(FileListener::getFilePathConfigKey(),filePathLine->text());
-    if (m_bHasFilePathChanged) {
-        m_nowPlayingFileChanged.set(true);
-    }
 }
 
 void DlgPrefBroadcast::broadcastEnabledChanged(double value) {
@@ -675,16 +657,6 @@ void DlgPrefBroadcast::btnDisconnectAllClicked() {
     }
 }
 
-void DlgPrefBroadcast::btnChangeNowPlayingFilePathClicked() {
-    QString filePath = QFileDialog::getSaveFileName(
-            this,
-            "Save NowPlaying.txt file",
-            "./NowPlaying.txt",
-            "Text files (*.txt)");
-    filePathLine->setText(filePath);
-    m_bHasFilePathChanged = true;
-}
-
 void DlgPrefBroadcast::onSectionResized() {
     float width = (float)connectionList->width();
 
@@ -696,22 +668,3 @@ void DlgPrefBroadcast::onSectionResized() {
     sender()->blockSignals(false);
 }
 
-void DlgPrefBroadcast::slotCancel() {
-    setNowPlayingFileValuesFromSettings();
-}
-
-void DlgPrefBroadcast::setNowPlayingFileValuesFromSettings() {
-    UserSettingsPointer pSettings = m_pBroadcastSettings->getUserSettings();
-    bool checked = pSettings->getValue(keyNowPlayingEnabled(),false);
-    enableFileBroadcast->setChecked(checked);
-    QString filePath = pSettings->getValue(FileListener::getFilePathConfigKey(),
-                                           QDir::currentPath());
-    filePathLine->setText(filePath);
-}
-
-// static
-ConfigKey DlgPrefBroadcast::keyNowPlayingEnabled() {
-    static const ConfigKey keyNowPlayingEnabled =
-            ConfigKey("[Livemetadata]","nowPlayingFileEnabled");
-    return keyNowPlayingEnabled;
-}

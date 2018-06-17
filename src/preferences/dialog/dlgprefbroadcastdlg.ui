@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>731</width>
-    <height>1040</height>
+    <height>1180</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -158,7 +158,16 @@
            <item>
             <widget class="QWidget" name="widgetReconnectControls" native="true">
              <layout class="QGridLayout" name="gridLayout_5">
-              <property name="margin">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
                <number>0</number>
               </property>
               <item row="0" column="0">
@@ -367,24 +376,20 @@
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <layout class="QGridLayout" name="gridLayout_1">
-           <item row="7" column="0" colspan="2">
-            <widget class="QCheckBox" name="enableFileBroadcast">
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="custom_title">
              <property name="text">
-              <string>Write NowPlaying.txt file</string>
+              <string notr="true">%maintitle</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="0" colspan="2">
-            <widget class="QCheckBox" name="enableUtf8Metadata">
+           <item row="1" column="0" colspan="2">
+            <widget class="QCheckBox" name="enableCustomMetadata">
              <property name="text">
-              <string>Use UTF-8 encoding for metadata.</string>
+              <string>Use static artist and title.</string>
              </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_16">
-             <property name="text">
-              <string>Format</string>
+             <property name="checked">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -395,20 +400,10 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_14">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_16">
              <property name="text">
-              <string>Static artist</string>
-             </property>
-             <property name="buddy">
-              <cstring>custom_artist</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="custom_artist">
-             <property name="text">
-              <string notr="true">%mainartist</string>
+              <string>Format</string>
              </property>
             </widget>
            </item>
@@ -422,10 +417,13 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="custom_title">
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_14">
              <property name="text">
-              <string notr="true">%maintitle</string>
+              <string>Static artist</string>
+             </property>
+             <property name="buddy">
+              <cstring>custom_artist</cstring>
              </property>
             </widget>
            </item>
@@ -455,33 +453,17 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QCheckBox" name="enableCustomMetadata">
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="custom_artist">
              <property name="text">
-              <string>Use static artist and title.</string>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
+              <string notr="true">%mainartist</string>
              </property>
             </widget>
            </item>
-           <item row="8" column="0">
-            <widget class="QPushButton" name="btnChangeFilePath">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
+           <item row="6" column="0" colspan="2">
+            <widget class="QCheckBox" name="enableUtf8Metadata">
              <property name="text">
-              <string>Change path</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1">
-            <widget class="QLineEdit" name="filePathLine">
-             <property name="readOnly">
-              <bool>false</bool>
+              <string>Use UTF-8 encoding for metadata.</string>
              </property>
             </widget>
            </item>
@@ -556,7 +538,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Website</string>
+              <string>We&amp;bsite</string>
              </property>
              <property name="buddy">
               <cstring>mountpoint</cstring>
@@ -619,8 +601,8 @@
               <string notr="true">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Noto Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Ubuntu';&quot;&gt;  &lt;/span&gt;&lt;/p&gt;
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Ubuntu'; font-size:10pt;&quot;&gt;  &lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Lucida Grande'; font-size:13pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
@@ -808,7 +790,16 @@ p, li { white-space: pre-wrap; }
          <item row="1" column="0">
           <widget class="QWidget" name="groupPasswordStorage" native="true">
            <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <property name="margin">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
              <number>0</number>
             </property>
             <item>
@@ -890,7 +881,6 @@ p, li { white-space: pre-wrap; }
   <tabstop>btnDisconnectAll</tabstop>
   <tabstop>btnCreateConnection</tabstop>
   <tabstop>connectOnApply</tabstop>
-
   <tabstop>comboBoxServerType</tabstop>
   <tabstop>mountpoint</tabstop>
   <tabstop>host</tabstop>
@@ -898,17 +888,14 @@ p, li { white-space: pre-wrap; }
   <tabstop>login</tabstop>
   <tabstop>password</tabstop>
   <tabstop>rbPasswordCleartext</tabstop>
-
   <tabstop>checkBoxEnableReconnect</tabstop>
   <tabstop>spinBoxFirstDelay</tabstop>
   <tabstop>spinBoxReconnectPeriod</tabstop>
   <tabstop>checkBoxLimitReconnects</tabstop>
   <tabstop>spinBoxMaximumRetries</tabstop>
-
   <tabstop>comboBoxEncodingBitrate</tabstop>
   <tabstop>comboBoxEncodingFormat</tabstop>
   <tabstop>comboBoxEncodingChannels</tabstop>
-
   <tabstop>stream_public</tabstop>
   <tabstop>stream_name</tabstop>
   <tabstop>stream_website</tabstop>
@@ -917,11 +904,8 @@ p, li { white-space: pre-wrap; }
   <tabstop>stream_IRC</tabstop>
   <tabstop>stream_AIM</tabstop>
   <tabstop>stream_ICQ</tabstop>
-
   <tabstop>metadata_format</tabstop>
   <tabstop>enableCustomMetadata</tabstop>
-  <tabstop>custom_artist</tabstop>
-  <tabstop>custom_title</tabstop>
   <tabstop>ogg_dynamicupdate</tabstop>
   <tabstop>enableUtf8Metadata</tabstop>
  </tabstops>
