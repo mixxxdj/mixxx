@@ -1637,18 +1637,6 @@ QTableView:!focus {
 
 /* checkbox in library "Played" column */
 QTableView::indicator {
-  width: 12px;
-  height: 12px;
-  }
-  QTableView::indicator:checked {
-    background: url(skin:/style/library_checkbox_checked.png);
-  }
-  QTableView::indicator:unchecked {
-    background: url(skin:/style/library_checkbox_unchecked.png);
-  }
-
-/* checkbox in library "Played" column */
-QTableView::indicator {
   width: 10px;
   height: 10px;
   margin: 0px;
@@ -1670,7 +1658,6 @@ QTableView::indicator {
       border: 1px solid #aaa;
     }
   QTableView::indicator:unchecked {
-    image: url(skin:/style/library_checkbox_unchecked.png);
     border: 1px solid #444;
     }
     QTableView::indicator:unchecked:hover {
@@ -1686,7 +1673,7 @@ QTableView::indicator {
 /* Entire BPM cell */
 /* Lock icon at the left */
 #LibraryBPMButton::indicator:checked {
-  image: url(skin:/style/library_lock_checked.png);
+  image: url(skin:/style/library_locked.png);
 }
 #LibraryBPMButton::indicator:unchecked {
   image: url(skin:/style/library_unlocked.png);
@@ -1721,8 +1708,6 @@ QTableView::indicator {
 
 /* Button in library "Preview" column */
 #LibraryPreviewButton {
-  width: 23px;
-  height: 12px;
   background-color: transparent;
   border: 0px;
   border-radius: 2px;

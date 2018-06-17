@@ -399,7 +399,7 @@ QPushButton#LibraryPreviewButton {
 }
 
 QPushButton#LibraryPreviewButton:!checked {
-  image: url(skin:/image/style_library_preview_play.png);
+  image: url(:/images/library/ic_library_preview_play.png);
 }
 
 QPushButton#LibraryPreviewButton:!checked:hover {
@@ -408,7 +408,7 @@ QPushButton#LibraryPreviewButton:!checked:hover {
 }
 
 QPushButton#LibraryPreviewButton:checked {
-  image: url(skin:/image/style_library_preview_pause.png);
+  image: url(:/images/library/ic_library_preview_pause.png);
   background-color: #0f0f0f;
   border: 1px solid #006596;
 }
