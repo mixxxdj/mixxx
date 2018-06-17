@@ -987,6 +987,7 @@ add_library(
   src/audio/streaminfo.cpp
   src/audio/types.cpp
   src/broadcast/filelistener.cpp
+  src/broadcast/listenersfinder.cpp
   src/broadcast/metadatabroadcast.cpp
   src/broadcast/scrobblingmanager.cpp
   src/control/control.cpp
@@ -1326,6 +1327,7 @@ add_library(
   src/preferences/colorpalettesettings.cpp
   src/preferences/configobject.cpp
   src/preferences/constants.cpp
+  src/preferences/dialog/dlgfilelistenerbox.ui
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
@@ -1345,6 +1347,8 @@ add_library(
   src/preferences/dialog/dlgprefkeydlg.ui
   src/preferences/dialog/dlgpreflibrary.cpp
   src/preferences/dialog/dlgpreflibrarydlg.ui
+  src/preferences/dialog/dlgprefmetadata.cpp
+  src/preferences/dialog/dlgprefmetadatadlg.ui
   src/preferences/dialog/dlgprefmixer.cpp
   src/preferences/dialog/dlgprefmixerdlg.ui
   src/preferences/dialog/dlgprefrecord.cpp

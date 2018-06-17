@@ -3,6 +3,7 @@
 #include <QObject>
 
 #include "broadcast/filelistener.h"
+#include "broadcast/listenersfinder.h"
 #include "broadcast/scrobblingmanager.h"
 #include "control/controlproxy.h"
 #include "engine/enginexfader.h"
@@ -72,11 +73,9 @@ ScrobblingManager::ScrobblingManager(PlayerManagerInterface* manager, UserSettin
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)), m_pBroadcaster.get(), SLOT(slotNowListening(TrackPointer)));
     connect(m_pTimer.get(), SIGNAL(timeout()), this, SLOT(slotCheckAudibleTracks()));
     m_pTimer->start(1000);
-    m_pBroadcaster
-            ->addNewScrobblingService(
-                    FileListener::makeFileListener(
-                            FileListener::FileListenerType::SAMBroadcaster,
-                            settings));
+    for (const auto &servicePtr : ListenersFinder::instance(settings).getAllServices()) {
+        m_pBroadcaster->addNewScrobblingService(servicePtr);
+    }
 }
 
 void ScrobblingManager::setAudibleStrategy(TrackAudibleStrategy* pStrategy) {
