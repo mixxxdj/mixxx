@@ -79,12 +79,6 @@ ScrobblingManager::ScrobblingManager(PlayerManagerInterface* manager, UserSettin
                             settings));
 }
 
-ScrobblingManager::~ScrobblingManager() {
-    for (TrackInfo* info : m_trackList) {
-        delete info;
-    }
-}
-
 void ScrobblingManager::setAudibleStrategy(TrackAudibleStrategy* pStrategy) {
     m_pAudibleStrategy.reset(pStrategy);
 }
@@ -108,15 +102,13 @@ bool ScrobblingManager::hasScrobbledAnyTrack() const {
 
 void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
     bool pausedInAllDecks = true;
-    TrackInfo* pausedTrackInfo = nullptr;
-    for (TrackInfo* trackInfo : m_trackList) {
-        VERIFY_OR_DEBUG_ASSERT(trackInfo) {
-            continue;
-        }
-        if (!trackInfo->m_pTrack.expired() &&
-                trackInfo->m_pTrack.lock() == pPausedTrack) {
-            pausedTrackInfo = trackInfo;
-            for (QString playerGroup : trackInfo->m_players) {
+    auto pausedTrackIterator = m_trackList.end();
+    for (auto it = m_trackList.begin(); it != m_trackList.end(); ++it) {
+        auto& trackInfoPtr = *it;
+        std::shared_ptr<Track> pTrack = trackInfoPtr->m_pTrack.lock();
+        if (pTrack && pTrack == pPausedTrack) {
+            pausedTrackIterator = it;
+            for (const QString& playerGroup : trackInfoPtr->m_players) {
                 BaseTrackPlayer* player = m_pManager->getPlayer(playerGroup);
                 if (!player->isTrackPaused())
                     pausedInAllDecks = false;
@@ -124,11 +116,11 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
             break;
         }
     }
-    if (pausedInAllDecks && pausedTrackInfo) {
-        pausedTrackInfo->m_trackInfo->pausePlayedTime();
+    if (pausedInAllDecks && pausedTrackIterator != m_trackList.end()) {
+        (*pausedTrackIterator)->m_trackInfo->pausePlayedTime();
         bool allTracksPaused = true;
-        for (TrackInfo* info : m_trackList) {
-            for (const QString& player : info->m_players) {
+        for (const auto& trackInfoPtr : m_trackList) {
+            for (const QString& player : trackInfoPtr->m_players) {
                 if (!m_pManager->getPlayer(player)->isTrackPaused()) {
                     allTracksPaused = false;
                     break;
@@ -146,18 +138,13 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
 
 void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack) {
     BaseTrackPlayer* player = qobject_cast<BaseTrackPlayer*>(sender());
-    VERIFY_OR_DEBUG_ASSERT(player) {
-        return;
-    }
+    DEBUG_ASSERT(player);
     if (m_pAudibleStrategy->isTrackAudible(pResumedTrack, player)) {
-        for (TrackInfo* pTrackInfo : m_trackList) {
-            VERIFY_OR_DEBUG_ASSERT(pTrackInfo) {
-                continue;
-            }
-            if (!pTrackInfo->m_pTrack.expired() &&
-                    pTrackInfo->m_pTrack.lock() == pResumedTrack &&
-                    pTrackInfo->m_trackInfo->isTimerPaused()) {
-                pTrackInfo->m_trackInfo->resumePlayedTime();
+        for (auto& trackInfoPtr : m_trackList) {
+            std::shared_ptr<Track> pTrack = trackInfoPtr->m_pTrack.lock();
+            if (pTrack == pResumedTrack &&
+                    trackInfoPtr->m_trackInfo->isTimerPaused()) {
+                trackInfoPtr->m_trackInfo->resumePlayedTime();
                 break;
             }
         }
@@ -185,10 +172,10 @@ void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack) {
         return;
     }
     bool trackAlreadyAdded = false;
-    for (TrackInfo* pTrackInfo : m_trackList) {
-        if (!pTrackInfo->m_pTrack.expired() &&
-                pTrackInfo->m_pTrack.lock() == pNewTrack) {
-            pTrackInfo->m_players.append(pPlayer->getGroup());
+    for (auto& trackInfoPtr : m_trackList) {
+        std::shared_ptr<Track> pTrack = trackInfoPtr->m_pTrack.lock();
+        if (pTrack && pTrack == pNewTrack) {
+            trackInfoPtr->m_players.append(pPlayer->getGroup());
             trackAlreadyAdded = true;
             break;
         }
@@ -199,8 +186,8 @@ void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack) {
         if (m_trackInfoFactory) {
             pNewTrackInfo->m_trackInfo = m_trackInfoFactory(pNewTrack);
         }
-        m_trackList.append(pNewTrackInfo);
-        connect(m_trackList.last()->m_trackInfo.get(), &TrackTimingInfo::readyToBeScrobbled, this, &ScrobblingManager::slotReadyToBeScrobbled);
+        connect(m_trackList.back()->m_trackInfo.get(), &TrackTimingInfo::readyToBeScrobbled, this, &ScrobblingManager::slotReadyToBeScrobbled);
+        m_trackList.push_back(std::move(std::unique_ptr<TrackInfo>(pNewTrackInfo)));
         m_pBroadcaster->newTrackLoaded(pNewTrack);
     }
     // A new track has been loaded so must unload old one.
@@ -212,14 +199,14 @@ void ScrobblingManager::slotPlayerEmpty() {
 }
 
 void ScrobblingManager::resetTracks() {
-    for (TrackToBeReset candidateTrack : m_tracksToBeReset) {
+    for (const TrackToBeReset& candidateTrack : m_tracksToBeReset) {
         for (auto it = m_trackList.begin();
                 it != m_trackList.end();
                 ++it) {
-            TrackInfo* trackInfo = *it;
-            if (!trackInfo->m_pTrack.expired() &&
-                    !candidateTrack.m_pTrack.expired() &&
-                    trackInfo->m_pTrack.lock() == candidateTrack.m_pTrack.lock()) {
+            auto& trackInfo = *it;
+            std::shared_ptr<Track> pActualTrack = trackInfo->m_pTrack.lock();
+            std::shared_ptr<Track> pCandidateTrack = trackInfo->m_pTrack.lock();
+            if (pActualTrack && pCandidateTrack && pActualTrack == pCandidateTrack) {
                 if (playerNotInTrackList(trackInfo->m_players,
                             candidateTrack.m_playerGroup) ||
                         isStrayFromEngine(trackInfo->m_pTrack.lock(),
@@ -260,16 +247,15 @@ void ScrobblingManager::deletePlayerFromList(const QString& player,
     }
 }
 
-void ScrobblingManager::deleteTrackInfoAndNotify(QLinkedList<TrackInfo*>::iterator& it) {
+void ScrobblingManager::deleteTrackInfoAndNotify(std::list<std::unique_ptr<TrackInfo>>::iterator& it) {
     (*it)->m_trackInfo->pausePlayedTime();
     (*it)->m_trackInfo->resetPlayedTime();
     m_pBroadcaster->trackUnloaded(TrackPointer());
-    delete *it;
     m_trackList.erase(it);
 }
 
 void ScrobblingManager::slotGuiTick(double timeSinceLastTick) {
-    for (TrackInfo* trackInfo : m_trackList) {
+    for (auto& trackInfo : m_trackList) {
         trackInfo->m_trackInfo->slotGuiTick(timeSinceLastTick);
     }
 
@@ -290,12 +276,13 @@ void ScrobblingManager::slotReadyToBeScrobbled(TrackPointer pTrack) {
 }
 
 void ScrobblingManager::slotCheckAudibleTracks() {
-    for (TrackInfo* pTrackInfo : m_trackList) {
+    for (auto& pTrackInfo : m_trackList) {
         bool inaudible = true;
         for (QString playerGroup : pTrackInfo->m_players) {
-            BaseTrackPlayer* player = m_pManager->getPlayer(playerGroup);
-            if (!pTrackInfo->m_pTrack.expired() &&
-                    m_pAudibleStrategy->isTrackAudible(pTrackInfo->m_pTrack.lock(), player)) {
+            BaseTrackPlayer* pPlayer = m_pManager->getPlayer(playerGroup);
+            std::shared_ptr<Track> pTrack = pTrackInfo->m_pTrack.lock();
+            if (pTrack &&
+                    m_pAudibleStrategy->isTrackAudible(pTrack, pPlayer)) {
                 inaudible = false;
                 break;
             }

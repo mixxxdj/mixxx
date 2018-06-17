@@ -15,7 +15,6 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     DlgPrefBroadcast(QWidget *parent,
                      BroadcastSettingsPointer pBroadcastSettings);
     virtual ~DlgPrefBroadcast();
-    static ConfigKey keyNowPlayingEnabled();
 
     QUrl helpUrl() const override;
 
@@ -24,7 +23,6 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void slotApply() override;
     void slotUpdate() override;
     void slotResetToDefaults() override;
-    void slotCancel() override;
     void broadcastEnabledChanged(double value);
     void checkBoxEnableReconnectChanged(int value);
     void checkBoxLimitReconnectsChanged(int value);
@@ -39,7 +37,6 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void btnRenameConnectionClicked();
     void btnRemoveConnectionClicked();
     void btnDisconnectAllClicked();
-    void btnChangeNowPlayingFilePathClicked();
     void onSectionResized();
 
   private:
@@ -49,12 +46,9 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void selectConnectionRowByName(const QString& rowName);
     void getValuesFromProfile(BroadcastProfilePtr profile);
     void setValuesToProfile(BroadcastProfilePtr profile);
-    void setNowPlayingFileValuesFromSettings();
 
     BroadcastSettingsPointer m_pBroadcastSettings;
     BroadcastSettingsModel* m_pSettingsModel;
-    ControlProxy* m_pBroadcastEnabled, m_nowPlayingFileChanged;
-    ControlProxy m_nowPlayingEnabled;
+    ControlProxy* m_pBroadcastEnabled;
     BroadcastProfilePtr m_pProfileListSelection;
-    bool m_bHasFilePathChanged;
 };
