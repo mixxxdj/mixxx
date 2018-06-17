@@ -45,7 +45,7 @@ class ScrobblingManager : public QObject {
     Q_OBJECT
   public:
     ScrobblingManager(PlayerManagerInterface *manager,UserSettingsPointer settings);
-    ~ScrobblingManager();
+    ~ScrobblingManager() = default;
     void setAudibleStrategy(TrackAudibleStrategy *pStrategy);
     void setMetadataBroadcaster(MetadataBroadcasterInterface *pBroadcast);
     void setTimer(TrackTimers::RegularTimer *timer);
@@ -65,14 +65,14 @@ class ScrobblingManager : public QObject {
         TrackWeakPointer m_pTrack;
         std::shared_ptr<TrackTimingInfo> m_trackInfo;
         QLinkedList<QString> m_players;
-        TrackInfo(TrackPointer pTrack) : 
+        explicit TrackInfo(TrackPointer pTrack) :
         m_pTrack(pTrack), m_trackInfo(new TrackTimingInfo(pTrack))
         {} 
     };
     struct TrackToBeReset {
         TrackWeakPointer m_pTrack;
         QString m_playerGroup;
-        TrackToBeReset(TrackPointer pTrack, const QString &playerGroup) :
+        TrackToBeReset(const TrackPointer &pTrack, const QString &playerGroup) :
         m_pTrack(pTrack), m_playerGroup(playerGroup) {}
     };   
 
@@ -80,7 +80,7 @@ class ScrobblingManager : public QObject {
 
     std::unique_ptr<MetadataBroadcasterInterface> m_pBroadcaster;   
     
-    QLinkedList<TrackInfo*> m_trackList;
+    std::list<std::unique_ptr<TrackInfo>> m_trackList;
     QLinkedList<TrackToBeReset> m_tracksToBeReset;
 
     std::unique_ptr<TrackAudibleStrategy> m_pAudibleStrategy;
@@ -95,7 +95,7 @@ class ScrobblingManager : public QObject {
     bool isStrayFromEngine(TrackPointer pTrack,const QString &group) const;
     bool playerNotInTrackList(const QLinkedList<QString> &list, const QString &group) const;
     void deletePlayerFromList(const QString &player,QLinkedList<QString> &list);
-    void deleteTrackInfoAndNotify(QLinkedList<TrackInfo*>::iterator &it);
+    void deleteTrackInfoAndNotify(std::list<std::unique_ptr<TrackInfo>>::iterator &it);
   private slots:    
     void slotReadyToBeScrobbled(TrackPointer pTrack);
     void slotCheckAudibleTracks();

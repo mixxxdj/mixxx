@@ -392,24 +392,20 @@
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="7" column="0" colspan="2">
-            <widget class="QCheckBox" name="enableFileBroadcast">
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="custom_title">
              <property name="text">
-              <string>Write NowPlaying.txt file</string>
+              <string notr="true">%maintitle</string>
              </property>
             </widget>
            </item>
-           <item row="6" column="0" colspan="2">
-            <widget class="QCheckBox" name="enableUtf8Metadata">
+           <item row="1" column="0" colspan="2">
+            <widget class="QCheckBox" name="enableCustomMetadata">
              <property name="text">
-              <string>Use UTF-8 encoding for metadata.</string>
+              <string>Use static artist and title.</string>
              </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_16">
-             <property name="text">
-              <string>Format</string>
+             <property name="checked">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -420,20 +416,10 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_14">
+           <item row="0" column="0">
+            <widget class="QLabel" name="label_16">
              <property name="text">
-              <string>Static artist</string>
-             </property>
-             <property name="buddy">
-              <cstring>custom_artist</cstring>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="1">
-            <widget class="QLineEdit" name="custom_artist">
-             <property name="text">
-              <string notr="true">%mainartist</string>
+              <string>Format</string>
              </property>
             </widget>
            </item>
@@ -447,10 +433,13 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="1">
-            <widget class="QLineEdit" name="custom_title">
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_14">
              <property name="text">
-              <string notr="true">%maintitle</string>
+              <string>Static artist</string>
+             </property>
+             <property name="buddy">
+              <cstring>custom_artist</cstring>
              </property>
             </widget>
            </item>
@@ -470,30 +459,17 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QCheckBox" name="enableCustomMetadata">
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="custom_artist">
              <property name="text">
-              <string>Use static artist and title.</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
+              <string notr="true">%mainartist</string>
              </property>
             </widget>
            </item>
-           <item row="8" column="0">
-            <widget class="QPushButton" name="btnChangeFilePath">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
+           <item row="6" column="0" colspan="2">
+            <widget class="QCheckBox" name="enableUtf8Metadata">
              <property name="text">
-              <string>Change path</string>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="1">
-            <widget class="QLineEdit" name="filePathLine">
-             <property name="readOnly">
-              <bool>false</bool>
+              <string>Use UTF-8 encoding for metadata.</string>
              </property>
             </widget>
            </item>
@@ -554,7 +530,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Website</string>
+              <string>We&amp;bsite</string>
              </property>
              <property name="buddy">
               <cstring>mountpoint</cstring>
