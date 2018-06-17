@@ -4,9 +4,11 @@
 
 class ScrobblingService : public QObject {
   public:
-    virtual ~ScrobblingService() = default;
+    ~ScrobblingService() override = default;
   public slots:
     virtual void slotBroadcastCurrentTrack(TrackPointer pTrack) = 0;
     virtual void slotScrobbleTrack(TrackPointer pTrack) = 0;
     virtual void slotAllTracksPaused() = 0;
 };
+
+typedef std::shared_ptr<ScrobblingService> ScrobblingServicePtr;

@@ -23,7 +23,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QTableView" name="listenersTableView"/>
+         <widget class="QTableWidget" name="listenersTableWidget"/>
         </item>
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_3">

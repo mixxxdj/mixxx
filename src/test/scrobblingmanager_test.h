@@ -10,15 +10,16 @@ class MetadataBroadcasterMock : public MetadataBroadcasterInterface {
     Q_OBJECT
   public:
     ~MetadataBroadcasterMock() = default;
-    MOCK_METHOD1(slotNowListening, void(TrackPointer));
-    MOCK_METHOD1(slotAttemptScrobble, void(TrackPointer));
-    MOCK_METHOD0(slotAllTracksPaused, void());
-    MetadataBroadcasterInterface&
-    addNewScrobblingService(std::unique_ptr<ScrobblingService>&& newService) override {
-    }
-    MOCK_METHOD1(newTrackLoaded, void(TrackPointer));
-    MOCK_METHOD1(trackUnloaded, void(TrackPointer));
-    MOCK_METHOD1(guiTick, void(double));
+    MOCK_METHOD1(slotNowListening,void(TrackPointer));
+    MOCK_METHOD1(slotAttemptScrobble,void(TrackPointer));
+    MOCK_METHOD0(slotAllTracksPaused,void());
+    MetadataBroadcasterInterface& 
+        addNewScrobblingService(const ScrobblingServicePtr &ptr) override {
+            Q_UNUSED(ptr);
+        }
+    MOCK_METHOD1(newTrackLoaded,void(TrackPointer));
+    MOCK_METHOD1(trackUnloaded,void(TrackPointer));
+    MOCK_METHOD1(guiTick,void(double));
 };
 
 class RegularTimerMock : public TrackTimers::RegularTimer {
