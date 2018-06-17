@@ -28,6 +28,7 @@
 
 #include "preferences/dialog/dlgprefsound.h"
 #include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/dialog/dlgprefmetadata.h"
 #include "controllers/dlgprefcontrollers.h"
 
 #ifdef __VINYLCONTROL__
@@ -127,6 +128,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
         pSettingsManager->broadcastSettings());
     addPageWidget(m_broadcastingPage);
 #endif
+    m_metadataPage = new DlgPrefMetadata(this);
+    addPageWidget(m_metadataPage);
 
     m_recordingPage = new DlgPrefRecord(this, m_pConfig);
     addPageWidget(m_recordingPage);
@@ -256,6 +259,12 @@ void DlgPreferences::createIcons() {
     m_pBroadcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
 
+    m_pMetadataButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pMetadataButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_broadcast.png"));
+    m_pMetadataButton->setText(0, tr("Metadata Broadcast"));
+    m_pMetadataButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pMetadataButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
     m_pRecordingButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pRecordingButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_recording.png"));
     m_pRecordingButton->setText(0, tr("Recording"));
@@ -331,6 +340,8 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
     } else if (current == m_pBroadcastButton) {
         switchToPage(m_broadcastingPage);
 #endif
+    } else if (current == m_pMetadataButton) {
+        switchToPage(m_metadataPage);
     } else if (current == m_pRecordingButton) {
         switchToPage(m_recordingPage);
     } else if (current == m_pBeatDetectionButton) {

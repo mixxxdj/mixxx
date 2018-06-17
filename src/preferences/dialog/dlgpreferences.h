@@ -45,6 +45,7 @@ class DlgPrefEffects;
 class DlgPrefCrossfader;
 class DlgPrefAutoDJ;
 class DlgPrefBroadcast;
+class DlgPrefMetadata;
 class DlgPrefRecord;
 class DlgPrefBeats;
 class DlgPrefKey;
@@ -116,6 +117,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     //DlgPrefEffects* m_effectsPage;
     DlgPrefAutoDJ* m_autoDjPage;
     DlgPrefBroadcast* m_broadcastingPage;
+    DlgPrefMetadata* m_metadataPage;
     DlgPrefRecord* m_recordingPage;
     DlgPrefBeats* m_beatgridPage;
     DlgPrefKey* m_musicalKeyPage;
@@ -136,6 +138,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     //QTreeWidgetItem* m_pEffectsButton;
     QTreeWidgetItem* m_pAutoDJButton;
     QTreeWidgetItem* m_pBroadcastButton;
+    QTreeWidgetItem *m_pMetadataButton;
     QTreeWidgetItem* m_pRecordingButton;
     QTreeWidgetItem* m_pBeatDetectionButton;
     QTreeWidgetItem* m_pKeyDetectionButton;
