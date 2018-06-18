@@ -91,9 +91,17 @@ class EngineBuffer : public EngineObject {
   public:
     enum SeekRequest {
         SEEK_NONE = 0x00,
-        SEEK_PHASE = 0x01,
-        SEEK_EXACT = 0x02,
-        SEEK_STANDARD = 0x03, // = (SEEK_EXACT | SEEK_PHASE)
+        SEEK_PHASE = 0x01, // This be set to force seek into phase
+        SEEK_EXACT = 0x02, // This is used to seek to position regardless of
+                           // Quantize enabled
+        SEEK_EXACT_PHASE = 0x03, // This is an artificial state the happens if
+                                 // an exact seek and a phase seek are sheduled
+                                 // at the same time.
+        SEEK_STANDARD = 0x04, // This is used to seek exact or phase depending
+                              // of Quantize enabled
+        SEEK_STANDARD_PHASE = 0x05, // This is an artificial state the happens if
+                                    // an standard seek and a phase seek are sheduled
+                                    // at the same time.
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
