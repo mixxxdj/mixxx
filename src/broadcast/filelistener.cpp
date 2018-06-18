@@ -81,6 +81,10 @@ ConfigKey FileListener::getFilePathConfigKey() {
     return ConfigKey("[Livemetadata]","NowPlayingFilePath");
 }
 
+QString FileListener::getName() const {
+    return "File listener";
+}
+
 SAMFileListener::SAMFileListener(UserSettingsPointer pConfig)
         :  FileListener(pConfig) {}
 

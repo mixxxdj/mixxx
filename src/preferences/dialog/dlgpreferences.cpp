@@ -128,7 +128,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
         pSettingsManager->broadcastSettings());
     addPageWidget(m_broadcastingPage);
 #endif
-    m_metadataPage = new DlgPrefMetadata(this);
+    m_metadataPage = new DlgPrefMetadata(this,m_pConfig);
     addPageWidget(m_metadataPage);
 
     m_recordingPage = new DlgPrefRecord(this, m_pConfig);

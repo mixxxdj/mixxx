@@ -21,7 +21,6 @@ class BroadcastSettings : public QObject {
     BroadcastProfilePtr createProfile(const QString& profileName);
     QList<BroadcastProfilePtr> profiles();
     BroadcastProfilePtr profileAt(int index);
-    UserSettingsPointer getUserSettings();
     void applyModel(BroadcastSettingsModel* pModel);
 
   signals:

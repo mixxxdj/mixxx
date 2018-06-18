@@ -9,6 +9,7 @@ class ScrobblingService : public QObject {
     virtual void slotBroadcastCurrentTrack(TrackPointer pTrack) = 0;
     virtual void slotScrobbleTrack(TrackPointer pTrack) = 0;
     virtual void slotAllTracksPaused() = 0;
+    virtual QString getName() const = 0;
 };
 
 typedef std::shared_ptr<ScrobblingService> ScrobblingServicePtr;

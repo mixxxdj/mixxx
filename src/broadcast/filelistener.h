@@ -19,12 +19,14 @@ class FileListener: public ScrobblingService {
     void slotAllTracksPaused() override;
     static ConfigKey getFileModifiedControlKey();
     static ConfigKey getFilePathConfigKey();
+    QString getName() const override;
   protected:
     virtual void writeMetadata(QTextStream &stream,TrackPointer pTrack) = 0;
     explicit FileListener(UserSettingsPointer pConfig);
   public slots:
     void slotFilePathChanged(double value);
-  private:
+
+private:
     QFile m_file;
     ControlPushButton m_filePathChanged, m_nowPlayingJustEnabled;
     UserSettingsPointer m_pConfig;
