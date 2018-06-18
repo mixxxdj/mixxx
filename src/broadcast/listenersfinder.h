@@ -9,12 +9,10 @@ class ListenersFinder {
     static QString fileListenerServiceKey() {
         return "FileListener";
     }
-    ScrobblingServicePtr getService(const QString &serviceName) const;
+    ScrobblingServicePtr getService(const QString& serviceName) const;
     QLinkedList<ScrobblingServicePtr> getAllServices() const;
+
   private:
     explicit ListenersFinder(UserSettingsPointer pSettings);
-    QHash<QString,ScrobblingServicePtr> m_servicesHash;
+    QHash<QString, ScrobblingServicePtr> m_servicesHash;
 };
-
-
-

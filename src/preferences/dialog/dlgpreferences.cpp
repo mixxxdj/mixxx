@@ -8,19 +8,13 @@
 #include <QScrollArea>
 #include <QtGlobal>
 
-#include <QResizeEvent>
-#include <QScreen>
-
-#include "preferences/dialog/dlgpreferences.h"
-
-#include "preferences/dialog/dlgprefsound.h"
-#include "preferences/dialog/dlgpreflibrary.h"
-#include "preferences/dialog/dlgprefmetadata.h"
 #include "controllers/dlgprefcontrollers.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
 #include "moc_dlgpreferences.cpp"
+#include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/dialog/dlgprefmetadata.h"
 #include "preferences/dialog/dlgprefsound.h"
 #include "util/color/color.h"
 #include "util/desktophelper.h"
@@ -214,8 +208,8 @@ DlgPreferences::DlgPreferences(
 #endif // __BROADCAST__
 
     addPageWidget(PreferencesPage(
-                          new DlgPrefMetadata(this),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)), 
+                          new DlgPrefMetadata(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Metadata Broadcast"),
             "ic_preferences_broadcast.svg");
 

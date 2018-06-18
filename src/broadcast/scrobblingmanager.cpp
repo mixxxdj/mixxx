@@ -73,7 +73,7 @@ ScrobblingManager::ScrobblingManager(PlayerManagerInterface* manager, UserSettin
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)), m_pBroadcaster.get(), SLOT(slotNowListening(TrackPointer)));
     connect(m_pTimer.get(), SIGNAL(timeout()), this, SLOT(slotCheckAudibleTracks()));
     m_pTimer->start(1000);
-    for (const auto &servicePtr : ListenersFinder::instance(settings).getAllServices()) {
+    for (const auto& servicePtr : ListenersFinder::instance(settings).getAllServices()) {
         m_pBroadcaster->addNewScrobblingService(servicePtr);
     }
 }
