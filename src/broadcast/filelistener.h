@@ -20,6 +20,7 @@ class FileListener : public ScrobblingService {
     void slotAllTracksPaused() override;
     static ConfigKey getFileModifiedControlKey();
     static ConfigKey getFilePathConfigKey();
+    QString getName() const override;
 
   protected:
     virtual void writeMetadata(QTextStream& stream, TrackPointer pTrack) = 0;
