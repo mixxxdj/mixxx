@@ -9,7 +9,6 @@
 #include "effects/effectsmanager.h"
 #include "effects/effectxmlelements.h"
 #include "engine/effects/engineeffectchain.h"
-#include "engine/effects/engineeffectrack.h"
 #include "engine/effects/message.h"
 #include "engine/engine.h"
 #include "mixer/playermanager.h"
@@ -108,7 +107,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
                                        true);
     m_pControlChainFocusedEffect->setButtonMode(ControlPushButton::TOGGLE);
 
-    addToEngine(m_pEffectRack->getEngineEffectRack(), m_iChainSlotNumber);
+    addToEngine(m_iChainSlotNumber);
 }
 
 EffectChainSlot::~EffectChainSlot() {
@@ -136,18 +135,18 @@ EffectChainSlot::~EffectChainSlot() {
     }
 
     m_slots.clear();
-    removeFromEngine(m_pEffectRack->getEngineEffectRack(), m_iChainSlotNumber);
+    removeFromEngine(m_iChainSlotNumber);
 }
 
-void EffectChainSlot::addToEngine(EngineEffectRack* pRack, int iIndex) {
+void EffectChainSlot::addToEngine(int iIndex) {
     m_pEngineEffectChain = new EngineEffectChain(m_id,
         m_pEffectsManager->registeredInputChannels(),
         m_pEffectsManager->registeredOutputChannels());
     EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::ADD_CHAIN_TO_RACK;
-    pRequest->pTargetRack = pRack;
-    pRequest->AddChainToRack.pChain = m_pEngineEffectChain;
-    pRequest->AddChainToRack.iIndex = iIndex;
+    pRequest->type = EffectsRequest::ADD_EFFECT_CHAIN;
+    pRequest->AddEffectChain.signalProcessingStage = m_pEffectRack->getSignalProcessingStage();
+    pRequest->AddEffectChain.pChain = m_pEngineEffectChain;
+    pRequest->AddEffectChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(pRequest);
 
     // Add all effects.
@@ -161,7 +160,7 @@ void EffectChainSlot::addToEngine(EngineEffectRack* pRack, int iIndex) {
     sendParameterUpdate();
 }
 
-void EffectChainSlot::removeFromEngine(EngineEffectRack* pRack, int iIndex) {
+void EffectChainSlot::removeFromEngine(int iIndex) {
     // Order doesn't matter when removing.
     for (int i = 0; i < m_effects.size(); ++i) {
         EffectPointer pEffect = m_effects[i];
@@ -171,10 +170,10 @@ void EffectChainSlot::removeFromEngine(EngineEffectRack* pRack, int iIndex) {
     }
 
     EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::REMOVE_CHAIN_FROM_RACK;
-    pRequest->pTargetRack = pRack;
-    pRequest->RemoveChainFromRack.pChain = m_pEngineEffectChain;
-    pRequest->RemoveChainFromRack.iIndex = iIndex;
+    pRequest->type = EffectsRequest::REMOVE_EFFECT_CHAIN;
+    pRequest->RemoveEffectChain.signalProcessingStage = m_pEffectRack->getSignalProcessingStage();
+    pRequest->RemoveEffectChain.pChain = m_pEngineEffectChain;
+    pRequest->RemoveEffectChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(pRequest);
 
     m_pEngineEffectChain = nullptr;

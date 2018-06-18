@@ -10,7 +10,6 @@
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/channelhandle.h"
 
-class EngineEffectRack;
 class EngineEffectChain;
 class EngineEffect;
 
@@ -64,14 +63,8 @@ class EngineEffectsManager : public EffectsRequestHandler {
         return QString("EngineEffectsManager");
     }
 
-    bool addEffectRack(EngineEffectRack* pRack, SignalProcessingStage stage);
-    bool removeEffectRack(EngineEffectRack* pRack, SignalProcessingStage stage);
-
-    bool addPreFaderEffectRack(EngineEffectRack* pRack);
-    bool removePreFaderEffectRack(EngineEffectRack* pRack);
-
-    bool addPostFaderEffectRack(EngineEffectRack* pRack);
-    bool removePostFaderEffectRack(EngineEffectRack* pRack);
+    bool addEffectChain(EngineEffectChain* pChain, SignalProcessingStage stage);
+    bool removeEffectChain(EngineEffectChain* pChain, SignalProcessingStage stage);
 
     void processInner(const SignalProcessingStage stage,
                       const ChannelHandle& inputHandle,
@@ -84,8 +77,7 @@ class EngineEffectsManager : public EffectsRequestHandler {
                       const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
 
     QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
-    QHash<SignalProcessingStage, QList<EngineEffectRack*>> m_racksByStage;
-    QList<EngineEffectChain*> m_chains;
+    QHash<SignalProcessingStage, QList<EngineEffectChain*>> m_chainsByStage;
     QList<EngineEffect*> m_effects;
 
     mixxx::SampleBuffer m_buffer1;

@@ -10,7 +10,6 @@
 #include "engine/channelhandle.h"
 #include "effects/defs.h"
 
-class EngineEffectRack;
 class EffectsManager;
 
 #include "effects/effectchainslot.h"
@@ -23,10 +22,6 @@ class EffectRack : public QObject {
                const unsigned int iRackNumber,
                const QString& group, SignalProcessingStage stage);
     virtual ~EffectRack();
-
-    void addToEngine();
-    void removeFromEngine();
-    EngineEffectRack* getEngineEffectRack();
 
     void registerInputChannel(const ChannelHandleAndGroup& handle_group);
     int numEffectChainSlots() const;
@@ -42,6 +37,10 @@ class EffectRack : public QObject {
 
     const QString& getGroup() const {
         return m_group;
+    }
+
+    SignalProcessingStage getSignalProcessingStage() const {
+      return m_signalProcessingStage;
     }
 
     void refresh();
@@ -63,8 +62,6 @@ class EffectRack : public QObject {
 
   protected:
     void addEffectChainSlotInternal(EffectChainSlotPointer pChainSlot);
-
-    EngineEffectRack* m_pEngineEffectRack;
 
     // We could make accessors for these for sub-classes. Doesn't really matter.
     EffectsManager* m_pEffectsManager;

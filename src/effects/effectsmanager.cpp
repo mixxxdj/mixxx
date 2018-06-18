@@ -10,7 +10,6 @@
 #include "effects/effectslot.h"
 #include "effects/effectxmlelements.h"
 #include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectrack.h"
 #include "engine/effects/engineeffectchain.h"
 #include "util/assert.h"
 
@@ -515,16 +514,11 @@ void EffectsManager::collectGarbage(const EffectsRequest* pRequest) {
             qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
         }
         delete pRequest->RemoveEffectFromChain.pEffect;
-    } else if (pRequest->type == EffectsRequest::REMOVE_CHAIN_FROM_RACK) {
+    } else if (pRequest->type == EffectsRequest::REMOVE_EFFECT_CHAIN) {
         if (kEffectDebugOutput) {
             qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
         }
-        delete pRequest->RemoveChainFromRack.pChain;
-    } else if (pRequest->type == EffectsRequest::REMOVE_EFFECT_RACK) {
-        if (kEffectDebugOutput) {
-            qDebug() << debugString() << "delete" << pRequest->RemoveEffectRack.pRack;
-        }
-        delete pRequest->RemoveEffectRack.pRack;
+        delete pRequest->RemoveEffectChain.pChain;
     } else if (pRequest->type == EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
         if (kEffectDebugOutput) {
             qDebug() << debugString() << "deleting states for input channel" << pRequest->DisableInputChannelForChain.pChannelHandle << "for EngineEffectChain" << pRequest->pTargetChain;

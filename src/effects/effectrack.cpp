@@ -2,15 +2,13 @@
 
 #include "effects/effectsmanager.h"
 #include "effects/effectslot.h"
-#include "engine/effects/engineeffectrack.h"
 
 #include "util/assert.h"
 
 EffectRack::EffectRack(EffectsManager* pEffectsManager,
                        const unsigned int iRackNumber,
                        const QString& group, SignalProcessingStage stage)
-        : m_pEngineEffectRack(nullptr),
-          m_pEffectsManager(pEffectsManager),
+        : m_pEffectsManager(pEffectsManager),
           m_signalProcessingStage(stage),
           m_iRackNumber(iRackNumber),
           m_group(group),
@@ -19,39 +17,11 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
     connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
             this, SLOT(slotClearRack(double)));
     m_controlNumEffectChainSlots.setReadOnly();
-    addToEngine();
 }
 
 EffectRack::~EffectRack() {
     m_effectChainSlots.clear();
-    removeFromEngine();
     //qDebug() << "EffectRack::~EffectRack()";
-}
-
-EngineEffectRack* EffectRack::getEngineEffectRack() {
-    return m_pEngineEffectRack;
-}
-
-void EffectRack::addToEngine() {
-    m_pEngineEffectRack = new EngineEffectRack(m_iRackNumber);
-    EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::ADD_EFFECT_RACK;
-    pRequest->AddEffectRack.pRack = m_pEngineEffectRack;
-    pRequest->AddEffectRack.signalProcessingStage = m_signalProcessingStage;
-    m_pEffectsManager->writeRequest(pRequest);
-
-    for (int i = 0; i < m_effectChainSlots.size(); ++i) {
-        EffectChainSlotPointer pSlot = m_effectChainSlots[i];
-    }
-}
-
-void EffectRack::removeFromEngine() {
-    EffectsRequest* pRequest = new EffectsRequest();
-    pRequest->type = EffectsRequest::REMOVE_EFFECT_RACK;
-    pRequest->RemoveEffectRack.signalProcessingStage = m_signalProcessingStage;
-    pRequest->RemoveEffectRack.pRack = m_pEngineEffectRack;
-    m_pEffectsManager->writeRequest(pRequest);
-    m_pEngineEffectRack = NULL;
 }
 
 void EffectRack::registerInputChannel(const ChannelHandleAndGroup& handle_group) {

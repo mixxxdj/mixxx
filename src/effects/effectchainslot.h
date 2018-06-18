@@ -148,8 +148,8 @@ class EffectChainSlot : public QObject {
         return QString("EffectChainSlot(%1)").arg(m_group);
     }
 
-    void addToEngine(EngineEffectRack* pRack, int iIndex);
-    void removeFromEngine(EngineEffectRack* pRack, int iIndex);
+    void addToEngine(int iIndex);
+    void removeFromEngine(int iIndex);
 
     const unsigned int m_iChainSlotNumber;
     const QString m_group;
