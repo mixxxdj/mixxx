@@ -445,6 +445,7 @@
             <SizePolicy>me,me</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
+
               <Splitter>
                 <Size>me,me</Size>
                 <SplitSizes>1,6</SplitSizes>

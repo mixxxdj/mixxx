@@ -1,5 +1,6 @@
 /* Summer Sunset */
-WBeatSpinBox {
+WBeatSpinBox,
+#DlgAutoDJ QSpinBox {
 	color: #101307;
 	background-color: #ad9e4f;
 }
@@ -14,6 +15,77 @@ WEffectSelector {
 } 
 #EffectSelectorGroup[highlight="0"]{ 
 	border: 0px solid #f8ba54;  
+}
+
+/* Library */
+
+WBaseLibrary QTabWidget::pane {
+/* when this border is not defined it gets added to tab widgets..wtf?
+  Affects AutoDJ 'Control' pane, DlgMissing & DlgHidden */
+  border: 1px solid #998A3C;
+}
+
+WBaseLibrary #DlgAutoDJ,
+WBaseLibrary #DlgRecording,
+WBaseLibrary #DlgAnalysis,
+WBaseLibrary #DlgHidden,
+WBaseLibrary #DlgMissing {
+  background-color: #998A3C;
+  border: 1px solid #998A3C;
+}
+
+WButtonBar QToolButton {
+  color: #000;
+  background-color: #A09249;
+  }
+  WButtonBar QToolButton:hover {
+    border: 1px solid #eee;
+  }
+  WButtonBar QToolButton:focus {
+    color: #eee;
+    background-color: #665D2F;
+  }
+
+/* Tabs in some special feature panes (AutoDJ, Analysis, Maintenance)*/
+WBaseLibrary QTabBar::tab {
+  border: 1px solid #998A3C;
+  border-bottom: 0px;
+  color: #000;
+  background-color: #998A3C;
+  }
+  WBaseLibrary QTabBar::tab:focus {
+    border-top: 1px solid #998A3C;
+    border-right: 1px solid #998A3C;
+    border-left: 1px solid #998A3C;
+    background-color: #232323;
+  }
+  WBaseLibrary QTabBar::tab:!selected {
+    border: 1px solid #191919;
+    border-bottom: 0px;
+    background-color: #665D2F;
+  }
+
+/* Pushbuttons in Library feature pane */
+WBaseLibrary QPushButton {
+  margin: 1px; 
+  padding: 0px;
+  font-size: 10pt;
+  font-family: "Open Sans";
+  color: #0f0f0f;
+  border: 1px solid #000;
+  background-color: #A4964B;
+  }
+  WBaseLibrary QPushButton:!enabled,
+  WBaseLibrary QWidget:!enabled {
+    color: #666;
+    border: 1px solid #666;
+  }
+/* 'Enable AutoDJ' button etc.	*/
+QPushButton#pushButtonAutoDJ:hover,
+QPushButton#pushButtonRecording:hover,
+QPushButton#pushButtonAnalyze:hover,
+QPushButton#btnPurge:hover {
+  border: 1px solid #52F904;
 }
 
 QHeaderView {
@@ -31,10 +103,10 @@ QHeaderView::down-arrow {
   background-color: rgba(153,138,60,160);
 }
 QHeaderView::up-arrow {
-  image: url(skin:/btn_lib_sort_up.png)
+  image: url(skin:/btn_lib_sort_up_summer.png)
 }
 QHeaderView::down-arrow {
-  image: url(skin:/btn_lib_sort_down.png)
+  image: url(skin:/btn_lib_sort_down_summer.png)
 }
 
 /* Scroll bars */
