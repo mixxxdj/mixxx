@@ -1187,7 +1187,7 @@ void EngineBuffer::processSeek(bool paused) {
     }
 
     if (!paused && (seekType & SEEK_PHASE)) {
-        position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
+        position = m_pBpmControl->getBeatMatchPosition(position, true, true);
     }
     if (position != m_filepos_play) {
         setNewPlaypos(position, adjustingPhase);
@@ -1369,4 +1369,12 @@ void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     if (m_pBpmControl != NULL) {
         m_pBpmControl->collectFeatures(pGroupFeatures);
     }
+}
+
+
+double  EngineBuffer::calcRateRatio() const {
+    if (m_pBpmControl != NULL) {
+        return m_pBpmControl->calcRateRatio();
+    }
+    return 1.0;
 }

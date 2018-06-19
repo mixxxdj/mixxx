@@ -569,7 +569,8 @@ bool BpmControl::getBeatContextNoLookup(
     return true;
 }
 
-double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing) {
+double BpmControl::getNearestPositionInPhase(
+        double dThisPosition, bool respectLoops, bool playing) {
     // Without a beatgrid, we don't know the phase offset.
     if (!m_pBeats) {
         return dThisPosition;
@@ -584,9 +585,10 @@ double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectL
     double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
     if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
-        // There's a chance the COs might be out of date, so do a lookup.
-        // TODO: figure out a way so that quantized control can take care of
-        // this so this call isn't necessary.
+        qDebug() << "BpmControl::getNearestPositionInPhase out of date"
+                << dThisPosition << dThisNextBeat << dThisPrevBeat;
+        // This happens if dThisPosition is the target position of a requested
+        // seek command
         if (!getBeatContext(m_pBeats, dThisPosition,
                             &dThisPrevBeat, &dThisNextBeat,
                             &dThisBeatLength, NULL)) {
@@ -713,6 +715,149 @@ double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectL
 
     return dNewPlaypos;
 }
+
+double BpmControl::getBeatMatchPosition(
+        double dThisPosition, bool respectLoops, bool playing) {
+    // Without a beatgrid, we don't know the phase offset.
+    if (!m_pBeats) {
+        return dThisPosition;
+    }
+    // Master buffer is always in sync!
+    if (getSyncMode() == SYNC_MASTER) {
+        return dThisPosition;
+    }
+
+    // Get the current position of this deck.
+    double dThisPrevBeat = m_pPrevBeat->get();
+    double dThisNextBeat = m_pNextBeat->get();
+    double dThisBeatLength;
+    if (dThisPosition > dThisNextBeat || dThisPosition < dThisPrevBeat) {
+        qDebug() << "BpmControl::getNearestPositionInPhase out of date"
+                << dThisPosition << dThisNextBeat << dThisPrevBeat;
+        // This happens if dThisPosition is the target position of a requested
+        // seek command
+        if (!getBeatContext(m_pBeats, dThisPosition,
+                            &dThisPrevBeat, &dThisNextBeat,
+                            &dThisBeatLength, nullptr)) {
+            return dThisPosition;
+        }
+    } else {
+        if (!getBeatContextNoLookup(dThisPosition,
+                                    dThisPrevBeat, dThisNextBeat,
+                                    &dThisBeatLength, nullptr)) {
+            return dThisPosition;
+        }
+    }
+
+    double dOtherPrevBeat;
+    double dOtherNextBeat;
+    double dOtherBeatLength;
+    double dOtherBeatFraction;
+    // If not, we have to figure it out
+    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+    if (pOtherEngineBuffer == NULL) {
+        return dThisPosition;
+    }
+
+    if (playing) {
+        // "this" track is playing, or just starting
+        // only match phase if the sync target is playing as well
+        if (pOtherEngineBuffer->getSpeed() == 0.0) {
+            return dThisPosition;
+        }
+    }
+
+    TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
+    BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
+
+    // If either track does not have beats, then we can't adjust the phase.
+    if (!otherBeats) {
+        return dThisPosition;
+    }
+
+    double dOtherLength = ControlObject::get(
+            ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"));
+    double dOtherEnginePlayPos = pOtherEngineBuffer->getVisualPlayPos();
+    double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
+
+    if (!BpmControl::getBeatContext(otherBeats, dOtherPosition,
+                  &dOtherPrevBeat, &dOtherNextBeat, &dOtherBeatLength, &dOtherBeatFraction)) {
+        return dThisPosition;
+    }
+
+    qDebug() << dThisPrevBeat << dThisNextBeat << dThisBeatLength << dThisPosition;
+    qDebug() << dOtherPrevBeat << dOtherNextBeat << dOtherBeatLength << dOtherBeatFraction;
+
+
+    // seek our nearest beat to the other nearest beat
+    bool this_near_next = dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
+    double thisDivSec;
+    if (this_near_next) {
+        thisDivSec = (dThisNextBeat - dThisPosition) / m_pBeats->getSampleRate() / calcRateRatio();
+    } else {
+        thisDivSec = (dThisPrevBeat - dThisPosition) / m_pBeats->getSampleRate() / calcRateRatio();
+    }
+
+    // dOtherBeatFraction =+ m_dUserOffset;
+    bool other_near_next = dOtherBeatFraction >= 0.5;
+    double otherDivSec;
+    if (other_near_next) {
+        otherDivSec = (1 - dOtherBeatFraction) * dOtherBeatLength / otherBeats->getSampleRate() / pOtherEngineBuffer->calcRateRatio();
+    } else {
+        otherDivSec = (-dOtherBeatFraction) * dOtherBeatLength / otherBeats->getSampleRate() / pOtherEngineBuffer->calcRateRatio();
+    }
+
+    double dNewPlaypos = dThisPosition + (thisDivSec - otherDivSec) * m_pBeats->getSampleRate() * calcRateRatio();
+
+    qDebug() << otherDivSec << thisDivSec << dOtherBeatFraction << dNewPlaypos;
+
+    if (respectLoops) {
+        // We might be seeking outside the loop.
+        const bool loop_enabled = m_pLoopEnabled->toBool();
+        const double loop_start_position = m_pLoopStartPosition->get();
+        const double loop_end_position = m_pLoopEndPosition->get();
+
+        // Cases for sanity:
+        //
+        // CASE 1
+        // Two identical 1-beat loops, out of phase by X samples.
+        // Other deck is at its loop start.
+        // This deck is half way through. We want to jump forward X samples to the loop end point.
+        //
+        // Two identical 1-beat loop, out of phase by X samples.
+        // Other deck is
+
+        // If sync target is 50% through the beat,
+        // If we are at the loop end point and hit sync, jump forward X samples.
+
+
+        // TODO(rryan): Revise this with something that keeps a broader number of
+        // cases in sync. This at least prevents breaking out of the loop.
+        if (loop_enabled &&
+                dThisPosition <= loop_end_position) {
+            const double loop_length = loop_end_position - loop_start_position;
+            const double end_delta = dNewPlaypos - loop_end_position;
+
+            // Syncing to after the loop end.
+            if (end_delta > 0 && loop_length > 0.0) {
+                int i = end_delta / loop_length;
+                dNewPlaypos = loop_start_position + end_delta - i * loop_length;
+
+                // Move new position after loop jump into phase as well.
+                // This is a recursive call, called only twice because of
+                // respectLoops = false
+                dNewPlaypos = getNearestPositionInPhase(dNewPlaypos, false, playing);
+            }
+
+            // Note: Syncing to before the loop beginning is allowed, because
+            // loops are catching
+        }
+    }
+
+    return dNewPlaypos;
+}
+
+
 
 double BpmControl::getPhaseOffset(double dThisPosition) {
     // This does not respect looping

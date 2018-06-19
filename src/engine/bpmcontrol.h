@@ -34,6 +34,7 @@ class BpmControl : public EngineControl {
     double calcSyncedRate(double userTweak);
     // Get the phase offset from the specified position.
     double getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing);
+    double getBeatMatchPosition(double dThisPosition, bool respectLoops, bool playing);
     double getPhaseOffset(double dThisPosition);
     double getBeatDistance(double dThisPosition) const;
 
@@ -71,6 +72,8 @@ class BpmControl : public EngineControl {
     static double shortestPercentageChange(const double& current_percentage,
                                            const double& target_percentage);
 
+    double calcRateRatio() const;
+
   public slots:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
@@ -97,7 +100,6 @@ class BpmControl : public EngineControl {
     }
     bool syncTempo();
     double calcSyncAdjustment(double my_percentage, bool userTweakingSync);
-    double calcRateRatio() const;
 
     friend class SyncControl;
 

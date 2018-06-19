@@ -147,6 +147,8 @@ class EngineBuffer : public EngineObject {
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
+    double calcRateRatio() const;
+
     // For dependency injection of readers.
     //void setReader(CachingReader* pReader);
 
