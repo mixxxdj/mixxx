@@ -42,45 +42,44 @@ class BeatMap : public QObject, public Beats {
 
     // See method comments in beats.h
 
-    virtual Beats::CapabilitiesFlags getCapabilities() const {
+    Beats::CapabilitiesFlags getCapabilities() const override {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
                 BEATSCAP_MOVEBEAT;
     }
 
-    virtual QByteArray toByteArray() const;
-    BeatsPointer clone() const;
-    virtual QString getVersion() const;
-    virtual QString getSubVersion() const;
-    virtual void setSubVersion(QString subVersion);
+    QByteArray toByteArray() const override;
+    BeatsPointer clone() const override;
+    QString getVersion() const override;
+    QString getSubVersion() const override;
+    void setSubVersion(QString subVersion);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
     ////////////////////////////////////////////////////////////////////////////
 
-    virtual double findNextBeat(double dSamples) const;
-    virtual double findPrevBeat(double dSamples) const;
-    virtual bool findPrevNextBeats(double dSamples,
+    double findNextBeat(double dSamples) const override;
+    double findPrevBeat(double dSamples) const override;
+    bool findPrevNextBeats(double dSamples,
                                    double* dpPrevBeatSamples,
-                                   double* dpNextBeatSamples) const;
-    virtual double findClosestBeat(double dSamples) const;
-    virtual double findNthBeat(double dSamples, int n) const;
-    virtual std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const;
-    virtual bool hasBeatInRange(double startSample, double stopSample) const;
+                                   double* dpNextBeatSamples) const override;
+    double findClosestBeat(double dSamples) const override;
+    double findNthBeat(double dSamples, int n) const override;
+    std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;
+    bool hasBeatInRange(double startSample, double stopSample) const override;
 
-    virtual double getBpm() const;
-    virtual double getBpmRange(double startSample, double stopSample) const;
-    virtual double getBpmAroundPosition(double curSample, int n) const;
+    double getBpm() const;
+    double getBpmRange(double startSample, double stopSample) const override;
+    double getBpmAroundPosition(double curSample, int n) const override;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    virtual void addBeat(double dBeatSample);
-    virtual void removeBeat(double dBeatSample);
-    virtual void moveBeat(double dBeatSample, double dNewBeatSample);
-    virtual void translate(double dNumSamples);
-    virtual void scale(enum BPMScale scale);
-    virtual void setBpm(double dBpm);
+    void addBeat(double dBeatSample) override;
+    void removeBeat(double dBeatSample) override;
+    void translate(double dNumSamples) override;
+    void scale(enum BPMScale scale) override;
+    void setBpm(double dBpm) override;
 
   signals:
     void updated();
