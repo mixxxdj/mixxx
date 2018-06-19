@@ -1531,7 +1531,7 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
     ProcessBuffer();
 
     ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 1.0);
-    // preview a hot cue without quantize
+    // preview a hot cue with quantize
     pHotCueActivate->set(1.0);
     ProcessBuffer();
 
