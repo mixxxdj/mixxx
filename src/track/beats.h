@@ -7,6 +7,7 @@
 #include <QSharedPointer>
 
 #include "util/memory.h"
+#include "util/types.h"
 
 namespace {
     double kMaxBpm = 500;
@@ -161,6 +162,8 @@ class Beats {
     // Adjust the beats so the global average BPM matches dBpm. Beats class must
     // have the capability BEATSCAP_SET.
     virtual void setBpm(double dBpm) = 0;
+
+    virtual SINT getSampleRate() const = 0;
 };
 
 #endif /* BEATS_H */

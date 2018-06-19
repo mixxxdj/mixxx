@@ -81,6 +81,10 @@ class BeatMap : public QObject, public Beats {
     void scale(enum BPMScale scale) override;
     void setBpm(double dBpm) override;
 
+    SINT getSampleRate() const override {
+        return m_iSampleRate;
+    }
+
   signals:
     void updated();
 
