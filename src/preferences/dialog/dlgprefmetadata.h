@@ -9,12 +9,42 @@ namespace Ui {
 class fileListenerBox;
 }
 
+namespace {
+const ConfigKey kMetadataFileEnabled =
+        ConfigKey("[Livemetadata]", "MetadataFileEnabled");
+
+const ConfigKey kFileEncoding =
+        ConfigKey("[Livemetadata]", "FileEncoding");
+
+const ConfigKey kFileFormat =
+        ConfigKey("[Livemetadata]", "FileFormat");
+
+const ConfigKey kFileFormatString =
+        ConfigKey("[Livemetadata]", "FileFormatString");
+
+const ConfigKey kFilePath =
+        ConfigKey("[Livemetadata]", "CustomFormatString");
+const ConfigKey kSettingsChanged =
+        ConfigKey("[Livemetadata]", "SettingsChanged");
+
+const bool defaultFileMetadataEnabled = false;
+const QString defaultEncoding = "UTF-8";
+const QString defaultFileFormat = "SAMBroadcaster";
+const QString defaultFilePath = QDir::currentPath();
+const QString defaultFileFormatString = "author - title";
+}; // namespace
+
+struct FileSettings {
+    bool enabled;
+    QString fileEncoding, fileFormat, fileFormatString, filePath;
+};
+
 class DlgPrefMetadata : public DlgPreferencePage, public Ui::DlgPrefMetadataDlg {
     Q_OBJECT
   public:
     DlgPrefMetadata(QWidget* pParent, UserSettingsPointer pSettings);
-    ~DlgPrefMetadata() override;
-
+    ~DlgPrefMetadata() override = default;
+    FileSettings getLatestSettings();
   public slots:
     void slotApply() override;
     void slotCancel() override;
@@ -22,9 +52,18 @@ class DlgPrefMetadata : public DlgPreferencePage, public Ui::DlgPrefMetadataDlg 
     void slotUpdate() override;
 
   private:
-    void setupTableWidget(UserSettingsPointer pSettings);
-    void fillTableWithServices(const QLinkedList<ScrobblingServicePtr>& listeners);
-    Ui::fileListenerBox* fileListenerBox;
+    void getPersistedSettings(UserSettingsPointer pSettings);
+    void setupWidgets();
+    bool fileSettingsDifferent();
+    bool checkIfSettingsCorrect();
+    void saveLatestSettingsAndNotify();
+    void persistSettings();
+    void resetSettingsToDefault();
+
+    UserSettingsPointer m_pSettings;
+    ControlProxy m_CPSettingsChanged;
+    FileSettings m_latestSettings;
   private slots:
-    void slotCurrentListenerChanged(const QModelIndex& previous, const QModelIndex& current);
+    void slotFormatChanged(int newIndex);
+    void slotFilepathButtonClicked();
 };
