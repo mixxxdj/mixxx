@@ -10,30 +10,34 @@
 #include "moc_dlgprefmetadata.cpp"
 #include "preferences/dialog/ui_dlgfilelistenerbox.h"
 
-DlgPrefMetadata::DlgPrefMetadata(QWidget* pParent, UserSettingsPointer pSettings)
+FileSettings DlgPrefMetadata::s_latestSettings;
+
+DlgPrefMetadata::DlgPrefMetadata(QWidget *pParent,UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
           m_pSettings(pSettings),
           m_CPSettingsChanged(kSettingsChanged) {
     setupUi(this);
-    getPersistedSettings(pSettings);
+    s_latestSettings = getPersistedSettings(pSettings);
     setupWidgets();
 }
 
-void DlgPrefMetadata::getPersistedSettings(UserSettingsPointer pSettings) {
-    m_latestSettings.enabled =
-            pSettings->getValue(kMetadataFileEnabled, defaultFileMetadataEnabled);
-    m_latestSettings.fileEncoding =
-            pSettings->getValue(kFileEncoding, defaultEncoding);
-    m_latestSettings.fileFormat =
-            pSettings->getValue(kFileFormat, defaultFileFormat);
-    m_latestSettings.fileFormatString =
-            pSettings->getValue(kFileFormatString, defaultFileFormatString);
-    m_latestSettings.filePath =
-            pSettings->getValue(kFilePath, defaultFilePath);
+FileSettings DlgPrefMetadata::getPersistedSettings(const UserSettingsPointer &pSettings) {
+    FileSettings ret;
+    ret.enabled =
+            pSettings->getValue(kMetadataFileEnabled,defaultFileMetadataEnabled);
+    ret.fileEncoding =
+            pSettings->getValue(kFileEncoding,defaultEncoding.constData()).toUtf8();
+    ret.fileFormat =
+            pSettings->getValue(kFileFormat,defaultFileFormat);
+    ret.fileFormatString =
+            pSettings->getValue(kFileFormatString,defaultFileFormatString);
+    ret.filePath =
+            pSettings->getValue(kFilePath,defaultFilePath);
+    return ret;
 }
 
 void DlgPrefMetadata::setupWidgets() {
-    enableFileListener->setChecked(m_latestSettings.enabled);
+    enableFileListener->setChecked(s_latestSettings.enabled);
 
     fileEncodingComboBox->clear();
     QList<QByteArray> codecs = QTextCodec::availableCodecs();
@@ -49,11 +53,11 @@ void DlgPrefMetadata::setupWidgets() {
     formatLineEdit->setText(formatComboBox->itemData(formatComboBox->currentIndex()).toString());
     connect(formatComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(slotFormatChanged(int)));
 
-    customFormatEnabledBox->setChecked(m_latestSettings.fileFormat == "Custom");
-    if (m_latestSettings.fileFormat == "Custom")
-        customFormatLineEdit->setText(m_latestSettings.fileFormatString);
+    customFormatEnabledBox->setChecked(s_latestSettings.fileFormat == "Custom");
+    if (s_latestSettings.fileFormat == "Custom")
+        customFormatLineEdit->setText(s_latestSettings.fileFormatString);
 
-    filePathLineEdit->setText(m_latestSettings.filePath);
+    filePathLineEdit->setText(s_latestSettings.filePath);
     filePathLineEdit->setStyleSheet("");
     connect(filePathButton, SIGNAL(pressed()), this, SLOT(slotFilepathButtonClicked()));
 }
@@ -79,13 +83,13 @@ void DlgPrefMetadata::slotApply() {
 }
 
 bool DlgPrefMetadata::fileSettingsDifferent() {
-    return (m_latestSettings.enabled != enableFileListener->isChecked() ||
-            m_latestSettings.fileEncoding != fileEncodingComboBox->currentText() ||
-            (m_latestSettings.fileFormat != "Custom" && m_latestSettings.fileFormat != formatComboBox->currentText()) ||
-            (m_latestSettings.fileFormat != "Custom" && customFormatEnabledBox->isChecked()) ||
-            (m_latestSettings.fileFormat == "Custom" && !customFormatEnabledBox->isChecked()) ||
-            (m_latestSettings.fileFormat == "Custom" && m_latestSettings.fileFormatString != customFormatLineEdit->text()) ||
-            m_latestSettings.filePath != filePathLineEdit->text());
+    return (s_latestSettings.enabled != enableFileListener->isChecked() ||
+            s_latestSettings.fileEncoding !=  fileEncodingComboBox->currentText() ||
+            (s_latestSettings.fileFormat != "Custom" && s_latestSettings.fileFormat != formatComboBox->currentText()) ||
+            (s_latestSettings.fileFormat != "Custom" && customFormatEnabledBox->isChecked()) ||
+            (s_latestSettings.fileFormat == "Custom" && !customFormatEnabledBox->isChecked()) ||
+            (s_latestSettings.fileFormat == "Custom" && s_latestSettings.fileFormatString != customFormatLineEdit->text()) ||
+            s_latestSettings.filePath != filePathLineEdit->text());
 }
 
 bool DlgPrefMetadata::checkIfSettingsCorrect() {
@@ -106,22 +110,24 @@ bool DlgPrefMetadata::checkIfSettingsCorrect() {
 }
 
 void DlgPrefMetadata::saveLatestSettingsAndNotify() {
-    m_latestSettings.enabled = enableFileListener->isChecked();
-    m_latestSettings.fileEncoding = fileEncodingComboBox->currentText();
-    m_latestSettings.fileFormat =
-            customFormatEnabledBox->isChecked() ? "Custom" : formatComboBox->currentText();
-    m_latestSettings.fileFormatString =
-            customFormatEnabledBox->isChecked() ? customFormatLineEdit->text() : formatLineEdit->text();
-    m_latestSettings.filePath = QDir(filePathLineEdit->text()).absolutePath();
+    s_latestSettings.enabled = enableFileListener->isChecked();
+    s_latestSettings.fileEncoding = fileEncodingComboBox->currentText().toUtf8();
+    s_latestSettings.fileFormat =
+            customFormatEnabledBox->isChecked() ? "Custom" :
+            formatComboBox->currentText();
+    s_latestSettings.fileFormatString =
+            customFormatEnabledBox->isChecked() ? customFormatLineEdit->text() :
+            formatLineEdit->text();
+    s_latestSettings.filePath = QDir(filePathLineEdit->text()).absolutePath();
     m_CPSettingsChanged.set(true);
 }
 
 void DlgPrefMetadata::persistSettings() {
-    m_pSettings->setValue(kMetadataFileEnabled, m_latestSettings.enabled);
-    m_pSettings->setValue(kFileEncoding, m_latestSettings.fileEncoding);
-    m_pSettings->setValue(kFileFormat, m_latestSettings.fileFormat);
-    m_pSettings->setValue(kFileFormatString, m_latestSettings.fileFormatString);
-    m_pSettings->setValue(kFilePath, m_latestSettings.filePath);
+    m_pSettings->setValue(kMetadataFileEnabled,s_latestSettings.enabled);
+    m_pSettings->setValue(kFileEncoding,QString(s_latestSettings.fileEncoding));
+    m_pSettings->setValue(kFileFormat,s_latestSettings.fileFormat);
+    m_pSettings->setValue(kFileFormatString,s_latestSettings.fileFormatString);
+    m_pSettings->setValue(kFilePath,s_latestSettings.filePath);
 }
 
 void DlgPrefMetadata::slotCancel() {
@@ -134,15 +140,15 @@ void DlgPrefMetadata::slotResetToDefaults() {
 }
 
 void DlgPrefMetadata::resetSettingsToDefault() {
-    m_latestSettings.enabled = defaultFileMetadataEnabled;
-    m_latestSettings.fileEncoding = defaultEncoding;
-    m_latestSettings.fileFormat = defaultFileFormat;
-    m_latestSettings.fileFormatString = defaultFileFormatString;
-    m_latestSettings.filePath = defaultFilePath;
+    s_latestSettings.enabled = defaultFileMetadataEnabled;
+    s_latestSettings.fileEncoding = defaultEncoding;
+    s_latestSettings.fileFormat = defaultFileFormat;
+    s_latestSettings.fileFormatString = defaultFileFormatString;
+    s_latestSettings.filePath = defaultFilePath;
 }
 
 FileSettings DlgPrefMetadata::getLatestSettings() {
-    return m_latestSettings;
+    return DlgPrefMetadata::s_latestSettings;
 }
 
 void DlgPrefMetadata::slotUpdate() {

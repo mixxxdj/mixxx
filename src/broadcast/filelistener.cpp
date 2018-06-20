@@ -1,23 +1,18 @@
 
+#include <QtCore/QTextCodec>
 #include "broadcast/filelistener.h"
 
 #include "moc_filelistener.cpp"
 #include "preferences/dialog/dlgprefbroadcast.h"
 
 FileListener::FileListener(UserSettingsPointer pConfig)
-        : m_filePathChanged(getFileModifiedControlKey()),
-          m_nowPlayingJustEnabled(ConfigKey("[Livemetadata]", "nowPlayingFileEnabled")),
-          m_pConfig(pConfig) {
-    QString filePath = pConfig->getValue(getFilePathConfigKey(),
-            "NowPlaying.txt");
-    QObject::connect(&m_filePathChanged, SIGNAL(valueChanged(double)), this, SLOT(slotFilePathChanged(double)));
-    m_file.setFileName(filePath);
-    if (pConfig->getValue(ConfigKey("[Livemetadata]", "nowPlayingFileEnabled"), false)) {
-        m_file.open(QIODevice::ReadWrite |
-                QIODevice::Truncate |
-                QIODevice::Text |
-                QIODevice::Unbuffered);
-    }
+        : m_COsettingsChanged(kSettingsChanged),
+          m_pConfig(pConfig),
+          m_latestSettings(DlgPrefMetadata::getPersistedSettings(pConfig)) {
+
+    connect(&m_COsettingsChanged,SIGNAL(valueChanged(double)),
+            this,SLOT(slotFileSettingsChanged(double)));
+    updateStateFromSettings();
 }
 
 FileListener::~FileListener() {
@@ -30,7 +25,13 @@ void FileListener::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     QTextStream stream(&m_file);
     //Clear file
     m_file.resize(0);
-    writeMetadata(stream, pTrack);
+    QTextCodec *codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
+    DEBUG_ASSERT(codec);
+    stream.setCodec(codec);
+    QString writtenString =
+            m_latestSettings.fileFormatString.replace("author",pTrack->getArtist()).
+            replace("title",pTrack->getTitle());
+    stream << writtenString << '\n';
 }
 
 void FileListener::slotScrobbleTrack(TrackPointer pTrack) {
@@ -41,55 +42,45 @@ void FileListener::slotAllTracksPaused() {
     m_file.resize(0);
 }
 
-std::unique_ptr<FileListener>
-FileListener::makeFileListener(FileListenerType type,
-        UserSettingsPointer pConfig) {
-    switch (type) {
-    case FileListenerType::SAMBroadcaster:
-        return std::unique_ptr<FileListener>(new SAMFileListener(pConfig));
+void FileListener::slotFileSettingsChanged(double value) {
+    if (value) {
+        m_latestSettings = DlgPrefMetadata::getLatestSettings();
+        updateStateFromSettings();
     }
-    return {};
 }
 
-void FileListener::slotFilePathChanged(double value) {
-    if (value > 0.0 && m_pConfig->getValue(ConfigKey("[Livemetadata]", "nowPlayingFileEnabled"), false)) {
-        QString newPath = m_pConfig->getValueString(getFilePathConfigKey());
-        if (newPath.size() == 0) {
-            qDebug() << "Received value changed from nowPlaying.txt control object"
-                        " yet QString is empty";
-            return;
+void FileListener::updateStateFromSettings() {
+    if (m_latestSettings.enabled) {
+        updateFile();
+    }
+    else  {
+        m_file.setFileName(m_latestSettings.filePath);
+        if (m_file.exists()) {
+            m_file.remove();
         }
-        if (!m_file.seek(0)) {
-            qDebug() << "Couldn't seek start of NowPlaying.txt file";
-            return;
-        }
+    }
+}
+
+void FileListener::updateFile() {
+    if (m_file.isOpen()) {
+        m_file.seek(0);
         QByteArray fileContents = m_file.readAll();
+        QTextCodec *codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
+        DEBUG_ASSERT(codec);
+        QByteArray newFileContents = codec->fromUnicode(fileContents);
         m_file.remove();
-        m_file.setFileName(newPath);
+        m_file.setFileName(m_latestSettings.filePath);
         m_file.open(QIODevice::ReadWrite |
-                QIODevice::Truncate |
-                QIODevice::Text |
-                QIODevice::Unbuffered);
-        m_file.write(fileContents);
+                    QIODevice::Truncate |
+                    QIODevice::Text |
+                    QIODevice::Unbuffered);
+        m_file.write(newFileContents);
     }
-}
-
-ConfigKey FileListener::getFileModifiedControlKey() {
-    return ConfigKey("[Livemetadata]", "nowPlayingFilePathChanged");
-}
-
-ConfigKey FileListener::getFilePathConfigKey() {
-    return ConfigKey("[Livemetadata]", "NowPlayingFilePath");
-}
-
-QString FileListener::getName() const {
-    return "File listener";
-}
-
-SAMFileListener::SAMFileListener(UserSettingsPointer pConfig)
-        : FileListener(pConfig) {
-}
-
-void SAMFileListener::writeMetadata(QTextStream& stream, TrackPointer pTrack) {
-    stream << pTrack->getArtist() << " - " << pTrack->getTitle();
+    else {
+        m_file.setFileName(m_latestSettings.filePath);
+        m_file.open(QIODevice::ReadWrite |
+                    QIODevice::Truncate |
+                    QIODevice::Text |
+                    QIODevice::Unbuffered);
+    }
 }
