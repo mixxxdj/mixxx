@@ -1,66 +1,164 @@
-#include <QLinkedList>
-#include <QCheckBox>
+#include <QTextCodec>
+#include <QComboBox>
+#include <QFileDialog>
+#include <QDir>
+#include <QErrorMessage>
 #include "broadcast/listenersfinder.h"
 #include "preferences/dialog/dlgprefmetadata.h"
 #include "preferences/dialog/ui_dlgfilelistenerbox.h"
 
 DlgPrefMetadata::DlgPrefMetadata(QWidget *pParent,UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
-          fileListenerBox(new Ui::fileListenerBox){
+          m_pSettings(pSettings),
+          m_CPSettingsChanged(kSettingsChanged) {
     setupUi(this);
-    setupTableWidget(pSettings);
+    getPersistedSettings(pSettings);
+    setupWidgets();
 }
 
-void DlgPrefMetadata::setupTableWidget(UserSettingsPointer pSettings) {
-    QLinkedList<ScrobblingServicePtr> listeners =
-            ListenersFinder::instance(pSettings).getAllServices();
-    setTableParameters(listeners.size()+5);
-    fillTableWithServices(listeners);
+void DlgPrefMetadata::getPersistedSettings(UserSettingsPointer pSettings) {
+    m_latestSettings.enabled =
+            pSettings->getValue(kMetadataFileEnabled,defaultFileMetadataEnabled);
+    m_latestSettings.fileEncoding =
+            pSettings->getValue(kFileEncoding,defaultEncoding);
+    m_latestSettings.fileFormat =
+            pSettings->getValue(kFileFormat,defaultFileFormat);
+    m_latestSettings.fileFormatString =
+            pSettings->getValue(kFileFormatString,defaultFileFormatString);
+    m_latestSettings.filePath =
+            pSettings->getValue(kFilePath,defaultFilePath);
+
 }
 
-DlgPrefMetadata::~DlgPrefMetadata() {
-    delete fileListenerBox;
-}
+void DlgPrefMetadata::setupWidgets() {
+    enableFileListener->setChecked(m_latestSettings.enabled);
 
-void DlgPrefMetadata::setTableParameters(int numberOfListeners) {
-    listenersTableWidget->setColumnCount(2);
-    listenersTableWidget->setRowCount(numberOfListeners);
-    QStringList headerLabels = {"Enabled","Name"};
-    listenersTableWidget->setHorizontalHeaderLabels(headerLabels);
-    listenersTableWidget->verticalHeader()->setVisible(false);
-    listenersTableWidget->setShowGrid(false);
-    listenersTableWidget->horizontalHeader()->setStretchLastSection(true);
-    /*connect(listenersTableWidget->selectionModel(),
-            SIGNAL(currentChanged(const QModelIndex&,const QModelIndex&)),
-            this,SLOT(slotCurrentListenerChanged(const QModelIndex&,const QModelIndex&)));*/
-}
-
-void DlgPrefMetadata::fillTableWithServices(const QLinkedList<ScrobblingServicePtr> &listeners) {
-    unsigned int currentRow = 0;
-    for (const ScrobblingServicePtr &pService : listeners) {
-        QTableWidgetItem *enabledItem = new QTableWidgetItem;
-        enabledItem->setFlags(Qt::NoItemFlags);
-        listenersTableWidget->setItem(currentRow,0,enabledItem);
-        listenersTableWidget->setCellWidget(currentRow,0,new QCheckBox);
-        QTableWidgetItem *nameItem = new QTableWidgetItem(pService->getName());
-        nameItem->setFlags(Qt::ItemIsSelectable);
-        listenersTableWidget->setItem(currentRow,1,nameItem);
-        ++currentRow;
+    fileEncodingComboBox->clear();
+    QList<QByteArray> codecs = QTextCodec::availableCodecs();
+    for (const QByteArray &codec : codecs) {
+        fileEncodingComboBox->addItem(codec);
     }
-    for (int i = listeners.size(); i < listeners.size() + 5; ++i) {
-        QTableWidgetItem *enabledItem = new QTableWidgetItem;
-        enabledItem->setFlags(Qt::NoItemFlags);
-        listenersTableWidget->setItem(i,0,enabledItem);
-        listenersTableWidget->setCellWidget(i,0,new QCheckBox);
-        QTableWidgetItem *nameItem = new QTableWidgetItem("Mock");
-        nameItem->setFlags(Qt::ItemIsSelectable);
-        listenersTableWidget->setItem(i,1,nameItem);
+
+    formatComboBox->clear();
+    //To be extended when adding more file formats.
+    QVariant SAMBroadcasterData("author - title");
+    formatComboBox->addItem("SAMBroadcaster",SAMBroadcasterData);
+
+    formatLineEdit->setText(formatComboBox->itemData(formatComboBox->currentIndex()).toString());
+    connect(formatComboBox,SIGNAL(currentIndexChanged(int)),
+            this,SLOT(slotFormatChanged(int)));
+
+    customFormatEnabledBox->setChecked(m_latestSettings.fileFormat == "Custom");
+    if (m_latestSettings.fileFormat == "Custom")
+        customFormatLineEdit->setText(m_latestSettings.fileFormatString);
+
+    filePathLineEdit->setText(m_latestSettings.filePath);
+    filePathLineEdit->setStyleSheet("");
+    connect(filePathButton,SIGNAL(pressed()),
+            this,SLOT(slotFilepathButtonClicked()));
+
+}
+
+void DlgPrefMetadata::slotFormatChanged(int newIndex) {
+    formatLineEdit->setText(formatComboBox->itemData(newIndex).toString());
+}
+
+void DlgPrefMetadata::slotFilepathButtonClicked() {
+    QString newFilePath = QFileDialog::getSaveFileName(
+        this,
+        "Choose new file path",
+        "./",
+        "Text files(*.txt)"
+    );
+    filePathLineEdit->setText(newFilePath);
+}
+
+void DlgPrefMetadata::slotApply() {
+    if (fileSettingsDifferent() && checkIfSettingsCorrect()) {
+        saveLatestSettingsAndNotify();
+        persistSettings();
     }
 }
 
-void DlgPrefMetadata::slotCurrentListenerChanged
-        (const QModelIndex &previous, const QModelIndex &current) {
-    listenersTableWidget->selectionModel()->select(previous,QItemSelectionModel::Clear);
+bool DlgPrefMetadata::fileSettingsDifferent() {
+    return  m_latestSettings.enabled != enableFileListener->isChecked() ||
+            m_latestSettings.fileEncoding !=  fileEncodingComboBox->currentText() ||
+            m_latestSettings.fileFormat != "Custom" &&
+            m_latestSettings.fileFormat != formatComboBox->currentText() ||
+            m_latestSettings.fileFormat != "Custom" && customFormatEnabledBox->isChecked() ||
+            m_latestSettings.fileFormat == "Custom" && !customFormatEnabledBox->isChecked() ||
+            m_latestSettings.fileFormat == "Custom" &&
+            m_latestSettings.fileFormatString != customFormatLineEdit->text() ||
+            m_latestSettings.filePath != filePathLineEdit->text();
 }
+
+bool DlgPrefMetadata::checkIfSettingsCorrect() {
+    QString supposedPath = filePathLineEdit->text();
+    int lastIndex = supposedPath.lastIndexOf('/');
+    if (lastIndex != -1) {
+        QString supposedDir = supposedPath.left(lastIndex);
+        QDir dir(supposedDir);
+        bool dirExists = dir.exists();
+        if (!dirExists) {
+            filePathLineEdit->setStyleSheet("border: 1px solid red");
+        }
+        else {
+            filePathLineEdit->setStyleSheet("");
+        }
+        return dirExists;
+    }
+    return true;
+}
+
+void DlgPrefMetadata::saveLatestSettingsAndNotify() {
+    m_latestSettings.enabled = enableFileListener->isChecked();
+    m_latestSettings.fileEncoding = fileEncodingComboBox->currentText();
+    m_latestSettings.fileFormat =
+            customFormatEnabledBox->isChecked() ? "Custom" :
+            formatComboBox->currentText();
+    m_latestSettings.fileFormatString =
+            customFormatEnabledBox->isChecked() ? customFormatLineEdit->text() :
+            formatLineEdit->text();
+    m_latestSettings.filePath = QDir(filePathLineEdit->text()).absolutePath();
+    m_CPSettingsChanged.set(true);
+}
+
+void DlgPrefMetadata::persistSettings() {
+    m_pSettings->setValue(kMetadataFileEnabled,m_latestSettings.enabled);
+    m_pSettings->setValue(kFileEncoding,m_latestSettings.fileEncoding);
+    m_pSettings->setValue(kFileFormat,m_latestSettings.fileFormat);
+    m_pSettings->setValue(kFileFormatString,m_latestSettings.fileFormatString);
+    m_pSettings->setValue(kFilePath,m_latestSettings.filePath);
+}
+
+void DlgPrefMetadata::slotCancel() {
+    setupWidgets();
+}
+
+void DlgPrefMetadata::slotResetToDefaults() {
+    resetSettingsToDefault();
+    setupWidgets();
+}
+
+void DlgPrefMetadata::resetSettingsToDefault() {
+    m_latestSettings.enabled = defaultFileMetadataEnabled;
+    m_latestSettings.fileEncoding = defaultEncoding;
+    m_latestSettings.fileFormat = defaultFileFormat;
+    m_latestSettings.fileFormatString = defaultFileFormatString;
+    m_latestSettings.filePath = defaultFilePath;
+}
+
+FileSettings DlgPrefMetadata::getLatestSettings() {
+    return m_latestSettings;
+}
+
+
+
+
+
+
+
+
+
 
 
