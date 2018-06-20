@@ -67,37 +67,67 @@
          </widget>
         </item>
         <item row="1" column="2">
-         <widget class="QComboBox" name="comboBox"/>
+         <widget class="QComboBox" name="formatComboBox"/>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="formatLineEdit">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <widget class="QCheckBox" name="checkBox_2">
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="customFormatEnabledBox">
           <property name="text">
            <string>Custom format</string>
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QLineEdit" name="lineEdit"/>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="customFormatLineEdit"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Use the keywords author and title</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignBottom|Qt::AlignHCenter</set>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="filePathButton">
           <property name="text">
            <string>Choose file path</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="lineEdit_3"/>
+         <widget class="QLineEdit" name="filePathLineEdit"/>
         </item>
        </layout>
+      </item>
+      <item>
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
@@ -107,18 +137,34 @@
  <resources/>
  <connections>
   <connection>
-   <sender>checkBox_2</sender>
+   <sender>customFormatEnabledBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>comboBox</receiver>
+   <receiver>formatComboBox</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>100</x>
-     <y>295</y>
+     <x>115</x>
+     <y>365</y>
     </hint>
     <hint type="destinationlabel">
      <x>596</x>
      <y>167</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>customFormatEnabledBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>formatLineEdit</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>52</x>
+     <y>351</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>183</x>
+     <y>179</y>
     </hint>
    </hints>
   </connection>
