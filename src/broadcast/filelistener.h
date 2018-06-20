@@ -1,7 +1,8 @@
 #pragma once
 
 #include <QFile>
-
+#include "preferences/dialog/dlgprefmetadata.h"
+#include "control/controlpushbutton.h"
 #include "broadcast/scrobblingservice.h"
 #include "control/controlpushbutton.h"
 
@@ -11,32 +12,21 @@ class FileListener : public ScrobblingService {
     enum class FileListenerType {
         SAMBroadcaster
     };
-    FileListener() = delete;
+    explicit FileListener(UserSettingsPointer pSettings);
     ~FileListener() override;
-    static std::unique_ptr<FileListener>
-    makeFileListener(FileListenerType type, UserSettingsPointer pConfig);
     void slotBroadcastCurrentTrack(TrackPointer pTrack) override;
     void slotScrobbleTrack(TrackPointer pTrack) override;
     void slotAllTracksPaused() override;
-    static ConfigKey getFileModifiedControlKey();
-    static ConfigKey getFilePathConfigKey();
-    QString getName() const override;
-
   protected:
-    virtual void writeMetadata(QTextStream& stream, TrackPointer pTrack) = 0;
-    explicit FileListener(UserSettingsPointer pConfig);
-  public slots:
-    void slotFilePathChanged(double value);
-
+  private slots:
+    void slotFileSettingsChanged(double value);
   private:
-    QFile m_file;
-    ControlPushButton m_filePathChanged, m_nowPlayingJustEnabled;
-    UserSettingsPointer m_pConfig;
-};
 
-class SAMFileListener : public FileListener {
-  public:
-    explicit SAMFileListener(UserSettingsPointer pConfig);
-    ~SAMFileListener() override = default;
-    void writeMetadata(QTextStream& stream, TrackPointer pTrack) override;
+    void updateStateFromSettings();
+    void updateFile();
+
+    QFile m_file;
+    ControlPushButton m_COsettingsChanged;
+    UserSettingsPointer m_pConfig;
+    FileSettings m_latestSettings;
 };
