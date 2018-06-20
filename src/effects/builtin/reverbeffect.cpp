@@ -12,6 +12,9 @@ QString ReverbEffect::getId() {
 // static
 EffectManifestPointer ReverbEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
+
+    pManifest->setAddDryToWet(true);
+
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Reverb"));
     pManifest->setAuthor("The Mixxx Team, CAPS Plugins");
@@ -64,10 +67,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     send->setName(QObject::tr("Send"));
     send->setShortName(QObject::tr("Send"));
     send->setDescription(QObject::tr(
-        "How much of the signal to send in to the effect\n"
-        "Lowering this fades out the effect smoothly\n"
-        "Use this to adjust the amount of the effect when the effect unit is in D/W mode\n"
-        "When the effect unit is in D+W mode, keep this turned up all the way"));
+        "How much of the signal to send in to the effect"));
     send->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
@@ -77,21 +77,6 @@ EffectManifestPointer ReverbEffect::getManifest() {
     send->setDefault(0);
     send->setMaximum(1);
 
-    EffectManifestParameterPointer dryWet = pManifest->addParameter();
-    dryWet->setId("dry_wet");
-    dryWet->setName(QObject::tr("Dry/Wet"));
-    dryWet->setShortName(QObject::tr("Dry/Wet"));
-    dryWet->setDescription(QObject::tr(
-        "Mix between the input (dry) and output (wet) of the effect\n"
-        "Lowering this fades out the effect abruptly\n"
-        "Use this to adjust the amount of the effect when the effect unit is in D+W mode"));
-    dryWet->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
-    dryWet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    dryWet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    dryWet->setMinimum(0);
-    dryWet->setDefault(1);
-    dryWet->setMaximum(1);
-
     return pManifest;
 }
 
@@ -99,8 +84,7 @@ ReverbEffect::ReverbEffect(EngineEffect* pEffect)
         : m_pDecayParameter(pEffect->getParameterById("decay")),
           m_pBandWidthParameter(pEffect->getParameterById("bandwidth")),
           m_pDampingParameter(pEffect->getParameterById("damping")),
-          m_pSendParameter(pEffect->getParameterById("send_amount")),
-          m_pDryWetParameter(pEffect->getParameterById("dry_wet")) {
+          m_pSendParameter(pEffect->getParameterById("send_amount")) {
 }
 
 ReverbEffect::~ReverbEffect() {
@@ -112,11 +96,9 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
-                                const GroupFeatureState& groupFeatures,
-                                const EffectChainMixMode mixMode) {
+                                const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(mixMode);
 
     if (!pState || !m_pDecayParameter || !m_pBandWidthParameter || !m_pDampingParameter || !m_pSendParameter) {
         qWarning() << "Could not retrieve all effect parameters";
@@ -127,7 +109,6 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
     const auto bandwidth = m_pBandWidthParameter->value();
     const auto damping = m_pDampingParameter->value();
     const auto send = m_pSendParameter->value();
-    const double wet = m_pDryWetParameter->value();
 
     // Reinitialize the effect when turning it on to prevent replaying the old buffer
     // from the last time the effect was enabled.
@@ -139,5 +120,5 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
     }
     pState->reverb.processBuffer(pInput, pOutput,
                                  bufferParameters.samplesPerBuffer(),
-                                 bandwidth, decay, damping, send, wet);
+                                 bandwidth, decay, damping, send);
 }

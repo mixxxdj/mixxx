@@ -39,12 +39,15 @@ TracksTreeModel::TracksTreeModel(LibraryFeature* pFeature,
 
     TrackDAO& trackDAO(pTrackCollection->getTrackDAO());
     connect(&trackDAO, SIGNAL(forceModelUpdate()), this, SLOT(reloadTree()));
-    connect(&trackDAO, SIGNAL(tracksAdded(QSet<TrackId>)),
-            this, SLOT(reloadTree()));
-    connect(&trackDAO, SIGNAL(tracksRemoved(QSet<TrackId>)),
-            this, SLOT(reloadTree()));
-    connect(&trackDAO, SIGNAL(trackChanged(TrackId)),
-            this, SLOT(reloadTree()));
+// FIXME: This is extremely inefficient! The entire model should not
+// be rebuilt when tracks change. Only the part of the model relevant
+// to those tracks should get updated.
+//     connect(&trackDAO, SIGNAL(tracksAdded(QSet<TrackId>)),
+//             this, SLOT(reloadTree()));
+//     connect(&trackDAO, SIGNAL(tracksRemoved(QSet<TrackId>)),
+//             this, SLOT(reloadTree()));
+//     connect(&trackDAO, SIGNAL(trackChanged(TrackId)),
+//             this, SLOT(reloadTree()));
 
     m_coverQuery << LIBRARYTABLE_COVERART_HASH
                  << LIBRARYTABLE_COVERART_LOCATION

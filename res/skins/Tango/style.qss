@@ -608,7 +608,7 @@ WWidgetGroup {
       image: url(skin:/buttons/btn_vinyl_right_hover.svg) no-repeat top center;
     }
   /* When passthrough is active but Vinyl Controls are hidden,
-    yellow background indicates passthrough, similiar to how
+    yellow background indicates passthrough, similar to how
     the FX expand toggle does */
   #VinylTogglerLeftPassthrough[displayValue="0"] {
     background: #ff8f00;
@@ -1553,7 +1553,7 @@ decks, samplers, mic, aux, fx */
       background-color: #202020;
       selection-background-color: #0f0f0f;
       /* On Linux, this is not applied but font color from WEffectSelector
-      is inherited. On Windows, it must be defined here explicitely: */
+      is inherited. On Windows, it must be defined here explicitly: */
       color: #ccc;
       border: 1px solid #333;
       border-radius: 2px;
@@ -2264,7 +2264,7 @@ QTreeView {
   QTableView:focus { /*
     New Library navigation COs only work if TreeView or TableView have focus.
     Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
-    In conjuction with [Library],MoveFocusBackward/..Forward, some highlight
+    In conjunction with [Library],MoveFocusBackward/..Forward, some highlight
     helps a lot. */
     border-color: #ff6600;
   }

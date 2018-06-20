@@ -42,7 +42,7 @@ const MP4SampleId kSampleBlockIdMin = 1;
 // https://developer.apple.com/library/ios/technotes/tn2258/_index.html
 // "It must also be assumed that without an explicit value, the playback
 // system will trim 2112 samples from the AAC decoder output when starting
-// playback from any point in the bistream."
+// playback from any point in the bitstream."
 const SINT kNumberOfPrefetchFrames = 2112;
 
 // The TrackId is a 1-based index of the tracks in an MP4 file

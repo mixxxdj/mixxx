@@ -120,9 +120,9 @@ bool GLSLWaveformRendererSignal::loadTexture() {
         // Waveform ensures that getTextureSize is a multiple of
         // getTextureStride so there is no rounding here.
         int textureWidth = waveform->getTextureStride();
-        int textureHeigth = waveform->getTextureSize() / waveform->getTextureStride();
+        int textureHeight = waveform->getTextureSize() / waveform->getTextureStride();
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeigth, 0,
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0,
                      GL_RGBA, GL_UNSIGNED_BYTE, data);
         int error = glGetError();
         if (error)
