@@ -504,7 +504,6 @@ WCoverArt {
 QScrollBar {
   border: 1px solid #5C5B5D;
   background-color: #191919;
-  padding: 1px;
   color: #5C5B5D;
   font-size: 8pt;
   }

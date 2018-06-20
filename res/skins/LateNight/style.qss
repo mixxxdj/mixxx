@@ -1428,16 +1428,25 @@ WButtonBar QToolButton {
                                         stop:0 #0f0f0f, 
                                         stop:1 #151515);
   }
-
+/* this applies style to feature buttons */
 WBaseLibrary QPushButton {
   margin: 2px 3px 2px 3px; 
-  padding: 0px;
+  padding: 10px;
   color: #d2d2d2;
   border: 1px solid #585858;
   border-radius: 2px;
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
                                stop:0 #252525, 
                                stop:1 #0f0f0f);
+  }
+  /* for padding we need this. Wtf? */
+  #DlgAutoDJ > QPushButton,
+  #DlgRecording > QPushButton,
+  #DlgAnalysis > QPushButton,
+  #DlgHidden > QPushButton,
+  #DlgHidden > QPushButton,
+  #DlgMissing > QPushButton {
+    padding: 3px 1px 3px 1px;
   }
   WBaseLibrary QPushButton:hover,
   WBaseLibrary QPushButton:focus {
@@ -1461,11 +1470,6 @@ WBaseLibrary QPushButton {
     background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 #840600,
       stop:1 #AD0800);
-  }
-  #DlgRecording > QPushButton#pushButtonAutoDJ:checked {
-    background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-      stop:0 #076A00,
-      stop:1 #098000);
   }
   #DlgAutoDJ > QPushButton#pushButtonAutoDJ:checked,
   #DlgAnalysis > QPushButton#pushButtonAnalyze:checked,

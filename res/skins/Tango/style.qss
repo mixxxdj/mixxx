@@ -1027,12 +1027,6 @@ WBeatSpinBox,
     padding: 1px 0px 0px 0px;
     margin: 0px 15px 0px 0px;
   }
-  #DlgAutoDJ QSpinBox {
-    /* Note(ronso0):
-    Individual padding/margin in AutoDJ feature */
-    padding: -1px 3px -1px 3px;
-    margin: 0px 17px 3px 7px;
-  }
   #DlgAutoDJ QLabel {
     margin: 0px 0px 3px 2px;
   }
@@ -2481,57 +2475,61 @@ WBaseLibrary QPushButton {
   max-height: 22px;
   height: 22px;	*/
   color: #ccc;
-  border-radius: 2px;
   margin: 1px 2px 5px 1px;
-  padding: 1px 3px 1px 3px;/*
-  padding: 3px 6px 3px 6px;*/
+  padding: 2px 3px 2px 3px;
   background-color: #333;
+  border: 1px solid #333;
+  border-radius: 2px;
   }
-  WBaseLibrary QPushButton:hover {
+  WBaseLibrary QPushButton:checked:hover,
+  WBaseLibrary QPushButton#pushButtonRecording:checked:hover {
+    border: 1px solid #eee;
+  }
+  WBaseLibrary QPushButton:!checked:hover {
     border: 1px solid #888;
-    }
-    WBaseLibrary QPushButton:unchecked {
-      color: #888;
-      background-color: #444;
-    }
-  WLibrary QPushButton:checked {
+  }
+  /* Disabled buttons */
+  WBaseLibrary QPushButton:!enabled,
+  WBaseLibrary QWidget:!enabled {
+    color: #666;
+  }
+  /* special feature buttons that start processes	*/
+  WBaseLibrary QPushButton#pushButtonAutoDJ:!checked:hover,
+  WBaseLibrary QPushButton#pushButtonAnalyze:!checked:hover,
+  WBaseLibrary QPushButton#btnPurge:!checked:hover,
+  WBaseLibrary QPushButton#btnUnhide:!checked:hover {
+    border: 1px solid #ff7b00;
+  }
+  WBaseLibrary QPushButton#pushButtonRecording:!checked:hover {
+    border: 1px solid #a90000;
+  }
+  /* neither those */
+  #DlgAutoDJ > QPushButton#pushButtonAutoDJ:checked,
+  #DlgAnalysis > QPushButton#pushButtonAnalyze:checked,
+  #DlgMissing > QPushButton#btnPurge:checked,
+  #DlgHidden > QPushButton#btnPurge:checked,
+  #DlgHidden > QPushButton#btnUnhide:checked,
+  /* nor those reach the active feature buttons*/
+  WBaseLibrary QPushButton#pushButtonAutoDJ:checked,
+  WBaseLibrary QPushButton#pushButtonAnalyze:checked,
+  WBaseLibrary QPushButton#btnPurge:checked,
+  WBaseLibrary QPushButton#btnUnhide:checked {
     color: #000;
-    font-weight: bold;
+    background-color: #ff7b00;
+    }
+  /* 'Start/Stop Recording' button	*/
+  WBaseLibrary QPushButton#pushButtonRecording:checked {
+    color: #dddddd;
+    background-color: #a90000;
+    border: 1px solid #ca0000;
+  }/*
+  WBaseLibrary QPushButton:checked {
+    color: #000;
     background-color: #ff7b00;
     }
     WBaseLibrary QPushButton:checked:hover {
       border: 1px solid #ff3f00;
-    }
-    /* Disabled buttons */
-    WBaseLibrary QPushButton:!enabled,
-    WBaseLibrary QWidget:!enabled {
-      color: #666;
-    }
-  /* Push 'Start/Stop Recording' button and
-    'Enable AutoDJ' button away from skin border	*/
-  QPushButton#pushButtonAutoDJ,
-  QPushButton#pushButtonRecording {
-    margin: 1px 9px 5px 1px;
-  }
-  /* 'Enable AutoDJ' button	*/
-  WBaseLibrary QPushButton#pushButtonAutoDJ:unchecked:hover {
-    background-color: #ff7b00;
-  }
-  /* 'Start/Stop Recording' button	*/
-  WBaseLibrary QPushButton#pushButtonRecording {
-    border: 1px solid #ff6600;
-  }
-  WBaseLibrary QPushButton#pushButtonRecording:unchecked {
-    color: #888;
-    border: 1px solid #444;
-  }
-  WBaseLibrary QPushButton#pushButtonRecording:unchecked:hover,
-  WBaseLibrary QPushButton#pushButtonRecording:checked {
-    color: #dddddd;
-    font-weight: bold;
-    background-color: #a90000;
-    border: 1px solid #ca0000;
-  }
+    }*/
 
 /* Feature pane styling */
 WBaseLibrary QTabWidget,
@@ -2646,6 +2644,7 @@ WBaseLibrary QTabBar::tab {
     background: transparent;
     margin: 0px;
     padding: 0px;
+    border: 0px;
     }
     #LibraryPreviewButton:!checked {
       image: url(skin:/graphics/library_preview_play.png);
