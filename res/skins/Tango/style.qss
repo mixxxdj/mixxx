@@ -51,31 +51,6 @@ WWidgetGroup {
   background-color: rgba(51, 51, 51, 200);
 }
 
-/* splitters between
-    - waveforms & lower skin part
-    - library sidebar & tracks table
-    - library feature tree & cover art */
-#LibrarySplitter::handle:horizontal {
-  image: url(skin:/graphics/splitterHori_handle.svg);
-  width: 6px;
-  }
-  #LibrarySplitter::handle:horizontal:hover,
-  #LibrarySplitter::handle:horizontal:pressed {
-    image: url(skin:/graphics/splitterHori_handle_pressed.svg);
-  }
-  /* splitter between coverArt and tree view */
-  #LibrarySplitter::handle:vertical,
-  #WaveformSplitter::handle:vertical {
-    image: url(skin:/graphics/splitterVert_handle.svg);
-    height: 6px;
-    }
-    #LibrarySplitter::handle:vertical:hover,
-    #LibrarySplitter::handle:vertical:pressed,
-    #WaveformSplitter::handle:vertical:hover,
-    #WaveformSplitter::handle:vertical:pressed {
-      image: url(skin:/graphics/splitterVert_handle_pressed.svg);
-    }
-
 
 
 /* ################################################################
@@ -2019,8 +1994,7 @@ QToolTip {
 ############################################################### */
 
 #LibMiniMaxiButton {
-  margin: 0px 3px 1px 3px;/*
-  background-color: #446971;*/
+  margin: 0px 3px 1px 3px;
   }
   #LibMiniMaxiButton[displayValue="0"] {
     image: url(skin:/buttons/btn_arrow_up.svg) no-repeat center top;
@@ -2036,8 +2010,7 @@ QToolTip {
     }
 
 #LibCoverArtButton {
-  margin: 1px;/*
-  background-color: #446971;*/
+  margin: 1px;
   }
   #LibCoverArtButton:hover {
     background-color: #0f0f0f;
@@ -2050,9 +2023,10 @@ QToolTip {
     image: url(skin:/buttons/btn_lib_cover_on.svg) no-repeat center center;
   }
 
+/* Toggles text labels of libraryr feature buttons.
+  Unused for now */
 #LibLabelButton {
-  margin: 2px;/*
-  background-color: #446971;*/
+  margin: 2px;
   }
   #LibLabelButton[displayValue="0"],
   #LibLabelButton[displayValue="1"]:hover {
@@ -2063,24 +2037,26 @@ QToolTip {
     image: url(skin:/buttons/btn_lib_sideBar_labels_on.svg) no-repeat center center;
   }
 
-/* splitters between treeview and library table */
-#LibrarySplitter::handle:horizontal {
-  image: url(skin:/graphics/splitterHori_handle.png);
+/* splitters between
+    - waveforms & lower skin part
+    - library feature tree & cover art */
+#HorizontalSplitter::handle:horizontal {
+  image: url(skin:/graphics/splitterHori_handle.svg);
   width: 6px;
   }
-  #LibrarySplitter::handle:horizontal:hover,
-  #LibrarySplitter::handle:horizontal:pressed {
-    image: url(skin:/graphics/splitterHori_handle_pressed.png);
+  #HorizontalSplitter::handle:horizontal:hover,
+  #HorizontalSplitter::handle:horizontal:pressed {
+    image: url(skin:/graphics/splitterHori_handle_pressed.svg);
   }
-  /* splitter between coverArt and tree view */
-  #LibrarySplitter::handle:vertical {
-    height: 6px;
-    image: url(skin:/graphics/splitterVert_handle.png);
-    }
-    #LibrarySplitter::handle:vertical:hover,
-    #LibrarySplitter::handle:vertical:pressed {
-      image: url(skin:/graphics/splitterVert_handle_pressed.png);
-    }
+/* splitter between coverArt and library feature pane */
+#VerticalSplitter::handle:vertical {
+  image: url(skin:/graphics/splitterVert_handle.svg);
+  height: 6px;
+  }
+  #VerticalSplitter::handle:vertical:hover,
+  #VerticalSplitter::handle:vertical:pressed {
+    image: url(skin:/graphics/splitterVert_handle_pressed.svg);
+  }
 
 #SidebarButtonsContainer {
   margin-right: 3px;
