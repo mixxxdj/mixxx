@@ -31,11 +31,9 @@ class ControlProxy : public QObject {
             ControlFlags flags = ControlFlag::None);
     virtual ~ControlProxy();
 
-    void initialize(ControlFlags flags = ControlFlag::None);
+    void initialize(const ConfigKey& key, ControlFlags flags = ControlFlag::None);
 
-    const ConfigKey& getKey() const {
-        return m_key;
-    }
+    const ConfigKey& getKey() const;
 
     template<typename Receiver, typename Slot>
     bool connectValueChanged(Receiver receiver,
@@ -202,7 +200,6 @@ class ControlProxy : public QObject {
     }
 
   protected:
-    ConfigKey m_key;
     // Pointer to connected control.
     QSharedPointer<ControlDoublePrivate> m_pControl;
 };
