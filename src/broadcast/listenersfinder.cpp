@@ -26,7 +26,6 @@ QLinkedList<ScrobblingServicePtr> ListenersFinder::getAllServices() const {
 }
 
 ListenersFinder::ListenersFinder(UserSettingsPointer pSettings) {
-    m_servicesHash[fileListenerServiceKey()] =
-            ScrobblingServicePtr(FileListener::makeFileListener
-                                         (FileListener::FileListenerType::SAMBroadcaster,pSettings));
+    m_servicesHash[kfileListenerKey] =
+            ScrobblingServicePtr(new FileListener(pSettings));
 }
