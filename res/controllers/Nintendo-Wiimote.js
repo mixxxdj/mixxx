@@ -30,7 +30,7 @@ function WiimoteController() {
         this.controller.defaultPacket = "coreaccel";
 
         // Core buttons input packet
-        packet = new HIDPacket("buttons",[0x30],3);
+        packet = new HIDPacket("buttons", 0x30);
         packet.addControl("buttons","arrow_left",1,"B",0x1);
         packet.addControl("buttons","arrow_right",1,"B",0x2);
         packet.addControl("buttons","arrow_down",1,"B",0x4);
@@ -45,7 +45,7 @@ function WiimoteController() {
         this.controller.registerInputPacket(packet);
 
         // Core buttons and accelerometer data
-        packet = new HIDPacket("coreaccel",[0x31],6);
+        packet = new HIDPacket("coreaccel", 0x31);
         packet.addControl("coreaccel","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel","arrow_down",1,"B",0x4);
@@ -64,7 +64,7 @@ function WiimoteController() {
 
         // Core buttons and accelerometer data with 8 bytes
         // from extension module
-        packet = new HIDPacket("coreaccel_ext8",[0x32],14);
+        packet = new HIDPacket("coreaccel_ext8", 0x32);
         packet.addControl("coreaccel_ext8","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel_ext8","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel_ext8","arrow_down",1,"B",0x4);
@@ -91,7 +91,7 @@ function WiimoteController() {
 
         // Core buttons and accelerometer data with 12 bytes
         // from IR camera 
-        packet = new HIDPacket("coreaccel_ir12",[0x33],18);
+        packet = new HIDPacket("coreaccel_ir12", 0x33);
         packet.addControl("coreaccel_ir12","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel_ir12","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel_ir12","arrow_down",1,"B",0x4);
@@ -122,7 +122,7 @@ function WiimoteController() {
 
         // Core buttons and 19 bytes from extension module,
         // no accelerometer data
-        packet = new HIDPacket("corebuttons_ext19",[0x34],22);
+        packet = new HIDPacket("corebuttons_ext19", 0x34);
         packet.addControl("corebuttons_ext19","arrow_left",1,"B",0x1);
         packet.addControl("corebuttons_ext19","arrow_right",1,"B",0x2);
         packet.addControl("corebuttons_ext19","arrow_down",1,"B",0x4);
@@ -157,7 +157,7 @@ function WiimoteController() {
 
         // Core buttons, accelerometer and 16 bytes from 
         // extension module
-        packet = new HIDPacket("coreaccel_ext16",[0x35],22);
+        packet = new HIDPacket("coreaccel_ext16", 0x35);
         packet.addControl("coreaccel_ext16","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel_ext16","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel_ext16","arrow_down",1,"B",0x4);
@@ -192,7 +192,7 @@ function WiimoteController() {
 
         // Core buttons, no accelerometer and 10 IR bytes and
         // 9 bytes from extension module
-        packet = new HIDPacket("corebuttons_ir10_ext9",[0x36],22);
+        packet = new HIDPacket("corebuttons_ir10_ext9", 0x36);
         packet.addControl("corebuttons_ir10_ext9","arrow_left",1,"B",0x1);
         packet.addControl("corebuttons_ir10_ext9","arrow_right",1,"B",0x2);
         packet.addControl("corebuttons_ir10_ext9","arrow_down",1,"B",0x4);
@@ -227,7 +227,7 @@ function WiimoteController() {
 
         // Core buttons, accelerometer and 10 IR bytes and
         // 6 bytes from extension module
-        packet = new HIDPacket("coreaccel_ir10_ext6",[0x37],22);
+        packet = new HIDPacket("coreaccel_ir10_ext6", 0x37);
         packet.addControl("coreaccel_ir10_ext6","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel_ir10_ext6","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel_ir10_ext6","arrow_down",1,"B",0x4);
@@ -262,7 +262,7 @@ function WiimoteController() {
 
         // No core buttons, no accelerometer, 21 bytes from
         // extension module
-        packet = new HIDPacket("ext_21",[0x3d],22);
+        packet = new HIDPacket("ext_21", 0x3d);
         packet.addControl("ext_21","extension_1",1,"B");
         packet.addControl("ext_21","extension_2",2,"B");
         packet.addControl("ext_21","extension_3",3,"B");
@@ -288,7 +288,7 @@ function WiimoteController() {
 
         // Interleaved packet 1: core buttons, accelerometer,
         // first 16 bytes from IR camera
-        packet = new HIDPacket("coreaccel_interleaved_1",[0x3e],22);
+        packet = new HIDPacket("coreaccel_interleaved_1", 0x3e);
         packet.addControl("coreaccel_interleaved_1","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel_interleaved_1","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel_interleaved_1","arrow_down",1,"B",0x4);
@@ -323,7 +323,7 @@ function WiimoteController() {
 
         // Interleaved packet 2: core buttons, accelerometer,
         // last 16 bytes from IR camera
-        packet = new HIDPacket("coreaccel_interleaved_2",[0x3f],22);
+        packet = new HIDPacket("coreaccel_interleaved_2", 0x3f);
         packet.addControl("coreaccel_interleaved_2","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel_interleaved_2","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel_interleaved_2","arrow_down",1,"B",0x4);
@@ -358,7 +358,7 @@ function WiimoteController() {
     }
 
     this.registerOutputPackets = function() {
-        packet = new HIDPacket("feedback",[0x11],2);
+        packet = new HIDPacket("feedback", 0x11);
         packet.addControl("state","rumble",1,"B",0x1);
         packet.addControl("state","led_1",1,"B",0x10);
         packet.addControl("state","led_2",1,"B",0x20);
@@ -366,16 +366,16 @@ function WiimoteController() {
         packet.addControl("state","led_4",1,"B",0x80);
         this.controller.registerOutputPacket(packet); 
 
-        packet = new HIDPacket("setreportmode",[0x12],3);
+        packet = new HIDPacket("setreportmode", 0x12);
         packet.addControl("reportmode","continuous",1,"B",0x4);
         packet.addControl("reportmode","code",2,"B");
         this.controller.registerOutputPacket(packet); 
 
-        packet = new HIDPacket("ircamera",[0x13],3);
+        packet = new HIDPacket("ircamera", 0x13);
         packet.addControl("ircontrol","enabled",1,"B",0x4);
         this.controller.registerOutputPacket(packet); 
 
-        packet = new HIDPacket("ircamerastate",[0x1a],3);
+        packet = new HIDPacket("ircamerastate", 0x1a);
         packet.addControl("irstate","enabled",1,"B",0x4);
         this.controller.registerOutputPacket(packet); 
     }

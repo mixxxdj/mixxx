@@ -21,7 +21,7 @@ function PioneerCDJController() {
         var name = undefined;
         var offset = 0;
 
-        packet = new HIDPacket("control",[],20);
+        packet = new HIDPacket("control", 0);
         packet.addControl("hid","eject",0,"B",0x1);
         packet.addControl("hid","previous_track",0,"B",0x4);
         packet.addControl("hid","next_track",0,"B",0x8);
@@ -79,7 +79,7 @@ function PioneerCDJController() {
         // TODO - Sean: this is just example, fill in correct packet
         // size, header bytes control field offesets but bits to make
         // it work.
-        packet = new HIDPacket("lights", [0x1],36);
+        packet = new HIDPacket("lights", 0x1);
         packet.addOutput("hid","screen_acue",4,"B",0x1);
         packet.addOutput("hid","remain",4,"B",0x2);
         packet.addOutput("hid","screen_flag_1",4,"B",0x4);
@@ -142,7 +142,7 @@ function PioneerCDJController() {
         // TODO - Sean: This is arbitrary example packet, fix the
         // bytes to get it working. Need to add a response packet
         // to input packets as well, if we receive acknowledgement
-        packet = new HIDPacket("request_hid_mode",[0x1],0x20);
+        packet = new HIDPacket("request_hid_mode", 0x1);
         packet.addControl("hid","mode",0,"B",1);
         this.controller.registerOutputPacket(packet);
 
@@ -155,7 +155,7 @@ function PioneerCDJController() {
         var chars = 1;
         var offset = 2;
         // Register 2 bytes for each letter, I expect UTF-8 output
-        packet = new HIDPacket("display",[0x2,0x2],2+textlines*chars*2);
+        packet = new HIDPacket("display", 0x2, undefined, [0x2]);
         for (var i=0;i<textlines;i++) {
             for (var c=0;c<chars;c++) {
                 var name = "line_"+(i+1)+"letter_"+(c+1);
@@ -170,7 +170,7 @@ function PioneerCDJController() {
         // anyway when implemented. When I know what data is sent, I
         // will add a helper function to actually do something with it!
         var waveform_packet_datalen = 400;
-        packet = new HIDPacket("waveform",[0x1,0x2],2+waveform_packet_datalen);;
+        packet = new HIDPacket("waveform", 0x1, undefined, [0x2]);;
         for (var i=0;i<waveform_packet_datalen;i++)
             packet.addControl("hid","byte_"+i,i,"B");
         //this.controller.registerOutputPacket(packet);
