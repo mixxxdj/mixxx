@@ -299,8 +299,8 @@ void AutoDJFeature::constructCrateChildModel() {
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
                                       QModelIndex index) {
     TreeItem* pClickedItem = static_cast<TreeItem*>(index.internalPointer());
-    if (m_pCratesTreeItem == pClickedItem) {
-        // The "Crates" parent item was right-clicked.
+    if (m_pCratesTreeItem == pClickedItem || !pClickedItem) {
+        // The "Crates" parent item or empty space was right-clicked.
         // Bring up the context menu.
         QMenu crateMenu;
         crateMenu.setTitle(tr("Add Crate as Track Source"));
