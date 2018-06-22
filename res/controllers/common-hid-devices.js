@@ -6,7 +6,7 @@ function HIDTrackpadDevice() {
 
     this.registerInputPackets = function() {
         // Example how to register a callback directly on a packet
-        packet = new HIDPacket("control",[],4,this.mouseInput);
+        packet = new HIDPacket("control", 0, this.mouseInput);
         packet.addControl("hid","byte_1",3,"B");
         packet.addControl("hid","byte_2",4,"B");
         packet.addControl("hid","byte_3",5,"B");
@@ -42,7 +42,7 @@ function HIDKeyboardDevice() {
     this.controller = new HIDController();
 
     this.registerInputPackets = function() {
-        packet = new HIDPacket("control",[0x1,0x0,0x0],9);
+        packet = new HIDPacket("control", 0x1);
         packet.addControl("hid","keycode_1",3,"B");
         packet.addControl("hid","keycode_2",4,"B");
         packet.addControl("hid","keycode_3",5,"B");

@@ -112,17 +112,24 @@ HIDModifierList.prototype.setCallback = function(name,callback) {
 //
 // One HID input/output packet to register to HIDController
 // name     name of packet
-// header   list of bytes to match from beginning of packet
-// length   packet length
+// reportId report ID of the packet. If the device only uses
+//          one report type, this must be 0.
 // callback function to call when this packet type is input
 //          and is received. If packet callback is set, the
 //          packet is not parsed by delta functions.
 //          callback is not meaningful for output packets
-function HIDPacket(name,header,length,callback) {
+// header   (optional) list of bytes to match from beginning
+//          of packet. Do NOT put the report ID in this; use
+//          the reportId parameter instead.
+function HIDPacket(name, reportId, callback, header) {
     this.name = name;
     this.header = header;
-    this.length = length;
     this.callback = callback;
+
+    this.reportId = 0;
+    if (reportId !== undefined) {
+        this.reportId = reportId;
+    }
 
     this.groups = new Object();
 
@@ -235,13 +242,6 @@ HIDPacket.prototype.getFieldByOffset = function(offset,pack) {
         return undefined;
     }
     var end_offset = offset + this.packSizes[pack];
-    if (end_offset>this.length) {
-        HIDDebug("Invalid offset+pack range " +
-            offset + "-" + end_offset +
-            " for " +  this.length + " byte packet"
-        );
-        return undefined;
-    }
     var group = undefined;
     var field = undefined;
     for (var group_name in this.groups) {
@@ -670,7 +670,7 @@ HIDPacket.prototype.send = function() {
     //  packet_string += packet.data[d].toString(16) + " ";
     //}
     //HIDDebug("packet: " + packet_string);
-    controller.send(packet.data, packet.length, 0);
+    controller.send(packet.data, packet.data.length, packet.reportId);
 }
 
 //
@@ -1023,10 +1023,16 @@ HIDController.prototype.parsePacket = function(data,length) {
     }
     for (var name in this.InputPackets) {
         packet = this.InputPackets[name];
-        if (packet.length!=length) {
+
+        // When the device uses multiple report types with report IDs, hidapi
+        // prepends the report ID to the data sent to Mixxx. If the device
+        // only has a single report type, the HIDPacket constructor sets the
+        // reportId as 0. In this case, hidapi only sends the data of the
+        // report to Mixxx without a report ID.
+        if (packet.reportId !== 0 && packet.reportId !== data[0]) {
             continue;
         }
-        // Check for packet header match against data
+
         for (var header_byte=0;header_byte<packet.header.length;header_byte++) {
             if (packet.header[header_byte]!=data[header_byte]) {
                 packet=undefined;
