@@ -132,6 +132,22 @@
      </layout>
     </widget>
    </item>
+   <item>
+    <widget class="QGroupBox" name="ListenbrainzBox">
+     <property name="title">
+      <string>ListenBrainz options</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QCheckBox" name="enableListenbrainzBox">
+        <property name="text">
+         <string>Enable ListenBrainz metadata broadcast</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>
