@@ -99,9 +99,11 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         }
     }
 
-    kLogger.debug()
-            << "Loading database schema migrations from"
-            << schemaFilename;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "Loading database schema migrations from"
+                << schemaFilename;
+    }
     QDomElement schemaRoot = XmlParse::openXMLFile(schemaFilename, "schema");
     if (schemaRoot.isNull()) {
         kLogger.critical()

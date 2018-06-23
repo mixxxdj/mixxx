@@ -1,4 +1,5 @@
 #include <QDesktopWidget>
+#include <QStyle>
 #include <QWheelEvent>
 
 #include "library/dlgcoverartfullsize.h"

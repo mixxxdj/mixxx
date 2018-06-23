@@ -22,7 +22,7 @@ configuration:
 #  - release
 #  - debug
 environment:
-  ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.1.x-windows/
+  ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.2.x-windows/
   ENVIRONMENTS_PATH: C:\mixxx-buildserver
   matrix:
     - platform: x64

@@ -39,12 +39,15 @@ TracksTreeModel::TracksTreeModel(LibraryFeature* pFeature,
 
     TrackDAO& trackDAO(pTrackCollection->getTrackDAO());
     connect(&trackDAO, SIGNAL(forceModelUpdate()), this, SLOT(reloadTree()));
-    connect(&trackDAO, SIGNAL(tracksAdded(QSet<TrackId>)),
-            this, SLOT(reloadTree()));
-    connect(&trackDAO, SIGNAL(tracksRemoved(QSet<TrackId>)),
-            this, SLOT(reloadTree()));
-    connect(&trackDAO, SIGNAL(trackChanged(TrackId)),
-            this, SLOT(reloadTree()));
+// FIXME: This is extremely inefficient! The entire model should not
+// be rebuilt when tracks change. Only the part of the model relevant
+// to those tracks should get updated.
+//     connect(&trackDAO, SIGNAL(tracksAdded(QSet<TrackId>)),
+//             this, SLOT(reloadTree()));
+//     connect(&trackDAO, SIGNAL(tracksRemoved(QSet<TrackId>)),
+//             this, SLOT(reloadTree()));
+//     connect(&trackDAO, SIGNAL(trackChanged(TrackId)),
+//             this, SLOT(reloadTree()));
 
     m_coverQuery << LIBRARYTABLE_COVERART_HASH
                  << LIBRARYTABLE_COVERART_LOCATION
@@ -111,7 +114,7 @@ QVariant TracksTreeModel::data(const QModelIndex& index, int role) const {
             m_hashToIndex[this].insert(info.type, index);
 
             // Return a temporary icon
-            return QIcon(":/images/library/cover_default.png");
+            return QIcon(":/images/library/cover_default.svg");
         } else {
             // Good luck icon found
             return QIcon(pixmap);
@@ -338,5 +341,5 @@ void TracksTreeModel::addCoverArt(const TracksTreeModel::CoverIndex& index,
     c.source = static_cast<CoverInfo::Source>(source);
     c.type = static_cast<CoverInfo::Type>(type);
     pTree->setCoverInfo(c);
-    pTree->setIcon(QIcon(":/images/library/cover_default.png"));
+    pTree->setIcon(QIcon(":/images/library/cover_default.svg"));
 }

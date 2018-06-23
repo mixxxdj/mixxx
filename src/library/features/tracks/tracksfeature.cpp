@@ -121,12 +121,15 @@ TracksFeature::TracksFeature(UserSettingsPointer pConfig,
 
     m_pChildModel = std::make_unique<LibraryFolderModel>(this,
             m_pTrackCollection, m_pConfig);
-    connect(&m_trackDao, SIGNAL(trackChanged(TrackId)),
-            m_pChildModel.get(), SLOT(reloadTree()));
-    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<TrackId>)),
-            m_pChildModel.get(), SLOT(reloadTree()));
-    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<TrackId>)),
-            m_pChildModel.get(), SLOT(reloadTree()));
+// FIXME: This is extremely inefficient! The entire model should not
+// be rebuilt when tracks change. Only the part of the model relevant
+// to those tracks should get updated.
+//     connect(&m_trackDao, SIGNAL(trackChanged(TrackId)),
+//             m_pChildModel.get(), SLOT(reloadTree()));
+//     connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<TrackId>)),
+//             m_pChildModel.get(), SLOT(reloadTree()));
+//     connect(&m_trackDao, SIGNAL(tracksAdded(QSet<TrackId>)),
+//             m_pChildModel.get(), SLOT(reloadTree()));
 
     m_pLibraryTableModel = make_parented<LibraryTableModel>(this,
             pTrackCollection, "mixxx.db.model.library");
