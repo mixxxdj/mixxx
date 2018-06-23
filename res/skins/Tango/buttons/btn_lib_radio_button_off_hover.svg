@@ -15,7 +15,7 @@
    viewBox="0 0 18 18"
    id="svg2"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="btn_lib_radio_button_on.svg">
+   sodipodi:docname="btn_lib_radio_button_off.svg">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -25,16 +25,16 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="640"
-     inkscape:window-height="480"
-     id="namedview3065"
+     inkscape:window-width="1366"
+     inkscape:window-height="740"
+     id="namedview6"
      showgrid="false"
      inkscape:zoom="13.111111"
-     inkscape:cx="9"
+     inkscape:cx="-0.41949153"
      inkscape:cy="9"
      inkscape:window-x="0"
      inkscape:window-y="0"
-     inkscape:window-maximized="0"
+     inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <metadata
      id="metadata12">
@@ -44,20 +44,14 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
      id="defs10" />
   <path
-     d="m 9,5.6381472 c -1.8557428,0 -3.3618528,1.50611 -3.3618528,3.3618528 0,1.855743 1.50611,3.361853 3.3618528,3.361853 1.855743,0 3.361853,-1.50611 3.361853,-3.361853 0,-1.8557428 -1.50611,-3.3618528 -3.361853,-3.3618528 z"
-     id="path2987"
-     style="fill:#ff8800;fill-opacity:1"
-     inkscape:connector-curvature="0" />
-  <path
-     inkscape:connector-curvature="0"
-     style="fill:#999999;fill-opacity:1"
-     d="M 9,4 C 6.2373571,4 4,6.2373571 4,9 c 0,2.762643 2.2373571,5 5,5 2.762643,0 5,-2.237357 5,-5 C 14,6.2373571 11.762857,4 9,4 z m 0,1 c 2.21,0 4,1.79 4,4 0,2.21 -1.79,4 -4,4 C 6.79,13 5,11.21 5,9 5,6.79 6.79,5 9,5 z"
+     style="fill:#d2d2d2;fill-opacity:1"
+     d="M 9 4 C 6.2373571 4 4 6.2373571 4 9 C 4 11.762643 6.2373571 14 9 14 C 11.762643 14 14 11.762643 14 9 C 14 6.2373571 11.762857 4 9 4 z M 9 5 C 11.21 5 13 6.79 13 9 C 13 11.21 11.21 13 9 13 C 6.79 13 5 11.21 5 9 C 5 6.79 6.79 5 9 5 z "
      id="path2985" />
 </svg>
