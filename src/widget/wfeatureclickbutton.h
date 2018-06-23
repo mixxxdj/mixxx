@@ -45,13 +45,11 @@ class WFeatureClickButton : public QToolButton
   private slots:
 
     void slotClicked();
-    void slotTextDisplayChanged(double value);
 
   private:
 
     static const int kHoverTime;
 
-    ControlProxy m_textControl;
     LibraryFeature* m_pFeature;
     QBasicTimer m_hoverTimer;
     bool m_mousEntered;

@@ -7,7 +7,6 @@ const int WFeatureClickButton::kHoverTime = 250; // milliseconds
 
 WFeatureClickButton::WFeatureClickButton(LibraryFeature* pFeature, QWidget* parent)
         : QToolButton(parent),
-          m_textControl(ConfigKey("[Library]", "show_icon_text"), this),
           m_pFeature(pFeature) {
     VERIFY_OR_DEBUG_ASSERT(pFeature != nullptr) {
         return;
@@ -17,13 +16,7 @@ WFeatureClickButton::WFeatureClickButton(LibraryFeature* pFeature, QWidget* pare
     connect(this, SIGNAL(clicked()), this, SLOT(slotClicked()));
 
     setIcon(m_pFeature->getIcon());
-    m_textControl.connectValueChanged(SLOT(slotTextDisplayChanged(double)));
-
-    if (m_textControl.valid()) {
-        slotTextDisplayChanged(m_textControl.get());
-    } else {
-        slotTextDisplayChanged(1.0);
-    }
+    setToolTip(m_pFeature->title().toString());
 
     setFocusPolicy(Qt::ClickFocus);
 }
@@ -95,16 +88,6 @@ void WFeatureClickButton::timerEvent(QTimerEvent* event) {
 
 void WFeatureClickButton::slotClicked() {
     emit(clicked(m_pFeature));
-}
-
-void WFeatureClickButton::slotTextDisplayChanged(double value) {
-    if (value < 1.0) {
-        setText("");
-        setToolButtonStyle(Qt::ToolButtonIconOnly);
-    } else {
-        setText(m_pFeature->title().toString());
-        setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    }
 }
 
 void WFeatureClickButton::keyPressEvent(QKeyEvent* event) {
