@@ -1049,6 +1049,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefwaveformdlg.ui
   src/preferences/effectchainpresetlistmodel.cpp
   src/preferences/effectmanifesttablemodel.cpp
+  src/preferences/metadatafilesettings.cpp
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp

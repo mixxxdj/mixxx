@@ -4,13 +4,13 @@
 #include "broadcast/scrobblingservice.h"
 
 namespace {
-    const QString kfileListenerKey = "FileListener";
+const QString kfileListenerKey = "FileListener";
 }
 
 class ListenersFinder {
   public:
     static ListenersFinder& instance(UserSettingsPointer pSettings);
-    ScrobblingServicePtr getService(const QString &serviceName) const;
+    ScrobblingServicePtr getService(const QString& serviceName) const;
     QLinkedList<ScrobblingServicePtr> getAllServices() const;
 
   private:
