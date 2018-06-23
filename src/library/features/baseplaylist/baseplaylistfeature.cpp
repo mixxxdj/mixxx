@@ -1,3 +1,4 @@
+#include <QAction>
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QFileInfo>
