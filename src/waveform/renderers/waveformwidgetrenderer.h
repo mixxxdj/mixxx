@@ -99,7 +99,7 @@ class WaveformWidgetRenderer {
     }
 
     void setPlayMarkerPosition(double newPos) {
-        m_playMarkerPosition = math_clamp(newPos, 0.1, 0.9);
+        m_playMarkerPosition = math_clamp(newPos, 0.0, 1.0);
     }
 
   protected:
