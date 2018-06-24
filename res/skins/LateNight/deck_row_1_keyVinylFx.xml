@@ -86,37 +86,7 @@
         </Connection>
       </PushButton>
 
-      <WidgetGroup>  <!-- spacer -->
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children></Children>
-      </WidgetGroup>
-
       <Template src="skin:vinyl_controls.xml"/>
-
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-	 <Children>
-          <NumberBpm>
-            <TooltipId>visual_bpm</TooltipId>
-            <Size>40f,22f</Size>
-            <Channel><Variable name="channum" /></Channel>
-            <NumberOfDigits>2</NumberOfDigits>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-            </Connection>
-          </NumberBpm>
- 	  <Label>
-            <TooltipId>text</TooltipId>
-            <Size>27f,22f</Size>
-            <Text>BPM</Text>
-          </Label>
-	</Children>
-       <Connection>
-        <ConfigKey persist="false">[Master],show_bpm_in_top_bar</ConfigKey>
-        <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
 
       <WidgetGroup>  <!-- spacer -->
         <Layout>horizontal</Layout>
@@ -128,9 +98,30 @@
         <Layout>horizontal</Layout>
           <ObjectName>AlignRightTop</ObjectName>
            <Children>
+
+			  <WidgetGroup>
+				<Layout>horizontal</Layout>
+          		<ObjectName>AlignCenter</ObjectName>
+				 <Children>
+					  <NumberBpm>
+						<TooltipId>visual_bpm</TooltipId>
+						<Size>30f,10f</Size>
+						<Channel><Variable name="channum" /></Channel>
+						<NumberOfDigits>1</NumberOfDigits>
+						<Connection>
+						  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+						</Connection>
+					  </NumberBpm>
+				</Children>
+			   <Connection>
+				<ConfigKey persist="false">[Master],show_bpm_in_top_bar</ConfigKey>
+				<BindProperty>visible</BindProperty>
+				</Connection>
+			  </WidgetGroup>
+
             <!-- FX buttons 1-4 -->
             <PushButton>
-              <Size>30f,22f</Size>
+              <Size>28f,22f</Size>
               <TooltipId>EffectUnit_deck_enabled</TooltipId>
               <ObjectName>FxAssignButton</ObjectName>
               <NumberStates>2</NumberStates>
@@ -149,7 +140,7 @@
             </PushButton>
 
             <PushButton>
-              <Size>30f,22f</Size>
+              <Size>28f,22f</Size>
               <TooltipId>EffectUnit_deck_enabled</TooltipId>
               <ObjectName>FxAssignButton</ObjectName>
               <NumberStates>2</NumberStates>
@@ -175,7 +166,7 @@
               </Connection>
               <Children>
                 <PushButton>
-                  <Size>30f,22f</Size>
+                  <Size>28f,22f</Size>
                   <TooltipId>EffectUnit_deck_enabled</TooltipId>
                   <ObjectName>FxAssignButton</ObjectName>
                   <NumberStates>2</NumberStates>
@@ -194,7 +185,7 @@
                 </PushButton>
 
                 <PushButton>
-                  <Size>30f,22f</Size>
+                  <Size>28f,22f</Size>
                   <TooltipId>EffectUnit_deck_enabled</TooltipId>
                   <ObjectName>FxAssignButton</ObjectName>
                   <NumberStates>2</NumberStates>
