@@ -51,7 +51,10 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
           m_config(this),
           m_pErrorDevice(nullptr),
           m_underflowHappened(0),
-          m_underflowUpdateCount(0) {
+          m_underflowUpdateCount(0),
+          m_masterAudioLatencyOverloadCount("[Master]",
+                  "audio_latency_overload_count"),
+          m_masterAudioLatencyOverload("[Master]", "audio_latency_overload") {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
     m_pControlObjectSoundStatusCO = new ControlObject(
@@ -60,12 +63,6 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
 
     m_pControlObjectVinylControlGainCO = new ControlObject(
             ConfigKey(VINYL_PREF_KEY, "gain"));
-
-    m_pMasterAudioLatencyOverloadCount = new ControlProxy("[Master]",
-            "audio_latency_overload_count");
-
-    m_pMasterAudioLatencyOverload = new ControlProxy("[Master]",
-            "audio_latency_overload");
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back(44100);
@@ -101,8 +98,6 @@ SoundManager::~SoundManager() {
 
     delete m_pControlObjectSoundStatusCO;
     delete m_pControlObjectVinylControlGainCO;
-    delete m_pMasterAudioLatencyOverloadCount;
-    delete m_pMasterAudioLatencyOverload;
 }
 
 QList<SoundDevicePointer> SoundManager::getDeviceList(
@@ -355,7 +350,7 @@ SoundDeviceError SoundManager::setupDevices() {
     // compute the new one then atomically hand off below.
     SoundDevicePointer pNewMasterClockRef;
 
-    m_pMasterAudioLatencyOverloadCount->set(0);
+    m_masterAudioLatencyOverloadCount.set(0);
 
     // load with all configured devices.
     // all found devices are removed below
@@ -692,9 +687,9 @@ int SoundManager::getConfiguredDeckCount() const {
 void SoundManager::processUnderflowHappened() {
     if (m_underflowUpdateCount == 0) {
         if (atomicLoadRelaxed(m_underflowHappened)) {
-            m_pMasterAudioLatencyOverload->set(1.0);
-            m_pMasterAudioLatencyOverloadCount->set(
-                    m_pMasterAudioLatencyOverloadCount->get() + 1);
+            m_masterAudioLatencyOverload.set(1.0);
+            m_masterAudioLatencyOverloadCount.set(
+                    m_masterAudioLatencyOverloadCount.get() + 1);
             m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_config.getSampleRate()
                     / m_config.getFramesPerBuffer() / 1000;
 
@@ -702,7 +697,7 @@ void SoundManager::processUnderflowHappened() {
                                      // but that is OK, because we count only
                                      // 1 underflow each 500 ms
         } else {
-            m_pMasterAudioLatencyOverload->set(0.0);
+            m_masterAudioLatencyOverload.set(0.0);
         }
     } else {
         --m_underflowUpdateCount;

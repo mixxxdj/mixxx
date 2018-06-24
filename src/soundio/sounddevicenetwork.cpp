@@ -31,11 +31,12 @@ const mixxx::Logger kLogger("SoundDeviceNetwork");
 } // namespace
 
 SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
-                                       SoundManager *sm,
-                                       QSharedPointer<EngineNetworkStream> pNetworkStream)
+        SoundManager* sm,
+        QSharedPointer<EngineNetworkStream> pNetworkStream)
         : SoundDevice(config, sm),
           m_pNetworkStream(pNetworkStream),
           m_inputDrift(false),
+          m_masterAudioLatencyUsage("[Master]", "audio_latency_usage"),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_denormals(false),
           m_targetTime(0) {
@@ -46,9 +47,6 @@ SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
     m_strDisplayName = QObject::tr("Network stream");
     m_iNumInputChannels = pNetworkStream->getNumInputChannels();
     m_iNumOutputChannels = pNetworkStream->getNumOutputChannels();
-
-    m_pMasterAudioLatencyUsage = std::make_unique<ControlProxy>("[Master]",
-            "audio_latency_usage");
 }
 
 SoundDeviceNetwork::~SoundDeviceNetwork() {
@@ -492,7 +490,7 @@ void SoundDeviceNetwork::updateAudioLatencyUsage() {
     if (m_framesSinceAudioLatencyUsageUpdate
             > (m_dSampleRate / CPU_USAGE_UPDATE_RATE)) {
         double secInAudioCb = m_timeInAudioCallback.toDoubleSeconds();
-        m_pMasterAudioLatencyUsage->set(secInAudioCb /
+        m_masterAudioLatencyUsage.set(secInAudioCb /
                 (m_framesSinceAudioLatencyUsageUpdate / m_dSampleRate));
         m_timeInAudioCallback = mixxx::Duration::empty();
         m_framesSinceAudioLatencyUsageUpdate = 0;
