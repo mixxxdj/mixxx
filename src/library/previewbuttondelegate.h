@@ -1,41 +1,40 @@
 #ifndef PREVIEWBUTTONDELEGATE_H
 #define PREVIEWBUTTONDELEGATE_H
 
-#include <QStyledItemDelegate>
 #include <QPushButton>
-#include <QTableView>
 
+#include "library/tableitemdelegate.h"
 #include "track/track.h"
 
 class ControlProxy;
 
-class PreviewButtonDelegate : public QStyledItemDelegate {
+class PreviewButtonDelegate : public TableItemDelegate {
   Q_OBJECT
 
   public:
-    explicit PreviewButtonDelegate(QObject* parent = NULL, int column = 0);
+    explicit PreviewButtonDelegate(QTableView* parent, int column);
     virtual ~PreviewButtonDelegate();
 
-    QWidget* createEditor(QWidget *parent,
-                          const QStyleOptionViewItem &option,
-                          const QModelIndex &index) const;
+    QWidget* createEditor(QWidget* parent,
+                          const QStyleOptionViewItem& option,
+                          const QModelIndex& index) const;
 
-    void setEditorData(QWidget *editor, const QModelIndex &index) const;
-    void setModelData(QWidget *editor, QAbstractItemModel *model,
+    void setEditorData(QWidget* editor, const QModelIndex& index) const;
+    void setModelData(QWidget* editor, QAbstractItemModel* model,
                       const QModelIndex &index) const;
-    void paint(QPainter *painter, const QStyleOptionViewItem &option,
-               const QModelIndex &index) const;
+    void paintItem(QPainter* painter, const QStyleOptionViewItem& option,
+               const QModelIndex& index) const;
     QSize sizeHint(const QStyleOptionViewItem &option,
-                   const QModelIndex &index) const;
-    void updateEditorGeometry(QWidget *editor,const QStyleOptionViewItem &option,
-                              const QModelIndex &index) const;
+                   const QModelIndex& index) const;
+    void updateEditorGeometry(QWidget* editor,const QStyleOptionViewItem& option,
+                              const QModelIndex& index) const;
 
   signals:
     void loadTrackToPlayer(TrackPointer Track, QString group, bool play);
     void buttonSetChecked(bool);
 
   public slots:
-    void cellEntered(const QModelIndex &index);
+    void cellEntered(const QModelIndex& index);
     void buttonClicked();
     void previewDeckPlayChanged(double v);
 

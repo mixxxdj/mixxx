@@ -1587,7 +1587,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="163"/>
         <source>Mid EQ</source>
-        <translation>Ekvalizér středů</translation>
+        <translation>Středový ekvalizér</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="162"/>
@@ -2390,7 +2390,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="419"/>
         <source>Go to the currently selected item</source>
-        <translation type="unfinished"/>
+        <translation>Jít na nyní vybranou položku</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="420"/>
@@ -2929,12 +2929,12 @@
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="104"/>
         <source>Credits</source>
-        <translation type="unfinished"/>
+        <translation>Zásluhy</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="130"/>
         <source>License</source>
-        <translation type="unfinished"/>
+        <translation>Povolení</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="152"/>
@@ -4265,12 +4265,12 @@ Použít nastavení a pokračovat?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="252"/>
         <source>Effect options</source>
-        <translation type="unfinished"/>
+        <translation>Volby pro efekty</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="258"/>
         <source>Load behavior</source>
-        <translation type="unfinished"/>
+        <translation>Nahrát chování</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="267"/>
@@ -4743,12 +4743,12 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="39"/>
         <source>Use the same EQ filter for all decks</source>
-        <translation>Použít stejný filtr pro opravu kmitočtu na všechny přehrávače</translation>
+        <translation>Použít stejný filtr pro opravu kmitočtu (filtr ekvalizéru) na všechny přehrávače</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="45"/>
         <source>Uncheck to allow different decks to use different EQ effects.</source>
-        <translation>Zrušit zaškrtnutí, aby mohly být v různých přehrávačích používány různé efekty na opravu kmitočtu.</translation>
+        <translation>Zrušit zaškrtnutí, aby mohly být v různých přehrávačích používány různé efekty na opravu kmitočtu (efekty ekvalizéru).</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="77"/>
@@ -4763,7 +4763,7 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="103"/>
         <source>High Shelf EQ</source>
-        <translation>Ekvalizér vysokého prahu</translation>
+        <translation>Ekvalizér prahu výšek</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="150"/>
@@ -4815,7 +4815,7 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="202"/>
         <source>Low Shelf EQ</source>
-        <translation>Ekvalizér nízkého prahu</translation>
+        <translation>Ekvalizér prahu hloubek</translation>
     </message>
 </context>
 <context>
@@ -5288,7 +5288,7 @@ a umožní vám upravit tóninu pro libozvučné míchání.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="255"/>
         <source>Edit metadata after clicking selected track</source>
-        <translation type="unfinished"/>
+        <translation>Upravit popisná data po klepnutí na vybranou stopu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="268"/>
@@ -5795,7 +5795,7 @@ Cílová hlasitost zvuku je přibližná a předpokládá se, že předzesílen�
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="113"/>
         <source>Master and booth outputs</source>
-        <translation>Hlavní výstup a výstup z budky</translation>
+        <translation>Hlavní výstup a výstup kukaně</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="115"/>
@@ -5929,7 +5929,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="197"/>
         <source>Booth Delay</source>
-        <translation>Zpoždění budky</translation>
+        <translation>Zpoždění kukaně</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="345"/>
@@ -6224,7 +6224,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="172"/>
         <source>Visual gain of the middle frequencies</source>
-        <translation>Viditelné zesílení středních kmitočtů</translation>
+        <translation>Viditelné zesílení středových kmitočtů</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="338"/>
@@ -7925,7 +7925,7 @@ Chcete nyní kvůli souborům s obaly prohledat knihovnu?</translation>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
         <source>Booth</source>
-        <translation>Budka</translation>
+        <translation>Kukaň</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
@@ -8060,7 +8060,7 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
     <message>
         <location filename="../../src/effects/native/bitcrushereffect.cpp" line="45"/>
         <source>The sample rate to which the signal is downsampled</source>
-        <translation type="unfinished"/>
+        <translation>Vzorkovací kmitočet, na nějž je signál převzorkován.</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/echoeffect.cpp" line="31"/>
@@ -8111,7 +8111,9 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
         <source>Delay time
 1/8 - 2 beats if tempo is detected
 1/8 - 2 seconds if no tempo is detected</source>
-        <translation type="unfinished"/>
+        <translation>Čas zpoždění
+1/8 - 2 doby, pokud je zjištěno tempo
+1/8 - 2 sekundy, pokud není zjištěno žádné tempo</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/echoeffect.cpp" line="58"/>
@@ -8161,7 +8163,7 @@ Pro zrušení této činnosti, stiskněte Zrušit v souborovém dialogu.</transl
     <message>
         <location filename="../../src/effects/native/filtereffect.cpp" line="22"/>
         <source>Allows only high or low frequencies to play.</source>
-        <translation type="unfinished"/>
+        <translation>Povolí přehrávání pouze vysokých nebo nízkých kmitočtů.</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/filtereffect.cpp" line="28"/>
@@ -8288,7 +8290,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
         <location filename="../../src/effects/native/flangereffect.cpp" line="91"/>
         <location filename="../../src/effects/native/flangereffect.cpp" line="92"/>
         <source>Mix</source>
-        <translation type="unfinished"/>
+        <translation>Míchat</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="65"/>
@@ -8512,7 +8514,7 @@ Higher values result in less attenuation of high frequencies.</source>
     <message>
         <location filename="../../src/effects/native/equalizer_util.h" line="83"/>
         <source>To adjust frequency shelves, go to Preferences -&gt; Equalizers.</source>
-        <translation type="unfinished"/>
+        <translation>Na upravení kmitočtových úrovní se podívejte do Nastavení → Ekvalizéry.</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/graphiceqeffect.cpp" line="15"/>
@@ -8994,7 +8996,7 @@ a higher Q affects a narrower band of frequencies.</source>
     <message>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="29"/>
         <source>How much the effect changes the volume</source>
-        <translation type="unfinished"/>
+        <translation>Nakolik efekt změní hlasitost</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="41"/>
@@ -9135,7 +9137,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="36"/>
         <source>Save Sampler Bank</source>
-        <translation>Uložit rejstřík vzorkovače</translation>
+        <translation>Uložit banku vzorkovače</translation>
     </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="34"/>
@@ -9147,27 +9149,27 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="56"/>
         <source>Error Saving Sampler Bank</source>
-        <translation>Chyba při ukládání rejstříku vzorkovače</translation>
+        <translation>Chyba při ukládání banky vzorkovače</translation>
     </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="57"/>
         <source>Could not write the sampler bank to &apos;%1&apos;.</source>
-        <translation>Nepodařilo se zapsat rejstřík vzorkovače do &apos;%1&apos;.</translation>
+        <translation>Nepodařilo se zapsat banku vzorkovače do &apos;%1&apos;.</translation>
     </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="117"/>
         <source>Load Sampler Bank</source>
-        <translation>Nahrát rejstřík vzorkovače</translation>
+        <translation>Nahrát banku vzorkovače</translation>
     </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="126"/>
         <source>Error Reading Sampler Bank</source>
-        <translation>Chyba při nahrávání rejstříku vzorkovače</translation>
+        <translation>Chyba při nahrávání banky vzorkovače</translation>
     </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="127"/>
         <source>Could not open the sampler bank file &apos;%1&apos;.</source>
-        <translation>Nepodařilo se otevřít soubor rejstříku vzorkovače &apos;%1&apos;.</translation>
+        <translation>Nepodařilo se otevřít soubor banky vzorkovače &apos;%1&apos;.</translation>
     </message>
 </context>
 <context>
@@ -9677,12 +9679,12 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="170"/>
         <source>Booth Gain</source>
-        <translation type="unfinished"/>
+        <translation>Zesílení kukaně</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="171"/>
         <source>Adjusts the booth output gain.</source>
-        <translation type="unfinished"/>
+        <translation>Upraví výstupní zesílení kukaně.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="175"/>
@@ -9983,12 +9985,12 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="312"/>
         <source>Mid EQ</source>
-        <translation>Ekvalizér středů</translation>
+        <translation>Středový ekvalizér</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="313"/>
         <source>Adjusts the gain of the mid EQ filter.</source>
-        <translation>Upraví zesílení filtru středů.</translation>
+        <translation>Upraví zesílení středového filtru ekvalizéru.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="317"/>
@@ -10013,17 +10015,17 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="324"/>
         <source>Holds the gain of the high EQ to zero while active.</source>
-        <translation>Když je zapnuto, vynutí zesílení vyrovnávače útlumu výšek na nulu.</translation>
+        <translation>Když je zapnuto, drží zesílení ekvalizéru výšek na nule.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="328"/>
         <source>Mid EQ Kill</source>
-        <translation>Zastavení kmitočtové opravy středů</translation>
+        <translation>Potlačení středů</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="329"/>
         <source>Holds the gain of the mid EQ to zero while active.</source>
-        <translation>Když je zapnuto, vynutí zesílení vyrovnávače útlumu středů na nulu.</translation>
+        <translation>Když je zapnuto, drží zesílení středového ekvalizéru na nule.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="333"/>
@@ -10033,7 +10035,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="334"/>
         <source>Holds the gain of the low EQ to zero while active.</source>
-        <translation>Když je zapnuto, vynutí zesílení vyrovnávače útlumu hloubek na nulu.</translation>
+        <translation>Když je zapnuto, drží zesílení ekvalizéru hloubek na nule.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="337"/>
@@ -10340,7 +10342,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="885"/>
         <source>Save Sampler Bank</source>
-        <translation>Uložit rejstřík vzorkovače</translation>
+        <translation>Uložit banku vzorkovače</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="886"/>
@@ -10350,7 +10352,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="889"/>
         <source>Load Sampler Bank</source>
-        <translation>Nahrát rejstřík vzorkovače</translation>
+        <translation>Nahrát banku vzorkovače</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="890"/>
@@ -10635,13 +10637,13 @@ Fully right: end of the effect period</source>
         <location filename="../../src/skin/tooltips.cpp" line="851"/>
         <location filename="../../src/skin/tooltips.cpp" line="875"/>
         <source>Equalizer Parameter Kill</source>
-        <translation>Umlčení parametru vyrovnávače útlumu</translation>
+        <translation>Potlačení parametru ekvalizéru</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="852"/>
         <location filename="../../src/skin/tooltips.cpp" line="876"/>
         <source>Holds the gain of the EQ to zero while active.</source>
-        <translation>Když je zapnuto, podrží zesílení vyrovnávače útlumu na nule.</translation>
+        <translation>Když je zapnuto, drží zesílení ekvalizéru na nule.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="857"/>
@@ -10661,17 +10663,17 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="869"/>
         <source>Equalizer Parameter</source>
-        <translation>Parametr vyrovnávače útlumu</translation>
+        <translation>Parametr ekvalizéru</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="870"/>
         <source>Adjusts the gain of the EQ filter.</source>
-        <translation>Upraví zesílení filtru vyrovnávače útlumu.</translation>
+        <translation>Upraví zesílení filtru ekvalizéru.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="872"/>
         <source>Hint: Change the default EQ mode in Preferences -&gt; Equalizers.</source>
-        <translation>Rada: Změňte výchozí režim vyrovnávače útlumu v Nastavení → Ekvalizéry.</translation>
+        <translation>Rada: Změňte výchozí režim ekvalizéru v Nastavení → Ekvalizéry.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="368"/>

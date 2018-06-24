@@ -75,8 +75,11 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
             }
             return true;
         } else {
-            kLogger.debug()
-                    << "Crate not found by name:" << name;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Crate not found by name:"
+                        << name;
+            }
         }
     }
     return false;
@@ -285,8 +288,11 @@ bool CrateStorage::onDeletingCrate(
             return false;
         }
         if (query.numRowsAffected() <= 0) {
-            kLogger.debug()
-                    << "Deleting empty crate with id" << crateId;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Deleting empty crate with id"
+                        << crateId;
+            }
         }
     }
     {

@@ -389,6 +389,8 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex&
 
     CrateId crateId(crateIdFromIndex(index));
     if (!crateId.isValid()) {
+        // show the same context menu as if root item was right clicked
+        onRightClick(globalPos);
         return;
     }
 

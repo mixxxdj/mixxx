@@ -2,8 +2,10 @@
 
 #include "effects/effectrack.h"
 #include "effects/effectxmlelements.h"
+#include "effects/effectslot.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
+#include "control/controlencoder.h"
 #include "mixer/playermanager.h"
 #include "util/math.h"
 #include "util/xml.h"
@@ -47,11 +49,11 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
     m_pControlChainSuperParameter->set(0.0);
     m_pControlChainSuperParameter->setDefaultValue(0.0);
 
-    m_pControlChainInsertionType = new ControlPushButton(ConfigKey(m_group, "insertion_type"));
-    m_pControlChainInsertionType->setButtonMode(ControlPushButton::TOGGLE);
-    m_pControlChainInsertionType->setStates(static_cast<double>(EffectChainInsertionType::Num_Insertion_Types));
-    connect(m_pControlChainInsertionType, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlChainInsertionType(double)));
+    m_pControlChainMixMode = new ControlPushButton(ConfigKey(m_group, "mix_mode"));
+    m_pControlChainMixMode->setButtonMode(ControlPushButton::TOGGLE);
+    m_pControlChainMixMode->setStates(static_cast<int>(EffectChainMixMode::NumMixModes));
+    connect(m_pControlChainMixMode, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlChainMixMode(double)));
 
     m_pControlChainNextPreset = new ControlPushButton(ConfigKey(m_group, "next_chain"));
     connect(m_pControlChainNextPreset, SIGNAL(valueChanged(double)),
@@ -96,7 +98,7 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainEnabled;
     delete m_pControlChainMix;
     delete m_pControlChainSuperParameter;
-    delete m_pControlChainInsertionType;
+    delete m_pControlChainMixMode;
     delete m_pControlChainPrevPreset;
     delete m_pControlChainNextPreset;
     delete m_pControlChainSelector;
@@ -147,8 +149,8 @@ void EffectChainSlot::slotChainMixChanged(double mix) {
     emit(updated());
 }
 
-void EffectChainSlot::slotChainInsertionTypeChanged(EffectChainInsertionType type) {
-    m_pControlChainInsertionType->set(static_cast<double>(type));
+void EffectChainSlot::slotChainMixModeChanged(EffectChainMixMode mixMode) {
+    m_pControlChainMixMode->set(static_cast<double>(mixMode));
     emit(updated());
 }
 
@@ -184,8 +186,8 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber,
         }
 
         m_pControlNumEffects->forceSet(math_min(
-            static_cast<unsigned int>(m_slots.size()),
-            m_pEffectChain->numEffects()));
+                static_cast<unsigned int>(m_slots.size()),
+                m_pEffectChain->numEffects()));
 
         if (shouldEmit) {
             emit(updated());
@@ -208,14 +210,14 @@ void EffectChainSlot::loadEffectChainToSlot(EffectChainPointer pEffectChain) {
                 this, SLOT(slotChainEnabledChanged(bool)));
         connect(m_pEffectChain.data(), SIGNAL(mixChanged(double)),
                 this, SLOT(slotChainMixChanged(double)));
-        connect(m_pEffectChain.data(), SIGNAL(insertionTypeChanged(EffectChainInsertionType)),
-                this, SLOT(slotChainInsertionTypeChanged(EffectChainInsertionType)));
+        connect(m_pEffectChain.data(), SIGNAL(mixModeChanged(EffectChainMixMode)),
+                this, SLOT(slotChainMixModeChanged(EffectChainMixMode)));
         connect(m_pEffectChain.data(), SIGNAL(channelStatusChanged(const QString&, bool)),
                 this, SLOT(slotChainChannelStatusChanged(const QString&, bool)));
 
         m_pControlChainLoaded->forceSet(true);
-        m_pControlChainInsertionType->set(
-                static_cast<double>(m_pEffectChain->insertionType()));
+        m_pControlChainMixMode->set(
+                static_cast<double>(m_pEffectChain->mixMode()));
 
         // Mix and enabled channels are persistent properties of the chain slot,
         // not of the chain. Propagate the current settings to the chain.
@@ -277,8 +279,8 @@ void EffectChainSlot::clear() {
     }
     m_pControlNumEffects->forceSet(0.0);
     m_pControlChainLoaded->forceSet(0.0);
-    m_pControlChainInsertionType->set(
-            static_cast<double>(EffectChainInsertionType::Insert));
+    m_pControlChainMixMode->set(
+            static_cast<double>(EffectChainMixMode::DrySlashWet));
     emit(updated());
 }
 
@@ -394,12 +396,12 @@ void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
     }
 }
 
-void EffectChainSlot::slotControlChainInsertionType(double v) {
+void EffectChainSlot::slotControlChainMixMode(double v) {
     // Intermediate cast to integer is needed for VC++.
-    EffectChainInsertionType type = static_cast<EffectChainInsertionType>(int(v));
+    EffectChainMixMode type = static_cast<EffectChainMixMode>(int(v));
     (void)v; // this avoids a false warning with g++ 4.8.1
-    if (m_pEffectChain && type < EffectChainInsertionType::Num_Insertion_Types) {
-        m_pEffectChain->setInsertionType(type);
+    if (m_pEffectChain && type < EffectChainMixMode::NumMixModes) {
+        m_pEffectChain->setMixMode(type);
     }
 }
 
@@ -457,10 +459,10 @@ QDomElement EffectChainSlot::toXml(QDomDocument* doc) const {
             m_pEffectChain->name());
     XmlParse::addElement(*doc, chainElement, EffectXml::ChainDescription,
             m_pEffectChain->description());
-    XmlParse::addElement(*doc, chainElement, EffectXml::ChainInsertionType,
-            EffectChain::insertionTypeToString(
-                    static_cast<EffectChainInsertionType>(
-                            static_cast<int>(m_pControlChainInsertionType->get()))));
+    XmlParse::addElement(*doc, chainElement, EffectXml::ChainMixMode,
+            EffectChain::mixModeToString(
+                    static_cast<EffectChainMixMode>(
+                            static_cast<int>(m_pControlChainMixMode->get()))));
     XmlParse::addElement(*doc, chainElement, EffectXml::ChainSuperParameter,
             QString::number(m_pControlChainSuperParameter->get()));
 
@@ -486,7 +488,7 @@ void EffectChainSlot::loadChainSlotFromXml(const QDomElement& effectChainElement
         return;
     }
 
-    // FIXME: insertion type is set in EffectChain::createFromXml
+    // FIXME: mix mode is set in EffectChain::createFromXml
 
     m_pControlChainSuperParameter->set(XmlParse::selectNodeDouble(
                                           effectChainElement,

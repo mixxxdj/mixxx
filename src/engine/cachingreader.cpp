@@ -17,7 +17,7 @@ mixxx::Logger kLogger("CachingReader");
 
 // This is the default hint frameCount that is adopted in case of Hint::kFrameCountForward and
 // Hint::kFrameCountBackward count is provided. It matches 23 ms @ 44.1 kHz
-// TODO() Do we suffer chache misses if we use an audio buffer of above 23 ms?
+// TODO() Do we suffer cache misses if we use an audio buffer of above 23 ms?
 const SINT kDefaultHintFrames = 1024;
 
 // currently CachingReaderWorker::kCachingReaderChunkLength is 65536 (0x10000);
@@ -204,7 +204,7 @@ void CachingReader::process() {
         } else if (status.status == TRACK_LOADED) {
             m_readerStatus = status.status;
             // Reset the max. readable frame index
-            m_readableFrameIndexRange = status.readableFrameIndexRange;
+            m_readableFrameIndexRange = status.readableFrameIndexRange();
             // Free all chunks with sample data from a previous track
             freeAllChunks();
         }
@@ -212,7 +212,7 @@ void CachingReader::process() {
             // Adjust the readable frame index range after loading or reading
             m_readableFrameIndexRange = intersect(
                     m_readableFrameIndexRange,
-                    status.readableFrameIndexRange);
+                    status.readableFrameIndexRange());
         } else {
             // Reset the readable frame index range
             m_readableFrameIndexRange = mixxx::IndexRange();
@@ -467,8 +467,8 @@ void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
                 }
                 // Do not insert the allocated chunk into the MRU/LRU list,
                 // because it will be handed over to the worker immediately
-                CachingReaderChunkReadRequest request(pChunk);
-                pChunk->giveToWorker();
+                CachingReaderChunkReadRequest request;
+                request.giveToWorker(pChunk);
                 // kLogger.debug() << "Requesting read of chunk" << current << "into" << pChunk;
                 // kLogger.debug() << "Requesting read into " << request.chunk->data;
                 if (m_chunkReadRequestFIFO.write(&request, 1) != 1) {

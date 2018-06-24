@@ -146,7 +146,7 @@ class MixxxBuild(object):
         toolpath = ['#build/']
         extra_arguments = {}
         from . import depends
-        if int(Script.ARGUMENTS.get('qt5', 0)):
+        if int(Script.ARGUMENTS.get('qt5', 1)):
             tools.append('qt5')
             if self.machine_is_64bit:
                 default_qtdir = depends.Qt.DEFAULT_QT5DIRS64.get(

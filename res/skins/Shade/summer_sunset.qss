@@ -1,4 +1,6 @@
-WBeatSpinBox {
+/* Summer Sunset */
+WBeatSpinBox,
+#DlgAutoDJ QSpinBox {
 	color: #101307;
 	background-color: #ad9e4f;
 }
@@ -14,4 +16,144 @@ WEffectSelector {
 #EffectSelectorGroup[highlight="0"]{ 
 	border: 0px solid #f8ba54;  
 }
+
+/* Library */
+
+WBaseLibrary QTabWidget::pane {
+/* when this border is not defined it gets added to tab widgets..wtf?
+  Affects AutoDJ 'Control' pane, DlgMissing & DlgHidden */
+  border: 1px solid #998A3C;
+}
+
+WBaseLibrary #DlgAutoDJ,
+WBaseLibrary #DlgRecording,
+WBaseLibrary #DlgAnalysis,
+WBaseLibrary #DlgHidden,
+WBaseLibrary #DlgMissing {
+  background-color: #998A3C;
+  border: 1px solid #998A3C;
+}
+
+WButtonBar QToolButton {
+  color: #000;
+  background-color: #A09249;
+  }
+  WButtonBar QToolButton:hover {
+    border: 1px solid #eee;
+  }
+  WButtonBar QToolButton:focus {
+    color: #eee;
+    background-color: #665D2F;
+  }
+
+/* Tabs in some special feature panes (AutoDJ, Analysis, Maintenance)*/
+WBaseLibrary QTabBar::tab {
+  border: 1px solid #998A3C;
+  border-bottom: 0px;
+  color: #000;
+  background-color: #998A3C;
+  }
+  WBaseLibrary QTabBar::tab:focus {
+    border-top: 1px solid #998A3C;
+    border-right: 1px solid #998A3C;
+    border-left: 1px solid #998A3C;
+    background-color: #232323;
+  }
+  WBaseLibrary QTabBar::tab:!selected {
+    border: 1px solid #191919;
+    border-bottom: 0px;
+    background-color: #665D2F;
+  }
+
+/* Pushbuttons in Library feature pane */
+WBaseLibrary QPushButton {
+  margin: 1px; 
+  padding: 0px;
+  font-size: 10pt;
+  font-family: "Open Sans";
+  color: #0f0f0f;
+  border: 1px solid #000;
+  background-color: #A4964B;
+  }
+  WBaseLibrary QPushButton:!enabled,
+  WBaseLibrary QWidget:!enabled {
+    color: #666;
+    border: 1px solid #666;
+  }
+/* 'Enable AutoDJ' button etc.	*/
+QPushButton#pushButtonAutoDJ:hover,
+QPushButton#pushButtonRecording:hover,
+QPushButton#pushButtonAnalyze:hover,
+QPushButton#btnPurge:hover {
+  border: 1px solid #52F904;
+}
+
+QHeaderView {
+  color: #0f0f0f;
+  background-color: #998A3D;
+}
+/*	Library header 'buttons'	*/
+QHeaderView::section {
+  border-right: 1px solid #0f0f0f;
+  background-color: #998A3D;
+  border-radius: 0px;
+}
+QHeaderView::up-arrow,
+QHeaderView::down-arrow {
+  background-color: rgba(153,138,60,160);
+}
+QHeaderView::up-arrow {
+  image: url(skin:/btn_lib_sort_up_summer.png)
+}
+QHeaderView::down-arrow {
+  image: url(skin:/btn_lib_sort_down_summer.png)
+}
+
+/* Scroll bars */
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+QScrollBar::add-page,
+QScrollBar::sub-page {
+  background-color: #000;
+}
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal {
+  background: #998A3C;
+  border: 1px solid #524A20;
+}
+
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+QScrollBar {
+  background-color: #0f0f0f;
+}
+QScrollBar::add-page,
+QScrollBar::sub-page {
+  min-width: 14px;
+  min-height: 14px;
+  background-color: #0f0f0f;
+}
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal {
+  background: rgba(218, 195, 80, 170);
+}
+
+WLibrary QPushButton {
+  background-color: #9E9048;
+  }
+  WLibrary QPushButton:!enabled {
+    background-color: #706633;
+    }
+  WLibrary QPushButton:unchecked {
+    color: #888;
+    background-color: #444;
+    }
+  WLibrary QPushButton:checked {
+    color: #000;
+    background-color: #52F904;
+    }
+  /* 'Enable AutoDJ' button	*/
+  QPushButton#pushButtonAutoDJ:hover,
+  QPushButton#pushButtonRecording:hover,
+  QPushButton#pushButtonAnalyze:hover {
+    border: 1px solid #52F904;
+  }
 

@@ -11,11 +11,11 @@ var PioneerDDJSX = function() {};
 
 /*
 	Author: 		DJMaxergy
-	Version: 		1.18, 06/13/2017
+	Version: 		1.19, 05/01/2018
 	Description: 	Pioneer DDJ-SX Controller Mapping for Mixxx
     Source: 		http://github.com/DJMaxergy/mixxx/tree/pioneerDDJSX_mapping
     
-    Copyright (c) 2017 DJMaxergy, licensed under GPL version 2 or later
+    Copyright (c) 2018 DJMaxergy, licensed under GPL version 2 or later
     Copyright (c) 2014-2015 various contributors, base for this mapping, licensed under MIT license
     
     Contributors:
@@ -71,7 +71,7 @@ PioneerDDJSX.jogwheelShiftMultiplier = 10;
 
 // If true, vu meters twinkle if AutoDJ is enabled (default: true).
 PioneerDDJSX.twinkleVumeterAutodjOn = true;
-// If true, selected track will be added to AutoDJ queue-top on pressing rotary selector,
+// If true, selected track will be added to AutoDJ queue-top on pressing shift + rotary selector,
 // else track will be added to AutoDJ queue-bottom (default: false).
 PioneerDDJSX.autoDJAddTop = false;
 // Sets the duration of sleeping between AutoDJ actions if AutoDJ is enabled [ms] (default: 1000).
@@ -95,10 +95,6 @@ PioneerDDJSX.samplerCueGotoAndPlay = false;
 
 // If true, PFL / Cue (headphone) is being activated by loading a track into certain deck (default: true).
 PioneerDDJSX.autoPFL = true;
-
-// If true, new in Mixxx 2.1 introduced library controls will be used,
-// else old playlist controls will be used (default: false).
-PioneerDDJSX.useNewLibraryControls = false;
 
 
 ///////////////////////////////////////////////////////////////
@@ -951,16 +947,16 @@ PioneerDDJSX.playButton = function(channel, control, value, status, group) {
         playing = engine.getValue(group, "play");
 
     if (value) {
-        if (!PioneerDDJSX.toggledBrake[deck]) {
-            script.toggleControl(group, "play");
-        }
         if (playing) {
             script.brake(channel, control, value, status, group);
             PioneerDDJSX.toggledBrake[deck] = true;
+        } else {
+            script.toggleControl(group, "play");
         }
     } else {
         if (PioneerDDJSX.toggledBrake[deck]) {
             script.brake(channel, control, value, status, group);
+            script.toggleControl(group, "play");
             PioneerDDJSX.toggledBrake[deck] = false;
         }
     }
@@ -1390,10 +1386,10 @@ PioneerDDJSX.shiftKeyLockButton = function(channel, control, value, status, grou
 
     PioneerDDJSX.nonPadLedControl(group, PioneerDDJSX.nonPadLeds.shiftKeyLock, value);
 
-    if (range === 1.00) {
+    if (range === 0.90) {
         range = PioneerDDJSX.setUpSpeedSliderRange[deck];
-    } else if ((range * 2) > 1.00) {
-        range = 1.00;
+    } else if ((range * 2) > 0.90) {
+        range = 0.90;
     } else {
         range = range * 2;
     }
@@ -2198,11 +2194,7 @@ PioneerDDJSX.loadPrepareButton = function(channel, control, value, status) {
 };
 
 PioneerDDJSX.backButton = function(channel, control, value, status) {
-    if (PioneerDDJSX.useNewLibraryControls) {
-        script.toggleControl("[Library]", "MoveFocusBackward");
-    } else {
-        script.toggleControl("AutoDJ", "skip_next");
-    }
+    script.toggleControl("[Library]", "MoveFocusBackward");
 };
 
 PioneerDDJSX.shiftBackButton = function(channel, control, value, status) {
@@ -2224,43 +2216,26 @@ PioneerDDJSX.getRotaryDelta = function(value) {
 PioneerDDJSX.rotarySelector = function(channel, control, value, status) {
     var delta = PioneerDDJSX.getRotaryDelta(value);
 
-    if (PioneerDDJSX.useNewLibraryControls) {
-        engine.setValue("[Library]", "MoveVertical", delta);
-        PioneerDDJSX.rotarySelectorChanged = true;
-    } else {
-        engine.setValue("[Playlist]", "SelectTrackKnob", delta);
-        PioneerDDJSX.rotarySelectorChanged = true;
-    }
+    engine.setValue("[Library]", "MoveVertical", delta);
+    PioneerDDJSX.rotarySelectorChanged = true;
 };
 
 PioneerDDJSX.rotarySelectorShifted = function(channel, control, value, status) {
     var delta = PioneerDDJSX.getRotaryDelta(value),
         f = (delta > 0 ? "SelectNextPlaylist" : "SelectPrevPlaylist");
 
-    if (PioneerDDJSX.useNewLibraryControls) {
-        engine.setValue("[Library]", "MoveHorizontal", delta);
-    } else {
-        engine.setValue("[Playlist]", f, Math.abs(delta));
-    }
+    engine.setValue("[Library]", "MoveHorizontal", delta);
 };
 
 PioneerDDJSX.rotarySelectorClick = function(channel, control, value, status) {
-    if (PioneerDDJSX.useNewLibraryControls) {
-        script.toggleControl("[Library]", "MoveFocusForward");
-    } else {
-        if (PioneerDDJSX.autoDJAddTop) {
-            script.toggleControl("[Library]", "AutoDjAddTop");
-        } else {
-            script.toggleControl("[Library]", "AutoDjAddBottom");
-        }
-    }
+    script.toggleControl("[Library]", "GoToItem");
 };
 
 PioneerDDJSX.rotarySelectorShiftedClick = function(channel, control, value, status) {
-    if (PioneerDDJSX.useNewLibraryControls) {
-        script.toggleControl("[Library]", "GoToItem");
+    if (PioneerDDJSX.autoDJAddTop) {
+        script.toggleControl("[Library]", "AutoDjAddTop");
     } else {
-        script.toggleControl("[Playlist]", "ToggleSelectedSidebarItem");
+        script.toggleControl("[Library]", "AutoDjAddBottom");
     }
 };
 
@@ -2343,7 +2318,6 @@ PioneerDDJSX.slicerBeatActive = function(value, group, control) {
             }
         }
     } else {
-        engine.setValue(group, "slip_enabled", false);
         PioneerDDJSX.slicerAlreadyJumped[deck] = false;
         PioneerDDJSX.slicerPreviousBeatsPassed[deck] = 0;
         PioneerDDJSX.slicerActive[deck] = false;

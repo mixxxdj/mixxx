@@ -241,7 +241,7 @@ static unsigned long int do_hash(unsigned char *, unsigned long int, unsigned lo
 //
 
 static char *r_buf;	// Buffer address
-static char *r_end;	// Curent end of buffer
+static char *r_end;	// Current end of buffer
 static char *r_cp;	// Current write-position
 static char *r_lab;	// Current loop-back label, or 0
 static int r_loop;	// Loop count

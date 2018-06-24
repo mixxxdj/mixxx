@@ -54,7 +54,7 @@ void InternalClock::notifyOnlyPlayingSyncable() {
     // No action necessary.
 }
 
-void InternalClock::requestSyncPhase() {
+void InternalClock::requestSync() {
     // TODO(owilliams): This should probably be how we reset the internal beat distance.
 }
 

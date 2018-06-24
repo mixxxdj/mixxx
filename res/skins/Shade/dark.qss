@@ -1,5 +1,6 @@
-
-WBeatSpinBox {
+/* Dark */
+WBeatSpinBox,
+#DlgAutoDJ QSpinBox {
 	color: #000000;
 	background-color: #717171;
 }
@@ -16,6 +17,8 @@ WEffectSelector {
 	border: 0px solid #3c8bb2;  
 }
 
+/* Library */
+
 QTableView:focus, QTreeView:focus {
   border: 1px solid #78C70B;
 }
@@ -24,7 +27,121 @@ WSearchLineEdit:focus {
   border: 2px solid #78C70B;
 }
 
+WBaseLibrary QTabWidget::pane {
+/* when this border is not defined it gets added to tab widgets..wtf?
+  Affects AutoDJ 'Control' pane, DlgMissing & DlgHidden */
+  border: 1px solid #5C5B5D;
+}
 
+WBaseLibrary #DlgAutoDJ,
+WBaseLibrary #DlgRecording,
+WBaseLibrary #DlgAnalysis,
+WBaseLibrary #DlgHidden,
+WBaseLibrary #DlgMissing {
+  background-color: #5C5B5D;
+  border: 1px solid #5C5B5D;
+}
+
+WBaseLibrary QLabel,
+WBaseLibrary QRadioButton {
+  color: #000;
+}
+
+WButtonBar QToolButton {
+  color: #000;
+  background-color: #656565;
+  }
+  WButtonBar QToolButton:hover {
+    border: 1px solid #eee;
+  }
+  WButtonBar QToolButton:focus {
+    color: #eee;
+    border: 1px solid #78C70B;
+    background-color: #4D4D4D;
+  }
+
+/* Tabs in some special feature panes (AutoDJ, Analysis, Maintenance)*/
+WBaseLibrary QTabBar::tab {
+  border: 1px solid #5C5B5D;
+  border-bottom: 0px;
+  color: #000;
+  background-color: #5C5B5D;
+  }
+  WBaseLibrary QTabBar::tab:focus {
+    border-top: 1px solid #5C5B5D;
+    border-right: 1px solid #5C5B5D;
+    border-left: 1px solid #5C5B5D;
+    background-color: #232323;
+  }
+  WBaseLibrary QTabBar::tab:!selected {
+    border: 1px solid #191919;
+    border-bottom: 0px;
+    background-color: #444345;
+  }
+
+/* Pushbuttons in Library feature pane */
+WBaseLibrary QPushButton {
+  margin: 1px; 
+  padding: 0px;
+  color: #0f0f0f;
+  border: 1px solid #000;
+  background-color: #717171;
+  }
+  WBaseLibrary QPushButton:!enabled,
+  WBaseLibrary QWidget:!enabled {
+    color: #333;
+    border: 1px solid #666;
+  }
+  
+/* 'Enable AutoDJ' button	*/
+QPushButton#pushButtonAutoDJ:hover,
+QPushButton#pushButtonRecording:hover,
+QPushButton#pushButtonAnalyze:hover,
+QPushButton#btnPurge:hover {
+    border: 1px solid #B79E00;
+  }
+
+WBaseLibrary QRadioButton::indicator:checked {
+ background: url(skin:btn_lib_radio_button_on_dark.svg);
+}
+
+QHeaderView {
+  color: #000;
+  background-color: #5C5B5D;
+}
+/*	Library header 'buttons'	*/
+QHeaderView::section {
+  border-right: 1px solid #3F3041;
+  background-color: #5C5B5D;
+  border-radius: 0px;
+  }
+  QHeaderView::up-arrow,
+  QHeaderView::down-arrow {
+    background-color: rgba(92,91,93,160);
+  }
+  QHeaderView::up-arrow {
+    image: url(skin:/btn_lib_sort_up_dark.png)
+  }
+  QHeaderView::down-arrow {
+    image: url(skin:/btn_lib_sort_down_dark.png)
+  }
+
+/* "add-page" and "sub-page" are the gutter of the scrollbar */
+QScrollBar {
+  border: 1px solid #5C5B5D;
+  background-color: #0f0f0f;
+  padding: 1px;
+  color: #5C5B5D;
+  }
+  QScrollBar::add-page,
+  QScrollBar::sub-page {
+    background-color: #0f0f0f;
+  }
+  QScrollBar::handle:vertical,
+  QScrollBar::handle:horizontal {
+    background: rgba(126, 125, 127, 170);
+    border: 1px solid #0f0f0f;
+  }
 
 
 

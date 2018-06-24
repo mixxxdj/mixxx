@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="100%"
+   height="100%"
+   viewBox="0 0 18 18"
+   id="svg2"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="btn_lib_radio_button_on.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="740"
+     id="namedview7"
+     showgrid="false"
+     inkscape:zoom="13.111111"
+     inkscape:cx="-8.5304624"
+     inkscape:cy="8.9999999"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <metadata
+     id="metadata12">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs10">
+    <linearGradient
+       id="linearGradient3752">
+      <stop
+         style="stop-color:#5de800;stop-opacity:1;"
+         offset="0"
+         id="stop3754" />
+      <stop
+         id="stop4386"
+         offset="0.62857145"
+         style="stop-color:#246402;stop-opacity:1;" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop3756" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3752"
+       id="radialGradient3758"
+       cx="9.0000001"
+       cy="9.0000001"
+       fx="9.0000001"
+       fy="9.0000001"
+       r="7.0228699"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <path
+     d="M 9,1.9771303 C 5.1233758,1.9771303 1.9771303,5.1233758 1.9771303,9 c 0,3.876623 3.1462455,7.02287 7.0228697,7.02287 3.876623,0 7.02287,-3.146247 7.02287,-7.02287 C 16.02287,5.1233758 12.876623,1.9771303 9,1.9771303 z"
+     id="path2987"
+     style="fill:url(#radialGradient3758);fill-opacity:1"
+     inkscape:connector-curvature="0" />
+  <path
+     d="M 9,2 C 5.1325,2 2,5.1325 2,9 c 0,3.8675 3.1325,7 7,7 3.8675,0 7,-3.1325 7,-7 C 16,5.1325 12.868,2 9,2 z"
+     id="path2985"
+     style="fill:none;fill-opacity:1;stroke:#6c6c6c;stroke-opacity:1;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="sssss" />
+</svg>
