@@ -80,7 +80,7 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     connect(clearCachedWaveforms, SIGNAL(clicked()),
             this, SLOT(slotClearCachedWaveforms()));
     connect(playMarkerPositionSlider, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSetPlayMarkerPosition(int)));            
+            this, SLOT(slotSetPlayMarkerPosition(int)));
 }
 
 DlgPrefWaveform::~DlgPrefWaveform() {
@@ -112,7 +112,7 @@ void DlgPrefWaveform::slotUpdate() {
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
-    playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition());
+    playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition() * 100);
     beatGridAlphaSpinBox->setValue(factory->beatGridAlpha());
     beatGridAlphaSlider->setValue(factory->beatGridAlpha());
 
@@ -250,8 +250,9 @@ void DlgPrefWaveform::slotSetBeatGridAlpha(int alpha) {
 }
 
 void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
-    //qDebug() << "DlgPrefWaveform::slotSetPlayMarkerPosition, position=" << position;
-    WaveformWidgetFactory::instance()->setPlayMarkerPosition(position);
+    // QSlider works with integer values, so divide the percentage given by the
+    // slider value by 100 to get a fraction of the waveform width.
+    WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

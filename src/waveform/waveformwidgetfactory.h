@@ -106,8 +106,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setVSyncType(int vsType);
     int getVSyncType();
 
-    void setPlayMarkerPosition(int position);
-    int getPlayMarkerPosition() const { return m_playMarkerPosition; }
+    void setPlayMarkerPosition(double position);
+    double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
     void notifyZoomChange(WWaveformViewer *viewer);
 
@@ -163,7 +163,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     float m_frameCnt;
     double m_actualFrameRate;
     int m_vSyncType;
-    int m_playMarkerPosition;
+    double m_playMarkerPosition;
 };
 
 #endif // WAVEFORMWIDGETFACTORY_H

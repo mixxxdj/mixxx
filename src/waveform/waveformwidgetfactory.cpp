@@ -72,7 +72,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_frameCnt(0),
         m_actualFrameRate(0),
         m_vSyncType(0),
-        m_playMarkerPosition(50) {
+        m_playMarkerPosition(0.5) {
 
     m_visualGain[All] = 1.0;
     m_visualGain[Low] = 1.0;
@@ -308,8 +308,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
 
     viewer->setZoom(m_defaultZoom);
     viewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
-    const double dPlayMarkerPosition = static_cast<double>(m_playMarkerPosition) / 100.0;
-    viewer->setPlayMarkerPosition(dPlayMarkerPosition);
+    viewer->setPlayMarkerPosition(m_playMarkerPosition);
     viewer->update();
 
     qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory, index" << index;
@@ -477,7 +476,7 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
     }
 }
 
-void WaveformWidgetFactory::setPlayMarkerPosition(int position) {
+void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
     //qDebug() << "setPlayMarkerPosition, position=" << position;
     m_playMarkerPosition = position;
     if (m_config) {
@@ -488,9 +487,9 @@ void WaveformWidgetFactory::setPlayMarkerPosition(int position) {
         return;
     }
 
-    const double dPlayMarkerPosition = static_cast<double>(m_playMarkerPosition) / 100.0;
     for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformWidget->setPlayMarkerPosition(dPlayMarkerPosition);
+        m_waveformWidgetHolders[i].m_waveformWidget->setPlayMarkerPosition(
+                m_playMarkerPosition);
     }
 }
 
