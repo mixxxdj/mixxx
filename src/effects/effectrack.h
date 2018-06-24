@@ -8,22 +8,13 @@
 
 #include "control/controlobject.h"
 #include "engine/channelhandle.h"
-#include "effects/effectchainslot.h"
+#include "effects/defs.h"
 
 class EngineEffectRack;
 class EffectsManager;
 class EffectChainManager;
 
-class EffectRack;
-class StandardEffectRack;
-class EqualizerRack;
-class QuickEffectRack;
-class OutputEffectRack;
-typedef QSharedPointer<EffectRack> EffectRackPointer;
-typedef QSharedPointer<StandardEffectRack> StandardEffectRackPointer;
-typedef QSharedPointer<EqualizerRack> EqualizerRackPointer;
-typedef QSharedPointer<QuickEffectRack> QuickEffectRackPointer;
-typedef QSharedPointer<OutputEffectRack> OutputEffectRackPointer;
+#include "effects/effectchainslot.h"
 
 //TODO(Be): Remove these superfluous classes.
 class EffectRack : public QObject {
@@ -55,7 +46,11 @@ class EffectRack : public QObject {
         return m_group;
     }
 
+    void refresh();
+
     QDomElement toXml(QDomDocument* doc) const;
+
+    virtual bool isAdoptMetaknobValueEnabled() const;
 
   public slots:
     void slotClearRack(double v);
@@ -197,6 +192,11 @@ class QuickEffectRack : public PerGroupRack {
                                            group);
     }
 
+    bool isAdoptMetaknobValueEnabled() const override {
+        // No visible Metaknobs to adopt
+        return false;
+    }
+
   protected:
     void configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
                                           const QString& group) override;
@@ -242,6 +242,11 @@ class EqualizerRack : public PerGroupRack {
                                         const QString& group) const {
         return formatEffectSlotGroupString(getRackNumber(), iEffectSlotNumber,
                                            group);
+    }
+
+    bool isAdoptMetaknobValueEnabled() const override {
+        // No visible Metaknobs to adopt
+        return false;
     }
 
   protected:

@@ -40,13 +40,13 @@
                     <NumberStates>2</NumberStates>
                     <State>
                       <Number>0</Number>
-                      <Pressed>buttons/btn_aux_play_down.svg</Pressed>
-                      <Unpressed>buttons/btn_aux_play.svg</Unpressed>
+                      <Pressed>buttons/btn_aux_play_overdown.svg</Pressed>
+                      <Unpressed>buttons/btn_aux_play_over.svg</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
-                      <Pressed>buttons/btn_aux_play_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_aux_play_over.svg</Unpressed>
+                      <Pressed>buttons/btn_aux_play_down.svg</Pressed>
+                      <Unpressed>buttons/btn_aux_play.svg</Unpressed>
                     </State>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,mute</ConfigKey>
@@ -91,14 +91,22 @@
 
           <WidgetGroup><!-- VU meter -->
             <ObjectName>MicVUMeter</ObjectName>
-            <Layout>horizontal</Layout>
+            <Layout>vertical</Layout>
             <SizePolicy>max,min</SizePolicy>
             <Children>
+              <StatusLight>
+                <TooltipId>microphone_PeakIndicator</TooltipId>
+                <PathStatusLight>style/clipping_micAux_over.svg</PathStatusLight>
+                <PathBack>style/clipping_micAux.svg</PathBack>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+                </Connection>
+              </StatusLight>
+
               <VuMeter>
-                <TooltipId>channel_VuMeter</TooltipId>
-                <Size>7f,59f</Size>
-                <PathVu>style/vumeter_mic_aux_over.png</PathVu>
-                <PathBack>style/vumeter_mic_aux_bg_solid.png</PathBack>
+                <TooltipId>microphone_VuMeter</TooltipId>
+                <PathVu>style/volume_display_micAux_over.svg</PathVu>
+                <PathBack>style/volume_display_micAux.svg</PathBack>
                 <Horizontal>false</Horizontal>
                 <PeakHoldSize>5</PeakHoldSize>
                 <PeakHoldTime>500</PeakHoldTime>
@@ -110,6 +118,8 @@
               </VuMeter>
             </Children>
           </WidgetGroup><!-- /VU meter -->
+
+          <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
           <WidgetGroup><!-- Gain, Pfl, FX buttons -->
             <Layout>vertical</Layout>

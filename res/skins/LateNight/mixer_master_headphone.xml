@@ -174,9 +174,9 @@
                 <Children>
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="Size">35f,30f</SetVariable>
-                    <SetVariable name="TooltipId">master_gain</SetVariable>
-                    <SetVariable name="group">[Booth]</SetVariable>
-                    <SetVariable name="control">gain</SetVariable>
+                    <SetVariable name="TooltipId">booth_gain</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">booth_gain</SetVariable>
                   </Template>
 
                   <Label>
@@ -205,16 +205,16 @@
                     <Children>
                       <StatusLight>
                         <TooltipId>master_PeakIndicator</TooltipId>
-                        <PathStatusLight>style/clipping1_over.png</PathStatusLight>
-                        <PathBack>style/clipping1.png</PathBack>
+                        <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
+                        <PathBack>style/clipping_deck.png</PathBack>
                         <Connection>
                           <ConfigKey>[Master],PeakIndicatorL</ConfigKey>
                         </Connection>
                       </StatusLight>
                       <StatusLight>
                         <TooltipId>master_PeakIndicator</TooltipId>
-                        <PathStatusLight>style/clipping1_over.png</PathStatusLight>
-                        <PathBack>style/clipping1.png</PathBack>
+                        <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
+                        <PathBack>style/clipping_deck.png</PathBack>
                         <Connection>
                           <ConfigKey>[Master],PeakIndicatorR</ConfigKey>
                         </Connection>
@@ -229,8 +229,8 @@
                     <Children>
                       <VuMeter>
                         <TooltipId>master_VuMeterL</TooltipId>
-                        <PathVu>style/volume_display1_over.png</PathVu>
-                        <PathBack>style/volume_display1.png</PathBack>
+                        <PathVu>style/volume_display_deck_over.png</PathVu>
+                        <PathBack>style/volume_display_deck.png</PathBack>
                         <Horizontal>false</Horizontal>
                         <PeakHoldSize>5</PeakHoldSize>
                         <PeakHoldTime>500</PeakHoldTime>
@@ -242,8 +242,8 @@
                       </VuMeter>
                       <VuMeter>
                         <TooltipId>master_VuMeterR</TooltipId>
-                        <PathVu>style/volume_display1_over.png</PathVu>
-                        <PathBack>style/volume_display1.png</PathBack>
+                        <PathVu>style/volume_display_deck_over.png</PathVu>
+                        <PathBack>style/volume_display_deck.png</PathBack>
                         <Horizontal>false</Horizontal>
                         <PeakHoldSize>5</PeakHoldSize>
                         <PeakHoldTime>500</PeakHoldTime>

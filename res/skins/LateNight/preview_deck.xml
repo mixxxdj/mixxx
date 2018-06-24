@@ -178,8 +178,8 @@
 
               <SliderComposed>
                 <TooltipId>pregain</TooltipId>
-                <Handle>knob_volume_previewdeck.png</Handle>
-                <Slider>slider_volume_previewdeck.png</Slider>
+                <Handle>knob_volume_previewdeck.svg</Handle>
+                <Slider>slider_volume_previewdeck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey>[PreviewDeck1],pregain</ConfigKey>

@@ -8,6 +8,7 @@
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
+#include "effects/effectrack.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "library/library.h"
@@ -23,6 +24,13 @@
 #include "util/stat.h"
 #include "util/sleepableqthread.h"
 
+//static
+QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumDecks;
+//static
+QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
+//static
+QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
+
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                              SoundManager* pSoundManager,
                              EffectsManager* pEffectsManager,
@@ -36,15 +44,15 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         // and not ControlProxies.
         m_pAnalyzerQueue(nullptr),
         m_pCONumDecks(new ControlObject(
-            ConfigKey("[Master]", "num_decks"), true, true)),
+                ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(
             ConfigKey("[Master]", "num_samplers"), true, true)),
         m_pCONumPreviewDecks(new ControlObject(
             ConfigKey("[Master]", "num_preview_decks"), true, true)),
         m_pCONumMicrophones(new ControlObject(
-            ConfigKey("[Master]", "num_microphones"), true, true)),
+                ConfigKey("[Master]", "num_microphones"), true, true)),
         m_pCONumAuxiliaries(new ControlObject(
-            ConfigKey("[Master]", "num_auxiliaries"), true, true)){
+                ConfigKey("[Master]", "num_auxiliaries"), true, true)) {
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
             Qt::DirectConnection);
@@ -93,6 +101,10 @@ PlayerManager::~PlayerManager() {
     m_microphones.clear();
     m_auxiliaries.clear();
 
+    delete m_pCOPNumDecks.fetchAndStoreAcquire(nullptr);
+    delete m_pCOPNumSamplers.fetchAndStoreAcquire(nullptr);
+    delete m_pCOPNumPreviewDecks.fetchAndStoreAcquire(nullptr);
+
     delete m_pCONumSamplers;
     delete m_pCONumDecks;
     delete m_pCONumPreviewDecks;
@@ -134,21 +146,6 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
-}
-
-// static
-unsigned int PlayerManager::numDecks() {
-    // We do this to cache the control once it is created so callers don't incur
-    // a hashtable lookup every time they call this.
-    static ControlProxy* pNumCO = NULL;
-    if (pNumCO == NULL) {
-        pNumCO = new ControlProxy(ConfigKey("[Master]", "num_decks"));
-        if (!pNumCO->valid()) {
-            delete pNumCO;
-            pNumCO = NULL;
-        }
-    }
-    return pNumCO ? pNumCO->get() : 0;
 }
 
 // static
@@ -203,34 +200,58 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
 }
 
 // static
+unsigned int PlayerManager::numDecks() {
+    // We do this to cache the control once it is created so callers don't incur
+    // a hashtable lookup every time they call this.
+    ControlProxy* pCOPNumDecks = load_atomic_pointer(m_pCOPNumDecks);
+    if (pCOPNumDecks == nullptr) {
+        pCOPNumDecks = new ControlProxy(ConfigKey("[Master]", "num_decks"));
+        if (!pCOPNumDecks->valid()) {
+            delete pCOPNumDecks;
+            pCOPNumDecks = nullptr;
+        } else {
+            m_pCOPNumDecks = pCOPNumDecks;
+        }
+    }
+    // m_pCOPNumDecks->get() fails on MacOs
+    return pCOPNumDecks ? pCOPNumDecks->get() : 0;
+}
+
+// static
 unsigned int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlProxy* pNumCO = NULL;
-    if (pNumCO == NULL) {
-        pNumCO = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
-        if (!pNumCO->valid()) {
-            delete pNumCO;
-            pNumCO = NULL;
+    ControlProxy* pCOPNumSamplers = load_atomic_pointer(m_pCOPNumSamplers);
+    if (pCOPNumSamplers == nullptr) {
+        pCOPNumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
+        if (!pCOPNumSamplers->valid()) {
+            delete pCOPNumSamplers;
+            pCOPNumSamplers = nullptr;
+        } else {
+            m_pCOPNumSamplers = pCOPNumSamplers;
         }
     }
-    return pNumCO ? pNumCO->get() : 0;
+    // m_pCOPNumSamplers->get() fails on MacOs
+    return pCOPNumSamplers ? pCOPNumSamplers->get() : 0;
 }
 
 // static
 unsigned int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlProxy* pNumCO = NULL;
-    if (pNumCO == NULL) {
-        pNumCO = new ControlProxy(
+    ControlProxy* pCOPNumPreviewDecks = load_atomic_pointer(m_pCOPNumPreviewDecks);
+    if (pCOPNumPreviewDecks == nullptr) {
+        pCOPNumPreviewDecks = new ControlProxy(
                 ConfigKey("[Master]", "num_preview_decks"));
-        if (!pNumCO->valid()) {
-            delete pNumCO;
-            pNumCO = NULL;
+        if (!pCOPNumPreviewDecks->valid()) {
+            delete pCOPNumPreviewDecks;
+            pCOPNumPreviewDecks = nullptr;
+        } else {
+            m_pCOPNumPreviewDecks = pCOPNumPreviewDecks;
         }
     }
-    return pNumCO ? pNumCO->get() : 0;
+    // m_pCOPNumPreviewDecks->get() fails on MacOs
+    return pCOPNumPreviewDecks ? pCOPNumPreviewDecks->get() : 0;
 }
 
 void PlayerManager::slotNumDecksControlChanged(double v) {

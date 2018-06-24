@@ -82,7 +82,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             if (sidebarModel) {
                 accepted = false;
                 for (const QUrl& url : urls) {
-                    QModelIndex destIndex = this->indexAt(event->pos());
+                    QModelIndex destIndex = indexAt(event->pos());
                     if (sidebarModel->dragMoveAccept(destIndex, url)) {
                         // We only need one URL to be valid for us
                         // to accept the whole drag...
@@ -137,7 +137,7 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             if (sidebarModel) {
                 QModelIndex destIndex = indexAt(event->pos());
-                // event->source() will return NULL if something is droped from
+                // event->source() will return NULL if something is dropped from
                 // a different application
                 QList<QUrl> urls(event->mimeData()->urls());
                 if (sidebarModel->dropAccept(destIndex, urls, event->source())) {
@@ -166,6 +166,21 @@ void WLibrarySidebar::toggleSelectedItem() {
     }
 }
 
+bool WLibrarySidebar::isLeafNodeSelected() {
+    QModelIndexList selectedIndices = this->selectionModel()->selectedRows();
+    if (selectedIndices.size() > 0) {
+        QModelIndex index = selectedIndices.at(0);
+        if(!index.model()->hasChildren(index)) {
+            return true;
+        }
+        const SidebarModel* sidebarModel = dynamic_cast<const SidebarModel*>(index.model());
+        if (sidebarModel) {
+            return sidebarModel->hasTrackTable(index);
+        }
+    }
+    return false;
+}
+
 void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Return) {
         toggleSelectedItem();
@@ -185,9 +200,13 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
             emit(pressed(index));
         }
         return;
+    //} else if (event->key() == Qt::Key_Enter && (event->modifiers() & Qt::AltModifier)) {
+    //    // encoder click via "GoToItem"
+    //    qDebug() << "GoToItem";
+    //    TODO(xxx) decide what todo here instead of in librarycontrol
     }
 
-    // Fall through to deafult handler.
+    // Fall through to default handler.
     QTreeView::keyPressEvent(event);
 }
 

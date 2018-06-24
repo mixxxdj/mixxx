@@ -25,10 +25,6 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
-          m_pBgImage(nullptr),
-          m_pMaskImage(nullptr),
-          m_pFgImage(nullptr),
-          m_pGhostImage(nullptr),
           m_pPlay(nullptr),
           m_pPlayPos(nullptr),
           m_pVisualPlayPos(nullptr),
@@ -100,10 +96,6 @@ WSpinny::~WSpinny() {
 #ifdef __VINYLCONTROL__
     m_pVCManager->removeSignalQualityListener(this);
 #endif
-    WImageStore::deleteImage(m_pBgImage);
-    WImageStore::deleteImage(m_pMaskImage);
-    WImageStore::deleteImage(m_pFgImage);
-    WImageStore::deleteImage(m_pGhostImage);
 }
 
 void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
@@ -383,7 +375,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         p.drawImage(-(m_ghostImageScaled.width() / 2),
                     -(m_ghostImageScaled.height() / 2), m_ghostImageScaled);
 
-        //Rotate back to the playback position (not the ghost positon),
+        //Rotate back to the playback position (not the ghost position),
         //and draw the beat marks from there.
         p.restore();
     }

@@ -2,6 +2,7 @@
 
 #include "effects/effectsmanager.h"
 #include "effects/effectchainmanager.h"
+#include "effects/effectslot.h"
 #include "engine/effects/engineeffectrack.h"
 
 #include "util/assert.h"
@@ -151,7 +152,7 @@ void EffectRack::maybeLoadEffect(const unsigned int iChainSlotNumber,
     bool loadNew = false;
     if (pEffectSlot == nullptr || pEffectSlot->getEffect() == nullptr) {
         loadNew = true;
-    } else if (id != pEffectSlot->getEffect()->getManifest().id()) {
+    } else if (id != pEffectSlot->getEffect()->getManifest()->id()) {
         loadNew = true;
     }
 
@@ -169,7 +170,7 @@ void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
         return;
     }
 
-    QString effectId = pEffect ? pEffect->getManifest().id() : QString();
+    QString effectId = pEffect ? pEffect->getManifest()->id() : QString();
     QString nextEffectId = m_pEffectsManager->getNextEffectId(effectId);
     EffectPointer pNextEffect = m_pEffectsManager->instantiateEffect(nextEffectId);
 
@@ -186,7 +187,7 @@ void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
         return;
     }
 
-    QString effectId = pEffect ? pEffect->getManifest().id() : QString();
+    QString effectId = pEffect ? pEffect->getManifest()->id() : QString();
     QString prevEffectId = m_pEffectsManager->getPrevEffectId(effectId);
     EffectPointer pPrevEffect = m_pEffectsManager->instantiateEffect(prevEffectId);
 
@@ -209,6 +210,17 @@ QDomElement EffectRack::toXml(QDomDocument* doc) const {
     }
     rackElement.appendChild(chainsElement);
     return rackElement;
+}
+
+void EffectRack::refresh() {
+    for (const auto& pChainSlot: m_effectChainSlots) {
+        EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+        pChain->refreshAllEffects();
+    }
+}
+
+bool EffectRack::isAdoptMetaknobValueEnabled() const {
+    return m_pEffectChainManager->isAdoptMetaknobValueEnabled();
 }
 
 StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
@@ -283,7 +295,7 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
             this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
 
     // Register the master channel.
-    const ChannelHandleAndGroup* masterHandleAndGroup;
+    const ChannelHandleAndGroup* masterHandleAndGroup = nullptr;
 
     // TODO(Be): Remove this hideous hack to get the ChannelHandleAndGroup
     const QSet<ChannelHandleAndGroup>& registeredChannels =
@@ -336,7 +348,7 @@ void PerGroupRack::setupForGroup(const QString& groupName) {
     pChain->updateEngineState();
 
     // TODO(rryan): remove.
-    const ChannelHandleAndGroup* handleAndGroup;
+    const ChannelHandleAndGroup* handleAndGroup = nullptr;
     for (const ChannelHandleAndGroup& handle_group :
              m_pEffectChainManager->registeredInputChannels()) {
         if (handle_group.name() == groupName) {

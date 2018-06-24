@@ -10,7 +10,8 @@ QRegExp WBeatSpinBox::s_regexpBlacklist("[^0-9.,/ ]");
 
 WBeatSpinBox::WBeatSpinBox(QWidget * parent, ControlObject* pValueControl,
                            int decimals, double minimum, double maximum)
-        : WBaseWidget(parent),
+        : QDoubleSpinBox(parent),
+          WBaseWidget(this),
           m_valueControl(
             pValueControl ?
             pValueControl->getKey() : ConfigKey(), this

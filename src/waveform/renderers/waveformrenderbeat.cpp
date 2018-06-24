@@ -22,9 +22,6 @@ WaveformRenderBeat::~WaveformRenderBeat() {
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
     m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
-
-    if (m_beatColor.alphaF() > 0.99)
-        m_beatColor.setAlphaF(0.9);
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -37,8 +34,10 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     if (!trackBeats)
         return;
 
-    if (!m_waveformRenderer->isBeatGridEnabled())
+    int alpha = m_waveformRenderer->beatGridAlpha();
+    if (alpha == 0)
         return;
+    m_beatColor.setAlphaF(alpha/100.0);
 
     const int trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {

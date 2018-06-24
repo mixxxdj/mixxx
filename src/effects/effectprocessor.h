@@ -4,15 +4,16 @@
 
 #include <QString>
 #include <QHash>
+#include <QDebug>
 #include <QPair>
 
 #include "util/types.h"
 #include "engine/engine.h"
 #include "effects/defs.h"
-#include "effects/effectsmanager.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "engine/effects/message.h"
 #include "engine/channelhandle.h"
+#include "effects/effectsmanager.h"
 
 class EngineEffect;
 
@@ -44,15 +45,6 @@ class EffectState {
         Q_UNUSED(bufferParameters);
     };
     virtual ~EffectState() {};
-
-    // TODO: implement this for all subclasses and call it when the buffer
-    // size and sample rate are configured by SoundManager
-    virtual void engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
-        Q_UNUSED(bufferParameters);
-    };
-    // Subclasses should clear any mixxx::SampleBuffer members and set
-    // other values back to their defaults.
-    virtual void clear() {};
 };
 
 // EffectProcessor is an abstract base class for interfacing with the main
@@ -135,7 +127,7 @@ class EffectProcessorImpl : public EffectProcessor {
     // static EffectManifest getManifest();
 
     // This is the only non-static method that subclasses need to implement.
-    // TODO(Be): remove ChannelHandle& argument? No (native) effects use it. Why should
+    // TODO(Be): remove ChannelHandle& argument? No (built-in) effects use it. Why should
     // effects be concerned with the ChannelHandle& when process() takes care of giving
     // it the appropriate ChannelStateHolder?
     virtual void processChannel(const ChannelHandle& handle,
@@ -159,14 +151,14 @@ class EffectProcessorImpl : public EffectProcessor {
                            << "EffectState should have been preallocated in the"
                               "main thread.";
             }
-            pState = createState(bufferParameters);
+            pState = createSpecificState(bufferParameters);
             m_channelStateMatrix[inputHandle][outputHandle] = pState;
         }
         processChannel(inputHandle, pState, pInput, pOutput, bufferParameters,
                        enableState, groupFeatures);
     }
 
-   void initialize(const QSet<ChannelHandleAndGroup>& activeInputChannels,
+    void initialize(const QSet<ChannelHandleAndGroup>& activeInputChannels,
             EffectsManager* pEffectsManager,
             const mixxx::EngineParameters& bufferParameters) final {
         for (const ChannelHandleAndGroup& inputChannel : activeInputChannels) {
@@ -178,7 +170,7 @@ class EffectProcessorImpl : public EffectProcessor {
             for (const ChannelHandleAndGroup& outputChannel :
                     pEffectsManager->registeredOutputChannels()) {
                 outputChannelMap.insert(outputChannel.handle(),
-                        createState(bufferParameters));
+                        createSpecificState(bufferParameters));
                 if (kEffectDebugOutput) {
                     qDebug() << this << "EffectProcessorImpl::initialize "
                                 "registering output" << outputChannel << outputChannelMap[outputChannel.handle()];
@@ -190,12 +182,8 @@ class EffectProcessorImpl : public EffectProcessor {
         DEBUG_ASSERT(m_pEffectsManager != nullptr);
     };
 
-    EffectSpecificState* createState(const mixxx::EngineParameters& bufferParameters) final {
-        EffectSpecificState* pState = new EffectSpecificState(bufferParameters);
-        if (kEffectDebugOutput) {
-            qDebug() << this << "EffectProcessorImpl creating EffectState" << pState;
-        }
-        return pState;
+    EffectState* createState(const mixxx::EngineParameters& bufferParameters) final {
+        return createSpecificState(bufferParameters);
     };
 
     bool loadStatesForInputChannel(const ChannelHandle* inputChannel,
@@ -275,6 +263,15 @@ class EffectProcessorImpl : public EffectProcessor {
     };
 
   private:
+
+    EffectSpecificState* createSpecificState(const mixxx::EngineParameters& bufferParameters) {
+        EffectSpecificState* pState = new EffectSpecificState(bufferParameters);
+        if (kEffectDebugOutput) {
+            qDebug() << this << "EffectProcessorImpl creating EffectState" << pState;
+        }
+        return pState;
+    };
+
     EffectsManager* m_pEffectsManager;
     ChannelHandleMap<ChannelHandleMap<EffectSpecificState*>> m_channelStateMatrix;
 };

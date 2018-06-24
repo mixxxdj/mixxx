@@ -4,6 +4,7 @@
 #include <QMetaType>
 #include <QMessageBox>
 #include <QUrl>
+#include <QTableView>
 
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
@@ -345,10 +346,11 @@ void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
             }
         }
         if (pTrack) {
+            QString trackLocation = pTrack->getLocation();
             for (int row = 0; row < rowCount(); ++row) {
                 QModelIndex i = index(row, COLUMN_PREVIEW);
                 QString location = getTrackLocation(i);
-                if (location == pTrack->getLocation()) {
+                if (location == trackLocation) {
                     QStandardItem* item = itemFromIndex(i);
                     item->setText("1");
                     break;
@@ -363,8 +365,10 @@ bool BrowseTableModel::isColumnSortable(int column) {
 }
 
 QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
+    QTableView* pTableView = qobject_cast<QTableView*>(pParent);
+    DEBUG_ASSERT(pTableView);
     if (PlayerManager::numPreviewDecks() > 0 && i == COLUMN_PREVIEW) {
-        return new PreviewButtonDelegate(pParent, i);
+        return new PreviewButtonDelegate(pTableView, i);
     }
     return NULL;
 }

@@ -28,6 +28,7 @@
 
 #include "library/coverartutils.h"
 #include "library/coverartcache.h"
+#include "track/globaltrackcache.h"
 #include "util/cmdlineargs.h"
 #include "util/regex.h"
 #include "util/logger.h"
@@ -54,7 +55,7 @@ QList<QDir> getSoundSourcePluginDirectories() {
 
     const QString& pluginPath = CmdlineArgs::Instance().getPluginPath();
     if (!pluginPath.isEmpty()) {
-        kLogger.debug() << "Adding plugin path from commandline arg:" << pluginPath;
+        kLogger.info() << "Adding plugin path from commandline arg:" << pluginPath;
         pluginDirs << QDir(pluginPath);
     }
 
@@ -185,7 +186,7 @@ void SoundSourceProxy::loadPlugins() {
     // that have been registered before (see above)!
     const QList<QDir> pluginDirs(getSoundSourcePluginDirectories());
     for (const auto& pluginDir: pluginDirs) {
-        kLogger.debug() << "Loading SoundSource plugins" << pluginDir.path();
+        kLogger.info() << "Loading SoundSource plugins" << pluginDir.path();
         const QStringList files(pluginDir.entryList(
                 SOUND_SOURCE_PLUGIN_FILENAME_PATTERN,
                 QDir::Files | QDir::NoDotAndDotDot));
@@ -298,12 +299,40 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
     return registrationsForFileExtension;
 }
 
+
+//static
+TrackPointer SoundSourceProxy::importTemporaryTrack(
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken) {
+    TrackPointer pTrack = Track::newTemporary(std::move(fileInfo), std::move(pSecurityToken));
+    // Lock the track cache while populating the temporary track
+    // object to ensure that no metadata is exported into any file
+    // while reading from this file. Since locking individual files
+    // is not possible and the whole cache is locked.
+    GlobalTrackCacheLocker locker;
+    SoundSourceProxy(pTrack).updateTrackFromSource();
+    return pTrack;
+}
+
+//static
+QImage SoundSourceProxy::importTemporaryCoverImage(
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken) {
+    TrackPointer pTrack = Track::newTemporary(std::move(fileInfo), std::move(pSecurityToken));
+    // Lock the track cache while populating the temporary track
+    // object to ensure that no metadata is exported into any file
+    // while reading from this file. Since locking individual files
+    // is not possible and the whole cache is locked.
+    GlobalTrackCacheLocker locker;
+    return SoundSourceProxy(pTrack).importCoverImage();
+}
+
 //static
 Track::ExportMetadataResult
 SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
     mixxx::MetadataSourcePointer pMetadataSource =
-            SoundSourceProxy(pTrack).m_pSoundSource;
+            SoundSourceProxy(getCanonicalUrlForTrack(pTrack)).m_pSoundSource;
     if (pMetadataSource) {
         return pTrack->exportMetadata(pMetadataSource);
     } else {
@@ -324,9 +353,8 @@ SoundSourceProxy::SoundSourceProxy(
 }
 
 SoundSourceProxy::SoundSourceProxy(
-        const Track* pTrack)
-    : m_pTrack(TrackPointer()), // provided track object is about to be destroyed
-      m_url(getCanonicalUrlForTrack(pTrack)),
+        const QUrl& url)
+    : m_url(url),
       m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
       m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
@@ -374,12 +402,14 @@ void SoundSourceProxy::initSoundSource() {
             // ...and continue loop
             DEBUG_ASSERT(!m_pSoundSource);
         } else {
-            kLogger.debug() << "SoundSourceProvider"
-                     << pProvider->getName()
-                     << "created a SoundSource for file"
-                     << getUrl().toString()
-                     << "of type"
-                     << m_pSoundSource->getType();
+            if (kLogger.debugEnabled()) {
+                kLogger.debug() << "SoundSourceProvider"
+                         << pProvider->getName()
+                         << "created a SoundSource for file"
+                         << getUrl().toString()
+                         << "of type"
+                         << m_pSoundSource->getType();
+            }
         }
     }
 }
@@ -500,20 +530,23 @@ void SoundSourceProxy::updateTrackFromSource(
         // once in the past. Only overwrite this information if
         // new data has actually been imported, otherwise abort
         // and preserve the existing data!
-        if (metadataImported.first == mixxx::MetadataSource::ImportResult::Succeeded) {
-            kLogger.info()
+        if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
+            return; // abort
+        }
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
                     << "Updating track metadata"
                     << (pCoverImg ? "and embedded cover art" : "")
                     << "from file"
                     << getUrl().toString();
-        } else {
-            return; // abort
         }
     } else {
         DEBUG_ASSERT(pCoverImg);
-        kLogger.info()
-                << "Initializing track metadata and embedded cover art from file"
-                << getUrl().toString();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Initializing track metadata and embedded cover art from file"
+                    << getUrl().toString();
+        }
     }
 
     // Fallback: If artist or title fields are blank then try to populate
@@ -587,6 +620,9 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
     DEBUG_ASSERT(m_pTrack);
     auto openMode = mixxx::SoundSource::OpenMode::Strict;
     while (m_pSoundSource && !m_pAudioSource) {
+        // NOTE(uklotzde): Log unconditionally (with debug level) to
+        // identify files in the log file that might have caused a
+        // crash while importing metadata or decoding audio subsequently.
         kLogger.debug() << "Opening file"
                 << getUrl().toString()
                 << "with provider"
@@ -664,7 +700,9 @@ void SoundSourceProxy::closeAudioSource() {
         DEBUG_ASSERT(m_pSoundSource);
         m_pSoundSource->close();
         m_pAudioSource = mixxx::AudioSourcePointer();
-        kLogger.debug() << "Closed AudioSource for file"
-                 << getUrl().toString();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug() << "Closed AudioSource for file"
+                    << getUrl().toString();
+        }
     }
 }

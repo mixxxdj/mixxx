@@ -27,11 +27,11 @@
 //
 //	Effect:	Flanger. 1st and 2nd knob modify Depth and Delay.
 //
-//	Cue: 	Don't set Cue accidentaly at the end of the song (return to the lastest cue).
+//	Cue: 	Don't set Cue accidentally at the end of the song (return to the lastest cue).
 //		LED ON when stopped. LED OFF when playing.
 //		LED Blink at Beat time in the ultimates 30 seconds of song.
 //
-// 	Stutter: Adjust BeatGrid in the correct place (usefull to sync well).
+// 	Stutter: Adjust BeatGrid in the correct place (useful to sync well).
 //		 LED Blink at each Beat of the grid.
 //
 //	Sync:	If the other deck is stopped, only sync tempo (not fase).
@@ -325,7 +325,7 @@ NumarkMixTrackPro.flanger = function(channel, control, value, status, group) {
 NumarkMixTrackPro.cuebutton = function(channel, control, value, status, group) {
 
 
-	// Don't set Cue accidentaly at the end of the song
+	// Don't set Cue accidentally at the end of the song
 	if (engine.getValue(group, "playposition") <= 0.97) {
 			engine.setValue(group, "cue_default", value ? 1 : 0);
 	} else {

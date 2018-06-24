@@ -7,7 +7,7 @@
 
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
         : QComboBox(pParent),
-          WBaseWidget(pParent),
+          WBaseWidget(this),
           m_pEffectsManager(pEffectsManager),
           m_scaleFactor(1.0) {
     // Prevent this widget from getting focused to avoid
@@ -27,6 +27,8 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
             node, context, m_pChainSlot);
 
     if (m_pEffectSlot != nullptr) {
+        connect(m_pEffectsManager, SIGNAL(visibleEffectsUpdated()),
+                this, SLOT(populate()));
         connect(m_pEffectSlot.data(), SIGNAL(updated()),
                 this, SLOT(slotEffectUpdated()));
         connect(this, SIGNAL(currentIndexChanged(int)),
@@ -44,25 +46,23 @@ void WEffectSelector::populate() {
     blockSignals(true);
     clear();
 
-    // TODO(xxx): filter out blacklisted effects
-    // https://bugs.launchpad.net/mixxx/+bug/1653140
-    const QList<EffectManifest> availableEffectManifests =
-            m_pEffectsManager->getAvailableEffectManifests();
+    const QList<EffectManifestPointer> visibleEffectManifests =
+            m_pEffectsManager->getVisibleEffectManifests();
     QFontMetrics metrics(font());
 
-    for (int i = 0; i < availableEffectManifests.size(); ++i) {
-        const EffectManifest& manifest = availableEffectManifests.at(i);
-        QString elidedDisplayName = metrics.elidedText(manifest.displayName(),
+    for (int i = 0; i < visibleEffectManifests.size(); ++i) {
+        const EffectManifestPointer pManifest = visibleEffectManifests.at(i);
+        QString elidedDisplayName = metrics.elidedText(pManifest->displayName(),
                                                        Qt::ElideMiddle,
                                                        width() - 2);
-        addItem(elidedDisplayName, QVariant(manifest.id()));
+        addItem(elidedDisplayName, QVariant(pManifest->id()));
 
         // NOTE(Be): Using \n instead of : as the separator does not work in
         // QComboBox item tooltips.
         // TODO(Be): Check if this is also the case with Qt5.
         //: %1 = effect name; %2 = effect description
-        QString description = tr("%1: %2").arg(manifest.name(),
-                                               manifest.description());
+        QString description = tr("%1: %2").arg(pManifest->name(),
+                                               pManifest->description());
         // The <span/> is a hack to get Qt to treat the string as rich text so
         // it automatically wraps long lines.
         setItemData(i, QVariant("<span/>" + description), Qt::ToolTipRole);
@@ -70,7 +70,7 @@ void WEffectSelector::populate() {
 
     //: Displayed when no effect is loaded
     addItem(tr("None"), QVariant());
-    setItemData(availableEffectManifests.size(), QVariant(tr("No effect loaded.")),
+    setItemData(visibleEffectManifests.size(), QVariant(tr("No effect loaded.")),
                 Qt::ToolTipRole);
 
     slotEffectUpdated();
@@ -94,8 +94,8 @@ void WEffectSelector::slotEffectUpdated() {
     if (m_pEffectSlot != nullptr) {
         EffectPointer pEffect = m_pEffectSlot->getEffect();
         if (pEffect != nullptr) {
-            const EffectManifest& manifest = pEffect->getManifest();
-            newIndex = findData(QVariant(manifest.id()));
+            EffectManifestPointer pManifest = pEffect->getManifest();
+            newIndex = findData(QVariant(pManifest->id()));
         } else {
             newIndex = findData(QVariant());
         }

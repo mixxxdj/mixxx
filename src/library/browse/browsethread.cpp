@@ -10,7 +10,6 @@
 #include "library/browse/browsetablemodel.h"
 
 #include "sources/soundsourceproxy.h"
-#include "track/globaltrackcache.h"
 #include "util/trace.h"
 
 
@@ -154,17 +153,10 @@ void BrowseThread::populateModel() {
 
         const QString filepath = fileIt.next();
         {
-            TrackPointer pTrack =
-                GlobalTrackCache::instance().resolve(
-                        filepath, thisPath.token()).getTrack();
-            // The GlobalTrackCache is unlocked instantly even if a new track object
-            // has been created and inserted into the cache. Newly created track
-            // objects will only contain a reference of the corresponding file,
-            // but not any metadata, yet. This reduces lock contention on the
-            // global track cache.
-
-            // Update the track object by (re-)importing metadata from the file
-            SoundSourceProxy(pTrack).updateTrackFromSource();
+            const TrackPointer pTrack =
+                    SoundSourceProxy::importTemporaryTrack(
+                            filepath,
+                            thisPath.token());
 
             item = new QStandardItem(pTrack->getFileName());
             item->setToolTip(item->text());

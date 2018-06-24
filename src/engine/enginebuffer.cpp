@@ -658,7 +658,7 @@ void EngineBuffer::slotControlPlayRequest(double v) {
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
 
     if (!oldPlay && verifiedPlay) {
-        if (m_pQuantize->get() > 0.0
+        if (m_pQuantize->toBool()
 #ifdef __VINYLCONTROL__
                 && m_pVinylControlControl && !m_pVinylControlControl->isEnabled()
 #endif
@@ -875,7 +875,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // (natural vinyl Pitch) when keylock is disabled and enabled.
         //
         // With preference mode KeylockMode = kCurrentKey
-        // the speedSliderPitchRatio is not reseted when keylock is enabled.
+        // the speedSliderPitchRatio is not reset when keylock is enabled.
         // This mode allows to enable keylock
         // while the track is already played. You can reset to the tracks
         // original pitch by resetting the pitch knob to center. When disabling
@@ -886,7 +886,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // and its distance to the original track pitch
         //
         // The Pitch_Adjust knob does not reflect the speedSliderPitchRatio.
-        // So it is is useful for controller mappings, because it is not
+        // So it is useful for controller mappings, because it is not
         // changed by the speed slider or keylock.
 
         // In the second part all other speed changing controls are processed.
@@ -900,7 +900,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // we need to sync phase or we'll be totally out of whack and the sync
         // adjuster will kick in and push the track back in to sync with the
         // master.
-        if (m_scratching_old && !is_scratching && m_pQuantize->get() > 0.0
+        if (m_scratching_old && !is_scratching && m_pQuantize->toBool()
                 && m_pSyncControl->getSyncMode() == SYNC_FOLLOWER && !paused) {
             // TODO() The resulting seek is processed in the following callback
             // That is to late
@@ -1179,7 +1179,7 @@ void EngineBuffer::processSeek(bool paused) {
             return;
     }
 
-    if ((seekType & SEEK_PHASE) && !paused && m_pQuantize->toBool()) {
+    if (!paused && ((seekType & SEEK_PHASE) || m_pQuantize->toBool())) {
         position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
     }
     if (position != m_filepos_play) {
@@ -1228,7 +1228,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
     if (m_iSamplesCalculated > (m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
-        const double samplePositionToSeconds = 1.0 / m_iSampleRate
+        const double samplePositionToSeconds = 1.0 / m_trackSampleRateOld
                 / kSamplesPerFrame / m_tempo_ratio_old;
         m_timeElapsed->set(m_filepos_play * samplePositionToSeconds);
         m_timeRemaining->set(std::max(m_trackSamplesOld - m_filepos_play, 0.0) *

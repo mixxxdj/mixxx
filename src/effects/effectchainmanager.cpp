@@ -143,6 +143,18 @@ EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEf
     return m_effectChains[(indexOf - 1 + m_effectChains.size()) % m_effectChains.size()];
 }
 
+void EffectChainManager::refeshAllRacks() {
+    for (const auto& pRack: m_standardEffectRacks) {
+        pRack->refresh();
+    }
+    for (const auto& pRack: m_equalizerEffectRacks) {
+        pRack->refresh();
+    }
+    for (const auto& pRack: m_quickEffectRacks) {
+        pRack->refresh();
+    }
+}
+
 bool EffectChainManager::saveEffectChains() {
     QDomDocument doc("MixxxEffects");
 
@@ -216,4 +228,8 @@ void EffectChainManager::loadEffectChains() {
             }
         }
     }
+}
+
+bool EffectChainManager::isAdoptMetaknobValueEnabled() const {
+    return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
 }

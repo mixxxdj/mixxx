@@ -15,7 +15,7 @@ BroadcastSettingsModel::BroadcastSettingsModel() {
 }
 
 void BroadcastSettingsModel::resetFromSettings(BroadcastSettingsPointer pSettings) {
-    if(!pSettings) {
+    if (!pSettings) {
         return;
     }
 
@@ -35,7 +35,7 @@ void BroadcastSettingsModel::resetFromSettings(BroadcastSettingsPointer pSetting
 }
 
 bool BroadcastSettingsModel::addProfileToModel(BroadcastProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return false;
 
     int position = m_profiles.size();
@@ -57,11 +57,11 @@ bool BroadcastSettingsModel::addProfileToModel(BroadcastProfilePtr profile) {
 }
 
 void BroadcastSettingsModel::deleteProfileFromModel(BroadcastProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return;
 
     int position = m_profiles.keys().indexOf(profile->getProfileName());
-    if(position > -1) {
+    if (position > -1) {
         beginRemoveRows(QModelIndex(), position, position);
         endRemoveRows();
     }
@@ -120,13 +120,13 @@ QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const 
 
 QVariant BroadcastSettingsModel::headerData(int section, Qt::Orientation orientation,
         int role) const {
-    if(orientation == Qt::Horizontal) {
-        if(role == Qt::DisplayRole) {
-            if(section == kColumnEnabled) {
+    if (orientation == Qt::Horizontal) {
+        if (role == Qt::DisplayRole) {
+            if (section == kColumnEnabled) {
                 return tr("Enabled");
-            } else if(section == kColumnName) {
+            } else if (section == kColumnName) {
                 return tr("Name");
-            } else if(section == kColumnStatus) {
+            } else if (section == kColumnStatus) {
                 return tr("Status");
             }
         }
@@ -135,27 +135,27 @@ QVariant BroadcastSettingsModel::headerData(int section, Qt::Orientation orienta
 }
 
 Qt::ItemFlags BroadcastSettingsModel::flags(const QModelIndex& index) const {
-    if(index.column() == kColumnEnabled)
+    if (index.column() == kColumnEnabled)
         return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
 
-    if(index.column() == kColumnName)
+    if (index.column() == kColumnName)
         return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable;
 
     return QAbstractItemModel::flags(index) | Qt::ItemIsEnabled;
 }
 
 bool BroadcastSettingsModel::setData(const QModelIndex& index, const QVariant& value, int role) {
-    if(index.isValid()) {
+    if (index.isValid()) {
         BroadcastProfilePtr profile = m_profiles.values().at(index.row());
-        if(profile) {
-            if(index.column() == kColumnEnabled && role == Qt::CheckStateRole) {
+        if (profile) {
+            if (index.column() == kColumnEnabled && role == Qt::CheckStateRole) {
                 profile->setEnabled(value.toBool());
             }
-            if(index.column() == kColumnName && role == Qt::EditRole) {
+            if (index.column() == kColumnName && role == Qt::EditRole) {
                 QString newName = value.toString();
                 newName = newName.trimmed();
 
-                if(!newName.isNull() && !newName.isEmpty())
+                if (!newName.isNull() && !newName.isEmpty())
                     profile->setProfileName(newName);
             }
         }
@@ -206,18 +206,18 @@ QColor BroadcastSettingsModel::connectionStatusColor(BroadcastProfilePtr profile
 }
 
 void BroadcastSettingsModel::onProfileNameChanged(QString oldName, QString newName) {
-    if(!m_profiles.contains(oldName))
+    if (!m_profiles.contains(oldName))
         return;
 
     BroadcastProfilePtr profile = m_profiles.take(oldName);
-    if(profile) {
+    if (profile) {
         m_profiles.insert(newName, profile);
     }
 
     // Refresh the whole name column
     QModelIndex start = this->index(0, kColumnName);
     QModelIndex end = this->index(this->rowCount()-1, kColumnName);
-    emit dataChanged(start, end);
+    emit(dataChanged(start, end));
 }
 
 void BroadcastSettingsModel::onConnectionStatusChanged(int newStatus) {
@@ -225,6 +225,6 @@ void BroadcastSettingsModel::onConnectionStatusChanged(int newStatus) {
     // Refresh the whole status column
     QModelIndex start = this->index(0, kColumnStatus);
     QModelIndex end = this->index(this->rowCount()-1, kColumnStatus);
-    emit dataChanged(start, end);
+    emit(dataChanged(start, end));
 }
 

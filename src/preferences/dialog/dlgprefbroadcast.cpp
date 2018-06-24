@@ -142,7 +142,7 @@ void DlgPrefBroadcast::slotUpdate() {
 }
 
 void DlgPrefBroadcast::applyModel() {
-    if(m_pProfileListSelection) {
+    if (m_pProfileListSelection) {
         setValuesToProfile(m_pProfileListSelection);
     }
     m_pBroadcastSettings->applyModel(m_pSettingsModel);
@@ -187,7 +187,7 @@ void DlgPrefBroadcast::slotApply() {
 
     applyModel();
     bool broadcastingEnabled = m_pBroadcastEnabled->toBool();
-    if(!broadcastingEnabled && connectOnApply->isChecked()) {
+    if (!broadcastingEnabled && connectOnApply->isChecked()) {
         m_pBroadcastEnabled->set(true);
 
         // Reset state of "Connect on Apply" checkbox
@@ -233,7 +233,7 @@ void DlgPrefBroadcast::enableCustomMetadataChanged(int value) {
 }
 
 void DlgPrefBroadcast::btnCreateConnectionClicked() {
-    if(m_pSettingsModel->rowCount() >= BROADCAST_MAX_CONNECTIONS) {
+    if (m_pSettingsModel->rowCount() >= BROADCAST_MAX_CONNECTIONS) {
         QMessageBox::warning(this, tr("Action failed"),
                 tr("You can't create more than %1 source connections.")
                 .arg(BROADCAST_MAX_CONNECTIONS));
@@ -253,7 +253,7 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
     } while(!existingProfile.isNull());
 
     BroadcastProfilePtr newProfile(new BroadcastProfile(newName));
-    if(m_pProfileListSelection) {
+    if (m_pProfileListSelection) {
         m_pProfileListSelection->copyValuesTo(newProfile);
     }
     m_pSettingsModel->addProfileToModel(newProfile);
@@ -267,7 +267,7 @@ void DlgPrefBroadcast::connectionListItemSelected(const QModelIndex& selected) {
             Qt::DisplayRole).toString();
     BroadcastProfilePtr profile =
             m_pSettingsModel->getProfileByName(selectedName);
-    if(profile) {
+    if (profile) {
         getValuesFromProfile(profile);
         m_pProfileListSelection = profile;
     }
@@ -277,12 +277,12 @@ void DlgPrefBroadcast::updateModel() {
     // Resetting the model will clear the current list selection
     // so store the name of the current selection before resetting
     QString selected("");
-    if(m_pProfileListSelection) {
+    if (m_pProfileListSelection) {
         selected = m_pProfileListSelection->getProfileName();
     }
 
     m_pSettingsModel->resetFromSettings(m_pBroadcastSettings);
-    if(!selected.isEmpty()) {
+    if (!selected.isEmpty()) {
         // Restore previous selection with the name fetched before
         selectConnectionRowByName(selected);
     }
@@ -324,7 +324,7 @@ void DlgPrefBroadcast::selectConnectionRowByName(QString rowName) {
 }
 
 void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
-    if(!profile) {
+    if (!profile) {
         return;
     }
 
@@ -442,7 +442,7 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
 }
 
 void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return;
 
     profile->setSecureCredentialStorage(rbPasswordKeychain->isChecked());
@@ -496,26 +496,26 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
 }
 
 void DlgPrefBroadcast::btnRemoveConnectionClicked() {
-    if(m_pSettingsModel->rowCount() < 2) {
+    if (m_pSettingsModel->rowCount() < 2) {
         QMessageBox::information(this, tr("Action failed"),
                 tr("At least one source connection is required."));
         return;
     }
 
-    if(m_pProfileListSelection) {
+    if (m_pProfileListSelection) {
         QString profileName = m_pProfileListSelection->getProfileName();
         auto response = QMessageBox::question(this, tr("Confirmation required"),
                     tr("Are you sure you want to delete '%1'?")
                     .arg(profileName), QMessageBox::Yes, QMessageBox::No);
 
-        if(response == QMessageBox::Yes) {
+        if (response == QMessageBox::Yes) {
             m_pSettingsModel->deleteProfileFromModel(m_pProfileListSelection);
         }
     }
 }
 
 void DlgPrefBroadcast::btnRenameConnectionClicked() {
-    if(m_pProfileListSelection) {
+    if (m_pProfileListSelection) {
         QString profileName = m_pProfileListSelection->getProfileName();
 
         bool ok = false;
@@ -523,9 +523,9 @@ void DlgPrefBroadcast::btnRenameConnectionClicked() {
                 QInputDialog::getText(this, tr("Renaming '%1'").arg(profileName),
                         tr("New name for '%1':").arg(profileName),
                         QLineEdit::Normal, profileName, &ok);
-        if(ok && newName != profileName) {
+        if (ok && newName != profileName) {
             BroadcastProfilePtr existingProfile = m_pSettingsModel->getProfileByName(newName);
-            if(!existingProfile) {
+            if (!existingProfile) {
                 // Requested name not used already
                 m_pProfileListSelection->setProfileName(newName);
                 getValuesFromProfile(m_pProfileListSelection);
@@ -545,7 +545,7 @@ void DlgPrefBroadcast::btnDisconnectAllClicked() {
             tr("Are you sure you want to disconnect every active source connection?"),
             QMessageBox::Yes, QMessageBox::No);
 
-    if(response == QMessageBox::Yes) {
+    if (response == QMessageBox::Yes) {
         m_pBroadcastEnabled->set(false);
         broadcastEnabledChanged(0.0);
     }

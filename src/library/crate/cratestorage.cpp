@@ -303,8 +303,11 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
             }
             return true;
         } else {
-            kLogger.debug()
-                    << "Crate not found by name:" << name;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Crate not found by name:"
+                        << name;
+            }
         }
     }
     return false;
@@ -538,7 +541,7 @@ QSet<CrateId> CrateStorage::collectCrateIdsOfTracks(const QList<TrackId>& trackI
     QSet<CrateId> trackCrates;
     for (const auto& trackId: trackIds) {
         // NOTE(uklotzde): The query result does not need to be sorted by crate id
-        // here. But since the coresponding FK column is indexed the impact on the
+        // here. But since the corresponding FK column is indexed the impact on the
         // performance should be negligible. By reusing an existing query we reduce
         // the amount of code and the number of prepared SQL queries.
         CrateTrackSelectResult crateTracks(selectTrackCratesSorted(trackId));
@@ -647,8 +650,11 @@ bool CrateStorage::onDeletingCrate(
             return false;
         }
         if (query.numRowsAffected() <= 0) {
-            kLogger.debug()
-                    << "Deleting empty crate with id" << crateId;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Deleting empty crate with id"
+                        << crateId;
+            }
         }
     }
     {
@@ -697,9 +703,11 @@ bool CrateStorage::onAddingCrateTracks(
         }
         if (query.numRowsAffected() == 0) {
             // track is already in crate
-            kLogger.debug()
-                    << "Track" << trackId
-                    << "not added to crate" << crateId;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Track" << trackId
+                        << "not added to crate" << crateId;
+            }
         } else {
             DEBUG_ASSERT(query.numRowsAffected() == 1);
         }
@@ -729,9 +737,11 @@ bool CrateStorage::onRemovingCrateTracks(
         }
         if (query.numRowsAffected() == 0) {
             // track not found in crate
-            kLogger.debug()
-                    << "Track" << trackId
-                    << "not removed from crate" << crateId;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Track" << trackId
+                        << "not removed from crate" << crateId;
+            }
         } else {
             DEBUG_ASSERT(query.numRowsAffected() == 1);
         }

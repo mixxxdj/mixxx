@@ -31,8 +31,8 @@ Description:
             <TooltipId>balance</TooltipId>
             <ObjectName>MixerbarSlider</ObjectName>
             <SizePolicy>min,min</SizePolicy>
-            <Handle>skin:/knobs_sliders/balance_handle.svg</Handle>
-            <Slider>skin:/knobs_sliders/balance_scale.svg</Slider>
+            <Handle>knobs_sliders/balance_handle.svg</Handle>
+            <Slider>knobs_sliders/balance_scale.svg</Slider>
             <Horizontal>true</Horizontal>
             <Connection>
               <ConfigKey>[Master],balance</ConfigKey>

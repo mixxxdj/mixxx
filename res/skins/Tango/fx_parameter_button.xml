@@ -40,6 +40,7 @@ Variables:
             <Effect><Variable name="FxNum"/></Effect>
             <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
             <Alignment>center</Alignment>
+            <Elide>right</Elide>
           </EffectButtonParameterName>
           <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
         </Children>

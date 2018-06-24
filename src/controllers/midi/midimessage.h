@@ -81,7 +81,7 @@ struct MidiOptions {
             bool rot64_fast    : 1;
             bool diff          : 1;
             bool button        : 1;    // Button Down (!=00) and Button Up (00) events happen together
-            bool sw            : 1;    // button down (!=00) and button up (00) events happen seperately
+            bool sw            : 1;    // button down (!=00) and button up (00) events happen separately
             bool spread64      : 1;    // accelerated difference from 64
             bool herc_jog      : 1;    // generic Hercules range correction 0x01 -> +1; 0x7f -> -1
             bool selectknob    : 1;    // relative knob which can be turned forever and outputs a signed value

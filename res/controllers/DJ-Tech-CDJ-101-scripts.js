@@ -229,7 +229,7 @@ DJTechCDJ101.jogouter = function(channel, control, value, status, group)
 
 //
 // track playing: top of jog scratches
-// track not playing: seek thru track (using same scratch ticks and gives more postive response) or seek faster through track when push button held down
+// track not playing: seek thru track (using same scratch ticks and gives more positive response) or seek faster through track when push button held down
 //
 
 DJTechCDJ101.jogtop = function(channel, control, value, status, group) 

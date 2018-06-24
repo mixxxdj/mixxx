@@ -272,7 +272,7 @@ void SoundDeviceNetwork::writeProcess() {
     QVector<NetworkOutputStreamWorkerPtr> workers =
             m_pNetworkStream->outputWorkers();
     for(auto pWorker : workers) {
-        if(pWorker.isNull()) {
+        if (pWorker.isNull()) {
             continue;
         }
 
@@ -333,7 +333,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         }
 
         QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
-        if(pFifo) {
+        if (pFifo) {
             // interval = copyCount
             // Check for desired kNetworkLatencyFrames + 1/2 interval to
             // avoid big jitter due to interferences with sync code
@@ -357,7 +357,7 @@ void SoundDeviceNetwork::workerWrite(NetworkOutputStreamWorkerPtr pWorker,
         int writeAvailable = pFifo->writeAvailable();
         int writeRequired = frames * m_iNumOutputChannels;
         if (writeAvailable < writeRequired) {
-            kLogger.warning() << "write: worker buffer full, loosing samples";
+            kLogger.warning() << "write: worker buffer full, losing samples";
             pWorker->incOverflowCount();
         }
 
@@ -380,11 +380,11 @@ void SoundDeviceNetwork::workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker
     }
 
     QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
-    if(pFifo) {
+    if (pFifo) {
         int writeAvailable = pFifo->writeAvailable();
         int writeRequired = frames * m_iNumOutputChannels;
         if (writeAvailable < writeRequired) {
-            kLogger.warning() << "writeSilence: worker buffer full, loosing samples";
+            kLogger.warning() << "writeSilence: worker buffer full, losing samples";
             pWorker->incOverflowCount();
         }
 

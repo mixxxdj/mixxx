@@ -279,9 +279,5 @@
       </WidgetStack><!-- /EffectUnit 2 -->
 
     </Children>
-    <Connection>
-      <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

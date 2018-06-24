@@ -224,6 +224,7 @@ EngineMaster::~EngineMaster() {
     delete m_pAudioLatencyOverload;
 
     delete m_pMasterEnabled;
+    delete m_pBoothEnabled;
     delete m_pMasterMonoMixdown;
     delete m_pMicMonitorMode;
     delete m_pHeadphoneEnabled;

@@ -3,7 +3,7 @@ Description:
   A HotCue button for Samplers and Preview deck only.
   HotCues can only be activated/recalled but not removed since
   Samplers and Preview deck lack the controls to properly re-set
-  any HotCue when it was accidentially removed.
+  any HotCue when it was accidentally removed.
 Variables:
   group : [SamplerN], [PreviewDeck1]
   HotCue: hotcue number

@@ -202,6 +202,24 @@
             </Connection>
           </PushButton>
 
+          <PushButton>
+            <Size>94f,24f</Size>
+            <TooltipId>show_effects</TooltipId>
+            <ObjectName>GuiToggleButton</ObjectName>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>4 EFFECT UNITS</Text>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>4 EFFECT UNITS</Text>
+            </State>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
+            </Connection>
+          </PushButton>
+
           <WidgetGroup>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
@@ -305,8 +323,8 @@
       <WidgetGroup><!-- Recording button & recording duration label -->
         <ObjectName>RecBox</ObjectName>
         <Layout>stacked</Layout>
-        <Size>76f,24f</Size>
-        <!-- minus 2px margin, minus 1px border
+        <Size>72f,22f</Size>
+        <!-- minus 1px border
             = 70x18 available for text -->
         <Children>
           <!-- invisible Rec button -->
@@ -319,16 +337,16 @@
 
           <WidgetGroup><!-- Rec dot + RecDuration -->
             <Layout>horizontal</Layout>
-            <Size>70f,18f</Size>
+            <Size>70me,18me</Size>
             <Children>
               <Label>
                 <ObjectName>RecDot</ObjectName>
-                <Size>15f,18f</Size>
+                <Size>15me,18me</Size>
               </Label>  
 
               <RecordingDuration>
                 <ObjectName>RecDuration</ObjectName>
-                <Size>55f,18f</Size>
+                <Size>55me,18me</Size>
                 <InactiveText>REC</InactiveText>
                 <Alignment>center</Alignment>
               </RecordingDuration>
@@ -339,7 +357,7 @@
           <Template src="skin:button_3state_display.xml">
             <SetVariable name="ObjectName">RecFeedback</SetVariable>
             <SetVariable name="TooltipId">toggle_recording</SetVariable>
-            <SetVariable name="Size">70f,18f</SetVariable>
+            <SetVariable name="Size">70me,18me</SetVariable>
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
             <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
           </Template>
@@ -348,7 +366,7 @@
 
       <WidgetGroup> <!-- Spacer -->
         <Layout>horizontal</Layout>
-        <Size>5f,min</Size>
+        <Size>7f,min</Size>
         <Children/>
       </WidgetGroup>
 
@@ -389,13 +407,14 @@
             <Text>CPU</Text>
           </Label>
 
+          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
+
           <VuMeter>
             <TooltipId>audio_latency_usage</TooltipId>
             <ObjectName>LatencyMeter</ObjectName>
-            <Size>72f,4min</Size>
-            <PathVu>style/vumeter_latency_over.png</PathVu>
-            <PathBack>style/vumeter_latency_bg.png</PathBack>
-            <!-- <PathVu>vumeter_latency.svg</PathVu> -->
+            <Size>63f,7f</Size>
+            <PathBack>style/latency_bg.svg</PathBack>
+            <PathVu>style/latency_over.svg</PathVu>
             <Horizontal>true</Horizontal>
             <PeakHoldSize>5</PeakHoldSize>
             <PeakHoldTime>1000</PeakHoldTime>
@@ -405,6 +424,8 @@
               <ConfigKey>[Master],audio_latency_usage</ConfigKey>
             </Connection>
           </VuMeter>
+
+          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
         </Children>
       </WidgetGroup>
 

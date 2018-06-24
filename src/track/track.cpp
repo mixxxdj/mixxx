@@ -1,7 +1,8 @@
 #include <QDirIterator>
 #include <QFile>
 #include <QMutexLocker>
-#include <QtDebug>
+
+#include <atomic>
 
 #include "track/track.h"
 #include "track/trackref.h"
@@ -14,11 +15,17 @@
 
 namespace {
 
-mixxx::Logger kLogger("Track");
+const mixxx::Logger kLogger("Track");
+
+constexpr bool kLogStats = false;
+
+// Count the number of currently existing instances for detecting
+// memory leaks.
+std::atomic<int> s_numberOfInstances;
 
 SecurityTokenPointer openSecurityToken(
         const QFileInfo& fileInfo,
-        const SecurityTokenPointer& pSecurityToken = SecurityTokenPointer()) {
+        SecurityTokenPointer pSecurityToken = SecurityTokenPointer()) {
     if (pSecurityToken.isNull()) {
         return Sandbox::openSecurityToken(fileInfo, true);
     } else {
@@ -54,40 +61,67 @@ mixxx::Bpm getActualBpm(
 } // anonymous namespace
 
 Track::Track(
-        const QFileInfo& fileInfo,
-        const SecurityTokenPointer& pSecurityToken,
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken,
         TrackId trackId)
-        : m_fileInfo(fileInfo),
-          m_pSecurityToken(openSecurityToken(m_fileInfo, pSecurityToken)),
-          m_qMutex(QMutex::Recursive),
+        : m_qMutex(QMutex::Recursive),
+          m_fileInfo(std::move(fileInfo)),
+          m_pSecurityToken(openSecurityToken(m_fileInfo, std::move(pSecurityToken))),
           m_record(trackId),
           m_bDirty(false),
           m_bMarkedForMetadataExport(false),
           m_analyzerProgress(-1) {
+    if (kLogStats && kLogger.debugEnabled()) {
+        long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
+        kLogger.debug()
+                << "Creating instance:"
+                << this
+                << numberOfInstancesBefore
+                << "->"
+                << numberOfInstancesBefore + 1;
+    }
+}
+
+Track::~Track() {
+    if (kLogStats && kLogger.debugEnabled()) {
+        long numberOfInstancesBefore = s_numberOfInstances.fetch_sub(1);
+        kLogger.debug()
+                << "Destroying instance:"
+                << this
+                << numberOfInstancesBefore
+                << "->"
+                << numberOfInstancesBefore - 1;
+    }
 }
 
 //static
 TrackPointer Track::newTemporary(
-        const QFileInfo& fileInfo,
-        const SecurityTokenPointer& pSecurityToken) {
-    Track* pTrack =
-            new Track(
-                    fileInfo,
-                    pSecurityToken,
-                    TrackId());
-    return TrackPointer(pTrack);
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken) {
+    return std::make_shared<Track>(
+            std::move(fileInfo),
+            std::move(pSecurityToken));
 }
 
 //static
 TrackPointer Track::newDummy(
-        const QFileInfo& fileInfo,
+        QFileInfo fileInfo,
         TrackId trackId) {
-    Track* pTrack =
-            new Track(
-                    fileInfo,
-                    SecurityTokenPointer(),
-                    trackId);
-    return TrackPointer(pTrack);
+    return std::make_shared<Track>(
+            std::move(fileInfo),
+            SecurityTokenPointer(),
+            trackId);
+}
+
+void Track::relocate(
+        QFileInfo fileInfo,
+        SecurityTokenPointer pSecurityToken) {
+    QMutexLocker lock(&m_qMutex);
+    m_fileInfo = fileInfo;
+    m_pSecurityToken = pSecurityToken;
+    // The track does not need to be marked as dirty,
+    // because this function will always be called with
+    // the updated location from the database.
 }
 
 void Track::setTrackMetadata(
@@ -272,7 +306,9 @@ double Track::setBpm(double bpmValue) {
 
     // Continue with the regular case
     if (m_pBeats->getBpm() != bpmValue) {
-        kLogger.debug() << "Updating BPM:" << getLocation();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug() << "Updating BPM:" << getLocation();
+        }
         m_pBeats->setBpm(bpmValue);
         markDirtyAndUnlock(&lock);
         // Tell the GUI to update the bpm label...
@@ -830,9 +866,14 @@ bool Track::isDirty() {
 
 void Track::markForMetadataExport() {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(&m_bMarkedForMetadataExport, true)) {
-        markDirtyAndUnlock(&lock);
-    }
+    m_bMarkedForMetadataExport = true;
+    // No need to mark the track as dirty, because this flag
+    // is transient and not stored in the database.
+}
+
+bool Track::isMarkedForMetadataExport() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_bMarkedForMetadataExport;
 }
 
 int Track::getRating() const {
@@ -968,7 +1009,7 @@ Track::ExportMetadataResult Track::exportMetadata(
             // must be exported explicitly once. This ensures that we don't
             // overwrite existing file tags with completely different
             // information.
-            kLogger.debug()
+            kLogger.info()
                     << "Skip exporting of unsynchronized track metadata:"
                     << getLocation();
             return ExportMetadataResult::Skipped;
@@ -1013,9 +1054,11 @@ Track::ExportMetadataResult Track::exportMetadata(
             if (!m_record.getMetadata().hasBeenModifiedAfterImport(importedFromFile))  {
                 // The file tags are in-sync with the track's metadata and don't need
                 // to be updated.
-                kLogger.debug()
-                        << "Skip exporting of unmodified track metadata into file:"
-                        << getLocation();
+                if (kLogger.debugEnabled()) {
+                    kLogger.debug()
+                                << "Skip exporting of unmodified track metadata into file:"
+                                << getLocation();
+                }
                 return ExportMetadataResult::Skipped;
             }
         } else {
@@ -1046,9 +1089,11 @@ Track::ExportMetadataResult Track::exportMetadata(
         DEBUG_ASSERT(!trackMetadataExported.second.isNull());
         //pTrack->setMetadataSynchronized(trackMetadataExported.second);
         m_record.setMetadataSynchronized(!trackMetadataExported.second.isNull());
-        kLogger.debug()
-                << "Exported track metadata:"
-                << getLocation();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Exported track metadata:"
+                    << getLocation();
+        }
         return ExportMetadataResult::Succeeded;
     } else {
         kLogger.warning()

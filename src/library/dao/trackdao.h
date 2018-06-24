@@ -10,7 +10,7 @@
 
 #include "preferences/usersettings.h"
 #include "library/dao/dao.h"
-#include "track/track.h"
+#include "track/globaltrackcache.h"
 #include "util/class.h"
 #include "util/memory.h"
 
@@ -19,12 +19,9 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
-class TrackCollection;
-class GlobalTrackCacheLocker;
-class GlobalTrackCacheResolver;
 
 
-class TrackDAO : public QObject, public virtual DAO {
+class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT
   public:
     // The 'config object' is necessary because users decide ID3 tags get
@@ -46,8 +43,6 @@ class TrackDAO : public QObject, public virtual DAO {
     QList<TrackId> getTrackIds(const QList<QFileInfo>& files);
     QList<TrackId> getTrackIds(const QDir& dir);
 
-    bool trackExistsInDatabase(const QString& absoluteFilePath);
-
     // WARNING: Only call this from the main thread instance of TrackDAO.
     TrackPointer getTrack(TrackId trackId) const;
 
@@ -60,7 +55,6 @@ class TrackDAO : public QObject, public virtual DAO {
 
     void addTracksPrepare();
     TrackPointer addTracksAddFile(const QFileInfo& fileInfo, bool unremove);
-    TrackPointer addTracksAddTrack(GlobalTrackCacheResolver&& /*r-value ref*/ cacheResolver, bool unremove);
     TrackId addTracksAddTrack(const TrackPointer& pTrack, bool unremove);
     void addTracksFinish(bool rollback = false);
 
@@ -96,7 +90,6 @@ class TrackDAO : public QObject, public virtual DAO {
     void markTracksInDirectoriesAsVerified(const QStringList& directories);
     void invalidateTrackLocationsInLibrary();
     void markUnverifiedTracksAsDeleted();
-    void markTrackLocationsAsDeleted(const QString& directory);
     bool detectMovedTracks(QSet<TrackId>* pTracksMovedSetOld,
                           QSet<TrackId>* pTracksMovedSetNew,
                           const QStringList& addedTracks,
@@ -108,6 +101,8 @@ class TrackDAO : public QObject, public virtual DAO {
 
     void detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                                         QSet<TrackId>* pTracksChanged);
+
+    void saveTrack(Track* pTrack);
 
   signals:
     void trackDirty(TrackId trackId) const;
@@ -133,9 +128,12 @@ class TrackDAO : public QObject, public virtual DAO {
   private:
     TrackPointer getTrackFromDB(TrackId trackId) const;
 
-    friend class TrackCollection;
-    void saveTrack(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack);
     bool updateTrack(Track* pTrack);
+
+    // Callback for GlobalTrackCache
+    QFileInfo relocateCachedTrack(
+            TrackId trackId,
+            QFileInfo fileInfo) override;
 
     QSqlDatabase m_database;
 

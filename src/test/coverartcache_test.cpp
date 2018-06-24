@@ -24,10 +24,10 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
         EXPECT_QSTRING_EQ(QString(), res.cover.coverLocation);
         EXPECT_EQ(info.hash, res.cover.hash);
 
-        SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
-            QDir(trackLocation), true);
-        auto pTrack = Track::newTemporary(trackLocation, securityToken);
-        QImage img = SoundSourceProxy(pTrack).importCoverImage();
+        SecurityTokenPointer securityToken =
+                Sandbox::openSecurityToken(QDir(trackLocation), true);
+        QImage img = SoundSourceProxy::importTemporaryCoverImage(
+                trackLocation, securityToken);
         EXPECT_FALSE(img.isNull());
         EXPECT_EQ(img, res.cover.image);
     }

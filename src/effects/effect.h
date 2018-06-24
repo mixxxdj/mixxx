@@ -17,9 +17,6 @@ class EngineEffectChain;
 class EngineEffect;
 class EffectsManager;
 
-class Effect;
-typedef QSharedPointer<Effect> EffectPointer;
-
 // The Effect class is the main-thread representation of an instantiation of an
 // effect. This class is NOT thread safe and must only be used by the main
 // thread. The getEngineEffect() method can be used to get a pointer to the
@@ -30,13 +27,13 @@ class Effect : public QObject {
     typedef bool (*ParameterFilterFnc)(EffectParameter*);
 
     Effect(EffectsManager* pEffectsManager,
-           const EffectManifest& manifest,
+           EffectManifestPointer pManifest,
            EffectInstantiatorPointer pInstantiator);
     virtual ~Effect();
 
     EffectState* createState(const mixxx::EngineParameters& bufferParameters);
 
-    const EffectManifest& getManifest() const;
+    EffectManifestPointer getManifest() const;
 
     unsigned int numKnobParameters() const;
     unsigned int numButtonParameters() const;
@@ -44,7 +41,8 @@ class Effect : public QObject {
     static bool isButtonParameter(EffectParameter* parameter);
     static bool isKnobParameter(EffectParameter* parameter);
 
-    EffectParameter* getFilteredParameterForSlot(ParameterFilterFnc filterFnc, unsigned int slotNumber);
+    EffectParameter* getFilteredParameterForSlot(
+            ParameterFilterFnc filterFnc, unsigned int slotNumber);
     EffectParameter* getKnobParameterForSlot(unsigned int slotNumber);
     EffectParameter* getButtonParameterForSlot(unsigned int slotNumber);
 
@@ -64,18 +62,20 @@ class Effect : public QObject {
     static EffectPointer createFromXml(EffectsManager* pEffectsManager,
                                  const QDomElement& element);
 
+    double getMetaknobDefault();
+
   signals:
     void enabledChanged(bool enabled);
 
   private:
     QString debugString() const {
-        return QString("Effect(%1)").arg(m_manifest.name());
+        return QString("Effect(%1)").arg(m_pManifest->name());
     }
 
     void sendParameterUpdate();
 
     EffectsManager* m_pEffectsManager;
-    EffectManifest m_manifest;
+    EffectManifestPointer m_pManifest;
     EffectInstantiatorPointer m_pInstantiator;
     EngineEffect* m_pEngineEffect;
     bool m_bAddedToEngine;

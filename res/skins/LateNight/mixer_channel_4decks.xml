@@ -52,23 +52,23 @@
         </Children>
       </WidgetGroup>
 
-      <Template src="skin:eq_knob_left.xml">
+      <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">4</SetVariable>
       </Template>
 
-      <Template src="skin:eq_knob_left.xml">
+      <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">3</SetVariable>
       </Template>
 
-      <Template src="skin:eq_knob_left.xml">
+      <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">2</SetVariable>
       </Template>
 
-      <Template src="skin:eq_knob_left.xml">
+      <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">1</SetVariable>
       </Template>
 
-      <Template src="skin:quick_effect_knob_left.xml"/>
+      <Template src="skin:quick_effect_knob_4decks.xml"/>
 
       <WidgetGroup>
         <ObjectName>CrossfaderSwitch4Decks</ObjectName>
@@ -125,7 +125,7 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>VuAndSlider</ObjectName>
+        <ObjectName>VuAndSlider4decks</ObjectName>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
@@ -136,16 +136,16 @@
             <Children>
               <StatusLight>
                 <TooltipId>channel_PeakIndicator</TooltipId>
-                <PathStatusLight>style/clipping1_over.png</PathStatusLight>
-                <PathBack>style/clipping1.png</PathBack>
+                <PathStatusLight>style/clipping_deck_over.png</PathStatusLight>
+                <PathBack>style/clipping_deck.png</PathBack>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
                 </Connection>
               </StatusLight>
               <VuMeter>
                 <TooltipId>channel_VuMeter</TooltipId>
-                <PathVu>style/volume_display1_over.png</PathVu>
-                <PathBack>style/volume_display1.png</PathBack>
+                <PathVu>style/volume_display_deck_over.png</PathVu>
+                <PathBack>style/volume_display_deck.png</PathBack>
                 <Horizontal>false</Horizontal>
                 <PeakHoldSize>5</PeakHoldSize>
                 <PeakHoldTime>500</PeakHoldTime>
@@ -160,8 +160,8 @@
 
           <SliderComposed>
             <TooltipId>channel_volume</TooltipId>
-            <Handle>knob_volume1.png</Handle>
-            <Slider>slider_volume1.png</Slider>
+            <Handle>knob_volume_deck.svg</Handle>
+            <Slider>slider_volume_deck.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,volume</ConfigKey>

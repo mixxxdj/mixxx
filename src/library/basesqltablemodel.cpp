@@ -3,6 +3,7 @@
 #include <QtAlgorithms>
 #include <QtDebug>
 #include <QUrl>
+#include <QTableView>
 
 #include "library/basesqltablemodel.h"
 
@@ -512,7 +513,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
 
     // we have two selects for sorting, since keeping the select history
     // across the two selects is hard, we do this only for the trackSource
-    // this is OK, because the colums of the table are virtual in case of
+    // this is OK, because the columns of the table are virtual in case of
     // preview column or individual like playlist track number so that we
     // do not need the history anyway.
 
@@ -1049,14 +1050,17 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 }
 
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
+    QTableView* pTableView = qobject_cast<QTableView*>(pParent);
+    DEBUG_ASSERT(pTableView);
+
     if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-        return new StarDelegate(pParent);
+        return new StarDelegate(pTableView);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
-        return new BPMDelegate(pParent);
+        return new BPMDelegate(pTableView);
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
-        return new PreviewButtonDelegate(pParent, i);
+        return new PreviewButtonDelegate(pTableView, i);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
-        CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pParent);
+        CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pTableView);
         connect(pCoverDelegate, SIGNAL(coverReadyForCell(int, int)),
                 this, SLOT(refreshCell(int, int)));
         return pCoverDelegate;

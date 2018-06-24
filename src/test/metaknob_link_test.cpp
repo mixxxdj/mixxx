@@ -5,7 +5,10 @@
 
 #include "controllers/softtakeover.h"
 #include "effects/effectparameterslot.h"
+#include "effects/effectchainslot.h"
+#include "effects/effectrack.h"
 #include "effects/effect.h"
+#include "effects/effectslot.h"
 #include "mixxxtest.h"
 #include "test/baseeffecttest.h"
 #include "util/time.h"
@@ -36,11 +39,12 @@ class MetaLinkTest : public BaseEffectTest {
         QString group = StandardEffectRack::formatEffectSlotGroupString(
             iRackNumber, iChainNumber, iEffectNumber);
 
-        EffectManifest manifest;
-        manifest.setId("org.mixxx.test.effect");
-        manifest.setName("Test Effect");
+        EffectManifestPointer pManifest(new EffectManifest());
+        pManifest->setId("org.mixxx.test.effect");
+        pManifest->setName("Test Effect");
+        pManifest->setMetaknobDefault(0.0);
 
-        EffectManifestParameter* low = manifest.addParameter();
+        EffectManifestParameterPointer low = pManifest->addParameter();
         low->setId("low");
         low->setName(QObject::tr("Low"));
         low->setDescription(QObject::tr("Gain for Low Filter"));
@@ -52,12 +56,12 @@ class MetaLinkTest : public BaseEffectTest {
         low->setMinimum(0);
         low->setMaximum(1.0);
 
-        registerTestEffect(manifest, false);
+        registerTestEffect(pManifest, false);
 
         // Check the controls reflect the state of their loaded effect.
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
+        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(pManifest->id());
 
-        m_pEffectSlot->loadEffect(pEffect);
+        m_pEffectSlot->loadEffect(pEffect, false);
 
         QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
 
@@ -203,10 +207,10 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     // 0 or 1.
     QString group = StandardEffectRack::formatEffectSlotGroupString(
         0, 0, 0);
-    EffectManifest manifest;
-    manifest.setId("org.mixxx.test.effect2");
-    manifest.setName("Test Effect2");
-    EffectManifestParameter* low = manifest.addParameter();
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId("org.mixxx.test.effect2");
+    pManifest->setName("Test Effect2");
+    EffectManifestParameterPointer low = pManifest->addParameter();
     low->setId("low");
     low->setName(QObject::tr("Low"));
     low->setDescription(QObject::tr("Gain for Low Filter (neutral at 1.0)"));
@@ -217,10 +221,10 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     low->setDefault(1.0);
     low->setMinimum(0);
     low->setMaximum(1.0);
-    registerTestEffect(manifest, false);
+    registerTestEffect(pManifest, false);
     // Check the controls reflect the state of their loaded effect.
-    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
-    m_pEffectSlot->loadEffect(pEffect);
+    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(pManifest->id());
+    m_pEffectSlot->loadEffect(pEffect, false);
     QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
     m_pControlValue.reset(new ControlProxy(group, itemPrefix));
     m_pControlLinkType.reset(new ControlProxy(group,

@@ -67,7 +67,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_overviewNormalized(false),
         m_openGLAvailable(false),
         m_openGLShaderAvailable(false),
-        m_beatGridEnabled(true),
+        m_beatGridAlpha(90),
         m_vsyncThread(NULL),
         m_frameCnt(0),
         m_actualFrameRate(0),
@@ -225,8 +225,8 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
     }
 
-    bool showBeatGrid = m_config->getValue(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), m_beatGridEnabled);
-    setDisplayBeatGrid(showBeatGrid);
+    int beatGridAlpha = m_config->getValue(ConfigKey("[Waveform]", "beatGridAlpha"), m_beatGridAlpha);
+    setDisplayBeatGridAlpha(beatGridAlpha);
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
             m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
@@ -307,7 +307,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
     }
 
     viewer->setZoom(m_defaultZoom);
-    viewer->setDisplayBeatGrid(m_beatGridEnabled);
+    viewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
     const double dPlayMarkerPosition = static_cast<double>(m_playMarkerPosition) / 100.0;
     viewer->setPlayMarkerPosition(dPlayMarkerPosition);
     viewer->update();
@@ -322,7 +322,7 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
-    m_vsyncThread->setUsSyncIntervalTime(1e6 / m_frameRate);
+    m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
 }
 
 void WaveformWidgetFactory::setEndOfTrackWarningTime(int endTime) {
@@ -448,18 +448,14 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     }
 }
 
-void WaveformWidgetFactory::setDisplayBeatGrid(bool sync) {
-    m_beatGridEnabled = sync;
-    if (m_config) {
-        m_config->set(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), ConfigValue(m_beatGridEnabled));
-    }
-
+void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
+    m_beatGridAlpha = alpha;
     if (m_waveformWidgetHolders.size() == 0) {
         return;
     }
 
     for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGrid(m_beatGridEnabled);
+        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
 
 }

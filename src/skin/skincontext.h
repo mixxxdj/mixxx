@@ -31,13 +31,28 @@ class SkinContext {
     virtual ~SkinContext();
 
     // Gets a path relative to the skin path.
-    QString getSkinPath(const QString& relativePath) const {
-        return m_skinBasePath.filePath(relativePath);
+    QString makeSkinPath(const QString& relativePath) const {
+        if (relativePath.isEmpty() || relativePath.startsWith("/")
+                || relativePath.contains(":")) {
+            // This is already an absolute path start with the root folder "/"
+            // a windows drive letter e.g. "C:" or a qt search path prefix
+            return relativePath;
+        }
+        return QString("skin:").append(relativePath);
     }
 
     // Sets the base path used by getSkinPath.
     void setSkinBasePath(const QString& skinBasePath) {
-        m_skinBasePath = QDir(skinBasePath);
+        QStringList skinPaths(skinBasePath);
+        QDir::setSearchPaths("skin", skinPaths);
+        m_skinBasePath = skinBasePath;
+    }
+
+    // Sets the base path used by getSkinPath.
+    void setSkinTemplatePath(const QString& skinTemplatePath) {
+        QStringList skinPaths(m_skinBasePath);
+        skinPaths.append(skinTemplatePath);
+        QDir::setSearchPaths("skin", skinPaths);
     }
 
     // Variable lookup and modification methods.
@@ -55,7 +70,7 @@ class SkinContext {
     // Updates the SkinContext with 'element', a <SetVariable> node.
     void updateVariable(const QDomElement& element);
 
-    inline QDomNode selectNode(const QDomNode& node, const QString& nodeName) const {
+    static inline QDomNode selectNode(const QDomNode& node, const QString& nodeName) {
         QDomNode child = node.firstChild();
         while (!child.isNull()) {
             if (child.nodeName() == nodeName) {
@@ -66,7 +81,7 @@ class SkinContext {
         return QDomNode();
     }
 
-    inline QDomElement selectElement(const QDomNode& node, const QString& nodeName) const {
+    static inline QDomElement selectElement(const QDomNode& node, const QString& nodeName) {
         QDomNode child = selectNode(node, nodeName);
         return child.toElement();
     }
@@ -263,7 +278,7 @@ class SkinContext {
     QString variableNodeToText(const QDomElement& element) const;
 
     QString m_xmlPath;
-    QDir m_skinBasePath;
+    QString m_skinBasePath;
     UserSettingsPointer m_pConfig;
 
     QHash<QString, QString> m_variables;

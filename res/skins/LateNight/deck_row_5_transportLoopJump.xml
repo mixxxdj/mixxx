@@ -92,7 +92,7 @@
             <Layout>horizontal</Layout>
             <SizePolicy>26f,min</SizePolicy>
             <Children>
-              <!-- put this spacer here so BeatSpinBox expands whith HiDPI scaling -->
+              <!-- put this spacer here so BeatSpinBox expands with HiDPI scaling -->
               <WidgetGroup><Size>0f,26f</Size></WidgetGroup>
               <BeatSpinBox>
                 <TooltipId>beatjump_size</TooltipId>

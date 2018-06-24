@@ -727,18 +727,24 @@ void Tooltips::addStandardTooltips() {
             << tr("Toggle Unit")
             << tr("Enable or disable this whole effect unit.");
     add("EffectUnit_mix")
-            << tr("Dry/Wet")
-            << tr("Adjust the balance between the original (dry) and processed (wet) signal for the whole effect unit.")
+            << tr("Mix")
+            << tr("Adjust the mixing of the dry (input) signal with the wet (output) signal of the effect unit")
+            << tr("D/W mode: Crossfade between dry and wet")
+            << tr("D+W mode: Add wet to dry")
             << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("EffectUnit_mix_mode")
+            << tr("Mix Mode")
+            << tr("Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit") + "\n"
+            << tr("D/W mode: Mix knob crossfades between dry and wet\n"
+                  "Use this to change the sound of the track with EQ and filter effects.") + "\n"
+            << tr("D+W mode: Mix knob adds wet to dry\n"
+                  "Use this to change only the effected (wet) signal with EQ and filter effects.");
 
     add("EffectUnit_super1")
             << tr("Super Knob")
             << tr("Controls the Meta Knob of all effects in this unit together.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
-
-    add("EffectUnit_insertion_type")
-            << tr("Insert/Send Toggle")
-            << tr("Insert/Send Toggle");
 
     add("EffectUnit_next_chain")
             << tr("Next Chain")
@@ -765,6 +771,16 @@ void Tooltips::addStandardTooltips() {
     add("EffectUnit_master_enabled")
             << tr("Assign Effect Unit")
             << tr("Route the master mix through this effect unit.")
+            << effectsWithinUnit;
+
+    add("EffectUnit_BusLeft_enabled")
+            << tr("Assign Effect Unit")
+            << tr("Route the left crossfader bus through this effect unit.")
+            << effectsWithinUnit;
+
+    add("EffectUnit_BusRight_enabled")
+            << tr("Assign Effect Unit")
+            << tr("Route the right crossfader bus through this effect unit.")
             << effectsWithinUnit;
 
     add("EffectUnit_deck_enabled")
@@ -869,4 +885,13 @@ void Tooltips::addStandardTooltips() {
     add("skin_settings")
             << tr("Skin Settings Menu")
             << tr("Show/hide skin settings menu");
+
+    // Sampler Bank Controls
+    add("SaveSamplerBank")
+            << tr("Save Sampler Bank")
+            << tr("Save the collection of samples loaded in the samplers.");
+    
+    add("LoadSamplerBank")
+            << tr("Load Sampler Bank")
+            << tr("Load a previously saved collection of samples into the samplers.");
 }

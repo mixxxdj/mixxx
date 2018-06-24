@@ -4,6 +4,10 @@ Description:
   Visible when mixer is hidden and Permanent Level Meters are enabled.
 Variables:
   group   : [ChannelN]
+
+
+Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
+Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
 -->
 <Template>
   <WidgetGroup>
@@ -31,10 +35,10 @@ Variables:
                 <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
                 <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
                 <Horizontal>false</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
+                <PeakHoldSize>4</PeakHoldSize>
+                <PeakHoldTime>800</PeakHoldTime>
+                <PeakFallTime>200</PeakFallTime>
+                <PeakFallStep>5</PeakFallStep>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,VuMeterL</ConfigKey>
                 </Connection>
@@ -58,10 +62,10 @@ Variables:
                 <PathVu>skin:/graphics/vumeter_floating_over.png</PathVu>
                 <PathBack>skin:/graphics/vumeter_floating.png</PathBack>
                 <Horizontal>false</Horizontal>
-                <PeakHoldSize>5</PeakHoldSize>
-                <PeakHoldTime>500</PeakHoldTime>
-                <PeakFallTime>50</PeakFallTime>
-                <PeakFallStep>2</PeakFallStep>
+                <PeakHoldSize>4</PeakHoldSize>
+                <PeakHoldTime>800</PeakHoldTime>
+                <PeakFallTime>200</PeakFallTime>
+                <PeakFallStep>5</PeakFallStep>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,VuMeterR</ConfigKey>
                 </Connection>

@@ -191,15 +191,15 @@ class Qt(Dependence):
 
     DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
-                         'windows': 'C:\\qt\\5.0.1'}
+                         'windows': 'C:\\qt\\5.10.1'}
 
     DEFAULT_QT5DIRS32 = {'linux': '/usr/lib/i386-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
-                         'windows': 'C:\\qt\\5.0.1'}
+                         'windows': 'C:\\qt\\5.10.1'}
 
     @staticmethod
     def qt5_enabled(build):
-        return int(util.get_flags(build.env, 'qt5', 0))
+        return int(util.get_flags(build.env, 'qt5', 1))
 
     @staticmethod
     def uic(build):
@@ -233,12 +233,32 @@ class Qt(Dependence):
     def enabled_modules(build):
         qt5 = Qt.qt5_enabled(build)
         qt_modules = [
-            'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
-            'QtSql', 'QtScript', 'QtNetwork',
-            'QtTest', 'QtScriptTools'
+            # Keep alphabetized.
+            'QtCore',
+            'QtGui',
+            'QtNetwork',
+            'QtOpenGL',
+            'QtScript',
+            'QtScriptTools',
+            'QtSql',
+            'QtSvg',
+            'QtTest',
+            'QtXml',
         ]
         if qt5:
-            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
+            qt_modules.extend([
+                # Keep alphabetized.
+                'QtConcurrent',
+                'QtWidgets',
+            ])
+            if build.platform_is_windows:
+                qt_modules.extend([
+                    # Keep alphabetized.
+                    'QtAccessibilitySupport',
+                    'QtEventDispatcherSupport',
+                    'QtFontDatabaseSupport',
+                    'QtThemeSupport',
+                ])
         return qt_modules
 
     @staticmethod
@@ -391,6 +411,23 @@ class Qt(Dependence):
                 # QtNetwork openssl-linked
                 build.env.Append(LIBS = 'crypt32')
 
+                # New libraries required by Qt5.
+                if qt5:
+                    build.env.Append(LIBS = 'dwmapi')  # qtwindows
+                    build.env.Append(LIBS = 'iphlpapi')  # qt5network
+                    build.env.Append(LIBS = 'libEGL')  # qt5opengl
+                    build.env.Append(LIBS = 'libGLESv2')  # qt5opengl
+                    build.env.Append(LIBS = 'mpr')  # qt5core
+                    build.env.Append(LIBS = 'netapi32')  # qt5core
+                    build.env.Append(LIBS = 'userenv')  # qt5core
+                    build.env.Append(LIBS = 'uxtheme')  # ?
+                    build.env.Append(LIBS = 'version')  # ?
+
+                    build.env.Append(LIBS = 'qtfreetype')
+                    build.env.Append(LIBS = 'qtharfbuzz')
+                    build.env.Append(LIBS = 'qtlibpng')
+                    build.env.Append(LIBS = 'qtpcre2')
+
                 # NOTE(rryan): If you are adding a plugin here, you must also
                 # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
                 # for it. Not all imageformats plugins are built as .libs when
@@ -409,11 +446,33 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'qico')
                 build.env.Append(LIBS = 'qsvg')
                 build.env.Append(LIBS = 'qtga')
+                build.env.Append(LIBS = 'qgif')
+                build.env.Append(LIBS = 'qjpeg')
 
-                # accessibility plugins
-                build.env.Append(LIBPATH=[
-                    os.path.join(build.env['QTDIR'],'plugins/accessible')])
-                build.env.Append(LIBS = 'qtaccessiblewidgets')
+                # accessibility plugins (gone in Qt5)
+                if not qt5:
+                    build.env.Append(LIBPATH=[
+                        os.path.join(build.env['QTDIR'],'plugins/accessible')])
+                    build.env.Append(LIBS = 'qtaccessiblewidgets')
+
+                # platform plugins (new in Qt5 for Windows)
+                if qt5:
+                    build.env.Append(LIBPATH=[
+                        os.path.join(build.env['QTDIR'],'plugins/platforms')])
+                    build.env.Append(LIBS = 'qwindows')
+
+                # styles (new in Qt5 for Windows)
+                if qt5:
+                    build.env.Append(LIBPATH=[
+                        os.path.join(build.env['QTDIR'],'plugins/styles')])
+                    build.env.Append(LIBS = 'qwindowsvistastyle')
+
+                # sqldrivers (new in Qt5? or did we just start enabling them)
+                if qt5:
+                    build.env.Append(LIBPATH=[
+                        os.path.join(build.env['QTDIR'],'plugins/sqldrivers')])
+                    build.env.Append(LIBS = 'qsqlite')
+
 
 
         # Set the rpath for linux/bsd/osx.
@@ -427,7 +486,6 @@ class Qt(Dependence):
             qtdir = build.env['QTDIR']
             framework_path = Qt.find_framework_libdir(qtdir, qt5)
             if os.path.isdir(framework_path):
-                build.env.Append(LINKFLAGS="-Wl,-rpath," + framework_path)
                 build.env.Append(LINKFLAGS="-L" + framework_path)
 
         # Mixxx requires C++11 support. Windows enables C++11 features by
@@ -455,11 +513,11 @@ class FidLib(Dependence):
         else:
             symbol = 'T_LINUX'
 
-        return [build.env.StaticObject('#lib/fidlib-0.9.10/fidlib.c',
+        return [build.env.StaticObject('#lib/fidlib/fidlib.c',
                                        CPPDEFINES=symbol)]
 
     def configure(self, build, conf):
-        build.env.Append(CPPPATH='#lib/fidlib-0.9.10/')
+        build.env.Append(CPPPATH='#lib/fidlib/')
 
 
 class ReplayGain(Dependence):
@@ -472,7 +530,7 @@ class ReplayGain(Dependence):
 
 
 class Ebur128Mit(Dependence):
-    INTERNAL_PATH = '#lib/libebur128-1.2.3'
+    INTERNAL_PATH = '#lib/libebur128'
     INTERNAL_LINK = False
 
     def sources(self, build):
@@ -523,7 +581,7 @@ class SoundTouch(Dependence):
 
         if build.platform_is_linux:
             # Try using system lib
-            if conf.CheckForPKG('soundtouch', '1.8.0'):
+            if conf.CheckForPKG('soundtouch', '2.0.0'):
                 # System Lib found
                 build.env.ParseConfig('pkg-config soundtouch --silence-errors \
                                       --cflags --libs')
@@ -562,7 +620,7 @@ class TagLib(Dependence):
                 "Could not find libtag or its development headers.")
 
         # Karmic seems to have an issue with mp4tag.h where they don't include
-        # the files correctly. Adding this folder ot the include path should fix
+        # the files correctly. Adding this folder to the include path should fix
         # it, though might cause issues. This is safe to remove once we
         # deprecate Karmic support. rryan 2/2011
         build.env.Append(CPPPATH='/usr/include/taglib/')
@@ -600,7 +658,7 @@ class FpClassify(Dependence):
     def enabled(self, build):
         return build.toolchain_is_gnu
 
-    # This is a wrapper arround the fpclassify function that pevents inlining
+    # This is a wrapper around the fpclassify function that prevents inlining
     # It is compiled without optimization and allows to use these function
     # from -ffast-math optimized objects
     def sources(self, build):
@@ -662,6 +720,7 @@ class MixxxCore(Feature):
                    "control/controlproxy.cpp",
                    "control/controlpushbutton.cpp",
                    "control/controlttrotary.cpp",
+                   "control/controlencoder.cpp",
 
                    "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefcontroller.cpp",
@@ -689,6 +748,7 @@ class MixxxCore(Feature):
                    "preferences/broadcastsettings.cpp",
                    "preferences/broadcastsettings_legacy.cpp",
                    "preferences/broadcastsettingsmodel.cpp",
+                   "preferences/effectsettingsmodel.cpp",
                    "preferences/broadcastprofile.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
@@ -706,31 +766,30 @@ class MixxxCore(Feature):
                    "effects/effectparameterslotbase.cpp",
                    "effects/effectparameterslot.cpp",
                    "effects/effectbuttonparameterslot.cpp",
-
                    "effects/effectsmanager.cpp",
                    "effects/effectchainmanager.cpp",
                    "effects/effectsbackend.cpp",
 
-                   "effects/native/nativebackend.cpp",
-                   "effects/native/bitcrushereffect.cpp",
-                   "effects/native/balanceeffect.cpp",
-                   "effects/native/linkwitzriley8eqeffect.cpp",
-                   "effects/native/bessel4lvmixeqeffect.cpp",
-                   "effects/native/bessel8lvmixeqeffect.cpp",
-                   "effects/native/threebandbiquadeqeffect.cpp",
-                   "effects/native/biquadfullkilleqeffect.cpp",
-                   "effects/native/loudnesscontoureffect.cpp",
-                   "effects/native/graphiceqeffect.cpp",
-                   "effects/native/parametriceqeffect.cpp",
-                   "effects/native/flangereffect.cpp",
-                   "effects/native/filtereffect.cpp",
-                   "effects/native/moogladder4filtereffect.cpp",
-                   "effects/native/reverbeffect.cpp",
-                   "effects/native/echoeffect.cpp",
-                   "effects/native/autopaneffect.cpp",
-                   "effects/native/phasereffect.cpp",
-                   "effects/native/metronomeeffect.cpp",
-                   "effects/native/tremoloeffect.cpp",
+                   "effects/builtin/builtinbackend.cpp",
+                   "effects/builtin/bitcrushereffect.cpp",
+                   "effects/builtin/balanceeffect.cpp",
+                   "effects/builtin/linkwitzriley8eqeffect.cpp",
+                   "effects/builtin/bessel4lvmixeqeffect.cpp",
+                   "effects/builtin/bessel8lvmixeqeffect.cpp",
+                   "effects/builtin/threebandbiquadeqeffect.cpp",
+                   "effects/builtin/biquadfullkilleqeffect.cpp",
+                   "effects/builtin/loudnesscontoureffect.cpp",
+                   "effects/builtin/graphiceqeffect.cpp",
+                   "effects/builtin/parametriceqeffect.cpp",
+                   "effects/builtin/flangereffect.cpp",
+                   "effects/builtin/filtereffect.cpp",
+                   "effects/builtin/moogladder4filtereffect.cpp",
+                   "effects/builtin/reverbeffect.cpp",
+                   "effects/builtin/echoeffect.cpp",
+                   "effects/builtin/autopaneffect.cpp",
+                   "effects/builtin/phasereffect.cpp",
+                   "effects/builtin/metronomeeffect.cpp",
+                   "effects/builtin/tremoloeffect.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectrack.cpp",
@@ -1000,6 +1059,7 @@ class MixxxCore(Feature):
                    "library/bpmdelegate.cpp",
                    "library/previewbuttondelegate.cpp",
                    "library/coverartdelegate.cpp",
+				   "library/tableitemdelegate.cpp",
 
                    "library/treeitemmodel.cpp",
                    "library/treeitem.cpp",
@@ -1205,6 +1265,7 @@ class MixxxCore(Feature):
             'preferences/dialog/dlgprefbeatsdlg.ui',
             'preferences/dialog/dlgprefdeckdlg.ui',
             'preferences/dialog/dlgprefcrossfaderdlg.ui',
+            'preferences/dialog/dlgpreflv2dlg.ui',
             'preferences/dialog/dlgprefeffectsdlg.ui',
             'preferences/dialog/dlgprefeqdlg.ui',
             'preferences/dialog/dlgpreferencesdlg.ui',
@@ -1258,9 +1319,17 @@ class MixxxCore(Feature):
 
             # In a release build we want to disable all Q_ASSERTs in Qt headers
             # that we include. We can't define QT_NO_DEBUG because that would
-            # mean turning off QDebug output. qt_noop() is what Qt defines
-            # Q_ASSERT to be when QT_NO_DEBUG is defined.
-            build.env.Append(CPPDEFINES="'Q_ASSERT(x)=qt_noop()'")
+            # mean turning off QDebug output. qt_noop() is what Qt defined
+            # Q_ASSERT to be when QT_NO_DEBUG is defined in Qt 5.9 and earlier.
+            # Now it is defined as static_cast<void>(false&&(x)) to support use
+            # in constexpr functions. We still use qt_noop on Windows since we
+            # can't specify static_cast<void>(false&&(x)) in a commandline
+            # macro definition, but it seems VS 2015 isn't bothered by the use
+            # qt_noop here, so we can keep it.
+            if build.platform_is_windows:
+                build.env.Append(CPPDEFINES="'Q_ASSERT(x)=qt_noop()'")
+            else:
+                build.env.Append(CPPDEFINES="'Q_ASSERT(x)=static_cast<void>(false&&(x))'")
 
         if int(SCons.ARGUMENTS.get('debug_assertions_fatal', 0)):
             build.env.Append(CPPDEFINES='MIXXX_DEBUG_ASSERTIONS_FATAL')
@@ -1322,10 +1391,13 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='/MP')
 
             # Generate debugging information for compilation units and
-            # executables linked regardless of whether we are creating a debug
-            # build. Having PDB files for our releases is helpful for debugging.
-            build.env.Append(LINKFLAGS='/DEBUG')
-            build.env.Append(CCFLAGS='/Zi /Fd${TARGET}.pdb')
+            # executables linked if we are creating a debug build or bundling
+            # PDBs is enabled.  Having PDB files for our releases is helpful for
+            # debugging, but increases link times and memory usage
+            # significantly.
+            if build.build_is_debug or build.bundle_pdbs:
+                build.env.Append(LINKFLAGS='/DEBUG')
+                build.env.Append(CCFLAGS='/Zi /Fd${TARGET}.pdb')
 
             if build.build_is_debug:
                 # Important: We always build Mixxx with the Multi-Threaded DLL

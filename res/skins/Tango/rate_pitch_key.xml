@@ -29,7 +29,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Size>1me,14f</Size>
                 <Children>
-                  <Template src="skin:button_1state.xml">
+                  <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">pitch_down</SetVariable>
                     <SetVariable name="ObjectName">KeyDown</SetVariable>
                     <SetVariable name="Size">12me,13f</SetVariable>
@@ -48,7 +48,7 @@ Variables:
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],rate_key_buttons</ConfigKey>
+                  <ConfigKey persist="true">[Tango],rate_key_controls</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /Key adjust buttons -->
@@ -96,7 +96,7 @@ Variables:
               </WidgetGroup><!-- /Key Display/Match -->
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],key_controls</ConfigKey>
+              <ConfigKey persist="true">[Tango],key_display_match</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Key Display/Match + Key adjust buttons -->
@@ -113,7 +113,7 @@ Variables:
                 <SetVariable name="ObjectName">SyncButtonOverlay</SetVariable>
                 <SetVariable name="Size">50f,18min</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
-                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_set_default</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_phase</SetVariable>
               </Template>
               <Number>
                 <ObjectName>BpmLabel</ObjectName>
@@ -137,7 +137,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Size>50f,14f</Size>
                 <Children>
-                  <Template src="skin:button_1state.xml">
+                  <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">rate_temp_down_rate_temp_down_small</SetVariable>
                     <SetVariable name="ObjectName">RateDown</SetVariable>
                     <SetVariable name="Size">13me,13f</SetVariable>
@@ -158,7 +158,7 @@ Variables:
               </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],rate_key_buttons</ConfigKey>
+              <ConfigKey persist="true">[Tango],rate_key_controls</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Rate adjust buttons -->
@@ -169,8 +169,8 @@ Variables:
             <MaximumSize>50,136</MaximumSize>
             <SizePolicy>f,me</SizePolicy>
             <TooltipId>rate</TooltipId>
-            <Handle>skin:/knobs_sliders/pitch_handle.svg</Handle>
-            <Slider scalemode="STRETCH">skin:/knobs_sliders/pitch_scale.svg</Slider>
+            <Handle>knobs_sliders/pitch_handle.svg</Handle>
+            <Slider scalemode="STRETCH">knobs_sliders/pitch_scale.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>
               <ConfigKey><Variable name="group"/>,rate</ConfigKey>

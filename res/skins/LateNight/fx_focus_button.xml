@@ -11,9 +11,9 @@ Variables:
   <WidgetGroup>
     <ObjectName>EffectFocusButton</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>f,me</SizePolicy>
+    <Size>30f,-1me</Size>
     <Children>
-      <WidgetGroup><Size>2f,-1min</Size></WidgetGroup>
+      <WidgetGroup><Size>5f,-1min</Size></WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>EffectFocusButton</ObjectName>
@@ -52,7 +52,7 @@ Variables:
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup><Size>2f,-1min</Size></WidgetGroup>
+      <WidgetGroup><Size>5f,-1min</Size></WidgetGroup>
     </Children>
     <Connection>
       <ConfigKey><Variable name="FxRack_FxUnit"/>,show_focus</ConfigKey>

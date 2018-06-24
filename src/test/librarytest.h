@@ -9,18 +9,22 @@
 #include "util/db/dbconnectionpooled.h"
 #include "track/globaltrackcache.h"
 
+namespace {
+    const bool kInMemoryDbConnection = true;
+} // anonymous namespace
 
 class LibraryTest : public MixxxTest,
-    public virtual /*implements*/ GlobalTrackCacheEvictor {
+    public virtual /*implements*/ GlobalTrackCacheSaver {
 
   public:
-    void onEvictingTrackFromCache(GlobalTrackCacheLocker* pCacheLocker, Track* pTrack) override {
-        m_trackCollection.saveTrack(pCacheLocker, pTrack);
+    void saveCachedTrack(Track* pTrack) noexcept override {
+        m_trackCollection.exportTrackMetadata(pTrack);
+        m_trackCollection.saveTrack(pTrack);
     }
 
   protected:
     LibraryTest()
-        : m_mixxxDb(config()),
+        : m_mixxxDb(config(), kInMemoryDbConnection),
           m_dbConnectionPooler(m_mixxxDb.connectionPool()),
           m_dbConnection(mixxx::DbConnectionPooled(m_mixxxDb.connectionPool())),
           m_trackCollection(config()) {
@@ -29,7 +33,6 @@ class LibraryTest : public MixxxTest,
         GlobalTrackCache::createInstance(this);
     }
     ~LibraryTest() override {
-        GlobalTrackCache::instance().evictAll();
         GlobalTrackCache::destroyInstance();
         m_trackCollection.disconnectDatabase();
     }

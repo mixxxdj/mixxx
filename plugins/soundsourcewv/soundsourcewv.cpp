@@ -6,6 +6,11 @@
 
 namespace mixxx {
 
+// TODO(XXX): Remove this ugly "extern" hack after getting rid of
+// the broken plugin architecture.
+LogLevel g_logLevel;
+LogLevel g_logFlushLevel;
+
 namespace {
 
 const Logger kLogger("SoundSourceWV");
@@ -62,7 +67,7 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
     m_wpc = WavpackOpenFileInputEx(&s_streamReader, m_pWVFile, m_pWVCFile,
             msg, openFlags, 0);
     if (!m_wpc) {
-        kLogger.debug() << "failed to open file : " << msg;
+        kLogger.warning() << "failed to open file : " << msg;
         return OpenResult::Failed;
     }
 
@@ -77,9 +82,18 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
         m_sampleScaleFactor = CSAMPLE_PEAK;
     } else {
         const int bitsPerSample = WavpackGetBitsPerSample(m_wpc);
-        const uint32_t wavpackPeakSampleValue = 1u
-                << (bitsPerSample - 1);
-        m_sampleScaleFactor = CSAMPLE_PEAK / wavpackPeakSampleValue;
+        if ((bitsPerSample >= 8) && (bitsPerSample <= 32)) {
+            // Range of signed sample values: [-2 ^ (bitsPerSample - 1), 2 ^ (bitsPerSample - 1) - 1]
+            const uint32_t absSamplePeak = 1u << (bitsPerSample - 1);
+            DEBUG_ASSERT(absSamplePeak > 0);
+            // Scaled range of sample values: [-CSAMPLE_PEAK, CSAMPLE_PEAK)
+            m_sampleScaleFactor = CSAMPLE_PEAK / absSamplePeak;
+        } else {
+            kLogger.warning()
+                    << "Invalid bits per sample:"
+                    << bitsPerSample;
+            return OpenResult::Aborted;
+        }
     }
 
     m_curFrameIndex = frameIndexMin();
@@ -258,9 +272,11 @@ int32_t SoundSourceWV::WriteBytesCallback(void* id, void* data, int32_t bcount)
 } // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider(int logLevel, int logFlushLevel) {
     // SoundSourceProviderWV is stateless and a single instance
     // can safely be shared
+    mixxx::g_logLevel = static_cast<mixxx::LogLevel>(logLevel);
+    mixxx::g_logFlushLevel = static_cast<mixxx::LogLevel>(logFlushLevel);
     static mixxx::SoundSourceProviderWV singleton;
     return &singleton;
 }

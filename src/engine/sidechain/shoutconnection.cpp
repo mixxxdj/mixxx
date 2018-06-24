@@ -26,6 +26,7 @@
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
+#include "util/compatibility.h"
 #include "util/logger.h"
 
 #include <engine/sidechain/shoutconnection.h>
@@ -52,8 +53,8 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_pConfig(pConfig),
           m_pProfile(profile),
           m_encoder(nullptr),
-          m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate")),
-          m_pBroadcastEnabled(new ControlProxy(BROADCAST_PREF_KEY, "enabled")),
+          m_pMasterSamplerate(new ControlProxy("[Master]", "samplerate", this)),
+          m_pBroadcastEnabled(new ControlProxy(BROADCAST_PREF_KEY, "enabled", this)),
           m_custom_metadata(false),
           m_firstCall(false),
           m_format_is_mp3(false),
@@ -899,7 +900,7 @@ QSharedPointer<FIFO<CSAMPLE>> ShoutConnection::getOutputFifo() {
 }
 
 bool ShoutConnection::threadWaiting() {
-    return m_threadWaiting;
+    return load_atomic(m_threadWaiting);
 }
 
 void ShoutConnection::run() {
@@ -996,4 +997,3 @@ void ShoutConnection::ignoreSigpipe() {
 #endif
 }
 #endif
-
