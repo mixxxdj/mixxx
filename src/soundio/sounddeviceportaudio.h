@@ -1,9 +1,10 @@
 #pragma once
 
-
 #include <portaudio.h>
+
 #include <QString>
 
+#include "control/pollingcontrolproxy.h"
 #include "soundio/sounddevice.h"
 #include "util/duration.h"
 #include "util/performancetimer.h"
@@ -72,7 +73,7 @@ class SoundDevicePortAudio : public SoundDevice {
     QString m_lastError;
     // Whether we have set the thread priority to realtime or not.
     bool m_bSetThreadPriority;
-    ControlProxy* m_pMasterAudioLatencyUsage;
+    PollingControlProxy m_masterAudioLatencyUsage;
     mixxx::Duration m_timeInAudioCallback;
     int m_framesSinceAudioLatencyUsageUpdate;
     int m_syncBuffers;

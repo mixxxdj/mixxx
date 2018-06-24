@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "audio/types.h"
+#include "control/pollingcontrolproxy.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
@@ -146,6 +147,6 @@ class SoundManager : public QObject {
 
     QAtomicInt m_underflowHappened;
     int m_underflowUpdateCount;
-    ControlProxy* m_pMasterAudioLatencyOverloadCount;
-    ControlProxy* m_pMasterAudioLatencyOverload;
+    PollingControlProxy m_masterAudioLatencyOverloadCount;
+    PollingControlProxy m_masterAudioLatencyOverload;
 };
