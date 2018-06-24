@@ -5,7 +5,7 @@
 #include <QScopedPointer>
 
 #include "test/librarytest.h"
-#include "library/autodj/autodjprocessor.h"
+#include "library/features/autodj/autodjprocessor.h"
 #include "control/controlpushbutton.h"
 #include "control/controlpotmeter.h"
 #include "control/controllinpotmeter.h"

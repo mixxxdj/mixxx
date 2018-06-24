@@ -16,6 +16,7 @@
 
 class WBaseWidget;
 class Library;
+class LibraryPaneManager;
 class KeyboardEventFilter;
 class PlayerManager;
 class EffectsManager;
@@ -108,8 +109,12 @@ class LegacySkinParser : public QObject, public SkinParser {
     // Library widgets.
     QWidget* parseTableView(const QDomElement& node);
     QWidget* parseSearchBox(const QDomElement& node);
-    QWidget* parseLibrary(const QDomElement& node);
+    QWidget* parseLibraryPane(const QDomElement& node);
     QWidget* parseLibrarySidebar(const QDomElement& node);
+    QWidget* parseLibrarySidebarButtons(const QDomElement& node);
+    QWidget* parseLibrarySidebarExpanded(const QDomElement& node);
+    QWidget* parseLibraryBreadCrumb(const QDomElement& node);
+    QWidget* parseLibrary(const QDomElement& node);
     QWidget* parseBattery(const QDomElement& node);
     QWidget* parseRecordingDuration(const QDomElement& node);
     QWidget* parseCoverArt(const QDomElement& node);
@@ -152,6 +157,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QHash<QString, QDomElement> m_templateCache;
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;
+    int m_paneId;
 };
 
 

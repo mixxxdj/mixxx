@@ -1,6 +1,9 @@
+#include <QLatin1String>
+#include <QStringBuilder>
+
 #include "library/treeitemmodel.h"
 
-#include "library/treeitem.h"
+#include "util/stringhelper.h"
 
 /*
  * Just a word about how the TreeItem objects and TreeItemModels are used in general:
@@ -26,7 +29,7 @@
  * - cratefeature.cpp
  * - *feature.cpp
  */
-TreeItemModel::TreeItemModel(QObject *parent)
+TreeItemModel::TreeItemModel(QObject* parent)
         : QAbstractItemModel(parent),
           m_pRootItem(std::make_unique<TreeItem>()) {
 }
@@ -45,19 +48,40 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
         return QVariant();
     }
 
-    TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-
-    // We use Qt::UserRole to ask for the data.
-    switch (role) {
-    case Qt::DisplayRole:
-        return item->getLabel();
-    case kDataRole:
-        return item->getData();
-    case kBoldRole:
-        return item->isBold();
-    default:
+    TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
+    if (item == nullptr) {
         return QVariant();
     }
+
+    // We use Qt::UserRole to ask for the datapath.
+    switch(role) {
+        case Qt::DisplayRole:
+            return item->getLabel();
+        case Qt::SizeHintRole:
+        {
+            QIcon icon(item->getIcon());
+            if (icon.isNull()) {
+                return QVariant();
+            }
+            QSize size(getDefaultIconSize());
+            size.setHeight(size.height() + 2);
+            return size;
+        }
+        case Qt::DecorationRole:
+            return item->getIcon();
+        case AbstractRole::RoleData:
+            return item->getData();
+        case AbstractRole::RoleBold:
+            return item->isBold();
+        case AbstractRole::RoleDivider:
+            return item->isDivider();
+        case AbstractRole::RoleBreadCrumb:
+            return getBreadCrumbString(item);
+        case AbstractRole::RoleGroupingLetter:
+            return StringHelper::getFirstCharForGrouping(item->getLabel());
+    }
+
+    return QVariant();
 }
 
 bool TreeItemModel::setData(const QModelIndex &a_rIndex,
@@ -70,17 +94,20 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
 
     // Set the relevant data.
     switch (a_iRole) {
-    case Qt::DisplayRole:
-        pItem->setLabel(a_rValue.toString());
-        break;
-    case kDataRole:
-        pItem->setData(a_rValue);
-        break;
-    case kBoldRole:
-        pItem->setBold(a_rValue.toBool());
-        break;
-    default:
-        return false;
+        case Qt::DisplayRole:
+            pItem->setLabel(a_rValue.toString());
+            break;
+        case AbstractRole::RoleData:
+            pItem->setData(a_rValue);
+            break;
+        case AbstractRole::RoleBold:
+            pItem->setBold(a_rValue.toBool());
+            break;
+        case AbstractRole::RoleDivider:
+            pItem->setDivider(a_rValue.toBool());
+            break;
+        default:
+            return false;
     }
 
     emit(dataChanged(a_rIndex, a_rIndex));
@@ -88,11 +115,16 @@ bool TreeItemModel::setData(const QModelIndex &a_rIndex,
 }
 
 Qt::ItemFlags TreeItemModel::flags(const QModelIndex &index) const {
-    if (index.isValid()) {
-        return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
-    } else {
+    if (!index.isValid())
         return 0;
+    Qt::ItemFlags flags = Qt::ItemIsEnabled;
+
+    bool divider = index.data(AbstractRole::RoleDivider).toBool();
+    if (!divider) {
+        flags |= Qt::ItemIsSelectable;
     }
+
+    return flags;
 }
 
 QVariant TreeItemModel::headerData(int section, Qt::Orientation orientation, int role) const {
@@ -164,7 +196,8 @@ TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
  * Before you can resize the data model dynamically by using 'insertRows' and 'removeRows'
  * make sure you have initialized
  */
-void TreeItemModel::insertTreeItemRows(QList<TreeItem*>& rows, int position, const QModelIndex& parent) {
+void TreeItemModel::insertTreeItemRows(
+        QList<TreeItem*>& rows, int position, const QModelIndex &parent) {
     if (rows.isEmpty()) {
         return;
     }
@@ -208,4 +241,58 @@ void TreeItemModel::triggerRepaint() {
     QModelIndex left = index(0, 0);
     QModelIndex right = index(rowCount() - 1, columnCount() - 1);
     emit(dataChanged(left, right));
+}
+
+//static
+QString TreeItemModel::getBreadCrumbString(TreeItem* pTree) {
+    // Base case
+    if (pTree == nullptr || pTree->feature() == nullptr) {
+        return QString();
+    }
+    else if (pTree->parent() == nullptr) {
+        return pTree->feature()->title().toString();
+    }
+
+    // Recursive case
+    QString text = pTree->getLabel();
+    QString next = getBreadCrumbString(pTree->parent());
+    return next % QLatin1String(" > ") % text;
+}
+
+//static
+QSize TreeItemModel::getDefaultIconSize() {
+    return QSize(32, 32);
+}
+
+void TreeItemModel::reloadTree() {
+    triggerRepaint();
+}
+
+bool TreeItemModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
+                               QObject* pSource) {
+    //qDebug() << "TreeItemModel::dropAccept() index=" << index << urls;
+    LibraryFeature* pFeature = getFeatureFromIndex(index);
+    if (pFeature == nullptr) {
+        return false;
+    }
+
+    return pFeature->dropAcceptChild(index, urls, pSource);
+}
+
+bool TreeItemModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
+    //qDebug() << "TreeItemModel::dragMoveAccept() index=" << index << url;
+    LibraryFeature* pFeature = getFeatureFromIndex(index);
+    if (pFeature == nullptr) {
+        return false;
+    }
+
+    return pFeature->dragMoveAcceptChild(index, url);
+}
+
+LibraryFeature* TreeItemModel::getFeatureFromIndex(const QModelIndex& index) const {
+    TreeItem* pTree = getItem(index);
+    if (pTree == nullptr) {
+        return nullptr;
+    }
+    return pTree->feature();
 }

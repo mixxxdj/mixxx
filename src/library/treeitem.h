@@ -4,29 +4,29 @@
 #include <QList>
 #include <QString>
 #include <QVariant>
+#include <QIcon>
 
 #include "library/libraryfeature.h"
-
 #include "util/memory.h"
 
+class CoverInfo;
 
 class TreeItem final {
   public:
     static const int kInvalidRow = -1;
 
-    TreeItem();
+	TreeItem(); // creates an invisible root item for the tree
     explicit TreeItem(
             LibraryFeature* pFeature,
             const QString& label = QString(),
             const QVariant& data = QVariant());
     ~TreeItem();
 
-
     /////////////////////////////////////////////////////////////////////////
     // Feature
     /////////////////////////////////////////////////////////////////////////
 
-    LibraryFeature* feature() const {
+    inline LibraryFeature* feature() const {
         return m_pFeature;
     }
 
@@ -35,13 +35,13 @@ class TreeItem final {
     // Parent
     /////////////////////////////////////////////////////////////////////////
 
-    TreeItem* parent() const {
+    inline TreeItem* parent() const {
         return m_pParent;
     }
-    bool hasParent() const {
+    inline bool hasParent() const {
         return m_pParent != nullptr;
     }
-    bool isRoot() const {
+    inline bool isRoot() const {
         return !hasParent();
     }
     // Returns the position of this object within its parent
@@ -53,10 +53,10 @@ class TreeItem final {
     // Children
     /////////////////////////////////////////////////////////////////////////
 
-    bool hasChildren() const {
+    inline bool hasChildren() const {
         return !m_children.empty();
     }
-    int childRows() const {
+    inline int childRows() const {
         return m_children.size();
     }
     TreeItem* child(int row) const;
@@ -81,36 +81,69 @@ class TreeItem final {
     // Payload
     /////////////////////////////////////////////////////////////////////////
 
-    void setLabel(const QString& label) {
+    inline void setLabel(const QString& label) {
         m_label = label;
     }
-    const QString& getLabel() const {
+
+    inline const QString& getLabel() const {
+		if (m_trackCount >= 0) {
+			return m_labelNumbered;
+		}
         return m_label;
     }
 
-    void setData(const QVariant& data) {
+    inline void setData(const QVariant& data) {
         m_data = data;
     }
-    const QVariant& getData() const {
+    inline const QVariant& getData() const {
         return m_data;
     }
 
-    void setIcon(const QIcon& icon) {
+    inline void setIcon(const QIcon& icon) {
         m_icon = icon;
     }
-    const QIcon& getIcon() {
+    inline const QIcon& getIcon() {
         return m_icon;
     }
 
-    void setBold(bool bold) {
-        m_bold = bold;
-    }
-    bool isBold() const {
-        return m_bold;
-    }
+	// Returns true if we have a leaf node
+    bool isPlaylist() const;
+    // Returns true if we have an inner node
+    bool isFolder() const;
+
+	inline void setBold(bool bold) {
+		m_bold = bold;
+	}
+	inline bool isBold() const {
+		return m_bold;
+	}
+
+	inline void setDivider(bool divider) {
+		m_divider = divider;
+	}
+	inline bool isDivider() const {
+		return m_divider;
+	}
+
+	inline void setCoverInfo(const CoverInfo& cover) {
+		m_cover = cover;
+	}
+	inline const CoverInfo& getCoverInfo() const {
+		return m_cover;
+	}
+
+	inline void setTrackCount(int count) {
+		m_trackCount = count;
+		m_labelNumbered = m_label + " (" + QString::number(m_trackCount) + ")";
+	}
+
+	inline int getTrackCount() {
+		return m_trackCount;
+	}
 
   private:
     void appendChild(TreeItem* pChild);
+	void insertChild(TreeItem* pChild, int row);
 
     LibraryFeature* m_pFeature;
 
@@ -118,9 +151,14 @@ class TreeItem final {
     QList<TreeItem*> m_children; // owned child items
 
     QString m_label;
+	QString m_labelNumbered;
     QVariant m_data;
     QIcon m_icon;
+    CoverInfo m_cover;
+
+	bool m_divider;
     bool m_bold;
+    int m_trackCount;
 };
 
 #endif // MIXXX_TREEITEM_H

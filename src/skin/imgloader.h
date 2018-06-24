@@ -25,6 +25,7 @@ class ImgLoader : public ImgSource {
 public:
     ImgLoader();
     QImage* getImage(const QString &fileName, double scaleFactor) const override;
+    void correctImageColors(QImage*) const override;
 };
 
 #endif

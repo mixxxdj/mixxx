@@ -83,3 +83,6 @@ QImage* ImgLoader::getImage(const QString& fileName, double scaleFactor) const {
     return pImage;
 }
 
+void ImgLoader::correctImageColors(QImage*) const {
+}
+

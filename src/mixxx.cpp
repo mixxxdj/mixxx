@@ -23,6 +23,7 @@
 #include <QGLWidget>
 #include <QUrl>
 #include <QtDebug>
+#include <QShortcut>
 
 #include "analyzer/analyzerqueue.h"
 #include "dialog/dlgabout.h"
@@ -294,11 +295,15 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     launchProgress(35);
 
     m_pLibrary = new Library(
-            this,
             pConfig,
             m_pDbConnectionPool,
             m_pPlayerManager,
             m_pRecordingManager);
+
+    new QShortcut(
+            QKeySequence(tr("Ctrl+F", "Search|Focus")),
+            this, SLOT(slotFocusSearch()));
+
     // Create the singular GlobalTrackCache instance immediately after
     // the Library has been created and BEFORE binding the
     // PlayerManager to it!
@@ -1224,6 +1229,7 @@ void MixxxMainWindow::rebootMixxxView() {
     // that need to be deleted -- otherwise we can't tell what features the skin
     // supports since the controls from the previous skin will be left over.
     m_pMenuBar->onNewSkinAboutToLoad();
+    m_pLibrary->destroyInterface();
 
     if (m_pWidgetParent) {
         m_pWidgetParent->hide();
@@ -1439,4 +1445,8 @@ void MixxxMainWindow::launchProgress(int progress) {
         m_pLaunchImage->progress(progress);
     }
     qApp->processEvents();
+}
+
+void MixxxMainWindow::slotFocusSearch() {
+    m_pLibrary->focusSearch();
 }

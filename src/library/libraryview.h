@@ -7,24 +7,27 @@
 #ifndef LIBRARYVIEW_H
 #define LIBRARYVIEW_H
 
+#include <QObject>
 #include <QString>
 
 class LibraryView {
   public:
-    virtual ~LibraryView() {};
+    virtual ~LibraryView() {}
 
     virtual void onShow() = 0;
     virtual bool hasFocus() const = 0;
     // reimplement if LibraryView should be able to search
-    virtual void onSearch(const QString& text) {Q_UNUSED(text);}
+    virtual void onSearch(const QString&) {}
+    virtual void onSearchStarting() {}
+    virtual void onSearchCleared() {}
 
     // If applicable, requests that the LibraryView load the selected
     // track. Does nothing otherwise.
-    virtual void loadSelectedTrack() {};
+    virtual void loadSelectedTrack() {}
 
-    virtual void slotSendToAutoDJBottom() {};
-    virtual void slotSendToAutoDJTop() {};
-    virtual void slotSendToAutoDJReplace() {};
+    virtual void slotSendToAutoDJBottom() {}
+    virtual void slotSendToAutoDJTop() {}
+    virtual void slotSendToAutoDJReplace() {}
 
     // If applicable, requests that the LibraryView load the selected track to
     // the specified group. Does nothing otherwise.

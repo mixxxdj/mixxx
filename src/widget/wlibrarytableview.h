@@ -12,6 +12,8 @@
 #include "library/libraryview.h"
 #include "track/track.h"
 #include "library/coverartcache.h"
+#include "library/dao/savedqueriesdao.h"
+
 #include "library/trackmodel.h"
 
 
@@ -25,6 +27,9 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     ~WLibraryTableView() override;
     void moveSelection(int delta) override;
 
+    virtual void restoreQuery(const SavedSearchQuery& query);
+    virtual SavedSearchQuery saveQuery(SavedSearchQuery query = SavedSearchQuery()) const;
+    
     /**
      * @brief saveVScrollBarPos function saves current position of scrollbar
      * using string key - can be any value but should invariant for model
@@ -45,10 +50,13 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void trackSelected(TrackPointer pTrack);
     void onlyCachedCoverArt(bool);
     void scrollValueChanged(int);
+    
 
   public slots:
-    void saveVScrollBarPos(); // these slosts remain for compatibility
-    void restoreVScrollBarPos();
+    void saveView();
+    void restoreView();
+    void saveVScrollBarPos() {} // these slosts remain for compatibility
+    void restoreVScrollBarPos() {}
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
     void setSelectedClick(bool enable);
@@ -64,6 +72,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     // The position of the vertical scrollbar slider, eg. before a search is
     // executed
     int m_iSavedVScrollBarPos;
+    int m_savedSortColumn;
+    Qt::SortOrder m_savedSortOrder;
 };
 
 

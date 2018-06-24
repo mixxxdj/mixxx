@@ -7,46 +7,57 @@
 #ifndef LIBRARY_H
 #define LIBRARY_H
 
-#include <QList>
-#include <QObject>
 #include <QAbstractItemModel>
 #include <QFont>
+#include <QHash>
+#include <QList>
+#include <QObject>
 
+#include "library/scanner/libraryscanner.h"
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "recording/recordingmanager.h"
-#include "analysisfeature.h"
-#include "library/coverartcache.h"
-#include "library/setlogfeature.h"
-#include "library/scanner/libraryscanner.h"
+#include "util/parented_ptr.h"
+#include "util/memory.h"
 #include "util/db/dbconnectionpool.h"
 
-class TrackModel;
-class TrackCollection;
-class SidebarModel;
-class LibraryFeature;
-class LibraryTableModel;
-class WLibrarySidebar;
-class WLibrary;
-class WSearchLineEdit;
-class MixxxLibraryFeature;
-class PlaylistFeature;
+class AnalysisFeature;
 class CrateFeature;
-class LibraryControl;
 class KeyboardEventFilter;
+class LibraryPaneManager;
+class LibraryControl;
+class LibraryFeature;
+class LibrarySidebarExpandedManager;
+class LibraryView;
+class TracksFeature;
+class PlaylistFeature;
 class PlayerManagerInterface;
+class TrackCollection;
+class WBaseLibrary;
+class WLibraryPane;
+class WLibrarySidebar;
+class WLibraryBreadCrumb;
+class WButtonBar;
+class WSearchLineEdit;
+class TreeItem;
 
 class Library: public QObject,
     public virtual /*implements*/ GlobalTrackCacheSaver {
     Q_OBJECT
+public:
+    enum RemovalType {
+        LeaveTracksUnchanged = 0,
+        HideTracks,
+        PurgeTracks
+    };
 
-  public:
+    static const int kDefaultRowHeightPx;
+
     static const QString kConfigGroup;
 
     static const ConfigKey kConfigKeyRepairDatabaseOnNextRestart;
 
-    Library(QObject* parent,
-            UserSettingsPointer pConfig,
+    Library(UserSettingsPointer pConfig,
             mixxx::DbConnectionPoolPtr pDbConnectionPool,
             PlayerManagerInterface* pPlayerManager,
             RecordingManager* pRecordingManager);
@@ -56,12 +67,22 @@ class Library: public QObject,
         return m_pDbConnectionPool;
     }
 
-    void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* pKeyboard);
-    void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
+    void bindSearchBar(WSearchLineEdit* searchLine, int id);
+    void bindSidebarButtons(WButtonBar* sidebar);
+    void bindPaneWidget(WLibraryPane *libraryWidget,
+                        KeyboardEventFilter* pKeyboard, int paneId);
+    void bindSidebarExpanded(WBaseLibrary *expandedPane,
+                             KeyboardEventFilter* pKeyboard);
+    void bindBreadCrumb(WLibraryBreadCrumb *pBreadCrumb, int paneId);
+
+    void destroyInterface();
+    LibraryView* getActiveView();
 
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
+
+    void paneCollapsed(int paneId);
+    void paneUncollapsed(int paneId);
 
     inline int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
@@ -71,27 +92,32 @@ class Library: public QObject,
         return m_trackTableFont;
     }
 
-    //static Library* buildDefaultLibrary();
+    void switchToFeature(LibraryFeature* pFeature);
+    void showBreadCrumb(int paneId, TreeItem* pTree);
+    void showBreadCrumb(int paneId, const QString& text, const QIcon& icon);
+    void restoreSearch(int paneId, const QString& text);
+    void restoreSaveButton(int paneId);
+    void paneFocused(LibraryPaneManager *pPane);
+    void panePreselected(LibraryPaneManager* pPane, bool value);
 
-    enum RemovalType {
-        LeaveTracksUnchanged = 0,
-        HideTracks,
-        PurgeTracks
-    };
+    int getFocusedPaneId();
+    int getPreselectedPaneId();
 
-    static const int kDefaultRowHeightPx;
+    void focusSearch();
 
     void setFont(const QFont& font);
     void setRowHeight(int rowHeight);
     void setEditMedatataSelectedClick(bool enable);
 
   public slots:
-    void slotShowTrackModel(QAbstractItemModel* model);
-    void slotSwitchToView(const QString& view);
+
+    void slotActivateFeature(LibraryFeature* pFeature);
+    void slotHoverFeature(LibraryFeature* pFeature);
+
+    // Updates the focus from the feature before changing the view
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
     void slotLoadLocationToPlayer(QString location, QString group);
-    void slotRestoreSearch(const QString& text);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
@@ -100,19 +126,19 @@ class Library: public QObject,
     void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void onSkinLoadFinished();
 
+    void slotSetHoveredFeature(LibraryFeature* pFeature);
+    void slotResetHoveredFeature(LibraryFeature* pFeature);
+    void slotSetFocusedFeature(LibraryFeature* pFeature);
+    void slotResetFocusedFeature(LibraryFeature* pFeature);
+
     void scan() {
         m_scanner.scan();
     }
 
   signals:
-    void showTrackModel(QAbstractItemModel* model);
-    void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
-    void restoreSearch(const QString&);
-    void search(const QString& text);
-    void searchCleared();
-    void searchStarting();
+
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
@@ -126,29 +152,54 @@ class Library: public QObject,
     void scanFinished();
 
   private:
+    // If the pane exists returns it, otherwise it creates the pane
+    LibraryPaneManager* getOrCreatePane(int paneId);
+    LibraryPaneManager* getFocusedPane();
+    LibraryPaneManager* getPreselectedPane();
+
+    void createTrackCache();
+    void createFeatures(
+            UserSettingsPointer pConfig,
+            PlayerManagerInterface *pPlayerManager,
+            RecordingManager* pRecordingManager);
+
+    void handleFocus();
+    void handlePreselection();
+
     // Callback for GlobalTrackCache
     void saveCachedTrack(Track* pTrack) noexcept override;
+
 
     const UserSettingsPointer m_pConfig;
 
     // The Mixxx database connection pool
     const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 
-    SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
-    LibraryControl* m_pLibraryControl;
-    QList<LibraryFeature*> m_features;
-    const static QString m_sTrackViewName;
-    const static QString m_sAutoDJViewName;
-    MixxxLibraryFeature* m_pMixxxLibraryFeature;
+    TracksFeature* m_pTracksFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
+    LibraryControl* m_pLibraryControl;
     LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
     bool m_editMetadataSelectedClick;
     QScopedPointer<ControlObject> m_pKeyNotation;
+
+    QHash<int, LibraryPaneManager*> m_panes;
+    std::unique_ptr<LibrarySidebarExpandedManager> m_pSidebarExpanded;
+    QList<LibraryFeature*> m_features;
+    QSet<int> m_collapsedPanes;
+    QHash<int, LibraryFeature*> m_savedFeatures;
+    // Used to show the preselected pane when the mouse is over the button
+    LibraryFeature* m_hoveredFeature;
+    LibraryFeature* m_focusedFeature;
+
+    // Can be any integer as it's used with a HashMap
+    int m_focusedPaneId;
+    int m_preselectedPane;
+    int m_previewPreselectedPane;
 };
 
 #endif /* LIBRARY_H */

@@ -6,49 +6,49 @@
 	"Shade" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 	http://creativecommons.org/licenses/by-sa/3.0/
 
-	With every copy of the work, you are required to either provide a copy of the license it self
-	or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
+    With every copy of the work, you are required to either provide a copy of the license it self
+    or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
 
-	You are free:
-	to Share - to copy, distribute and transmit the work
-	to Remix - to adapt the work
+    You are free:
+    to Share - to copy, distribute and transmit the work
+    to Remix - to adapt the work
 
-	Under the following conditions:
-	Attribution - You must attribute the work in the manner specified by the author or licensor
-	(but not in any way that suggests that they endorse you or your use of the work).
-	A attribution should include the following: The name of the author and/or licensor,
-	the title of the work, the URL that is associated with the work.
+    Under the following conditions:
+    Attribution - You must attribute the work in the manner specified by the author or licensor
+    (but not in any way that suggests that they endorse you or your use of the work).
+    A attribution should include the following: The name of the author and/or licensor,
+    the title of the work, the URL that is associated with the work.
 
-	Share Alike - If you alter, transform, or build upon this work, you may distribute
-	the resulting work only under the same or similar license to this one.
+    Share Alike - If you alter, transform, or build upon this work, you may distribute
+    the resulting work only under the same or similar license to this one.
 
-	See CHANGELOG.txt for the list of changes.
-	-->
+    See CHANGELOG.txt for the list of changes.
+    -->
 
 <!DOCTYPE skin>
 <skin>
-	<!--
-	############################################################################################
-	############################################################################################
-	Mixxx skin documentation:
-	http://mixxx.org/wiki/doku.php/creating_skins
+    <!--
+    ############################################################################################
+    ############################################################################################
+    Mixxx skin documentation:
+    http://mixxx.org/wiki/doku.php/creating_skins
 
-	List of controls:
-	http://mixxx.org/wiki/doku.php/mixxxcontrols
+    List of controls:
+    http://mixxx.org/wiki/doku.php/mixxxcontrols
 
-	Qt Style Sheets documentation:
-	https://qt-project.org/doc/qt-4.8/stylesheet.html
+    Qt Style Sheets documentation:
+    https://qt-project.org/doc/qt-4.8/stylesheet.html
 
-	Debugging:
-	To outline WidgetGroups change all occurrences (except this one ;-) of
-	"QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
+    Debugging:
+    To outline WidgetGroups change all occurrences (except this one ;-) of
+    "QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
 
-	Parent WidgedGroups are outlined one pixel solid red;
-		Child WidgedGroups are outlined one pixel solid yellow;
-			Grandchild WidgedGroups are outlined one pixel solid green;
-	############################################################################################
-	############################################################################################
-	-->
+    Parent WidgedGroups are outlined one pixel solid red;
+        Child WidgedGroups are outlined one pixel solid yellow;
+            Grandchild WidgedGroups are outlined one pixel solid green;
+    ############################################################################################
+    ############################################################################################
+    -->
 
 	<manifest>
 		<title>Shade</title>
@@ -70,6 +70,7 @@
 			<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
 			<attribute persist="true" config_key="[Library],show_coverart">0</attribute>
 			<attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+            <attribute persist="true" config_key="[Library],show_icon_text">1</attribute>
 			<attribute persist="false" config_key="[Shade],looping">0</attribute>
 
 			<!--Disable hidden effect routing Buttons-->
@@ -153,81 +154,83 @@
 			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Microphone2]_enable">0</attribute>
 			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Auxiliary1]_enable">0</attribute>
 			<attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[Auxiliary2]_enable">0</attribute>
-		</attributes>
-	</manifest>
+        </attributes>
+    </manifest>
 
 
-	<!--
-	**********************************************
-	General- Skin Colour Scheme
-	**********************************************
-	-->
-	<Schemes>
-		<Scheme>
-			<Name>Classic</Name>
-			<Filters/>
-		</Scheme>
-		<Scheme>
-			<Name>Dark</Name>
-			<Filters>
-				<HSVTweak>
+    <LibraryIconsColor>#e74421</LibraryIconsColor>
+
+    <!--
+    **********************************************
+    General- Skin Colour Scheme
+    **********************************************
+    -->
+    <Schemes>
+        <Scheme>
+            <Name>Classic</Name>
+            <Filters/>
+        </Scheme>
+        <Scheme>
+            <Name>Dark</Name>
+            <Filters>
+                <HSVTweak>
 					<HConst>75</HConst>
-					<SConst>-30</SConst>
-					<VConst>-30</VConst>
-				</HSVTweak>
-				<Add>
-					<Amount>-40</Amount>
-				</Add>
-			</Filters>
+                    <SConst>-30</SConst>
+                    <VConst>-30</VConst>
+                </HSVTweak>
+                <Add>
+                    <Amount>-40</Amount>
+                </Add>
+            </Filters>
 			<Style src="skin:dark.qss"/>
-		</Scheme>
-		<Scheme>
-			<Name>Summer Sunset</Name>
-			<Filters>
-				<HSVTweak>
-					<SMin>100</SMin>
+        </Scheme>
+        <Scheme>
+            <Name>Summer Sunset</Name>
+            <Filters>
+                <HSVTweak>
+                    <SMin>100</SMin>
 					<VFact>1.0</VFact>
-					<HFact>0.3</HFact>
-				</HSVTweak>
-				<HSVTweak>
-					<SMax>50</SMax>
-					<HFact>0</HFact>
-					<HConst>50</HConst>
-					<SConst>120</SConst>
-					<VConst>-10</VConst>
-				</HSVTweak>
-			</Filters>
+                    <HFact>0.3</HFact>
+                </HSVTweak>
+                <HSVTweak>
+                    <SMax>50</SMax>
+                    <HFact>0</HFact>
+                    <HConst>50</HConst>
+                    <SConst>120</SConst>
+                    <VConst>-10</VConst>
+                </HSVTweak>
+            </Filters>
 			<Style src="skin:summer_sunset.qss"/>
-		</Scheme>
-	</Schemes>
+        </Scheme>
+    </Schemes>
 
 
-	<!--
-	############################################################################################
-	############################################################################################
-	General- Main background picture
-	############################################################################################
-	############################################################################################
-	-->
+    <!--
+    ############################################################################################
+    ############################################################################################
+    General- Main background picture
+    ############################################################################################
+    ############################################################################################
+    -->
 
-	<ObjectName>Mixxx</ObjectName>
-	<Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
-	<Size>1008e,500e</Size>
-	<Layout>vertical</Layout>
+    <ObjectName>Mixxx</ObjectName>
+    <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
+    <Size>1008e,500e</Size>
+    <Layout>vertical</Layout>
     <LaunchImageStyle>
-    	LaunchImage { background-color: #202020; }
+        LaunchImage { background-color: #202020; }
         QLabel {
-        	image: url(skin:/style/mixxx-icon-logo-symbolic.png);
-          	padding:0;
+            image: url(skin:/style/mixxx-icon-logo-symbolic.png);
+            padding:0;
             margin:0;
             border:none;
             min-width: 208px;
             min-height: 48px;
-    	    max-width: 208px;
+            max-width: 208px;
             max-height: 48px;
         }
         QProgressBar {
-        	background-color: #202020;
+            background-color: #202020;
             border:none;
             min-width: 208px;
             min-height: 3px;
@@ -287,19 +290,19 @@
 											<Size>5f,64f</Size>
 											<BackPath>style/style_bg_deck_border.png</BackPath>
 											<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-										</WidgetGroup>
-		 					        </Children>
-								</WidgetGroup>
- 					        </Children>
-					    </WidgetGroup>
-					</Children>
-				</WidgetGroup>
-				<WidgetGroup>
+                                        </WidgetGroup>
+                                    </Children>
+                                </WidgetGroup>
+                            </Children>
+                        </WidgetGroup>
+                    </Children>
+                </WidgetGroup>
+                <WidgetGroup>
 					<Size>261f,233f</Size>
 					<Children>
 						<Template src="skin:mixer_panel.xml">
 						</Template>
-					</Children>
+                    </Children>
 				</WidgetGroup>
 				<WidgetGroup>
   					<Size>0e,233f</Size>
@@ -364,21 +367,21 @@
 		</Connection>
 	</WidgetGroup>
 
-		<!--
-		############################################################################################
-		############################################################################################
-		WidgetGroup : Show/hide Samplers, Preview Deck, and shrink Library
-		############################################################################################
-		############################################################################################
-		-->
-		<WidgetGroup>
-			<MinimumSize>1008,105</MinimumSize>
-			<SizePolicy>me,me</SizePolicy>
-			<Layout>vertical</Layout>
-			<!--deactivate the standard
-			<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-			cause push buttons in library will show up with wrong margin/padding -->
-			<Children>
+        <!--
+        ############################################################################################
+        ############################################################################################
+        WidgetGroup : Show/hide Samplers, Preview Deck, and shrink Library
+        ############################################################################################
+        ############################################################################################
+        -->
+        <WidgetGroup>
+            <MinimumSize>1008,105</MinimumSize>
+            <SizePolicy>me,me</SizePolicy>
+            <Layout>vertical</Layout>
+            <!--deactivate the standard
+            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+            cause push buttons in library will show up with wrong margin/padding -->
+            <Children>
 				<WidgetGroup>
 				  <SizePolicy>me,f</SizePolicy>
 				  <Layout>horizontal</Layout>
@@ -474,7 +477,7 @@
 											</Style>
 											<Layout>horizontal</Layout>
 											<Children>
-                        <Template src="skin:preview_deck.xml"/>
+											    <Template src="skin:preview_deck.xml"/>
 											</Children>
 											<Connection>
 												<ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
@@ -509,15 +512,23 @@
 									<Style>QGroupBox {}</Style>
 									<Layout>vertical</Layout>
 									<SizePolicy>me,me</SizePolicy>
-									<Children>
-										<Library></Library>
-									</Children>
-								</WidgetGroup>
-							</Children>
-						</Splitter>
-					</Children>
-				</WidgetGroup>
-			</Children>
-		</WidgetGroup>
-	</Children>
+                                    <Children>
+                                        <LibraryBreadCrumb>
+                                            <Id>1</Id>
+                                        </LibraryBreadCrumb>
+                                        <SearchBox>
+                                            <Id>1</Id>
+                                        </SearchBox>
+                                        <LibraryPane>
+                                            <Id>1</Id>
+                                        </LibraryPane>
+                                    </Children>
+                                </WidgetGroup>
+                            </Children>
+                        </Splitter>
+                    </Children>
+                </WidgetGroup>
+            </Children>
+        </WidgetGroup>
+    </Children>
 </skin>

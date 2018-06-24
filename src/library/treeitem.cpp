@@ -28,7 +28,9 @@
 TreeItem::TreeItem()
     : m_pFeature(nullptr),
       m_pParent(nullptr),
-      m_bold(false) {
+	  m_divider(false),
+      m_bold(false),
+	  m_trackCount(-1) {
 }
 
 TreeItem::TreeItem(
@@ -39,12 +41,22 @@ TreeItem::TreeItem(
       m_pParent(nullptr),
       m_label(label),
       m_data(data),
-      m_bold(false) {
+	  m_divider(false),
+      m_bold(false),
+	  m_trackCount(-1) {
     DEBUG_ASSERT(m_pFeature != nullptr);
 }
 
 TreeItem::~TreeItem() {
     qDeleteAll(m_children);
+}
+
+bool TreeItem::isPlaylist() const {
+    return (m_children.count() == 0);
+}
+
+bool TreeItem::isFolder() const {
+	return (m_children.count() != 0);
 }
 
 int TreeItem::parentRow() const {
@@ -70,6 +82,16 @@ void TreeItem::appendChild(TreeItem* pChild) {
     pChild->m_pParent = this;
 }
 
+void TreeItem::insertChild(TreeItem* pChild, int row) {
+	DEBUG_ASSERT(row >= 0);
+	DEBUG_ASSERT(feature() != nullptr);
+	DEBUG_ASSERT(pChild != nullptr);
+	DEBUG_ASSERT(pChild->feature() == feature());
+	DEBUG_ASSERT(!pChild->hasParent());
+	m_children.insert(row, pChild);
+	pChild->m_pParent = this;
+}
+
 TreeItem* TreeItem::appendChild(
         const QString& label,
         const QVariant& data) {
@@ -92,11 +114,10 @@ void TreeItem::insertChildren(QList<TreeItem*>& children, int row, int count) {
     DEBUG_ASSERT(count <= children.size());
     DEBUG_ASSERT(row >= 0);
     DEBUG_ASSERT(row <= m_children.size());
-    for (int counter = 0; counter < count; ++counter) {
+    for (int counter = row; counter < count + row; ++counter) {
         DEBUG_ASSERT(!children.empty());
-        TreeItem* pChild = children.front();
-        appendChild(pChild);
-        children.pop_front();
+        TreeItem* pChild = children.takeFirst();
+        insertChild(pChild, counter);
     }
 }
 

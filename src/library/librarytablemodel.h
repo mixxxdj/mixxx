@@ -17,6 +17,10 @@ class LibraryTableModel : public BaseSqlTableModel {
     // number of successful additions.
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     TrackModel::CapabilitiesFlags getCapabilities() const final;
+
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    using QObject::parent;
+#endif
 };
 
 #endif

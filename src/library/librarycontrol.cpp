@@ -1,3 +1,4 @@
+#include <widget/wlibrarypane.h>
 #include "library/librarycontrol.h"
 
 #include <QApplication>
@@ -9,7 +10,6 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "mixer/playermanager.h"
-#include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wtracktableview.h"
 #include "library/library.h"
@@ -48,7 +48,6 @@ void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
 LibraryControl::LibraryControl(Library* pLibrary)
         : QObject(pLibrary),
           m_pLibrary(pLibrary),
-          m_pLibraryWidget(nullptr),
           m_pSidebarWidget(nullptr),
           m_numDecks("[Master]", "num_decks", this),
           m_numSamplers("[Master]", "num_samplers", this),
@@ -218,30 +217,16 @@ void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             this, SLOT(sidebarWidgetDeleted()));
 }
 
-void LibraryControl::bindWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
-    Q_UNUSED(pKeyboard);
-    if (m_pLibraryWidget) {
-        disconnect(m_pLibraryWidget, 0, this, 0);
-    }
-    m_pLibraryWidget = pLibraryWidget;
-    connect(m_pLibraryWidget, SIGNAL(destroyed()),
-            this, SLOT(libraryWidgetDeleted()));
-}
-
-void LibraryControl::libraryWidgetDeleted() {
-    m_pLibraryWidget = nullptr;
-}
-
 void LibraryControl::sidebarWidgetDeleted() {
     m_pSidebarWidget = nullptr;
 }
 
 void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibrary) {
         return;
     }
 
-    LibraryView* activeView = m_pLibraryWidget->getActiveView();
+    LibraryView* activeView = m_pLibrary->getActiveView();
     if (!activeView) {
         return;
     }
@@ -249,12 +234,9 @@ void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
 }
 
 void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
-    if (!m_pLibraryWidget) {
-        return;
-    }
 
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
+        LibraryView* activeView = m_pLibrary->getActiveView();
         if (!activeView) {
             return;
         }
@@ -263,12 +245,8 @@ void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
 }
 
 void LibraryControl::slotAutoDjAddTop(double v) {
-    if (!m_pLibraryWidget) {
-        return;
-    }
-
     if (v > 0) {
-        auto activeView = m_pLibraryWidget->getActiveView();
+        LibraryView* activeView = m_pLibrary->getActiveView();
         if (!activeView) {
             return;
         }
@@ -277,12 +255,8 @@ void LibraryControl::slotAutoDjAddTop(double v) {
 }
 
 void LibraryControl::slotAutoDjAddBottom(double v) {
-    if (!m_pLibraryWidget) {
-        return;
-    }
-
     if (v > 0) {
-        auto activeView = m_pLibraryWidget->getActiveView();
+        LibraryView* activeView = m_pLibrary->getActiveView();
         if (!activeView) {
             return;
         }
@@ -303,13 +277,9 @@ void LibraryControl::slotSelectPrevTrack(double v) {
 }
 
 void LibraryControl::slotSelectTrack(double v) {
-    if (!m_pLibraryWidget) {
-        return;
-    }
-
     int i = (int)v;
 
-    auto activeView = m_pLibraryWidget->getActiveView();
+    LibraryView* activeView = m_pLibrary->getActiveView();
     if (!activeView) {
         return;
     }
@@ -453,11 +423,12 @@ void LibraryControl::slotToggleSelectedSidebarItem(double v) {
 }
 
 void LibraryControl::slotGoToItem(double v) {
-    if (!m_pLibraryWidget) {
+    if (!m_pLibrary) {
         return;
     }
+
     // Load current track if a LibraryView object has focus
-    const auto activeView = m_pLibraryWidget->getActiveView();
+    LibraryView* activeView  = m_pLibrary->getActiveView();
     if (activeView && activeView->hasFocus()) {
         return slotLoadSelectedIntoFirstStopped(v);
     }

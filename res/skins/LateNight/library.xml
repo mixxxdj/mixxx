@@ -44,14 +44,7 @@
                     <Collapsible>0,0</Collapsible>
                     <Children>
                       <!--Library Tree View-->
-                      <WidgetGroup>
-                        <ObjectName>SidebarContainer</ObjectName>
-                        <Size>1min,50min</Size>
-                        <Layout>vertical</Layout>
-                        <Children>
-                          <LibrarySidebar></LibrarySidebar>
-                        </Children>
-                      </WidgetGroup>
+                      <LibrarySidebar></LibrarySidebar>
                       <!--Cover Art-->
                       <CoverArt>
                         <SizePolicy>me,me</SizePolicy>
@@ -66,17 +59,13 @@
 
                 </Children>
               </WidgetGroup>
-              <WidgetGroup>
-                <!-- Library Table-->
-                <Style>QGroupBox {}</Style>
-                <Layout>vertical</Layout>
-                <Children>
-                  <Library>
-                    <BgColor>#585858</BgColor>
-                    <FgColor>#eece33</FgColor>
-                  </Library>
-                </Children>
-              </WidgetGroup>
+              
+              <!-- Library Table-->
+              <Library>
+                <BgColor>#585858</BgColor>
+                <FgColor>#eece33</FgColor>
+              </Library>
+
             </Children>
           </Splitter>
 

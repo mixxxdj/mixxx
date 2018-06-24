@@ -112,6 +112,24 @@ WTime {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
+#SpinnyBorder {
+  border: 1px solid #585858;
+}
+
+#SpinnyContainer {
+  border: 0px;
+  background-color: #0f0f0f;
+}
+
+#SpinnyBorder {
+  border: 1px solid #585858;
+}
+
+#SpinnyContainer {
+  border: 0px;
+  background-color: #0f0f0f;
+}
+
 #DeckRow_1_KeyVinylFx {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-bottom: 1px solid #585858;
@@ -1345,25 +1363,127 @@ WEffectSelector {
 
 /* Library styling is hard */
 
-#LibrarySingleton {
-  /* This doesn't work as expected:
-  it appears LibrarySingleton is displayed twice, so
-  padding/margin would double.
-  Placed a plain spacer in library.xml which works reliably
-  padding-top: 5px;*/
+#LibrarySingleton {/*
+  padding-top: 5px;
+  padding-bottom: 2px;*/
 }
 
 #Library {
+  border-left: 0px solid #585858;
+  background-color: #0e0e0e;
+  padding-top: 5px;
   padding-bottom: 2px;
-  /* make a smooth transition from toolbar at the bottom to
-    darker skin background at the top.
-    Splitter handles should be transparent for this to work. */
-  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #0f0f0f,
-    stop:1 #1e1e1e);
+  /*border-top: 1px solid #585858;*/
 }
 
-QTableView, QTextBrowser, QTreeView {
+#LibrarySidebarExpanded QWidget {
+  background-color: #0f0f0f;
+}
+
+#LibrarySidebarExpanded QScrollArea {
+  border:none;
+}
+
+#LibrarySidebarExpanded QTabWidget QTreeView, #DlgAutoDJ QScrollArea {
+  margin: 0;
+  border: none;
+}
+
+#LibrarySidebarExpanded QTabWidget {
+  border: none
+}
+
+#LibrarySidebarExpanded QTabWidget::pane,
+#LibrarySidebarExpanded #DlgRecording,
+#LibrarySidebarExpanded #DlgAnalysis {
+  border: 1px solid #585858;
+}
+
+#LibrarySidebarExpanded QTabBar::tab {
+  padding: 5px;
+  border: none;
+  color: #cfb32c;
+  background-color: #191919;
+  border-top-left-radius: 2px;
+  border-top-right-radius: 2px;
+}
+
+#LibrarySidebarExpanded QTabBar::tab:hover {
+  border-top: 1px solid #585858;
+  border-right: 1px solid #585858;
+  border-left: 1px solid #585858; 
+  background-color: #232323;
+}
+
+#LibrarySidebarExpanded QTabBar::tab:!enabled {
+  color: #7A6919;
+  background-color: #191919;
+}
+
+
+#LibrarySidebarExpanded QTabBar::tab:focus {
+  border-top: 1px solid #8E5C00;
+  border-right: 1px solid #8E5C00;
+  border-left: 1px solid #8E5C00; 
+  background-color: #232323;
+}
+
+#LibrarySidebarExpanded QTabBar::tab:selected {
+  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
+}
+
+#LibrarySidebarExpanded QWidget:!enabled {
+  color: #666666;
+}
+
+#LibrarySidebarButtons QToolButton {
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  border: 1px solid #191919;
+  color: #cfb32c;
+  background-color: #191919;
+}
+
+#LibrarySidebarExpanded QPushButton {
+  margin: 2px 3px 2px 3px; 
+  padding: 4px 6px; 
+  min-width: 65px; 
+  border: none;
+  color: #cfb32c;
+  background-color: #191919;
+}
+
+#LibrarySidebarButtons QToolButton:hover,
+#LibrarySidebarExpanded QPushButton:hover {
+  border: 1px solid #585858;
+  background-color: #232323;
+  color: #cfb32c;
+}
+
+#LibrarySidebarButtons QToolButton:hover {
+  border-radius: 10px;
+}
+
+#LibrarySidebarButtons QToolButton:focus {
+  border-radius: 10px;
+}
+
+#LibrarySidebarButtons:focus,
+#LibrarySidebarButtons QToolButton:focus,
+#LibrarySidebarExpanded > QWidget:focus,
+#LibrarySidebarExpanded QAbstractScrollArea > QWidget:focus,
+WLibrarySidebar:focus, 
+WLibrary:focus,
+QTableView:focus {
+  border: 1px solid #8E5C00;
+}
+
+#LibrarySidebarButtons WButtonBar {
+  background-color: #191919;
+  margin: 0px 1px 0px 0px;
+}
+
+#LibrarySidebarButtons, QTableView, QTextBrowser, QTreeView {
   border: 1px solid #585858;
   /*font-size: 15px/18px;*/
   color: #cfb32c;
@@ -1373,16 +1493,41 @@ QTableView, QTextBrowser, QTreeView {
   selection-background-color: #725309;
 }
 
-QTableView:focus, QTreeView:focus {
-  border: 1px solid #FF6600;
+WLibraryBreadCrumb QLabel {
+  margin: 4px 0px 6px 3px;
 }
 
-/* selected items in Tree and Tracks table */
-QTreeView::item:selected,
-QTableView::item:selected {
-  color: #fff;
+WLibraryBreadCrumb QToolButton {
+  margin-right: 3px;
+  background: none;
+  border: none;
+}
+
+WBaseLibrary QLabel {
+  padding: 0px 0px 0px 0px;
+  margin: 0px;
+}
+
+QTreeView::item:selected:active, 
+QTableView::item:selected:active {
+  color: #cfb32c;
   background-color: #725309;
 }
+
+QTreeView::item:selected:!active,
+QTableView::item:selected:!active {
+  color: #cfb32c;
+  background-color: #4c3b11;
+}
+
+QTableView:!focus {
+  selection-background-color: #4c3b11;
+}
+
+/* checkbox in library "Played" column */
+QTableView::indicator { width: 12px; height: 12px;}
+QTableView::indicator:checked { background: url(skin:/style/style_checkbox_checked.png);}
+QTableView::indicator:unchecked { background: url(skin:/style/style_checkbox_unchecked.png);}
 
 /* checkbox in library "Played" column */
 QTableView::indicator {

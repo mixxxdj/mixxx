@@ -13,6 +13,7 @@ Variables:
 <Template>	
   <SetVariable name="group">[PreviewDeck1]</SetVariable>
   <WidgetGroup>
+    <ObjectName>PreviewDeckContainer</ObjectName>
     <Layout>stacked</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>

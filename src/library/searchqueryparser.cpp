@@ -16,6 +16,8 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
                   << "grouping"
                   << "comment"
                   << "location"
+                  << "directory"
+                  << "folder"
                   << "crate";
     m_numericFilters << "year"
                      << "track"
@@ -48,6 +50,8 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
     m_fieldToSqlColumns["played"] << "timesplayed";
     m_fieldToSqlColumns["rating"] << "rating";
     m_fieldToSqlColumns["location"] << "location";
+    m_fieldToSqlColumns["directory"] << "directory";
+    m_fieldToSqlColumns["folder"] << "directory";
     m_fieldToSqlColumns["datetime_added"] << "datetime_added";
 
     m_allFilters.append(m_textFilters);
@@ -56,6 +60,7 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
 
     m_fuzzyMatcher = QRegExp(QString("^~(%1)$").arg(m_allFilters.join("|")));
     m_textFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_textFilters.join("|")));
+    m_exactTextMatcher = QRegExp(QString("^-?(%1):=(.*)$").arg(m_textFilters.join("|")));
     m_numericFilterMatcher = QRegExp(QString("^-?(%1):(.*)$").arg(m_numericFilters.join("|")));
     m_specialFilterMatcher = QRegExp(QString("^[~-]?(%1):(.*)$").arg(m_specialFilters.join("|")));
 }
@@ -115,6 +120,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             continue;
         }
 
+        bool exact = m_exactTextMatcher.indexIn(token) != -1;
         bool negate = token.startsWith(kNegatePrefix);
         std::unique_ptr<QueryNode> pNode;
 
@@ -122,32 +128,50 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             // TODO(XXX): implement this feature.
         } else if (m_textFilterMatcher.indexIn(token) != -1) {
             QString field = m_textFilterMatcher.cap(1);
-            QString argument = getTextArgument(
-                m_textFilterMatcher.cap(2), &tokens).trimmed();
+            QString argument;
+            if (exact) {
+                argument = getTextArgument(
+                            m_exactTextMatcher.cap(2), &tokens).trimmed();
+            } else {
+                argument = getTextArgument(
+                            m_textFilterMatcher.cap(2), &tokens).trimmed();
+            }
 
-            if (!argument.isEmpty()) {
-                if (field == "crate") {
+            if (field == "crate") {
+                if (!argument.isEmpty()) {
                     pNode = std::make_unique<CrateFilterNode>(
                           &m_pTrackCollection->crates(), argument);
                 } else {
-                    pNode = std::make_unique<TextFilterNode>(
-                          m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
+                    //TODO(gramanas) It should generate a query to
+                    //match all the tracks that are not in a crate.
                 }
             }
+            else {
+                if (exact) {
+                    pNode = std::make_unique<ExactFilterNode>(
+                            m_pTrackCollection->database(),
+                            m_fieldToSqlColumns[field], argument);
+                } else {
+                    pNode = std::make_unique<TextFilterNode>(
+                            m_pTrackCollection->database(),
+                            m_fieldToSqlColumns[field], argument);
+                }
+            }
+
         } else if (m_numericFilterMatcher.indexIn(token) != -1) {
             QString field = m_numericFilterMatcher.cap(1);
             QString argument = getTextArgument(
-                m_numericFilterMatcher.cap(2), &tokens).trimmed();
+                    m_numericFilterMatcher.cap(2), &tokens).trimmed();
 
             if (!argument.isEmpty()) {
                 pNode = std::make_unique<NumericFilterNode>(
-                     m_fieldToSqlColumns[field], argument);
+                        m_fieldToSqlColumns[field], argument);
             }
         } else if (m_specialFilterMatcher.indexIn(token) != -1) {
             bool fuzzy = token.startsWith(kFuzzyPrefix);
             QString field = m_specialFilterMatcher.cap(1);
             QString argument = getTextArgument(
-                m_specialFilterMatcher.cap(2), &tokens).trimmed();
+                    m_specialFilterMatcher.cap(2), &tokens).trimmed();
             if (!argument.isEmpty()) {
                 if (field == "key") {
                     mixxx::track::io::key::ChromaticKey key =
@@ -167,7 +191,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                            field == "dateadded") {
                     field = "datetime_added";
                     pNode = std::make_unique<TextFilterNode>(
-                        m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
+                            m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
                 }
             }
         } else {
@@ -178,7 +202,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             // Don't trigger on a lone minus sign.
             if (!token.isEmpty()) {
                 pNode = std::make_unique<TextFilterNode>(
-                                m_pTrackCollection->database(), searchColumns, token);
+                        m_pTrackCollection->database(), searchColumns, token);
             }
         }
         if (pNode) {

@@ -14,6 +14,7 @@
 #include "track/track.h"
 #include "util/duration.h"
 #include "widget/wlibrarytableview.h"
+#include "widget/wminiviewscrollbar.h"
 
 class ControlProxy;
 class DlgTrackInfo;
@@ -37,6 +38,10 @@ class WTrackTableView : public WLibraryTableView {
     void keyPressEvent(QKeyEvent* event) override;
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(QString group, bool play) override;
+    void setSorting(bool sorting);
+    void setScrollBar(WMiniViewScrollBar* pScrollbar);
+    void restoreQuery(const SavedSearchQuery& query) override;
+    SavedSearchQuery saveQuery(SavedSearchQuery query = SavedSearchQuery()) const override;
     QList<TrackId> getSelectedTrackIds() const;
     void setSelectedTracks(const QList<TrackId>& tracks);
     void saveCurrentVScrollBarPos();
@@ -47,11 +52,14 @@ class WTrackTableView : public WLibraryTableView {
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
-    void onSearchStarting();
-    void onSearchCleared();
+    void onSearchStarting() override;
+    void onSearchCleared() override;
     void slotSendToAutoDJBottom() override;
     void slotSendToAutoDJTop() override;
     void slotSendToAutoDJReplace() override;
+    
+  signals:
+    void tableChanged();
 
   private slots:
     void slotRemove();
@@ -104,7 +112,11 @@ class WTrackTableView : public WLibraryTableView {
     void dragMoveEvent(QDragMoveEvent * event) override;
     void dragEnterEvent(QDragEnterEvent * event) override;
     void dropEvent(QDropEvent * event) override;
+    void cut();
+    void paste();
+    void copy();
     void lockBpm(bool lock);
+    int getVisibleColumn();
 
     void enableCachedOnly();
     void selectionChanged(const QItemSelection &selected,
@@ -118,6 +130,8 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel* getTrackModel() const;
     bool modelHasCapabilities(TrackModel::CapabilitiesFlags capabilities) const;
 
+    bool insert(const QMimeData* pMimeData, const QModelIndex& destIndex);
+    bool move(const QMimeData* pMimeData, const QModelIndex& destIndex);
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
 
@@ -193,6 +207,10 @@ class WTrackTableView : public WLibraryTableView {
     QAction* m_pClearHotCuesAction;
     QAction* m_pClearLoopAction;
     QAction* m_pClearWaveformAction;
+
+    QPointer<WMiniViewScrollBar> m_pScrollBar;
+    // Replay Gain feature
+    QAction* m_pReplayGainResetAction;
     QAction* m_pClearReplayGainAction;
     QAction* m_pClearAllMetadataAction;
 

@@ -7,14 +7,14 @@
 
 #include "preferences/usersettings.h"
 #include "library/basetrackcache.h"
-#include "library/crate/cratestorage.h"
+#include "library/features/crates/cratestorage.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
-
+#include "library/dao/savedqueriesdao.h"
 
 // forward declaration(s)
 class Track;
@@ -55,6 +55,9 @@ class TrackCollection : public QObject,
     }
     AnalysisDao& getAnalysisDAO() {
         return m_analysisDao;
+    }
+    SavedQueriesDAO& getSavedQueriesDAO() {
+        return m_savedDao;
     }
 
     QSharedPointer<BaseTrackCache> getTrackSource() const {
@@ -109,6 +112,7 @@ class TrackCollection : public QObject,
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
     LibraryHashDAO m_libraryHashDao;
+    SavedQueriesDAO m_savedDao;
     TrackDAO m_trackDao;
 
     QSharedPointer<BaseTrackCache> m_pTrackSource;

@@ -10,7 +10,7 @@
 class ControlObject;
 class ControlPushButton;
 class Library;
-class WLibrary;
+class WLibraryPane;
 class WLibrarySidebar;
 class KeyboardEventFilter;
 
@@ -39,11 +39,9 @@ class LibraryControl : public QObject {
     LibraryControl(Library* pLibrary);
     virtual ~LibraryControl();
 
-    void bindWidget(WLibrary* pLibrary, KeyboardEventFilter* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
 
   private slots:
-    void libraryWidgetDeleted();
     void sidebarWidgetDeleted();
 
     void slotMoveUp(double);
@@ -133,7 +131,6 @@ class LibraryControl : public QObject {
     std::unique_ptr<ControlObject> m_pLoadSelectedIntoFirstStopped;
 
     // Library widgets
-    WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
 
     // Other variables

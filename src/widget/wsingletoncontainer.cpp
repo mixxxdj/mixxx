@@ -1,10 +1,10 @@
+#include <widget/wlibrarypane.h>
 #include "widget/wsingletoncontainer.h"
 
 #include <QLayout>
 
 #include "util/assert.h"
 #include "skin/skincontext.h"
-#include "widget/wlibrary.h"
 
 
 WSingletonContainer::WSingletonContainer(QWidget* pParent)

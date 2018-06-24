@@ -26,6 +26,7 @@ class DragAndDropHelper {
                                                     bool firstOnly,
                                                     bool acceptPlaylists) {
         QList<QFileInfo> fileLocations;
+        qDebug() << urls;
         foreach (const QUrl& url, urls) {
 
             // XXX: Possible WTF alert - Previously we thought we needed

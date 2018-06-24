@@ -46,10 +46,15 @@ class WPixmapStore {
     static void setLoader(QSharedPointer<ImgSource> ld);
     static void correctImageColors(QImage* p);
     static bool willCorrectColors();
+    
+    static void setLibraryIconLoader(QSharedPointer<ImgSource> pIconLoader);
+    static QIcon getLibraryIcon(const QString& fileName);
+    static QPixmap getLibraryPixmap(const QString& fileName);
 
   private:
     static QHash<QString, WeakPaintablePointer> m_paintableCache;
-    static QSharedPointer<ImgSource> m_loader;
+    static QSharedPointer<ImgSource> m_pIconLoader;
+    static QSharedPointer<ImgSource> m_pLoader;
 };
 
 #endif
