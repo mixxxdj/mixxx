@@ -99,12 +99,7 @@ class WaveformWidgetRenderer {
     }
 
     void setPlayMarkerPosition(double newPos) {
-        if(newPos >= 0.1 && newPos <= 0.9) {
-            m_playMarkerPosition = newPos;
-        } 
-        // else {
-        //     qDebug() << "Invalid playMarkerPosition. Value must be between 0.1 and 0.9";
-        // }        
+        m_playMarkerPosition = math_clamp(newPos, 0.1, 0.9);
     }
 
   protected:

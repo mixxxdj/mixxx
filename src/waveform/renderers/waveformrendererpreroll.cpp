@@ -26,7 +26,6 @@ void WaveformRendererPreroll::setup(
 void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     Q_UNUSED(event);
 
-    
     const TrackPointer track = m_waveformRenderer->getTrackInfo();
     if (!track) {
         return;
@@ -45,12 +44,10 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
 
     // Some of the pre-roll is on screen. Draw little triangles to indicate
     // where the pre-roll is located.
-    // if (currentPosition < numberOfSamples / 2.0) {
     if (currentPosition < numberOfSamples * playMarkerPosition) {
-        // int index = static_cast<int>(numberOfSamples / 2.0 - currentPosition);
         int index = static_cast<int>(numberOfSamples * playMarkerPosition - currentPosition);
         const int polyLength = static_cast<int>(40.0 / samplesPerPixel);
-        
+
         const float halfBreadth = m_waveformRenderer->getBreadth() / 2.0;
         const float halfPolyBreadth = m_waveformRenderer->getBreadth() / 5.0;
 
