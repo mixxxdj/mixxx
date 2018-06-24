@@ -101,6 +101,11 @@
             </Connection>
           </PushButton>
 
+          <WidgetGroup>
+            <ObjectName>ToolbarDivider</ObjectName>
+            <Size>13f,9min</Size>
+          </WidgetGroup>
+
           <PushButton>
             <Size>69f,24f</Size>
             <TooltipId>show_samplers</TooltipId>
