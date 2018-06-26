@@ -989,6 +989,7 @@ add_library(
   src/broadcast/filelistener.cpp
   src/broadcast/listenersfinder.cpp
   src/broadcast/metadatabroadcast.cpp
+  src/broadcast/metadatafileworker.cpp 
   src/broadcast/scrobblingmanager.cpp
   src/control/control.cpp
   src/control/controlaudiotaperpot.cpp

@@ -3,22 +3,52 @@
 
 #include <QTextCodec>
 #include <QtConcurrentRun>
-#include <functional>
 
+#include "broadcast/filelistener.h"
+#include "broadcast/metadatafileworker.h"
+#include "preferences/metadatafilesettings.h"
 #include "moc_filelistener.cpp"
-#include "preferences/dialog/dlgprefbroadcast.h"
+
 
 FileListener::FileListener(UserSettingsPointer pConfig)
-        : m_pFile(new QFile, [](QFile* file) -> void {
-              file->resize(0);
-              delete file;
-          }),
-          m_COsettingsChanged(kSettingsChanged),
+        : m_COsettingsChanged(kSettingsChanged),
           m_pConfig(pConfig),
           m_latestSettings(MetadataFileSettings::getPersistedSettings(pConfig)) {
-    connect(&m_COsettingsChanged, SIGNAL(valueChanged(double)), this, SLOT(slotFileSettingsChanged(double)));
+
+    MetadataFileWorker *newWorker = new MetadataFileWorker(m_latestSettings.filePath);
+    newWorker->moveToThread(&m_workerThread);
+
+    connect(&m_workerThread,SIGNAL(finished()),
+            newWorker,SLOT(deleteLater()));
+
+    connect(this,SIGNAL(deleteFile()),
+            newWorker,SLOT(slotDeleteFile()));
+
+    connect(this,SIGNAL(openFile()),
+            newWorker,SLOT(slotOpenFile()));
+
+    connect(this,SIGNAL(moveFile(QString)),
+            newWorker,SLOT(slotMoveFile(QString)));
+
+    connect(this,SIGNAL(writeMetadataToFile(QByteArray)),
+            newWorker,SLOT(slotWriteMetadataToFile(QByteArray)));
+
+    connect(this,SIGNAL(clearFile()),
+            newWorker,SLOT(slotClearFile()));
+
+    connect(&m_COsettingsChanged,SIGNAL(valueChanged(double)),
+            this,SLOT(slotFileSettingsChanged(double)));
+
     updateStateFromSettings();
+
+    m_workerThread.start();
 }
+
+FileListener::~FileListener() {
+    m_workerThread.quit();
+    m_workerThread.wait();
+}
+
 
 void FileListener::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     if (!pTrack)
@@ -28,9 +58,9 @@ void FileListener::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     m_fileContents = writtenString;
     QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
     DEBUG_ASSERT(codec);
-    QByteArray* fileContents = new QByteArray;
-    *fileContents = codec->fromUnicode(m_fileContents);
-    QtConcurrent::run(&FileListener::writeMetadataToFile, fileContents, m_pFile);
+    QByteArray fileContents = codec->fromUnicode(m_fileContents);
+    tracksPaused = false;
+    emit writeMetadataToFile(fileContents);
 }
 
 void FileListener::slotScrobbleTrack(TrackPointer pTrack) {
@@ -38,7 +68,8 @@ void FileListener::slotScrobbleTrack(TrackPointer pTrack) {
 }
 
 void FileListener::slotAllTracksPaused() {
-    m_pFile->resize(0);
+    tracksPaused = true;
+    emit clearFile();
 }
 
 void FileListener::slotFileSettingsChanged(double value) {
@@ -53,40 +84,27 @@ void FileListener::slotFileSettingsChanged(double value) {
 void FileListener::updateStateFromSettings() {
     if (m_latestSettings.enabled) {
         updateFile();
-    } else {
-        m_pFile->setFileName(m_latestSettings.filePath);
-        if (m_pFile->exists()) {
-            m_pFile->remove();
-        }
+    }
+    else  {
+        emit deleteFile();
     }
 }
 
 void FileListener::updateFile() {
-    if (m_pFile->isOpen()) {
+    if (fileOpen) {
         if (filePathChanged) {
-            m_pFile->remove();
-            m_pFile->setFileName(m_latestSettings.filePath);
-            m_pFile->open(QIODevice::ReadWrite |
-                    QIODevice::Truncate |
-                    QIODevice::Text |
-                    QIODevice::Unbuffered);
+            emit moveFile(m_latestSettings.filePath);
         }
-        QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
-        DEBUG_ASSERT(codec);
-        QByteArray* fileContents = new QByteArray;
-        *fileContents = codec->fromUnicode(m_fileContents);
-        QtConcurrent::run(&FileListener::writeMetadataToFile, fileContents, m_pFile);
-    } else {
-        m_pFile->setFileName(m_latestSettings.filePath);
-        m_pFile->open(QIODevice::ReadWrite |
-                QIODevice::Truncate |
-                QIODevice::Text |
-                QIODevice::Unbuffered);
+        else if (!tracksPaused) {
+            QTextCodec *codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
+            DEBUG_ASSERT(codec);
+            QByteArray fileContents = codec->fromUnicode(m_fileContents);
+            emit writeMetadataToFile(fileContents);
+        }
+    }
+    else {
+        emit openFile();
+        fileOpen = true;
     }
 }
 
-void FileListener::writeMetadataToFile(const QByteArray* contents, std::shared_ptr<QFile> file) {
-    file->resize(0);
-    file->write(*contents);
-    delete contents;
-}
