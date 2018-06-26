@@ -72,6 +72,7 @@ Description:
                 <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <Template src="skin:skin_settings_button_2state.xml">
+ 					<SetVariable name="TooltipId">show_previewdeck</SetVariable>
                     <SetVariable name="state_0_text">      Preview Deck</SetVariable>
                     <SetVariable name="state_1_text"> &#10004; Preview Deck</SetVariable>
                     <SetVariable name="width">110</SetVariable>
