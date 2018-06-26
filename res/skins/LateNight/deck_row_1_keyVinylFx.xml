@@ -115,7 +115,7 @@
 				</Children>
 			   <Connection>
 				<ConfigKey persist="false">[Master],show_bpm_in_top_bar</ConfigKey>
-				<BindProperty>visible</BindProperty>
+				  <BindProperty>visible</BindProperty>
 				</Connection>
 			  </WidgetGroup>
 
