@@ -6,38 +6,29 @@
 
 #include "broadcast/filelistener.h"
 #include "broadcast/metadatafileworker.h"
-#include "preferences/metadatafilesettings.h"
 #include "moc_filelistener.cpp"
-
+#include "preferences/metadatafilesettings.h"
 
 FileListener::FileListener(UserSettingsPointer pConfig)
         : m_COsettingsChanged(kSettingsChanged),
           m_pConfig(pConfig),
           m_latestSettings(MetadataFileSettings::getPersistedSettings(pConfig)) {
-
-    MetadataFileWorker *newWorker = new MetadataFileWorker(m_latestSettings.filePath);
+    MetadataFileWorker* newWorker = new MetadataFileWorker(m_latestSettings.filePath);
     newWorker->moveToThread(&m_workerThread);
 
-    connect(&m_workerThread,SIGNAL(finished()),
-            newWorker,SLOT(deleteLater()));
+    connect(&m_workerThread, SIGNAL(finished()), newWorker, SLOT(deleteLater()));
 
-    connect(this,SIGNAL(deleteFile()),
-            newWorker,SLOT(slotDeleteFile()));
+    connect(this, SIGNAL(deleteFile()), newWorker, SLOT(slotDeleteFile()));
 
-    connect(this,SIGNAL(openFile()),
-            newWorker,SLOT(slotOpenFile()));
+    connect(this, SIGNAL(openFile()), newWorker, SLOT(slotOpenFile()));
 
-    connect(this,SIGNAL(moveFile(QString)),
-            newWorker,SLOT(slotMoveFile(QString)));
+    connect(this, SIGNAL(moveFile(QString)), newWorker, SLOT(slotMoveFile(QString)));
 
-    connect(this,SIGNAL(writeMetadataToFile(QByteArray)),
-            newWorker,SLOT(slotWriteMetadataToFile(QByteArray)));
+    connect(this, SIGNAL(writeMetadataToFile(QByteArray)), newWorker, SLOT(slotWriteMetadataToFile(QByteArray)));
 
-    connect(this,SIGNAL(clearFile()),
-            newWorker,SLOT(slotClearFile()));
+    connect(this, SIGNAL(clearFile()), newWorker, SLOT(slotClearFile()));
 
-    connect(&m_COsettingsChanged,SIGNAL(valueChanged(double)),
-            this,SLOT(slotFileSettingsChanged(double)));
+    connect(&m_COsettingsChanged, SIGNAL(valueChanged(double)), this, SLOT(slotFileSettingsChanged(double)));
 
     updateStateFromSettings();
 
@@ -49,12 +40,11 @@ FileListener::~FileListener() {
     m_workerThread.wait();
 }
 
-
 void FileListener::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     if (!pTrack)
         return;
     QString writtenString(m_latestSettings.fileFormatString);
-    writtenString.replace("author", pTrack->getArtist()).replace("title", pTrack->getTitle()) += '\n';
+    writtenString.replace("$author", pTrack->getArtist()).replace("$title", pTrack->getTitle()) += '\n';
     m_fileContents = writtenString;
     QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
     DEBUG_ASSERT(codec);
@@ -84,8 +74,7 @@ void FileListener::slotFileSettingsChanged(double value) {
 void FileListener::updateStateFromSettings() {
     if (m_latestSettings.enabled) {
         updateFile();
-    }
-    else  {
+    } else {
         emit deleteFile();
     }
 }
@@ -94,15 +83,13 @@ void FileListener::updateFile() {
     if (fileOpen) {
         if (filePathChanged) {
             emit moveFile(m_latestSettings.filePath);
-        }
-        else if (!tracksPaused) {
-            QTextCodec *codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
+        } else if (!tracksPaused) {
+            QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
             DEBUG_ASSERT(codec);
             QByteArray fileContents = codec->fromUnicode(m_fileContents);
             emit writeMetadataToFile(fileContents);
         }
-    }
-    else {
+    } else {
         emit openFile();
         fileOpen = true;
     }

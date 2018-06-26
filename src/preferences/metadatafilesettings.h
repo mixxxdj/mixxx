@@ -31,7 +31,7 @@ const bool defaultFileMetadataEnabled = false;
 const QByteArray defaultEncoding = "UTF-8";
 const QString defaultFileFormat = "SAMBroadcaster";
 const QString defaultFilePath = QDir::currentPath() + "/NowPlaying.txt";
-const QString defaultFileFormatString = "author - title";
+const QString defaultFileFormatString = "$author - $title";
 } // namespace
 
 struct FileSettings {
