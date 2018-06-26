@@ -93,7 +93,7 @@
         <item row="0" column="1">
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>Use the keywords author and title</string>
+           <string>Use the keywords $author and $title</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignBottom|Qt::AlignHCenter</set>

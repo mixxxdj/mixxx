@@ -51,8 +51,8 @@ void FileListener::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     if (!pTrack)
         return;
     QString writtenString(m_latestSettings.fileFormatString);
-    writtenString.replace("author",pTrack->getArtist()).
-            replace("title",pTrack->getTitle()) += '\n';
+    writtenString.replace("$author",pTrack->getArtist()).
+            replace("$title",pTrack->getTitle()) += '\n';
     m_fileContents = writtenString;
     QTextCodec *codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
     DEBUG_ASSERT(codec);
