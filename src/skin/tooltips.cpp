@@ -396,11 +396,6 @@ void Tooltips::addStandardTooltips() {
     add("rate_toggle")
         <<tr("Toggle visibility of Rate Control");
 
-    // Show Rate Control
-    add("bmp_top_bar_toogle")
-        <<tr("Toggle visibility of BPM in Top Bar of Deck");
-
-
     // Used in cue/hotcue/loop tooltips below.
     QString quantizeSnap = tr("If quantize is enabled, snaps to the nearest beat.");
     add("quantize")
