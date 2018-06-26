@@ -254,10 +254,6 @@
                 </Children>
               </WidgetGroup><!-- RateButtons for different rate directions -->
             </Children>
-	    <Connection>
-	     <ConfigKey persist="true">[Master],show_rate_control</ConfigKey>
-             <BindProperty>visible</BindProperty>
-	    </Connection>
           </WidgetGroup>
 
           <WidgetGroup>
