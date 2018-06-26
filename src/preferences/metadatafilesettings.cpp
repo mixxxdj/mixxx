@@ -46,7 +46,7 @@ void MetadataFileSettings::setupWidgets() {
 
     m_widgets.formatBox->clear();
     //To be extended when adding more file formats.
-    QVariant SAMBroadcasterData("author - title");
+    QVariant SAMBroadcasterData("$author - $title");
     m_widgets.formatBox->addItem("SAMBroadcaster", SAMBroadcasterData);
 
     m_widgets.formatLineEdit->setText(m_widgets.formatBox->itemData(

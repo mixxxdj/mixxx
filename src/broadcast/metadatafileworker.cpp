@@ -3,9 +3,8 @@
 
 #include "moc_metadatafileworker.cpp"
 
-MetadataFileWorker::MetadataFileWorker(const QString &filePath)
-        :  m_file(filePath) {
-
+MetadataFileWorker::MetadataFileWorker(const QString& filePath)
+        : m_file(filePath) {
 }
 
 void MetadataFileWorker::slotDeleteFile() {
@@ -14,9 +13,9 @@ void MetadataFileWorker::slotDeleteFile() {
 
 void MetadataFileWorker::slotOpenFile() {
     m_file.open(QIODevice::ReadWrite |
-                QIODevice::Truncate |
-                QIODevice::Text |
-                QIODevice::Unbuffered);
+            QIODevice::Truncate |
+            QIODevice::Text |
+            QIODevice::Unbuffered);
 }
 
 void MetadataFileWorker::slotMoveFile(QString destination) {
@@ -33,5 +32,3 @@ void MetadataFileWorker::slotWriteMetadataToFile(QByteArray fileContents) {
 void MetadataFileWorker::slotClearFile() {
     m_file.resize(0);
 }
-
-
