@@ -42,6 +42,9 @@
 #include "preferences/dialog/dlgprefdeck.h"
 #include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgprefcrossfader.h"
+#ifdef __LILV__
+#include "preferences/dialog/dlgpreflv2.h"
+#endif /* __LILV__ */
 #include "preferences/dialog/dlgprefeffects.h"
 #include "preferences/dialog/dlgprefautodj.h"
 
@@ -66,6 +69,7 @@
 DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
+                               LV2Backend* pLV2Backend,
                                EffectsManager* pEffectsManager,
                                SettingsManager* pSettingsManager,
                                Library *pLibrary)
@@ -117,9 +121,12 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_equalizerPage);
     m_crossfaderPage = new DlgPrefCrossfader(this, m_pConfig);
     addPageWidget(m_crossfaderPage);
-    // TODO: Re-enable the effects preferences pane when it does something useful.
-    //m_effectsPage = new DlgPrefEffects(this, m_pConfig, pEffectsManager);
-    //addPageWidget(m_effectsPage);
+    m_effectsPage = new DlgPrefEffects(this, m_pConfig, pEffectsManager);
+    addPageWidget(m_effectsPage);
+#ifdef __LILV__
+    m_lv2Page = new DlgPrefLV2(this, pLV2Backend, m_pConfig, pEffectsManager);
+    addPageWidget(m_lv2Page);
+#endif /* __LILV__ */
     m_autoDjPage = new DlgPrefAutoDJ(this, m_pConfig);
     addPageWidget(m_autoDjPage);
 
@@ -238,12 +245,19 @@ void DlgPreferences::createIcons() {
     m_pCrossfaderButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pCrossfaderButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    // TODO: Re-enable the effects pane when it does something useful.
-    //m_pEffectsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    //m_pEffectsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_effects.png"));
-    //m_pEffectsButton->setText(0, tr("Effects"));
-    //m_pEffectsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    //m_pEffectsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pEffectsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pEffectsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_effects.png"));
+    m_pEffectsButton->setText(0, tr("Effects"));
+    m_pEffectsButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pEffectsButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+#ifdef __LILV__
+    m_pLV2Button = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pLV2Button->setIcon(0, QIcon(":/images/preferences/ic_preferences_lv2.png"));
+    m_pLV2Button->setText(0, tr("LV2 Plugins"));
+    m_pLV2Button->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pLV2Button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#endif /* __LILV__ */
 
     m_pAutoDJButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pAutoDJButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_autodj.png"));
@@ -331,9 +345,12 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_equalizerPage);
     } else if (current == m_pCrossfaderButton) {
         switchToPage(m_crossfaderPage);
-    // TODO: Re-enable the effects preferences pane when it does something useful.
-    //} else if (current == m_pEffectsButton) {
-    //    switchToPage(m_effectsPage);
+    } else if (current == m_pEffectsButton) {
+        switchToPage(m_effectsPage);
+#ifdef __LILV__
+    } else if (current == m_pLV2Button) {
+        switchToPage(m_lv2Page);
+#endif /* __LILV__ */
     } else if (current == m_pAutoDJButton) {
         switchToPage(m_autoDjPage);
 #ifdef __BROADCAST__

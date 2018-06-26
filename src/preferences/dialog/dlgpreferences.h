@@ -50,6 +50,10 @@ class DlgPrefRecord;
 class DlgPrefBeats;
 class DlgPrefKey;
 class DlgPrefReplayGain;
+#ifdef __LILV__
+class DlgPrefLV2;
+#endif /* __LILV__ */
+class LV2Backend;
 class ControllerManager;
 class EffectsManager;
 class SkinLoader;
@@ -65,7 +69,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
   public:
     DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
-                   VinylControlManager* pVCManager, EffectsManager* pEffectsManager,
+                   VinylControlManager* pVCManager, LV2Backend* pLV2Backend, 
+                   EffectsManager* pEffectsManager,
                    SettingsManager* pSettingsManager, Library *pLibrary);
     virtual ~DlgPreferences();
 
@@ -113,8 +118,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefDeck* m_deckPage;
     DlgPrefEQ* m_equalizerPage;
     DlgPrefCrossfader* m_crossfaderPage;
-    //TODO: Re-enable the effects pane when it does something useful.
-    //DlgPrefEffects* m_effectsPage;
+    DlgPrefEffects* m_effectsPage;
     DlgPrefAutoDJ* m_autoDjPage;
     DlgPrefBroadcast* m_broadcastingPage;
     DlgPrefMetadata* m_metadataPage;
@@ -122,6 +126,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefBeats* m_beatgridPage;
     DlgPrefKey* m_musicalKeyPage;
     DlgPrefReplayGain* m_replayGainPage;
+#ifdef __LILV__
+    DlgPrefLV2* m_lv2Page;
+#endif /* __LILV__ */
 #ifdef __MODPLUG__
     DlgPrefModplug* m_modplugPage;
 #endif
@@ -134,6 +141,10 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pWaveformButton;
     QTreeWidgetItem* m_pDecksButton;
     QTreeWidgetItem* m_pEqButton;
+#ifdef __LILV__
+    QTreeWidgetItem* m_pLV2Button;
+#endif /* __LILV__ */
+    QTreeWidgetItem* m_pEffectsButton;
     QTreeWidgetItem* m_pCrossfaderButton;
     //QTreeWidgetItem* m_pEffectsButton;
     QTreeWidgetItem* m_pAutoDJButton;

@@ -3,6 +3,8 @@
 #include <QDoubleSpinBox>
 #include <QRect>
 #include <QPalette>
+#include <QTableView>
+#include <QPainter>
 
 #include "library/bpmdelegate.h"
 #include "library/trackmodel.h"
@@ -30,9 +32,9 @@ class BpmEditorCreator : public QItemEditorCreatorBase {
     }
 };
 
-BPMDelegate::BPMDelegate(QObject* parent)
-        : QStyledItemDelegate(parent),
-          m_pTableView(qobject_cast<QTableView*>(parent)),
+BPMDelegate::BPMDelegate(QTableView* pTableView)
+        : TableItemDelegate(pTableView),
+          m_pTableView(pTableView),
           m_pCheckBox(new QCheckBox(m_pTableView)) {
     m_pCheckBox->setObjectName("LibraryBPMButton");
     // NOTE(rryan): Without ensurePolished the first render of the QTableView
@@ -51,8 +53,8 @@ BPMDelegate::~BPMDelegate() {
     delete m_pFactory;
 }
 
-void BPMDelegate::paint(QPainter* painter,const QStyleOptionViewItem &option,
-                        const QModelIndex &index) const {
+void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option,
+                        const QModelIndex& index) const {
     // NOTE(rryan): Qt has a built-in limitation that we cannot style multiple
     // CheckState indicators in the same QAbstractItemView. The CSS rule
     // QTableView::indicator:checked applies to all columns with a

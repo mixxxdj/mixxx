@@ -437,16 +437,26 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         # play nice with)
 
         # NOTE(rryan): Only include the SQLite plugin if we are building Qt in
-        # sqlite_plugin mode.
+        # sqlite_plugin mode or Qt 5 is enabled. In Qt 5, the SQLite driver was
+        # moved out of QtSql and into a plugin.
         sql_dylibs = []
-        if int(flags.get('qt_sqlite_plugin', 0)):
+        if int(flags.get('qt_sqlite_plugin', 0)) or qt5:
                 sql_dylibs = ["libqsqlite.dylib"]
 
         qt_plugins = (
                 [("iconengines", e) for e in ["libqsvgicon.dylib"]] +
                 [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
-                [("sqldrivers", e) for e in sql_dylibs] +
-                [("accessible", e) for e in ["libqtaccessiblewidgets.dylib"]])
+                [("sqldrivers", e) for e in sql_dylibs])
+
+        # In Qt 5, accessibility features are more tightly integrated.
+        if not qt5:
+                qt_plugins.append(("accessible", "libqtaccessiblewidgets.dylib"))
+
+        if qt5:
+                # Cocoa support moved to a plugin in Qt 5.
+                qt_plugins.append(("platforms", "libqcocoa.dylib"))
+                qt_plugins.append(("styles", "libqmacstyle.dylib"))
+
         #Left out libqmng and libqtiff to save space.
 
         # Concatenate the SoundSource plugins to our list of plugins (converting

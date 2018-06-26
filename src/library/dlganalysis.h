@@ -1,6 +1,7 @@
 #ifndef DLGANALYSIS_H
 #define DLGANALYSIS_H
 
+#include <QButtonGroup>
 #include <QItemSelection>
 
 #include "preferences/usersettings.h"

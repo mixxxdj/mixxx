@@ -16,6 +16,7 @@ using namespace QKeychain;
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
+#include "util/compatibility.h"
 #include "util/xml.h"
 #include "util/memory.h"
 #include "util/logger.h"
@@ -104,7 +105,7 @@ QString BroadcastProfile::stripForbiddenChars(const QString& str) {
 BroadcastProfilePtr BroadcastProfile::loadFromFile(
         const QString& filename) {
     QFileInfo xmlFile(filename);
-    if(!xmlFile.exists())
+    if (!xmlFile.exists())
         return BroadcastProfilePtr(nullptr);
 
     QString profileFilename = xmlFile.baseName();
@@ -123,7 +124,7 @@ bool BroadcastProfile::equals(BroadcastProfilePtr other) {
 }
 
 bool BroadcastProfile::valuesEquals(BroadcastProfilePtr other) {
-    if(getEnabled() == other->getEnabled()
+    if (getEnabled() == other->getEnabled()
             && secureCredentialStorage() == other->secureCredentialStorage()
             && getHost() == other->getHost()
             && getPort() == other->getPort()
@@ -243,7 +244,7 @@ void BroadcastProfile::adoptDefaultValues() {
 
 bool BroadcastProfile::loadValues(const QString& filename) {
     QDomElement doc = XmlParse::openXMLFile(filename, kDoctype);
-    if(doc.childNodes().size() < 1)
+    if (doc.childNodes().size() < 1)
         return false;
 
     m_secureCredentials = (bool)XmlParse::selectNodeInt(doc, kSecureCredentials);
@@ -260,7 +261,7 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_serverType = XmlParse::selectNodeQString(doc, kServertype);
 
     m_login = XmlParse::selectNodeQString(doc, kLogin);
-    if(m_secureCredentials) {
+    if (m_secureCredentials) {
         m_password = getSecurePassword(m_login);
     } else {
         m_password = XmlParse::selectNodeQString(doc, kPassword);
@@ -317,7 +318,7 @@ bool BroadcastProfile::save(const QString& filename) {
     XmlParse::addElement(doc, docRoot, kServertype, m_serverType);
 
     XmlParse::addElement(doc, docRoot, kLogin, m_login);
-    if(m_secureCredentials) {
+    if (m_secureCredentials) {
         setSecurePassword(m_login, m_password);
     } else {
         XmlParse::addElement(doc, docRoot, kPassword, m_password);
@@ -364,7 +365,7 @@ bool BroadcastProfile::save(const QString& filename) {
     doc.appendChild(docRoot);
 
     QFile xmlFile(filename);
-    if(xmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    if (xmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream fileStream(&xmlFile);
         doc.save(fileStream, 4);
         xmlFile.close();
@@ -378,7 +379,7 @@ void BroadcastProfile::setProfileName(const QString &profileName) {
     QString oldName(m_profileName);
     m_profileName = QString(profileName);
 
-    emit profileNameChanged(oldName, m_profileName);
+    emit(profileNameChanged(oldName, m_profileName));
 }
 
 QString BroadcastProfile::getProfileName() const {
@@ -387,11 +388,11 @@ QString BroadcastProfile::getProfileName() const {
 
 void BroadcastProfile::setConnectionStatus(int newState) {
     m_connectionStatus = newState;
-    emit connectionStatusChanged(m_connectionStatus);
+    emit(connectionStatusChanged(connectionStatus()));
 }
 
 int BroadcastProfile::connectionStatus() {
-    return m_connectionStatus;
+    return load_atomic(m_connectionStatus);
 }
 
 void BroadcastProfile::setSecureCredentialStorage(bool value) {
@@ -402,7 +403,7 @@ bool BroadcastProfile::secureCredentialStorage() {
     return m_secureCredentials;
 }
 
-bool BroadcastProfile::setSecurePassword(QString login, QString password) {
+bool BroadcastProfile::setSecurePassword(const QString& login, const QString& password) {
 #ifdef __QTKEYCHAIN__
     QString serviceName = QString(kKeychainPrefix) + getProfileName();
 
@@ -417,7 +418,7 @@ bool BroadcastProfile::setSecurePassword(QString login, QString password) {
     writeJob.start();
     loop.exec();
 
-    if(writeJob.error() == Error::NoError) {
+    if (writeJob.error() == Error::NoError) {
         kLogger.debug() << "setSecureValue: write successful";
         return true;
     } else {
@@ -434,7 +435,7 @@ bool BroadcastProfile::setSecurePassword(QString login, QString password) {
 #endif
 }
 
-QString BroadcastProfile::getSecurePassword(QString login) {
+QString BroadcastProfile::getSecurePassword(const QString& login) {
 #ifdef __QTKEYCHAIN__
     QString serviceName = QString(kKeychainPrefix) + getProfileName();
 
@@ -448,7 +449,7 @@ QString BroadcastProfile::getSecurePassword(QString login) {
     readJob.start();
     loop.exec();
 
-    if(readJob.error() == Error::NoError) {
+    if (readJob.error() == Error::NoError) {
         kLogger.debug() << "getSecureValue: read successful";
         return readJob.textData();
     } else {
@@ -457,11 +458,13 @@ QString BroadcastProfile::getSecurePassword(QString login) {
         errorDialog(tr("Secure password retrieval unsuccessful: keychain access failed."),
                         readJob.errorString());
     }
+#else
+    Q_UNUSED(login);
 #endif
     return QString();
 }
 
-void BroadcastProfile::errorDialog(QString text, QString detailedError) {
+void BroadcastProfile::errorDialog(const QString& text, const QString& detailedError) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Settings error"));
@@ -492,7 +495,7 @@ bool BroadcastProfile::getEnabled() const {
 
 void BroadcastProfile::setEnabled(bool value) {
     m_enabled = value;
-    emit statusChanged(m_enabled);
+    emit(statusChanged(m_enabled));
 }
 
 QString BroadcastProfile::getHost() const {
