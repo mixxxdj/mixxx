@@ -668,6 +668,7 @@ class MixxxCore(Feature):
                    "broadcast/scrobblingmanager.cpp",
                    "broadcast/filelistener.cpp",
                    "broadcast/listenersfinder.cpp",
+                   "broadcast/metadatafileworker.cpp",
 
                    "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefcontroller.cpp",
