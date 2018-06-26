@@ -142,7 +142,7 @@
       <WidgetGroup><!-- Recording button & recording duration label -->
         <ObjectName>RecBox</ObjectName>
         <Layout>stacked</Layout>
-        <Size>72f,22f</Size>
+        <Size>72f,24f</Size>
         <!-- minus 1px border
             = 70x18 available for text -->
         <Children>
@@ -150,22 +150,22 @@
           <Template src="skin:button_2state.xml">
             <SetVariable name="ObjectName">RecButton</SetVariable>
             <SetVariable name="TooltipId">toggle_recording</SetVariable>
-            <SetVariable name="Size">70f,18f</SetVariable>
+            <SetVariable name="Size">68f,20f</SetVariable>
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Rec dot + RecDuration -->
             <Layout>horizontal</Layout>
-            <Size>70me,18me</Size>
+            <Size>68f,18f</Size>
             <Children>
               <Label>
                 <ObjectName>RecDot</ObjectName>
-                <Size>15me,18me</Size>
+                <Size>15f,18f</Size>
               </Label>  
 
               <RecordingDuration>
                 <ObjectName>RecDuration</ObjectName>
-                <Size>55me,18me</Size>
+                <Size>53f,18f</Size>
                 <InactiveText>REC</InactiveText>
                 <Alignment>center</Alignment>
               </RecordingDuration>
@@ -176,7 +176,7 @@
           <Template src="skin:button_3state_display.xml">
             <SetVariable name="ObjectName">RecFeedback</SetVariable>
             <SetVariable name="TooltipId">toggle_recording</SetVariable>
-            <SetVariable name="Size">70me,18me</SetVariable>
+            <SetVariable name="Size">66f,18f</SetVariable>
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
             <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
           </Template>

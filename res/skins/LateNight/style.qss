@@ -480,7 +480,8 @@ WEffectButtonParameter*/
   border-radius: 2px;
   }
 
-  #GuiToggleButton {
+  #GuiToggleButton,
+  #RecBox {
     margin: 2px;
   }
 
