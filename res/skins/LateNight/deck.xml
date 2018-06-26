@@ -9,7 +9,7 @@
       <WidgetGroup>
         <ObjectName>RateContainer</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,me</SizePolicy>
+        <Size>69f,-1me</Size>
         <Children>
           <WidgetGroup>
             <ObjectName>AlignCenter</ObjectName>
