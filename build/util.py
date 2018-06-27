@@ -157,10 +157,12 @@ def get_flags(env, argflag, default=0):
 def CheckForPKGConfig(context, version='0.0.0'):
     context.Message(
         "Checking for pkg-config (at least version %s)... " % version)
-    ret = context.TryAction(
+    retExists = context.TryAction(
+        "command -v pkg-config")[0]
+    retVersion = context.TryAction(
         "pkg-config --atleast-pkgconfig-version=%s" % version)[0]
-    context.Result(ret)
-    return ret
+    context.Result(retExists and retVersion)
+    return retExists and retVersion
 
 
 # Uses pkg-config to check for a minimum version
