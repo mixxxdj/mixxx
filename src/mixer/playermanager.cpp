@@ -8,7 +8,6 @@
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
-#include "effects/effectrack.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "library/library.h"
@@ -388,11 +387,7 @@ void PlayerManager::addDeckInner() {
             AudioInput(AudioInput::VINYLCONTROL, 0, 2, number - 1), pEngineDeck);
 
     // Setup equalizer rack for this deck.
-    EqualizerRackPointer pEqRack = m_pEffectsManager->getEqualizerRack(0);
-    VERIFY_OR_DEBUG_ASSERT(pEqRack) {
-        return;
-    }
-    pEqRack->setupForGroup(group);
+    m_pEffectsManager->addEqualizerEffectChainSlot(group);
 
     // BaseTrackPlayer needs to delay until we have setup the equalizer rack for
     // this deck to fetch the legacy EQ controls.
@@ -400,11 +395,7 @@ void PlayerManager::addDeckInner() {
     pDeck->setupEqControls();
 
     // Setup quick effect rack for this deck.
-    QuickEffectRackPointer pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
-    VERIFY_OR_DEBUG_ASSERT(pQuickEffectRack) {
-        return;
-    }
-    pQuickEffectRack->setupForGroup(group);
+    m_pEffectsManager->addQuickEffectChainSlot(group);
 }
 
 void PlayerManager::loadSamplers() {

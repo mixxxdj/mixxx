@@ -9,7 +9,6 @@
 #include "effects/effectchainslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
-#include "effects/effectrack.h"
 #include "effects/effectslot.h"
 
 #include "test/baseeffecttest.h"
@@ -31,19 +30,18 @@ class EffectSlotTest : public BaseEffectTest {
 };
 
 TEST_F(EffectSlotTest, ControlsReflectSlotState) {
-    int iRackNumber = 0;
     int iChainNumber = 0;
     int iEffectNumber = 0;
 
-    StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
-    // StandardEffectRack::addEffectChainSlot automatically adds 4 effect
+    m_pEffectsManager->addStandardEffectChainSlots();
+    EffectChainSlotPointer pChainSlot = m_pEffectsManager->getStandardEffectChainSlot(iChainNumber);
+    // StandardEffectChainSlot::addEffectChainSlot automatically adds 4 effect
     // slots. In the future we will probably remove this so this will just start
     // segfaulting.
     EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
 
-    QString group = StandardEffectRack::formatEffectSlotGroupString(
-        iRackNumber, iChainNumber, iEffectNumber);
+    QString group = StandardEffectChainSlot::formatEffectSlotGroup(
+        iChainNumber, iEffectNumber);
 
     EffectManifestPointer pManifest(new EffectManifest());
     pManifest->setId("org.mixxx.test.effect");

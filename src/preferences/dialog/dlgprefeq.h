@@ -26,7 +26,6 @@
 #include "control/controlproxy.h"
 #include "preferences/dlgpreferencepage.h"
 #include "effects/effectsmanager.h"
-#include "effects/effectrack.h"
 
 /**
   *@author John Sully
@@ -86,9 +85,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     // Members needed for changing the effects loaded on the EQ Effect Rack
     EffectsManager* m_pEffectsManager;
-    EqualizerRackPointer m_pEQEffectRack;
-    QuickEffectRackPointer m_pQuickEffectRack;
-    OutputEffectRackPointer m_pOutputEffectRack;
     QLabel* m_firstSelectorLabel;
     QList<QComboBox*> m_deckEqEffectSelectors;
     QList<QComboBox*> m_deckQuickEffectSelectors;

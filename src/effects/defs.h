@@ -44,21 +44,6 @@ class EffectState;
 typedef ChannelHandleMap<EffectState*> EffectStatesMap;
 typedef std::array<EffectStatesMap, kNumEffectsPerUnit> EffectStatesMapArray;
 
-class EffectRack;
-typedef QSharedPointer<EffectRack> EffectRackPointer;
-
-class StandardEffectRack;
-typedef QSharedPointer<StandardEffectRack> StandardEffectRackPointer;
-
-class EqualizerRack;
-typedef QSharedPointer<EqualizerRack> EqualizerRackPointer;
-
-class QuickEffectRack;
-typedef QSharedPointer<QuickEffectRack> QuickEffectRackPointer;
-
-class OutputEffectRack;
-typedef QSharedPointer<OutputEffectRack> OutputEffectRackPointer;
-
 class EffectSlot;
 typedef QSharedPointer<EffectSlot> EffectSlotPointer;
 
@@ -79,3 +64,15 @@ typedef QSharedPointer<EffectParameterSlotBase> EffectParameterSlotBasePointer;
 
 class EffectChainSlot;
 typedef QSharedPointer<EffectChainSlot> EffectChainSlotPointer;
+
+class StandardEffectChainSlot;
+typedef QSharedPointer<StandardEffectChainSlot> StandardEffectChainSlotPointer;
+
+class EqualizerEffectChainSlot;
+typedef QSharedPointer<EqualizerEffectChainSlot> EqualizerEffectChainSlotPointer;
+
+class OutputEffectChainSlot;
+typedef QSharedPointer<OutputEffectChainSlot> OutputEffectChainSlotPointer;
+
+class QuickEffectChainSlot;
+typedef QSharedPointer<QuickEffectChainSlot> QuickEffectChainSlotPointer;

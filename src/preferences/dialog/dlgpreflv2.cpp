@@ -117,7 +117,7 @@ void DlgPrefLV2::slotApply() {
         EffectManifestParameterPointer pParameter = pCurrentEffectManifest->parameter(i);
         pParameter->setShowInParameterSlot(m_pluginParameters[i]->isChecked());
     }
-    m_pEffectsManager->refreshAllRacks();
+    m_pEffectsManager->refreshAllChainSlots();
 }
 
 void DlgPrefLV2::slotUpdateOnParameterCheck(int state) {

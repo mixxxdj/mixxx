@@ -23,7 +23,6 @@ class EffectSlot : public QObject {
     Q_OBJECT
   public:
     EffectSlot(const QString& group,
-               const unsigned int iChainNumber,
                const unsigned int iEffectNumber);
     virtual ~EffectSlot();
 
@@ -90,16 +89,6 @@ class EffectSlot : public QObject {
     // previously loaded effect was removed from the slot.
     void effectLoaded(EffectPointer pEffect, unsigned int effectSlotNumber);
 
-    // Signal that whoever is in charge of this EffectSlot should load the next
-    // Effect into it.
-    void nextEffect(unsigned int iChainNumber, unsigned int iEffectNumber,
-                    EffectPointer pEffect);
-
-    // Signal that whoever is in charge of this EffectSlot should load the
-    // previous Effect into it.
-    void prevEffect(unsigned int iChainNumber, unsigned int iEffectNumber,
-                    EffectPointer pEffect);
-
     // Signal that whoever is in charge of this EffectSlot should clear this
     // EffectSlot (by deleting the effect from the underlying chain).
     void clearEffect(unsigned int iEffectNumber);
@@ -111,7 +100,6 @@ class EffectSlot : public QObject {
         return QString("EffectSlot(%1)").arg(m_group);
     }
 
-    const unsigned int m_iChainNumber;
     const unsigned int m_iEffectNumber;
     const QString m_group;
     UserSettingsPointer m_pConfig;

@@ -91,7 +91,6 @@ struct EffectsRequest {
     union {
         struct {
             EngineEffectChain* pChain;
-            int iIndex;
             SignalProcessingStage signalProcessingStage;
         } AddEffectChain;
         struct {

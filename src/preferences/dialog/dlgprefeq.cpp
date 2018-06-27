@@ -28,7 +28,7 @@
 #include "control/controlproxy.h"
 #include "util/math.h"
 #include "mixer/playermanager.h"
-#include "effects/effectrack.h"
+#include "effects/specialeffectchainslots.h"
 
 const QString kConfigKey = "[Mixer Profile]";
 const QString kEnableEqs = "EnableEQs";
@@ -55,10 +55,6 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_inSlotPopulateDeckEffectSelectors(false),
           m_bEqAutoReset(false),
           m_bGainAutoReset(false) {
-    m_pEQEffectRack = m_pEffectsManager->getEqualizerRack(0);
-    m_pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
-    m_pOutputEffectRack = m_pEffectsManager->getOutputsEffectRack();
-
     setupUi(this);
     // Connection
     connect(SliderHiEQ, SIGNAL(valueChanged(int)), this, SLOT(slotUpdateHiEQ()));
@@ -453,11 +449,11 @@ void DlgPrefEQ::applySelections() {
         // Only apply the effect if it changed -- so first interrogate the
         // loaded effect if any.
         bool need_load = true;
-        if (m_pEQEffectRack->numEffectChainSlots() > deck) {
+        if (m_pEffectsManager->numEqualizerEffectChainSlots() > deck) {
             // It's not correct to get a chainslot by index number -- get by
             // group name instead.
             EffectChainSlotPointer chainslot =
-                    m_pEQEffectRack->getGroupEffectChainSlot(group);
+                    m_pEffectsManager->getEqualizerEffectChainSlot(group);
             if (chainslot) {
                 EffectPointer effectpointer =
                         chainslot->getEffectSlot(0)->getEffect();
@@ -469,7 +465,7 @@ void DlgPrefEQ::applySelections() {
         }
         if (need_load) {
             EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-            m_pEQEffectRack->loadEffectToGroup(group, pEffect);
+            m_pEffectsManager->loadEqualizerEffectToGroup(group, pEffect);
             m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
                     ConfigValue(effectId));
             m_filterWaveformEnableCOs[deck]->set(m_pEffectsManager->isEQ(effectId));
@@ -497,11 +493,11 @@ void DlgPrefEQ::applySelections() {
         // Only apply the effect if it changed -- so first interrogate the
         // loaded effect if any.
         bool need_load = true;
-        if (m_pQuickEffectRack->numEffectChainSlots() > deck) {
+        if (m_pEffectsManager->numQuickEffectChainSlots() > deck) {
             // It's not correct to get a chainslot by index number -- get by
             // group name instead.
             EffectChainSlotPointer chainslot =
-                    m_pQuickEffectRack->getGroupEffectChainSlot(group);
+                    m_pEffectsManager->getQuickEffectChainSlot(group);
             if (chainslot) {
                 EffectPointer effectpointer =
                         chainslot->getEffectSlot(0)->getEffect();
@@ -513,7 +509,7 @@ void DlgPrefEQ::applySelections() {
         }
         if (need_load) {
             EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
-            m_pQuickEffectRack->loadEffectToGroup(group, pEffect);
+            m_pEffectsManager->loadQuickEffectToGroup(group, pEffect);
 
             m_pConfig->set(ConfigKey(kConfigKey, "QuickEffectForGroup_" + group),
                     ConfigValue(effectId));
@@ -719,7 +715,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
         pbResetMasterEq->show();
     }
 
-    EffectChainSlotPointer pChainSlot = m_pOutputEffectRack->getEffectChainSlot(0);
+    auto pChainSlot = m_pEffectsManager->getOutputEffectChainSlot();
 
     if (pChainSlot) {
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
@@ -801,21 +797,13 @@ void DlgPrefEQ::validate_levels() {
 }
 
 QString DlgPrefEQ::getEQEffectGroupForDeck(int deck) const {
-    // The EQ effect is loaded in effect slot 0.
-    if (m_pEQEffectRack) {
-        return m_pEQEffectRack->formatEffectSlotGroupString(
-            0, PlayerManager::groupForDeck(deck));
-    }
-    return QString();
+    return EqualizerEffectChainSlot::formatEffectSlotGroup(
+            PlayerManager::groupForDeck(deck));
 }
 
 QString DlgPrefEQ::getQuickEffectGroupForDeck(int deck) const {
-    // The quick effect is loaded in effect slot 0.
-    if (m_pQuickEffectRack) {
-        return m_pQuickEffectRack->formatEffectSlotGroupString(
-            0, PlayerManager::groupForDeck(deck));
-    }
-    return QString();
+    return QuickEffectChainSlot::formatEffectSlotGroup(
+            PlayerManager::groupForDeck(deck));
 }
 
 void DlgPrefEQ::slotMasterEQToDefault() {

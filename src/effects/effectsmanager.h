@@ -10,7 +10,7 @@
 
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "effects/effectrack.h"
+#include "effects/specialeffectchainslots.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "preferences/usersettings.h"
@@ -44,17 +44,11 @@ class EffectsManager : public QObject {
     // being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
 
-    // TODO(Kshitij) : Remove these redundant functions
-    void addEffectChain(EffectChainSlotPointer pEffectChainSlot);
-    void removeEffectChain(EffectChainSlotPointer pEffectChainSlot);
-
     // To support cycling through effect chains, there is a global ordering of
     // chains. These methods allow you to get the next or previous chain given
     // your current chain.
-    // TODO(rryan): Prevent double-loading of a chain into a slot?
-    // TODO(Kshitij) : These functions are not being used. Remove
-    EffectChainSlotPointer getNextEffectChain(EffectChainSlotPointer pEffectChainSlot);
-    EffectChainSlotPointer getPrevEffectChain(EffectChainSlotPointer pEffectChainSlot);
+    // EffectChainSlotPointer getNextEffectChain(EffectChainSlotPointer pEffectChainSlot);
+    // EffectChainSlotPointer getPrevEffectChain(EffectChainSlotPointer pEffectChainSlot);
 
     // NOTE(Kshitij) : New functions for saving and loading
     // bool saveEffectChains();
@@ -74,22 +68,34 @@ class EffectsManager : public QObject {
         return m_registeredOutputChannels;
     }
 
-    StandardEffectRackPointer addStandardEffectRack();
-    StandardEffectRackPointer getStandardEffectRack(int rack);
+    void addStandardEffectChainSlots();
+    EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
 
-    EqualizerRackPointer addEqualizerRack();
-    EqualizerRackPointer getEqualizerRack(int rack);
+    void addOutputEffectChainSlot();
+    EffectChainSlotPointer getOutputEffectChainSlot() const;
 
-    QuickEffectRackPointer addQuickEffectRack();
-    QuickEffectRackPointer getQuickEffectRack(int rack);
+    void addEqualizerEffectChainSlot(const QString& groupName);
+    EqualizerEffectChainSlotPointer getEqualizerEffectChainSlot(const QString& group) {
+        return m_equalizerEffectChainSlots.value(group);
+    }
+    bool loadEqualizerEffectToGroup(const QString& group, EffectPointer pEffect);
+    int numEqualizerEffectChainSlots() {
+        return m_equalizerEffectChainSlots.size();
+    }
 
-    OutputEffectRackPointer addOutputsEffectRack();
-    OutputEffectRackPointer getOutputsEffectRack();
+    void addQuickEffectChainSlot(const QString& groupName);
+    QuickEffectChainSlotPointer getQuickEffectChainSlot(const QString& group) {
+        return m_quickEffectChainSlots.value(group);
+    }
+    bool loadQuickEffectToGroup(const QString& group, EffectPointer pEffect);
+    int numQuickEffectChainSlots() {
+        return m_quickEffectChainSlots.size();
+    }
 
     // NOTE(Kshitij) : Use new functions
     // void loadEffectChains();
 
-    EffectRackPointer getEffectRack(const QString& group);
+    EffectChainSlotPointer getEffectChainSlot(const QString& group) const;
     EffectSlotPointer getEffectSlot(const QString& group);
 
     EffectParameterSlotPointer getEffectParameterSlot(
@@ -118,11 +124,10 @@ class EffectsManager : public QObject {
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
     bool getEffectVisibility(EffectManifestPointer pManifest);
 
-    void setupPerGroupRacks();
     void setup();
 
     // Reloads all effect to the slots to update parameter assignements
-    void refreshAllRacks();
+    void refreshAllChainSlots();
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
     // ownership of request and deletes it once a response is received.
@@ -158,20 +163,21 @@ class EffectsManager : public QObject {
 
     ControlObject* m_pNumEffectsAvailable;
     // We need to create Control Objects for Equalizers' frequencies
-    ControlPotmeter* m_pLoEqFreq;
-    ControlPotmeter* m_pHiEqFreq;
+    ControlPotmeter m_loEqFreq;
+    ControlPotmeter m_hiEqFreq;
 
     bool m_underDestruction;
 
     QSet<ChannelHandleAndGroup> m_registeredInputChannels;
     QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
-    QList<StandardEffectRackPointer> m_standardEffectRacks;
     UserSettingsPointer m_pConfig;
-    QList<EqualizerRackPointer> m_equalizerEffectRacks;
-    QList<QuickEffectRackPointer> m_quickEffectRacks;
-    OutputEffectRackPointer m_pOutputEffectRack;
-    QHash<QString, EffectRackPointer> m_effectRacksByGroup;
-    QList<EffectChainSlotPointer> m_effectChainSlots;
+    QHash<QString, EffectChainSlotPointer> m_effectChainSlotsByGroup;
+
+    QList<StandardEffectChainSlotPointer> m_standardEffectChainSlots;
+    OutputEffectChainSlotPointer m_outputEffectChainSlot;
+    QHash<QString, EqualizerEffectChainSlotPointer> m_equalizerEffectChainSlots;
+    QHash<QString, QuickEffectChainSlotPointer> m_quickEffectChainSlots;
+
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };
 

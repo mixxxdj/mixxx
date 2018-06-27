@@ -14,6 +14,10 @@
 #include "util/assert.h"
 
 namespace {
+const QString kStandardEffectRackGroup = "[EffectRack1]";
+const QString kOutputEffectRackGroup = "[OutputEffectRack]";
+const QString kQuickEffectRackGroup = "[QuickEffectRack1]";
+const QString kEqualizerEffectRackGroup = "[EqualizerRack1]";
 const QString kEffectGroupSeparator = "_";
 const QString kGroupClose = "]";
 const unsigned int kEffectMessagPipeFifoSize = 2048;
@@ -26,8 +30,8 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_pConfig(pConfig),
           m_nextRequestId(0),
-          m_pLoEqFreq(NULL),
-          m_pHiEqFreq(NULL),
+          m_loEqFreq(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040),
+          m_hiEqFreq(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040),
           m_underDestruction(false) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
@@ -39,10 +43,6 @@ EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
 
     m_pNumEffectsAvailable = new ControlObject(ConfigKey("[Master]", "num_effectsavailable"));
     m_pNumEffectsAvailable->setReadOnly();
-
-    // These controls are used inside EQ Effects
-    m_pLoEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);
-    m_pHiEqFreq = new ControlPotmeter(ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);
 }
 
 EffectsManager::~EffectsManager() {
@@ -63,8 +63,8 @@ EffectsManager::~EffectsManager() {
         it = m_activeRequests.erase(it);
     }
 
-    delete m_pHiEqFreq;
-    delete m_pLoEqFreq;
+    // delete m_pHiEqFreq;
+    // delete m_pLoEqFreq;
     delete m_pNumEffectsAvailable;
     // Safe because the Engine is deleted before EffectsManager. Also, it holds
     // a bare pointer to m_pRequestPipe so it is critical that it does not
@@ -111,56 +111,6 @@ void EffectsManager::slotBackendRegisteredEffect(EffectManifestPointer pManifest
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 }
 
-// TODO(Kshitij) : This function is not being used. Remove
-void EffectsManager::addEffectChain(EffectChainSlotPointer pEffectChainSlot) {
-    if (pEffectChainSlot) {
-        m_effectChainSlots.append(pEffectChainSlot);
-    }
-}
-
-// TODO(Kshitij) : This function is not being used. Remove
-void EffectsManager::removeEffectChain(EffectChainSlotPointer pEffectChainSlot) {
-    if (pEffectChainSlot) {
-        m_effectChainSlots.removeAll(pEffectChainSlot);
-    }
-}
-
-// TODO(Kshitij) : This function is not being used. Remove
-EffectChainSlotPointer EffectsManager::getNextEffectChain(EffectChainSlotPointer pEffectChainSlot) {
-    if (m_effectChainSlots.isEmpty())
-        return EffectChainSlotPointer();
-
-    if (!pEffectChainSlot) {
-        return m_effectChainSlots[0];
-    }
-
-    int indexOf = m_effectChainSlots.lastIndexOf(pEffectChainSlot);
-    if (indexOf == -1) {
-        qWarning() << debugString() << "WARNING: getNextEffectChain called for an unmanaged EffectChain";
-        return m_effectChainSlots[0];
-    }
-
-    return m_effectChainSlots[(indexOf + 1) % m_effectChainSlots.size()];
-}
-
-// TODO(Kshitij) : This function is not being used. Remove
-EffectChainSlotPointer EffectsManager::getPrevEffectChain(EffectChainSlotPointer pEffectChainSlot) {
-    if (m_effectChainSlots.isEmpty())
-        return EffectChainSlotPointer();
-
-    if (!pEffectChainSlot) {
-        return m_effectChainSlots[m_effectChainSlots.size()-1];
-    }
-
-    int indexOf = m_effectChainSlots.lastIndexOf(pEffectChainSlot);
-    if (indexOf == -1) {
-        qWarning() << debugString() << "WARNING: getPrevEffectChain called for an unmanaged EffectChain";
-        return m_effectChainSlots[m_effectChainSlots.size()-1];
-    }
-
-    return m_effectChainSlots[(indexOf - 1 + m_effectChainSlots.size()) % m_effectChainSlots.size()];
-}
-
 bool EffectsManager::isAdoptMetaknobValueEnabled() const {
     return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
 }
@@ -171,8 +121,8 @@ void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handle_gr
     }
     m_registeredInputChannels.insert(handle_group);
 
-    for (auto& pRack : m_standardEffectRacks) {
-        pRack->registerInputChannel(handle_group);
+    foreach (EffectChainSlotPointer pChainSlot, m_standardEffectChainSlots) {
+        pChainSlot->registerInputChannel(handle_group);
     }
 }
 
@@ -273,64 +223,97 @@ EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
     return EffectPointer();
 }
 
-StandardEffectRackPointer EffectsManager::addStandardEffectRack() {
-    StandardEffectRackPointer pRack(new StandardEffectRack(
-        this, m_standardEffectRacks.size()));
-    m_standardEffectRacks.append(pRack);
-    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
-    return pRack;
-}
+void EffectsManager::addStandardEffectChainSlots() {
+    for (int i = 0; i < EffectsManager::kNumStandardEffectChains; ++i) {
+        VERIFY_OR_DEBUG_ASSERT(!m_effectChainSlotsByGroup.contains(
+                StandardEffectChainSlot::formatEffectChainSlotGroup(i))) {
+            continue;
+        }
 
-StandardEffectRackPointer EffectsManager::getStandardEffectRack(int i) {
-    if (i < 0 || i >= m_standardEffectRacks.size()) {
-        return StandardEffectRackPointer();
+        auto pChainSlot = StandardEffectChainSlotPointer(
+            new StandardEffectChainSlot(i, this));
+
+        m_standardEffectChainSlots.append(pChainSlot);
+        m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
     }
-    return m_standardEffectRacks[i];
 }
 
-EqualizerRackPointer EffectsManager::addEqualizerRack() {
-    EqualizerRackPointer pRack(new EqualizerRack(
-            this, m_equalizerEffectRacks.size()));
-    m_equalizerEffectRacks.append(pRack);
-    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
-    return pRack;
+void EffectsManager::addOutputEffectChainSlot() {
+    m_outputEffectChainSlot = OutputEffectChainSlotPointer(new OutputEffectChainSlot(this));
+    m_effectChainSlotsByGroup.insert(m_outputEffectChainSlot->group(), m_outputEffectChainSlot);
 }
 
-EqualizerRackPointer EffectsManager::getEqualizerRack(int i) {
-    if (i < 0 || i >= m_equalizerEffectRacks.size()) {
-        return EqualizerRackPointer();
+EffectChainSlotPointer EffectsManager::getOutputEffectChainSlot() const {
+    return m_outputEffectChainSlot;
+}
+
+EffectChainSlotPointer EffectsManager::getStandardEffectChainSlot(int unitNumber) const {
+    VERIFY_OR_DEBUG_ASSERT(0 <= unitNumber || unitNumber < m_standardEffectChainSlots.size()) {
+        return EffectChainSlotPointer();
     }
-    return m_equalizerEffectRacks[i];
+    return m_standardEffectChainSlots.at(unitNumber);
 }
 
-QuickEffectRackPointer EffectsManager::addQuickEffectRack() {
-    QuickEffectRackPointer pRack(new QuickEffectRack(
-        this, m_quickEffectRacks.size()));
-    m_quickEffectRacks.append(pRack);
-    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
-    return pRack;
-}
-
-QuickEffectRackPointer EffectsManager::getQuickEffectRack(int i) {
-    if (i < 0 || i >= m_quickEffectRacks.size()) {
-        return QuickEffectRackPointer();
+void EffectsManager::addEqualizerEffectChainSlot(const QString& groupName) {
+    VERIFY_OR_DEBUG_ASSERT(!m_equalizerEffectChainSlots.contains(
+            EqualizerEffectChainSlot::formatEffectChainSlotGroup(groupName))) {
+        return;
     }
-    return m_quickEffectRacks[i];
+
+    auto pChainSlot = EqualizerEffectChainSlotPointer(
+            new EqualizerEffectChainSlot(groupName, this));
+    m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
+    m_equalizerEffectChainSlots.insert(pChainSlot->group(), pChainSlot);
 }
 
-OutputEffectRackPointer EffectsManager::addOutputsEffectRack() {
-    OutputEffectRackPointer pRack(new OutputEffectRack(this));
-    m_pOutputEffectRack = pRack;
-    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
-    return m_pOutputEffectRack;
+bool EffectsManager::loadEqualizerEffectToGroup(const QString& group,
+                                                EffectPointer pEffect) {
+    auto chainSlotGroup = EqualizerEffectChainSlot::formatEffectChainSlotGroup(group);
+    auto pChainSlot = m_equalizerEffectChainSlots.value(chainSlotGroup);
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+        return false;
+    }
+
+    pChainSlot->replaceEffect(0, pEffect);
+    if (pEffect != nullptr) {
+        pEffect->setEnabled(true);
+    }
+    return true;
 }
 
-OutputEffectRackPointer EffectsManager::getOutputsEffectRack() {
-    return m_pOutputEffectRack;
+void EffectsManager::addQuickEffectChainSlot(const QString& groupName) {
+    VERIFY_OR_DEBUG_ASSERT(!m_quickEffectChainSlots.contains(
+            QuickEffectChainSlot::formatEffectChainSlotGroup(groupName))) {
+        return;
+    }
+
+    auto pChainSlot = QuickEffectChainSlotPointer(
+        new QuickEffectChainSlot(groupName, this));
+    m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
+    m_quickEffectChainSlots.insert(pChainSlot->group(), pChainSlot);
 }
 
-EffectRackPointer EffectsManager::getEffectRack(const QString& group) {
-    return m_effectRacksByGroup.value(group);
+bool EffectsManager::loadQuickEffectToGroup(const QString& group,
+                                            EffectPointer pEffect) {
+    auto chainSlotGroup = QuickEffectChainSlot::formatEffectChainSlotGroup(group);
+    EffectChainSlotPointer pChainSlot = m_quickEffectChainSlots.value(chainSlotGroup);
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+        return false;
+    }
+
+    pChainSlot->replaceEffect(0, pEffect);
+    if (pEffect != nullptr) {
+        pEffect->setEnabled(true);
+    }
+
+    // Force update metaknobs and parameters to match state of superknob
+    pChainSlot->setSuperParameter(pChainSlot->getSuperParameter(), true);
+
+    return true;
+}
+
+EffectChainSlotPointer EffectsManager::getEffectChainSlot(const QString& group) const {
+    return m_effectChainSlotsByGroup.value(group);
 }
 
 EffectSlotPointer EffectsManager::getEffectSlot(
@@ -339,27 +322,9 @@ EffectSlotPointer EffectsManager::getEffectSlot(
 
     QStringList parts = group.split(kEffectGroupSeparator);
 
-    EffectRackPointer pRack = getEffectRack(parts.at(0) + kGroupClose);
-    VERIFY_OR_DEBUG_ASSERT(pRack) {
-        return EffectSlotPointer();
-    }
-
-    EffectChainSlotPointer pChainSlot;
-    if (parts.at(0) == "[EffectRack1") {
-        intRegEx.indexIn(parts.at(1));
-        pChainSlot = pRack->getEffectChainSlot(intRegEx.cap(1).toInt() - 1);
-    } else {
-        // Assume a PerGroupRack
-        const QString chainGroup =
-                parts.at(0) + kEffectGroupSeparator + parts.at(1) + kGroupClose;
-        for (int i = 0; i < pRack->numEffectChainSlots(); ++i) {
-            EffectChainSlotPointer pSlot = pRack->getEffectChainSlot(i);
-            if (pSlot->getGroup() == chainGroup) {
-                pChainSlot = pSlot;
-                break;
-            }
-        }
-    }
+    // NOTE(Kshitij) : Assuming the group is valid
+    const QString chainGroup = parts.at(0) + kEffectGroupSeparator + parts.at(1) + kGroupClose;
+    EffectChainSlotPointer pChainSlot = getEffectChainSlot(chainGroup);
     VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
         return EffectSlotPointer();
     }
@@ -417,19 +382,10 @@ bool EffectsManager::getEffectVisibility(EffectManifestPointer pManifest) {
     return m_visibleEffectManifests.contains(pManifest);
 }
 
-// TODO: remove this when removing EffectRack layer. The EQs and QuickEffects
-// should be EffectChainSlot subclasses that get initialized by PlayerManager
-// with each deck
-void EffectsManager::setupPerGroupRacks() {
-    // NOTE(Be): Effect racks are processed in the order they are added here.
-    addEqualizerRack();
-    addQuickEffectRack();
-}
-
 void EffectsManager::setup() {
-    // Add postfader effect racks
-    addStandardEffectRack();
-    addOutputsEffectRack();
+    // Add postfader effect chain slots
+    addStandardEffectChainSlots();
+    addOutputEffectChainSlot();
 }
 
 // NOTE(Kshitij) : Use new functions for effect loading using Effect Preset
@@ -438,15 +394,15 @@ void EffectsManager::setup() {
 //     m_pEffectChainManager->loadEffectChains();
 // }
 
-void EffectsManager::refreshAllRacks() {
-    for (const auto& pRack: m_standardEffectRacks) {
-        pRack->refresh();
+void EffectsManager::refreshAllChainSlots() {
+    for (auto& pChainSlot : m_standardEffectChainSlots) {
+        pChainSlot->refreshAllEffects();
     }
-    for (const auto& pRack: m_equalizerEffectRacks) {
-        pRack->refresh();
+    for (auto& pChainSlot : m_equalizerEffectChainSlots) {
+        pChainSlot->refreshAllEffects();
     }
-    for (const auto& pRack: m_quickEffectRacks) {
-        pRack->refresh();
+    for (auto& pChainSlot : m_quickEffectChainSlots) {
+        pChainSlot->refreshAllEffects();
     }
 }
 

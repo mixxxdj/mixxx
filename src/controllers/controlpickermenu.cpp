@@ -4,8 +4,8 @@
 #include "mixer/playermanager.h"
 #include "engine/cuecontrol.h"
 #include "engine/loopingcontrol.h"
-#include "effects/effectrack.h"
 #include "effects/effectchainslot.h"
+#include "effects/specialeffectchainslots.h"
 #include "effects/effectslot.h"
 #include "effects/effectparameterslot.h"
 
@@ -150,38 +150,35 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Temporarily decrease speed (fine)"), speedMenu);
 
     // EQs
-    QMenu* eqMenu = addSubmenu(tr("Equalizers"));
-    const int kNumEqRacks = 1;
+    QMenu* eqMenu = addSubmenu(tr("Equalizers"));    // const int kNumEqRacks = 1;
     const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
-    for (int iRackNumber = 0; iRackNumber < kNumEqRacks; ++iRackNumber) {
-        // TODO: Although there is a mode with 4-band EQs, it's not feasible
-        // right now to add support for learning both it and regular 3-band eqs.
-        // Since 3-band is by far the most common, stick with that.
-        const int kMaxEqs = 3;
-        QList<QString> eqNames;
-        eqNames.append(tr("Low EQ"));
-        eqNames.append(tr("Mid EQ"));
-        eqNames.append(tr("High EQ"));
-        for (int deck = 1; deck <= iNumDecks; ++deck) {
-            QMenu* deckMenu = addSubmenu(QString("Deck %1").arg(deck), eqMenu);
-            for (int effect = kMaxEqs - 1; effect >= 0; --effect) {
-                const QString group = EqualizerRack::formatEffectSlotGroupString(
-                        iRackNumber, 0, QString("[Channel%1]").arg(deck));
-                QMenu* bandMenu = addSubmenu(eqNames[effect], deckMenu);
-                QString control = "parameter%1";
-                addPrefixedControl(group, control.arg(effect+1),
-                                   tr("Adjust %1").arg(eqNames[effect]),
-                                   tr("Adjust %1").arg(eqNames[effect]),
-                                   tr("Deck %1").arg(deck),
-                                   bandMenu, true);
+    // TODO: Although there is a mode with 4-band EQs, it's not feasible
+    // right now to add support for learning both it and regular 3-band eqs.
+    // Since 3-band is by far the most common, stick with that.
+    const int kMaxEqs = 3;
+    QList<QString> eqNames;
+    eqNames.append(tr("Low EQ"));
+    eqNames.append(tr("Mid EQ"));
+    eqNames.append(tr("High EQ"));
+    for (int deck = 1; deck <= iNumDecks; ++deck) {
+        QMenu* deckMenu = addSubmenu(QString("Deck %1").arg(deck), eqMenu);
+        for (int effect = kMaxEqs - 1; effect >= 0; --effect) {
+            const QString group = EqualizerEffectChainSlot::formatEffectSlotGroup(
+                    PlayerManager::groupForDeck(deck));
+            QMenu* bandMenu = addSubmenu(eqNames[effect], deckMenu);
+            QString control = "parameter%1";
+            addPrefixedControl(group, control.arg(effect+1),
+                               tr("Adjust %1").arg(eqNames[effect]),
+                               tr("Adjust %1").arg(eqNames[effect]),
+                               tr("Deck %1").arg(deck),
+                               bandMenu, true);
 
-                control = "button_parameter%1";
-                addPrefixedControl(group, control.arg(effect+1),
-                                   tr("Kill %1").arg(eqNames[effect]),
-                                   tr("Kill %1").arg(eqNames[effect]),
-                                   tr("Deck %1").arg(deck),
-                                   bandMenu, false);
-            }
+            control = "button_parameter%1";
+            addPrefixedControl(group, control.arg(effect+1),
+                               tr("Kill %1").arg(eqNames[effect]),
+                               tr("Kill %1").arg(eqNames[effect]),
+                               tr("Deck %1").arg(deck),
+                               bandMenu, false);
         }
     }
 
@@ -432,7 +429,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Replace Auto DJ Queue with selected tracks"),
                        m_libraryStr, libraryMenu);
 
-            
+
     // Load track (these can be loaded into any channel)
     addDeckAndSamplerControl("LoadSelectedTrack",
                              tr("Load Track"),
@@ -459,226 +456,220 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            quickEffectMenu);
     }
 
-    const int kNumEffectRacks = 1;
-    for (int iRackNumber = 1; iRackNumber <= kNumEffectRacks; ++iRackNumber) {
-        const QString rackGroup = StandardEffectRack::formatGroupString(
-                iRackNumber - 1);
-        QMenu* rackMenu = addSubmenu(m_effectRackStr.arg(iRackNumber), effectsMenu);
-        QString descriptionPrefix = m_effectRackStr.arg(iRackNumber);
+    const QString rackGroup = "[EffectRack1]";
+    QMenu* rackMenu = addSubmenu(m_effectRackStr.arg(1), effectsMenu);
+    QString descriptionPrefix = m_effectRackStr.arg(1);
 
-        addPrefixedControl(rackGroup, "clear",
-                           tr("Clear Effect Rack"), tr("Clear effect rack"),
-                           descriptionPrefix, rackMenu);
+    addPrefixedControl(rackGroup, "clear",
+                        tr("Clear Effect Rack"), tr("Clear effect rack"),
+                        descriptionPrefix, rackMenu);
 
-        const int numEffectUnits = ControlObject::get(
-            ConfigKey(rackGroup, "num_effectunits"));
-        for (int iEffectUnitNumber = 1; iEffectUnitNumber <= numEffectUnits;
-             ++iEffectUnitNumber) {
-            const QString effectUnitGroup =
-                    StandardEffectRack::formatEffectChainSlotGroupString(
-                        iRackNumber - 1, iEffectUnitNumber - 1);
+    const int numEffectUnits = ControlObject::get(
+        ConfigKey(rackGroup, "num_effectunits"));
+    for (int iEffectUnitNumber = 1; iEffectUnitNumber <= numEffectUnits;
+         ++iEffectUnitNumber) {
+        const QString effectUnitGroup =
+                StandardEffectChainSlot::formatEffectChainSlotGroup(iEffectUnitNumber - 1);
 
-            descriptionPrefix = QString("%1, %2").arg(m_effectRackStr.arg(iRackNumber),
-                                                      m_effectUnitStr.arg(iEffectUnitNumber));
+        descriptionPrefix = QString("%1, %2").arg(m_effectRackStr.arg(1),
+                                                  m_effectUnitStr.arg(iEffectUnitNumber));
 
-            QMenu* effectUnitMenu = addSubmenu(m_effectUnitStr.arg(iEffectUnitNumber),
-                                               rackMenu);
-            addPrefixedControl(effectUnitGroup, "clear",
-                               tr("Clear Unit"),
-                               tr("Clear effect unit"), descriptionPrefix,
-                               effectUnitMenu);
-            addPrefixedControl(effectUnitGroup, "enabled",
-                               tr("Toggle Unit"),
-                               tr("Enable or disable effect processing"), descriptionPrefix,
-                               effectUnitMenu, false);
-            addPrefixedControl(effectUnitGroup, "mix",
-                               tr("Dry/Wet"),
-                               tr("Adjust the balance between the original (dry) and processed (wet) signal."), descriptionPrefix,
-                               effectUnitMenu, true);
-            addPrefixedControl(effectUnitGroup, "super1",
-                               tr("Super Knob"),
-                               tr("Super Knob (control effects' Meta Knobs)"),
-                               descriptionPrefix,
-                               effectUnitMenu, true);
-            addPrefixedControl(effectUnitGroup, "Mix Mode",
-                               tr("Mix Mode Toggle"),
-                               tr("Toggle effect unit between D/W and D+W modes"),
-                               descriptionPrefix,
-                               effectUnitMenu);
-            addPrefixedControl(effectUnitGroup, "next_chain",
-                               tr("Next Chain"),
-                               tr("Next chain preset"), descriptionPrefix,
-                               effectUnitMenu);
-            addPrefixedControl(effectUnitGroup, "prev_chain",
-                               tr("Previous Chain"),
-                               tr("Previous chain preset"), descriptionPrefix,
-                               effectUnitMenu);
-            addPrefixedControl(effectUnitGroup, "chain_selector",
-                               tr("Next/Previous Chain"),
-                               tr("Next or previous chain preset"), descriptionPrefix,
-                               effectUnitMenu);
-            addPrefixedControl(effectUnitGroup, "show_parameters",
-                               tr("Show Effect Parameters"),
-                               tr("Show Effect Parameters"), descriptionPrefix,
-                               effectUnitMenu);
+        QMenu* effectUnitMenu = addSubmenu(m_effectUnitStr.arg(iEffectUnitNumber),
+                                           rackMenu);
+        addPrefixedControl(effectUnitGroup, "clear",
+                           tr("Clear Unit"),
+                           tr("Clear effect unit"), descriptionPrefix,
+                           effectUnitMenu);
+        addPrefixedControl(effectUnitGroup, "enabled",
+                           tr("Toggle Unit"),
+                           tr("Enable or disable effect processing"), descriptionPrefix,
+                           effectUnitMenu, false);
+        addPrefixedControl(effectUnitGroup, "mix",
+                           tr("Dry/Wet"),
+                           tr("Adjust the balance between the original (dry) and processed (wet) signal."), descriptionPrefix,
+                           effectUnitMenu, true);
+        addPrefixedControl(effectUnitGroup, "super1",
+                           tr("Super Knob"),
+                           tr("Super Knob (control effects' Meta Knobs)"),
+                           descriptionPrefix,
+                           effectUnitMenu, true);
+        addPrefixedControl(effectUnitGroup, "Mix Mode",
+                           tr("Mix Mode Toggle"),
+                           tr("Toggle effect unit between D/W and D+W modes"),
+                           descriptionPrefix,
+                           effectUnitMenu);
+        addPrefixedControl(effectUnitGroup, "next_chain",
+                           tr("Next Chain"),
+                           tr("Next chain preset"), descriptionPrefix,
+                           effectUnitMenu);
+        addPrefixedControl(effectUnitGroup, "prev_chain",
+                           tr("Previous Chain"),
+                           tr("Previous chain preset"), descriptionPrefix,
+                           effectUnitMenu);
+        addPrefixedControl(effectUnitGroup, "chain_selector",
+                           tr("Next/Previous Chain"),
+                           tr("Next or previous chain preset"), descriptionPrefix,
+                           effectUnitMenu);
+        addPrefixedControl(effectUnitGroup, "show_parameters",
+                           tr("Show Effect Parameters"),
+                           tr("Show Effect Parameters"), descriptionPrefix,
+                           effectUnitMenu);
 
-            QString enableOn = tr("Toggle Effect Unit");
-            QMenu* effectUnitGroups = addSubmenu(enableOn,
-                                                 effectUnitMenu);
+        QString enableOn = tr("Toggle Effect Unit");
+        QMenu* effectUnitGroups = addSubmenu(enableOn,
+                                             effectUnitMenu);
 
-            QString groupDescriptionPrefix = QString("%1, %2 %3").arg(
-                    m_effectRackStr.arg(iRackNumber),
-                    m_effectUnitStr.arg(iEffectUnitNumber),
-                    enableOn);
+        QString groupDescriptionPrefix = QString("%1, %2 %3").arg(
+                m_effectRackStr.arg(1),
+                m_effectUnitStr.arg(iEffectUnitNumber),
+                enableOn);
 
-            addPrefixedControl(effectUnitGroup, "group_[Master]_enable",
-                               m_effectMasterOutputStr,
-                               m_effectMasterOutputStr, groupDescriptionPrefix,
+        addPrefixedControl(effectUnitGroup, "group_[Master]_enable",
+                           m_effectMasterOutputStr,
+                           m_effectMasterOutputStr, groupDescriptionPrefix,
+                           effectUnitGroups);
+        addPrefixedControl(effectUnitGroup, "group_[Headphone]_enable",
+                           m_effectHeadphoneOutputStr,
+                           m_effectHeadphoneOutputStr, groupDescriptionPrefix,
+                           effectUnitGroups);
+
+        const int iNumDecks = ControlObject::get(
+            ConfigKey("[Master]", "num_decks"));
+        for (int iDeckNumber = 1; iDeckNumber <= iNumDecks; ++iDeckNumber) {
+            // PlayerManager::groupForDeck is 0-indexed.
+            QString playerGroup = PlayerManager::groupForDeck(iDeckNumber - 1);
+            // TODO(owen): Fix bad i18n here.
+            addPrefixedControl(effectUnitGroup,
+                               QString("group_%1_enable").arg(playerGroup),
+                               tr("Assign ") + m_deckStr.arg(iDeckNumber),
+                               tr("Assign ") + m_deckStr.arg(iDeckNumber),
+                               groupDescriptionPrefix,
                                effectUnitGroups);
-            addPrefixedControl(effectUnitGroup, "group_[Headphone]_enable",
-                               m_effectHeadphoneOutputStr,
-                               m_effectHeadphoneOutputStr, groupDescriptionPrefix,
+        }
+
+        const int iNumSamplers = ControlObject::get(
+                ConfigKey("[Master]", "num_samplers"));
+        for (int iSamplerNumber = 1; iSamplerNumber <= iNumSamplers;
+             ++iSamplerNumber) {
+            // PlayerManager::groupForSampler is 0-indexed.
+            QString playerGroup = PlayerManager::groupForSampler(iSamplerNumber - 1);
+            // TODO(owen): Fix bad i18n here.
+            addPrefixedControl(effectUnitGroup,
+                               QString("group_%1_enable").arg(playerGroup),
+                               tr("Assign ") + m_samplerStr.arg(iSamplerNumber),
+                               tr("Assign ") + m_samplerStr.arg(iSamplerNumber),
+                               groupDescriptionPrefix,
                                effectUnitGroups);
+        }
 
-            const int iNumDecks = ControlObject::get(
-                ConfigKey("[Master]", "num_decks"));
-            for (int iDeckNumber = 1; iDeckNumber <= iNumDecks; ++iDeckNumber) {
-                // PlayerManager::groupForDeck is 0-indexed.
-                QString playerGroup = PlayerManager::groupForDeck(iDeckNumber - 1);
-                // TODO(owen): Fix bad i18n here.
-                addPrefixedControl(effectUnitGroup,
-                                   QString("group_%1_enable").arg(playerGroup),
-                                   tr("Assign ") + m_deckStr.arg(iDeckNumber),
-                                   tr("Assign ") + m_deckStr.arg(iDeckNumber),
-                                   groupDescriptionPrefix,
-                                   effectUnitGroups);
-            }
+        const int iNumMicrophones = ControlObject::get(
+            ConfigKey("[Master]", "num_microphones"));
+        for (int iMicrophoneNumber = 1; iMicrophoneNumber <= iNumMicrophones;
+             ++iMicrophoneNumber) {
+            QString micGroup = PlayerManager::groupForMicrophone(iMicrophoneNumber - 1);
+            // TODO(owen): Fix bad i18n here.
+            addPrefixedControl(effectUnitGroup,
+                               QString("group_%1_enable").arg(micGroup),
+                               tr("Assign ") + m_microphoneStr.arg(iMicrophoneNumber),
+                               tr("Assign ") + m_microphoneStr.arg(iMicrophoneNumber),
+                               groupDescriptionPrefix,
+                               effectUnitGroups);
+        }
 
-            const int iNumSamplers = ControlObject::get(
-                    ConfigKey("[Master]", "num_samplers"));
-            for (int iSamplerNumber = 1; iSamplerNumber <= iNumSamplers;
-                 ++iSamplerNumber) {
-                // PlayerManager::groupForSampler is 0-indexed.
-                QString playerGroup = PlayerManager::groupForSampler(iSamplerNumber - 1);
-                // TODO(owen): Fix bad i18n here.
-                addPrefixedControl(effectUnitGroup,
-                                   QString("group_%1_enable").arg(playerGroup),
-                                   tr("Assign ") + m_samplerStr.arg(iSamplerNumber),
-                                   tr("Assign ") + m_samplerStr.arg(iSamplerNumber),
-                                   groupDescriptionPrefix,
-                                   effectUnitGroups);
+        const int iNumAuxiliaries = ControlObject::get(
+                ConfigKey("[Master]", "num_auxiliaries"));
+        for (int iAuxiliaryNumber = 1; iAuxiliaryNumber <= iNumAuxiliaries;
+             ++iAuxiliaryNumber) {
+            QString auxGroup = PlayerManager::groupForAuxiliary(iAuxiliaryNumber - 1);
+            // TODO(owen): Fix bad i18n here.
+            addPrefixedControl(effectUnitGroup,
+                               QString("group_%1_enable").arg(auxGroup),
+                               tr("Assign ") + m_auxStr.arg(iAuxiliaryNumber),
+                               tr("Assign ") + m_auxStr.arg(iAuxiliaryNumber),
+                               groupDescriptionPrefix,
+                               effectUnitGroups);
+        }
 
-            }
+        const int numEffectSlots = ControlObject::get(
+                ConfigKey(effectUnitGroup, "num_effectslots"));
+        for (int iEffectSlotNumber = 1; iEffectSlotNumber <= numEffectSlots;
+                 ++iEffectSlotNumber) {
+            const QString effectSlotGroup =
+                    StandardEffectChainSlot::formatEffectSlotGroup(
+                        iEffectUnitNumber - 1,
+                        iEffectSlotNumber - 1);
 
-            const int iNumMicrophones = ControlObject::get(
-                ConfigKey("[Master]", "num_microphones"));
-            for (int iMicrophoneNumber = 1; iMicrophoneNumber <= iNumMicrophones;
-                 ++iMicrophoneNumber) {
-                QString micGroup = PlayerManager::groupForMicrophone(iMicrophoneNumber - 1);
-                // TODO(owen): Fix bad i18n here.
-                addPrefixedControl(effectUnitGroup,
-                                   QString("group_%1_enable").arg(micGroup),
-                                   tr("Assign ") + m_microphoneStr.arg(iMicrophoneNumber),
-                                   tr("Assign ") + m_microphoneStr.arg(iMicrophoneNumber),
-                                   groupDescriptionPrefix,
-                                   effectUnitGroups);
-            }
+            QMenu* effectSlotMenu = addSubmenu(m_effectStr.arg(iEffectSlotNumber),
+                                               effectUnitMenu);
 
-            const int iNumAuxiliaries = ControlObject::get(
-                    ConfigKey("[Master]", "num_auxiliaries"));
-            for (int iAuxiliaryNumber = 1; iAuxiliaryNumber <= iNumAuxiliaries;
-                 ++iAuxiliaryNumber) {
-                QString auxGroup = PlayerManager::groupForAuxiliary(iAuxiliaryNumber - 1);
-                // TODO(owen): Fix bad i18n here.
-                addPrefixedControl(effectUnitGroup,
-                                   QString("group_%1_enable").arg(auxGroup),
-                                   tr("Assign ") + m_auxStr.arg(iAuxiliaryNumber),
-                                   tr("Assign ") + m_auxStr.arg(iAuxiliaryNumber),
-                                   groupDescriptionPrefix,
-                                   effectUnitGroups);
-            }
+            QString slotDescriptionPrefix =
+                    QString("%1, %2").arg(descriptionPrefix,
+                                          m_effectStr.arg(iEffectSlotNumber));
 
-            const int numEffectSlots = ControlObject::get(
-                    ConfigKey(effectUnitGroup, "num_effectslots"));
-            for (int iEffectSlotNumber = 1; iEffectSlotNumber <= numEffectSlots;
-                     ++iEffectSlotNumber) {
-                const QString effectSlotGroup =
-                        StandardEffectRack::formatEffectSlotGroupString(
-                            iRackNumber - 1, iEffectUnitNumber - 1,
+            addPrefixedControl(effectSlotGroup, "clear",
+                               tr("Clear"), tr("Clear the current effect"),
+                               slotDescriptionPrefix,
+                               effectSlotMenu);
+            addPrefixedControl(effectSlotGroup, "meta",
+                               tr("Meta Knob"), tr("Effect Meta Knob (control linked effect parameters)"),
+                               slotDescriptionPrefix,
+                               effectSlotMenu);
+            addPrefixedControl(effectSlotGroup, "enabled",
+                               tr("Toggle"), tr("Toggle the current effect"),
+                               slotDescriptionPrefix,
+                               effectSlotMenu);
+            addPrefixedControl(effectSlotGroup, "next_effect",
+                               tr("Next"), tr("Switch to next effect"),
+                               slotDescriptionPrefix,
+                               effectSlotMenu);
+            addPrefixedControl(effectSlotGroup, "prev_effect",
+                               tr("Previous"), tr("Switch to the previous effect"),
+                               slotDescriptionPrefix,
+                               effectSlotMenu);
+            addPrefixedControl(effectSlotGroup, "effect_selector",
+                               tr("Next or Previous"),
+                               tr("Switch to either next or previous effect"),
+                               slotDescriptionPrefix,
+                               effectSlotMenu);
+
+            const int numParameterSlots = ControlObject::get(
+                    ConfigKey(effectSlotGroup, "num_parameterslots"));
+            for (int iParameterSlotNumber = 1; iParameterSlotNumber <= numParameterSlots;
+                 ++iParameterSlotNumber) {
+                // The parameter slot group is the same as the effect slot
+                // group on a standard effect rack.
+                const QString parameterSlotGroup =
+                        StandardEffectChainSlot::formatEffectSlotGroup(
+                            iEffectUnitNumber - 1,
                             iEffectSlotNumber - 1);
+                const QString parameterSlotItemPrefix = EffectParameterSlot::formatItemPrefix(
+                        iParameterSlotNumber - 1);
+                QMenu* parameterSlotMenu = addSubmenu(
+                    m_parameterStr.arg(iParameterSlotNumber),
+                    effectSlotMenu);
 
-                QMenu* effectSlotMenu = addSubmenu(m_effectStr.arg(iEffectSlotNumber),
-                                                   effectUnitMenu);
+                QString parameterDescriptionPrefix =
+                        QString("%1, %2").arg(slotDescriptionPrefix,
+                                              m_parameterStr.arg(iParameterSlotNumber));
 
-                QString slotDescriptionPrefix =
-                        QString("%1, %2").arg(descriptionPrefix,
-                                              m_effectStr.arg(iEffectSlotNumber));
+                // Likely to change soon.
+                addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix,
+                                   tr("Parameter Value"),
+                                   tr("Parameter Value"),
+                                   parameterDescriptionPrefix,
+                                   parameterSlotMenu, true);
 
-                addPrefixedControl(effectSlotGroup, "clear",
-                                   tr("Clear"), tr("Clear the current effect"),
-                                   slotDescriptionPrefix,
-                                   effectSlotMenu);
-                addPrefixedControl(effectSlotGroup, "meta",
-                                   tr("Meta Knob"), tr("Effect Meta Knob (control linked effect parameters)"),
-                                   slotDescriptionPrefix,
-                                   effectSlotMenu);
-                addPrefixedControl(effectSlotGroup, "enabled",
-                                   tr("Toggle"), tr("Toggle the current effect"),
-                                   slotDescriptionPrefix,
-                                   effectSlotMenu);
-                addPrefixedControl(effectSlotGroup, "next_effect",
-                                   tr("Next"), tr("Switch to next effect"),
-                                   slotDescriptionPrefix,
-                                   effectSlotMenu);
-                addPrefixedControl(effectSlotGroup, "prev_effect",
-                                   tr("Previous"), tr("Switch to the previous effect"),
-                                   slotDescriptionPrefix,
-                                   effectSlotMenu);
-                addPrefixedControl(effectSlotGroup, "effect_selector",
-                                   tr("Next or Previous"),
-                                   tr("Switch to either next or previous effect"),
-                                   slotDescriptionPrefix,
-                                   effectSlotMenu);
+                addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_type",
+                                   tr("Meta Knob Mode"),
+                                   tr("Set how linked effect parameters change when turning the Meta Knob."),
+                                   parameterDescriptionPrefix,
+                                   parameterSlotMenu);
+                addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_inverse",
+                                   tr("Meta Knob Mode Invert"),
+                                   tr("Invert how linked effect parameters change when turning the Meta Knob."),
+                                   parameterDescriptionPrefix,
+                                   parameterSlotMenu);
 
-                const int numParameterSlots = ControlObject::get(
-                        ConfigKey(effectSlotGroup, "num_parameterslots"));
-                for (int iParameterSlotNumber = 1; iParameterSlotNumber <= numParameterSlots;
-                     ++iParameterSlotNumber) {
-                    // The parameter slot group is the same as the effect slot
-                    // group on a standard effect rack.
-                    const QString parameterSlotGroup =
-                            StandardEffectRack::formatEffectSlotGroupString(
-                                iRackNumber - 1, iEffectUnitNumber - 1,
-                                iEffectSlotNumber - 1);
-                    const QString parameterSlotItemPrefix = EffectParameterSlot::formatItemPrefix(
-                            iParameterSlotNumber - 1);
-                    QMenu* parameterSlotMenu = addSubmenu(
-                        m_parameterStr.arg(iParameterSlotNumber),
-                        effectSlotMenu);
-
-                    QString parameterDescriptionPrefix =
-                            QString("%1, %2").arg(slotDescriptionPrefix,
-                                                  m_parameterStr.arg(iParameterSlotNumber));
-
-                    // Likely to change soon.
-                    addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix,
-                                       tr("Parameter Value"),
-                                       tr("Parameter Value"),
-                                       parameterDescriptionPrefix,
-                                       parameterSlotMenu, true);
-
-                    addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_type",
-                                       tr("Meta Knob Mode"),
-                                       tr("Set how linked effect parameters change when turning the Meta Knob."),
-                                       parameterDescriptionPrefix,
-                                       parameterSlotMenu);
-                    addPrefixedControl(parameterSlotGroup, parameterSlotItemPrefix + "_link_inverse",
-                                       tr("Meta Knob Mode Invert"),
-                                       tr("Invert how linked effect parameters change when turning the Meta Knob."),
-                                       parameterDescriptionPrefix,
-                                       parameterSlotMenu);
-
-                }
             }
         }
     }

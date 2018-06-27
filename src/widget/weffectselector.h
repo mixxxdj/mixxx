@@ -3,7 +3,6 @@
 
 #include <QDomNode>
 #include <QComboBox>
-#include "effects/effectrack.h"
 #include "effects/effectslot.h"
 #include "skin/skincontext.h"
 
@@ -28,7 +27,6 @@ class WEffectSelector : public QComboBox, public WBaseWidget {
     EffectsManager* m_pEffectsManager;
     EffectSlotPointer m_pEffectSlot;
     EffectChainSlotPointer m_pChainSlot;
-    EffectRackPointer m_pRack;
     double m_scaleFactor;
 };
 

@@ -6,7 +6,7 @@
 #include "controllers/softtakeover.h"
 #include "effects/effectparameterslot.h"
 #include "effects/effectchainslot.h"
-#include "effects/effectrack.h"
+#include "effects/specialeffectchainslots.h"
 #include "effects/effect.h"
 #include "effects/effectslot.h"
 #include "mixxxtest.h"
@@ -25,16 +25,15 @@ class MetaLinkTest : public BaseEffectTest {
         m_pEffectsManager->registerInputChannel(m_headphone);
         registerTestBackend();
 
-        int iRackNumber = 0;
         int iChainNumber = 0;
         int iEffectNumber = 0;
 
-        StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-        m_pChainSlot = pRack->getEffectChainSlot(iChainNumber);
+        m_pEffectsManager->addStandardEffectChainSlots();
+        m_pChainSlot = m_pEffectsManager->getStandardEffectChainSlot(iChainNumber);
         m_pEffectSlot = m_pChainSlot->getEffectSlot(iEffectNumber);
 
-        QString group = StandardEffectRack::formatEffectSlotGroupString(
-            iRackNumber, iChainNumber, iEffectNumber);
+        QString group = StandardEffectChainSlot::formatEffectSlotGroup(
+            iChainNumber, iEffectNumber);
 
         EffectManifestPointer pManifest(new EffectManifest());
         pManifest->setId("org.mixxx.test.effect");
@@ -202,8 +201,7 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
 
     // We have to recreate the effect because we want a neutral point at
     // 0 or 1.
-    QString group = StandardEffectRack::formatEffectSlotGroupString(
-        0, 0, 0);
+    QString group = StandardEffectChainSlot::formatEffectSlotGroup(0, 0);
     EffectManifestPointer pManifest(new EffectManifest());
     pManifest->setId("org.mixxx.test.effect2");
     pManifest->setName("Test Effect2");

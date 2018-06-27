@@ -103,9 +103,9 @@ void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHand
                                                   const unsigned int sampleRate) {
     // Feature state is gathered after prefader effects processing.
     // This is okay because the equalizer and filter effects do not make use of it.
-    // However, if an effect is loaded into a QuickEffectRack that could make use
+    // However, if an effect is loaded into a QuickEffectChainSlot that could make use
     // of the GroupFeatureState, it will not sound the same as if it is loaded into
-    // a StandardEffectRack.
+    // a StandardEffectChainSlot.
     GroupFeatureState featureState;
     processInner(SignalProcessingStage::Prefader,
                  inputHandle, outputHandle,

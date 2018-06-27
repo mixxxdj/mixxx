@@ -19,10 +19,8 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
     m_scaleFactor = context.getScaleFactor();
 
     // EffectWidgetUtils propagates NULLs so this is all safe.
-    m_pRack = EffectWidgetUtils::getEffectRackFromNode(
-            node, context, m_pEffectsManager);
     m_pChainSlot = EffectWidgetUtils::getEffectChainSlotFromNode(
-            node, context, m_pRack);
+            node, context, m_pEffectsManager);
     m_pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(
             node, context, m_pChainSlot);
 
@@ -80,8 +78,7 @@ void WEffectSelector::populate() {
 void WEffectSelector::slotEffectSelected(int newIndex) {
     const QString id = itemData(newIndex).toString();
 
-    m_pRack->maybeLoadEffect(
-            m_pChainSlot->getChainSlotNumber(),
+    m_pChainSlot->maybeLoadEffect(
             m_pEffectSlot->getEffectSlotNumber(),
             id);
 

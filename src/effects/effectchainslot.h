@@ -20,20 +20,21 @@ class EffectChainSlot;
 class EffectChainSlot : public QObject {
     Q_OBJECT
   public:
-    EffectChainSlot(EffectRack* pRack,
-                    const QString& group,
-                    const unsigned int iChainNumber,
+    EffectChainSlot(const QString& group,
                     EffectsManager* pEffectsManager,
+                    SignalProcessingStage stage = SignalProcessingStage::Postfader,
+                    const bool hasMetaknob = true,
                     const QString& id = QString());
     virtual ~EffectChainSlot();
 
     // Get the ID of the loaded EffectChain
     QString id() const;
+    QString group() const;
 
-    EffectSlotPointer addEffectSlot(const QString& group);
     EffectSlotPointer getEffectSlot(unsigned int slotNumber);
 
-    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
+    void registerInputChannel(const ChannelHandleAndGroup& handle_group,
+                              const double initialValue = 0.0);
 
     double getSuperParameter() const;
     void setSuperParameter(double value, bool force = false);
@@ -42,20 +43,12 @@ class EffectChainSlot : public QObject {
     // Unload the loaded EffectChain.
     void clear();
 
-    unsigned int getChainSlotNumber() const;
-
     const QString& getGroup() const {
         return m_group;
     }
 
     QDomElement toXml(QDomDocument* doc) const;
     void loadChainSlotFromXml(const QDomElement& effectChainElement);
-
-
-    // Activates EffectChain processing for the provided channel.
-    // TODO(Kshitij) : Make this function private once EffectRack layer is removed
-    void enableForInputChannel(const ChannelHandleAndGroup& handle_group);
-    void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
 
     // Get the human-readable name of the EffectChain
     const QString& name() const;
@@ -64,9 +57,6 @@ class EffectChainSlot : public QObject {
     // Get the human-readable description of the EffectChain
     QString description() const;
     void setDescription(const QString& description);
-
-    // TODO(Kshitij) : Remove this setter function once the EffectRack layer is removed
-    void setMix(const double& dMix);
 
     static QString mixModeToString(EffectChainMixMode type) {
         switch (type) {
@@ -89,6 +79,8 @@ class EffectChainSlot : public QObject {
     }
 
     void addEffect(EffectPointer pEffect);
+    void maybeLoadEffect(const unsigned int iEffectSlotNumber,
+                         const QString& id);
     void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
     void removeEffect(unsigned int effectSlotNumber);
     void refreshAllEffects();
@@ -114,24 +106,23 @@ class EffectChainSlot : public QObject {
     // this EffectChain (by removing the chain from this EffectChainSlot).
     void clearChain(unsigned int iChainNumber, EffectChainSlotPointer pEffectChain);
 
-    // Signal that whoever is in charge of this EffectChainSlot should load the
-    // next Effect into the specified EffectSlot.
-    void nextEffect(unsigned int iChainSlotNumber,
-                    unsigned int iEffectSlotNumber,
-                    EffectPointer pEffect);
-
-    // Signal that whoever is in charge of this EffectChainSlot should load the
-    // previous Effect into the specified EffectSlot.
-    void prevEffect(unsigned int iChainSlotNumber,
-                    unsigned int iEffectSlotNumber,
-                    EffectPointer pEffect);
-
     // Signal that indicates that the EffectChainSlot has been updated.
     void updated();
 
+  protected slots:
+    void sendParameterUpdate();
+
+  protected:
+    EffectSlotPointer addEffectSlot(const QString& group);
+
+    // Activates EffectChain processing for the provided channel.
+    void enableForInputChannel(const ChannelHandleAndGroup& handle_group);
+    void disableForInputChannel(const ChannelHandleAndGroup& handle_group);
+
+    EffectsManager* m_pEffectsManager;
+    ControlObject* m_pControlChainMix;
 
   private slots:
-    void sendParameterUpdate();
     void slotChainEffectChanged(unsigned int effectSlotNumber);
     // Clears the effect in the given position in the loaded EffectChain.
     void slotClearEffect(unsigned int iEffectSlotNumber);
@@ -148,19 +139,16 @@ class EffectChainSlot : public QObject {
         return QString("EffectChainSlot(%1)").arg(m_group);
     }
 
-    void addToEngine(int iIndex);
-    void removeFromEngine(int iIndex);
+    void addToEngine();
+    void removeFromEngine();
 
-    const unsigned int m_iChainSlotNumber;
     const QString m_group;
-    EffectRack* m_pEffectRack;
 
     ControlPushButton* m_pControlClear;
     ControlObject* m_pControlNumEffects;
     ControlObject* m_pControlNumEffectSlots;
     ControlObject* m_pControlChainLoaded;
     ControlPushButton* m_pControlChainEnabled;
-    ControlObject* m_pControlChainMix;
     ControlObject* m_pControlChainSuperParameter;
     ControlPushButton* m_pControlChainMixMode;
     ControlEncoder* m_pControlChainSelector;
@@ -196,14 +184,14 @@ class EffectChainSlot : public QObject {
     QMap<QString, ChannelInfo*> m_channelInfoByName;
     QList<EffectSlotPointer> m_slots;
     QSignalMapper m_channelStatusMapper;
-    EffectsManager* m_pEffectsManager;
     QString m_id;
     QString m_name;
     QString m_description;
+    SignalProcessingStage m_signalProcessingStage;
+    bool m_bHasMetaknob;
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     QList<EffectPointer> m_effects;
     EngineEffectChain* m_pEngineEffectChain;
-
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };
 

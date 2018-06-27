@@ -4,10 +4,10 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "effects/effectprocessor.h"
-#include "effects/effectrack.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectxmlelements.h"
+#include "effects/specialeffectchainslots.h"
 #include "engine/effects/engineeffectchain.h"
 #include "engine/effects/message.h"
 #include "engine/engine.h"
@@ -18,21 +18,22 @@
 #include "util/xml.h"
 
 
-EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
-                                 unsigned int iChainNumber,
+EffectChainSlot::EffectChainSlot(const QString& group,
                                  EffectsManager* pEffectsManager,
+                                 SignalProcessingStage stage,
+                                 const bool hasMetaknob,
                                  const QString& id)
-        : m_iChainSlotNumber(iChainNumber),
-          // The control group names are 1-indexed while internally everything
+        : // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_group(group),
-          m_pEffectRack(pRack),
           m_pEffectsManager(pEffectsManager),
+          m_signalProcessingStage(stage),
+          m_bHasMetaknob(hasMetaknob),
           m_id(id),
           m_name(""),
           m_description(""),
           m_pEngineEffectChain(nullptr) {
-    // qDebug() << "EffectChainSlot::EffectChainSlot " << pRack << ' ' << group << ' ' << iChainNumber;
+    // qDebug() << "EffectChainSlot::EffectChainSlot " << group << ' ' << iChainNumber;
 
     m_pControlClear = new ControlPushButton(ConfigKey(m_group, "clear"));
     connect(m_pControlClear, SIGNAL(valueChanged(double)),
@@ -107,7 +108,7 @@ EffectChainSlot::EffectChainSlot(EffectRack* pRack, const QString& group,
                                        true);
     m_pControlChainFocusedEffect->setButtonMode(ControlPushButton::TOGGLE);
 
-    addToEngine(m_iChainSlotNumber);
+    addToEngine();
 }
 
 EffectChainSlot::~EffectChainSlot() {
@@ -135,18 +136,17 @@ EffectChainSlot::~EffectChainSlot() {
     }
 
     m_slots.clear();
-    removeFromEngine(m_iChainSlotNumber);
+    removeFromEngine();
 }
 
-void EffectChainSlot::addToEngine(int iIndex) {
+void EffectChainSlot::addToEngine() {
     m_pEngineEffectChain = new EngineEffectChain(m_id,
         m_pEffectsManager->registeredInputChannels(),
         m_pEffectsManager->registeredOutputChannels());
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::ADD_EFFECT_CHAIN;
-    pRequest->AddEffectChain.signalProcessingStage = m_pEffectRack->getSignalProcessingStage();
+    pRequest->AddEffectChain.signalProcessingStage = m_signalProcessingStage;
     pRequest->AddEffectChain.pChain = m_pEngineEffectChain;
-    pRequest->AddEffectChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(pRequest);
 
     // Add all effects.
@@ -160,7 +160,7 @@ void EffectChainSlot::addToEngine(int iIndex) {
     sendParameterUpdate();
 }
 
-void EffectChainSlot::removeFromEngine(int iIndex) {
+void EffectChainSlot::removeFromEngine() {
     // Order doesn't matter when removing.
     for (int i = 0; i < m_effects.size(); ++i) {
         EffectPointer pEffect = m_effects[i];
@@ -171,9 +171,8 @@ void EffectChainSlot::removeFromEngine(int iIndex) {
 
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::REMOVE_EFFECT_CHAIN;
-    pRequest->RemoveEffectChain.signalProcessingStage = m_pEffectRack->getSignalProcessingStage();
+    pRequest->RemoveEffectChain.signalProcessingStage = m_signalProcessingStage;
     pRequest->RemoveEffectChain.pChain = m_pEngineEffectChain;
-    pRequest->RemoveEffectChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(pRequest);
 
     m_pEngineEffectChain = nullptr;
@@ -197,11 +196,6 @@ void EffectChainSlot::setDescription(const QString& description) {
     emit(updated());
 }
 
-void EffectChainSlot::setMix(const double& dMix) {
-    m_pControlChainMix->set(dMix);
-    sendParameterUpdate();
-}
-
 void EffectChainSlot::addEffect(EffectPointer pEffect) {
     // qDebug() << debugString() << "addEffect" << pEffect;
     if (!pEffect) {
@@ -218,6 +212,23 @@ void EffectChainSlot::addEffect(EffectPointer pEffect) {
     m_effects.append(pEffect);
     pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1, m_enabledInputChannels);
     slotChainEffectChanged(m_effects.size() - 1);
+}
+
+void EffectChainSlot::maybeLoadEffect(const unsigned int iEffectSlotNumber,
+                                      const QString& id) {
+    EffectSlotPointer pEffectSlot = getEffectSlot(iEffectSlotNumber);
+
+    bool loadNew = false;
+    if (pEffectSlot == nullptr || pEffectSlot->getEffect() == nullptr) {
+        loadNew = true;
+    } else if (id != pEffectSlot->getEffect()->getManifest()->id()) {
+        loadNew = true;
+    }
+
+    if (loadNew) {
+        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(id);
+        replaceEffect(iEffectSlotNumber, pEffect);
+    }
 }
 
 void EffectChainSlot::replaceEffect(unsigned int effectSlotNumber,
@@ -272,6 +283,10 @@ QString EffectChainSlot::id() const {
     return m_id;
 }
 
+QString EffectChainSlot::group() const {
+    return m_group;
+}
+
 double EffectChainSlot::getSuperParameter() const {
     return m_pControlChainSuperParameter->get();
 }
@@ -300,7 +315,7 @@ void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber) {
         pEffect = m_effects.at(effectSlotNumber);
     }
     if (pSlot != nullptr) {
-        pSlot->loadEffect(pEffect, m_pEffectRack->isAdoptMetaknobValueEnabled());
+        pSlot->loadEffect(pEffect, m_bHasMetaknob && m_pEffectsManager->isAdoptMetaknobValueEnabled());
     }
 
     m_pControlNumEffects->forceSet(math_min(
@@ -317,15 +332,9 @@ void EffectChainSlot::clear() {
 
 EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     // qDebug() << debugString() << "addEffectSlot" << group;
-
-    EffectSlot* pEffectSlot = new EffectSlot(group, m_iChainSlotNumber,
-                                             m_slots.size());
+    EffectSlot* pEffectSlot = new EffectSlot(group, m_slots.size());
     connect(pEffectSlot, SIGNAL(clearEffect(unsigned int)),
             this, SLOT(slotClearEffect(unsigned int)));
-    connect(pEffectSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)));
-    connect(pEffectSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)));
 
     EffectSlotPointer pSlot(pEffectSlot);
     m_slots.append(pSlot);
@@ -335,17 +344,12 @@ EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     return pSlot;
 }
 
-void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
+void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_group,
+                                           const double initialValue) {
     VERIFY_OR_DEBUG_ASSERT(!m_channelInfoByName.contains(handle_group.name())) {
         return;
     }
 
-    double initialValue = 0.0;
-    int deckNumber;
-    if (PlayerManager::isDeckGroup(handle_group.name(), &deckNumber) &&
-        (m_iChainSlotNumber + 1) == (unsigned) deckNumber) {
-        initialValue = 1.0;
-    }
     ControlPushButton* pEnableControl = new ControlPushButton(
             ConfigKey(m_group, QString("group_%1_enable").arg(handle_group.name())),
             true, initialValue);
@@ -358,7 +362,7 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
     m_channelInfoByName[handle_group.name()] = pInfo;
 
     // m_channelStatusMapper will emit a mapped(handle_group.name()) signal whenever
-    // the valueChanged(double) signal is emitted by pEnableControl 
+    // the valueChanged(double) signal is emitted by pEnableControl
     m_channelStatusMapper.setMapping(pEnableControl, handle_group.name());
     connect(pEnableControl, SIGNAL(valueChanged(double)),
             &m_channelStatusMapper, SLOT(map()));
@@ -489,10 +493,6 @@ void EffectChainSlot::disableForInputChannel(const ChannelHandleAndGroup& handle
     request->pTargetChain = m_pEngineEffectChain;
     request->DisableInputChannelForChain.pChannelHandle = &handle_group.handle();
     m_pEffectsManager->writeRequest(request);
-}
-
-unsigned int EffectChainSlot::getChainSlotNumber() const {
-    return m_iChainSlotNumber;
 }
 
 QDomElement EffectChainSlot::toXml(QDomDocument* doc) const {

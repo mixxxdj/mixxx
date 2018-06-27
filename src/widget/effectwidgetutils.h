@@ -5,43 +5,16 @@
 
 #include "effects/effectsmanager.h"
 #include "effects/defs.h"
-#include "effects/effectrack.h"
 #include "effects/effectslot.h"
 #include "skin/skincontext.h"
 
 class EffectWidgetUtils {
   public:
-    static EffectRackPointer getEffectRackFromNode(
+    static EffectChainSlotPointer getEffectChainSlotFromNode(
             const QDomNode& node,
             const SkinContext& context,
             EffectsManager* pEffectsManager) {
         if (pEffectsManager == nullptr) {
-            return EffectRackPointer();
-        }
-
-        // If specified, EffectRack always refers to a StandardEffectRack index.
-        bool rackNumberOk = false;
-        int rackNumber = context.selectInt(node, "EffectRack",
-                                           &rackNumberOk);
-        if (rackNumberOk) {
-            // XML effect nodes are 1-indexed.
-            return pEffectsManager->getStandardEffectRack(rackNumber - 1);
-        }
-
-        // For custom racks, users can specify EffectRackGroup explicitly
-        // instead.
-        QString rackGroup;
-        if (!context.hasNodeSelectString(node, "EffectRackGroup", &rackGroup)) {
-            return EffectRackPointer();
-        }
-        return pEffectsManager->getEffectRack(rackGroup);
-    }
-
-    static EffectChainSlotPointer getEffectChainSlotFromNode(
-            const QDomNode& node,
-            const SkinContext& context,
-            EffectRackPointer pRack) {
-        if (pRack.isNull()) {
             return EffectChainSlotPointer();
         }
 
@@ -50,7 +23,7 @@ class EffectWidgetUtils {
                                            &unitNumberOk);
         if (unitNumberOk) {
             // XML effect nodes are 1-indexed.
-            return pRack->getEffectChainSlot(unitNumber - 1);
+            return pEffectsManager->getStandardEffectChainSlot(unitNumber - 1);
         }
 
         QString unitGroup;
@@ -58,13 +31,7 @@ class EffectWidgetUtils {
             return EffectChainSlotPointer();
         }
 
-        for (int i = 0; i < pRack->numEffectChainSlots(); ++i) {
-            EffectChainSlotPointer pSlot = pRack->getEffectChainSlot(i);
-            if (pSlot->getGroup() == unitGroup) {
-                return pSlot;
-            }
-        }
-        return EffectChainSlotPointer();
+        return pEffectsManager->getEffectChainSlot(unitGroup);
     }
 
     static EffectSlotPointer getEffectSlotFromNode(

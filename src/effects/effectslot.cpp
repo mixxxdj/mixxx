@@ -13,10 +13,8 @@
 const unsigned int kDefaultMaxParameters = 16;
 
 EffectSlot::EffectSlot(const QString& group,
-                       const unsigned int iChainNumber,
                        const unsigned int iEffectnumber)
-        : m_iChainNumber(iChainNumber),
-          m_iEffectNumber(iEffectnumber),
+        : m_iEffectNumber(iEffectnumber),
           m_group(group) {
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlLoaded->setReadOnly();
@@ -231,11 +229,11 @@ void EffectSlot::slotNextEffect(double v) {
 }
 
 void EffectSlot::slotEffectSelector(double v) {
-    if (v > 0) {
-        emit(nextEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
-    } else if (v < 0) {
-        emit(prevEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
-    }
+    // if (v > 0) {
+    //     emit(nextEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
+    // } else if (v < 0) {
+    //     emit(prevEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
+    // }
 }
 
 void EffectSlot::slotClear(double v) {
