@@ -55,7 +55,7 @@ QList<QDir> getSoundSourcePluginDirectories() {
 
     const QString& pluginPath = CmdlineArgs::Instance().getPluginPath();
     if (!pluginPath.isEmpty()) {
-        kLogger.debug() << "Adding plugin path from commandline arg:" << pluginPath;
+        kLogger.info() << "Adding plugin path from commandline arg:" << pluginPath;
         pluginDirs << QDir(pluginPath);
     }
 
@@ -186,7 +186,7 @@ void SoundSourceProxy::loadPlugins() {
     // that have been registered before (see above)!
     const QList<QDir> pluginDirs(getSoundSourcePluginDirectories());
     for (const auto& pluginDir: pluginDirs) {
-        kLogger.debug() << "Loading SoundSource plugins" << pluginDir.path();
+        kLogger.info() << "Loading SoundSource plugins" << pluginDir.path();
         const QStringList files(pluginDir.entryList(
                 SOUND_SOURCE_PLUGIN_FILENAME_PATTERN,
                 QDir::Files | QDir::NoDotAndDotDot));
@@ -402,12 +402,14 @@ void SoundSourceProxy::initSoundSource() {
             // ...and continue loop
             DEBUG_ASSERT(!m_pSoundSource);
         } else {
-            kLogger.debug() << "SoundSourceProvider"
-                     << pProvider->getName()
-                     << "created a SoundSource for file"
-                     << getUrl().toString()
-                     << "of type"
-                     << m_pSoundSource->getType();
+            if (kLogger.debugEnabled()) {
+                kLogger.debug() << "SoundSourceProvider"
+                         << pProvider->getName()
+                         << "created a SoundSource for file"
+                         << getUrl().toString()
+                         << "of type"
+                         << m_pSoundSource->getType();
+            }
         }
     }
 }
@@ -618,6 +620,9 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(const mixxx::AudioSo
     DEBUG_ASSERT(m_pTrack);
     auto openMode = mixxx::SoundSource::OpenMode::Strict;
     while (m_pSoundSource && !m_pAudioSource) {
+        // NOTE(uklotzde): Log unconditionally (with debug level) to
+        // identify files in the log file that might have caused a
+        // crash while importing metadata or decoding audio subsequently.
         kLogger.debug() << "Opening file"
                 << getUrl().toString()
                 << "with provider"
@@ -695,7 +700,9 @@ void SoundSourceProxy::closeAudioSource() {
         DEBUG_ASSERT(m_pSoundSource);
         m_pSoundSource->close();
         m_pAudioSource = mixxx::AudioSourcePointer();
-        kLogger.debug() << "Closed AudioSource for file"
-                 << getUrl().toString();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug() << "Closed AudioSource for file"
+                    << getUrl().toString();
+        }
     }
 }

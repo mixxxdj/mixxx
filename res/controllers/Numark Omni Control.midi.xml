@@ -2,7 +2,7 @@
     <info>
         <name>Numark Omni Control</name>
         <author>Baxter</author>
-        <description>Addaptation from the work of Smashuu and David Gnedt</description>
+        <description>Adaptation from the work of Smashuu and David Gnedt</description>
     </info>
     <controller id="Numark OMNI CONTROL MIDI">
         <scriptfiles>

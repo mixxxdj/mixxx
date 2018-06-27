@@ -262,7 +262,7 @@ void RecordingManager::slotBytesRecorded(int bytes)
     if (dfree > MIN_DISK_FREE) {
         m_dfSilence = false;
     } else if (m_dfSilence != true) {
-        // surpress further warnings until the situation has cleared
+        // suppress further warnings until the situation has cleared
         m_dfSilence = true;
         // we run out of diskspace and should warn the user.
         // FIXME(poelzi) temporary display a error message. Replace this with Message Infrastructure when ready

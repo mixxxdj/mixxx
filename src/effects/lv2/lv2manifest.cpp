@@ -1,6 +1,6 @@
 #include "effects/lv2/lv2manifest.h"
 #include "effects/effectmanifestparameter.h"
-#include <math.h>
+#include "util/math.h"
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
                          QHash<QString, LilvNode*>& properties)

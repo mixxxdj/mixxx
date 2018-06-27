@@ -245,7 +245,7 @@ Variables:
         <Size>1me,20f</Size>
         <Children>
 
-          <WidgetGroup><!-- Gain knob, expanding to be centerd below Play/Cover -->
+          <WidgetGroup><!-- Gain knob, expanding to be centered below Play/Cover -->
             <ObjectName>AlignHCenter</ObjectName>
             <Layout>horizontal</Layout>
             <MinimumSize>20,20</MinimumSize>

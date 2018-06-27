@@ -165,9 +165,8 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             foundPlayingDeck = true;
         }
         activateFollower(pSyncable);
-        if (foundPlayingDeck && pSyncable->isPlaying()) {
-            // Users also expect phase to be aligned when they press the sync button.
-            pSyncable->requestSyncPhase();
+        if (foundPlayingDeck) {
+            pSyncable->requestSync();
         }
     } else {
         // Already disabled?  Do nothing.
