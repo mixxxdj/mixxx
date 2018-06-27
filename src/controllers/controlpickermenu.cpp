@@ -95,7 +95,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     QMenu* syncMenu = addSubmenu(tr("Sync"));
     addDeckAndSamplerControl("sync_enabled", tr("Sync Mode"),
-                             tr("Tap to sync (tempo and phase depending on quantize), hold to enable permanent sync"), syncMenu);
+                             tr("Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync"), syncMenu);
     addControl("[InternalClock]", "sync_master", tr("Internal Sync Master"),
                tr("Toggle Internal Sync Master"), syncMenu);
     addControl("[InternalClock]", "bpm", tr("Internal Master BPM"),
@@ -114,7 +114,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("sync_mode", tr("Sync Mode"),
                              tr("Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)"), syncMenu);
     addDeckAndSamplerControl("beatsync", tr("Beat Sync One-Shot"),
-                             tr("One-time beat sync (tempo and phase depending on quantize)"), syncMenu);
+                             tr("One-time beat sync tempo (and phase with quantize enabled)"), syncMenu);
     addDeckAndSamplerControl("beatsync_tempo", tr("Sync Tempo One-Shot"),
                              tr("One-time beat sync (tempo only)"), syncMenu);
     addDeckAndSamplerControl("beatsync_phase", tr("Sync Phase One-Shot"),
