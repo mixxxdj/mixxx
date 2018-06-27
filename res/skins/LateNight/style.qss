@@ -573,7 +573,9 @@ WEffectButtonParameter*/
 ##############################################################*/
 
 #SkinSettingsContainer{
-  margin-left: 5px;
+/*  margin-left: 5px;*/
+  border: 1px solid #585858;
+  border-width: 0px 0px 1px 1px;
   
 }
 
@@ -1067,15 +1069,11 @@ border: 0px;
   border-top: 1px solid #585858;
   /*border-bottom: 1px solid #585858;*/
   padding-bottom: 0px;
-  padding-left: 5px;
-  padding-right: 5px;
   padding-top: 5px;
 }
 
 #SamplerDeck {
   margin-top: 5px;
-  margin-left: 5px;
-  margin-right: 5px;
   border: 1px solid #585858;
   background-color: #1e1e1e;
 }
@@ -1170,11 +1168,11 @@ border: 0px;
 }
 
 #EffectUnit1, #EffectUnit3 {
-  margin: 5px 5px 2px 2px;
+  margin: 5px 5px 2px 0px;
 }
 
 #EffectUnit2, #EffectUnit4 {
-  margin: 5px 2px 2px 5px;
+  margin: 5px 0px 2px 5px;
 }
 
 #EffectRows {

@@ -120,20 +120,20 @@
         <WidgetGroup><!-- All skin elements-->
           <Layout>horizontal</Layout>
           <SizePolicy>me,me</SizePolicy>
-            <Children>
-
-        <!-- Select between either the full UI or the big library -->
-        <WidgetStack currentpage="[Master],maximize_library">
           <Children>
 
-            <!-- Decks, Effects ... Library -->
-            <Splitter>
-              <ObjectName>HorizontalSplitter</ObjectName>
-              <Orientation>vertical</Orientation>
-              <SizePolicy>me,min</SizePolicy>
-              <SplitSizes>1,5</SplitSizes>
-              <SplitSizesConfigKey>[LateNight],waveform_splitSize</SplitSizesConfigKey>
-              <Collapsible>1,0</Collapsible>
+            <!-- Select between either the full UI or the big library -->
+            <WidgetStack currentpage="[Master],maximize_library">
+              <Children>
+
+                <!-- Waveforms, Decks, Effects... /  Library -->
+                <Splitter>
+                  <ObjectName>HorizontalSplitter</ObjectName>
+                  <Orientation>vertical</Orientation>
+                  <SizePolicy>me,min</SizePolicy>
+                  <SplitSizes>1,5</SplitSizes>
+                  <SplitSizesConfigKey>[LateNight],waveform_splitSize</SplitSizesConfigKey>
+                  <Collapsible>1,0</Collapsible>
                   <Children>
 
                     <Template src="skin:waveforms.xml"/>

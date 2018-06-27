@@ -16,6 +16,8 @@ Description:
     <Layout>horizontal</Layout>
     <Size>180f,1me</Size>
     <Children>
+      <WidgetGroup><Size>3f,1me</Size></WidgetGroup>
+      
       <WidgetGroup>
         <ObjectName>SkinSettings</ObjectName>
         <Layout>vertical</Layout>
