@@ -99,26 +99,6 @@
           <ObjectName>AlignRightTop</ObjectName>
            <Children>
 
-			  <WidgetGroup>
-				<Layout>horizontal</Layout>
-          		<ObjectName>AlignCenter</ObjectName>
-				 <Children>
-					  <NumberBpm>
-						<TooltipId>visual_bpm</TooltipId>
-						<Size>30f,10f</Size>
-						<Channel><Variable name="channum" /></Channel>
-						<NumberOfDigits>1</NumberOfDigits>
-						<Connection>
-						  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-						</Connection>
-					  </NumberBpm>
-				</Children>
-			   <Connection>
-				<ConfigKey persist="false">[Master],show_bpm_in_top_bar</ConfigKey>
-				  <BindProperty>visible</BindProperty>
-				</Connection>
-			  </WidgetGroup>
-
             <!-- FX buttons 1-4 -->
             <PushButton>
               <Size>28f,22f</Size>
