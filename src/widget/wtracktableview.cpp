@@ -146,6 +146,8 @@ WTrackTableView::~WTrackTableView() {
     delete m_pAutoDJTopAct;
     delete m_pAutoDJReplaceAct;
     delete m_pRemoveAct;
+    delete m_pRemovePlaylistAct;
+    delete m_pRemoveCrateAct;
     delete m_pHideAct;
     delete m_pUnhideAct;
     delete m_pPropertiesAct;
@@ -422,6 +424,12 @@ void WTrackTableView::createActions() {
 
     m_pRemoveAct = new QAction(tr("Remove"), this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
+
+    m_pRemovePlaylistAct = new QAction(tr("Remove from Playlist"), this);
+    connect(m_pRemovePlaylistAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
+
+    m_pRemoveCrateAct = new QAction(tr("Remove from Crate"), this);
+    connect(m_pRemoveCrateAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
     m_pHideAct = new QAction(tr("Hide from Library"), this);
     connect(m_pHideAct, SIGNAL(triggered()), this, SLOT(slotHide()));
@@ -896,6 +904,14 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
         m_pRemoveAct->setEnabled(!locked);
         m_pMenu->addAction(m_pRemoveAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        m_pRemovePlaylistAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pRemovePlaylistAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        m_pRemoveCrateAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pRemoveCrateAct);
     }
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
         m_pHideAct->setEnabled(!locked);
