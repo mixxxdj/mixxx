@@ -94,8 +94,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pBPMMenu->setTitle(tr("Change BPM"));
 
     m_pClearMetadataMenu = new QMenu(this);
-    //: Clear metadata in right click track context menu in library
-    m_pClearMetadataMenu->setTitle(tr("Clear \u2026")); // "Clear ..."
+    //: Reset metadata in right click track context menu in library
+    m_pClearMetadataMenu->setTitle(tr("Reset"));
 
     m_pCoverMenu = new WCoverArtMenu(this);
     m_pCoverMenu->setTitle(tr("Cover Art"));
