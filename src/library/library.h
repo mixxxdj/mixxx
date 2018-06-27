@@ -28,7 +28,6 @@ class LibraryFeature;
 class LibraryTableModel;
 class WLibrarySidebar;
 class WLibrary;
-class WSearchLineEdit;
 class MixxxLibraryFeature;
 class PlaylistFeature;
 class CrateFeature;
