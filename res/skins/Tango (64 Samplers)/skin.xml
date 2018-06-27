@@ -258,7 +258,7 @@
                 <Template src="skin:../Tango/topbar.xml"/>
 
                 <Splitter>
-                  <ObjectName>WaveformSplitter</ObjectName>
+                  <ObjectName>VerticalSplitter</ObjectName>
                   <SizePolicy>me,me</SizePolicy>
                   <Orientation>vertical</Orientation>
                   <SplitSizes>100,10000</SplitSizes>
