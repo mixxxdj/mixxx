@@ -9,7 +9,6 @@ class MetadataFileWorker : public QObject {
     explicit MetadataFileWorker(const QString& filePath);
   public slots:
     void slotDeleteFile();
-    void slotOpenFile();
     void slotMoveFile(QString destination);
     void slotWriteMetadataToFile(QByteArray fileContents);
     void slotClearFile();

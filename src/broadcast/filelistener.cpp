@@ -20,17 +20,20 @@ FileListener::FileListener(UserSettingsPointer pConfig)
 
     connect(this, SIGNAL(deleteFile()), newWorker, SLOT(slotDeleteFile()));
 
-    connect(this, SIGNAL(openFile()), newWorker, SLOT(slotOpenFile()));
+    connect(this,SIGNAL(deleteFile()),
+            newWorker,SLOT(slotDeleteFile()));
 
-    connect(this, SIGNAL(moveFile(QString)), newWorker, SLOT(slotMoveFile(QString)));
+    connect(this,SIGNAL(moveFile(QString)),
+            newWorker,SLOT(slotMoveFile(QString)));
+
+    connect(this,SIGNAL(writeMetadataToFile(QByteArray)),
+            newWorker,SLOT(slotWriteMetadataToFile(QByteArray)));
 
     connect(this, SIGNAL(writeMetadataToFile(QByteArray)), newWorker, SLOT(slotWriteMetadataToFile(QByteArray)));
 
     connect(this, SIGNAL(clearFile()), newWorker, SLOT(slotClearFile()));
 
     connect(&m_COsettingsChanged, SIGNAL(valueChanged(double)), this, SLOT(slotFileSettingsChanged(double)));
-
-    updateStateFromSettings();
 
     m_workerThread.start();
 }
@@ -43,13 +46,14 @@ FileListener::~FileListener() {
 void FileListener::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     if (!pTrack)
         return;
+    m_fileContents.title = pTrack->getTitle();
+    m_fileContents.artist = pTrack->getArtist();
     QString writtenString(m_latestSettings.fileFormatString);
     writtenString.replace("$author", pTrack->getArtist()).replace("$title", pTrack->getTitle()) += '\n';
-    m_fileContents = writtenString;
     QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
     DEBUG_ASSERT(codec);
-    QByteArray fileContents = codec->fromUnicode(m_fileContents);
-    tracksPaused = false;
+    QByteArray fileContents = codec->fromUnicode(writtenString);
+    m_tracksPaused = false;
     emit writeMetadataToFile(fileContents);
 }
 
@@ -58,14 +62,14 @@ void FileListener::slotScrobbleTrack(TrackPointer pTrack) {
 }
 
 void FileListener::slotAllTracksPaused() {
-    tracksPaused = true;
+    m_tracksPaused = true;
     emit clearFile();
 }
 
 void FileListener::slotFileSettingsChanged(double value) {
     if (value) {
         FileSettings latestSettings = MetadataFileSettings::getLatestSettings();
-        filePathChanged = latestSettings.filePath != m_latestSettings.filePath;
+        m_filePathChanged = latestSettings.filePath != m_latestSettings.filePath;
         m_latestSettings = latestSettings;
         updateStateFromSettings();
     }
@@ -80,18 +84,17 @@ void FileListener::updateStateFromSettings() {
 }
 
 void FileListener::updateFile() {
-    if (fileOpen) {
-        if (filePathChanged) {
-            emit moveFile(m_latestSettings.filePath);
-        } else if (!tracksPaused) {
-            QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
-            DEBUG_ASSERT(codec);
-            QByteArray fileContents = codec->fromUnicode(m_fileContents);
-            emit writeMetadataToFile(fileContents);
-        }
-    } else {
-        emit openFile();
-        fileOpen = true;
+    if (m_filePathChanged) {
+        emit moveFile(m_latestSettings.filePath);
+    }
+    if (!m_tracksPaused && !m_fileContents.isEmpty()) {
+        QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
+        DEBUG_ASSERT(codec);
+        QString newContents(m_latestSettings.fileFormatString);
+        newContents.replace("$author", m_fileContents.artist)
+                .replace("$title", m_fileContents.title) += '\n';
+        QByteArray contentsBinary = codec->fromUnicode(newContents);
+        emit writeMetadataToFile(contentsBinary);
     }
 }
 
