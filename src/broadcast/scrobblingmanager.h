@@ -54,9 +54,9 @@ class ScrobblingManager : public QObject {
 
   public slots:
     void slotTrackPaused(TrackPointer pPausedTrack);
-    void slotTrackResumed(TrackPointer pResumedTrack);
-    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void slotNewTrackLoaded(TrackPointer pNewTrack);
+    void slotTrackResumed(TrackPointer pResumedTrack, const QString& playerGroup);
+    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack, const QString& playerGroup);
+    void slotNewTrackLoaded(TrackPointer pNewTrack, const QString& playerGroup);
     void slotPlayerEmpty();
     void slotGuiTick(double timeSinceLastTick);
 

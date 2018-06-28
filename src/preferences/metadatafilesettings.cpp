@@ -82,19 +82,19 @@ bool MetadataFileSettings::fileSettingsDifferent() {
             s_latestSettings.fileEncoding !=
             m_widgets.encodingBox->currentText() ||
 
-            s_latestSettings.fileFormat != "Custom" &&
-            s_latestSettings.fileFormat !=
-                    m_widgets.formatBox->currentText() ||
+            (s_latestSettings.fileFormat != "Custom" &&
+                    s_latestSettings.fileFormat !=
+                            m_widgets.formatBox->currentText()) ||
 
-            s_latestSettings.fileFormat != "Custom" &&
-            m_widgets.enableCustomFormatBox->isChecked() ||
+            (s_latestSettings.fileFormat != "Custom" &&
+                    m_widgets.enableCustomFormatBox->isChecked()) ||
 
-            s_latestSettings.fileFormat == "Custom" &&
-            !m_widgets.enableCustomFormatBox->isChecked() ||
+            (s_latestSettings.fileFormat == "Custom" &&
+                    !m_widgets.enableCustomFormatBox->isChecked()) ||
 
-            s_latestSettings.fileFormat == "Custom" &&
-            s_latestSettings.fileFormatString !=
-                    m_widgets.customFormatLineEdit->text() ||
+            (s_latestSettings.fileFormat == "Custom" &&
+                    s_latestSettings.fileFormatString !=
+                            m_widgets.customFormatLineEdit->text()) ||
 
             s_latestSettings.filePath != m_widgets.filePathLineEdit->text();
 }

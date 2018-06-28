@@ -400,8 +400,9 @@ void PlayerManager::addConfiguredDecks() {
 
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
+    QString group = groupForDeck(m_decks.count());
     ChannelHandleAndGroup handleGroup =
-            m_pEngine->registerChannelGroup(groupForDeck(m_decks.count()));
+            m_pEngine->registerChannelGroup(group);
     VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handleGroup.handle())) {
         return;
     }
@@ -427,10 +428,10 @@ void PlayerManager::addDeckInner() {
             this,
             &PlayerManager::slotSaveEjectedTrack);
 
-    connect(pDeck, SIGNAL(trackPaused(TrackPointer)), &m_scrobblingManager, SLOT(slotTrackPaused(TrackPointer)));
-    connect(pDeck, SIGNAL(trackResumed(TrackPointer)), &m_scrobblingManager, SLOT(slotTrackResumed(TrackPointer)));
-    connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)), &m_scrobblingManager, SLOT(slotNewTrackLoaded(TrackPointer)));
-    connect(pDeck, SIGNAL(loadingTrack(TrackPointer, TrackPointer)), &m_scrobblingManager, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+    connect(pDeck, &Deck::trackPaused, &m_scrobblingManager, &ScrobblingManager::slotTrackPaused);
+    connect(pDeck, &Deck::trackResumed, [this, group](TrackPointer pTrack) -> void { m_scrobblingManager.slotTrackResumed(pTrack, group); });
+    connect(pDeck, &Deck::newTrackLoaded, [this, group](TrackPointer pTrack) -> void { m_scrobblingManager.slotNewTrackLoaded(pTrack, group); });
+    connect(pDeck, &Deck::loadingTrack, [this, group](TrackPointer pOldTrack, TrackPointer pNewTrack) -> void { m_scrobblingManager.slotLoadingTrack(pOldTrack, pNewTrack, group); });
     connect(pDeck, SIGNAL(playerEmpty()), &m_scrobblingManager, SLOT(slotPlayerEmpty()));
 
     if (m_pTrackAnalysisScheduler) {

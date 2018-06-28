@@ -11,22 +11,17 @@ void MetadataFileWorker::slotDeleteFile() {
     m_file.remove();
 }
 
-void MetadataFileWorker::slotOpenFile() {
-    m_file.open(QIODevice::ReadWrite |
-            QIODevice::Truncate |
-            QIODevice::Text |
-            QIODevice::Unbuffered);
-}
-
 void MetadataFileWorker::slotMoveFile(QString destination) {
     m_file.remove();
     m_file.setFileName(destination);
-    slotOpenFile();
 }
 
 void MetadataFileWorker::slotWriteMetadataToFile(QByteArray fileContents) {
-    slotClearFile();
+    m_file.open(QIODevice::WriteOnly |
+            QIODevice::Text |
+            QIODevice::Unbuffered);
     m_file.write(fileContents);
+    m_file.close();
 }
 
 void MetadataFileWorker::slotClearFile() {

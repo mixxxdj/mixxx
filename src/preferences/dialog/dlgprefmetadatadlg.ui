@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>647</width>
-    <height>541</height>
+    <width>668</width>
+    <height>514</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -144,6 +144,22 @@
          <string>Enable ListenBrainz metadata broadcast</string>
         </property>
        </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>User token. If you don't have one please register &lt;a href=&quot;https://listenbrainz.org/login/&quot;&gt;here&lt;/a&gt;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::RichText</enum>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEdit"/>
       </item>
      </layout>
     </widget>
