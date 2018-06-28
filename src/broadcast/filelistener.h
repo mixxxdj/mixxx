@@ -16,7 +16,6 @@ class FileListener: public ScrobblingService {
     void slotAllTracksPaused() override;
   signals:
     void deleteFile();
-    void openFile();
     void moveFile(QString destination);
     void writeMetadataToFile(QByteArray contents);
     void clearFile();
@@ -24,16 +23,21 @@ class FileListener: public ScrobblingService {
     void slotFileSettingsChanged(double value);
   private:
 
+    struct WrittenMetadata {
+        QString title,artist;
+        bool isEmpty() {
+            return title.isEmpty() && artist.isEmpty();
+        }
+    };
+
     void updateStateFromSettings();
     void updateFile();
-    static void writeMetadataToFile(const QByteArray *contents,std::shared_ptr<QFile> file);
 
-    QString m_fileContents; //We need this to translate between codecs.
     ControlPushButton m_COsettingsChanged;
     UserSettingsPointer m_pConfig;
     FileSettings m_latestSettings;
     QThread m_workerThread;
-    bool filePathChanged = false;
-    bool fileOpen = false;
-    bool tracksPaused = false;
+    WrittenMetadata m_fileContents;
+    bool m_filePathChanged = false;
+    bool m_tracksPaused = false;
 };

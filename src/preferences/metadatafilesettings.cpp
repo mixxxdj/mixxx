@@ -1,7 +1,7 @@
 #include <QTextCodec>
 #include <QObject>
 #include <QLineEdit>
-#include <QtGui/QFileDialog>
+#include <QFileDialog>
 
 #include "metadatafilesettings.h"
 
