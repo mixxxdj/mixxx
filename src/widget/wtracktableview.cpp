@@ -913,18 +913,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pRemoveCrateAct->setEnabled(!locked);
         m_pMenu->addAction(m_pRemoveCrateAct);
     }
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
-        m_pHideAct->setEnabled(!locked);
-        m_pMenu->addAction(m_pHideAct);
-    }
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
-        m_pUnhideAct->setEnabled(!locked);
-        m_pMenu->addAction(m_pUnhideAct);
-    }
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
-        m_pPurgeAct->setEnabled(!locked);
-        m_pMenu->addAction(m_pPurgeAct);
-    }
 
     m_pMenu->addSeparator();
     m_pMetadataMenu->clear();
@@ -1060,6 +1048,18 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     m_pMenu->addMenu(m_pBPMMenu);
 
     m_pMenu->addSeparator();
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        m_pHideAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pHideAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        m_pUnhideAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pUnhideAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        m_pPurgeAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pPurgeAct);
+    }
     m_pMenu->addAction(m_pFileBrowserAct);
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
