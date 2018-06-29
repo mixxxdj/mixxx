@@ -66,16 +66,11 @@ void TotalVolumeThreshold::setVolumeThreshold(double volume) {
 
 ScrobblingManager::ScrobblingManager(PlayerManagerInterface* manager, UserSettingsPointer settings)
         : m_pManager(manager),
-          m_pBroadcaster(new MetadataBroadcaster),
           m_pAudibleStrategy(new TotalVolumeThreshold(this, 0.20)),
           m_pTimer(new TrackTimers::GUITickTimer),
           m_scrobbledAtLeastOnce(false) {
-    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)), m_pBroadcaster.get(), SLOT(slotNowListening(TrackPointer)));
     connect(m_pTimer.get(), SIGNAL(timeout()), this, SLOT(slotCheckAudibleTracks()));
     m_pTimer->start(1000);
-    for (const auto& servicePtr : ListenersFinder::instance(settings).getAllServices()) {
-        m_pBroadcaster->addNewScrobblingService(servicePtr);
-    }
 }
 
 void ScrobblingManager::setAudibleStrategy(TrackAudibleStrategy* pStrategy) {
@@ -84,6 +79,7 @@ void ScrobblingManager::setAudibleStrategy(TrackAudibleStrategy* pStrategy) {
 
 void ScrobblingManager::setMetadataBroadcaster(MetadataBroadcasterInterface* pBroadcast) {
     m_pBroadcaster.reset(pBroadcast);
+    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)), m_pBroadcaster.get(), SLOT(slotNowListening(TrackPointer)));
 }
 
 void ScrobblingManager::setTimer(TrackTimers::RegularTimer* timer) {
