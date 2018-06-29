@@ -234,9 +234,9 @@ void BroadcastProfile::adoptDefaultValues() {
     m_streamName = QString();
     m_streamPublic = kDefaultStreamPublic;
     m_streamWebsite = MIXXX_WEBSITE_URL;
-    m_streamIRC = QString();
-    m_streamAIM = QString();
-    m_streamICQ = QString();
+    m_streamIRC.clear();
+    m_streamAIM.clear();
+    m_streamICQ.clear();
 
     m_enableMetadata = kDefaultEnableMetadata;
     m_metadataCharset = QString();
@@ -663,7 +663,7 @@ QString BroadcastProfile::getStreamIRC() const {
 }
 
 void BroadcastProfile::setStreamIRC(const QString& value) {
-    m_streamIRC = QString(value);
+    m_streamIRC = value;
 }
 
 QString BroadcastProfile::getStreamAIM() const {
@@ -671,7 +671,7 @@ QString BroadcastProfile::getStreamAIM() const {
 }
 
 void BroadcastProfile::setStreamAIM(const QString& value) {
-    m_streamAIM = QString(value);
+    m_streamAIM = value;
 }
 
 QString BroadcastProfile::getStreamICQ() const {
@@ -679,7 +679,7 @@ QString BroadcastProfile::getStreamICQ() const {
 }
 
 void BroadcastProfile::setStreamICQ(const QString& value) {
-    m_streamICQ = QString(value);
+    m_streamICQ = value;
 }
 
 QString BroadcastProfile::getFormat() const {
