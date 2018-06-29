@@ -12,7 +12,7 @@
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
 const int WaveformWidgetRenderer::s_waveformMaxZoom = 10;
 const int WaveformWidgetRenderer::s_waveformDefaultZoom = 3;
-const double WaveformWidgetRenderer::s_DefaultPlayMarkerPosition = 0.5;
+const double WaveformWidgetRenderer::s_defaultPlayMarkerPosition = 0.5;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
     : m_group(group),
@@ -44,7 +44,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_pTrackSamplesControlObject(NULL),
       m_trackSamples(0.0),
       m_scaleFactor(1.0),
-      m_playMarkerPosition(s_DefaultPlayMarkerPosition) {
+      m_playMarkerPosition(s_defaultPlayMarkerPosition) {
 
     //qDebug() << "WaveformWidgetRenderer";
 
@@ -156,29 +156,28 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
 
         double displayedLengthLeft = (static_cast<double>(getLength()) / m_trackPixelCount) * leftOffset;
         double displayedLengthRight = (static_cast<double>(getLength()) / m_trackPixelCount) * rightOffset;
-/*
-        qDebug() <<
-        "m_playMarkerPosition=" << m_playMarkerPosition <<
-        "leftOffset=" << leftOffset <<
-        "rightOffset=" << rightOffset <<
-        "displayedLengthLeft=" << displayedLengthLeft <<
-        "displayedLengthRight=" << displayedLengthRight;
-*/
+
+        //qDebug() << "WaveformWidgetRenderer::onPreRender" <<
+        //        "m_playMarkerPosition=" << m_playMarkerPosition <<
+        //        "leftOffset=" << leftOffset <<
+        //        "rightOffset=" << rightOffset <<
+        //        "displayedLengthLeft=" << displayedLengthLeft <<
+        //        "displayedLengthRight=" << displayedLengthRight;
+
         m_firstDisplayedPosition = m_playPos - displayedLengthLeft;
         m_lastDisplayedPosition = m_playPos + displayedLengthRight;
     } else {
         m_playPos = -1; // disable renderers
     }
 
-    /*
-    qDebug() << "m_group" << m_group
-            << "m_trackSamples" << m_trackSamples
-            << "m_playPos" << m_playPos
-            << "m_rate" << m_rate
-            << "m_rateDir" << m_rateDir
-            << "m_rateRange" << m_rateRange
-            << "m_gain" << m_gain;
-            */
+    //qDebug() << "WaveformWidgetRenderer::onPreRender" <<
+    //        "m_group" << m_group <<
+    //        "m_trackSamples" << m_trackSamples <<
+    //        "m_playPos" << m_playPos <<
+    //        "m_rate" << m_rate <<
+    //        "m_rateDir" << m_rateDir <<
+    //        "m_rateRange" << m_rateRange <<
+    //        "m_gain" << m_gain;
 }
 
 void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {

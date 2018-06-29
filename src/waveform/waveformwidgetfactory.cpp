@@ -72,7 +72,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_frameCnt(0),
         m_actualFrameRate(0),
         m_vSyncType(0),
-        m_playMarkerPosition(0.5) {
+        m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
 
     m_visualGain[All] = 1.0;
     m_visualGain[Low] = 1.0;
@@ -253,12 +253,10 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
 
-    int playMarkerPosition = m_config->getValueString(ConfigKey("[Waveform]","PlayMarkerPosition")).toInt(&ok);
-    if (ok) {
-        setPlayMarkerPosition(playMarkerPosition);
-    } else {
-        m_config->set(ConfigKey("[Waveform]","PlayMarkerPosition"), ConfigValue(m_playMarkerPosition));
-    }
+    m_playMarkerPosition = m_config->getValue(ConfigKey("[Waveform]","PlayMarkerPosition"),
+            WaveformWidgetRenderer::s_defaultPlayMarkerPosition);
+    setPlayMarkerPosition(m_playMarkerPosition);
+
     return true;
 }
 
@@ -480,16 +478,11 @@ void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
     //qDebug() << "setPlayMarkerPosition, position=" << position;
     m_playMarkerPosition = position;
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]", "PlayMarkerPosition"), ConfigValue(m_playMarkerPosition));
+        m_config->setValue(ConfigKey("[Waveform]", "PlayMarkerPosition"), m_playMarkerPosition);
     }
 
-    if (m_waveformWidgetHolders.size() == 0) {
-        return;
-    }
-
-    for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformWidget->setPlayMarkerPosition(
-                m_playMarkerPosition);
+    for (const auto& holder : m_waveformWidgetHolders) {
+        holder.m_waveformWidget->setPlayMarkerPosition(m_playMarkerPosition);
     }
 }
 

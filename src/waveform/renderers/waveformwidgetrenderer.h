@@ -24,7 +24,7 @@ class WaveformWidgetRenderer {
     static const int s_waveformMinZoom;
     static const int s_waveformMaxZoom;
     static const int s_waveformDefaultZoom;
-    static const double s_DefaultPlayMarkerPosition;
+    static const double s_defaultPlayMarkerPosition;
 
   public:
     explicit WaveformWidgetRenderer(const char* group);
@@ -99,7 +99,10 @@ class WaveformWidgetRenderer {
     }
 
     void setPlayMarkerPosition(double newPos) {
-        m_playMarkerPosition = math_clamp(newPos, 0.0, 1.0);
+        VERIFY_OR_DEBUG_ASSERT(newPos >= 0.0 && newPos <= 1.0) {
+            newPos = math_clamp(newPos, 0.0, 1.0);
+        }
+        m_playMarkerPosition = newPos;
     }
 
   protected:
