@@ -38,23 +38,33 @@
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
       <!-- Set skin defaults. -->
+
+      <!-- Set skin defaults (common over all skins -->
       <attribute config_key="[Master],num_decks">4</attribute>
+	  <attribute config_key="[Master],num_samplers">4</attribute>
+	  <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
+      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
+      <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
+      <attribute persist="true" config_key="[Master],show_eq_kill_buttons">1</attribute>
+      <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
+      <attribute config_key="[Master],show_superknobs">0</attribute>
+      <attribute config_key="[Master],maximize_library">0</attribute>
+
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
       <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
-      <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
-      <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
-      <attribute persist="true" config_key="[Master],show_eq_kill_buttons">1</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
-      <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
-      <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
-      <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Library],show_library">1</attribute>
-      <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
       <attribute persist="true" config_key="[Skin],8_hotcues">0</attribute>
-      <attribute config_key="[Master],maximize_library">0</attribute>
+
+      <!-- non common skin settings -->  
+      
+      <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
+
       <!--Disable hidden effect routing Buttons-->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
