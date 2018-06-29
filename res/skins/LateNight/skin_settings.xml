@@ -67,23 +67,6 @@ Description:
             <Layout>vertical</Layout>
             <Children>
 
-              <WidgetGroup><!-- Preview Deck toogle -->
-                <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <Template src="skin:skin_settings_button_2state.xml">
- 					<SetVariable name="TooltipId">show_previewdeck</SetVariable>
-                    <SetVariable name="state_0_text">&#9744;  Preview Deck</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Preview Deck</SetVariable>
-                    <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
-                  </Template>
-                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-                </Children>
-              </WidgetGroup>
-
               <WidgetGroup><!-- 2/4 Decks toogle -->
                 <Layout>stacked</Layout>
                 <MinimumSize>180,13</MinimumSize>
@@ -363,7 +346,58 @@ Description:
               </WidgetGroup><!-- /Super knobs -->
 
             </Children>
-          </WidgetGroup><!-- /Effects -->
+          </WidgetGroup><!-- /Miscellaneous -->
+          <!-- Effects -->
+          <Label>
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Miscellaneous</Text>
+            <Size>180f,21f</Size>
+          </Label>
+
+          <WidgetGroup><!-- 4 buttons -->
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <MinimumSize>180,58</MinimumSize>
+            <MaximumSize>180,84</MaximumSize>
+            <SizePolicy>me,me</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup><!-- Preview Deck -->
+                <Layout>stacked</Layout>
+                <MinimumSize>180,13</MinimumSize>
+                <MaximumSize>180,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+ 					<SetVariable name="TooltipId">show_previewdeck</SetVariable>
+                    <SetVariable name="state_0_text">&#9744;  Preview Deck</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Preview Deck</SetVariable>
+                    <SetVariable name="width">110</SetVariable>
+                    <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /Preview Deck -->
+
+              <WidgetGroup><!-- coverart toogle -->
+                <Layout>stacked</Layout>
+                <MinimumSize>180,13</MinimumSize>
+                <MaximumSize>180,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="state_0_text">&#9744;  Cover Art</SetVariable>
+                    <SetVariable name="state_1_text"> &#10004; Cover Art</SetVariable>
+                    <SetVariable name="width">110</SetVariable>
+                    <SetVariable name="Setting">[Library],show_coverart</SetVariable>
+                  </Template>
+                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- /Miscellaneous -->
         </Children>
       </WidgetGroup><!-- /SkinSettings -->
     </Children>
