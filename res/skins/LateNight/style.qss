@@ -614,15 +614,6 @@ WEffectButtonParameter*/
   color: #d2d2d2;
   }
 
-  #SkinSettingsButton[displayValue="0"] {
-    background-color: none;
-  }
-  #SkinSettingsButton[displayValue="1"],
-  #SkinSettingsButton[displayValue="2"] {
-    background-color: #0f0f0f;
-    color: #eeeeee;
-  }
-
 #SkinSettingsLabelButton {
     font-size: 17px/17px;
     text-align: left;
