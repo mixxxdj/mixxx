@@ -621,6 +621,9 @@ WEffectButtonParameter*/
     color: #eece33;
   }
 
+#SubmenuCover {
+  background-color: rgba(51, 51, 51, 127);
+}
 
 /*################################################################
 #######  Loop Controls  ########################################
