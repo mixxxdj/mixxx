@@ -8,6 +8,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "mixer/basetrackplayer.h"
+#include "mixer/deck.h"
 #include "mixer/playermanager.h"
 #include "track/track.h"
 #include "track/trackplaytimers.h"
@@ -63,13 +64,19 @@ class ScrobblingTest : public ::testing::Test {
         dummyTrackLeft->setDuration(120);
         dummyTrackRight->setDuration(120);
         //Set up left player
-        QObject::connect(&dummyPlayerLeft, SIGNAL(newTrackLoaded(TrackPointer)), &scrobblingManager, SLOT(slotNewTrackLoaded(TrackPointer)));
-        QObject::connect(&dummyPlayerLeft, SIGNAL(trackResumed(TrackPointer)), &scrobblingManager, SLOT(slotTrackResumed(TrackPointer)));
-        QObject::connect(&dummyPlayerLeft, SIGNAL(trackPaused(TrackPointer)), &scrobblingManager, SLOT(slotTrackPaused(TrackPointer)));
+        QObject::connect(&dummyPlayerLeft, &Deck::newTrackLoaded, [this](TrackPointer pTrack) -> void { scrobblingManager.slotNewTrackLoaded(pTrack, "DummyPlayerLeft"); });
+        QObject::connect(&dummyPlayerLeft, &Deck::trackResumed, [this](TrackPointer pTrack) -> void {
+            scrobblingManager.slotTrackResumed(pTrack, "DummyPlayerLeft");
+        });
+        QObject::connect(&dummyPlayerLeft, &Deck::trackPaused, &scrobblingManager, &ScrobblingManager::slotTrackPaused);
         //Set up right player
-        QObject::connect(&dummyPlayerRight, SIGNAL(newTrackLoaded(TrackPointer)), &scrobblingManager, SLOT(slotNewTrackLoaded(TrackPointer)));
-        QObject::connect(&dummyPlayerRight, SIGNAL(trackResumed(TrackPointer)), &scrobblingManager, SLOT(slotTrackResumed(TrackPointer)));
-        QObject::connect(&dummyPlayerRight, SIGNAL(trackPaused(TrackPointer)), &scrobblingManager, SLOT(slotTrackPaused(TrackPointer)));
+        QObject::connect(&dummyPlayerRight, &Deck::newTrackLoaded, [this](TrackPointer pTrack) -> void { scrobblingManager.slotNewTrackLoaded(pTrack, "DummyPlayerRight"); });
+        QObject::connect(&dummyPlayerRight, &Deck::trackResumed, [this](TrackPointer pTrack) -> void { scrobblingManager.slotTrackResumed(pTrack, "DummyPlayerRight"); });
+        QObject::connect(&dummyPlayerRight, &Deck::trackPaused, &scrobblingManager, &ScrobblingManager::slotTrackPaused);
+        EXPECT_CALL(*playerManagerMock, getPlayer(QString("DummyPlayerLeft")))
+                .WillRepeatedly(testing::Return(&dummyPlayerLeft));
+        EXPECT_CALL(*playerManagerMock, getPlayer(QString("DummyPlayerRight")))
+                .WillRepeatedly(testing::Return(&dummyPlayerRight));
     }
 
     ~ScrobblingTest() {

@@ -40,7 +40,7 @@ class MetadataBroadcaster : public MetadataBroadcasterInterface {
         }
     };
   public:
-    MetadataBroadcaster() = default;
+    MetadataBroadcaster();
     const QList<TrackId> getTrackedTracks();
     MetadataBroadcasterInterface&
     addNewScrobblingService(const ScrobblingServicePtr& newService) override;
