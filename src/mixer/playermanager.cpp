@@ -5,6 +5,7 @@
 #include <QMutexLocker>
 
 #include "analyzer/analyzerqueue.h"
+#include <broadcast/listenersfinder.h>
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
@@ -44,7 +45,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
         m_pAnalyzerQueue(nullptr),
-        m_scrobblingManager(this,m_pConfig),
+        m_scrobblingManager(this, m_pConfig),
         m_pCONumDecks(new ControlObject(
                 ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(
@@ -89,6 +90,12 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
 
     // This is parented to the PlayerManager so does not need to be deleted
     m_pSamplerBank = new SamplerBank(this);
+
+    MetadataBroadcaster *broadcaster = new MetadataBroadcaster;
+    for (auto service : ListenersFinder::instance(pConfig).getAllServices()) {
+        broadcaster->addNewScrobblingService(service);
+    }
+    m_scrobblingManager.setMetadataBroadcaster(broadcaster);
 }
 
 PlayerManager::~PlayerManager() {
