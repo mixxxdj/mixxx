@@ -230,6 +230,9 @@ void ShoutConnection::updateFromPreferences() {
     QByteArray baStreamWebsite = encodeString(m_pProfile->getStreamWebsite());
     QByteArray baStreamDesc = encodeString(m_pProfile->getStreamDesc());
     QByteArray baStreamGenre = encodeString(m_pProfile->getStreamGenre());
+    QByteArray baStreamIRC = encodeString(m_pProfile->getStreamIRC());
+    QByteArray baStreamAIM = encodeString(m_pProfile->getStreamAIM());
+    QByteArray baStreamICQ = encodeString(m_pProfile->getStreamICQ());
 
     // Whether the stream is public.
     bool streamPublic = m_pProfile->getStreamPublic();
@@ -306,6 +309,21 @@ void ShoutConnection::updateFromPreferences() {
 
     if (shout_set_url(m_pShout, baStreamWebsite.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream url!"), shout_get_error(m_pShout));
+        return;
+    }
+
+    if (shout_set_meta(m_pShout, SHOUT_META_IRC, baStreamIRC.constData()) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting stream IRC!"), shout_get_error(m_pShout));
+        return;
+    }
+
+    if (shout_set_meta(m_pShout, SHOUT_META_AIM, baStreamAIM.constData()) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting stream AIM!"), shout_get_error(m_pShout));
+        return;
+    }
+
+    if (shout_set_meta(m_pShout, SHOUT_META_ICQ, baStreamICQ.constData()) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting stream ICQ!"), shout_get_error(m_pShout));
         return;
     }
 

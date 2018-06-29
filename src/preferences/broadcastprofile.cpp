@@ -52,6 +52,9 @@ const char* kServertype = "Servertype";
 const char* kStreamDesc = "StreamDesc";
 const char* kStreamGenre = "StreamGenre";
 const char* kStreamName = "StreamName";
+const char* kStreamIRC = "StreamIRC";
+const char* kStreamAIM = "StreamAIM";
+const char* kStreamICQ = "StreamICQ";
 const char* kStreamPublic = "StreamPublic";
 const char* kStreamWebsite = "StreamWebsite";
 
@@ -146,6 +149,9 @@ bool BroadcastProfile::valuesEquals(BroadcastProfilePtr other) {
             && getStreamGenre() == other->getStreamGenre()
             && getStreamPublic() == other->getStreamPublic()
             && getStreamWebsite() == other->getStreamWebsite()
+            && getStreamIRC() == other->getStreamIRC()
+            && getStreamAIM() == other->getStreamAIM()
+            && getStreamICQ() == other->getStreamICQ()
             && getEnableMetadata() == other->getEnableMetadata()
             && getMetadataCharset() == other->getMetadataCharset()
             && getCustomArtist() == other->getCustomArtist()
@@ -194,6 +200,9 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
     other->setStreamGenre(this->getStreamGenre());
     other->setStreamPublic(this->getStreamPublic());
     other->setStreamWebsite(this->getStreamWebsite());
+    other->setStreamIRC(this->getStreamIRC());
+    other->setStreamAIM(this->getStreamAIM());
+    other->setStreamICQ(this->getStreamICQ());
 
     other->setEnableMetadata(this->getEnableMetadata());
     other->setMetadataCharset(this->getMetadataCharset());
@@ -225,6 +234,9 @@ void BroadcastProfile::adoptDefaultValues() {
     m_streamName = QString();
     m_streamPublic = kDefaultStreamPublic;
     m_streamWebsite = MIXXX_WEBSITE_URL;
+    m_streamIRC = QString();
+    m_streamAIM = QString();
+    m_streamICQ = QString();
 
     m_enableMetadata = kDefaultEnableMetadata;
     m_metadataCharset = QString();
@@ -288,6 +300,9 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_streamGenre = XmlParse::selectNodeQString(doc, kStreamGenre);
     m_streamPublic = (bool)XmlParse::selectNodeInt(doc, kStreamPublic);
     m_streamWebsite = XmlParse::selectNodeQString(doc, kStreamWebsite);
+    m_streamIRC = XmlParse::selectNodeQString(doc, kStreamIRC);
+    m_streamAIM = XmlParse::selectNodeQString(doc, kStreamAIM);
+    m_streamICQ = XmlParse::selectNodeQString(doc, kStreamICQ);
 
     m_format = XmlParse::selectNodeQString(doc, kFormat);
     m_bitrate = XmlParse::selectNodeInt(doc, kBitrate);
@@ -346,6 +361,9 @@ bool BroadcastProfile::save(const QString& filename) {
     XmlParse::addElement(doc, docRoot, kStreamPublic,
                          QString::number((int)m_streamPublic));
     XmlParse::addElement(doc, docRoot, kStreamWebsite, m_streamWebsite);
+    XmlParse::addElement(doc, docRoot, kStreamIRC, m_streamIRC);
+    XmlParse::addElement(doc, docRoot, kStreamAIM, m_streamAIM);
+    XmlParse::addElement(doc, docRoot, kStreamICQ, m_streamICQ);
 
     XmlParse::addElement(doc, docRoot, kFormat, m_format);
     XmlParse::addElement(doc, docRoot, kBitrate,
@@ -638,6 +656,30 @@ QString BroadcastProfile::getStreamWebsite() const {
 
 void BroadcastProfile::setStreamWebsite(const QString& value) {
     m_streamWebsite = QString(value);
+}
+
+QString BroadcastProfile::getStreamIRC() const {
+    return m_streamIRC;
+}
+
+void BroadcastProfile::setStreamIRC(const QString& value) {
+    m_streamIRC = QString(value);
+}
+
+QString BroadcastProfile::getStreamAIM() const {
+    return m_streamAIM;
+}
+
+void BroadcastProfile::setStreamAIM(const QString& value) {
+    m_streamAIM = QString(value);
+}
+
+QString BroadcastProfile::getStreamICQ() const {
+    return m_streamICQ;
+}
+
+void BroadcastProfile::setStreamICQ(const QString& value) {
+    m_streamICQ = QString(value);
 }
 
 QString BroadcastProfile::getFormat() const {

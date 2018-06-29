@@ -389,6 +389,15 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     // Stream website
     stream_website->setText(profile->getStreamWebsite());
 
+    // Stream IRC
+    stream_IRC->setText(profile->getStreamIRC());
+
+    // Stream AIM
+    stream_AIM->setText(profile->getStreamAIM());
+
+    // Stream ICQ
+    stream_ICQ->setText(profile->getStreamICQ());
+
     // Stream description
     stream_desc->setText(profile->getStreamDesc());
 
@@ -470,6 +479,9 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
     profile->setMaximumRetries(spinBoxMaximumRetries->value());
     profile->setStreamName(stream_name->text());
     profile->setStreamWebsite(stream_website->text());
+    profile->setStreamIRC(stream_IRC->text());
+    profile->setStreamAIM(stream_AIM->text());
+    profile->setStreamICQ(stream_ICQ->text());
     profile->setStreamDesc(stream_desc->toPlainText());
     profile->setStreamGenre(stream_genre->text());
     profile->setStreamPublic(stream_public->isChecked());
