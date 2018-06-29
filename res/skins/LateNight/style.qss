@@ -595,12 +595,6 @@ WEffectButtonParameter*/
     background-color: transparent;
     image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center top;
     }
-    #SkinSettingsClose:hover {
-      border-radius:2px;
-      margin-bottom: 4px;
-      background-color: #0f0f0f;
-      image: url(skin:/buttons/btn_skinsettings_close_hover.svg) no-repeat center top;
-    }
 
 #SkinSettingsCategory {
   padding: 2px 8px 1px 10px;
@@ -627,11 +621,6 @@ WEffectButtonParameter*/
   #SkinSettingsButton[displayValue="2"] {
     background-color: #0f0f0f;
     color: #eeeeee;
-  }
-  #SkinSettingsButton[displayValue="0"]:hover,
-  #SkinSettingsButton[displayValue="1"]:hover,
-  #SkinSettingsButton[displayValue="2"]:hover {
-    background-color: #202020;
   }
 
 #SkinSettingsLabelButton {
