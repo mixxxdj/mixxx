@@ -622,7 +622,7 @@ WEffectButtonParameter*/
   }
 
 #SubmenuCover {
-  background-color: rgba(51, 51, 51, 127);
+  background-color: rgba(15, 15, 15, 180);
 }
 
 /*################################################################
