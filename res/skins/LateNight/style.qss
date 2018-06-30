@@ -139,6 +139,13 @@ WTime {
   background-color: #1e1e1e;
 }
 
+#SpinnyContainer {
+  qproperty-layoutAlignment: 'AlignHCenter';
+  background-color: #1e1e1e;
+  border-bottom: 1px solid #585858;
+  border-right: 1px solid #585858;
+}
+
 #VisualizationContainer {
   border: 1px solid #585858;
   border-top: 0px;

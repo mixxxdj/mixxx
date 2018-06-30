@@ -4,9 +4,6 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
-
-      <Template src="skin:spinny.xml"/>
-
       <Overview>
         <TooltipId>waveform_overview</TooltipId>
         <Channel><Variable name="channum"/></Channel>
@@ -66,7 +63,7 @@
         <ObjectName>DeckControls</ObjectName>
         <Layout>vertical</Layout>
         <Children>
-          
+
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
           <WidgetGroup>
@@ -83,7 +80,7 @@
               </StarRating>
             </Children>
           </WidgetGroup>
-          
+
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
           <!-- Deck controls row 1 -->
@@ -208,9 +205,9 @@
 
             </Children>
           </WidgetGroup><!-- /Deck controls row 2 -->
-          
+
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
-          
+
         </Children>
       </WidgetGroup>
     </Children>
