@@ -318,9 +318,22 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:deck_row_1_keyVinylFx.xml" />
-          <Template src="skin:deck_row_2_3_TitleArtistTime.xml" />
-          <Template src="skin:deck_row_4_overviewSpinny.xml" />
+          <WidgetGroup>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:spinny.xml"/>
+              <WidgetGroup>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:deck_row_1_keyVinylFx.xml" />
+                  <Template src="skin:deck_row_2_3_TitleArtistTime.xml" />
+                  <Template src="skin:deck_row_4_overviewSpinny.xml" />
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
           <Template src="skin:deck_row_5_transportLoopJump.xml" />
         </Children>
       </WidgetGroup> <!-- /Deck Channel1 -->
