@@ -9,7 +9,7 @@
       <WidgetGroup>
         <ObjectName>RateContainer</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,me</SizePolicy>
+        <Size>69f,-1me</Size>
         <Children>
           <WidgetGroup>
             <ObjectName>AlignCenter</ObjectName>
@@ -307,6 +307,10 @@
             </Children>
           </WidgetGroup>
         </Children>
+	 <Connection>
+	  <ConfigKey persist="true">[Master],show_rate_control</ConfigKey>
+          <BindProperty>visible</BindProperty>
+	 </Connection>
       </WidgetGroup><!-- /RateContainer -->
 
       <WidgetGroup>  <!-- Deck Channel
