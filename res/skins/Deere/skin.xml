@@ -208,7 +208,6 @@
             <WidgetGroup><!-- Parallel Waveforms -->
               <ObjectName>Waveforms</ObjectName>
               <Layout>vertical</Layout>
-              <Size>-1me,4min</Size>
               <Connection>
                 <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
                 <BindProperty>visible</BindProperty>

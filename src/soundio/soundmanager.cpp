@@ -567,7 +567,8 @@ SoundDeviceError SoundManager::setConfig(SoundManagerConfig config) {
     // certain parts of mixxx rely on this being here, for the time being, just
     // letting those be -- bkgood
     // Do this first so vinyl control gets the right samplerate -- Owen W.
-    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
+    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),
+                   ConfigValue(static_cast<int>(m_config.getSampleRate())));
 
     err = setupDevices();
     if (err == SOUNDDEVICE_ERROR_OK) {
