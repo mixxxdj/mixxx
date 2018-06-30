@@ -6,6 +6,9 @@
 #include <QMessageBox>
 #include <QHeaderView>
 
+// Needed to enable version guard check
+#include <shout/shout.h>
+
 #include "broadcast/defs_broadcast.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
@@ -37,6 +40,21 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
 
     rbPasswordKeychain->setEnabled(false);
     groupPasswordStorage->setVisible(false);
+#endif
+
+#ifndef SHOUT_META_IRC
+    stream_IRC_label->setVisible(false);
+    stream_IRC->setVisible(false);
+#endif
+
+#ifndef SHOUT_META_AIM
+    stream_AIM_label->setVisible(false);
+    stream_AIM->setVisible(false);
+#endif
+
+#ifndef SHOUT_META_ICQ
+    stream_ICQ_label->setVisible(false);
+    stream_ICQ->setVisible(false);
 #endif
 
     connect(connectionList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),

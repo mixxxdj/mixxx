@@ -477,14 +477,14 @@
          <item>
           <layout class="QGridLayout">
            <item row="7" column="0">
-            <widget class="QLabel" name="label_23">
+            <widget class="QLabel" name="stream_ICQ_label">
              <property name="text">
               <string>ICQ</string>
              </property>
             </widget>
            </item>
            <item row="6" column="0">
-            <widget class="QLabel" name="label_22">
+            <widget class="QLabel" name="stream_AIM_label">
              <property name="text">
               <string>AIM</string>
              </property>
@@ -634,7 +634,7 @@ p, li { white-space: pre-wrap; }
             </widget>
            </item>
            <item row="5" column="0">
-            <widget class="QLabel" name="label_21">
+            <widget class="QLabel" name="stream_IRC_label">
              <property name="text">
               <string>IRC</string>
              </property>

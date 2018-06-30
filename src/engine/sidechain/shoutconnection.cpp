@@ -312,20 +312,26 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
+#ifdef SHOUT_META_IRC
     if (shout_set_meta(m_pShout, SHOUT_META_IRC, baStreamIRC.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream IRC!"), shout_get_error(m_pShout));
         return;
     }
+#endif
 
+#ifdef SHOUT_META_AIM
     if (shout_set_meta(m_pShout, SHOUT_META_AIM, baStreamAIM.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream AIM!"), shout_get_error(m_pShout));
         return;
     }
+#endif
 
+#ifdef SHOUT_META_ICQ
     if (shout_set_meta(m_pShout, SHOUT_META_ICQ, baStreamICQ.constData()) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream ICQ!"), shout_get_error(m_pShout));
         return;
     }
+#endif
 
     if (shout_set_public(m_pShout, streamPublic ? 1 : 0) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream public!"), shout_get_error(m_pShout));
