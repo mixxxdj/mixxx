@@ -29,7 +29,7 @@ DlgKeywheel::DlgKeywheel(QWidget *parent, UserSettingsPointer pConfig) :
 
     // load the user configured setting as default
     auto pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
-    m_notation = static_cast<KeyUtils::KeyNotation>(pKeyNotation->get());
+    m_notation = static_cast<KeyUtils::KeyNotation>(static_cast<int>(pKeyNotation->get()));
     // we skip the TRADITIONAL display, because it shows redundant informations only
     if (m_notation == KeyUtils::KeyNotation::TRADITIONAL) {
             m_notation = KeyUtils::KeyNotation::OPEN_KEY;
