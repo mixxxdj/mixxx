@@ -5,6 +5,8 @@
 #include <QString>
 
 #include "broadcast/filelistener.h"
+#include "broadcast/listenbrainzservice.h"
+#include "broadcast/networkmanager.h"
 
 ListenersFinder& ListenersFinder::instance(UserSettingsPointer pSettings) {
     static ListenersFinder instance(pSettings);
@@ -27,4 +29,7 @@ QLinkedList<ScrobblingServicePtr> ListenersFinder::getAllServices() const {
 ListenersFinder::ListenersFinder(UserSettingsPointer pSettings) {
     m_servicesHash[kfileListenerKey] =
             ScrobblingServicePtr(new FileListener(pSettings));
+    NetworkManager *manager = new FakeNetworkManager;
+    m_servicesHash[klistenbrainzListenerKey] =
+            ScrobblingServicePtr(new ListenBrainzService(manager));
 }

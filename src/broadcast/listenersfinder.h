@@ -4,7 +4,8 @@
 #include "broadcast/scrobblingservice.h"
 
 namespace {
-const QString kfileListenerKey = "FileListener";
+    const QString kfileListenerKey = "FileListener";
+    const QString klistenbrainzListenerKey = "ListenBrainz";
 }
 
 class ListenersFinder {
