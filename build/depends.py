@@ -728,6 +728,11 @@ class MixxxCore(Feature):
                    "broadcast/filelistener.cpp",
                    "broadcast/listenersfinder.cpp",
                    "broadcast/metadatafileworker.cpp",
+                   "broadcast/networkrequest.cpp",
+                   "broadcast/networkmanager.cpp",
+                   "broadcast/networkreply.cpp",
+                   "broadcast/listenbrainzservice.cpp",
+                   "broadcast/listenbrainzjsonfactory.cpp",
 
                    "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefcontroller.cpp",
