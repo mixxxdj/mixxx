@@ -7,9 +7,20 @@
 #include <QDir>
 #include <QUrl>
 
+namespace {
+    QString sOpenInFileBrowserCommand;
+    QString getOpenInFileBrowserCommand() {
+        return ""; // no special command use QDesktopServices";
+    }
+} // anonymous namespace
+
+
 namespace mixxx {
 
 void DesktopHelper::openInFileBrowser(const QStringList& paths) {
+    if (sOpenInFileBrowserCommand.isNull()) {
+        sOpenInFileBrowserCommand = getOpenInFileBrowserCommand();
+    }
     QSet<QString> openedDirs;
     QDir dir;
     for (const auto& path: paths) {
@@ -31,7 +42,11 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
         QString dirPath = dir.absolutePath();
         if (!openedDirs.contains(dirPath)) {
             openedDirs.insert(dirPath);
-            QDesktopServices::openUrl(QUrl::fromLocalFile(dirPath));
+            if (sOpenInFileBrowserCommand.isEmpty()) {
+                QDesktopServices::openUrl(QUrl::fromLocalFile(dirPath));
+            } else {
+                // special command, that supports also select the requested file
+            }
         }
     }
 }
