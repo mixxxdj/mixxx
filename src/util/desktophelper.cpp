@@ -11,7 +11,7 @@
 namespace {
     QString sSelectInFileBrowserCommand;
 
-    QString getOpenInFileBrowserCommand() {
+    QString getSelectInFileBrowserCommand() {
 #if defined(Q_OS_MAC)
         return "open -R \"%1\"";
 #elif defined(Q_OS_WIN)
@@ -60,12 +60,13 @@ namespace mixxx {
 
 void DesktopHelper::openInFileBrowser(const QStringList& paths) {
     if (sSelectInFileBrowserCommand.isNull()) {
-        sSelectInFileBrowserCommand = getOpenInFileBrowserCommand();
+        sSelectInFileBrowserCommand = getSelectInFileBrowserCommand();
     }
     QSet<QString> openedDirs;
     QString dirPath;
     for (const auto& path: paths) {
         dirPath = removeChildDir(path);
+        // First try to select the file in file browser
         if (!sSelectInFileBrowserCommand.isEmpty() &&
                 QFile::exists(path)) {
             if (!openedDirs.contains(dirPath)) {
@@ -78,6 +79,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
                 QProcess::startDetached(command);
             }
         } else {
+            // We cannot select, just open the parent folder
             QDir dir = dirPath;
             while (!dir.exists() && dirPath.size()) {
                 dirPath = removeChildDir(dirPath);
