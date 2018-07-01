@@ -209,13 +209,10 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         incrementRing(&read_position, bufferParameters.channelCount(),
                 gs.delay_buf.size());
 
-        // Actual delays distort and saturate, so clamp the buffer here.
-        gs.delay_buf[gs.write_position] = SampleUtil::clampSample(
-                pInput[i] * send_ramped +
-                bufferedSampleLeft * feedback_ramped);
-        gs.delay_buf[gs.write_position + 1] = SampleUtil::clampSample(
-                pInput[i + 1] * send_ramped +
-                bufferedSampleLeft * feedback_ramped);
+        gs.delay_buf[gs.write_position] = pInput[i] * send_ramped
+                + bufferedSampleLeft * feedback_ramped;
+        gs.delay_buf[gs.write_position + 1] = pInput[i + 1] * send_ramped
+                + bufferedSampleLeft * feedback_ramped;
 
         // Pingpong the output.  If the pingpong value is zero, all of the
         // math below should result in a simple copy of delay buf to pOutput.
