@@ -318,6 +318,7 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
+          <Template src="skin:deck_row_1_keyVinylFx.xml" />
           <WidgetGroup>
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
@@ -327,7 +328,6 @@
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
-                  <Template src="skin:deck_row_1_keyVinylFx.xml" />
                   <Template src="skin:deck_row_2_3_TitleArtistTime.xml" />
                   <Template src="skin:deck_row_4_overviewSpinny.xml" />
                 </Children>
