@@ -170,6 +170,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
 
         QGLWidget* glWidget = new QGLWidget(); // create paint device
         // QGLShaderProgram::hasOpenGLShaderPrograms(); valgind error
+        // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
+        glWidget->context()->makeCurrent();
         m_openGLShaderAvailable =
                 QGLShaderProgram::hasOpenGLShaderPrograms(glWidget->context());
         delete glWidget;
