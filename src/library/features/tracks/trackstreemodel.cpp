@@ -207,19 +207,11 @@ QVariant TracksTreeModel::getQuery(TreeItem* pTree) const {
 
 void TracksTreeModel::createTracksTree() {
 
-    QStringList columns;
+    QStringList columns, sortColumns;
     for (const QString& col : m_sortOrder) {
         columns << "library." + col;
-    }
-
-    QStringList sortColumns;
-#ifdef __SQLITE3__
-    for (const QString& col : m_sortOrder) {
         sortColumns << mixxx::DbConnection::collateLexicographically(col);
     }
-#else
-    sortColumns = m_sortOrder;
-#endif
 
     // Sorting is required to create the tree because the tree is sorted and
     // in order to create a tree with levels it must be sorted too.
@@ -229,13 +221,13 @@ void TracksTreeModel::createTracksTree() {
                        "WHERE %5 != 1 AND  %7 != 1 "
                        "GROUP BY %2 "
                        "ORDER BY %6 ";
-    queryStr = queryStr.arg(m_coverQuery.join(","),
-                            columns.join(","),
-                            "library." + LIBRARYTABLE_ID,
-                            "track_locations." + TRACKLOCATIONSTABLE_ID,
-                            "library." + LIBRARYTABLE_MIXXXDELETED,
-                            sortColumns.join(","),
-                            "track_locations." + TRACKLOCATIONSTABLE_FSDELETED);
+    queryStr = queryStr.arg(m_coverQuery.join(","),                                 // 1
+                            columns.join(","),                                      // 2
+                            "library." + LIBRARYTABLE_ID,                           // 3
+                            "track_locations." + TRACKLOCATIONSTABLE_ID,            // 4
+                            "library." + LIBRARYTABLE_MIXXXDELETED,                 // 5
+                            sortColumns.join(","),                                  // 6
+                            "track_locations." + TRACKLOCATIONSTABLE_FSDELETED);    // 7
 
 
     QSqlQuery query(m_pTrackCollection->database());
@@ -245,7 +237,7 @@ void TracksTreeModel::createTracksTree() {
         LOG_FAILED_QUERY(query);
         return;
     }
-    //qDebug() << "LibraryTreeModel::createTracksTree" << query.executedQuery();
+    qDebug() << "LibraryTreeModel::createTracksTree" << query.executedQuery();
 
     int treeDepth = columns.size();
     if (treeDepth <= 0) {
