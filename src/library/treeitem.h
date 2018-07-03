@@ -2,6 +2,7 @@
 #define MIXXX_TREEITEM_H
 
 #include <QList>
+#include <QSet>
 #include <QString>
 #include <QVariant>
 #include <QIcon>
@@ -86,8 +87,9 @@ class TreeItem final {
     }
 
     inline const QString& getLabel() const {
-		if (m_trackCount >= 0) {
-			return m_labelNumbered;
+        count = getTrackCount();
+        if (count > 0) {
+            return m_label + " (" + QString::number(count) + ")";
 		}
         return m_label;
     }
@@ -134,12 +136,17 @@ class TreeItem final {
 
 	inline void setTrackCount(int count) {
 		m_trackCount = count;
-		m_labelNumbered = m_label + " (" + QString::number(m_trackCount) + ")";
 	}
 
 	inline int getTrackCount() {
+        if (m_trackCount < 0) {
+           return m_childTracks.size();
+        }
+
 		return m_trackCount;
 	}
+
+    QSet<TrackId> m_childTracks;
 
   private:
     void appendChild(TreeItem* pChild);
@@ -151,7 +158,6 @@ class TreeItem final {
     QList<TreeItem*> m_children; // owned child items
 
     QString m_label;
-	QString m_labelNumbered;
     QVariant m_data;
     QIcon m_icon;
     CoverInfo m_cover;
