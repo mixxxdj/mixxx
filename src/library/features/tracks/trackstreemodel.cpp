@@ -215,11 +215,11 @@ void TracksTreeModel::createTracksTree() {
 
     // Sorting is required to create the tree because the tree is sorted and
     // in order to create a tree with levels it must be sorted too.
-    QString queryStr = "SELECT COUNT(%3),%1,%2 "
+    QString queryStr = "SELECT %3,%1,%2 "
                        "FROM library LEFT JOIN track_locations "
                        "ON (%3 = %4) "
                        "WHERE %5 != 1 AND  %7 != 1 "
-                       "GROUP BY %2 "
+//                       "GROUP BY %2 "
                        "ORDER BY %6 ";
     queryStr = queryStr.arg(m_coverQuery.join(","),                                 // 1
                             columns.join(","),                                      // 2
@@ -237,14 +237,16 @@ void TracksTreeModel::createTracksTree() {
         LOG_FAILED_QUERY(query);
         return;
     }
-    qDebug() << "LibraryTreeModel::createTracksTree" << query.executedQuery();
+    qDebug() << "TracksTreeModel::createTracksTree" << query.executedQuery();
 
+    // For error handling if there are any columns selected do nothing
     int treeDepth = columns.size();
     if (treeDepth <= 0) {
         return;
     }
     QSqlRecord record = query.record();
 
+    // Cover Art query indices information
     int iAlbum = record.indexOf(LIBRARYTABLE_ALBUM);
     CoverIndex cIndex;
     cIndex.iCoverHash = record.indexOf(LIBRARYTABLE_COVERART_HASH);
@@ -263,16 +265,22 @@ void TracksTreeModel::createTracksTree() {
     parent[0] = getRootItem();
 
     while (query.next()) {
+        TrackId currentId(query.value(0));
+        parent[0]->m_childTracks.insert(currentId);
+
         for (int i = 0; i < treeDepth; ++i) {
             QString treeItemLabel = query.value(treeStartQueryIndex + i).toString();
             QString dataPath = treeItemLabel;
 
-            bool unknown = dataPath.isNull();
+            bool unknown = dataPath.isEmpty();
             if (unknown) {
                 dataPath = "";
                 treeItemLabel = tr("Unknown");
             }
+
+            // If the current element is equal to the previous one just add the new id
             if (!lastUsed[i].isNull() && dataPath.localeAwareCompare(lastUsed[i]) == 0) {
+                parent[i + 1]->m_childTracks.insert(currentId);
                 continue;
             }
 
@@ -295,24 +303,13 @@ void TracksTreeModel::createTracksTree() {
 
             // We need to create a new item
             TreeItem* pTree = parent[i]->appendChild(treeItemLabel, dataPath);
-            pTree->setTrackCount(0);
+            pTree->m_childTracks.insert(currentId);
             parent[i + 1] = pTree;
 
             // Add coverart info
             if (treeStartQueryIndex + i == iAlbum) {
                 addCoverArt(cIndex, query, pTree);
             }
-        }
-
-        // Set track count
-        int val = query.value(0).toInt();
-        for (int i = 1; i < treeDepth + 1; ++i) {
-            TreeItem* pTree = parent[i];
-            if (pTree == nullptr) {
-                continue;
-            }
-
-            pTree->setTrackCount(pTree->getTrackCount() + val);
         }
     }
 }
