@@ -86,8 +86,8 @@ class TreeItem final {
         m_label = label;
     }
 
-    inline const QString& getLabel() const {
-        count = getTrackCount();
+    inline const QString getLabel() const {
+        int count = getTrackCount();
         if (count > 0) {
             return m_label + " (" + QString::number(count) + ")";
 		}
@@ -138,7 +138,7 @@ class TreeItem final {
 		m_trackCount = count;
 	}
 
-	inline int getTrackCount() {
+    inline int getTrackCount() const {
         if (m_trackCount < 0) {
            return m_childTracks.size();
         }
