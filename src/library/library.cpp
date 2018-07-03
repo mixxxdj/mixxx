@@ -19,6 +19,7 @@
 #include "library/browse/browsefeature.h"
 #include "library/crate/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/clementine/clementinefeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
@@ -141,6 +142,12 @@ Library::Library(
         BansheeFeature::prepareDbPath(pConfig);
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
+        }
+    }
+    if (pConfig->getValue(ConfigKey(kConfigGroup,"ShowClementineLibrary"), true)) {
+        ClementineFeature::prepareDbPath(pConfig);
+        if (ClementineFeature::isSupported()) {
+            addFeature(new ClementineFeature(this, m_pTrackCollection, pConfig));
         }
     }
     if (ITunesFeature::isSupported() &&

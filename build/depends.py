@@ -1030,6 +1030,10 @@ class MixxxCore(Feature):
                    "library/banshee/bansheeplaylistmodel.cpp",
                    "library/banshee/bansheedbconnection.cpp",
 
+                   "library/clementine/clementinefeature.cpp",
+                   "library/clementine/clementineplaylistmodel.cpp",
+                   "library/clementine/clementinedbconnection.cpp",
+
                    "library/itunes/itunesfeature.cpp",
                    "library/traktor/traktorfeature.cpp",
 
