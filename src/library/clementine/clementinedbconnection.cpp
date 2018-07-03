@@ -152,6 +152,14 @@ QString ClementineDbConnection::getDatabaseFile() {
 
     QString dbfile;
 
+#ifdef __APPLE__
+    dbfile = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
+    dbfile += "/Library/Application Support/Clementine/clementine.db";
+    if (QFile::exists(dbfile)) {
+        return dbfile;
+    }
+#endif
+
     dbfile = QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
     dbfile += "/.config/Clementine/clementine.db";
     if (QFile::exists(dbfile)) {
