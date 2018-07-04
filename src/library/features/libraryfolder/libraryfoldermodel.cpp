@@ -97,10 +97,9 @@ void LibraryFolderModel::createTracksTree() {
     // Get the Library directories
     QStringList dirs(m_pTrackCollection->getDirectoryDAO().getDirs());
 
-    QString queryStr = "SELECT COUNT(%3),%1 "
+    QString queryStr = "SELECT %3,%1 "
                        "FROM track_locations INNER JOIN library ON %3=%4 "
                        "WHERE %2=0 AND %1 LIKE :dir "
-                       "GROUP BY %1 "
                        "ORDER BY ";
     queryStr = queryStr.arg(TRACKLOCATIONSTABLE_DIRECTORY,
                             "library." + LIBRARYTABLE_MIXXXDELETED,
@@ -138,11 +137,16 @@ void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& 
     bool first = true;
 
     while (query.next()) {
+        TrackId currentId(query.value(0));
+        parent[0]->m_childTracks.insert(currentId);
+
         QString location = query.value(1).toString();
         //qDebug() << location;
 
-        // Remove the first / character
+        // Remove the common library directory
         QString dispValue = location.mid(dir.size());
+
+        // Remove the first / character
         if (dispValue.startsWith("/")) {
             dispValue = dispValue.mid(1);
         }
@@ -165,8 +169,11 @@ void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& 
 
         // We always use Qt notation for folders "/"
         QStringList parts = dispValue.split("/");
+
         int treeDepth = parts.size();
         if (treeDepth > lastUsed.size()) {
+            // If the depth changes because there are more folders then
+            // add more levels for both the parent and the last used lists
             for (int i = lastUsed.size(); i < parts.size(); ++i) {
                 lastUsed.append(QString());
                 parent.append(nullptr);
@@ -176,6 +183,9 @@ void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& 
         bool change = false;
         for (int i = 0; i < parts.size(); ++i) {
             const QString& val = parts.at(i);
+            // "change" is used to check if there has been a change on the
+            // current level and thus we must change all the following levels
+            // on the tree
             if (change || val != lastUsed.at(i)) {
                 change = true;
 
@@ -189,22 +199,13 @@ void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& 
                 }
 
                 TreeItem* pItem = parent[i]->appendChild(val, fullPath);
-                pItem->setTrackCount(0);
+                pItem->m_childTracks.insert(currentId);
 
                 parent[i + 1] = pItem;
                 lastUsed[i] = val;
+            } else {
+                parent[i + 1]->m_childTracks.insert(currentId);
             }
-        }
-
-        // Set track count
-        int val = query.value(0).toInt();
-        for (int i = 1; i < treeDepth + 1; ++i) {
-            TreeItem* pItem = parent[i];
-            if (pItem == nullptr) {
-                continue;
-            }
-
-            pItem->setTrackCount(pItem->getTrackCount() + val);
         }
     }
 }
