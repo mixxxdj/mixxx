@@ -219,7 +219,6 @@ void TracksTreeModel::createTracksTree() {
                        "FROM library LEFT JOIN track_locations "
                        "ON (%3 = %4) "
                        "WHERE %5 != 1 AND  %7 != 1 "
-//                       "GROUP BY %2 "
                        "ORDER BY %6 ";
     queryStr = queryStr.arg(m_coverQuery.join(","),                                 // 1
                             columns.join(","),                                      // 2
@@ -237,7 +236,7 @@ void TracksTreeModel::createTracksTree() {
         LOG_FAILED_QUERY(query);
         return;
     }
-    qDebug() << "TracksTreeModel::createTracksTree" << query.executedQuery();
+    //qDebug() << "TracksTreeModel::createTracksTree" << query.executedQuery();
 
     // For error handling if there are any columns selected do nothing
     int treeDepth = columns.size();
@@ -306,7 +305,8 @@ void TracksTreeModel::createTracksTree() {
             pTree->m_childTracks.insert(currentId);
             parent[i + 1] = pTree;
 
-            // Add coverart info
+            // Add coverart info, the coverart must only be added on the
+            // Album nodes
             if (treeStartQueryIndex + i == iAlbum) {
                 addCoverArt(cIndex, query, pTree);
             }
