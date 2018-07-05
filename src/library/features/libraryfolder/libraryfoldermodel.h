@@ -22,15 +22,17 @@ class LibraryFolderModel : public TracksTreeModel
     virtual bool setData(const QModelIndex& index, const QVariant& value, int role);
     virtual QVariant data(const QModelIndex &index, int role) const;
 
+  public slots:
+    void tracksAdded(const QSet<TrackId> trackIds) override;
+
   protected:
     void createTracksTree() override;
     QString getGroupingOptions() override;
 
-  private slots:
-    void tracksAdded(const QSet<TrackId> trackIds);
-
   private:
     void createTreeForLibraryDir(const QString& dir, QSqlQuery& query);
+    QString createQueryStr(bool singleId);
+    void insertTrackToTree(TrackId id, QString dir, QString location, TreeItem* pLevel);
 
     bool m_folderRecursive;
     bool m_showFolders;

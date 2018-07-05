@@ -26,17 +26,12 @@ LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
 
     TrackDAO& trackDAO(pTrackCollection->getTrackDAO());
     connect(&trackDAO, SIGNAL(forceModelUpdate()), this, SLOT(reloadTree()));
-// FIXME: This is extremely inefficient! The entire model should not
-// be rebuilt when tracks change. Only the part of the model relevant
-// to those tracks should get updated.
-//     connect(&trackDAO, SIGNAL(tracksAdded(QSet<TrackId>)),
-//             this, SLOT(reloadTree()));
-//     connect(&trackDAO, SIGNAL(tracksRemoved(QSet<TrackId>)),
-//             this, SLOT(reloadTree()));
-//     connect(&trackDAO, SIGNAL(trackChanged(TrackId)),
-//             this, SLOT(reloadTree()));
     connect(&trackDAO, SIGNAL(tracksAdded(QSet<TrackId>)),
             this, SLOT(tracksAdded(QSet<TrackId>)));
+    connect(&trackDAO, SIGNAL(tracksRemoved(QSet<TrackId>)),
+            this, SLOT(tracksRemoved(QSet<TrackId>)));
+    connect(&trackDAO, SIGNAL(trackChanged(TrackId)),
+            this, SLOT(trackChanged(TrackId)));
 
     reloadTree();
 }
@@ -90,6 +85,43 @@ QVariant LibraryFolderModel::data(const QModelIndex& index, int role) const {
     return TracksTreeModel::data(index, role);
 }
 
+void LibraryFolderModel::tracksAdded(const QSet<TrackId> trackIds) {
+    if (!m_showFolders) {
+        TracksTreeModel::tracksAdded(trackIds);
+        return;
+    }
+
+    beginResetModel();
+
+    QStringList dirs(m_pTrackCollection->getDirectoryDAO().getDirs());
+    QSqlQuery query(m_pTrackCollection->database());
+    QString queryStr = createQueryStr(true);
+    query.prepare(queryStr);
+
+    for (const TrackId& id : trackIds) {
+        query.bindValue(":id", id.toVariant());
+
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+            return;
+        }
+
+        DEBUG_ASSERT(query.next());
+
+        TrackId trackId(query.value(0));
+        QString location(query.value(1).toString());
+
+        for (const QString& dir : dirs) {
+            if (location.startsWith(dir)) {
+                insertTrackToTree(id, dir, location, getRootItem());
+                break;
+            }
+        }
+    }
+
+    endResetModel();
+}
+
 void LibraryFolderModel::createTracksTree() {
     if (!m_showFolders) {
         TracksTreeModel::createTracksTree();
@@ -98,18 +130,9 @@ void LibraryFolderModel::createTracksTree() {
 
     // Get the Library directories
     QStringList dirs(m_pTrackCollection->getDirectoryDAO().getDirs());
-
-    QString queryStr = "SELECT %3,%1 "
-                       "FROM track_locations INNER JOIN library ON %3=%4 "
-                       "WHERE %2=0 AND %1 LIKE :dir "
-                       "ORDER BY ";
-    queryStr = queryStr.arg(TRACKLOCATIONSTABLE_DIRECTORY,
-                            "library." + LIBRARYTABLE_MIXXXDELETED,
-                            "library." + LIBRARYTABLE_ID,
-                            "track_locations." + TRACKLOCATIONSTABLE_ID);
-    queryStr += mixxx::DbConnection::collateLexicographically(TRACKLOCATIONSTABLE_DIRECTORY);
-
     QSqlQuery query(m_pTrackCollection->database());
+
+    QString queryStr = createQueryStr(false);
     query.prepare(queryStr);
 
     for (const QString& dir : dirs) {
@@ -132,95 +155,78 @@ QString LibraryFolderModel::getGroupingOptions() {
     return TracksTreeModel::getGroupingOptions();
 }
 
-void LibraryFolderModel::tracksAdded(const QSet<TrackId> trackIds) {
-    if (!m_showFolders) {
-//        TracksTreeModel::tracksAdded(trackIds);
+void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& query) {
+    while (query.next()) {
+        TrackId trackId(query.value(0));
+        QString location(query.value(1).toString());
+        insertTrackToTree(trackId,
+                          dir, location.mid(dir.size() + 1),
+                          getRootItem());
+    }
+}
+
+QString LibraryFolderModel::createQueryStr(bool singleId) {
+    QString queryStr = "SELECT %3,%1 "
+                       "FROM track_locations INNER JOIN library ON %3=%4 "
+                       "WHERE %2=0 AND ";
+
+    queryStr += singleId ? "%3 = :id" : "%1 LIKE :dir";
+
+    queryStr = queryStr.arg(TRACKLOCATIONSTABLE_DIRECTORY,
+                            "library." + LIBRARYTABLE_MIXXXDELETED,
+                            "library." + LIBRARYTABLE_ID,
+                            "track_locations." + TRACKLOCATIONSTABLE_ID);
+
+    return queryStr;
+}
+
+void LibraryFolderModel::insertTrackToTree(TrackId id,
+                                           QString dir,
+                                           QString location,
+                                           TreeItem* pLevel) {
+    pLevel->m_childTracks.insert(id);
+
+    QStringList splitted = location.split("/");
+    if (splitted.isEmpty() || location.isEmpty()) {
         return;
     }
 
-    TreeItem* pRoot = getRootItem();
+    QString currentLabel = splitted.takeFirst();
+    QString currentPath = dir + "/" + currentLabel;
+    QString currentPathTemp = currentPath + (m_folderRecursive ? "*" : "");
+    location = splitted.join("/");
 
-    // Everything works assuming that there are no intersections
-    DEBUG_ASSERT(!pRoot->m_childTracks.intersects(trackIds));
+    // Search where do we have to insert the next level
+    TreeItem* pInsert = nullptr;
+    QString lastHeader;
+    for (TreeItem* pChild : pLevel->children()) {
+        const QString itemPath = pChild->getData().toString();
+        const int comparedResult = currentPathTemp.compare(itemPath);
 
-}
-
-void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& query) {
-    QStringList lastUsed;
-    QList<TreeItem*> parent;
-    parent.append(getRootItem());
-    bool first = true;
-
-    while (query.next()) {
-        TrackId currentId(query.value(0));
-        parent[0]->m_childTracks.insert(currentId);
-
-        QString location = query.value(1).toString();
-        //qDebug() << location;
-
-        // Remove the common library directory
-        QString dispValue = location.mid(dir.size());
-
-        // Remove the first / character
-        if (dispValue.startsWith("/")) {
-            dispValue = dispValue.mid(1);
+        if (comparedResult == 0) {
+            pChild->m_childTracks.insert(id);
+            insertTrackToTree(id, currentPath, location, pChild);
+            return;
+        } else if (comparedResult < 0) {
+            pInsert = pChild;
+            break;
         }
 
-        // Add a header
-        if (first) {
-            first = false;
-            QString path = dir;
-            if (m_folderRecursive) {
-                path.append("*");
-            }
-            TreeItem* pTree = m_pRootItem->appendChild(dir, path);
-            pTree->setDivider(true);
-        }
-
-        // Do not add empty items
-        if (dispValue.isEmpty()) {
-            continue;
-        }
-
-        // We always use Qt notation for folders "/"
-        QStringList parts = dispValue.split("/");
-
-        int treeDepth = parts.size();
-        if (treeDepth > lastUsed.size()) {
-            // If the depth changes because there are more folders then
-            // add more levels for both the parent and the last used lists
-            for (int i = lastUsed.size(); i < parts.size(); ++i) {
-                lastUsed.append(QString());
-                parent.append(nullptr);
-            }
-        }
-
-        bool change = false;
-        for (int i = 0; i < parts.size(); ++i) {
-            const QString& val = parts.at(i);
-            // "change" is used to check if there has been a change on the
-            // current level and thus we must change all the following levels
-            // on the tree
-            if (change || val != lastUsed.at(i)) {
-                change = true;
-
-                QString fullPath = dir;
-                for (int j = 0; j <= i; ++j) {
-                    fullPath += "/" + parts.at(j);
-                }
-
-                if (m_folderRecursive) {
-                    fullPath.append("*");
-                }
-
-                TreeItem* pItem = parent[i]->appendChild(val, fullPath);
-                pItem->m_childTracks.insert(currentId);
-
-                parent[i + 1] = pItem;
-                lastUsed[i] = val;
-            } else {
-                parent[i + 1]->m_childTracks.insert(currentId);
-            }
+        if (pChild->isDivider()) {
+            lastHeader = itemPath;
         }
     }
+
+    int row = (pInsert == nullptr ?
+                   pLevel->childRows() : pInsert->parentRow());
+
+    if (pLevel == getRootItem() && lastHeader != dir) {
+        TreeItem* pItem = pLevel->insertChild(row, dir, dir);
+        pItem->setDivider(true);
+        ++row;
+    }
+
+    TreeItem* pItem = pLevel->insertChild(row, currentLabel, currentPathTemp);
+
+    insertTrackToTree(id, currentPath, location, pItem);
 }
