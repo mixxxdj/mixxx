@@ -10,7 +10,7 @@
 #include "preferences/metadatafilesettings.h"
 
 FileListener::FileListener(UserSettingsPointer pConfig)
-        : m_COsettingsChanged(kSettingsChanged),
+        : m_COsettingsChanged(kFileSettingsChanged),
           m_pConfig(pConfig),
           m_latestSettings(MetadataFileSettings::getPersistedSettings(pConfig)) {
     MetadataFileWorker* newWorker = new MetadataFileWorker(m_latestSettings.filePath);

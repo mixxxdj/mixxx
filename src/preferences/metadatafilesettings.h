@@ -22,10 +22,10 @@ const ConfigKey kFileFormat =
 const ConfigKey kFileFormatString =
         ConfigKey("[Livemetadata]", "FileFormatString");
 
-const ConfigKey kFilePath =
-        ConfigKey("[Livemetadata]", "CustomFormatString");
-const ConfigKey kSettingsChanged =
-        ConfigKey("[Livemetadata]", "SettingsChanged");
+    const ConfigKey kFilePath  =
+            ConfigKey("[Livemetadata]","CustomFormatString");
+    const ConfigKey kFileSettingsChanged =
+            ConfigKey("[Livemetadata]","FileSettingsChanged");
 
 const bool defaultFileMetadataEnabled = false;
 const QByteArray defaultEncoding = "UTF-8";
@@ -63,7 +63,7 @@ class MetadataFileSettings : public QObject {
 
   private:
     void setupWidgets();
-    void saveLatestSettingsAndNotify();
+    void updateLatestSettingsAndNotify();
     void persistSettings();
     void resetSettingsToDefault();
     bool fileSettingsDifferent();

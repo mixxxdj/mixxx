@@ -2,40 +2,61 @@
 
 #include <QJsonObject>
 
+#include "preferences/listenbrainzsettings.h"
 #include "broadcast/listenbrainzjsonfactory.h"
 #include "broadcast/networkmanager.h"
 #include "moc_listenbrainzservice.cpp"
 
-ListenBrainzService::ListenBrainzService(NetworkManager *manager)
-        :  m_pNetworkManager(manager),
-           m_pRequest(new QtNetworkRequest(ListenBrainzAPIURL)) {
-       connect(m_pNetworkManager.get(),&NetworkManager::finished,
-               this,&ListenBrainzService::slotAPICallFinished);
+ListenBrainzService::ListenBrainzService(UserSettingsPointer pSettings)
+        :  m_request(ListenBrainzAPIURL),
+           m_latestSettings(ListenBrainzSettingsManager::getPersistedSettings(pSettings)),
+           m_COSettingsChanged(kListenBrainzSettingsChanged),
+           m_pCurrentJSON(nullptr) {
+    connect(&m_manager,&QNetworkAccessManager::finished,
+            this,&ListenBrainzService::slotAPICallFinished);
+    connect(&m_COSettingsChanged,&ControlPushButton::valueChanged,
+            this,&ListenBrainzService::slotSettingsChanged);
+    m_request.setHeader(QNetworkRequest::ContentTypeHeader,"application/json");
+    if (m_latestSettings.enabled) {
+        m_request.setRawHeader("Authorization","Token " + m_latestSettings.userToken.toUtf8());
+    }
 }
 
-void ListenBrainzService::setNetworkRequest(NetworkRequest *pRequest) {
-    m_pRequest.reset(pRequest);
-}
 
 void ListenBrainzService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
-    if (!pTrack)
+    if (!pTrack || !m_latestSettings.enabled)
         return;
-    QByteArray object =
+    m_pCurrentJSON = new QByteArray(
             ListenBrainzJSONFactory::getJSONFromTrack(
-                    pTrack,ListenBrainzJSONFactory::NowListening);
-
-    m_pNetworkManager->post(m_pRequest.get(),object);
+                    pTrack,ListenBrainzJSONFactory::NowListening));
+    m_manager.post(m_request,*m_pCurrentJSON);
 }
 
 void ListenBrainzService::slotScrobbleTrack(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
 }
 
 void ListenBrainzService::slotAllTracksPaused() {
 }
 
-void ListenBrainzService::slotAPICallFinished(NetworkReply *reply) {
+void ListenBrainzService::slotAPICallFinished(QNetworkReply *reply) {
     if (reply->error() != QNetworkReply::NoError) {
-        qWarning() << "API call to ListenBrainz error: " << reply->getHttpError();
+        qWarning() << "API call to ListenBrainz error: " <<
+                   reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    }
+    delete m_pCurrentJSON;
+    m_pCurrentJSON = nullptr;
+    QFile dump("Reply.txt");
+    dump.open(QFile::WriteOnly);
+    dump.write(reply->readAll());
+}
+
+void ListenBrainzService::slotSettingsChanged(double value) {
+    if (value) {
+        m_latestSettings = ListenBrainzSettingsManager::getLatestSettings();
+        if (m_latestSettings.enabled) {
+            m_request.setRawHeader("Authorization","Token " + m_latestSettings.userToken.toUtf8());
+        }
     }
 }
 

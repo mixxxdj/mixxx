@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QNetworkAccessManager>
 
 class QByteArray;
 class QNetworkReply;
@@ -11,7 +12,6 @@ class NetworkRequest;
 class NetworkManager : public QObject {
     Q_OBJECT
   public:
-    ~NetworkManager() = default;
     virtual NetworkReply *post(const NetworkRequest *request, const QByteArray &data) = 0;
   signals:
     void finished(NetworkReply *reply);
@@ -19,6 +19,6 @@ class NetworkManager : public QObject {
 
 class FakeNetworkManager : public NetworkManager {
     Q_OBJECT
-public:
+  public:
     NetworkReply *post(const NetworkRequest *request, const QByteArray &data) override;
 };

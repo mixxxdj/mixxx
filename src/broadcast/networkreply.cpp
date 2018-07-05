@@ -25,3 +25,15 @@ void FakeNetworkReply::setHttpError(unsigned int error) {
 void FakeNetworkReply::setContents(QByteArray contents) {
     this->contents = contents;
 }
+
+QNetworkReply::NetworkError QtNetworkReply::error() const {
+    return QNetworkReply::NoError;
+}
+
+unsigned int QtNetworkReply::getHttpError() {
+    return 200;
+}
+
+QByteArray QtNetworkReply::readAll() {
+    return QByteArray();
+}

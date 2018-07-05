@@ -1,4 +1,3 @@
-
 #include "listenbrainzjsonfactory.h"
 
 #include <QDateTime>
@@ -20,10 +19,10 @@ QByteArray ListenBrainzJSONFactory::getJSONFromTrack(TrackPointer pTrack, JsonTy
     QJsonObject metadataObject;
     QString title = pTrack->getTitle();
     QString artist = pTrack->getArtist();
-    metadataObject.insert("artist_name", artist);
-    metadataObject.insert("track_name", title);
-    payloadObject.insert("track_metadata", metadataObject);
-    qint64 timeStamp = QDateTime::currentSecsSinceEpoch();
+    metadataObject.insert("artist_name",artist);
+    metadataObject.insert("track_name",title);
+    payloadObject.insert("track_metadata",metadataObject);
+    qint64 timeStamp = QDateTime::currentMSecsSinceEpoch() / 1000;
 
     if (type == Single) {
         payloadObject.insert("listened_at", timeStamp);

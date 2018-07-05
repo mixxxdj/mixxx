@@ -28,3 +28,11 @@ class FakeNetworkReply : public NetworkReply {
     QNetworkReply::NetworkError netError;
     unsigned int httpError;
 };
+
+class QtNetworkReply : public NetworkReply {
+    Q_OBJECT
+  public:
+    QNetworkReply::NetworkError error() const override;
+    unsigned int getHttpError() override;
+    QByteArray readAll() override;
+};

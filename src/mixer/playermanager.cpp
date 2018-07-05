@@ -414,6 +414,7 @@ void PlayerManager::addDeckInner() {
         return;
     }
 
+
     int deckIndex = m_decks.count();
 
     Deck* pDeck = new Deck(this,
@@ -435,11 +436,19 @@ void PlayerManager::addDeckInner() {
             this,
             &PlayerManager::slotSaveEjectedTrack);
 
-    connect(pDeck, &Deck::trackPaused, &m_scrobblingManager, &ScrobblingManager::slotTrackPaused);
-    connect(pDeck, &Deck::trackResumed, [this, group](TrackPointer pTrack) -> void { m_scrobblingManager.slotTrackResumed(pTrack, group); });
-    connect(pDeck, &Deck::newTrackLoaded, [this, group](TrackPointer pTrack) -> void { m_scrobblingManager.slotNewTrackLoaded(pTrack, group); });
-    connect(pDeck, &Deck::loadingTrack, [this, group](TrackPointer pOldTrack, TrackPointer pNewTrack) -> void { m_scrobblingManager.slotLoadingTrack(pOldTrack, pNewTrack, group); });
-    connect(pDeck, SIGNAL(playerEmpty()), &m_scrobblingManager, SLOT(slotPlayerEmpty()));
+    connect(pDeck,&Deck::trackPaused,
+            &m_scrobblingManager, &ScrobblingManager::slotTrackPaused);
+    connect(pDeck,&Deck::trackResumed, this,
+            [this,group] (TrackPointer pTrack) -> void
+            {m_scrobblingManager.slotTrackResumed(pTrack,group);});
+    connect(pDeck,&Deck::newTrackLoaded, this,
+            [this,group] (TrackPointer pTrack) -> void
+            {m_scrobblingManager.slotNewTrackLoaded(pTrack,group);});
+    connect(pDeck,&Deck::loadingTrack, this,
+            [this,group] (TrackPointer pOldTrack,TrackPointer pNewTrack) -> void
+            {m_scrobblingManager.slotLoadingTrack(pOldTrack,pNewTrack,group);});
+    connect(pDeck,SIGNAL(playerEmpty()),
+            &m_scrobblingManager, SLOT(slotPlayerEmpty()));   
 
     if (m_pTrackAnalysisScheduler) {
         connect(pDeck,

@@ -29,7 +29,6 @@ QLinkedList<ScrobblingServicePtr> ListenersFinder::getAllServices() const {
 ListenersFinder::ListenersFinder(UserSettingsPointer pSettings) {
     m_servicesHash[kfileListenerKey] =
             ScrobblingServicePtr(new FileListener(pSettings));
-    NetworkManager *manager = new FakeNetworkManager;
     m_servicesHash[klistenbrainzListenerKey] =
-            ScrobblingServicePtr(new ListenBrainzService(manager));
+            ScrobblingServicePtr(new ListenBrainzService(pSettings));
 }
