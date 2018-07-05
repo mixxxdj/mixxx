@@ -46,9 +46,6 @@ void ListenBrainzService::slotAPICallFinished(QNetworkReply *reply) {
     }
     delete m_pCurrentJSON;
     m_pCurrentJSON = nullptr;
-    QFile dump("Reply.txt");
-    dump.open(QFile::WriteOnly);
-    dump.write(reply->readAll());
 }
 
 void ListenBrainzService::slotSettingsChanged(double value) {
