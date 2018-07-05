@@ -159,7 +159,11 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QLineEdit" name="listenBrainzUserTokenLineEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -175,12 +179,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>115</x>
-     <y>365</y>
+     <x>130</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>596</x>
-     <y>167</y>
+     <x>652</x>
+     <y>138</y>
     </hint>
    </hints>
   </connection>
@@ -191,12 +195,44 @@
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>52</x>
-     <y>351</y>
+     <x>67</x>
+     <y>197</y>
     </hint>
     <hint type="destinationlabel">
-     <x>183</x>
-     <y>179</y>
+     <x>332</x>
+     <y>138</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enableListenbrainzBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>listenBrainzUserTokenLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>142</x>
+     <y>430</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>123</x>
+     <y>471</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enableListenbrainzBox</sender>
+   <signal>clicked()</signal>
+   <receiver>listenBrainzUserTokenLineEdit</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>358</x>
+     <y>429</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>356</x>
+     <y>494</y>
     </hint>
    </hints>
   </connection>
