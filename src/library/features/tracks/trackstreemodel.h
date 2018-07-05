@@ -28,6 +28,7 @@ class TracksTreeModel : public TreeItemModel {
 
   public slots:
     void reloadTree() override;
+    void tracksRemoved(const QSet<TrackId> trackIds);
 
   protected:
     virtual void createTracksTree();
@@ -56,6 +57,9 @@ class TracksTreeModel : public TreeItemModel {
   private:
     QVariant getQuery(TreeItem* pTree) const;
     void addCoverArt(const CoverIndex& index, const QSqlQuery& query, TreeItem* pTree);
+    QString createQueryStr(bool singleId = false, bool sort = true);
+
+    void removeTracksRecursive(const QSet<TrackId>& trackIds, TreeItem* pTree);
 
 
     QStringList m_sortOrder;

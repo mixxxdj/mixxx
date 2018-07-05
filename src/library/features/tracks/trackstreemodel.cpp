@@ -152,6 +152,12 @@ void TracksTreeModel::reloadTree() {
     endResetModel();
 }
 
+void TracksTreeModel::tracksRemoved(const QSet<TrackId> trackIds) {
+    // Remove recursively starting from the root item
+    TreeItem* pRoot = getRootItem();
+    this->removeTracksRecursive(trackIds, pRoot);
+}
+
 void TracksTreeModel::coverFound(const QObject* requestor, int requestReference,
                                        const CoverInfo&, QPixmap pixmap, bool fromCache) {
 
@@ -206,29 +212,7 @@ QVariant TracksTreeModel::getQuery(TreeItem* pTree) const {
 }
 
 void TracksTreeModel::createTracksTree() {
-
-    QStringList columns, sortColumns;
-    for (const QString& col : m_sortOrder) {
-        columns << "library." + col;
-        sortColumns << mixxx::DbConnection::collateLexicographically(col);
-    }
-
-    // Sorting is required to create the tree because the tree is sorted and
-    // in order to create a tree with levels it must be sorted too.
-    QString queryStr = "SELECT %3,%1,%2 "
-                       "FROM library LEFT JOIN track_locations "
-                       "ON (%3 = %4) "
-                       "WHERE %5 != 1 AND  %7 != 1 "
-                       "ORDER BY %6 ";
-    queryStr = queryStr.arg(m_coverQuery.join(","),                                 // 1
-                            columns.join(","),                                      // 2
-                            "library." + LIBRARYTABLE_ID,                           // 3
-                            "track_locations." + TRACKLOCATIONSTABLE_ID,            // 4
-                            "library." + LIBRARYTABLE_MIXXXDELETED,                 // 5
-                            sortColumns.join(","),                                  // 6
-                            "track_locations." + TRACKLOCATIONSTABLE_FSDELETED);    // 7
-
-
+    QString queryStr = createQueryStr(false, true);
     QSqlQuery query(m_pTrackCollection->database());
     query.prepare(queryStr);
 
@@ -239,7 +223,7 @@ void TracksTreeModel::createTracksTree() {
     //qDebug() << "TracksTreeModel::createTracksTree" << query.executedQuery();
 
     // For error handling if there are any columns selected do nothing
-    int treeDepth = columns.size();
+    int treeDepth = m_sortOrder.size();
     if (treeDepth <= 0) {
         return;
     }
@@ -331,4 +315,69 @@ void TracksTreeModel::addCoverArt(const TracksTreeModel::CoverIndex& index,
     c.type = static_cast<CoverInfo::Type>(type);
     pTree->setCoverInfo(c);
     pTree->setIcon(QIcon(":/images/library/cover_default.svg"));
+}
+
+QString TracksTreeModel::createQueryStr(bool singleId,
+                                        bool sort) {
+    QStringList columns, sortColumns;
+    for (const QString& col : m_sortOrder) {
+        columns << "library." + col;
+        sortColumns << mixxx::DbConnection::collateLexicographically(col);
+    }
+
+    QString queryStr = "SELECT %3,%1,%2 "
+                       "FROM library LEFT JOIN track_locations "
+                       "ON (%3 = %4) "
+                       "WHERE %5 != 1 AND %6 != 1 ";
+
+    if (singleId) {
+        queryStr += "AND %3 == :id ";
+    }
+
+    queryStr = queryStr.arg(m_coverQuery.join(","),
+                            columns.join(","),
+                            "library." + LIBRARYTABLE_ID,
+                            "track_locations." + TRACKLOCATIONSTABLE_ID,
+                            "library." + LIBRARYTABLE_MIXXXDELETED,
+                            "track_locations." + TRACKLOCATIONSTABLE_FSDELETED);
+
+    // Sorting is required to create the tree because the tree is sorted and
+    // in order to create a tree with levels it must be sorted too.
+    if (sort) {
+        queryStr += "ORDER BY %1 ";
+        queryStr = queryStr.arg(sortColumns.join(","));
+    }
+
+    return queryStr;
+}
+
+void TracksTreeModel::removeTracksRecursive(const QSet<TrackId>& trackIds,
+                                            TreeItem* pTree) {
+
+    // Stopping condition, no further actions are required if the
+    // ids that we are looking for are not in this tree
+    if (!pTree->m_childTracks.intersects(trackIds)) {
+        return;
+    }
+
+    pTree->m_childTracks.subtract(trackIds);
+    if (pTree->m_childTracks.size() <= 0) {
+        // If there are no  child tracks then this node should be removed
+        // we know that we should remove this node because it intersects
+        // with the new tracks Ids
+
+        int parentRow = pTree->parentRow();
+        DEBUG_ASSERT(parentRow != TreeItem::kInvalidRow);
+
+        pTree->parent()->removeChild(parentRow);
+
+        // If this element is removed then all of its children will be removed
+        // too so there's no need to iterate over the children
+        return;
+    }
+
+    // If the element does not have any children this will return here
+    for (TreeItem* pItem : pTree->children()) {
+        removeTracksRecursive(trackIds, pItem);
+    }
 }
