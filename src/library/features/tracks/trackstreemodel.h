@@ -28,12 +28,14 @@ class TracksTreeModel : public TreeItemModel {
 
   public slots:
     void reloadTree() override;
-    void tracksAdded(const QSet<TrackId> trackIds);
-    void tracksRemoved(const QSet<TrackId> trackIds);
+    virtual void tracksAdded(const QSet<TrackId> trackIds);
+    virtual void tracksRemoved(const QSet<TrackId> trackIds);
+    virtual void trackChanged(TrackId trackId);
 
   protected:
     virtual void createTracksTree();
     virtual QString getGroupingOptions();
+    void removeTracksRecursive(const QSet<TrackId>& trackIds, TreeItem* pTree);
 
     parented_ptr<TreeItem> m_pGrouping;
     parented_ptr<TreeItem> m_pShowAll;
@@ -44,6 +46,12 @@ class TracksTreeModel : public TreeItemModel {
 
   private:
     struct CoverIndex {
+        CoverIndex() {
+            iCoverHash = iCoverLoc = iTrackLoc  = iCoverSrc = iCoverType = -1;
+        }
+
+        CoverIndex(const QSqlRecord& record);
+
         int iCoverHash;
         int iCoverLoc;
         int iTrackLoc;
@@ -58,13 +66,9 @@ class TracksTreeModel : public TreeItemModel {
   private:
     QVariant getQuery(TreeItem* pTree) const;
     void addCoverArt(const CoverIndex& index, const QSqlQuery& query, TreeItem* pTree);
-    QString createQueryStr(bool singleId = false, bool sort = true);
+    QString createQueryStr(bool singleId = false);
 
-    void removeTracksRecursive(const QSet<TrackId>& trackIds, TreeItem* pTree);
-    void addTrackToTree(const QSqlQuery& query, const CoverIndex& cIndex);
-    CoverIndex getCoverIndex(const QSqlQuery& query);
-    CoverIndex getCoverIndex(const QSqlRecord& record);
-
+    void insertTrackToTree(const QSqlQuery& query);
 
     QStringList m_sortOrder;
     QStringList m_coverQuery;

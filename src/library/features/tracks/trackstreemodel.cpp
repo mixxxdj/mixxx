@@ -39,15 +39,12 @@ TracksTreeModel::TracksTreeModel(LibraryFeature* pFeature,
 
     TrackDAO& trackDAO(pTrackCollection->getTrackDAO());
     connect(&trackDAO, SIGNAL(forceModelUpdate()), this, SLOT(reloadTree()));
-// FIXME: This is extremely inefficient! The entire model should not
-// be rebuilt when tracks change. Only the part of the model relevant
-// to those tracks should get updated.
-//     connect(&trackDAO, SIGNAL(tracksAdded(QSet<TrackId>)),
-//             this, SLOT(reloadTree()));
-//     connect(&trackDAO, SIGNAL(tracksRemoved(QSet<TrackId>)),
-//             this, SLOT(reloadTree()));
-//     connect(&trackDAO, SIGNAL(trackChanged(TrackId)),
-//             this, SLOT(reloadTree()));
+    connect(&trackDAO, SIGNAL(tracksAdded(QSet<TrackId>)),
+            this, SLOT(tracksAdded(QSet<TrackId>)));
+    connect(&trackDAO, SIGNAL(tracksRemoved(QSet<TrackId>)),
+            this, SLOT(tracksRemoved(QSet<TrackId>)));
+    connect(&trackDAO, SIGNAL(trackChanged(TrackId)),
+            this, SLOT(trackChanged(TrackId)));
 
     m_coverQuery << LIBRARYTABLE_COVERART_HASH
                  << LIBRARYTABLE_COVERART_LOCATION
@@ -140,30 +137,25 @@ void TracksTreeModel::reloadTree() {
     //qDebug() << "LibraryTreeModel::reloadTracksTree";
     beginResetModel();
     // Create root item
+    // Deletes the old root item if the previous root item was not null
     TreeItem* pRootItem = setRootItem(std::make_unique<TreeItem>(m_pFeature));
-
-    m_pShowAll = parented_ptr<TreeItem>(pRootItem->appendChild(tr("Show all"), ""));
+    createTracksTree();
 
     QString groupTitle = tr("Grouping Options (%1)").arg(getGroupingOptions());
-    m_pGrouping = parented_ptr<TreeItem>(pRootItem->appendChild(groupTitle, ""));
+    m_pGrouping = parented_ptr<TreeItem>(pRootItem->insertChild(0, groupTitle, ""));
+    m_pShowAll = parented_ptr<TreeItem>(pRootItem->insertChild(0, tr("Show all"), ""));
 
-    // Deletes the old root item if the previous root item was not null
-    createTracksTree();
     endResetModel();
 }
 
 void TracksTreeModel::tracksAdded(const QSet<TrackId> trackIds) {
-    // Just to be sure try to remove the added tracks to avoid further
-    // possible issues with adding pre-existing tracks
-    tracksRemoved(trackIds);
+    beginResetModel();
 
     // Get the tracks information
-    QString queryStr = createQueryStr(true, false);
+    QString queryStr = createQueryStr(true);
 
     QSqlQuery query(m_pTrackCollection->database());
     query.prepare(queryStr);
-
-    CoverIndex cIndex = getCoverIndex(query);
 
     // Since QT does not allow to bind value for " IN (...) " queries
     // we prepare the query and execute it once for each element
@@ -175,14 +167,26 @@ void TracksTreeModel::tracksAdded(const QSet<TrackId> trackIds) {
             return;
         }
 
-        addTrackToTree(query, cIndex);
+        DEBUG_ASSERT(query.next());
+        insertTrackToTree(query);
     }
+
+    endResetModel();
 }
 
 void TracksTreeModel::tracksRemoved(const QSet<TrackId> trackIds) {
     // Remove recursively starting from the root item
+    beginResetModel();
     TreeItem* pRoot = getRootItem();
     this->removeTracksRecursive(trackIds, pRoot);
+    endResetModel();
+}
+
+void TracksTreeModel::trackChanged(TrackId trackId) {
+    QSet<TrackId> trackIds{trackId};
+
+    tracksRemoved(trackIds);
+    tracksAdded(trackIds);
 }
 
 void TracksTreeModel::coverFound(const QObject* requestor, int requestReference,
@@ -239,7 +243,7 @@ QVariant TracksTreeModel::getQuery(TreeItem* pTree) const {
 }
 
 void TracksTreeModel::createTracksTree() {
-    QString queryStr = createQueryStr(false, true);
+    QString queryStr = createQueryStr(false);
     QSqlQuery query(m_pTrackCollection->database());
     query.prepare(queryStr);
 
@@ -249,76 +253,8 @@ void TracksTreeModel::createTracksTree() {
     }
     //qDebug() << "TracksTreeModel::createTracksTree" << query.executedQuery();
 
-    // For error handling if there are any columns selected do nothing
-    int treeDepth = m_sortOrder.size();
-    if (treeDepth <= 0) {
-        return;
-    }
-    QSqlRecord record = query.record();
-
-    // Cover Art query indices information
-    int iAlbum = record.indexOf(LIBRARYTABLE_ALBUM);
-    CoverIndex cIndex = getCoverIndex(record);
-
-
-    int treeStartQueryIndex = m_coverQuery.size() + 1;
-    QVector<QString> lastUsed(treeDepth);
-    QChar lastHeader;
-
-    // We add 1 to the total parents because the first parent is the root item
-    // with this we can always use parent[i] to get the parent of the element at
-    // depth i and to set the parent we avoid checking that i + 1 < treeDepth
-    QVector<TreeItem*> parent(treeDepth + 1, nullptr);
-    parent[0] = getRootItem();
-
     while (query.next()) {
-        TrackId currentId(query.value(0));
-        parent[0]->m_childTracks.insert(currentId);
-
-        for (int i = 0; i < treeDepth; ++i) {
-            QString treeItemLabel = query.value(treeStartQueryIndex + i).toString();
-            QString dataPath = treeItemLabel;
-
-            bool unknown = dataPath.isEmpty();
-            if (unknown) {
-                dataPath = "";
-                treeItemLabel = tr("Unknown");
-            }
-
-            // If the current element is equal to the previous one just add the new id
-            if (!lastUsed[i].isNull() && dataPath.localeAwareCompare(lastUsed[i]) == 0) {
-                parent[i + 1]->m_childTracks.insert(currentId);
-                continue;
-            }
-
-            if (i == 0 && !unknown) {
-                // If a new top level is added all the following levels must be
-                // reset
-                lastUsed.fill(QString());
-
-                // Check if a header must be added
-                QChar c = StringHelper::getFirstCharForGrouping(treeItemLabel);
-                if (lastHeader != c) {
-                    lastHeader = c;
-                    TreeItem* pTree =
-                        parent[0]->appendChild(lastHeader, lastHeader);
-                    pTree->setDivider(true);
-                }
-            }
-
-            lastUsed[i] = dataPath;
-
-            // We need to create a new item
-            TreeItem* pTree = parent[i]->appendChild(treeItemLabel, dataPath);
-            pTree->m_childTracks.insert(currentId);
-            parent[i + 1] = pTree;
-
-            // Add coverart info, the coverart must only be added on the
-            // Album nodes
-            if (treeStartQueryIndex + i == iAlbum) {
-                addCoverArt(cIndex, query, pTree);
-            }
-        }
+        insertTrackToTree(query);
     }
 }
 
@@ -339,40 +275,6 @@ void TracksTreeModel::addCoverArt(const TracksTreeModel::CoverIndex& index,
     c.type = static_cast<CoverInfo::Type>(type);
     pTree->setCoverInfo(c);
     pTree->setIcon(QIcon(":/images/library/cover_default.svg"));
-}
-
-QString TracksTreeModel::createQueryStr(bool singleId,
-                                        bool sort) {
-    QStringList columns, sortColumns;
-    for (const QString& col : m_sortOrder) {
-        columns << "library." + col;
-        sortColumns << mixxx::DbConnection::collateLexicographically(col);
-    }
-
-    QString queryStr = "SELECT %3,%1,%2 "
-                       "FROM library LEFT JOIN track_locations "
-                       "ON (%3 = %4) "
-                       "WHERE %5 != 1 AND %6 != 1 ";
-
-    if (singleId) {
-        queryStr += "AND %3 == :id ";
-    }
-
-    queryStr = queryStr.arg(m_coverQuery.join(","),
-                            columns.join(","),
-                            "library." + LIBRARYTABLE_ID,
-                            "track_locations." + TRACKLOCATIONSTABLE_ID,
-                            "library." + LIBRARYTABLE_MIXXXDELETED,
-                            "track_locations." + TRACKLOCATIONSTABLE_FSDELETED);
-
-    // Sorting is required to create the tree because the tree is sorted and
-    // in order to create a tree with levels it must be sorted too.
-    if (sort) {
-        queryStr += "ORDER BY %1 ";
-        queryStr = queryStr.arg(sortColumns.join(","));
-    }
-
-    return queryStr;
 }
 
 void TracksTreeModel::removeTracksRecursive(const QSet<TrackId>& trackIds,
@@ -406,22 +308,119 @@ void TracksTreeModel::removeTracksRecursive(const QSet<TrackId>& trackIds,
     }
 }
 
-void TracksTreeModel::addTrackToTree(const QSqlQuery& query,
-                                     const CoverIndex& cIndex) {
+QString TracksTreeModel::createQueryStr(bool singleId) {
+    QStringList columns, sortColumns;
+    for (const QString& col : m_sortOrder) {
+        columns << "library." + col;
+        sortColumns << mixxx::DbConnection::collateLexicographically(col);
+    }
 
+    QString queryStr = "SELECT %3,%1,%2 "
+                       "FROM library LEFT JOIN track_locations "
+                       "ON (%3 = %4) "
+                       "WHERE %5 != 1 AND %6 != 1 ";
+
+    if (singleId) {
+        queryStr += "AND %3 == :id ";
+    }
+
+    queryStr = queryStr.arg(m_coverQuery.join(","),
+                            columns.join(","),
+                            "library." + LIBRARYTABLE_ID,
+                            "track_locations." + TRACKLOCATIONSTABLE_ID,
+                            "library." + LIBRARYTABLE_MIXXXDELETED,
+                            "track_locations." + TRACKLOCATIONSTABLE_FSDELETED);
+
+    return queryStr;
 }
 
-TracksTreeModel::CoverIndex TracksTreeModel::getCoverIndex(const QSqlQuery& query) {
-    return getCoverIndex(query.record());
+void TracksTreeModel::insertTrackToTree(const QSqlQuery& query) {
+    const int treeDepth = m_sortOrder.size();
+    const int treeStartQueryIndex = m_coverQuery.size() + 1;
+    const TrackId currentId(query.value(0));
+    const QSqlRecord record = query.record();
+    const int iAlbum = record.indexOf(LIBRARYTABLE_ALBUM);
+    const CoverIndex cIndex(record);
+
+    TreeItem* pCurrentLevel = getRootItem();
+    pCurrentLevel->m_childTracks.insert(currentId);
+
+    for (int i = 0; i < treeDepth; ++i) {
+        QString treeItemLabel = query.value(treeStartQueryIndex + i).toString();
+        QString dataPath = treeItemLabel;
+
+        // Treat unknown labels differently
+        bool unknown = dataPath.isEmpty();
+        if (unknown) {
+            dataPath = "";
+            treeItemLabel = tr("Unknown");
+        }
+
+        // Find the position where the new item must be inserted
+        TreeItem* pInsert = nullptr;
+        bool found = false;
+        QChar lastHeader;
+        for (TreeItem* pItem : pCurrentLevel->children()) {
+            QString itemPath = pItem->getData().toString();
+            int compareResult = dataPath.localeAwareCompare(itemPath);
+
+            if (compareResult == 0) {
+                found = true;
+                pInsert = pItem;
+                break;
+            } else if (compareResult < 0) {
+                // If we reach this part this means that the item should
+                // be inserted here since dataPath < itemPath
+                pInsert = pItem;
+                break;
+            }
+
+            if (pItem->isDivider()) {
+                lastHeader = StringHelper::getFirstCharForGrouping(
+                        pItem->getLabel());
+            }
+        }
+
+        if (found) {
+            pInsert->m_childTracks.insert(currentId);
+            pCurrentLevel = pInsert;
+            continue;
+        }
+
+        // We need to create a new item
+        int row = (pInsert == nullptr ?
+                       pCurrentLevel->childRows() : pInsert->parentRow());
+
+        if (i == 0 && !unknown) {
+            // Check if a header must be added
+            QChar c = StringHelper::getFirstCharForGrouping(treeItemLabel);
+            if (lastHeader != c) {
+                lastHeader = c;
+                TreeItem* pTree =
+                    pCurrentLevel->insertChild(row, lastHeader, lastHeader);
+                pTree->setDivider(true);
+                ++row;
+            }
+        }
+
+        TreeItem* pTree = pCurrentLevel->insertChild(row, treeItemLabel,
+                                                     dataPath);
+        pTree->m_childTracks.insert(currentId);
+
+        // Add coverart info, the coverart must only be added on the
+        // Album nodes
+        if (treeStartQueryIndex + i == iAlbum) {
+            addCoverArt(cIndex, query, pTree);
+        }
+
+        pCurrentLevel = pTree;
+    }
 }
 
-TracksTreeModel::CoverIndex TracksTreeModel::getCoverIndex(const QSqlRecord& record) {
-    CoverIndex cIndex;
-    cIndex.iCoverHash = record.indexOf(LIBRARYTABLE_COVERART_HASH);
-    cIndex.iCoverLoc = record.indexOf(LIBRARYTABLE_COVERART_LOCATION);
-    cIndex.iCoverSrc = record.indexOf(LIBRARYTABLE_COVERART_SOURCE);
-    cIndex.iCoverType = record.indexOf(LIBRARYTABLE_COVERART_TYPE);
-    cIndex.iTrackLoc = record.indexOf(TRACKLOCATIONSTABLE_LOCATION);
-
-    return cIndex;
+TracksTreeModel::CoverIndex::CoverIndex(const QSqlRecord& record) {
+    iCoverHash = record.indexOf(LIBRARYTABLE_COVERART_HASH);
+    iCoverLoc = record.indexOf(LIBRARYTABLE_COVERART_LOCATION);
+    iCoverSrc = record.indexOf(LIBRARYTABLE_COVERART_SOURCE);
+    iCoverType = record.indexOf(LIBRARYTABLE_COVERART_TYPE);
+    iTrackLoc = record.indexOf(TRACKLOCATIONSTABLE_LOCATION);
 }
