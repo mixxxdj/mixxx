@@ -14,7 +14,7 @@ class MetadataBroadcasterMock : public MetadataBroadcasterInterface {
     MOCK_METHOD0(slotAllTracksPaused,void());
     MetadataBroadcasterInterface& 
         addNewScrobblingService(const ScrobblingServicePtr &ptr) override {
-            Q_UNUSED(ptr);
+            return *this;
         }
     MOCK_METHOD1(newTrackLoaded,void(TrackPointer));
     MOCK_METHOD1(trackUnloaded,void(TrackPointer));

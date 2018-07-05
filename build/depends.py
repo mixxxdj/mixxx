@@ -764,6 +764,7 @@ class MixxxCore(Feature):
                    "preferences/effectsettingsmodel.cpp",
                    "preferences/broadcastprofile.cpp",
                    "preferences/metadatafilesettings.cpp",
+                   "preferences/listenbrainzsettings.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
 
@@ -1372,7 +1373,7 @@ class MixxxCore(Feature):
                 # http://clang.llvm.org/docs/ThreadSafetyAnalysis.html
                 build.env.Append(CCFLAGS='-Wthread-safety')
             build.env.Append(CCFLAGS='-Wextra')
-
+            build.env.Append(CCFLAGS='-Werror=return-type')
             # Always generate debugging info.
             build.env.Append(CCFLAGS='-g')
         elif build.toolchain_is_msvs:

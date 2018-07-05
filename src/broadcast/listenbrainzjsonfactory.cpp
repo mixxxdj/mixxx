@@ -25,7 +25,7 @@ QByteArray ListenBrainzJSONFactory::getJSONFromTrack(TrackPointer pTrack, JsonTy
     metadataObject.insert("artist_name",artist);
     metadataObject.insert("track_name",title);
     payloadObject.insert("track_metadata",metadataObject);
-    qint64 timeStamp = QDateTime::currentSecsSinceEpoch();
+    qint64 timeStamp = QDateTime::currentMSecsSinceEpoch() / 1000;
 
     if (type == Single) {
         payloadObject.insert("listened_at",timeStamp);

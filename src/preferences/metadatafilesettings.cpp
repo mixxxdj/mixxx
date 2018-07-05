@@ -12,7 +12,7 @@ MetadataFileSettings::MetadataFileSettings(UserSettingsPointer pSettings,
                                            const FileWidgets &widgets,
                                            QWidget *dialogWidget)
         :  m_pSettings(pSettings),
-           m_CPSettingsChanged(kSettingsChanged),
+           m_CPSettingsChanged(kFileSettingsChanged),
            m_widgets(widgets),
            m_pDialogWidget(dialogWidget) {
     s_latestSettings = getPersistedSettings(pSettings);
@@ -71,7 +71,7 @@ FileSettings MetadataFileSettings::getLatestSettings() {
 
 void MetadataFileSettings::applySettings() {
     if (fileSettingsDifferent() && checkIfSettingsCorrect()) {
-        saveLatestSettingsAndNotify();
+        updateLatestSettingsAndNotify();
         persistSettings();
     }
 }
@@ -120,7 +120,7 @@ bool MetadataFileSettings::checkIfSettingsCorrect() {
     return true;
 }
 
-void MetadataFileSettings::saveLatestSettingsAndNotify() {
+void MetadataFileSettings::updateLatestSettingsAndNotify() {
     FileSettings ret;
     ret.enabled = m_widgets.enableCheckbox->isChecked();
     ret.fileEncoding = m_widgets.encodingBox->currentText().toUtf8();
