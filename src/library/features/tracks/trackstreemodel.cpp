@@ -152,6 +152,33 @@ void TracksTreeModel::reloadTree() {
     endResetModel();
 }
 
+void TracksTreeModel::tracksAdded(const QSet<TrackId> trackIds) {
+    // Just to be sure try to remove the added tracks to avoid further
+    // possible issues with adding pre-existing tracks
+    tracksRemoved(trackIds);
+
+    // Get the tracks information
+    QString queryStr = createQueryStr(true, false);
+
+    QSqlQuery query(m_pTrackCollection->database());
+    query.prepare(queryStr);
+
+    CoverIndex cIndex = getCoverIndex(query);
+
+    // Since QT does not allow to bind value for " IN (...) " queries
+    // we prepare the query and execute it once for each element
+    for (const TrackId& id : trackIds) {
+        query.bindValue(":id", id.toVariant());
+
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+            return;
+        }
+
+        addTrackToTree(query, cIndex);
+    }
+}
+
 void TracksTreeModel::tracksRemoved(const QSet<TrackId> trackIds) {
     // Remove recursively starting from the root item
     TreeItem* pRoot = getRootItem();
@@ -231,16 +258,13 @@ void TracksTreeModel::createTracksTree() {
 
     // Cover Art query indices information
     int iAlbum = record.indexOf(LIBRARYTABLE_ALBUM);
-    CoverIndex cIndex;
-    cIndex.iCoverHash = record.indexOf(LIBRARYTABLE_COVERART_HASH);
-    cIndex.iCoverLoc = record.indexOf(LIBRARYTABLE_COVERART_LOCATION);
-    cIndex.iCoverSrc = record.indexOf(LIBRARYTABLE_COVERART_SOURCE);
-    cIndex.iCoverType = record.indexOf(LIBRARYTABLE_COVERART_TYPE);
-    cIndex.iTrackLoc = record.indexOf(TRACKLOCATIONSTABLE_LOCATION);
+    CoverIndex cIndex = getCoverIndex(record);
+
 
     int treeStartQueryIndex = m_coverQuery.size() + 1;
     QVector<QString> lastUsed(treeDepth);
     QChar lastHeader;
+
     // We add 1 to the total parents because the first parent is the root item
     // with this we can always use parent[i] to get the parent of the element at
     // depth i and to set the parent we avoid checking that i + 1 < treeDepth
@@ -380,4 +404,24 @@ void TracksTreeModel::removeTracksRecursive(const QSet<TrackId>& trackIds,
     for (TreeItem* pItem : pTree->children()) {
         removeTracksRecursive(trackIds, pItem);
     }
+}
+
+void TracksTreeModel::addTrackToTree(const QSqlQuery& query,
+                                     const CoverIndex& cIndex) {
+
+}
+
+TracksTreeModel::CoverIndex TracksTreeModel::getCoverIndex(const QSqlQuery& query) {
+    return getCoverIndex(query.record());
+}
+
+TracksTreeModel::CoverIndex TracksTreeModel::getCoverIndex(const QSqlRecord& record) {
+    CoverIndex cIndex;
+    cIndex.iCoverHash = record.indexOf(LIBRARYTABLE_COVERART_HASH);
+    cIndex.iCoverLoc = record.indexOf(LIBRARYTABLE_COVERART_LOCATION);
+    cIndex.iCoverSrc = record.indexOf(LIBRARYTABLE_COVERART_SOURCE);
+    cIndex.iCoverType = record.indexOf(LIBRARYTABLE_COVERART_TYPE);
+    cIndex.iTrackLoc = record.indexOf(TRACKLOCATIONSTABLE_LOCATION);
+
+    return cIndex;
 }

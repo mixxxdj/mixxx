@@ -35,6 +35,8 @@ LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
 //             this, SLOT(reloadTree()));
 //     connect(&trackDAO, SIGNAL(trackChanged(TrackId)),
 //             this, SLOT(reloadTree()));
+    connect(&trackDAO, SIGNAL(tracksAdded(QSet<TrackId>)),
+            this, SLOT(tracksAdded(QSet<TrackId>)));
 
     reloadTree();
 }
@@ -128,6 +130,19 @@ QString LibraryFolderModel::getGroupingOptions() {
         return tr("Folders");
 
     return TracksTreeModel::getGroupingOptions();
+}
+
+void LibraryFolderModel::tracksAdded(const QSet<TrackId> trackIds) {
+    if (!m_showFolders) {
+//        TracksTreeModel::tracksAdded(trackIds);
+        return;
+    }
+
+    TreeItem* pRoot = getRootItem();
+
+    // Everything works assuming that there are no intersections
+    DEBUG_ASSERT(!pRoot->m_childTracks.intersects(trackIds));
+
 }
 
 void LibraryFolderModel::createTreeForLibraryDir(const QString& dir, QSqlQuery& query) {

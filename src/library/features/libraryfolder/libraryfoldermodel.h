@@ -26,6 +26,9 @@ class LibraryFolderModel : public TracksTreeModel
     void createTracksTree() override;
     QString getGroupingOptions() override;
 
+  private slots:
+    void tracksAdded(const QSet<TrackId> trackIds);
+
   private:
     void createTreeForLibraryDir(const QString& dir, QSqlQuery& query);
 
