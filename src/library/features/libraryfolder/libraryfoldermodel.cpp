@@ -23,16 +23,6 @@ LibraryFolderModel::LibraryFolderModel(LibraryFeature* pFeature,
     QString showFolders = m_pConfig->getValueString(
             ConfigKey("[Library]", LIBRARYFOLDERMODEL_FOLDER));
     m_showFolders = showFolders.toInt() == 1;
-
-    TrackDAO& trackDAO(pTrackCollection->getTrackDAO());
-    connect(&trackDAO, SIGNAL(forceModelUpdate()), this, SLOT(reloadTree()));
-    connect(&trackDAO, SIGNAL(tracksAdded(QSet<TrackId>)),
-            this, SLOT(tracksAdded(QSet<TrackId>)));
-    connect(&trackDAO, SIGNAL(tracksRemoved(QSet<TrackId>)),
-            this, SLOT(tracksRemoved(QSet<TrackId>)));
-    connect(&trackDAO, SIGNAL(trackChanged(TrackId)),
-            this, SLOT(trackChanged(TrackId)));
-
     reloadTree();
 }
 

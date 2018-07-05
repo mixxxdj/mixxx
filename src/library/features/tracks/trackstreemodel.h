@@ -35,7 +35,7 @@ class TracksTreeModel : public TreeItemModel {
   protected:
     virtual void createTracksTree();
     virtual QString getGroupingOptions();
-    void removeTracksRecursive(const QSet<TrackId>& trackIds, TreeItem* pTree);
+    bool removeTracksRecursive(const QSet<TrackId>& trackIds, TreeItem* pTree);
 
     parented_ptr<TreeItem> m_pGrouping;
     parented_ptr<TreeItem> m_pShowAll;

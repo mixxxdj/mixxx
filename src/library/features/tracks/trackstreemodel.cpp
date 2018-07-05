@@ -277,13 +277,13 @@ void TracksTreeModel::addCoverArt(const TracksTreeModel::CoverIndex& index,
     pTree->setIcon(QIcon(":/images/library/cover_default.svg"));
 }
 
-void TracksTreeModel::removeTracksRecursive(const QSet<TrackId>& trackIds,
+bool TracksTreeModel::removeTracksRecursive(const QSet<TrackId>& trackIds,
                                             TreeItem* pTree) {
 
     // Stopping condition, no further actions are required if the
     // ids that we are looking for are not in this tree
     if (!pTree->m_childTracks.intersects(trackIds)) {
-        return;
+        return false;
     }
 
     pTree->m_childTracks.subtract(trackIds);
@@ -292,20 +292,28 @@ void TracksTreeModel::removeTracksRecursive(const QSet<TrackId>& trackIds,
         // we know that we should remove this node because it intersects
         // with the new tracks Ids
 
-        int parentRow = pTree->parentRow();
-        DEBUG_ASSERT(parentRow != TreeItem::kInvalidRow);
-
-        pTree->parent()->removeChild(parentRow);
-
-        // If this element is removed then all of its children will be removed
-        // too so there's no need to iterate over the children
-        return;
+        return true;
     }
 
     // If the element does not have any children this will return here
+    QList<TreeItem*> childsToRemove;
     for (TreeItem* pItem : pTree->children()) {
-        removeTracksRecursive(trackIds, pItem);
+        bool remove = removeTracksRecursive(trackIds, pItem);
+
+        if (remove) {
+            childsToRemove.append(pItem);
+        }
     }
+
+    // Since the row changes every time an element is removed
+    // we must remove the items one by one after knowing which ones
+    // should be deleted
+    for (TreeItem* pItem : childsToRemove) {
+        pTree->removeChild(pItem->parentRow());
+    }
+
+
+    return false;
 }
 
 QString TracksTreeModel::createQueryStr(bool singleId) {
