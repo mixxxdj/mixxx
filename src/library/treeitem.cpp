@@ -102,6 +102,14 @@ TreeItem* TreeItem::appendChild(
     return pChild;
 }
 
+TreeItem*TreeItem::insertChild(int row, const QString& label, const QVariant& data) {
+    auto pNewChild = std::make_unique<TreeItem>(feature(), label, data);
+    TreeItem* pChild = pNewChild.get();
+    insertChild(pChild, row); // transfer ownership
+    pNewChild.release(); // release ownership (afterwards)
+    return pChild;
+}
+
 void TreeItem::removeChild(int row) {
     DEBUG_ASSERT(row >= 0);
     DEBUG_ASSERT(row < m_children.size());

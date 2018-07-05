@@ -71,6 +71,10 @@ class TreeItem final {
     TreeItem* appendChild(
             const QString& label,
             const QVariant& data = QVariant());
+    TreeItem* insertChild(
+            int row,
+            const QString& label,
+            const QVariant& data = QVariant());
     void removeChild(int row);
 
     // multiple child items
