@@ -230,6 +230,11 @@
                             </Connection>
                           </SliderComposed>
                         </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[Master],show_xfader</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
                       </WidgetGroup>
 
                       <!-- Channel2 xfader switch:

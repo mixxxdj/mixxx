@@ -7,6 +7,16 @@
 #include <QHeaderView>
 #include <QFileDialog>
 
+// shout.h checks for WIN32 to see if we are on Windows
+#ifdef WIN64
+#define WIN32
+#endif
+// this is needed to define SHOUT_META_* macros used in version guard
+#include <shout/shout.h>
+#ifdef WIN64
+#undef WIN32
+#endif
+
 #include "broadcast/defs_broadcast.h"
 #include "broadcast/filelistener.h"
 #include "control/controlproxy.h"
@@ -40,6 +50,21 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
 
     rbPasswordKeychain->setEnabled(false);
     groupPasswordStorage->setVisible(false);
+#endif
+
+#ifndef SHOUT_META_IRC
+    stream_IRC_label->setVisible(false);
+    stream_IRC->setVisible(false);
+#endif
+
+#ifndef SHOUT_META_AIM
+    stream_AIM_label->setVisible(false);
+    stream_AIM->setVisible(false);
+#endif
+
+#ifndef SHOUT_META_ICQ
+    stream_ICQ_label->setVisible(false);
+    stream_ICQ->setVisible(false);
 #endif
 
     connect(connectionList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
@@ -389,6 +414,15 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
     // Stream website
     stream_website->setText(profile->getStreamWebsite());
 
+    // Stream IRC
+    stream_IRC->setText(profile->getStreamIRC());
+
+    // Stream AIM
+    stream_AIM->setText(profile->getStreamAIM());
+
+    // Stream ICQ
+    stream_ICQ->setText(profile->getStreamICQ());
+
     // Stream description
     stream_desc->setText(profile->getStreamDesc());
 
@@ -470,6 +504,9 @@ void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
     profile->setMaximumRetries(spinBoxMaximumRetries->value());
     profile->setStreamName(stream_name->text());
     profile->setStreamWebsite(stream_website->text());
+    profile->setStreamIRC(stream_IRC->text());
+    profile->setStreamAIM(stream_AIM->text());
+    profile->setStreamICQ(stream_ICQ->text());
     profile->setStreamDesc(stream_desc->toPlainText());
     profile->setStreamGenre(stream_genre->text());
     profile->setStreamPublic(stream_public->isChecked());

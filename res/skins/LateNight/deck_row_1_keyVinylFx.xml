@@ -86,12 +86,6 @@
         </Connection>
       </PushButton>
 
-      <WidgetGroup>  <!-- spacer -->
-        <Layout>horizontal</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children></Children>
-      </WidgetGroup>
-
       <Template src="skin:vinyl_controls.xml"/>
 
       <WidgetGroup>  <!-- spacer -->
@@ -104,9 +98,10 @@
         <Layout>horizontal</Layout>
           <ObjectName>AlignRightTop</ObjectName>
            <Children>
+
             <!-- FX buttons 1-4 -->
             <PushButton>
-              <Size>30f,22f</Size>
+              <Size>28f,22f</Size>
               <TooltipId>EffectUnit_deck_enabled</TooltipId>
               <ObjectName>FxAssignButton</ObjectName>
               <NumberStates>2</NumberStates>
@@ -125,7 +120,7 @@
             </PushButton>
 
             <PushButton>
-              <Size>30f,22f</Size>
+              <Size>28f,22f</Size>
               <TooltipId>EffectUnit_deck_enabled</TooltipId>
               <ObjectName>FxAssignButton</ObjectName>
               <NumberStates>2</NumberStates>
@@ -151,7 +146,7 @@
               </Connection>
               <Children>
                 <PushButton>
-                  <Size>30f,22f</Size>
+                  <Size>28f,22f</Size>
                   <TooltipId>EffectUnit_deck_enabled</TooltipId>
                   <ObjectName>FxAssignButton</ObjectName>
                   <NumberStates>2</NumberStates>
@@ -170,7 +165,7 @@
                 </PushButton>
 
                 <PushButton>
-                  <Size>30f,22f</Size>
+                  <Size>28f,22f</Size>
                   <TooltipId>EffectUnit_deck_enabled</TooltipId>
                   <ObjectName>FxAssignButton</ObjectName>
                   <NumberStates>2</NumberStates>

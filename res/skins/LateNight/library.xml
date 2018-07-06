@@ -1,7 +1,6 @@
 <Template>
   <WidgetGroup>
     <SizePolicy>me,i</SizePolicy>
-    <MinimumSize>1270,-</MinimumSize>
     <Layout>vertical</Layout>
     <Children>
 
@@ -79,6 +78,14 @@
               </WidgetGroup>
             </Children>
           </Splitter>
+
+          <WidgetGroup>
+            <Size>5f,1min</Size>
+            <Connection>
+              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
         </Children>
       </WidgetGroup>

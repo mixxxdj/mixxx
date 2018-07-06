@@ -71,7 +71,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_vsyncThread(NULL),
         m_frameCnt(0),
         m_actualFrameRate(0),
-        m_vSyncType(0) {
+        m_vSyncType(0),
+        m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
 
     m_visualGain[All] = 1.0;
     m_visualGain[Low] = 1.0;
@@ -169,6 +170,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
 
         QGLWidget* glWidget = new QGLWidget(); // create paint device
         // QGLShaderProgram::hasOpenGLShaderPrograms(); valgind error
+        // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
+        glWidget->context()->makeCurrent();
         m_openGLShaderAvailable =
                 QGLShaderProgram::hasOpenGLShaderPrograms(glWidget->context());
         delete glWidget;
@@ -252,6 +255,10 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
 
+    m_playMarkerPosition = m_config->getValue(ConfigKey("[Waveform]","PlayMarkerPosition"),
+            WaveformWidgetRenderer::s_defaultPlayMarkerPosition);
+    setPlayMarkerPosition(m_playMarkerPosition);
+
     return true;
 }
 
@@ -301,6 +308,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
 
     viewer->setZoom(m_defaultZoom);
     viewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
+    viewer->setPlayMarkerPosition(m_playMarkerPosition);
     viewer->update();
 
     qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory, index" << index;
@@ -388,6 +396,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         TrackPointer pTrack = previousWidget->getTrackInfo();
         //previousWidget->hold();
         int previousZoom = previousWidget->getZoomFactor();
+        double previousPlayMarkerPosition = previousWidget->getPlayMarkerPosition();
         delete previousWidget;
         WWaveformViewer* viewer = holder.m_waveformViewer;
         WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
@@ -395,6 +404,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         viewer->setWaveformWidget(widget);
         viewer->setup(holder.m_skinNodeCache, holder.m_skinContextCache);
         viewer->setZoom(previousZoom);
+        viewer->setPlayMarkerPosition(previousPlayMarkerPosition);
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.
         //viewer->resize(viewer->size());
@@ -466,6 +476,18 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
     }
 }
 
+void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
+    //qDebug() << "setPlayMarkerPosition, position=" << position;
+    m_playMarkerPosition = position;
+    if (m_config) {
+        m_config->setValue(ConfigKey("[Waveform]", "PlayMarkerPosition"), m_playMarkerPosition);
+    }
+
+    for (const auto& holder : m_waveformWidgetHolders) {
+        holder.m_waveformWidget->setPlayMarkerPosition(m_playMarkerPosition);
+    }
+}
+
 void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
     WaveformWidgetAbstract* pWaveformWidget = viewer->getWaveformWidget();
     if (pWaveformWidget != NULL && isZoomSync()) {
@@ -505,7 +527,7 @@ void WaveformWidgetFactory::render() {
                         pWaveformWidget->getWidget()->isVisible()) {
                     (void)pWaveformWidget->render();
                 }
-                // qDebug() << "render" << i << m_vsyncThread->elapsed();
+                //qDebug() << "render" << i << m_vsyncThread->elapsed();
             }
         }
 

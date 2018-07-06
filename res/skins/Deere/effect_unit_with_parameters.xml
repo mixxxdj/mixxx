@@ -52,6 +52,16 @@ Variables:
                 <SetVariable name="color">purple_gapless</SetVariable>
               </Template>
 
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="ObjectName">EffectUnitMixModeButton</SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
+                <SetVariable name="MinimumSize">35,20</SetVariable>
+                <SetVariable name="MaximumSize">35,20</SetVariable>
+                <SetVariable name="state_0_text">D/W</SetVariable>
+                <SetVariable name="state_1_text">D+W</SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,mix_mode</SetVariable>
+              </Template>
+
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Connection>

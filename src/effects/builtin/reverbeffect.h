@@ -19,14 +19,17 @@
 class ReverbGroupState : public EffectState {
   public:
     ReverbGroupState(const mixxx::EngineParameters& bufferParameters)
-        : EffectState(bufferParameters) {
+        : EffectState(bufferParameters),
+          sendPrevious(0) {
     }
 
     void engineParametersChanged(const mixxx::EngineParameters& bufferParameters) {
         sampleRate = bufferParameters.sampleRate();
+        sendPrevious = 0;
     }
 
     float sampleRate;
+    float sendPrevious;
     MixxxPlateX2 reverb{};
 };
 
