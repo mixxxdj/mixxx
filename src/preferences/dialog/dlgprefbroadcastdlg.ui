@@ -289,7 +289,7 @@
               <number>1</number>
              </property>
              <property name="text">
-              <string>Channe&amp;ls</string>
+              <string>Channels</string>
              </property>
              <property name="textFormat">
               <enum>Qt::AutoText</enum>
@@ -370,17 +370,7 @@
            <item row="0" column="0">
             <widget class="QLabel" name="label_16">
              <property name="text">
-              <string notr="true">%maintitle</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
-            <widget class="QCheckBox" name="enableCustomMetadata">
-             <property name="text">
-              <string>Use static artist and title.</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
+              <string>Format</string>
              </property>
             </widget>
            </item>
@@ -391,10 +381,20 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label_16">
+           <item row="2" column="0">
+            <widget class="QLabel" name="label_14">
              <property name="text">
-              <string>Format</string>
+              <string>Static artist</string>
+             </property>
+             <property name="buddy">
+              <cstring>custom_artist</cstring>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="custom_artist">
+             <property name="text">
+              <string notr="true">%mainartist</string>
              </property>
             </widget>
            </item>
@@ -408,13 +408,10 @@
              </property>
             </widget>
            </item>
-           <item row="2" column="0">
-            <widget class="QLabel" name="label_14">
+           <item row="3" column="1">
+            <widget class="QLineEdit" name="custom_title">
              <property name="text">
-              <string>Static artist</string>
-             </property>
-             <property name="buddy">
-              <cstring>custom_artist</cstring>
+              <string notr="true">%maintitle</string>
              </property>
             </widget>
            </item>
@@ -447,7 +444,7 @@
            <item row="5" column="0" colspan="2">
             <widget class="QCheckBox" name="enableUtf8Metadata">
              <property name="text">
-              <string notr="true">%mainartist</string>
+              <string>Use UTF-8 encoding for metadata.</string>
              </property>
             </widget>
            </item>
@@ -519,7 +516,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>Stream &amp;name</string>
+              <string>Stream name</string>
              </property>
              <property name="buddy">
               <cstring>comboBoxServerType</cstring>
@@ -535,7 +532,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>We&amp;bsite</string>
+              <string>Website</string>
              </property>
              <property name="buddy">
               <cstring>mountpoint</cstring>
@@ -564,7 +561,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>&amp;Description</string>
+              <string>Description</string>
              </property>
              <property name="buddy">
               <cstring>stream_desc</cstring>
@@ -613,7 +610,7 @@ p, li { white-space: pre-wrap; }
               </sizepolicy>
              </property>
              <property name="text">
-              <string>&amp;Genre</string>
+              <string>Genre</string>
              </property>
              <property name="buddy">
               <cstring>stream_genre</cstring>
@@ -802,7 +799,7 @@ p, li { white-space: pre-wrap; }
               <item>
                <widget class="QRadioButton" name="rbPasswordCleartext">
                 <property name="text">
-                 <string>Plain &amp;text</string>
+                 <string>Plain text</string>
                 </property>
                 <attribute name="buttonGroup">
                  <string notr="true">rbGroupPassword</string>
@@ -812,7 +809,7 @@ p, li { white-space: pre-wrap; }
               <item>
                <widget class="QRadioButton" name="rbPasswordKeychain">
                 <property name="text">
-                 <string>Secure storage (OS &amp;keychain)</string>
+                 <string>Secure storage (OS keychain)</string>
                 </property>
                 <attribute name="buttonGroup">
                  <string notr="true">rbGroupPassword</string>

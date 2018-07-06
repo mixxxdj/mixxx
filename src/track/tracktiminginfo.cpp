@@ -21,7 +21,7 @@ void TrackTimingInfo::pausePlayedTime() {
     }        
 }
 
-void TrackTimingInfo::resumePlayedTime() {    
+void TrackTimingInfo::resumePlayedTime() {
     if (!m_pElapsedTimer->isValid()) {        
         m_pElapsedTimer->start();
         m_pTimer->start(1000);
@@ -58,10 +58,11 @@ void TrackTimingInfo::slotCheckIfScrobbable() {
         qDebug() << "Track pointer is null when checking if track is scrobbable";
         return;
     }
-    if (static_cast<double>(msInTimer + m_playedMs) / 1000.0 >=
-            m_pTrackPtr->getDurationInt() / 2.0) {
-        m_isTrackScrobbable = true;
-        emit(readyToBeScrobbled(m_pTrackPtr));
+    if ((msInTimer + m_playedMs) / 1000.0 >=
+         m_pTrackPtr->getDurationInt() / 2.0 ||
+        (msInTimer + m_playedMs) / 1000.0 >= 240.0) {
+            m_isTrackScrobbable = true;
+            emit readyToBeScrobbled(m_pTrackPtr);
     } else {
         m_pTimer->start(1000);
     } 

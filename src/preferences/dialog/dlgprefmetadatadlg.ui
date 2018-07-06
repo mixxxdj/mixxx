@@ -220,21 +220,5 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>enableListenbrainzBox</sender>
-   <signal>clicked()</signal>
-   <receiver>listenBrainzUserTokenLineEdit</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>358</x>
-     <y>429</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>356</x>
-     <y>494</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
 </ui>
