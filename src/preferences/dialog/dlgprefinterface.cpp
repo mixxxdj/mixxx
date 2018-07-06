@@ -109,7 +109,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     slotUpdateSchemes();
 
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
     AutoHiDpi autoHiDpi;
     m_dScaleFactorAuto = autoHiDpi.getScaleFactor();
     m_dScaleFactor = m_dScaleFactorAuto;
