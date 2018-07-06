@@ -31,6 +31,7 @@ class MetadataBroadcaster : public MetadataBroadcasterInterface {
         double m_msElapsed;
         unsigned int m_numberOfScrobbles = 0;
         TrackId m_trackId;
+        bool firstTimeLoaded = true;
         bool hasBeenEjected = false;
         GracePeriod(double msElapsed, TrackPointer pTrack)
                 : m_msElapsed(msElapsed), m_trackId(pTrack->getId()) {

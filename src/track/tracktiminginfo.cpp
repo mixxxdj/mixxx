@@ -59,10 +59,11 @@ void TrackTimingInfo::slotCheckIfScrobbable() {
         qDebug() << "Track pointer is null when checking if track is scrobbable";
         return;
     }
-    if (static_cast<double>(msInTimer + m_playedMs) / 1000.0 >=
-            m_pTrackPtr->getDuration() / 2.0) {
+    if ((msInTimer + m_playedMs) / 1000.0 >=
+                    m_pTrackPtr->getDuration() / 2.0 ||
+            (msInTimer + m_playedMs) / 1000.0 >= 240.0) {
         m_isTrackScrobbable = true;
-        emit(readyToBeScrobbled(m_pTrackPtr));
+        emit readyToBeScrobbled(m_pTrackPtr);
     } else {
         m_pTimer->start(1000);
     }

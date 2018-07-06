@@ -29,7 +29,7 @@ void TrackTimers::GUITickTimer::slotTick(double timeSinceLastTick) {
         m_msSoFar += timeSinceLastTick;
         if (m_msSoFar >= m_msTarget) {
             m_timeoutSent = true;
-            emit(timeout());
+            emit timeout();
         }
     }
 }

@@ -33,7 +33,12 @@ void ListenBrainzService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
 }
 
 void ListenBrainzService::slotScrobbleTrack(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
+    if (!pTrack || !m_latestSettings.enabled)
+        return;
+    m_pCurrentJSON = new QByteArray(
+            ListenBrainzJSONFactory::getJSONFromTrack(
+                    pTrack, ListenBrainzJSONFactory::Single));
+    m_manager.post(m_request, *m_pCurrentJSON);
 }
 
 void ListenBrainzService::slotAllTracksPaused() {

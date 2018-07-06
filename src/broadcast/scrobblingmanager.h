@@ -7,6 +7,7 @@
 #include <functional>
 
 #include "broadcast/metadatabroadcast.h"
+#include "control/controlobject.h"
 #include "track/track.h"
 #include "track/trackplaytimers.h"
 #include "track/tracktiminginfo.h"
@@ -58,7 +59,6 @@ class ScrobblingManager : public QObject {
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack, const QString& playerGroup);
     void slotNewTrackLoaded(TrackPointer pNewTrack, const QString& playerGroup);
     void slotPlayerEmpty();
-    void slotGuiTick(double timeSinceLastTick);
 
   private:
     struct TrackInfo {
@@ -93,6 +93,8 @@ class ScrobblingManager : public QObject {
 
     bool m_scrobbledAtLeastOnce;
 
+    ControlProxy m_GuiTickObject;
+
     void resetTracks();
     bool isStrayFromEngine(TrackPointer pTrack, const QString& group) const;
     bool playerNotInTrackList(const QLinkedList<QString>& list, const QString& group) const;
@@ -101,4 +103,5 @@ class ScrobblingManager : public QObject {
   private slots:
     void slotReadyToBeScrobbled(TrackPointer pTrack);
     void slotCheckAudibleTracks();
+    void slotGuiTick(double timeSinceLastTick);
 };
