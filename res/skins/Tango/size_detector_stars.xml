@@ -94,7 +94,7 @@ Controls:
                   </WidgetGroup>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                  <ConfigKey persist="true">[Tango],show_BIG_spinny_cover</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -126,8 +126,6 @@ Controls:
         <Children>
 
           <!-- Play button -->
-          <!-- here and for Cue button we the 1px borders.
-              Virtually no one uses Mixxx on WinXP in windowed mode... -->
           <WidgetGroup><Size>50f,20f</Size></WidgetGroup>
 
           <!-- Separate Cue button -->

@@ -91,29 +91,29 @@ Variables:
             </Connection>
           </WidgetGroup>
 
-          <WidgetGroup><!-- Spinny/Cover -->
+          <!-- Spinny/Cover if BIG spinny is enabled -->
+          <WidgetGroup>
+            <SizePolicy>max,min</SizePolicy>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
             <Children>
-              <WidgetGroup><!-- if BIG spinny is enabled -->
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <Template src="skin:spinnyCover.xml"/>
-                  <!-- margin to deck -->
-                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-                </Children>
+
+              <Template src="skin:spinnyCover_maxi.xml"/>
+
+              <!-- 3px margin to main deck -->
+              <WidgetGroup>
+                <Size>3f,1min</Size>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                  <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- if BIG spinny is enabled -->
+              </WidgetGroup>
+
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
+              <ConfigKey persist="true">[Tango],show_BIG_spinny_cover</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /Spinny/Cover -->
+          </WidgetGroup><!-- /Spinny/Cover if BIG spinny is enabled -->
 
         </Children>
         <Connection>

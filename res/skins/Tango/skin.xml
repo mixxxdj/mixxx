@@ -85,10 +85,9 @@
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Tango],stars">1</attribute>
       <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
-      <attribute persist="true" config_key="[Tango],show_spinny_cover">1</attribute>
-      <attribute persist="true" config_key="[Tango],spinny_or_cover">1</attribute>
-      <attribute persist="true" config_key="[Tango],spinnyCoverBIG">1</attribute>
-      <attribute persist="true" config_key="[Tango],spinnyWithCoverArt">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_cover_art">1</attribute>
+      <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
+      <attribute persist="true" config_key="[Tango],show_BIG_spinny_cover">1</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck1">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck2">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck3">0</attribute>
