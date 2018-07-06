@@ -68,8 +68,10 @@ ScrobblingManager::ScrobblingManager(PlayerManagerInterface* manager, UserSettin
         : m_pManager(manager),
           m_pAudibleStrategy(new TotalVolumeThreshold(this, 0.20)),
           m_pTimer(new TrackTimers::GUITickTimer),
-          m_scrobbledAtLeastOnce(false) {
+          m_scrobbledAtLeastOnce(false),
+          m_GuiTickObject(ConfigKey("[Master]", "guiTick50ms")) {
     connect(m_pTimer.get(), SIGNAL(timeout()), this, SLOT(slotCheckAudibleTracks()));
+    m_GuiTickObject.connectValueChanged(this, &ScrobblingManager::slotGuiTick);
     m_pTimer->start(1000);
 }
 

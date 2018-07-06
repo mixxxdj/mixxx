@@ -14,12 +14,14 @@ void MetadataBroadcaster::slotAttemptScrobble(TrackPointer pTrack) {
         if (*it == GracePeriod(0, pTrack)) {
             GracePeriod& trackPeriod = *it;
             if (trackPeriod.hasBeenEjected &&
-                    trackPeriod.m_msElapsed >
-                            m_gracePeriodSeconds * 1000.0) {
+                            trackPeriod.m_msElapsed >
+                                    m_gracePeriodSeconds * 1000.0 ||
+                    trackPeriod.firstTimeLoaded) {
                 for (auto& service : m_scrobblingServices) {
                     service->slotScrobbleTrack(pTrack);
                 }
                 trackPeriod.hasBeenEjected = false;
+                trackPeriod.firstTimeLoaded = false;
                 trackPeriod.m_numberOfScrobbles++;
             }
             break;
@@ -61,10 +63,11 @@ void MetadataBroadcaster::trackUnloaded(TrackPointer pTrack) {
             it != m_trackedTracks.end();
             ++it) {
         if (*it == GracePeriod(0, pTrack)) {
+            it->firstTimeLoaded = false;
             it->hasBeenEjected = true;
             it->m_msElapsed = 0;
+            break;
         }
-        break;
     }
 }
 
