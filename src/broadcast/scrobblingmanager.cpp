@@ -1,7 +1,6 @@
 #include <QObject>
 
 #include "broadcast/filelistener.h"
-#include "broadcast/listenersfinder.h"
 #include "broadcast/scrobblingmanager.h"
 #include "control/controlproxy.h"
 #include "engine/enginexfader.h"
@@ -56,7 +55,7 @@ void TotalVolumeThreshold::setVolumeThreshold(double volume) {
     m_volumeThreshold = volume;
 }
 
-ScrobblingManager::ScrobblingManager(PlayerManagerInterface *manager, UserSettingsPointer settings)
+ScrobblingManager::ScrobblingManager(PlayerManagerInterface *manager)
         :  m_pManager(manager),
            m_pAudibleStrategy(new TotalVolumeThreshold(this,0.20)),
            m_pTimer(new TrackTimers::GUITickTimer),

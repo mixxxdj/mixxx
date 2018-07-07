@@ -5,9 +5,8 @@
 #include <QMutexLocker>
 
 #include "analyzer/analyzerqueue.h"
-#include <broadcast/listenersfinder.h>
-#include <broadcast/filelistener.h>
-#include <broadcast/listenbrainzservice.h>
+#include "broadcast/filelistener.h"
+#include "broadcast/listenbrainzservice.h"
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
@@ -47,7 +46,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
         m_pAnalyzerQueue(nullptr),
-        m_scrobblingManager(this, m_pConfig),
+        m_scrobblingManager(this),
         m_pCONumDecks(new ControlObject(
                 ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(

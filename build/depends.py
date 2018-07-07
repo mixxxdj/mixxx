@@ -726,7 +726,6 @@ class MixxxCore(Feature):
                    "broadcast/metadatabroadcast.cpp",
                    "broadcast/scrobblingmanager.cpp",
                    "broadcast/filelistener.cpp",
-                   "broadcast/listenersfinder.cpp",
                    "broadcast/metadatafileworker.cpp",
                    "broadcast/networkrequest.cpp",
                    "broadcast/networkmanager.cpp",
