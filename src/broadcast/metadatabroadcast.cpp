@@ -13,9 +13,8 @@ void MetadataBroadcaster::slotAttemptScrobble(TrackPointer pTrack) {
             ++it) {
         if (*it == GracePeriod(0, pTrack)) {
             GracePeriod& trackPeriod = *it;
-            if (trackPeriod.hasBeenEjected &&
-                            trackPeriod.m_msElapsed >
-                                    m_gracePeriodSeconds * 1000.0 ||
+            if ((trackPeriod.hasBeenEjected &&
+                    (trackPeriod.m_msElapsed > m_gracePeriodSeconds * 1000.0)) ||
                     trackPeriod.firstTimeLoaded) {
                 for (auto& service : m_scrobblingServices) {
                     service->slotScrobbleTrack(pTrack);
