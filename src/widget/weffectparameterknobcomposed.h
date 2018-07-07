@@ -4,6 +4,8 @@
 #include "widget/wknobcomposed.h"
 #include "effects/effectparameterslot.h"
 
+class EffectsManager;
+
 // This is used for effect parameter knobs with dynamic
 // tooltips, if the knob value is displayed by rotating a
 // single SVG image.

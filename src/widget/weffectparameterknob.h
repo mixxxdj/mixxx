@@ -4,6 +4,8 @@
 #include "widget/wknob.h"
 #include "effects/effectparameterslot.h"
 
+class EffectsManager;
+
 // This is used for effect parameter knobs with dynamic
 // tooltips, if the knob value is displayed by one of e.g.
 // 64 pixmaps.

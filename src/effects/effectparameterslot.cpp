@@ -1,7 +1,10 @@
 #include <QtDebug>
 
-#include "control/controleffectknob.h"
 #include "effects/effectparameterslot.h"
+
+#include "effects/effectslot.h"
+#include "effects/effectparameter.h"
+#include "control/controleffectknob.h"
 #include "effects/effectxmlelements.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
@@ -45,7 +48,7 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
 }
 
 EffectParameterSlot::~EffectParameterSlot() {
-    //qDebug() << debugString() << "destroyed";
+    // qDebug() << debugString() << "destroyed";
     delete m_pControlValue;
     // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
     delete m_pControlLinkType;
@@ -53,12 +56,12 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pSoftTakeover;
 }
 
-void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
-    //qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
+void EffectParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
+    // qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     clear();
-    if (pEffect) {
+    if (pEffectSlot) {
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getKnobParameterForSlot(m_iParameterSlotNumber);
+        m_pEffectParameter = pEffectSlot->getKnobParameterForSlot(m_iParameterSlotNumber);
 
         if (m_pEffectParameter) {
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
@@ -104,7 +107,7 @@ void EffectParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
         m_pEffectParameter->disconnect(this);
-        m_pEffectParameter = NULL;
+        m_pEffectParameter = nullptr;
     }
 
     m_pControlLoaded->forceSet(0.0);
@@ -157,7 +160,7 @@ void EffectParameterSlot::slotLinkInverseChanged(double v) {
 
 void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
     m_dChainParameter = parameter;
-    if (m_pEffectParameter != NULL) {
+    if (m_pEffectParameter != nullptr) {
         // Intermediate cast to integer is needed for VC++.
         EffectManifestParameter::LinkType type =
                 static_cast<EffectManifestParameter::LinkType>(

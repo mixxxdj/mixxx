@@ -2,14 +2,12 @@
 
 #include "effects/effectparameter.h"
 #include "effects/effectsmanager.h"
-#include "effects/effect.h"
 #include "util/assert.h"
 
-EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
-                                 int iParameterNumber,
-                                 EffectManifestParameterPointer pParameter)
+EffectParameter::EffectParameter(EffectSlot* pEffectSlot, EffectsManager* pEffectsManager,
+                                 int iParameterNumber, EffectManifestParameterPointer pParameter)
         : QObject(), // no parent
-          m_pEffect(pEffect),
+          m_pEffectSlot(pEffectSlot),
           m_pEffectsManager(pEffectsManager),
           m_iParameterNumber(iParameterNumber),
           m_pParameter(pParameter),
@@ -212,7 +210,7 @@ EffectManifestParameter::ControlHint EffectParameter::getControlHint() const {
 }
 
 void EffectParameter::updateEngineState() {
-    EngineEffect* pEngineEffect = m_pEffect->getEngineEffect();
+    EngineEffect* pEngineEffect = m_pEffectSlot->getEngineEffect();
     if (!pEngineEffect) {
         return;
     }

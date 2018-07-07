@@ -27,9 +27,9 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
     if (m_pEffectSlot != nullptr) {
         connect(m_pEffectsManager, SIGNAL(visibleEffectsUpdated()),
                 this, SLOT(populate()));
-        connect(m_pEffectSlot.data(), SIGNAL(updated()),
+        connect(m_pEffectSlot.data(), SIGNAL(effectChanged()),
                 this, SLOT(slotEffectUpdated()));
-        connect(this, SIGNAL(currentIndexChanged(int)),
+        connect(this, SIGNAL(activated(int)),
                 this, SLOT(slotEffectSelected(int)));
     } else {
         SKIN_WARNING(node, context)
@@ -77,11 +77,7 @@ void WEffectSelector::populate() {
 
 void WEffectSelector::slotEffectSelected(int newIndex) {
     const QString id = itemData(newIndex).toString();
-
-    m_pChainSlot->maybeLoadEffect(
-            m_pEffectSlot->getEffectSlotNumber(),
-            id);
-
+    m_pEffectsManager->loadEffect(m_pChainSlot, m_pEffectSlot->getEffectSlotNumber(), id);
     setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
 }
 
@@ -89,15 +85,20 @@ void WEffectSelector::slotEffectUpdated() {
     int newIndex;
 
     if (m_pEffectSlot != nullptr) {
-        EffectPointer pEffect = m_pEffectSlot->getEffect();
-        if (pEffect != nullptr) {
-            EffectManifestPointer pManifest = pEffect->getManifest();
+        if (m_pEffectSlot->getManifest() != nullptr) {
+            EffectManifestPointer pManifest = m_pEffectSlot->getManifest();
             newIndex = findData(QVariant(pManifest->id()));
         } else {
             newIndex = findData(QVariant());
         }
     } else {
         newIndex = findData(QVariant());
+    }
+
+    if (kEffectDebugOutput) {
+        qDebug() << "WEffectSelector::slotEffectUpdated"
+                 << "old" << itemData(currentIndex())
+                 << "new" << itemData(newIndex);
     }
 
     if (newIndex != -1 && newIndex != currentIndex()) {

@@ -56,9 +56,6 @@ typedef QSharedPointer<EffectButtonParameterSlot> EffectButtonParameterSlotPoint
 class EffectManifest;
 typedef QSharedPointer<EffectManifest> EffectManifestPointer;
 
-class Effect;
-typedef QSharedPointer<Effect> EffectPointer;
-
 class EffectParameterSlotBase;
 typedef QSharedPointer<EffectParameterSlotBase> EffectParameterSlotBasePointer;
 

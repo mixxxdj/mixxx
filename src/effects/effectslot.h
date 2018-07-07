@@ -10,32 +10,43 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"
-#include "effects/effect.h"
-#include "effects/effectparameterslot.h"
+#include "engine/channelhandle.h"
+#include "engine/engine.h"
+#include "engine/effects/engineeffect.h"
 #include "effects/effectbuttonparameterslot.h"
+#include "effects/effectinstantiator.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectparameter.h"
+#include "effects/effectparameterslot.h"
 #include "util/class.h"
 
+class EffectProcessor;
 class EffectSlot;
+class EffectState;
+class EffectsManager;
+class EngineEffect;
+class EngineEffectChain;
 class ControlProxy;
-
+class EffectParameter;
+class EffectParameterSlot;
 
 class EffectSlot : public QObject {
     Q_OBJECT
   public:
+    typedef bool (*ParameterFilterFnc)(EffectParameter*);
+
     EffectSlot(const QString& group,
-               const unsigned int iEffectNumber);
+               EffectsManager* pEffectsManager,
+               const unsigned int iEffectNumber,
+               EngineEffectChain* pEngineEffectChain);
     virtual ~EffectSlot();
-
-    // Return the currently loaded effect, if any. If no effect is loaded,
-    // returns a null EffectPointer.
-    EffectPointer getEffect() const;
-
-    inline bool getEnableState() const {
-        return m_pControlEnabled->toBool();
-    }
 
     inline int getEffectSlotNumber() const {
         return m_iEffectNumber;
+    }
+
+    inline const bool isLoaded() const {
+        return m_pEngineEffect != nullptr;
     }
 
     unsigned int numParameterSlots() const;
@@ -43,7 +54,7 @@ class EffectSlot : public QObject {
     EffectParameterSlotPointer getEffectParameterSlot(unsigned int slotNumber);
     EffectParameterSlotPointer getEffectParameterSlotForConfigKey(unsigned int slotNumber);
     inline const QList<EffectParameterSlotPointer>& getEffectParameterSlots() const {
-        return m_parameters;
+        return m_parameterSlots;
     };
 
     unsigned int numButtonParameterSlots() const;
@@ -55,12 +66,9 @@ class EffectSlot : public QObject {
 
     double getMetaParameter() const;
 
-    // ensures that Softtakover is bypassed for the following
+    // Ensures that Softtakover is bypassed for the following
     // ChainParameterChange. Uses for testing only
     void syncSofttakeover();
-
-    // Unload the currently loaded effect
-    void clear();
 
     const QString& getGroup() const {
         return m_group;
@@ -69,41 +77,73 @@ class EffectSlot : public QObject {
     QDomElement toXml(QDomDocument* doc) const;
     void loadEffectSlotFromXml(const QDomElement& effectElement);
 
+    EffectState* createState(const mixxx::EngineParameters& bufferParameters);
+
+    EffectManifestPointer getManifest() const;
+
+    unsigned int numKnobParameters() const;
+    unsigned int numButtonParameters() const;
+
+    static bool isButtonParameter(EffectParameter* parameter);
+    static bool isKnobParameter(EffectParameter* parameter);
+
+    EffectParameter* getFilteredParameterForSlot(
+            ParameterFilterFnc filterFnc, unsigned int slotNumber);
+    EffectParameter* getKnobParameterForSlot(unsigned int slotNumber);
+    EffectParameter* getButtonParameterForSlot(unsigned int slotNumber);
+
+    void setEnabled(bool enabled);
+
+    EngineEffect* getEngineEffect();
+
+    // static EffectPointer createFromXml(EffectsManager* pEffectsManager,
+    //                              const QDomElement& element);
+    void addToEngine(const QSet<ChannelHandleAndGroup>& activeChannels);
+    void removeFromEngine();
+
+    double getMetaknobDefault();
+    void reload(const QSet<ChannelHandleAndGroup>& activeChannels);
+
   public slots:
-    // Request that this EffectSlot load the given Effect
-    void loadEffect(EffectPointer pEffect, bool adoptMetaknobPosition);
     void setMetaParameter(double v, bool force = false);
 
-    void slotEnabled(double v);
+    // Call with nullptr for pManifest and pInstantiator to unload an effect
+    void loadEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInstantiator,
+            const QSet<ChannelHandleAndGroup>& activeChannels);
+
     void slotNextEffect(double v);
     void slotPrevEffect(double v);
     void slotClear(double v);
     void slotEffectSelector(double v);
-    void slotEffectEnabledChanged(bool enabled);
     void slotEffectMetaParameter(double v, bool force = false);
 
   signals:
-    // Indicates that the effect pEffect has been loaded into this
-    // EffectSlot. The effectSlotNumber is provided for the convenience of
-    // listeners.  pEffect may be an invalid pointer, which indicates that a
-    // previously loaded effect was removed from the slot.
-    void effectLoaded(EffectPointer pEffect, unsigned int effectSlotNumber);
+    void effectChanged();
 
-    // Signal that whoever is in charge of this EffectSlot should clear this
-    // EffectSlot (by deleting the effect from the underlying chain).
-    void clearEffect(unsigned int iEffectNumber);
-
-    void updated();
+  private slots:
+    void updateEngineState();
 
   private:
     QString debugString() const {
         return QString("EffectSlot(%1)").arg(m_group);
     }
 
+    void sendParameterUpdate();
+    void unloadEffect();
+
     const unsigned int m_iEffectNumber;
     const QString m_group;
     UserSettingsPointer m_pConfig;
-    EffectPointer m_pEffect;
+    EffectsManager* m_pEffectsManager;
+    EffectManifestPointer m_pManifest;
+    EffectInstantiatorPointer m_pInstantiator;
+    QSet<ChannelHandleAndGroup> m_pActiveChannels;
+
+    EngineEffect* m_pEngineEffect;
+    QList<EffectParameter*> m_parameters;
+    EngineEffectChain* m_pEngineEffectChain;
+    QList<EffectParameterSlotPointer> m_parameterSlots;
+    QList<EffectButtonParameterSlotPointer> m_buttonParameters;
 
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlEnabled;
@@ -116,10 +156,8 @@ class EffectSlot : public QObject {
     ControlEncoder* m_pControlEffectSelector;
     ControlObject* m_pControlClear;
     ControlPotmeter* m_pControlMetaParameter;
-    QList<EffectParameterSlotPointer> m_parameters;
-    QList<EffectButtonParameterSlotPointer> m_buttonParameters;
 
-    SoftTakeover* m_pSoftTakeover;
+    SoftTakeover* m_pMetaknobSoftTakeover;
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
 };

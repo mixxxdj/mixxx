@@ -98,7 +98,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QList<QSlider*> m_masterEQSliders;
     QList<QLabel*> m_masterEQValues;
     QList<QLabel*> m_masterEQLabels;
-    QWeakPointer<Effect> m_pEffectMasterEQ;
+    QWeakPointer<EffectSlot> m_pEffectMasterEQ;
 
     bool m_bEqAutoReset;
     bool m_bGainAutoReset;

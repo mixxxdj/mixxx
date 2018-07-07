@@ -21,14 +21,12 @@
 EffectChainSlot::EffectChainSlot(const QString& group,
                                  EffectsManager* pEffectsManager,
                                  SignalProcessingStage stage,
-                                 const bool hasMetaknob,
                                  const QString& id)
         : // The control group names are 1-indexed while internally everything
           // is 0-indexed.
           m_group(group),
           m_pEffectsManager(pEffectsManager),
           m_signalProcessingStage(stage),
-          m_bHasMetaknob(hasMetaknob),
           m_id(id),
           m_name(""),
           m_description(""),
@@ -113,7 +111,9 @@ EffectChainSlot::EffectChainSlot(const QString& group,
 
 EffectChainSlot::~EffectChainSlot() {
     //qDebug() << debugString() << "destroyed";
-    clear();
+
+    m_effectSlots.clear();
+
     delete m_pControlClear;
     delete m_pControlNumEffects;
     delete m_pControlNumEffectSlots;
@@ -135,7 +135,6 @@ EffectChainSlot::~EffectChainSlot() {
         it = m_channelInfoByName.erase(it);
     }
 
-    m_slots.clear();
     removeFromEngine();
 }
 
@@ -149,24 +148,14 @@ void EffectChainSlot::addToEngine() {
     pRequest->AddEffectChain.pChain = m_pEngineEffectChain;
     m_pEffectsManager->writeRequest(pRequest);
 
-    // Add all effects.
-    for (int i = 0; i < m_effects.size(); ++i) {
-        // Add the effect to the engine.
-        EffectPointer pEffect = m_effects[i];
-        if (pEffect) {
-            pEffect->addToEngine(m_pEngineEffectChain, i, m_enabledInputChannels);
-        }
-    }
+    VERIFY_OR_DEBUG_ASSERT(!m_enabledInputChannels.size());
+
     sendParameterUpdate();
 }
 
 void EffectChainSlot::removeFromEngine() {
-    // Order doesn't matter when removing.
-    for (int i = 0; i < m_effects.size(); ++i) {
-        EffectPointer pEffect = m_effects[i];
-        if (pEffect) {
-            pEffect->removeFromEngine(m_pEngineEffectChain, i);
-        }
+    VERIFY_OR_DEBUG_ASSERT(m_effectSlots.isEmpty()) {
+        m_effectSlots.clear();
     }
 
     EffectsRequest* pRequest = new EffectsRequest();
@@ -196,76 +185,17 @@ void EffectChainSlot::setDescription(const QString& description) {
     emit(updated());
 }
 
-void EffectChainSlot::addEffect(EffectPointer pEffect) {
-    // qDebug() << debugString() << "addEffect" << pEffect;
-    if (!pEffect) {
-        // Insert empty effects to preserve chain order
-        // when loading chains with empty effects
-        m_effects.append(pEffect);
-        return;
-    }
-
-    VERIFY_OR_DEBUG_ASSERT(!m_effects.contains(pEffect)) {
-        return;
-    }
-
-    m_effects.append(pEffect);
-    pEffect->addToEngine(m_pEngineEffectChain, m_effects.size() - 1, m_enabledInputChannels);
-    slotChainEffectChanged(m_effects.size() - 1);
+void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
+                                 EffectManifestPointer pManifest,
+                                 EffectInstantiatorPointer pInstantiator) {
+    m_effectSlots[iEffectSlotNumber]->loadEffect(pManifest, pInstantiator,
+                                                 m_enabledInputChannels);
 }
 
-void EffectChainSlot::maybeLoadEffect(const unsigned int iEffectSlotNumber,
-                                      const QString& id) {
-    EffectSlotPointer pEffectSlot = getEffectSlot(iEffectSlotNumber);
-
-    bool loadNew = false;
-    if (pEffectSlot == nullptr || pEffectSlot->getEffect() == nullptr) {
-        loadNew = true;
-    } else if (id != pEffectSlot->getEffect()->getManifest()->id()) {
-        loadNew = true;
+void EffectChainSlot::reloadAllEffects() {
+    for (EffectSlotPointer pSlot : m_effectSlots) {
+        pSlot->reload(m_enabledInputChannels);
     }
-
-    if (loadNew) {
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(id);
-        replaceEffect(iEffectSlotNumber, pEffect);
-    }
-}
-
-void EffectChainSlot::replaceEffect(unsigned int effectSlotNumber,
-                                EffectPointer pEffect) {
-    // qDebug() << debugString() << "replaceEffect" << effectSlotNumber << pEffect;
-    while (effectSlotNumber >= static_cast<unsigned int>(m_effects.size())) {
-        if (pEffect.isNull()) {
-            return;
-        }
-        m_effects.append(EffectPointer());
-    }
-
-    EffectPointer pOldEffect = m_effects[effectSlotNumber];
-    if (!pOldEffect.isNull()) {
-        pOldEffect->removeFromEngine(m_pEngineEffectChain, effectSlotNumber);
-    }
-
-    m_effects.replace(effectSlotNumber, pEffect);
-    if (!pEffect.isNull()) {
-        pEffect->addToEngine(m_pEngineEffectChain, effectSlotNumber, m_enabledInputChannels);
-    }
-
-    slotChainEffectChanged(effectSlotNumber);
-}
-
-void EffectChainSlot::removeEffect(unsigned int effectSlotNumber) {
-    replaceEffect(effectSlotNumber, EffectPointer());
-}
-
-void EffectChainSlot::refreshAllEffects() {
-    for (int i = 0; i < m_effects.size(); ++i) {
-        slotChainEffectChanged(i);
-    }
-}
-
-const QList<EffectPointer>& EffectChainSlot::effects() const {
-    return m_effects;
 }
 
 void EffectChainSlot::sendParameterUpdate() {
@@ -300,44 +230,12 @@ void EffectChainSlot::setSuperParameterDefaultValue(double value) {
     m_pControlChainSuperParameter->setDefaultValue(value);
 }
 
-void EffectChainSlot::slotChainEffectChanged(unsigned int effectSlotNumber) {
-    qDebug() << debugString() << "slotChainEffectChanged" << effectSlotNumber;
-    EffectSlotPointer pSlot;
-    EffectPointer pEffect;
-
-    if (m_effects.size() > m_slots.size()) {
-        qWarning() << debugString() << "has too few slots for effect";
-    }
-    if (effectSlotNumber < (unsigned) m_slots.size()) {
-        pSlot = m_slots.at(effectSlotNumber);
-    }
-    if (effectSlotNumber < (unsigned) m_effects.size()) {
-        pEffect = m_effects.at(effectSlotNumber);
-    }
-    if (pSlot != nullptr) {
-        pSlot->loadEffect(pEffect, m_bHasMetaknob && m_pEffectsManager->isAdoptMetaknobValueEnabled());
-    }
-
-    m_pControlNumEffects->forceSet(math_min(
-            static_cast<unsigned int>(m_slots.size()),
-            static_cast<unsigned int>(m_effects.size())));
-}
-
-void EffectChainSlot::clear() {
-    m_pControlNumEffects->forceSet(0.0);
-    m_pControlChainLoaded->forceSet(0.0);
-    m_pControlChainMixMode->set(
-            static_cast<double>(EffectChainMixMode::DrySlashWet));
-}
-
 EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     // qDebug() << debugString() << "addEffectSlot" << group;
-    EffectSlot* pEffectSlot = new EffectSlot(group, m_slots.size());
-    connect(pEffectSlot, SIGNAL(clearEffect(unsigned int)),
-            this, SLOT(slotClearEffect(unsigned int)));
+    EffectSlot* pEffectSlot = new EffectSlot(group, m_pEffectsManager, m_effectSlots.size(), m_pEngineEffectChain);
 
     EffectSlotPointer pSlot(pEffectSlot);
-    m_slots.append(pSlot);
+    m_effectSlots.append(pSlot);
     int numEffectSlots = m_pControlNumEffectSlots->get() + 1;
     m_pControlNumEffectSlots->forceSet(numEffectSlots);
     m_pControlChainFocusedEffect->setStates(numEffectSlots);
@@ -368,25 +266,18 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
             &m_channelStatusMapper, SLOT(map()));
 }
 
-void EffectChainSlot::slotClearEffect(unsigned int iEffectSlotNumber) {
-    removeEffect(iEffectSlotNumber);
-}
-
 EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
     //qDebug() << debugString() << "getEffectSlot" << slotNumber;
-    if (slotNumber >= static_cast<unsigned int>(m_slots.size())) {
+    if (slotNumber >= static_cast<unsigned int>(m_effectSlots.size())) {
         qWarning() << "WARNING: slotNumber out of range";
         return EffectSlotPointer();
     }
-    return m_slots[slotNumber];
+    return m_effectSlots[slotNumber];
 }
 
 void EffectChainSlot::slotControlClear(double v) {
-    if (v > 0) {
-        for (EffectSlotPointer pSlot : m_slots) {
-            pSlot->clear();
-        }
-        clear();
+    for (EffectSlotPointer pSlot : m_effectSlots) {
+        pSlot->slotClear(v);
     }
 }
 
@@ -394,7 +285,7 @@ void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
     // qDebug() << debugString() << "slotControlChainSuperParameter" << v;
 
     m_pControlChainSuperParameter->set(v);
-    for (const auto& pSlot : m_slots) {
+    for (const auto& pSlot : m_effectSlots) {
         pSlot->setMetaParameter(v, force);
     }
 }
@@ -457,15 +348,15 @@ void EffectChainSlot::enableForInputChannel(const ChannelHandleAndGroup& handle_
           MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 
     // TODO: Simplify by defining a method to create an EffectState for the input channel
-    for (int i = 0; i < m_effects.size(); ++i) {
+    for (int i = 0; i < m_effectSlots.size(); ++i) {
         auto& statesMap = (*pEffectStatesMapArray)[i];
-        if (m_effects[i] != nullptr) {
+        if (m_effectSlots[i]->isLoaded()) {
             for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
                 if (kEffectDebugOutput) {
                     qDebug() << debugString() << "EffectChain::enableForInputChannel creating EffectState for input" << handle_group << "output" << outputChannel;
                 }
                 statesMap.insert(outputChannel.handle(),
-                        m_effects[i]->createState(bufferParameters));
+                        m_effectSlots[i]->createState(bufferParameters));
             }
         } else {
             for (EffectState* pState : statesMap) {
@@ -512,7 +403,7 @@ QDomElement EffectChainSlot::toXml(QDomDocument* doc) const {
     //         QString::number(m_pControlChainSuperParameter->get()));
 
     // QDomElement effectsElement = doc->createElement(EffectXml::EffectsRoot);
-    // for (const auto& pEffectSlot : m_slots) {
+    // for (const auto& pEffectSlot : m_effectSlots) {
     //     QDomElement effectNode;
     //     if (pEffectSlot->getEffect()) {
     //         effectNode = pEffectSlot->toXml(doc);
@@ -542,12 +433,12 @@ void EffectChainSlot::loadChainSlotFromXml(const QDomElement& effectChainElement
     // QDomElement effectsElement = XmlParse::selectElement(effectChainElement,
     //                                                      EffectXml::EffectsRoot);
     // QDomNodeList effectsNodeList = effectsElement.childNodes();
-    // for (int i = 0; i < m_slots.size(); ++i) {
-    //     if (m_slots[i] != nullptr) {
+    // for (int i = 0; i < m_effectSlots.size(); ++i) {
+    //     if (m_effectSlots[i] != nullptr) {
     //         QDomNode effectNode = effectsNodeList.at(i);
     //         if (effectNode.isElement()) {
     //             QDomElement effectElement = effectNode.toElement();
-    //             m_slots[i]->loadEffectSlotFromXml(effectElement);
+    //             m_effectSlots[i]->loadEffectSlotFromXml(effectElement);
     //         }
     //     }
     // }

@@ -17,10 +17,9 @@ class LV2Backend : public EffectsBackend {
     const QList<QString> getEffectIds() const;
     const QSet<QString> getDiscoveredPluginIds() const;
     EffectManifestPointer getManifest(const QString& effectId) const;
+    EffectInstantiatorPointer getInstantiator(const QString& effectId) const;
     LV2Manifest* getLV2Manifest(const QString& effectId) const;
     bool canInstantiateEffect(const QString& effectId) const;
-    EffectPointer instantiateEffect(EffectsManager* pEffectsManager,
-                                    const QString& effectId);
 
   private:
     void initializeProperties();

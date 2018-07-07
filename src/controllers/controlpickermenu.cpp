@@ -4,7 +4,6 @@
 #include "mixer/playermanager.h"
 #include "engine/cuecontrol.h"
 #include "engine/loopingcontrol.h"
-#include "effects/effectchainslot.h"
 #include "effects/specialeffectchainslots.h"
 #include "effects/effectslot.h"
 #include "effects/effectparameterslot.h"

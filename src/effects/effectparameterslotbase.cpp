@@ -1,5 +1,6 @@
 #include <QtDebug>
 
+#include "effects/effectparameter.h"
 #include "control/controleffectknob.h"
 #include "effects/effectparameterslotbase.h"
 #include "control/controlobject.h"
@@ -9,16 +10,16 @@ EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
                                                  const unsigned int iParameterSlotNumber)
         : m_iParameterSlotNumber(iParameterSlotNumber),
           m_group(group),
-          m_pEffectParameter(NULL),
-          m_pControlLoaded(NULL),
-          m_pControlType(NULL),
+          m_pEffectParameter(nullptr),
+          m_pControlLoaded(nullptr),
+          m_pControlType(nullptr),
           m_dChainParameter(0.0) {
 
 }
 
 EffectParameterSlotBase::~EffectParameterSlotBase() {
-    m_pEffectParameter = NULL;
-    m_pEffect.clear();
+    m_pEffectParameter = nullptr;
+    m_pEffectSlot = nullptr;
     delete m_pControlLoaded;
     delete m_pControlType;
 }

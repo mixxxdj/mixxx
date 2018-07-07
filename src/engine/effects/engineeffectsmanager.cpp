@@ -254,10 +254,10 @@ bool EngineEffectsManager::processEffectsRequest(EffectsRequest& message,
         case EffectsRequest::REMOVE_EFFECT_CHAIN:
             if (kEffectDebugOutput) {
                 qDebug() << debugString() << "REMOVE_EFFECT_CHAIN"
-                         << message.AddEffectChain.pChain;
+                         << message.RemoveEffectChain.pChain;
             }
-            response.success = removeEffectChain(message.AddEffectChain.pChain,
-                    message.AddEffectChain.signalProcessingStage);
+            response.success = removeEffectChain(message.RemoveEffectChain.pChain,
+                    message.RemoveEffectChain.signalProcessingStage);
             break;
         default:
             return false;

@@ -1,7 +1,6 @@
 #ifndef MOOGLADDER4FILTEREFFECT_H
 #define MOOGLADDER4FILTEREFFECT_H
 
-#include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"

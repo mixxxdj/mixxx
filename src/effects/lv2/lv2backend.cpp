@@ -73,25 +73,18 @@ EffectManifestPointer LV2Backend::getManifest(const QString& effectId) const {
     return EffectManifestPointer();
 }
 
-LV2Manifest* LV2Backend::getLV2Manifest(const QString& effectId) const {
-    return m_registeredEffects[effectId];
+EffectInstantiatorPointer LV2Backend::getInstantiator(const QString& effectId) const {
+    LV2Manifest* pLV2Mainfest = getLV2Manifest(effectId);
+    if (pLV2Mainfest != nullptr) {
+        return EffectInstantiatorPointer(new LV2EffectProcessorInstantiator(
+                pLV2Mainfest->getPlugin(),
+                pLV2Mainfest->getAudioPortIndices(),
+                pLV2Mainfest->getControlPortIndices()));
+    }
+    return EffectInstantiatorPointer();
+
 }
 
-EffectPointer LV2Backend::instantiateEffect(EffectsManager* pEffectsManager,
-                                            const QString& effectId) {
-    if (!canInstantiateEffect(effectId)) {
-        qWarning() << "WARNING: Effect" << effectId << "is not registered.";
-        return EffectPointer();
-    }
-    LV2Manifest* lv2manifest = m_registeredEffects[effectId];
-
-    return EffectPointer(
-        new Effect(
-                pEffectsManager,
-                lv2manifest->getEffectManifest(),
-                EffectInstantiatorPointer(
-                        new LV2EffectProcessorInstantiator(
-                                lv2manifest->getPlugin(),
-                                lv2manifest->getAudioPortIndices(),
-                                lv2manifest->getControlPortIndices()))));
+LV2Manifest* LV2Backend::getLV2Manifest(const QString& effectId) const {
+    return m_registeredEffects[effectId];
 }

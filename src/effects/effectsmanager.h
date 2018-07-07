@@ -68,6 +68,25 @@ class EffectsManager : public QObject {
         return m_registeredOutputChannels;
     }
 
+    void loadStandardEffect(const int iChainSlotNumber,
+            const int iEffectSlotNumber, const QString& effectId,
+            EffectBackendType backendType = EffectBackendType::Unknown);
+
+    void loadOutputEffect(const int iEffectSlotNumber, const QString& effectId,
+            EffectBackendType backendType = EffectBackendType::Unknown);
+
+    void loadQuickEffect(const QString& group,
+            const int iEffectSlotNumber, const QString& effectId,
+            EffectBackendType backendType = EffectBackendType::Unknown);
+
+    void loadEqualizerEffect(const QString& group,
+            const int iEffectSlotNumber, const QString& effectId,
+            EffectBackendType backendType = EffectBackendType::Unknown);
+
+    void loadEffect(EffectChainSlotPointer pChainSlot,
+            const int iEffectSlotNumber, const QString& effectId,
+            EffectBackendType backendType = EffectBackendType::Unknown);
+
     void addStandardEffectChainSlots();
     EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;
 
@@ -78,7 +97,6 @@ class EffectsManager : public QObject {
     EqualizerEffectChainSlotPointer getEqualizerEffectChainSlot(const QString& group) {
         return m_equalizerEffectChainSlots.value(group);
     }
-    bool loadEqualizerEffectToGroup(const QString& group, EffectPointer pEffect);
     int numEqualizerEffectChainSlots() {
         return m_equalizerEffectChainSlots.size();
     }
@@ -87,7 +105,6 @@ class EffectsManager : public QObject {
     QuickEffectChainSlotPointer getQuickEffectChainSlot(const QString& group) {
         return m_quickEffectChainSlots.value(group);
     }
-    bool loadQuickEffectToGroup(const QString& group, EffectPointer pEffect);
     int numQuickEffectChainSlots() {
         return m_quickEffectChainSlots.size();
     }
@@ -119,7 +136,6 @@ class EffectsManager : public QObject {
             const QString& effectId,
             EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const;
     EffectManifestPointer getEffectManifest(const QString& effectId) const;
-    EffectPointer instantiateEffect(const QString& effectId);
 
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
     bool getEffectVisibility(EffectManifestPointer pManifest);

@@ -175,6 +175,10 @@ class EffectManifest final {
         }
     }
 
+    bool operator==(const EffectManifest& other) const {
+        return other.id() == m_id && other.backendType() == m_backendType;
+    }
+
   private:
     QString debugString() const {
         return QString("EffectManifest(%1)").arg(m_id);

@@ -1,7 +1,8 @@
 #include <QtDebug>
 
-#include "control/controleffectknob.h"
+#include "effects/effectslot.h"
 #include "effects/effectbuttonparameterslot.h"
+#include "control/controleffectknob.h"
 #include "effects/effectxmlelements.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
@@ -32,21 +33,21 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
 }
 
 EffectButtonParameterSlot::~EffectButtonParameterSlot() {
-    //qDebug() << debugString() << "destroyed";
+    // qDebug() << debugString() << "destroyed";
     // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
     delete m_pControlValue;
 }
 
-void EffectButtonParameterSlot::loadEffect(EffectPointer pEffect) {
-    //qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
+void EffectButtonParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
+    // qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     if (m_pEffectParameter) {
         clear();
     }
 
-    if (pEffect) {
-        m_pEffect = pEffect;
+    if (pEffectSlot) {
+        m_pEffectSlot = pEffectSlot;
         // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffect->getButtonParameterForSlot(m_iParameterSlotNumber);
+        m_pEffectParameter = pEffectSlot->getButtonParameterForSlot(m_iParameterSlotNumber);
 
         if (m_pEffectParameter) {
             // Set the number of states
@@ -89,10 +90,10 @@ void EffectButtonParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
         m_pEffectParameter->disconnect(this);
-        m_pEffectParameter = NULL;
+        m_pEffectParameter = nullptr;
     }
 
-    m_pEffect.clear();
+    m_pEffectSlot = nullptr;
     m_pControlLoaded->forceSet(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);

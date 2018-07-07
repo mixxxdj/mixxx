@@ -9,13 +9,14 @@
 
 #include "control/controlobject.h"
 #include "effects/defs.h"
-#include "effects/effect.h"
+#include "effects/effectinstantiator.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
 
 class ControlPushButton;
 class ControlEncoder;
 class EffectChainSlot;
+class EffectsManager;
 
 class EffectChainSlot : public QObject {
     Q_OBJECT
@@ -23,7 +24,6 @@ class EffectChainSlot : public QObject {
     EffectChainSlot(const QString& group,
                     EffectsManager* pEffectsManager,
                     SignalProcessingStage stage = SignalProcessingStage::Postfader,
-                    const bool hasMetaknob = true,
                     const QString& id = QString());
     virtual ~EffectChainSlot();
 
@@ -35,13 +35,13 @@ class EffectChainSlot : public QObject {
 
     void registerInputChannel(const ChannelHandleAndGroup& handle_group,
                               const double initialValue = 0.0);
+    QSet<ChannelHandleAndGroup> getActiveChannels() const {
+        return m_enabledInputChannels;
+    }
 
     double getSuperParameter() const;
     void setSuperParameter(double value, bool force = false);
     void setSuperParameterDefaultValue(double value);
-
-    // Unload the loaded EffectChain.
-    void clear();
 
     const QString& getGroup() const {
         return m_group;
@@ -78,20 +78,13 @@ class EffectChainSlot : public QObject {
         }
     }
 
-    void addEffect(EffectPointer pEffect);
-    void maybeLoadEffect(const unsigned int iEffectSlotNumber,
-                         const QString& id);
-    void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
-    void removeEffect(unsigned int effectSlotNumber);
-    void refreshAllEffects();
+    void loadEffect(const unsigned int iEffectSlotNumber,
+                    EffectManifestPointer pManifest,
+                    EffectInstantiatorPointer pInstantiator);
 
-    const QList<EffectPointer>& effects() const;
+    void reloadAllEffects();
 
   signals:
-    // Indicates that the given EffectChain was loaded into this
-    // EffectChainSlot
-    void effectChainLoaded(EffectChainSlotPointer pEffectChain);
-
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // next EffectChain into it.
     void nextChain(unsigned int iChainSlotNumber,
@@ -121,12 +114,9 @@ class EffectChainSlot : public QObject {
 
     EffectsManager* m_pEffectsManager;
     ControlObject* m_pControlChainMix;
+    QList<EffectSlotPointer> m_effectSlots;
 
   private slots:
-    void slotChainEffectChanged(unsigned int effectSlotNumber);
-    // Clears the effect in the given position in the loaded EffectChain.
-    void slotClearEffect(unsigned int iEffectSlotNumber);
-
     void slotControlClear(double v);
     void slotControlChainSuperParameter(double v, bool force = false);
     void slotControlChainSelector(double v);
@@ -182,15 +172,12 @@ class EffectChainSlot : public QObject {
     };
 
     QMap<QString, ChannelInfo*> m_channelInfoByName;
-    QList<EffectSlotPointer> m_slots;
     QSignalMapper m_channelStatusMapper;
     QString m_id;
     QString m_name;
     QString m_description;
     SignalProcessingStage m_signalProcessingStage;
-    bool m_bHasMetaknob;
     QSet<ChannelHandleAndGroup> m_enabledInputChannels;
-    QList<EffectPointer> m_effects;
     EngineEffectChain* m_pEngineEffectChain;
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };

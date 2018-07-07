@@ -8,7 +8,7 @@ StandardEffectChainSlot::StandardEffectChainSlot(unsigned int iChainNumber,
                                                  const QString& id)
         : EffectChainSlot(formatEffectChainSlotGroup(iChainNumber),
                           pEffectsManager,
-                          SignalProcessingStage::Postfader, false,
+                          SignalProcessingStage::Postfader,
                           formatEffectChainSlotGroup(iChainNumber)) {
     for (int i = 0; i < kNumEffectsPerUnit; ++i) {
         addEffectSlot(formatEffectSlotGroup(iChainNumber, i));
@@ -43,9 +43,10 @@ QString StandardEffectChainSlot::formatEffectSlotGroup(const int iChainSlotNumbe
 OutputEffectChainSlot::OutputEffectChainSlot(EffectsManager* pEffectsManager)
         : EffectChainSlot(formatEffectChainSlotGroup("[Master]"),
                           pEffectsManager,
-                          SignalProcessingStage::Postfader, true,
+                          SignalProcessingStage::Postfader,
                           formatEffectChainSlotGroup("[Master]")) {
     addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
+    m_effectSlots[0]->setEnabled(true);
 
     // Register the master channel
     const ChannelHandleAndGroup* masterHandleAndGroup = nullptr;
@@ -76,7 +77,7 @@ PerGroupEffectChainSlot::PerGroupEffectChainSlot(const QString& group,
                                                  const QString& chainSlotGroup,
                                                  EffectsManager* pEffectsManager)
         : EffectChainSlot(chainSlotGroup, pEffectsManager,
-                          SignalProcessingStage::Prefader, false,
+                          SignalProcessingStage::Prefader,
                           chainSlotGroup) {
     // Set the chain to be fully wet.
     m_pControlChainMix->set(1.0);
@@ -104,6 +105,7 @@ QuickEffectChainSlot::QuickEffectChainSlot(const QString& group,
                                   pEffectsManager) {
     // Add a single effect slot
     addEffectSlot(formatEffectSlotGroup(group));
+    m_effectSlots[0]->setEnabled(true);
     // DlgPrefEq loads the Effect with loadEffectToGroup
 
     setSuperParameter(0.5);
@@ -128,6 +130,7 @@ EqualizerEffectChainSlot::EqualizerEffectChainSlot(const QString& group,
                                   pEffectsManager) {
     // Add a single effect slot
     addEffectSlot(formatEffectSlotGroup(group));
+    m_effectSlots[0]->setEnabled(true);
     // DlgPrefEq loads the Effect with loadEffectToGroup
 
     setupLegacyAliasesForGroup(group);

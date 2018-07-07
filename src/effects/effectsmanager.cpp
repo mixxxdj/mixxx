@@ -133,6 +133,60 @@ void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_g
     m_registeredOutputChannels.insert(handle_group);
 }
 
+void EffectsManager::loadStandardEffect(const int iChainSlotNumber,
+        const int iEffectSlotNumber, const QString& effectId,
+        EffectBackendType backendType) {
+    auto pChainSlot = getStandardEffectChainSlot(iChainSlotNumber);
+    if (pChainSlot) {
+        loadEffect(pChainSlot, iEffectSlotNumber, effectId, backendType);
+    }
+}
+
+void EffectsManager::loadOutputEffect(const int iEffectSlotNumber,
+    const QString& effectId, EffectBackendType backendType) {
+    if (m_outputEffectChainSlot) {
+        loadEffect(m_outputEffectChainSlot, iEffectSlotNumber, effectId, backendType);
+    }
+}
+
+void EffectsManager::loadQuickEffect(const QString& group,
+        const int iEffectSlotNumber, const QString& effectId,
+        EffectBackendType backendType) {
+    auto pChainSlot = getQuickEffectChainSlot(group);
+    if (pChainSlot) {
+        loadEffect(pChainSlot, iEffectSlotNumber, effectId, backendType);
+    }
+}
+
+void EffectsManager::loadEqualizerEffect(const QString& group,
+        const int iEffectSlotNumber, const QString& effectId,
+        EffectBackendType backendType) {
+    auto pChainSlot = getEqualizerEffectChainSlot(group);
+    if (pChainSlot) {
+        loadEffect(pChainSlot, iEffectSlotNumber, effectId, backendType);
+    }
+}
+
+void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
+        const int iEffectSlotNumber, const QString& effectId,
+        EffectBackendType backendType) {
+    if (kEffectDebugOutput) {
+        qDebug() << debugString() << "loading effect" << iEffectSlotNumber << effectId;
+    }
+    for (auto pBackend : m_effectsBackends) {
+        if (pBackend->canInstantiateEffect(effectId) &&
+                (backendType == EffectBackendType::Unknown ||
+                    pBackend->getType() == backendType)) {
+            EffectManifestPointer pManifest = pBackend->getManifest(effectId);
+            EffectInstantiatorPointer pInstantiator = pBackend->getInstantiator(effectId);
+
+            pChainSlot->loadEffect(iEffectSlotNumber, pManifest, pInstantiator);
+            return;
+        }
+    }
+    pChainSlot->loadEffect(iEffectSlotNumber, EffectManifestPointer(), EffectInstantiatorPointer());
+}
+
 const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFiltered(
         EffectManifestFilterFnc filter) const {
     if (filter == nullptr) {
@@ -211,18 +265,6 @@ EffectManifestPointer EffectsManager::getEffectManifest(const QString& effectId)
     return pMainifest;
 }
 
-EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
-    if (effectId.isEmpty()) {
-        return EffectPointer();
-    }
-    for (const auto& pBackend: m_effectsBackends) {
-        if (pBackend->canInstantiateEffect(effectId)) {
-            return pBackend->instantiateEffect(this, effectId);
-        }
-    }
-    return EffectPointer();
-}
-
 void EffectsManager::addStandardEffectChainSlots() {
     for (int i = 0; i < EffectsManager::kNumStandardEffectChains; ++i) {
         VERIFY_OR_DEBUG_ASSERT(!m_effectChainSlotsByGroup.contains(
@@ -266,21 +308,6 @@ void EffectsManager::addEqualizerEffectChainSlot(const QString& groupName) {
     m_equalizerEffectChainSlots.insert(pChainSlot->group(), pChainSlot);
 }
 
-bool EffectsManager::loadEqualizerEffectToGroup(const QString& group,
-                                                EffectPointer pEffect) {
-    auto chainSlotGroup = EqualizerEffectChainSlot::formatEffectChainSlotGroup(group);
-    auto pChainSlot = m_equalizerEffectChainSlots.value(chainSlotGroup);
-    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
-        return false;
-    }
-
-    pChainSlot->replaceEffect(0, pEffect);
-    if (pEffect != nullptr) {
-        pEffect->setEnabled(true);
-    }
-    return true;
-}
-
 void EffectsManager::addQuickEffectChainSlot(const QString& groupName) {
     VERIFY_OR_DEBUG_ASSERT(!m_quickEffectChainSlots.contains(
             QuickEffectChainSlot::formatEffectChainSlotGroup(groupName))) {
@@ -291,25 +318,6 @@ void EffectsManager::addQuickEffectChainSlot(const QString& groupName) {
         new QuickEffectChainSlot(groupName, this));
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
     m_quickEffectChainSlots.insert(pChainSlot->group(), pChainSlot);
-}
-
-bool EffectsManager::loadQuickEffectToGroup(const QString& group,
-                                            EffectPointer pEffect) {
-    auto chainSlotGroup = QuickEffectChainSlot::formatEffectChainSlotGroup(group);
-    EffectChainSlotPointer pChainSlot = m_quickEffectChainSlots.value(chainSlotGroup);
-    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
-        return false;
-    }
-
-    pChainSlot->replaceEffect(0, pEffect);
-    if (pEffect != nullptr) {
-        pEffect->setEnabled(true);
-    }
-
-    // Force update metaknobs and parameters to match state of superknob
-    pChainSlot->setSuperParameter(pChainSlot->getSuperParameter(), true);
-
-    return true;
 }
 
 EffectChainSlotPointer EffectsManager::getEffectChainSlot(const QString& group) const {
@@ -396,13 +404,13 @@ void EffectsManager::setup() {
 
 void EffectsManager::refreshAllChainSlots() {
     for (auto& pChainSlot : m_standardEffectChainSlots) {
-        pChainSlot->refreshAllEffects();
+        pChainSlot->reloadAllEffects();
     }
     for (auto& pChainSlot : m_equalizerEffectChainSlots) {
-        pChainSlot->refreshAllEffects();
+        pChainSlot->reloadAllEffects();
     }
     for (auto& pChainSlot : m_quickEffectChainSlots) {
-        pChainSlot->refreshAllEffects();
+        pChainSlot->reloadAllEffects();
     }
 }
 
@@ -472,7 +480,7 @@ void EffectsManager::collectGarbage(const EffectsRequest* pRequest) {
         delete pRequest->RemoveEffectFromChain.pEffect;
     } else if (pRequest->type == EffectsRequest::REMOVE_EFFECT_CHAIN) {
         if (kEffectDebugOutput) {
-            qDebug() << debugString() << "delete" << pRequest->RemoveEffectFromChain.pEffect;
+            qDebug() << debugString() << "delete" << pRequest->RemoveEffectChain.pChain;
         }
         delete pRequest->RemoveEffectChain.pChain;
     } else if (pRequest->type == EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL) {
