@@ -50,7 +50,7 @@ class ScrobblingTest : public ::testing::Test {
   public:
     ScrobblingTest()
             : playerManagerMock(new PlayerManagerMock),
-              scrobblingManager(playerManagerMock, UserSettingsPointer()),
+              scrobblingManager(playerManagerMock),
               dummyPlayerLeft(nullptr, "DummyPlayerLeft"),
               dummyPlayerRight(nullptr, "DummyPlayerRight"),
               dummyTrackLeft(Track::newDummy(QFileInfo(), TrackId())),

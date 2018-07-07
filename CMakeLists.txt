@@ -989,7 +989,6 @@ add_library(
   src/broadcast/filelistener.cpp
   src/broadcast/listenbrainzjsonfactory.cpp
   src/broadcast/listenbrainzservice.cpp
-  src/broadcast/listenersfinder.cpp
   src/broadcast/networkmanager.cpp
   src/broadcast/networkreply.cpp
   src/broadcast/networkrequest.cpp
