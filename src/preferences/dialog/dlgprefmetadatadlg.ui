@@ -28,28 +28,18 @@
        </widget>
       </item>
       <item>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="label">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>Choose file encoding</string>
+           <string>File encoding</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="2">
-         <widget class="QComboBox" name="fileEncodingComboBox">
-          <property name="sizeAdjustPolicy">
-           <enum>QComboBox::AdjustToContentsOnFirstShow</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
+        <item>
          <spacer name="horizontalSpacer">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -59,60 +49,47 @@
           </property>
          </spacer>
         </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>Choose format</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QComboBox" name="formatComboBox"/>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="formatLineEdit">
-          <property name="readOnly">
-           <bool>true</bool>
+        <item>
+         <widget class="QComboBox" name="fileEncodingComboBox">
+          <property name="enabled">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
        </layout>
       </item>
       <item>
-       <layout class="QGridLayout" name="gridLayout_2">
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="customFormatEnabledBox">
-          <property name="text">
-           <string>Custom format</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="customFormatLineEdit"/>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="label_3">
-          <property name="text">
-           <string>Use the keywords $author and $title</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignBottom|Qt::AlignHCenter</set>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>File format. The strings $artist and $title will be substituted by the metadata of the current track.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="fileFormatLineEdit">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
          <widget class="QPushButton" name="filePathButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Choose file path</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLineEdit" name="filePathLineEdit"/>
+         <widget class="QLineEdit" name="filePathLineEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -173,38 +150,6 @@
  <resources/>
  <connections>
   <connection>
-   <sender>customFormatEnabledBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>formatComboBox</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>130</x>
-     <y>197</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>652</x>
-     <y>138</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>customFormatEnabledBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>formatLineEdit</receiver>
-   <slot>clear()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>67</x>
-     <y>197</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>332</x>
-     <y>138</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>enableListenbrainzBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>listenBrainzUserTokenLineEdit</receiver>
@@ -217,6 +162,70 @@
     <hint type="destinationlabel">
      <x>123</x>
      <y>471</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enableFileListener</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fileFormatLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>121</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>121</x>
+     <y>142</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enableFileListener</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>filePathButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>217</x>
+     <y>57</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>71</x>
+     <y>178</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enableFileListener</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>filePathLineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>335</x>
+     <y>60</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>327</x>
+     <y>194</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>enableFileListener</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fileEncodingComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>568</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>616</x>
+     <y>82</y>
     </hint>
    </hints>
   </connection>

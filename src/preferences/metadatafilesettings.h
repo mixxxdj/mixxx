@@ -16,20 +16,16 @@ const ConfigKey kMetadataFileEnabled =
 const ConfigKey kFileEncoding =
         ConfigKey("[Livemetadata]", "FileEncoding");
 
-const ConfigKey kFileFormat =
-        ConfigKey("[Livemetadata]", "FileFormat");
-
 const ConfigKey kFileFormatString =
         ConfigKey("[Livemetadata]", "FileFormatString");
 
-    const ConfigKey kFilePath  =
-            ConfigKey("[Livemetadata]","CustomFormatString");
-    const ConfigKey kFileSettingsChanged =
-            ConfigKey("[Livemetadata]","FileSettingsChanged");
+const ConfigKey kFilePath =
+        ConfigKey("[Livemetadata]", "CustomFormatString");
+const ConfigKey kFileSettingsChanged =
+        ConfigKey("[Livemetadata]", "FileSettingsChanged");
 
 const bool defaultFileMetadataEnabled = false;
 const QByteArray defaultEncoding = "UTF-8";
-const QString defaultFileFormat = "SAMBroadcaster";
 const QString defaultFilePath = QDir::currentPath() + "/NowPlaying.txt";
 const QString defaultFileFormatString = "$author - $title";
 } // namespace
@@ -37,14 +33,13 @@ const QString defaultFileFormatString = "$author - $title";
 struct FileSettings {
     bool enabled;
     QByteArray fileEncoding;
-    QString fileFormat, fileFormatString, filePath;
+    QString fileFormatString, filePath;
 };
 
 struct FileWidgets {
-    QCheckBox *enableCheckbox, *enableCustomFormatBox;
-    QComboBox *encodingBox, *formatBox;
+    QCheckBox* enableCheckbox;
+    QComboBox* encodingBox;
     QLineEdit *formatLineEdit,
-            *customFormatLineEdit,
             *filePathLineEdit;
     QPushButton* changeFilePathButton;
 };
@@ -75,6 +70,5 @@ class MetadataFileSettings : public QObject {
     FileWidgets m_widgets;
     QWidget* m_pDialogWidget;
   private slots:
-    void slotFormatChanged(int newIndex);
     void slotFilepathButtonClicked();
 };
