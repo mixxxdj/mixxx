@@ -4,7 +4,7 @@
   <!ENTITY noteOff "0x84">
   <!ENTITY CC "0xB4">
 ]>
-<MixxxControllerPreset mixxxVersion="2.1.0" schemaVersion="1">
+<MixxxControllerPreset mixxxVersion="2.2.0" schemaVersion="1">
     <info>
         <name>Behringer CMD MM-1</name>
         <author>Swiftb0y</author>

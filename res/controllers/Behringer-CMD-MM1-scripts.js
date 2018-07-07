@@ -409,16 +409,6 @@ CMDMM.init = function () {
     inKey: "crossfader",
     group: "[Master]",
   });
-  // CMDMM.reassignKnobRow = function (channel,baseAddress) {
-  //   if (CMDMM.Decks[channel] instanceof CMDMM.deckChannel) {
-  //     if (CMDMM.Decks[channel].knobUnit instanceof CMDMM.EQAndQuickEffect) {
-  //       CMDMM.Decks[i].knobUnit = new CMDMM.EQAndGain(CMDMM.Decks[i].virtualChannel,i+0x06);
-  //     } else {
-  //       CMDMM.Decks[i].knobUnit = new CMDMM.EQAndQuickEffect(CMDMM.Decks[i].virtualChannel,i+0x06);
-  //     }
-  //     this.send(CMDMM.Decks[i].knobUnit instanceof CMDMM.EQAndQuickEffect);
-  //   }
-  // }
   CMDMM.middleButton = new components.Button({
     midi:[MIDI.noteOn,0x12],
     key: "crossfader",
