@@ -6,6 +6,8 @@
 
 #include "analyzer/analyzerqueue.h"
 #include <broadcast/listenersfinder.h>
+#include <broadcast/filelistener.h>
+#include <broadcast/listenbrainzservice.h>
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
@@ -92,9 +94,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
     m_pSamplerBank = new SamplerBank(this);
 
     MetadataBroadcaster *broadcaster = new MetadataBroadcaster;
-    for (auto service : ListenersFinder::instance(pConfig).getAllServices()) {
-        broadcaster->addNewScrobblingService(service);
-    }
+    broadcaster->addNewScrobblingService(ScrobblingServicePtr(new FileListener(pConfig)));
+    broadcaster->addNewScrobblingService(ScrobblingServicePtr(new ListenBrainzService(pConfig)));
     m_scrobblingManager.setMetadataBroadcaster(broadcaster);
 }
 
