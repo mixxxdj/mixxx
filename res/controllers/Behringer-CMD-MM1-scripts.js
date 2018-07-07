@@ -1,63 +1,48 @@
-var CMDMM = {};
+var CMDMM = new components.ComponentContainer();
 //GLOBAL VARS
 
 var channelNumber = 5;
 
 var invertColor = true; //false=(off=orange,on=blue);true=(off=blue,on=orange);
+
 var defaultChannelSequence = [3, 1, 2, 4];
 var channelMode = [true, true, true, true]; //true=deck;false=fxChannel
+var faderMode = [true, true, true, true]; // true=super;false=rate (only affects Deckmode Channels)
+
 var standardKnobBehavior = 0; // 0 = [High,Mid,Low,Quickeffect]; 1 = [Gain,High,Mid,Low]; 2 = [Effect1Meta,Effect2Meta,Effect3Meta,mix];
 var navEncoderScale = 5; // The amount of steps mixxx will scroll within the library while pressing the encoder;
 
-components.Component.layer = function (layer) {
-  if (this.before!==undefined){this.before();}
-  if (this["layer"+layer]!==undefined){this["layer"+layer]();} else {print("layer"+layer+" not Found!")}
-  if (this.after!==undefined){this.after();}
-}
 
 //0x00 = orange; 0x01 = blue;
 components.Button.prototype.on=(invertColor ? 0x00 : 0x01);
 components.Button.prototype.off=(invertColor ? 0x01 : 0x00);
 
-// components.Deck.prototype = function (newGroup) {
-//     this.currentDeck = newGroup;
-//     this.reconnectComponents(function (component) {
-//         if (component.group.search(script.channelRegEx) !== -1) {
-//             component.group = this.currentDeck;
-//         } else if (component.group.search(script.eqRegEx) !== -1) {
-//             component.group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
-//         } else if (component.group.search(script.quickEffectRegEx) !== -1) {
-//             component.group = '[QuickEffectRack1_' + this.currentDeck + ']';
-//         }
-//         // Do not alter the Component's group if it does not match any of those RegExs.
-//
-//         if (component instanceof EffectAssignmentButton) {
-//             // The ControlObjects for assinging decks to effect units
-//             // indicate the effect unit with the group and the deck with the key,
-//             // so change the key here instead of the group.
-//             component.inKey = 'group_' + newGroup + '_enable';
-//             component.outKey = 'group_' + newGroup + '_enable';
-//         }
-//     });
-// },
 
 components.ComponentContainer.prototype.layer = function (layer) {
   this.forEachComponent(function (component) {
+      if (component.before!==undefined){component.before();}
       if (typeof component["layer"+layer] === 'function') {
-          if (component instanceof Button
-              && (component.type === Button.prototype.types.push
+          if (component instanceof components.Button
+              && (component.type === components.Button.prototype.types.push
                   || component.type === undefined)
-              && component.input === Button.prototype.input
+              && component.input === components.Button.prototype.input
               && typeof component.inKey === 'string'
               && typeof component.group === 'string') {
               if (engine.getValue(component.group, component.inKey) !== 0) {
                   engine.setValue(component.group, component.inKey, 0);
               }
           }
-          component.layer(layer);
+          // component.layer(layer);
+          component["layer"+layer]();
       }
+      if (component.after!==undefined){component.after();}
       // Set isShifted for child ComponentContainers forEachComponent is iterating through recursively
-      //this.isShifted = true;
+      this.isShifted = (layer!==1);
+  });
+  CMDMM.reconnectComponents(function (component) {
+    if (component.group === undefined) {
+      component.group = this.group;
+    }
   });
 };
 
@@ -72,151 +57,183 @@ var MIDI = {};
 MIDI.noteOn = 0x90 + (channelNumber - 1);
 MIDI.noteOff = 0x80 + (channelNumber - 1);
 MIDI.CC = 0xB0 + (channelNumber - 1);
+MIDI.ControllerDump = [0xF0,0x00,0x20,0x7F,0x03,0x01,0xF7];
 
 CMDMM.currentLayer=1;
 
 CMDMM.EQAndGain = function (channel, baseAddress) {
-  var that = this;
   this.knobs = [];
   this.knobs[0] = new components.Pot({
     midi: [MIDI.CC, baseAddress],
+    group: "[Channel"+channel+"]",
     inKey: "pregain",
   });
   for (var i = 1; i <= 3; i++) {
     this.knobs[i] = new components.Pot({
       midi: [MIDI.CC, baseAddress + 4*(i-1)],
-      group: '[EqualizerRack1_'+that.group+'_Effect1]',
-      inKey: 'parameter' + i,
+      group: '[EqualizerRack1_[Channel'+channel+']_Effect1]',
+      inKey: 'parameter' + (4-i),
+      // parameter has to be assigned in reverse.
     });
   }
 };
 CMDMM.EQAndGain.prototype = new components.ComponentContainer();
 
 CMDMM.EQAndQuickEffect = function (channel, baseAddress) {
-  var that = this;
+  this.knobs=[];
   for (var i = 1; i <= 3; i++) {
     this.knobs[i-1] = new components.Pot({
       midi: [MIDI.CC, baseAddress + 4*(i-1)],
-      group: '[EqualizerRack1_'+that.group+'_Effect1]',
-      inKey: 'parameter' + i,
+      group: '[EqualizerRack1_[Channel'+channel+']_Effect1]',
+      inKey: 'parameter' + (4-i),
+      // parameter has to be assigned in reverse.
     });
   }
   this.knobs[3] = new components.Pot({
     midi: [MIDI.CC, baseAddress+3*4],
     // (third knob of channel (zero-based)) * (offset of knobs to one another)
-    inKey: "pregain",
+    group: "[QuickEffectRack1_[Channel"+channel+"]]",
+    inKey: "super1",
   });
 };
 CMDMM.EQAndQuickEffect.prototype = new components.ComponentContainer();
 
 CMDMM.FXKnobs = function (channel, baseAddress) {
-  var that = this;
   this.knobs = [];
   for (var i = 1; i <= 3; i++) {
     this.knobs[i-1] = new components.Pot({
       midi: [MIDI.CC, baseAddress + 4*(i-1)],
-      group: '[EffectRack1_EffectUnit'+that.group+'_Effect'+i+']',
+      group: '[EffectRack1_EffectUnit'+channel+'_Effect'+i+']',
       inKey: 'meta',
     });
   }
   this.knobs[3] = new components.Pot({
     midi: [MIDI.CC, baseAddress+3*4],
     // (third knob of channel (zero-based)) * (offset of knobs to one another)
-    group: '[EffectRack1_EffectUnit'+that.group+']',
+    group: '[EffectRack1_EffectUnit'+channel+']',
     inKey: "mix",
   });
 }
 CMDMM.FXKnobs.prototype = new components.ComponentContainer();
 
-CMDMM.deckChannel = function (channel) {
-  var baseAddress=0x05+channel;
+CMDMM.deckChannel = function (physicalChannel,virtualChannel) {
+  var baseAddress=0x06+physicalChannel;
   var theDeck = this;
-  this.type=true;
+  this.currentDeck="[Channel"+virtualChannel+"]";
+  this.virtualChannel=virtualChannel;
+  this.binaryChannel=virtualChannel-1;
   switch (standardKnobBehavior) {
     case 0:
-      this.knobUnit = new CMDMM.EQAndQuickEffect(channel,baseAddress);
+      this.knobUnit = new CMDMM.EQAndQuickEffect(virtualChannel,baseAddress);
       break;
     case 1:
-      this.knobUnit = new CMDMM.EQAndGain(channel,baseAddress);
+      this.knobUnit = new CMDMM.EQAndGain(virtualChannel,baseAddress);
       break;
     default:
-      print("Invalid Knob Type: "+standardKnobBehavior);
+      print("WRONG KNOBUNIT TYPE!\nfalling back to EQAndQuickEffect");
+      standardKnobBehavior=0;
+      this.knobUnit = new CMDMM.EQAndQuickEffect(virtualChannel,baseAddress);
   }
   this.button1 = new components.Button({
-    midi: [MIDI.noteOn,0x0D+baseAddress],
+    midi: [MIDI.noteOn,0x0D+baseAddress+physicalChannel*3],
+    type: components.Button.prototype.types.toggle,
+    mask: 1 << 0,
     layer1: function () {
       this.inKey="orientation";
+      this.group=theDeck.currentDeck;
       this.output = function (value, group, control) {
           this.send(this.outValueScale(value===0));
       };
-      this.input = function (channelUnused, control, value, status, group) {
-        this.inSetValue(this.inGetValue()!==0?1:this.inValueScale(value))
+      this.input = function (channel, control, value, status, group) {
+        this.inSetValue(this.inGetValue()!==0?0:1);
       };
     },
     layer2: function () {
-      this.inKey="group_[Channel1]_enable";
+      this.inKey="group_"+theDeck.currentDeck+"_enable";
+      this.group="[EffectRack1_EffectUnit1]";
     },
     layer3: function () {
-      this.inKey="group_[Channel3]_enable";
+      this.inKey="group_"+theDeck.currentDeck+"_enable";
+      this.group="[EffectRack1_EffectUnit3]";
     },
     layer4: function () {
       this.inKey="";
+      this.group="";
       this.input = function (channel, control, value, status, group) {
-        channel^=1; // XOR channel by "10" (binary)
-        theDeck.setCurrentDeck("[Channel"+channel+"]");
-        this.output(channel&1);
+        theDeck.binaryChannel^=this.mask;
+        this.output(theDeck.binaryChannel&this.mask);
+        theDeck.virtualChannel=theDeck.binaryChannel+1;
+        theDeck.knobUnit.currentDeck="[Channel"+(theDeck.virtualChannel)+"]";
+        theDeck.setCurrentDeck("[Channel"+(theDeck.virtualChannel)+"]");
       };
+      this.output(theDeck.binaryChannel&this.mask);
     }
   });
   this.button2 = new components.Button({
-    midi: [MIDI.noteOn,0x0E+baseAddress],
+    midi: [MIDI.noteOn,0x0E+baseAddress+physicalChannel*3],
+    type: components.Button.prototype.types.toggle,
+    mask: 1 << 1,
     layer1: function () {
       this.inKey="orientation";
+      this.group=theDeck.currentDeck;
       this.output = function (value, group, control) {
           this.send(this.outValueScale(value===2));
       };
-      this.input = function (channelUnused, control, value, status, group) {
-        this.inSetValue(this.inGetValue()!==2?1:this.inValueScale(value))
+      this.input = function (channel, control, value, status, group) {
+        this.inSetValue(this.inGetValue()!==2?2:1)
       };
     },
     layer2: function () {
-      this.inKey="group_[Channel2]_enable";
+      this.inKey="group_"+theDeck.currentDeck+"_enable";
+      this.group="[EffectRack1_EffectUnit2]";
     },
     layer3: function () {
-      this.inKey="group_[Channel4]_enable";
+      this.inKey="group_"+theDeck.currentDeck+"_enable";
+      this.group="[EffectRack1_EffectUnit4]";
     },
     layer4: function () {
       this.inKey="";
+      this.group="";
       this.input = function (channel, control, value, status, group) {
-        channel^=2; // XOR channel by "10" (binary)
-        theDeck.setCurrentDeck("[Channel"+channel+"]");
-        this.output(channel&2);
+        theDeck.binaryChannel^=this.mask;
+        this.output(theDeck.binaryChannel&this.mask);
+        theDeck.virtualChannel=theDeck.binaryChannel+1;
+        theDeck.knobUnit.currentDeck="[Channel"+(theDeck.virtualChannel)+"]";
+        theDeck.setCurrentDeck("[Channel"+(theDeck.virtualChannel)+"]");
       };
+      this.output(theDeck.binaryChannel&this.mask);
     }
   });
   this.buttonCue = new components.Button({
     midi: [MIDI.noteOn,0x2A+baseAddress],
+    group: theDeck.currentDeck,
     layer1: function () {
       this.inKey="pfl";
+      this.type=components.Button.prototype.types.toggle;
     },
     layer2: function () {
-        this.inKey="LoadSelectedTrack";
+      this.inKey="LoadSelectedTrack";
+      this.type=components.Button.prototype.types.push;
+    },
+    layer3: function () {
+      this.inKey="sync_enabled";
+      this.type=components.Button.prototype.types.push;
     },
     layer4: function () {
       this.inKey="";
-      this.output(theDeck.type);
-      this.input= function () {
-        theDeck.forEachComponent(
-          function (component) {
-            component.disconnect();
-          }
-        )
-        CMDMM.Decks[baseAddress-0x06] = new (theDeck.type?CMDMM.deckChannel(channel):CMDMM.fxChannel(channel));
+      this.output(this.on);
+      this.input = function () {
+        CMDMM.Decks[physicalChannel] = new CMDMM.fxChannel(physicalChannel,theDeck.virtualChannel);
+        this.output(this.off);
+        theDeck.reconnectComponents();
       }
     }
   });
   this.fader = new components.Pot({
     midi: [MIDI.CC,0x2A+baseAddress],
+    inKey: "volume",
+    group: theDeck.currentDeck,
+    after: function () {this.input=components.Pot.prototype.input;},
     layer4: function () {
       this.input = function (channel, control, value, status, group) {
         if (value>42&&value<=84) {
@@ -226,91 +243,126 @@ CMDMM.deckChannel = function (channel) {
         }
       };
     },
-  })
+  });
 }
 CMDMM.deckChannel.prototype = new components.Deck();
 
-CMDMM.fxChannel = function (channel) {
-  var baseAddress=0x05+channel;
+CMDMM.fxChannel = function (physicalChannel,virtualChannel) {
+  var baseAddress=0x06+physicalChannel;
   var theDeck=this;
-  this.type=false; //helper variable
-  this.knobUnit = new CMDMM.FXKnobs(channel,baseAddress);
+  this.currentDeck="[Channel"+virtualChannel+"]";
+  this.virtualChannel=virtualChannel;
+  this.binaryChannel=virtualChannel-1;
+  this.knobUnit = new CMDMM.FXKnobs(virtualChannel,baseAddress);
   this.button1 = new components.Button({
-    midi: [MIDI.noteOn,0x0D+baseAddress],
+    midi: [MIDI.noteOn,0x0D+baseAddress+physicalChannel*3],
+    type: components.Button.prototype.types.toggle,
+    mask: 1 << 0,
     layer1: function () {
       this.inKey="enabled";
+      this.group="[EffectRack1_EffectUnit"+theDeck.virtualChannel+"_Effect1]"
     },
     layer2: function () {
       this.inKey="group_[Channel1]_enable";
+      this.group="[EffectRack1_EffectUnit"+theDeck.virtualChannel+"]";
     },
     layer3: function () {
       this.inKey="group_[Channel3]_enable";
+      this.group="[EffectRack1_EffectUnit"+theDeck.virtualChannel+"]";
     },
     layer4: function () {
       this.inKey="";
-      this.input = function (channelUnused, control, value, status, group) {
-        channel^=1; // XOR channel by "10" (binary)
-        theDeck.setCurrentDeck("[Channel"+channel+"]");
-        this.output(channel&1);
+      this.group="";
+      this.input = function (channel, control, value, status, group) {
+        theDeck.binaryChannel^=this.mask;
+        this.output(theDeck.binaryChannel&this.mask);
+        theDeck.virtualChannel=theDeck.binaryChannel+1;
+        theDeck.knobUnit = new CMDMM.FXKnobs(theDeck.virtualChannel,baseAddress);
+        // creating a new Unit is easier than changing the groups via Regexp
+        if (theDeck.fader.inKey==="super1")
+        {theDeck.fader.group='[EffectRack1_EffectUnit'+theDeck.virtualChannel+']'}
+        // the fader doesnt get changed if it is set to controll the fxunit
+        // (look at components.Deck.setCurrentDeck for more explanation)
+        theDeck.setCurrentDeck("[Channel"+theDeck.virtualChannel+"]");
       };
+      this.output(theDeck.binaryChannel&this.mask);
     },
   });
   this.button2 = new components.Button({
-    midi: [MIDI.noteOn,0x0E+baseAddress],
+    midi: [MIDI.noteOn,0x0E+baseAddress+physicalChannel*3],
+    mask: 1 << 1,
+    type: components.Button.prototype.types.toggle,
     layer1: function () {
       this.inKey="enabled";
+      this.group="[EffectRack1_EffectUnit"+theDeck.virtualChannel+"_Effect2]"
     },
     layer2: function () {
       this.inKey="group_[Channel2]_enable";
+      this.group="[EffectRack1_EffectUnit"+theDeck.virtualChannel+"]";
     },
     layer3: function () {
       this.inKey="group_[Channel4]_enable";
+      this.group="[EffectRack1_EffectUnit"+theDeck.virtualChannel+"]";
     },
     layer4: function () {
       this.inKey="";
-      this.input = function (channelUnused, control, value, status, group) {
-        channel^=2; // XOR channel by "01" (binary)
-        theDeck.setCurrentDeck("[Channel"+channel+"]");
-        this.output(channel&2);
+      this.group="";
+      this.input = function (channel, control, value, status, group) {
+        theDeck.binaryChannel^=this.mask;
+        this.output(theDeck.binaryChannel&this.mask);
+        theDeck.virtualChannel=theDeck.binaryChannel+1;
+        theDeck.knobUnit = new CMDMM.FXKnobs(theDeck.virtualChannel,baseAddress);
+        // creating a new Unit is easier than changing the groups via Regexp
+        if (theDeck.fader.inKey==="super1")
+        {theDeck.fader.group='[EffectRack1_EffectUnit'+theDeck.virtualChannel+']'}
+        // the fader doesnt get changed if it is set to controll the fxunit
+        // (look at components.Deck.setCurrentDeck for more explanation)
+        theDeck.setCurrentDeck("[Channel"+theDeck.virtualChannel+"]");
       };
+      this.output(theDeck.binaryChannel&this.mask);
     },
   });
   this.buttonCue = new components.Button({
+    midi: [MIDI.noteOn,0x2A+baseAddress],
+    type: components.Button.prototype.types.toggle,
     layer1: function () {
       this.inKey="enabled";
+      this.group="[EffectRack1_EffectUnit"+theDeck.virtualChannel+"_Effect3]"
     },
     layer2: function () {
       this.inKey="group_[Headphone]_enable";
+      this.group="[EffectRack1_EffectUnit"+theDeck.virtualChannel+"]";
     },
     layer3: function () {
       this.inKey="group_[Master]_enable";
+      this.group="[EffectRack1_EffectUnit"+theDeck.virtualChannel+"]";
     },
     layer4: function () {
       this.inKey="";
-      this.output(theDeck.type);
-      this.input= function () {
-        theDeck.forEachComponent(
-          function (component) {
-            component.disconnect();
-          }
-        )
-        CMDMM.Decks[baseAddress-0x06] = new (theDeck.type?CMDMM.deckChannel(channel):CMDMM.fxChannel(channel));
+      this.group="";
+      this.output(this.off);
+      this.input = function () {
+        CMDMM.Decks[physicalChannel] = new CMDMM.deckChannel(physicalChannel,theDeck.virtualChannel);
+        this.output(this.on);
+        theDeck.reconnectComponents();
       }
     }
   });
   this.fader = new components.Pot({
     midi: [MIDI.CC,0x2A+baseAddress],
+    inKey: (faderMode[physicalChannel]?"super1":"rate"),
+    group: (faderMode[physicalChannel]?'[EffectRack1_EffectUnit'+theDeck.virtualChannel+']':"[Channel"+theDeck.virtualChannel+"]"),
     before: function () {
       this.input=components.Pot.prototype.input;
     },
     layer4: function () {
-      this.input = function (channelUnused, control, value, status, group) {
+      this.input = function (channael, control, value, status, group) {
         if (value>42&&value<=84) {
           this.inKey="rate";
-          this.group="[Channel"+channel+"]";
+          this.group="[Channel"+theDeck.virtualChannel+"]";
         } else {
           this.inKey="super1";
-          this.group='[EffectRack1_EffectUnit'+channel+']';
+          this.group='[EffectRack1_EffectUnit'+theDeck.virtualChannel+']';
         }
       };
     },
@@ -318,49 +370,77 @@ CMDMM.fxChannel = function (channel) {
 };
 CMDMM.fxChannel.prototype = new components.Deck();
 
-
-// TODO: Small Knobs + Library Encoder
-
 CMDMM.init = function () {
   CMDMM.Decks=[];
   for (i=0;i<defaultChannelSequence.length;i++) {
-    CMDMM.Decks[i] = new (channelMode[i]?
-      CMDMM.deckChannel(
-        defaultChannelSequence[i]
-      ):
-      CMDMM.fxChannel(
-        defaultChannelSequence[i]
-      )
-    );
+    if (channelMode[i]) {
+      CMDMM.Decks[i] = new CMDMM.deckChannel(i,defaultChannelSequence[i]);
+    } else {
+      CMDMM.Decks[i] = new CMDMM.fxChannel(i,defaultChannelSequence[i]);
+    }
     CMDMM.Decks[i].reconnectComponents(function (component) {
       if (component.group === undefined) {
-        component.group = "[Channel"+(defaultChannelSequence[i]+1)+"]";
+        component.group = "[Channel"+(defaultChannelSequence[i])+"]";
       }
     });
-    print("created Decknr "+i);
   }
   CMDMM.shiftButton = new components.Button({
     midi: [MIDI.noteOn,0x10],
+    before: undefined,
+    after: undefined,
     input: function (channel, control, value, status, group) {
-      CDMMM.currentLayer += this.isPress(channel, control, value, status)?1:-1;
+      CMDMM.currentLayer += this.isPress(channel, control, value, status)?1:-1;
+      CMDMM.layer(CMDMM.currentLayer);
+      CMDMM.reconnectComponents();
     },
   });
   CMDMM.ctrlButton = new components.Button({
     midi: [MIDI.noteOn,0x11],
+    before: undefined,
+    after: undefined,
     input: function (channel, control, value, status, group) {
-      CDMMM.currentLayer += this.isPress(channel, control, value, status)?2:-2;
-    },
+      CMDMM.currentLayer += this.isPress(channel, control, value, status)?2:-2;
+      CMDMM.layer(CMDMM.currentLayer);
+      CMDMM.reconnectComponents();
+    }
   });
   CMDMM.crossfader = new components.Pot({
     midi: [MIDI.CC,0x40],
     inKey: "crossfader",
     group: "[Master]",
   });
+  // CMDMM.reassignKnobRow = function (channel,baseAddress) {
+  //   if (CMDMM.Decks[channel] instanceof CMDMM.deckChannel) {
+  //     if (CMDMM.Decks[channel].knobUnit instanceof CMDMM.EQAndQuickEffect) {
+  //       CMDMM.Decks[i].knobUnit = new CMDMM.EQAndGain(CMDMM.Decks[i].virtualChannel,i+0x06);
+  //     } else {
+  //       CMDMM.Decks[i].knobUnit = new CMDMM.EQAndQuickEffect(CMDMM.Decks[i].virtualChannel,i+0x06);
+  //     }
+  //     this.send(CMDMM.Decks[i].knobUnit instanceof CMDMM.EQAndQuickEffect);
+  //   }
+  // }
   CMDMM.middleButton = new components.Button({
     midi:[MIDI.noteOn,0x12],
-    inKey: "crossfader",
+    key: "crossfader",
     group: "[Master]",
-    input: function () {this.inSetParameter(0.5);},
+    layer1: function () {
+      this.input = function () {this.inSetParameter(0.5);};
+      this.output = function () {this.send(this.inGetParameter()===0.5);};
+    },
+    layer2: function () {
+      this.input = function () {
+        for (var i = 0; i<CMDMM.Decks.length; i++) {
+          if (CMDMM.Decks[i] instanceof CMDMM.deckChannel) {
+            if (CMDMM.Decks[i].knobUnit instanceof CMDMM.EQAndQuickEffect) {
+              CMDMM.Decks[i].knobUnit = new CMDMM.EQAndGain(CMDMM.Decks[i].virtualChannel,i+0x06);
+            } else {
+              CMDMM.Decks[i].knobUnit = new CMDMM.EQAndQuickEffect(CMDMM.Decks[i].virtualChannel,i+0x06);
+            }
+          }
+        }
+      };
+      this.output = undefined;
+    },
   });
   CMDMM.out1 = new components.Pot({
     midi: [MIDI.CC,0x01],
@@ -385,10 +465,10 @@ CMDMM.init = function () {
   CMDMM.libraryButton = new components.Button({
     midi: [MIDI.noteOn,0x03],
     input: function (channel, control, value, status, group) {
-      CMDMM.libraryEncoder.speed = this.isPress(channel, control, value, status)?1:navEncoderScale;
+      // no functionality yet. suggestions are appreciated.
     },
   });
-  CMDMM.libraryEncoder = new components.Pot({
+  CMDMM.libraryEncoder = new components.Encoder({
     midi: [MIDI.CC,0x03],
     group: "[Library]",
     inKey: "MoveVertical",
@@ -396,11 +476,33 @@ CMDMM.init = function () {
       this.inSetValue((value-0x40)*this.speed);
       // this.speed is controlled by the libraryButton
     },
+    layer1: function () {
+      this.speed = 1;
+    },
+    layer2: function () {
+      this.speed=navEncoderScale;
+    },
+    layer3: function () {
+      this.speed=navEncoderScale;
+    },
   });
-  CMDMM.forEachComponent(function (obj) {
-    if (typeof obj.layer1 === 'function') {
-        obj.layer(1);
-        //calls layer1 (which is the alternative for unshift) explicitly
-    }
-  },true);
+  CMDMM.VuMeterL = engine.makeConnection("[Master]","VuMeterL",function (value) {
+    midi.sendShortMsg(MIDI.CC, 0x50, (value * 15) + 48);
+  });
+  CMDMM.VuMeterR = engine.makeConnection("[Master]","VuMeterR",function (value) {
+    midi.sendShortMsg(MIDI.CC, 0x51, (value * 15) + 48);
+  });
+  CMDMM.layer(1);
+
+  // midi.sendSysexMsg(MIDI.ControllerDump,MIDI.ControllerDump.lenght);
+  // Doesn't return anything. The controller might not be serato certified.
 };
+
+CMDMM.shutdown = function () {
+  CMDMM.VuMeterR.disconnect();
+  CMDMM.VuMeterL.disconnect();
+  for (var i = 0; i<127; i++) {
+    midi.sendShortMsg(MIDI.noteOn, i, 0);
+    // sets the controller to orange (to match the left/right buttons);
+  }
+}

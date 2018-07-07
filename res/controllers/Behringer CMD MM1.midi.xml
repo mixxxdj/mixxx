@@ -72,7 +72,7 @@
             </control>
             <control>
                 <group>[MixerEQ]</group>
-                <key>CMDMM.Decks[2].knobUnit.knobs[3]</key>
+                <key>CMDMM.Decks[2].knobUnit.knobs[3].input</key>
                 <description>knob[3,4]</description>
                 <status>&CC;</status>
                 <midino>0x14</midino>
@@ -323,7 +323,7 @@
             </control>
             <control>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>CMDMM.Decks[4].button1.input</key>
+                <key>CMDMM.Decks[3].button1.input</key>
                 <description>group_[Channel4]_enable</description>
                 <status>&noteOn;</status>
                 <midino>0x1F</midino>
@@ -353,7 +353,7 @@
             </control>
             <control>
                 <group>[MixerEQ]</group>
-                <key>CMDMM.Decks[1].knobUnit.knobs[1]</key>
+                <key>CMDMM.Decks[1].knobUnit.knobs[1].input</key>
                 <description>knob[2,2]</description>
                 <status>&CC;</status>
                 <midino>0x0B</midino>
@@ -378,7 +378,7 @@
                 <status>&CC;</status>
                 <midino>0x05</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -458,7 +458,7 @@
                 <status>&CC;</status>
                 <midino>0x04</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
