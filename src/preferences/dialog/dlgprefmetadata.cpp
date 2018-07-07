@@ -15,11 +15,8 @@ DlgPrefMetadata::DlgPrefMetadata(QWidget* pParent, UserSettingsPointer pSettings
 void DlgPrefMetadata::setFileSettings() {
     FileWidgets widgets;
     widgets.enableCheckbox = enableFileListener;
-    widgets.enableCustomFormatBox = customFormatEnabledBox;
     widgets.encodingBox = fileEncodingComboBox;
-    widgets.formatBox = formatComboBox;
-    widgets.formatLineEdit = formatLineEdit;
-    widgets.customFormatLineEdit = customFormatLineEdit;
+    widgets.formatLineEdit = fileFormatLineEdit;
     widgets.filePathLineEdit = filePathLineEdit;
     widgets.changeFilePathButton = filePathButton;
 
