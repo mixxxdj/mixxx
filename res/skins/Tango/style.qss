@@ -1363,8 +1363,20 @@ decks, samplers, mic, aux, fx */
   padding: 0px 2px 0px 0px;
 }
 
-#VUMeterMasterLabel {
+#VUMeterLabelMaster {
   image: url(skin:/buttons/btn_master_vu_label.svg) no-repeat center center;
+}
+#VUMeterLabelDeck1 {
+  image: url(skin:/buttons/btn_deck1_vu_label.svg) no-repeat center center;
+}
+#VUMeterLabelDeck2 {
+  image: url(skin:/buttons/btn_deck2_vu_label.svg) no-repeat center center;
+}
+#VUMeterLabelDeck3 {
+  image: url(skin:/buttons/btn_deck3_vu_label.svg) no-repeat center center;
+}
+#VUMeterLabelDeck4 {
+  image: url(skin:/buttons/btn_deck4_vu_label.svg) no-repeat center center;
 }
 
 

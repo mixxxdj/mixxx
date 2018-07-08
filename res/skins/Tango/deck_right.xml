@@ -64,6 +64,34 @@ Variables:
 
       <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
+      <WidgetGroup><!-- VUMeter -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:vumeter_floating.xml">
+                <SetVariable name="Label">Deck<Variable name="chanNum"/></SetVariable>
+              </Template>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /VUMeter -->
+
       <!-- Pitch slider & Key controls -->
       <Template src="skin:rate_pitch_key.xml"/>
 
@@ -76,20 +104,10 @@ Variables:
       </WidgetGroup>
       <!-- /Pitch slider & Key controls -->
 
-      <WidgetGroup><!-- Spinny/Cover + VUMeter -->
+      <WidgetGroup><!-- Spinny/Cover -->
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-
-          <Template src="skin:vumeter_floating.xml"/>
-
-          <WidgetGroup>
-            <Size>3f,1min</Size>
-            <Connection>
-              <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
 
           <!-- Spinny/Cover if BIG spinny is enabled -->
           <WidgetGroup>
@@ -121,7 +139,7 @@ Variables:
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Spinny/Cover + VUMeter -->
+      </WidgetGroup><!-- /Spinny/Cover -->
 
       <WidgetGroup><!-- Mixer -->
         <Layout>vertical</Layout>
