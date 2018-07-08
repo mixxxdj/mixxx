@@ -154,24 +154,31 @@ WWidgetGroup {
     background-color: none;
   }
 
-#SkinSettingsButton {
-  padding-top: 1px;
-  font-size: 12px/14px;
-  color: #d2d2d2;
+#SkinSettingsButton,
+#SkinSettingsButtonMulti  {
+  font-size: 12px/12px;
   }
-  #SkinSettingsButton[displayValue="0"] {
-    background-color: none;
+  #SkinSettingsButtonMulti {
+    qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+    text-align: center;
   }
-  #SkinSettingsButton[displayValue="1"],
-  #SkinSettingsButton[displayValue="2"] {
-    background-color: #202020;
-    color: #eeeeee;
-  }
-  #SkinSettingsButton[displayValue="0"]:hover,
-  #SkinSettingsButton[displayValue="1"]:hover,
-  #SkinSettingsButton[displayValue="2"]:hover {
+  #SkinSettingsButton:hover,
+  #SkinSettingsButtonMulti:hover {
     background-color: #0f0f0f;
   }
+  #SkinSettingsButton[displayValue="0"],
+  #SkinSettingsButtonMulti[displayValue="0"] {
+    color: #d2d2d2;
+  }
+  #SkinSettingsButton[displayValue="1"],
+  #SkinSettingsButton[displayValue="2"],
+  #SkinSettingsButtonMulti[displayValue="1"] {
+    color: #eeeeee;
+  }
+  #SkinSettingsButtonMulti[displayValue="1"] {
+    background-color: #0f0f0f;
+  }
+
 #DeckIndicatorSettings {
   margin-left: 17px;
 }
@@ -194,12 +201,11 @@ WWidgetGroup {
   background-color: rgba(51, 51, 51, 127);
 }
 #SkinSettingsLabel,
-#SubmenuLabel,
 #SubmenuHint {
   font-size: 12px/12px;
   }
-  #SubmenuLabel {
-    color: #eeeeee;
+  #SkinSettingsLabel {
+    padding-bottom: 2px;
   }
   #SubmenuHint {
     color: #666666;
@@ -209,7 +215,6 @@ WWidgetGroup {
   font-size: 13px/15px;
   font-weight: bold;
   color: #f56200;
-  background-color: #333;
 }
 
 

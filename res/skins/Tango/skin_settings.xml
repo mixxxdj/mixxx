@@ -142,58 +142,6 @@ Description:
                 <SetVariable name="Setting">[Tango],loop_beatjump_controls</SetVariable>
               </Template>
 
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="text">Track Comment</SetVariable>
-                <SetVariable name="Setting">[Tango],trackComment</SetVariable>
-              </Template>
-
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="text">BPM/Sync &amp; Pitch Fader</SetVariable>
-                <SetVariable name="Setting">[Tango],pitch_fader</SetVariable>
-              </Template>
-
-              <WidgetGroup><!-- Rate/Key submenu -->
-                <Layout>stacked</Layout>
-                <MinimumSize>182,26</MinimumSize>
-                <MaximumSize>-1,34</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                  <WidgetGroup><!-- translucent cover when Pitch slider is hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <MinimumSize>182,26</MinimumSize>
-                    <MaximumSize>-1,34</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
-                    <Connection>
-                      <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <WidgetGroup>
-                    <Layout>vertical</Layout>
-                    <Size>182f,0me</Size>
-                    <Children>
-                      <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="text">Key/Key Match</SetVariable>
-                        <SetVariable name="width">182</SetVariable>
-                        <SetVariable name="Setting">[Tango],key_display_match</SetVariable>
-                      </Template>
-
-                      <Template src="skin:skin_settings_button_2state.xml">
-                        <SetVariable name="text">Rate/Key Adjustment Buttons</SetVariable>
-                        <SetVariable name="width">182</SetVariable>
-                        <SetVariable name="Setting">[Tango],rate_key_controls</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup><!-- Pitch/Key submenu -->
-
               <WidgetGroup><!-- Permanent deck controls -->
                 <ObjectName>DeckIndicatorSettings</ObjectName>
                 <Layout>vertical</Layout>
@@ -206,7 +154,7 @@ Description:
                     <MinimumSize>182,13</MinimumSize>
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
-                    <Text> Permanent Deck controls:</Text>
+                    <Text>Permanent Deck controls:</Text>
                     <Alignment>left</Alignment>
                   </Label>
                   <WidgetGroup><!-- Permanent deck control icons -->
@@ -309,6 +257,58 @@ Description:
               </WidgetGroup><!-- /Permanent deck controls -->
 
               <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="text">BPM/Sync &amp; Pitch Fader</SetVariable>
+                <SetVariable name="Setting">[Tango],pitch_fader</SetVariable>
+              </Template>
+
+              <WidgetGroup><!-- Rate/Key submenu -->
+                <Layout>stacked</Layout>
+                <MinimumSize>182,26</MinimumSize>
+                <MaximumSize>-1,34</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Pitch slider is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <MinimumSize>182,26</MinimumSize>
+                    <MaximumSize>-1,34</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Size>182f,0me</Size>
+                    <Children>
+                      <Template src="skin:skin_settings_button_2state.xml">
+                        <SetVariable name="text">Key/Key Match</SetVariable>
+                        <SetVariable name="width">182</SetVariable>
+                        <SetVariable name="Setting">[Tango],key_display_match</SetVariable>
+                      </Template>
+
+                      <Template src="skin:skin_settings_button_2state.xml">
+                        <SetVariable name="text">Rate/Key Adjustment Buttons</SetVariable>
+                        <SetVariable name="width">182</SetVariable>
+                        <SetVariable name="Setting">[Tango],rate_key_controls</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- Pitch/Key submenu -->
+
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="text">Track Comment</SetVariable>
+                <SetVariable name="Setting">[Tango],trackComment</SetVariable>
+              </Template>
+
+              <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="text">Spinny</SetVariable>
                 <SetVariable name="Setting">[Spinny],show_spinnies</SetVariable>
               </Template>
@@ -391,7 +391,7 @@ Description:
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Children>
-                      <WidgetGroup><Size>54f,1min</Size></WidgetGroup>
+                      <WidgetGroup><Size>55f,1min</Size></WidgetGroup>
                       <Label>
                         <ObjectName>CoverSpinnyHint</ObjectName>
                         <MinimumSize>8,13</MinimumSize>
@@ -422,9 +422,10 @@ Description:
                     <Children>
                       <WidgetGroup><Size>19f,1min</Size></WidgetGroup>
                       <Label>
-                        <ObjectName>SubmenuLabel</ObjectName>
+                        <ObjectName>SkinSettingsLabel</ObjectName>
                         <SizePolicy>min,me</SizePolicy>
-                        <Text>Size:</Text>
+                        <Text>Size: </Text>
+                        <Alignment>center</Alignment>
                       </Label>
                       <Template src="skin:skin_settings_button_multi.xml">
                         <SetVariable name="state_x_text"> [  °  ] </SetVariable>
@@ -543,6 +544,49 @@ Description:
 
                 </Children>
               </WidgetGroup><!-- /EQ knobs -->
+
+              <WidgetGroup><!-- EQ Kill buttons -->
+                <Layout>stacked</Layout>
+                <MinimumSize>182,13</MinimumSize>
+                <MaximumSize>182,17</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when EQ knobs are hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <MinimumSize>182,13</MinimumSize>
+                    <MaximumSize>182,17</MaximumSize>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Connection>
+                      <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="text">EQ Kill Buttons</SetVariable>
+                    <SetVariable name="Setting">[Master],show_eq_kill_buttons</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /EQ Kill buttons -->
 
               <WidgetGroup><!-- Permanent Level Meters -->
                 <Layout>stacked</Layout>
@@ -768,16 +812,25 @@ Description:
                     <SetVariable name="ConfigKey">[Sampler],LoadSamplerBank</SetVariable>
                   </Template>
                   <Label>
+                    <ObjectName>SkinSettingsLabel</ObjectName>
+                    <SizePolicy>min,me</SizePolicy>
                     <Text> / </Text>
+                    <Alignment>center</Alignment>
                   </Label>
                   <Template src="skin:button_1state.xml">
                     <SetVariable name="TooltipId">SaveSamplerBank</SetVariable>
                     <SetVariable name="ObjectName">SkinSettingsButton</SetVariable>
-                    <SetVariable name="Size">110me,17f</SetVariable>
-                    <SetVariable name="state_0_text"> Save Sampler Bank</SetVariable>
+                    <SetVariable name="Size">31f,17f</SetVariable>
+                    <SetVariable name="state_0_text"> Save </SetVariable>
                     <SetVariable name="Align">left</SetVariable>
                     <SetVariable name="ConfigKey">[Sampler],SaveSamplerBank</SetVariable>
                   </Template>
+                  <Label>
+                    <ObjectName>SkinSettingsLabel</ObjectName>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Text>Sampler Bank</Text>
+                    <Alignment>center</Alignment>
+                  </Label>
                 </Children>
               </WidgetGroup><!-- /Load/Save Sampler Bank -->
             </Children>
