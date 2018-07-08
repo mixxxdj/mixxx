@@ -228,12 +228,21 @@ Variables:
             </Connection>
           </WidgetGroup>
 
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="ObjectName">MixModeButtons</SetVariable>
+          <WidgetGroup>
+            <Size>3f,1min</Size>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">MixModeButton</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
-            <SetVariable name="Size">35f,20f</SetVariable>
-            <SetVariable name="state_0_text">D/W</SetVariable>
-            <SetVariable name="state_1_text">D+W</SetVariable>
+            <SetVariable name="Size">30f,18f</SetVariable>
+            <SetVariable name="state_0_icon">fx_mixmode_d-w.svg</SetVariable>
+            <SetVariable name="state_1_icon">fx_mixmode_d+w.svg</SetVariable>
             <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
           </Template>
 
