@@ -16,13 +16,12 @@ Variables:
     <Children>
 
       <WidgetGroup><!-- FxUnitControls -->
-        <ObjectName>FxUnitControlsRight</ObjectName>
+        <ObjectName>FxUnitControls</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>min,me</SizePolicy>
         <Children>
-
           <WidgetGroup><!-- FX label + FX expand button -->
-            <ObjectName>Spacer25</ObjectName>
+            <ObjectName>AlignCenter</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
@@ -46,23 +45,22 @@ Variables:
             </Children>
           </WidgetGroup><!-- /FX label + FX expand button -->
 
-          <WidgetGroup><!-- FxUnitControls + Master, Headphone -->
+          <WidgetGroup><!-- FxUnitMixer + Pfl button -->
+            <ObjectName>Spacer0f</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
 
-              <WidgetGroup><!-- FxUnitControls + Master, Headphone -->
-                <ObjectName>FxUnitMixerRight</ObjectName>
+              <WidgetGroup><!-- FxUnitMixer -->
+                <ObjectName>FxUnitMixer</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
 
-                  <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
-
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
                     <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
-                    <SetVariable name="Size">30f,30f</SetVariable>
+                    <SetVariable name="Size">30min,26f</SetVariable>
                     <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
                     <SetVariable name="ConfigKey">mix</SetVariable>
                     <SetVariable name="Color">red</SetVariable>
@@ -146,13 +144,12 @@ Variables:
                   </WidgetGroup><!-- /Headphone FX button -->
 
                 </Children>
-              </WidgetGroup><!-- EffectUnitMixer -->
+              </WidgetGroup><!-- /FxUnitMixer -->
 
               <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
 
             </Children>
-          </WidgetGroup><!-- EffectUnitMixer -->
-
+          </WidgetGroup><!-- /FxUnitMixer + Pfl button -->
         </Children>
       </WidgetGroup><!-- /FxUnitControls -->
 

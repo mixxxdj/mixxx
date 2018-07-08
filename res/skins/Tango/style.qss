@@ -531,8 +531,8 @@ WWidgetGroup {
   }
 
 #MicAuxKnob {
-  qproperty-layoutAlignment: 'AlignCenter';
-  margin-top: 3px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin-top: 1px;
 }
 
 #MicDuckingButton {
@@ -1212,14 +1212,33 @@ WBeatSpinBox,
 }
 
 #VolumeSliderGain {
-  qproperty-layoutAlignment: 'AlignCenter';
+  qproperty-layoutAlignment: 'AlignHCenter';
   margin-top: 2px;
 }
+
+#GainKnob {
+  margin: 0px 2px 4px 2px;
+}
+#SuperWetDryKnob {
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  margin: 0px;
+}
+#FxMetaknob {
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  margin: 0px;
+}
+
+#MixModeButton {
+  border: 1px solid #0f0f0f;
+  }
+  #MixModeButton:hover {
+    background-color: #151515;
+  }
 
 #EQKnobContainerLeft {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   margin: 0px 4px 0px 2px;
-  }
+}
 #EQKnobContainerRight {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   margin: 0px 2px 0px 4px;
@@ -1241,42 +1260,31 @@ WBeatSpinBox,
     }
 
 /* Kill indicators underneath EQ knobs */
-#EQKillUnderlayLeft[displayValue="0"],
-#EQKillUnderlayRight[displayValue="0"] {
-  background: none;
+#EQKilledUnderlay[displayValue="1"],
+#QuickFxDisabledUnderlay[displayValue="0"] {
+  background: url(skin:/knobs_sliders/knob_bg_disabled.svg) no-repeat center center;
 }
-#EQKillUnderlayLeft[displayValue="1"] {
-  background-color: #585858;
-  border-top-left-radius: 15px;
-  border-bottom-left-radius: 15px;
-  }
-#EQKillUnderlayRight[displayValue="1"] {
-  background-color: #585858;
-  border-top-right-radius: 15px;
-  border-bottom-right-radius: 15px;
-  }
 
-#QuickFxEnableButton {
-  margin: 5px 0px;
+#QuickFxEnableButton_Side {
   background-color: #585858;
-  }
-  #QuickFxEnableButton[displayValue="0"] {
-    }
-  #QuickFxEnableButton[displayValue="0"]:hover {
+  margin: 2px 0px 2px 0px;
+}
+#QuickFxEnableButton_Bottom {
+  background-color: #585858;
+  margin: 2px 4px 2px 4px;
+}
+  #QuickFxEnableButton_Side[displayValue="0"]:hover,
+  #QuickFxEnableButton_Bottom[displayValue="0"]:hover {
     border: 1px solid #ff8f00;
     }
-  #QuickFxEnableButton[displayValue="1"] {
+  #QuickFxEnableButton_Side[displayValue="1"],
+  #QuickFxEnableButton_Bottom[displayValue="1"] {
     border: 1px solid #ff8f00;
     }
-  #QuickFxEnableButton[displayValue="1"]:hover {
-    border: 1px solid #eeeeee;
-  }
-
-  #QuickFxEnableUnderlay[displayValue="0"] {
-    background-color: #585858;
-    border-radius: 13px;
-    margin: 2px;
-  }
+    #QuickFxEnableButton_Side[displayValue="1"]:hover,
+    #QuickFxEnableButton_Bottom[displayValue="1"]:hover {
+      border: 1px solid #eeeeee;
+    }
 
 /*  This wouldn't scale the image:
 #PflButton[displayValue="0"] {
@@ -1320,8 +1328,7 @@ decks, samplers, mic, aux, fx */
 
 #FxUnitMixerLeft_mini WPushButton[displayValue="0"],
 #FxUnitMixerRight_mini WPushButton[displayValue="0"],
-#FxUnitMixerLeft WPushButton[displayValue="0"],
-#FxUnitMixerRight WPushButton[displayValue="0"],
+#FxUnitMixer WPushButton[displayValue="0"],
 #SamplerDeck #PflButton {
   border: 1px solid #151515;
   }
@@ -1375,25 +1382,19 @@ decks, samplers, mic, aux, fx */
   border: 0px;
 }
 
-#FxUnitControlsRight {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  background-color: #252525;
-}
-#FxUnitControlsLeft {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+#FxUnitControls {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   background-color: #252525;
 }
 
-#FxUnitMixerLeft,
+#FxUnitMixer,
 #FxUnitMixerLeft_mini,
-#FxUnitMixerRight,
 #FxUnitMixerRight_mini {
-  qproperty-layoutAlignment: 'AlignCenter';
+  qproperty-layoutAlignment: 'AlignHCenter';
   background-color: #333;
   }
-  #FxUnitMixerLeft,
-  #FxUnitMixerRight {
-    padding-bottom: 2px;
+  #FxUnitMixer {
+    padding: 2px;
   }
   #FxUnitMixerLeft_mini {
     padding-left: 2px;
@@ -1603,18 +1604,15 @@ decks, samplers, mic, aux, fx */
 
 #FxParameterKnob {
   padding-right: 1px;
-}
-
-#FxParameterKnob {
   qproperty-layoutAlignment: 'AlignCenter';
   margin-right: 1px;
-  }
+}
   #FxParameterKnobName {
     qproperty-alignment: 'AlignLeft | AlignTop';
     font-size: 10px/10px;
     font-weight: bold;
     color: #999999;
-    padding-top: -1px;
+    padding-top: -2px;
   }
 
 #FxParameterButton {
@@ -1844,7 +1842,7 @@ WTrackProperty#SamplerTitle_mini {
 }
 
 #SamplerGainKnob {
-  margin-bottom: -1px;
+  qproperty-layoutAlignment: 'AlignHCenter';
 }
 
 #SamplerButton,

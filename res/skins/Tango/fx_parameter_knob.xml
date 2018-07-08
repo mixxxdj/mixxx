@@ -11,7 +11,6 @@ Variables:
 -->
 <Template>
   <SetVariable name="FxRack_FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
-
   <WidgetGroup>
     <Layout>vertical</Layout>
     <MinimumSize>43,47</MinimumSize>
@@ -21,25 +20,25 @@ Variables:
 
       <WidgetGroup><!-- Parameter knob + parameter name -->
         <Layout>vertical</Layout>
-        <MinimumSize>42,34</MinimumSize>
-        <MaximumSize>51,34</MaximumSize>
+        <MinimumSize>42,33</MinimumSize>
+        <MaximumSize>51,33</MaximumSize>
         <SizePolicy>me,f</SizePolicy>
         <Children>
 
           <WidgetGroup><!-- Effect parameter knob -->
             <ObjectName>FxParameterKnob</ObjectName>
             <Layout>vertical</Layout>
-            <MinimumSize>42,23</MinimumSize>
-            <MaximumSize>51,23</MaximumSize>
+            <MinimumSize>42,22</MinimumSize>
+            <MaximumSize>51,22</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <Children>
               <EffectParameterKnobComposed>
-                <Size>26f,23f</Size>
+                <Size>26f,22f</Size>
                 <Knob>knobs_sliders/knob_fx_yellow.svg</Knob>
                 <BackPath>knobs_sliders/knob_bg_fx_parameter.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-                <KnobCenterYOffset>2.000</KnobCenterYOffset>
+                <KnobCenterYOffset>1.500</KnobCenterYOffset>
                 <Connection>
                   <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/></ConfigKey>
                 </Connection>
@@ -57,7 +56,7 @@ Variables:
               <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
               <EffectParameterName>
                 <ObjectName>FxParameterKnobName</ObjectName>
-                <Size>-1min,11f</Size>
+                <Size>-1min,12f</Size>
                 <EffectRack><Variable name="FxRack"/></EffectRack>
                 <EffectUnit><Variable name="FxUnit"/></EffectUnit>
                 <Effect><Variable name="FxNum"/></Effect>
@@ -69,8 +68,6 @@ Variables:
           </WidgetGroup>
         </Children>
       </WidgetGroup><!-- Parameter knob + parameter name -->
-
-      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
 
       <!-- Meta knob link button -->
       <Template src="skin:button_5state.xml">
@@ -90,7 +87,7 @@ Variables:
         <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,parameter<Variable name="FxParameter"/>_link_inverse</SetVariable>
       </Template>
 
-      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+      <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
 
     </Children>
     <!-- show only if parameter is loaded -->

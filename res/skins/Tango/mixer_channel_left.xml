@@ -20,32 +20,35 @@ Variables:
 
       <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
-      <WidgetGroup><!-- EQs + QuickEffect knobs -->
+      <WidgetGroup><!-- EQ + QuickEffect knobs/buttons -->
         <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>max,min</SizePolicy>
         <Children>
-            <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+          <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
           <Template src="skin:eq_knob_left.xml"><!-- High EQ -->
             <SetVariable name="FxParameter">3</SetVariable>
           </Template>
-            <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
           <Template src="skin:eq_knob_left.xml"><!-- Mid EQ -->
             <SetVariable name="FxParameter">2</SetVariable>
           </Template>
-            <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
           <Template src="skin:eq_knob_left.xml"><!-- Low EQ -->
             <SetVariable name="FxParameter">1</SetVariable>
           </Template>
-            <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
-          <Template src="skin:quick_fx_knob_left.xml"/><!-- Quick Effect knob -->
+          <Template src="skin:quick_fx_knob_left.xml"/><!-- Quick Effect -->
         </Children>
         <Connection>
           <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /EQs + QuickEffect knobs -->
+      </WidgetGroup><!-- /EQ + QuickEffect knobs/buttons -->
 
-      <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+      <WidgetGroup>
+        <Size>4f,1min</Size>
+        <Connection>
+          <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
 
       <WidgetGroup><!--  Volume Slider + Gain knob -->
         <ObjectName>VolumeSliderGain</ObjectName>
@@ -69,7 +72,7 @@ Variables:
           <Template src="skin:knob_textless.xml">
             <SetVariable name="ObjectName">GainKnob</SetVariable>
             <SetVariable name="TooltipId">pregain</SetVariable>
-            <SetVariable name="Size">30f,30f</SetVariable>
+            <SetVariable name="Size">34f,30f</SetVariable>
             <SetVariable name="Color">yellow</SetVariable>
             <SetVariable name="group"><Variable name="group"/></SetVariable>
             <SetVariable name="ConfigKey">pregain</SetVariable>
