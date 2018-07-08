@@ -343,39 +343,34 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                     break;
                 }
 
+                mixxx::IndexRange bufferedFrameIndexRange;
                 const CachingReaderChunkForOwner* const pChunk = lookupChunkAndFreshen(chunkIndex);
-                // If the chunk is not in cache, then we must return an error.
-                if (!pChunk || (pChunk->getState() != CachingReaderChunkForOwner::READY)) {
+                if (pChunk && (pChunk->getState() == CachingReaderChunkForOwner::READY)) {
+                    if (reverse) {
+                        bufferedFrameIndexRange =
+                                pChunk->readBufferedSampleFramesReverse(
+                                        &buffer[samplesRemaining],
+                                        remainingFrameIndexRange);
+                    } else {
+                        bufferedFrameIndexRange =
+                                pChunk->readBufferedSampleFrames(
+                                        buffer,
+                                        remainingFrameIndexRange);
+                    }
+                } else {
                     // This will happen regularly when jumping to a new position
                     // within the file and decoding of the audio data is still
                     // pending.
                     DEBUG_ASSERT(!pChunk ||
                             (pChunk->getState() == CachingReaderChunkForOwner::READ_PENDING));
                     Counter("CachingReader::read(): Failed to read chunk on cache miss")++;
-                    // Abort reading and indicate (temporary) unavailability
-                    // by returning 0. Some samples may have already been
-                    // written into the caller's buffer, but should not be
-                    // used. The caller should retry if it still needs to
-                    // read those samples.
-                    kLogger.debug() << "Cache miss for chunk with index" << chunkIndex;
-                    return 0;
-                }
-
-                mixxx::IndexRange bufferedFrameIndexRange;
-                if (reverse) {
-                    bufferedFrameIndexRange =
-                            pChunk->readBufferedSampleFramesReverse(
-                                    &buffer[samplesRemaining],
-                                    remainingFrameIndexRange);
-                } else {
-                    bufferedFrameIndexRange =
-                            pChunk->readBufferedSampleFrames(
-                                    buffer,
-                                    remainingFrameIndexRange);
+                    kLogger.debug() << "Cache miss for chunk with index" << chunkIndex << "- abort reading";
+                    // Abort reading (see below)
+                    DEBUG_ASSERT(bufferedFrameIndexRange.empty());
                 }
                 if (bufferedFrameIndexRange.empty()) {
                     // No more readable data available. Exit the loop and
-                    // fill the remaining buffer with silence.
+                    // finally fill the remaining buffer with silence.
                     break;
                 }
                 DEBUG_ASSERT(bufferedFrameIndexRange <= remainingFrameIndexRange);
@@ -401,6 +396,7 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                 }
                 const SINT chunkSamples =
                         CachingReaderChunk::frames2samples(bufferedFrameIndexRange.length());
+                DEBUG_ASSERT(chunkSamples > 0);
                 if (!reverse) {
                     buffer += chunkSamples;
                 }
