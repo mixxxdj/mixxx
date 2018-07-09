@@ -26,7 +26,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(QTableView* parent, int column)
     connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
-    m_pButton = new QPushButton("", m_pTableView);
+    m_pButton = std::make_unique<QPushButton>();
     m_pButton->setObjectName("LibraryPreviewButton");
     m_pButton->setCheckable(true);
     m_pButton->setChecked(false);
