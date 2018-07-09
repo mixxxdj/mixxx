@@ -38,6 +38,16 @@ void MetadataFileSettings::setupWidgets() {
 
     m_widgets.encodingBox->clear();
     QList<QByteArray> codecs = QTextCodec::availableCodecs();
+
+    QList<QByteArray> preferredCodecs = {
+            "latin1",
+            "UTF-8"};
+
+    for (const QByteArray& codec : preferredCodecs) {
+        m_widgets.encodingBox->addItem(codec);
+        codecs.removeAll(codec);
+    }
+
     for (const QByteArray& codec : codecs) {
         m_widgets.encodingBox->addItem(codec);
     }
