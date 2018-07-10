@@ -212,13 +212,6 @@
       </Children>
     </SingletonDefinition>
 
-    <SingletonDefinition>
-      <ObjectName>SamplerRowsButton_Singleton</ObjectName>
-      <Children>
-        <Template src="skin:/skin_settings_sampler_rows_64.xml"/>
-      </Children>
-    </SingletonDefinition>
-
 <!--  ################################################################
        SkinContainer  ###############################################
      ############################################################### -->
@@ -382,7 +375,7 @@
               </Connection>
             </WidgetGroup>
 
-            <Template src="skin:../Tango/skin_settings.xml"/>
+            <Template src="skin:skin_settings.xml"/>
 
           </Children>
         </WidgetGroup><!-- /All skin elements + Skin menu -->
