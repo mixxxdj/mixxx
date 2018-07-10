@@ -117,13 +117,13 @@
 			    <NumberStates>2</NumberStates>
 			    <State>
 				    <Number>0</Number>
-				    <Pressed>D-Wt.png</Pressed>
-				    <Unpressed>D-Wt.png</Unpressed>
+				    <Pressed>btn_fxmix_d-w.svg</Pressed>
+				    <Unpressed>btn_fxmix_d-w.svg</Unpressed>
 			    </State>
 			    <State>
 				    <Number>1</Number>
-				    <Pressed>D+Wt.png</Pressed>
-				    <Unpressed>D+Wt.png</Unpressed>
+				    <Pressed>btn_fxmix_d+w.svg</Pressed>
+				    <Unpressed>btn_fxmix_d+w.svg</Unpressed>
 			    </State>
 			    <Pos>54,49</Pos>
 			    <Connection>
