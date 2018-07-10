@@ -1947,7 +1947,6 @@ WTrackProperty#SamplerTitle_mini {
   }
   #PreviewGainKnob {
     qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
-    padding: 8px 0px 4px 0px;
   }
 
 
