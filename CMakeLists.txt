@@ -986,14 +986,19 @@ add_library(
   src/audio/signalinfo.cpp
   src/audio/streaminfo.cpp
   src/audio/types.cpp
-  src/broadcast/filelistener.cpp
-  src/broadcast/listenbrainzjsonfactory.cpp
-  src/broadcast/listenbrainzservice.cpp
-  src/broadcast/networkmanager.cpp
-  src/broadcast/networkreply.cpp
-  src/broadcast/networkrequest.cpp
+  src/broadcast/filelistener/filelistener.cpp
+  src/broadcast/filelistener/metadatafileworker.cpp
+  src/broadcast/listenbrainzlistener/listenbrainzjsonfactory.cpp
+  src/broadcast/listenbrainzlistener/listenbrainzservice.cpp
+  src/broadcast/listenbrainzlistener/networkmanager.cpp
+  src/broadcast/listenbrainzlistener/networkreply.cpp
+  src/broadcast/listenbrainzlistener/networkrequest.cpp
+  src/broadcast/mpris/mpris.cpp
+  src/broadcast/mpris/mediaplayer2.cpp
+  src/broadcast/mpris/mediaplayer2player.cpp
+  src/broadcast/mpris/mediaplayer2playlists.cpp
+  src/broadcast/mpris/mediaplayer2tracklist.cpp
   src/broadcast/metadatabroadcast.cpp
-  src/broadcast/metadatafileworker.cpp 
   src/broadcast/scrobblingmanager.cpp
   src/control/control.cpp
   src/control/controlaudiotaperpot.cpp

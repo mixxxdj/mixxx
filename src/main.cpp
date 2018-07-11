@@ -84,7 +84,7 @@ int runMixxx(MixxxApplication* pApp, const CmdlineArgs& args) {
         QPixmapCache::setCacheLimit(static_cast<int>(kPixmapCacheLimitAt100PercentZoom *
                 pow(pApp->devicePixelRatio(), 2.0f)));
 
-        pCoreServices->initialize(pApp);
+        pCoreServices->initialize(pApp, &mainWindow);
 
 #ifdef MIXXX_USE_QOPENGL
         // Will call initialize when the initial wglwidget's

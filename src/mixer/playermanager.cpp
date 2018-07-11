@@ -3,9 +3,8 @@
 #include <QRegularExpression>
 
 #include "audio/types.h"
-#include "broadcast/filelistener.h"
-#include "broadcast/listenbrainzservice.h"
-#include "broadcast/listenersfinder.h"
+#include "broadcast/filelistener/filelistener.h"
+#include "broadcast/listenbrainzlistener/listenbrainzservice.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -106,7 +105,8 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
-        EngineMixer* pEngine)
+        EngineMixer* pEngine, 
+        MixxxMainWindow* pWindow)
         : m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_pConfig(pConfig),
           m_pLibrary(nullptr),
@@ -126,7 +126,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                   ConfigKey(kAppGroup, QStringLiteral("num_microphones")), true, true)),
           m_pCONumAuxiliaries(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries")), true, true)),
-          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
+          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
+          m_mpris(pWindow) {
     m_pCONumDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_decks")));
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);

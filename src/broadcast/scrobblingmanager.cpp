@@ -2,7 +2,7 @@
 
 #include <QObject>
 
-#include "broadcast/filelistener.h"
+#include "broadcast/filelistener/filelistener.h"
 #include "broadcast/scrobblingmanager.h"
 #include "control/controlproxy.h"
 #include "engine/enginexfader.h"

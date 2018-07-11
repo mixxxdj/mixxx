@@ -72,7 +72,8 @@ class PlayerManagerTest : public MixxxDbTest, SoundSourceProviderRegistration {
         m_pPlayerManager = std::make_shared<PlayerManager>(m_pConfig,
                 m_pSoundManager.get(),
                 m_pEffectsManager.get(),
-                m_pEngine.get());
+                m_pEngine.get(), 
+                nullptr);
 
         m_pPlayerManager->addConfiguredDecks();
         m_pPlayerManager->addSampler();
