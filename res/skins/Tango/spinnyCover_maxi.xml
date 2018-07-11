@@ -33,7 +33,7 @@ Variables:
             <PathGhost scalemode="STRETCH_ASPECT">graphics/spinny_indicator_ghost.svg</PathGhost>
             <ShowCover>false</ShowCover>
             <Connection>
-              <ConfigKey persist="true">[Skin],show_cover_art</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -49,7 +49,7 @@ Variables:
             <PathGhost scalemode="STRETCH_ASPECT">graphics/spinny_indicator_ghost.svg</PathGhost>
             <ShowCover>true</ShowCover>
             <Connection>
-              <ConfigKey persist="true">[Skin],show_cover_art</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </Spinny>
@@ -73,7 +73,7 @@ Variables:
             <Group><Variable name="group"/></Group>
             <DefaultCover>skin:/graphics/cover_default.svg</DefaultCover>
             <Connection>
-              <ConfigKey persist="true">[Skin],show_cover_art</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </CoverArt>

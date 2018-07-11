@@ -121,13 +121,13 @@ Description:
                             <SetVariable name="state_x_text"> [ 4 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">0</SetVariable>
-                            <SetVariable name="Setting">[Tango],8_hotcues</SetVariable>
+                            <SetVariable name="Setting">[Skin],8_hotcues</SetVariable>
                           </Template>
                           <Template src="skin:../Tango/skin_settings_button_multi.xml">
                             <SetVariable name="state_x_text"> [ 8 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">1</SetVariable>
-                            <SetVariable name="Setting">[Tango],8_hotcues</SetVariable>
+                            <SetVariable name="Setting">[Skin],8_hotcues</SetVariable>
                           </Template>
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
@@ -258,7 +258,7 @@ Description:
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">BPM/Sync &amp; Pitch Fader</SetVariable>
-                <SetVariable name="Setting">[Tango],pitch_fader</SetVariable>
+                <SetVariable name="Setting">[Master],show_rate_control</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Rate/Key submenu -->
@@ -277,7 +277,7 @@ Description:
                     <MaximumSize>-1,34</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
+                      <ConfigKey persist="true">[Master],show_rate_control</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -315,12 +315,12 @@ Description:
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Cover Art</SetVariable>
-                <SetVariable name="Setting">[Skin],show_cover_art</SetVariable>
+                <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
               </Template>
 
             <!-- A hack involving a SizeAwareStack and WidgetStacks
               that toggles [Tango],no_spinny_no_cover when both
-              [Spinny],show_spinnies and [Skin],show_cover_art are 0 -->
+              [Spinny],show_spinnies and [Skin],show_coverart are 0 -->
               <WidgetGroup>
                 <Size>3f,0f</Size>
                 <Layout>horizontal</Layout>
@@ -336,7 +336,7 @@ Description:
                   <WidgetGroup>
                     <Size>1f,0f</Size>
                     <Connection>
-                      <ConfigKey persist="true">[Skin],show_cover_art</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -618,7 +618,7 @@ Description:
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Crossfader</SetVariable>
-                <SetVariable name="Setting">[Tango],crossfader</SetVariable>
+                <SetVariable name="Setting">[Master],show_xfader</SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /Mixer -->
@@ -644,7 +644,7 @@ Description:
                 <Children>
                   <Template src="skin:../Tango/skin_settings_button_2state.xml">
                     <SetVariable name="text">Effect Units</SetVariable>
-                    <SetVariable name="width">82</SetVariable>
+                    <SetVariable name="width">86</SetVariable>
                     <SetVariable name="Setting">[EffectRack1],show</SetVariable>
                   </Template>
                   <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -678,13 +678,13 @@ Description:
                             <SetVariable name="state_x_text"> [ 2 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">0</SetVariable>
-                            <SetVariable name="Setting">[Tango],4_FxUnits</SetVariable>
+                            <SetVariable name="Setting">[Master],show_4effectunits</SetVariable>
                           </Template>
                           <Template src="skin:../Tango/skin_settings_button_multi.xml">
                             <SetVariable name="state_x_text"> [ 4 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">1</SetVariable>
-                            <SetVariable name="Setting">[Tango],4_FxUnits</SetVariable>
+                            <SetVariable name="Setting">[Master],show_4effectunits</SetVariable>
                           </Template>
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
@@ -749,6 +749,11 @@ Description:
                 <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
               </Template>
 
+              <Template src="skin:../Tango/skin_settings_button_2state.xml">
+                <SetVariable name="text">Cover Art in Library</SetVariable>
+                <SetVariable name="Setting">[Library],show_coverart</SetVariable>
+              </Template>
+
               <WidgetGroup><!-- Sampler rows -->
                 <MinimumSize>182,13</MinimumSize>
                 <MaximumSize>182,17</MaximumSize>
@@ -757,7 +762,7 @@ Description:
                 <Children>
                   <Template src="skin:../Tango/skin_settings_button_2state.xml">
                     <SetVariable name="text">Samplers</SetVariable>
-                    <SetVariable name="width">70</SetVariable>
+                    <SetVariable name="width">71</SetVariable>
                     <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
                   </Template>
                   <WidgetGroup><Size>3f,1min</Size></WidgetGroup>

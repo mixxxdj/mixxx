@@ -26,7 +26,7 @@
   <manifest>
     <title>Tango</title>
     <author>ronso0</author>
-    <version>2.1.0.01</version>
+    <version>2.1.2.01</version>
     <description>A controller-focused nighttime skin. Almost all controls can be hidden with skin menu.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -42,12 +42,18 @@
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
+      <attribute persist="true" config_key="[Skin],8_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
+      <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
+      <attribute persist="true" config_key="[Master],show_rate_control">1</attribute>
       <!-- item index in skin_settings_sampler_rows.xml, '1' enables 2 sampler rows -->
       <attribute persist="true" config_key="[Tango],sampler_rows">1</attribute>
       <attribute persist="true" config_key="[SamplerRow1],expanded">0</attribute>
@@ -60,12 +66,10 @@
       <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
       <!-- [Tango] specific defaults -->
       <attribute persist="true" config_key="[Tango],master_mixer">1</attribute>
-      <attribute persist="true" config_key="[Tango],4_FxUnits">0</attribute>
       <!--attribute persist="true" config_key="[Tango],sampler_fx_buttons">1</attribute-->
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
       <attribute persist="true" config_key="[Tango],deck_controls_expanded">0</attribute>
       <attribute persist="true" config_key="[Tango],colorLogo">0</attribute>
-      <attribute persist="true" config_key="[Tango],crossfader">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_keylock">1</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_eject">0</attribute>
       <attribute persist="true" config_key="[Tango],always_visible_slipMode">1</attribute>
@@ -74,19 +78,15 @@
       <attribute persist="true" config_key="[Tango],always_visible_quantize">1</attribute>
       <attribute persist="true" config_key="[Tango],separate_cue_button">1</attribute>
       <attribute persist="true" config_key="[Tango],hotcues">1</attribute>
-      <attribute persist="true" config_key="[Tango],8_hotcues">0</attribute>
-      <attribute persist="true" config_key="[Tango],key_display_match">1</attribute>
-      <attribute persist="true" config_key="[Tango],rate_key_controls">0</attribute>
       <attribute persist="true" config_key="[Tango],loop_beatjump_controls">1</attribute>
       <attribute persist="true" config_key="[Tango],loop_sizes">0</attribute>
-      <attribute persist="true" config_key="[Tango],pitch_fader">1</attribute>
+      <attribute persist="true" config_key="[Tango],key_display_match">1</attribute>
+      <attribute persist="true" config_key="[Tango],rate_key_controls">0</attribute>
       <attribute persist="true" config_key="[Tango],symmetric_overviews">0</attribute>
       <attribute persist="true" config_key="[Tango],symmetric_time">0</attribute>
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Tango],stars">1</attribute>
       <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_cover_art">1</attribute>
-      <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Tango],show_BIG_spinny_cover">1</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck1">0</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck2">0</attribute>
@@ -306,7 +306,7 @@
                             </SingletonContainer>
                           </Children>
                           <Connection>
-                            <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
+                            <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </WidgetGroup>
@@ -320,7 +320,7 @@
                             <Template src="skin:fx_units_34.xml"/>
                           </Children>
                           <Connection>
-                            <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
+                            <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
                             <BindProperty>visible</BindProperty>
                           </Connection>
                         </WidgetGroup>
@@ -333,7 +333,7 @@
                             </SingletonContainer>
                           </Children>
                           <Connection>
-                            <ConfigKey persist="true">[Tango],4_FxUnits</ConfigKey>
+                            <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
                             <Transform><Not/></Transform>
                             <BindProperty>visible</BindProperty>
                           </Connection>

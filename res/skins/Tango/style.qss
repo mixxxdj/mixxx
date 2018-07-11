@@ -131,13 +131,13 @@ WWidgetGroup {
     border-radius:2px;
     margin-bottom: 4px;
     background-color: transparent;
-    image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center top;
+    image: url(skin:../Tango/buttons/btn_skinsettings_close.svg) no-repeat center top;
     }
     #SkinSettingsClose:hover {
       border-radius:2px;
       margin-bottom: 4px;
       background-color: #0f0f0f;
-      image: url(skin:/buttons/btn_skinsettings_close_hover.svg) no-repeat center top;
+      image: url(skin:../Tango/buttons/btn_skinsettings_close_hover.svg) no-repeat center top;
     }
 
 #SkinSettingsCategory {
@@ -2052,19 +2052,6 @@ QToolTip {
     }
     #LibMiniMaxiButton[displayValue="1"]:hover {
       image: url(skin:/buttons/btn_lib_mini_hover.svg) no-repeat center top;
-    }
-
-#LibCoverArtButton {
-  margin: 0px 0px 4px 2px;
-  }
-  #LibCoverArtButton:hover {
-    background-color: #0f0f0f;
-  }
-  #LibCoverArtButton[displayValue="0"] {
-    image: url(skin:/buttons/btn_lib_cover_off.svg) no-repeat center center;
-    }
-    #LibCoverArtButton[displayValue="1"] {
-      image: url(skin:/buttons/btn_lib_cover_on.svg) no-repeat center center;
     }
 
 QTableView,
