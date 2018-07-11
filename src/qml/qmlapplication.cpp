@@ -46,7 +46,7 @@ QmlApplication::QmlApplication(
           m_mainFilePath(pCoreServices->getSettings()->getResourcePath() + kMainQmlFileName),
           m_pAppEngine(nullptr),
           m_autoReload() {
-    m_pCoreServices->initialize(app);
+    m_pCoreServices->initialize(app, nullptr);
     SoundDeviceStatus result = m_pCoreServices->getSoundManager()->setupDevices();
     if (result != SoundDeviceStatus::Ok) {
         const int reInt = static_cast<int>(result);

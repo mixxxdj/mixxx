@@ -1,9 +1,9 @@
-#include "broadcast/networkmanager.h"
+#include "broadcast/listenbrainzlistener/networkmanager.h"
 
 #include <iostream>
 
-#include "broadcast/networkrequest.h"
-#include "broadcast/networkreply.h"
+#include "broadcast/listenbrainzlistener/networkrequest.h"
+#include "broadcast/listenbrainzlistener/networkreply.h"
 #include "moc_networkmanager.cpp"
 
 

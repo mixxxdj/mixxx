@@ -1,13 +1,11 @@
-
-#include "broadcast/filelistener.h"
+#include "broadcast/filelistener/filelistener.h"
 
 #include <QTextCodec>
 #include <QtConcurrentRun>
 
-#include "broadcast/filelistener.h"
-#include "broadcast/metadatafileworker.h"
-#include "moc_filelistener.cpp"
+#include "broadcast/filelistener/metadatafileworker.h"
 #include "preferences/metadatafilesettings.h"
+#include "moc_filelistener.cpp"
 
 FileListener::FileListener(UserSettingsPointer pConfig)
         : m_COsettingsChanged(kFileSettingsChanged),

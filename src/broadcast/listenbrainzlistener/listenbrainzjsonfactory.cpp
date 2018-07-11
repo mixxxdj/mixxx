@@ -1,4 +1,4 @@
-#include "listenbrainzjsonfactory.h"
+#include "broadcast/listenbrainzlistener/listenbrainzjsonfactory.h"
 
 #include <QDateTime>
 #include <QJsonArray>

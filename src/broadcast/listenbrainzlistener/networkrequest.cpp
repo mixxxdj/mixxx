@@ -1,4 +1,4 @@
-#include "broadcast/networkrequest.h"
+#include "broadcast/listenbrainzlistener/networkrequest.h"
 
 #include "moc_networkrequest.cpp"
 

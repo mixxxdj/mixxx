@@ -1,4 +1,4 @@
-#include "broadcast/networkreply.h"
+#include "broadcast/listenbrainzlistener/networkreply.h"
 
 #include "moc_networkreply.cpp"
 
