@@ -4,7 +4,6 @@
 #include <QFileInfo>
 
 #include "broadcast/defs_broadcast.h"
-#include "broadcast/filelistener.h"
 #include "defs_urls.h"
 #include "preferences/broadcastsettings.h"
 #include "util/logger.h"

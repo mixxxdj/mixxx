@@ -2,9 +2,9 @@
 #include <QJsonObject>
 
 #include "preferences/listenbrainzsettings.h"
-#include "broadcast/listenbrainzservice.h"
-#include "broadcast/listenbrainzjsonfactory.h"
-#include "broadcast/networkmanager.h"
+#include "broadcast/listenbrainzlistener/listenbrainzservice.h"
+#include "broadcast/listenbrainzlistener/listenbrainzjsonfactory.h"
+#include "broadcast/listenbrainzlistener/networkmanager.h"
 
 ListenBrainzService::ListenBrainzService(UserSettingsPointer pSettings)
         :  m_request(ListenBrainzAPIURL),

@@ -12,6 +12,7 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "broadcast/scrobblingmanager.h"
+#include "broadcast/mpris/mpris.h"
 
 class AnalyzerQueue;
 class Auxiliary;
@@ -26,6 +27,7 @@ class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
+class MixxxMainWindow;
 
 // For mocking PlayerManager.
 class PlayerManagerInterface {
@@ -59,9 +61,11 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     Q_OBJECT
   public:
     PlayerManager(UserSettingsPointer pConfig,
-                  SoundManager* pSoundManager,
-                  EffectsManager* pEffectsManager,
-                  EngineMaster* pEngine);
+                  SoundManager *pSoundManager,
+                  EffectsManager *pEffectsManager,
+                  EngineMaster *pEngine,
+                  MixxxMainWindow *pWindow);
+    
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager
@@ -260,7 +264,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<PreviewDeck*> m_preview_decks;
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
-    QMap<QString, BaseTrackPlayer*> m_players;         
+    QMap<QString, BaseTrackPlayer*> m_players;
+    Mpris m_mpris;
 };
 
 #endif // MIXER_PLAYERMANAGER_H

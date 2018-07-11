@@ -1,9 +1,9 @@
 
 #include <iostream>
 
-#include "broadcast/networkmanager.h"
-#include "broadcast/networkrequest.h"
-#include "broadcast/networkreply.h"
+#include "broadcast/listenbrainzlistener/networkmanager.h"
+#include "broadcast/listenbrainzlistener/networkrequest.h"
+#include "broadcast/listenbrainzlistener/networkreply.h"
 
 
 NetworkReply* FakeNetworkManager::post(const NetworkRequest *request, const QByteArray &data) {

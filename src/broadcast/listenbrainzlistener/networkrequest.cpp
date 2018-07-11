@@ -1,4 +1,4 @@
-#include "broadcast/networkrequest.h"
+#include "broadcast/listenbrainzlistener/networkrequest.h"
 
 
 void QtNetworkRequest::setRawHeader(const QByteArray &header, const QByteArray &value) {

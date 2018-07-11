@@ -1,4 +1,4 @@
-#include "broadcast/networkreply.h"
+#include "broadcast/listenbrainzlistener/networkreply.h"
 
 QNetworkReply::NetworkError FakeNetworkReply::error() const {
     return QNetworkReply::NoError;

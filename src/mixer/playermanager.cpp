@@ -5,8 +5,8 @@
 #include <QMutexLocker>
 
 #include "analyzer/analyzerqueue.h"
-#include "broadcast/filelistener.h"
-#include "broadcast/listenbrainzservice.h"
+#include "broadcast/filelistener/filelistener.h"
+#include "broadcast/listenbrainzlistener/listenbrainzservice.h"
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
@@ -34,10 +34,8 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
 //static
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 
-PlayerManager::PlayerManager(UserSettingsPointer pConfig,
-                             SoundManager* pSoundManager,
-                             EffectsManager* pEffectsManager,
-                             EngineMaster* pEngine) :
+PlayerManager::PlayerManager(UserSettingsPointer pConfig, SoundManager *pSoundManager, EffectsManager *pEffectsManager,
+                             EngineMaster *pEngine, MixxxMainWindow *pWindow) :
         m_mutex(QMutex::Recursive),
         m_pConfig(pConfig),
         m_pSoundManager(pSoundManager),
@@ -56,7 +54,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         m_pCONumMicrophones(new ControlObject(
                 ConfigKey("[Master]", "num_microphones"), true, true)),
         m_pCONumAuxiliaries(new ControlObject(
-                ConfigKey("[Master]", "num_auxiliaries"), true, true))
+                ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+        m_mpris(pWindow)
         {
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),

@@ -7,9 +7,9 @@
 #include "control/controlpushbutton.h"
 #include "preferences/listenbrainzsettings.h"
 #include "broadcast/scrobblingservice.h"
-#include "broadcast/networkrequest.h"
-#include "broadcast/networkreply.h"
-#include "broadcast/networkmanager.h"
+#include "broadcast/listenbrainzlistener/networkrequest.h"
+#include "broadcast/listenbrainzlistener/networkreply.h"
+#include "broadcast/listenbrainzlistener/networkmanager.h"
 
 class NetworkRequest;
 
