@@ -95,7 +95,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         // Otherwise, turn VSync off because it could cause horrible FPS on
         // Linux.
         // TODO(XXX): Make this configurable.
-        // TOOD(XXX): What should we do on Windows?
+        // TODO(XXX): What should we do on Windows?
         glFormat.setSwapInterval(0);
 #endif
 

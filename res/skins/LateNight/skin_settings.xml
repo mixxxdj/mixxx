@@ -17,7 +17,7 @@ Description:
     <Size>180f,1me</Size>
     <Children>
       <WidgetGroup><Size>3f,1me</Size></WidgetGroup>
-      
+
       <WidgetGroup>
         <ObjectName>SkinSettings</ObjectName>
         <Layout>vertical</Layout>
@@ -50,7 +50,7 @@ Description:
               in order to let them grow reasonably on big screens, as well as to
               allow good-looking compression of items on small screens.
               <SizePolicy> is very hard to handle in many places here due to
-              translucent covers and submenus, defining button sizes explicitely helps.
+              translucent covers and submenus, defining button sizes explicitly helps.
 
               Each categroy has a padding: top 2px, bottom 2px
               For every button we need to provide space (13-17px):
@@ -67,7 +67,7 @@ Description:
             <Layout>vertical</Layout>
             <Children>
 
-              <WidgetGroup><!-- 2/4 Decks toogle -->
+              <WidgetGroup><!-- 2/4 Decks toggle -->
                 <Layout>stacked</Layout>
                 <MinimumSize>180,13</MinimumSize>
                 <MaximumSize>180,17</MaximumSize>
@@ -84,7 +84,7 @@ Description:
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup><!-- 4/8 Hotcues toogle -->
+              <WidgetGroup><!-- 4/8 Hotcues toggle -->
                 <Layout>stacked</Layout>
                 <MinimumSize>180,13</MinimumSize>
                 <MaximumSize>180,17</MaximumSize>
@@ -101,7 +101,7 @@ Description:
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup><!-- Rate Control toogle -->
+              <WidgetGroup><!-- Rate Control toggle -->
                 <Layout>stacked</Layout>
                 <MinimumSize>180,13</MinimumSize>
                 <MaximumSize>180,17</MaximumSize>
@@ -135,7 +135,7 @@ Description:
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup><!-- Vinyl Control toogle -->
+              <WidgetGroup><!-- Vinyl Control toggle -->
                 <Layout>stacked</Layout>
                 <MinimumSize>180,13</MinimumSize>
                 <MaximumSize>180,17</MaximumSize>
@@ -380,7 +380,7 @@ Description:
                 </Children>
               </WidgetGroup><!-- /Preview Deck -->
 
-              <WidgetGroup><!-- coverart toogle -->
+              <WidgetGroup><!-- coverart toggle -->
                 <Layout>stacked</Layout>
                 <MinimumSize>180,13</MinimumSize>
                 <MaximumSize>180,17</MaximumSize>
