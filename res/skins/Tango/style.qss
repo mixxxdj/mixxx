@@ -47,9 +47,22 @@ WWidgetGroup {
 }
 
 #GuiCover {
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
   /* background is #333, so this has to blend in */
-  background-color: rgba(51, 51, 51, 200);
-}
+  background-color: rgba(51, 51, 51, 120);
+  }
+  #UnconfiguredHeadphoneHint {
+    font-size: 14px/14px;
+    text-align: center;
+    color: #fff;
+  }
+  #UnconfiguredHeadphoneText {
+    margin-left: 5px;
+    background-color: rgba(51, 51, 51, 200);
+    font-size: 12px/12px;
+    color: #aaa;
+  }
+
 
 /* splitters between
     - waveforms & lower skin part

@@ -185,16 +185,7 @@ Variables:
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
         
                   <!-- Greyed out if no headphone device is configured -->
-                  <WidgetGroup>
-                    <ObjectName>GuiCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <SizePolicy>min,me</SizePolicy>
-                    <Connection>
-                      <ConfigKey>[Master],headEnabled</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform><Not/></Transform>
-                    </Connection>
-                  </WidgetGroup>
+                  <Template src="skin:pfl_cover.xml"/>
         
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="ObjectName">PflButton</SetVariable>
