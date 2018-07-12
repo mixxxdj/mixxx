@@ -27,10 +27,6 @@ class MediaPlayer2 : public QDBusAbstractAdaptor
 
   public:
     explicit MediaPlayer2(MixxxMainWindow* pMixxx, QObject* parent = 0);
-    virtual ~MediaPlayer2();
-
-    void Raise();
-    void Quit();
 
     bool canQuit() const;
     bool fullscreen() const;
@@ -42,6 +38,10 @@ class MediaPlayer2 : public QDBusAbstractAdaptor
     QString desktopEntry() const;
     QStringList supportedUriSchemes() const;
     QStringList supportedMimeTypes() const;
+
+  public slots:
+    void Raise();
+    void Quit();
 
   private:
     MixxxMainWindow* m_pMixxx;

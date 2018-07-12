@@ -1,4 +1,6 @@
 #include <QApplication>
+#include <QDBusMessage>
+#include <QDBusConnection>
 
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
@@ -6,29 +8,29 @@
 
 #include "mediaplayer2player.h"
 
-static const char* kPlaybackStatusPlaying = "Playing";
-static const char* kPlaybackStatusPaused = "Paused";
-static const char* kPlaybackStatusStopped = "Stopped";
+namespace{
 
-// the playback will stop when there are no more tracks to play
-static const char* kLoopStatusNone = "None";
-// The current track will start again from the begining once it has finished playing
-static const char* kLoopStatusTrack = "Track";
-// The playback loops through a list of tracks
-static const char* kLoopStatusPlaylist = "Playlist";
+    const QString kPlaybackStatusPlaying = "Playing";
+    const QString kPlaybackStatusPaused = "Paused";
+    const QString kPlaybackStatusStopped = "Stopped";
+
+    // the playback will stop when there are no more tracks to play
+    const QString kLoopStatusNone = "None";
+    // The current track will start again from the begining once it has finished playing
+    const QString kLoopStatusTrack = "Track";
+    // The playback loops through a list of tracks
+    const QString kLoopStatusPlaylist = "Playlist";
+}
 
 
 MediaPlayer2Player::MediaPlayer2Player(QObject *parent)
     : QDBusAbstractAdaptor(parent) {
 }
 
-MediaPlayer2Player::~MediaPlayer2Player() {
-}
-
 QString MediaPlayer2Player::playbackStatus() const {
     int currentPlayingDeck = PlayerInfo::instance().getCurrentPlayingDeck();
     if (currentPlayingDeck == -1)
-        return kPlaybackStatusStopped;
+        return kPlaybackStatusPaused;
     return kPlaybackStatusPlaying;
 }
 
@@ -39,11 +41,11 @@ QString MediaPlayer2Player::loopStatus() const {
         QString group = PlayerManager::groupForDeck(deckIndex);
         ConfigKey key(group, "repeat");
         if (ControlObject::get(key) > 0.0) {
-            return QString(kLoopStatusTrack);
+            return kLoopStatusTrack;
         }
         // TODO: Decide when how to Handle playlist repeat mode
     }
-    return QString(kLoopStatusNone);
+    return kLoopStatusNone;
 }
 
 void MediaPlayer2Player::setLoopStatus(const QString& value) {
@@ -81,7 +83,18 @@ void MediaPlayer2Player::setShuffle(bool value) {
 }
 
 QVariantMap MediaPlayer2Player::metadata() const {
+    TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
     QVariantMap metadata;
+    if (!pTrack)
+        return metadata;
+    metadata.insert("mpris:trackid","/org/mixxx/" + pTrack->getId().toString());
+    double trackDurationSeconds = pTrack->getDuration();
+    trackDurationSeconds *= 1e6;
+    metadata.insert("mpris:length", static_cast<long long int>(trackDurationSeconds));
+    QStringList artists;
+    artists << pTrack->getArtist();
+    metadata.insert("xesam:artist", artists);
+    metadata.insert("xesam:title", pTrack->getTitle());
     return metadata;
 }
 

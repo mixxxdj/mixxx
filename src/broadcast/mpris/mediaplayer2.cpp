@@ -11,9 +11,6 @@ MediaPlayer2::MediaPlayer2(MixxxMainWindow* pMixxx, QObject* parent)
       m_pMixxx(pMixxx) {
 }
 
-MediaPlayer2::~MediaPlayer2() {
-}
-
 bool MediaPlayer2::canQuit() const {
     return true;
 }
@@ -35,7 +32,7 @@ bool MediaPlayer2::canRaise() const {
 }
 
 bool MediaPlayer2::hasTrackList() const {
-    return false;
+    return true;
 }
 
 QString MediaPlayer2::identity() const {

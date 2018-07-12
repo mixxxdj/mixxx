@@ -33,7 +33,6 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor
 
   public:
     explicit MediaPlayer2Player(QObject* parent = 0);
-    virtual ~MediaPlayer2Player();
 
     QString playbackStatus() const;
     QString loopStatus() const;
@@ -55,6 +54,7 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor
     bool canSeek() const;
     bool canControl() const;
 
+  public slots:
     void Next();
     void Previous();
     void Pause();

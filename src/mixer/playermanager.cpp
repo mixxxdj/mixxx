@@ -7,6 +7,7 @@
 #include "analyzer/analyzerqueue.h"
 #include "broadcast/filelistener/filelistener.h"
 #include "broadcast/listenbrainzlistener/listenbrainzservice.h"
+#include "broadcast/mpris/mprisservice.h"
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
@@ -54,8 +55,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig, SoundManager *pSoundMa
         m_pCONumMicrophones(new ControlObject(
                 ConfigKey("[Master]", "num_microphones"), true, true)),
         m_pCONumAuxiliaries(new ControlObject(
-                ConfigKey("[Master]", "num_auxiliaries"), true, true)),
-        m_mpris(pWindow)
+                ConfigKey("[Master]", "num_auxiliaries"), true, true))
         {
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
@@ -94,6 +94,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig, SoundManager *pSoundMa
     MetadataBroadcaster *broadcaster = new MetadataBroadcaster;
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new FileListener(pConfig)));
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new ListenBrainzService(pConfig)));
+    broadcaster->addNewScrobblingService(ScrobblingServicePtr(new MprisService(pWindow)));
     m_scrobblingManager.setMetadataBroadcaster(broadcaster);
 }
 
