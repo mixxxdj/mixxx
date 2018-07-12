@@ -32,8 +32,9 @@ PreviewButtonDelegate::PreviewButtonDelegate(QTableView* parent, int column)
     m_pButton->setChecked(false);
     // We need to hide the button that it is not painted by the QObject tree    
     m_pButton->hide();
-    // set the visible, to stop resizing in the background 
-    // which may lead to a crash since it is actally visible by the render() call 
+    // Set visible to stop resizing in the background 
+    // which may lead to a crash when already referenced by a painter obeject 
+    // during the render() call. 
     m_pButton->setAttribute(Qt::WA_WState_Visible);
 
     connect(m_pTableView, SIGNAL(entered(QModelIndex)),
