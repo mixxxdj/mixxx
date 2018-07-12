@@ -4,8 +4,8 @@
 #include <QtConcurrentRun>
 
 #include "broadcast/filelistener/metadatafileworker.h"
-#include "preferences/metadatafilesettings.h"
 #include "moc_filelistener.cpp"
+#include "preferences/metadatafilesettings.h"
 
 FileListener::FileListener(UserSettingsPointer pConfig)
         : m_COsettingsChanged(kFileSettingsChanged),
@@ -92,4 +92,3 @@ void FileListener::updateFile() {
         emit writeMetadataToFile(contentsBinary);
     }
 }
-

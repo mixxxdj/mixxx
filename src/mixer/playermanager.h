@@ -7,6 +7,7 @@
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
+#include "broadcast/mpris/mpris.h"
 #include "broadcast/scrobblingmanager.h"
 #include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
@@ -14,7 +15,6 @@
 #include "util/compatibility/qmutex.h"
 #include "util/parented_ptr.h"
 #include "util/performancetimer.h"
-#include "broadcast/mpris/mpris.h"
 
 class Auxiliary;
 class BaseTrackPlayer;
@@ -316,5 +316,4 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     QList<Microphone*> m_microphones;
     QList<Auxiliary*> m_auxiliaries;
     QMap<ChannelHandle, BaseTrackPlayer*> m_players;
-    Mpris m_mpris;
 };

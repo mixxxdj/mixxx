@@ -5,6 +5,7 @@
 #include "audio/types.h"
 #include "broadcast/filelistener/filelistener.h"
 #include "broadcast/listenbrainzlistener/listenbrainzservice.h"
+#include "broadcast/mpris/mprisservice.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -105,7 +106,7 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
-        EngineMixer* pEngine, 
+        EngineMixer* pEngine,
         MixxxMainWindow* pWindow)
         : m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_pConfig(pConfig),
@@ -126,8 +127,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                   ConfigKey(kAppGroup, QStringLiteral("num_microphones")), true, true)),
           m_pCONumAuxiliaries(std::make_unique<ControlObject>(
                   ConfigKey(kAppGroup, QStringLiteral("num_auxiliaries")), true, true)),
-          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
-          m_mpris(pWindow) {
+          m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->addAlias(ConfigKey(kLegacyGroup, QStringLiteral("num_decks")));
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
@@ -152,6 +152,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
     MetadataBroadcaster* broadcaster = new MetadataBroadcaster;
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new FileListener(pConfig)));
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new ListenBrainzService(pConfig)));
+    broadcaster->addNewScrobblingService(ScrobblingServicePtr(new MprisService(pWindow)));
     m_scrobblingManager.setMetadataBroadcaster(broadcaster);
 }
 
