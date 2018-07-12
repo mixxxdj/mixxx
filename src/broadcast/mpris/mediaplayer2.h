@@ -1,23 +1,22 @@
 #ifndef MEDIAPLAYER2_H
 #define MEDIAPLAYER2_H
 
-#include <QtDBus/QDBusAbstractAdaptor>
 #include <QStringList>
+#include <QtDBus/QDBusAbstractAdaptor>
 
 class MixxxMainWindow;
 
-// this implements the Version 2.2 of 
+// this implements the Version 2.2 of
 // MPRIS D-Bus Interface Specification
 // org.mpris.MediaPlayer2
 // http://specifications.freedesktop.org/mpris-spec/2.2/
 
-class MediaPlayer2 : public QDBusAbstractAdaptor
-{
+class MediaPlayer2 : public QDBusAbstractAdaptor {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.mpris.MediaPlayer2")
     Q_PROPERTY(bool CanQuit READ canQuit)
     Q_PROPERTY(bool Fullscreen READ fullscreen WRITE setFullscreen) // optional
-    Q_PROPERTY(bool CanSetFullscreen READ canSetFullscreen) // optional
+    Q_PROPERTY(bool CanSetFullscreen READ canSetFullscreen)         // optional
     Q_PROPERTY(bool CanRaise READ canRaise)
     Q_PROPERTY(bool HasTrackList READ hasTrackList)
     Q_PROPERTY(QString Identity READ identity)
@@ -27,10 +26,6 @@ class MediaPlayer2 : public QDBusAbstractAdaptor
 
   public:
     explicit MediaPlayer2(MixxxMainWindow* pMixxx, QObject* parent = 0);
-    virtual ~MediaPlayer2();
-
-    void Raise();
-    void Quit();
 
     bool canQuit() const;
     bool fullscreen() const;
@@ -42,6 +37,10 @@ class MediaPlayer2 : public QDBusAbstractAdaptor
     QString desktopEntry() const;
     QStringList supportedUriSchemes() const;
     QStringList supportedMimeTypes() const;
+
+  public slots:
+    void Raise();
+    void Quit();
 
   private:
     MixxxMainWindow* m_pMixxx;

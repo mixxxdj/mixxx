@@ -1,19 +1,16 @@
 #include "mediaplayer2.h"
 
 #include <QApplication>
-#include <QWidget>
 #include <QDebug>
+#include <QWidget>
 
 #include "mixxxmainwindow.h"
-#include "sources/soundsourceproxy.h"
 #include "moc_mediaplayer2.cpp"
+#include "sources/soundsourceproxy.h"
 
 MediaPlayer2::MediaPlayer2(MixxxMainWindow* pMixxx, QObject* parent)
-    : QDBusAbstractAdaptor(parent),
-      m_pMixxx(pMixxx) {
-}
-
-MediaPlayer2::~MediaPlayer2() {
+        : QDBusAbstractAdaptor(parent),
+          m_pMixxx(pMixxx) {
 }
 
 bool MediaPlayer2::canQuit() const {
@@ -45,7 +42,7 @@ bool MediaPlayer2::canRaise() const {
 }
 
 bool MediaPlayer2::hasTrackList() const {
-    return false;
+    return true;
 }
 
 QString MediaPlayer2::identity() const {
@@ -77,5 +74,3 @@ void MediaPlayer2::Raise() {
 void MediaPlayer2::Quit() {
     QApplication::quit();
 }
-
-

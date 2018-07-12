@@ -1,7 +1,7 @@
 #pragma once
 
-#include <QObject>
 #include <QNetworkReply>
+#include <QObject>
 
 class NetworkReply : public QObject {
     Q_OBJECT
@@ -23,6 +23,7 @@ class FakeNetworkReply : public NetworkReply {
     void setNetworkError(QNetworkReply::NetworkError error);
     void setHttpError(unsigned int error);
     void setContents(QByteArray contents);
+
   private:
     QByteArray contents;
     QNetworkReply::NetworkError netError;

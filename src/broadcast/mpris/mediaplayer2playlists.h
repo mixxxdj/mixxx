@@ -1,15 +1,14 @@
 #ifndef MEDIAPLAYER2PLAYLIST_H
 #define MEDIAPLAYER2PLAYLIST_H
 
+#include <QStringList>
 #include <QtDBus/QDBusAbstractAdaptor>
 #include <QtDBus/QDBusObjectPath>
-#include <QStringList>
 
-// this implements the Version 2.2 of 
+// this implements the Version 2.2 of
 // MPRIS D-Bus Interface Specification
 // org.mpris.MediaPlayer2.Playlists
 // http://specifications.freedesktop.org/mpris-spec/2.2/
-
 
 typedef struct {
     QDBusObjectPath o;
@@ -23,9 +22,7 @@ typedef struct {
     Playlist playlist;
 } MaybePlaylist;
 
-
-class MediaPlayer2Playlists : public QDBusAbstractAdaptor
-{
+class MediaPlayer2Playlists : public QDBusAbstractAdaptor {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.mpris.MediaPlayer2.Playlists")
     Q_PROPERTY(uint PlaylistCount READ playlistCount)
@@ -42,8 +39,7 @@ class MediaPlayer2Playlists : public QDBusAbstractAdaptor
 
   public slots:
     void ActivatePlaylist(const QDBusObjectPath& PlaylistId);
-    QList<Playlist> GetPlaylists(uint index, uint maxCount, const QString& order,
-                                 bool reverseOrder);
+    QList<Playlist> GetPlaylists(uint index, uint maxCount, const QString& order, bool reverseOrder);
 
   signals:
     void PlaylistChanged(const Playlist& playlist);

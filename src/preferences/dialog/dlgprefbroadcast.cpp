@@ -11,7 +11,6 @@
 
 #include "broadcast/defs_broadcast.h"
 #include "broadcast/filelistener/filelistener.h"
-#include "recording/defs_recording.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "encoder/encodersettings.h"

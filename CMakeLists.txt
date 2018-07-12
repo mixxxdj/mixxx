@@ -686,6 +686,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/broadcast/listenbrainzlistener/networkreply.cpp
   src/broadcast/listenbrainzlistener/networkrequest.cpp
   src/broadcast/mpris/mpris.cpp
+  src/broadcast/mpris/mprisservice.cpp
   src/broadcast/mpris/mediaplayer2.cpp
   src/broadcast/mpris/mediaplayer2player.cpp
   src/broadcast/mpris/mediaplayer2playlists.cpp

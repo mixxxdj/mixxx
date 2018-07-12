@@ -1,37 +1,36 @@
 #include "mediaplayer2player.h"
 
 #include <QApplication>
+#include <QDBusConnection>
+#include <QDBusMessage>
 
+#include "control/controlobject.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "control/controlobject.h"
-
 #include "moc_mediaplayer2player.cpp"
 
+namespace {
 
-static const char* kPlaybackStatusPlaying = "Playing";
-//static const char* kPlaybackStatusPaused = "Paused";
-static const char* kPlaybackStatusStopped = "Stopped";
+const QString kPlaybackStatusPlaying = "Playing";
+const QString kPlaybackStatusPaused = "Paused";
+const QString kPlaybackStatusStopped = "Stopped";
 
 // the playback will stop when there are no more tracks to play
-static const char* kLoopStatusNone = "None";
+const QString kLoopStatusNone = "None";
 // The current track will start again from the begining once it has finished playing
-static const char* kLoopStatusTrack = "Track";
+const QString kLoopStatusTrack = "Track";
 // The playback loops through a list of tracks
-//static const char* kLoopStatusPlaylist = "Playlist";
+//const QString kLoopStatusPlaylist = "Playlist";
+} // namespace
 
-
-MediaPlayer2Player::MediaPlayer2Player(QObject *parent)
-    : QDBusAbstractAdaptor(parent) {
-}
-
-MediaPlayer2Player::~MediaPlayer2Player() {
+MediaPlayer2Player::MediaPlayer2Player(QObject* parent)
+        : QDBusAbstractAdaptor(parent) {
 }
 
 QString MediaPlayer2Player::playbackStatus() const {
     int currentPlayingDeck = PlayerInfo::instance().getCurrentPlayingDeck();
     if (currentPlayingDeck == -1)
-        return kPlaybackStatusStopped;
+        return kPlaybackStatusPaused;
     return kPlaybackStatusPlaying;
 }
 
@@ -42,11 +41,11 @@ QString MediaPlayer2Player::loopStatus() const {
         QString group = PlayerManager::groupForDeck(deckIndex);
         ConfigKey key(group, "repeat");
         if (ControlObject::get(key) > 0.0) {
-            return QString(kLoopStatusTrack);
+            return kLoopStatusTrack;
         }
         // TODO: Decide when how to Handle playlist repeat mode
     }
-    return QString(kLoopStatusNone);
+    return kLoopStatusNone;
 }
 
 void MediaPlayer2Player::setLoopStatus(const QString& value) {
@@ -84,7 +83,18 @@ void MediaPlayer2Player::setShuffle(bool value) {
 }
 
 QVariantMap MediaPlayer2Player::metadata() const {
+    TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
     QVariantMap metadata;
+    if (!pTrack)
+        return metadata;
+    metadata.insert("mpris:trackid", QString(QStringLiteral("/org/mixxx/") + pTrack->getId().toString()));
+    double trackDurationSeconds = pTrack->getDuration();
+    trackDurationSeconds *= 1e6;
+    metadata.insert("mpris:length", static_cast<long long int>(trackDurationSeconds));
+    QStringList artists;
+    artists << pTrack->getArtist();
+    metadata.insert("xesam:artist", artists);
+    metadata.insert("xesam:title", pTrack->getTitle());
     return metadata;
 }
 
@@ -141,26 +151,26 @@ void MediaPlayer2Player::Previous() {
 }
 
 void MediaPlayer2Player::Pause() {
-//    TrackPointer pTrack;
-//    int deckIndex = PlayerInfo::instance().getCurrentPlayingDeck();
-//    if (deckIndex >= 0) {
-//        QString group = PlayerManager::groupForDeck(deckIndex);
-//        ConfigKey key(group, "play");
-//        ControlObject::set(key, 0.0);
-//    }
+    //    TrackPointer pTrack;
+    //    int deckIndex = PlayerInfo::instance().getCurrentPlayingDeck();
+    //    if (deckIndex >= 0) {
+    //        QString group = PlayerManager::groupForDeck(deckIndex);
+    //        ConfigKey key(group, "play");
+    //        ControlObject::set(key, 0.0);
+    //    }
 }
 
 void MediaPlayer2Player::PlayPause() {
 }
 
 void MediaPlayer2Player::Stop() {
-//    TrackPointer pTrack;
-//    int deckIndex = PlayerInfo::instance().getCurrentPlayingDeck();
-//    if (deckIndex >= 0) {
-//        QString group = PlayerManager::groupForDeck(deckIndex);
-//        ConfigKey key(group, "play");
-//        ControlObject::set(key, 0.0);
-//    }
+    //    TrackPointer pTrack;
+    //    int deckIndex = PlayerInfo::instance().getCurrentPlayingDeck();
+    //    if (deckIndex >= 0) {
+    //        QString group = PlayerManager::groupForDeck(deckIndex);
+    //        ConfigKey key(group, "play");
+    //        ControlObject::set(key, 0.0);
+    //    }
 }
 
 void MediaPlayer2Player::Play() {
@@ -171,7 +181,7 @@ void MediaPlayer2Player::Seek(qlonglong offset) {
 }
 
 void MediaPlayer2Player::SetPosition(const QDBusObjectPath& trackId,
-                                     qlonglong position) {
+        qlonglong position) {
     Q_UNUSED(trackId);
     Q_UNUSED(position);
 }
