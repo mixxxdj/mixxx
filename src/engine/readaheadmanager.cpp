@@ -84,22 +84,24 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     SINT start_sample = SampleUtil::roundPlayPosToFrameStart(
             m_currentPosition, kNumChannels);
 
-    SINT samples_read = m_pReader->read(
+    bool readSuccess = m_pReader->read(
             start_sample, samples_from_reader, in_reverse, pOutput);
+    // read() returns a buffer filed up to "samples_from_reader".
+    // in case of a chache miss the buffer is cleared and the return value is false;
 
-    if (samples_read != samples_from_reader) {
-        qDebug() << "didn't get what we wanted" << samples_read << samples_from_reader;
+    if (!readSuccess) {
+        qDebug() << "##################################";
     }
 
     // Increment or decrement current read-ahead position
     // Mixing int and double here is desired, because the fractional frame should
     // be resist
     if (in_reverse) {
-        addReadLogEntry(m_currentPosition, m_currentPosition - samples_read);
-        m_currentPosition -= samples_read;
+        addReadLogEntry(m_currentPosition, m_currentPosition - samples_from_reader);
+        m_currentPosition -= samples_from_reader;
     } else {
-        addReadLogEntry(m_currentPosition, m_currentPosition + samples_read);
-        m_currentPosition += samples_read;
+        addReadLogEntry(m_currentPosition, m_currentPosition + samples_from_reader);
+        m_currentPosition += samples_from_reader;
     }
 
     // Activate on this trigger if necessary
@@ -131,21 +133,21 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         int loop_read_position = SampleUtil::roundPlayPosToFrameStart(
                 m_currentPosition + (in_reverse ? preloop_samples : -preloop_samples), kNumChannels);
 
-        int looping_samples_read = m_pReader->read(
-                loop_read_position, samples_read, in_reverse, m_pCrossFadeBuffer);
+        bool readSuccess2 = m_pReader->read(
+                loop_read_position, samples_from_reader, in_reverse, m_pCrossFadeBuffer);
 
-        if (looping_samples_read != samples_read) {
+        if (!readSuccess2) {
             qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
         }
 
         // do crossfade from the current buffer into the new loop beginning
-        if (samples_read != 0) { // avoid division by zero
-            SampleUtil::linearCrossfadeBuffers(pOutput, pOutput, m_pCrossFadeBuffer, samples_read);
+        if (samples_from_reader != 0) { // avoid division by zero
+            SampleUtil::linearCrossfadeBuffers(pOutput, pOutput, m_pCrossFadeBuffer, samples_from_reader);
         }
     }
 
     //qDebug() << "read" << m_currentPosition << samples_read;
-    return samples_read;
+    return samples_from_reader;
 }
 
 void ReadAheadManager::addRateControl(RateControl* pRateControl) {
