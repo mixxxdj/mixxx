@@ -10,7 +10,9 @@
 FileListener::FileListener(UserSettingsPointer pConfig)
         : m_COsettingsChanged(kFileSettingsChanged),
           m_pConfig(pConfig),
-          m_latestSettings(MetadataFileSettings::getPersistedSettings(pConfig)) {
+          m_latestSettings(MetadataFileSettings::getPersistedSettings(pConfig)),
+          m_filePathChanged(false),
+          m_tracksPaused(false) {
     MetadataFileWorker* newWorker = new MetadataFileWorker(m_latestSettings.filePath);
     newWorker->moveToThread(&m_workerThread);
 
@@ -81,10 +83,14 @@ void FileListener::updateStateFromSettings() {
 void FileListener::updateFile() {
     if (m_filePathChanged) {
         emit moveFile(m_latestSettings.filePath);
+        m_filePathChanged = false;
     }
     if (!m_tracksPaused && !m_fileContents.isEmpty()) {
         QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
-        DEBUG_ASSERT(codec);
+        if (!codec) {
+            qWarning() << "Text codec selected from metadata broadcast settings doesn't exist";
+            codec = QTextCodec::codecForName("UTF-8");
+        }
         QString newContents(m_latestSettings.fileFormatString);
         newContents.replace("$author", m_fileContents.artist)
                 .replace("$title", m_fileContents.title) += '\n';

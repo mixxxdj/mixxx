@@ -39,6 +39,6 @@ class FileListener : public ScrobblingService {
     FileSettings m_latestSettings;
     QThread m_workerThread;
     WrittenMetadata m_fileContents;
-    bool m_filePathChanged = false;
-    bool m_tracksPaused = false;
+    bool m_filePathChanged;
+    bool m_tracksPaused;
 };
