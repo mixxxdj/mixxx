@@ -23,8 +23,6 @@ Mpris::Mpris(MixxxMainWindow* pMixxx)
     // they are connected to is also deleted).
     // http://doc.qt.io/qt-5/qdbusabstractadaptor.html
     new MediaPlayer2(pMixxx, this);
-    new MediaPlayer2TrackList(this);
-    new MediaPlayer2Playlists(this);
     m_busConnection.registerObject("/org/mpris/MediaPlayer2", this);
     m_busConnection.registerService("org.mpris.MediaPlayer2.mixxx");
 }
