@@ -29,11 +29,14 @@ class BalanceGroupState : public EffectState {
 
 class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
   public:
-    BalanceEffect(EngineEffect* pEffect);
+    BalanceEffect() {};
     virtual ~BalanceEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     void processChannel(const ChannelHandle& handle,
                         BalanceGroupState* pState,

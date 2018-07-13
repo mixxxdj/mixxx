@@ -24,11 +24,14 @@ class Bessel4LVMixEQEffectGroupState :
 
 class Bessel4LVMixEQEffect : public EffectProcessorImpl<Bessel4LVMixEQEffectGroupState> {
   public:
-    Bessel4LVMixEQEffect(EngineEffect* pEffect);
+    Bessel4LVMixEQEffect();
     virtual ~Bessel4LVMixEQEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

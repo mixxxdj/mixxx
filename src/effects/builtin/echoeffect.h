@@ -48,10 +48,13 @@ class EchoGroupState : public EffectState {
 
 class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
   public:
-    EchoEffect(EngineEffect* pEffect);
+    EchoEffect() {};
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     void processChannel(const ChannelHandle& handle,
                         EchoGroupState* pState,

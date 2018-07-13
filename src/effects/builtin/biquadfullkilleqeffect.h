@@ -59,10 +59,13 @@ class BiquadFullKillEQEffectGroupState : public EffectState {
 
 class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffectGroupState> {
   public:
-    BiquadFullKillEQEffect(EngineEffect* pEffect);
+    BiquadFullKillEQEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
     void setFilters(int sampleRate, double lowFreqCorner, double highFreqCorner);
 

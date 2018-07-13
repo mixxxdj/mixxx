@@ -33,11 +33,14 @@ class LoudnessContourEffectGroupState final : public EffectState {
 class LoudnessContourEffect
         : public EffectProcessorImpl<LoudnessContourEffectGroupState> {
   public:
-    LoudnessContourEffect(EngineEffect* pEffect);
+    LoudnessContourEffect() {};
     ~LoudnessContourEffect() override;
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     void setFilters(int sampleRate);
 

@@ -96,10 +96,11 @@ void BalanceGroupState::setFilters(int sampleRate, int freq) {
     m_high->setFrequencyCorners(sampleRate, freq);
 }
 
-BalanceEffect::BalanceEffect(EngineEffect* pEffect)
-          : m_pBalanceParameter(pEffect->getParameterById("balance")),
-            m_pMidSideParameter(pEffect->getParameterById("midSide")),
-            m_pBypassFreqParameter(pEffect->getParameterById("bypassFreq")) {
+void BalanceEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pBalanceParameter = parameters.value("balance");
+    m_pMidSideParameter = parameters.value("midSide");
+    m_pBypassFreqParameter = parameters.value("bypassFreq");
 }
 
 BalanceEffect::~BalanceEffect() {

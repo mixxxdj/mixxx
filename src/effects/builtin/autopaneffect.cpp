@@ -77,10 +77,11 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     return pManifest;
 }
 
-AutoPanEffect::AutoPanEffect(EngineEffect* pEffect)
-        : m_pSmoothingParameter(pEffect->getParameterById("smoothing")),
-          m_pPeriodParameter(pEffect->getParameterById("period")),
-          m_pWidthParameter(pEffect->getParameterById("width")) {
+void AutoPanEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pSmoothingParameter = parameters.value("smoothing");
+    m_pPeriodParameter = parameters.value("period");
+    m_pWidthParameter = parameters.value("width");
 }
 
 AutoPanEffect::~AutoPanEffect() {

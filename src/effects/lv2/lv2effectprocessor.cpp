@@ -9,21 +9,29 @@ LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
                                        const LilvPlugin* plugin,
                                        QList<int> audioPortIndices,
                                        QList<int> controlPortIndices)
-            : m_pPlugin(plugin),
+            : m_pManifest(pManifest),
+              m_pPlugin(plugin),
               m_audioPortIndices(audioPortIndices),
               m_controlPortIndices(controlPortIndices) {
     m_inputL = new float[MAX_BUFFER_LEN];
     m_inputR = new float[MAX_BUFFER_LEN];
     m_outputL = new float[MAX_BUFFER_LEN];
     m_outputR = new float[MAX_BUFFER_LEN];
-    m_params = new float[pManifest->parameters().size()];
+}
 
-    const QList<EffectManifestParameterPointer>& effectManifestParameterList =
-            pManifest->parameters();
+void LV2EffectProcessor::loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_LV2parameters = new float[parameters.size()];
 
-    // Initialize EngineEffectParameters
-    for (const auto& pParam: effectManifestParameterList) {
-        m_parameters.append(pEngineEffect->getParameterById(pParam->id()));
+    // EngineEffect passes the EngineEffectParameters indexed by ID string, which
+    // is used directly by built-in EffectProcessorImpl subclasseses to access
+    // specific named parameters. However, LV2EffectProcessor::process iterates
+    // over the EngineEffectParameters to copy their values to the LV2 control
+    // ports. To avoid slow string comparisons in the audio engine thread in
+    // LV2EffectProcessor::process, rearrange the QMap of EngineEffectParameters by
+    // ID string to an ordered QList.
+    for (const auto& pManifestParameter : m_pManifest->parameters()) {
+        m_engineEffectParameters.append(parameters.value(pManifestParameter->id()));
     }
 }
 
@@ -54,7 +62,7 @@ LV2EffectProcessor::~LV2EffectProcessor() {
     delete[] m_inputR;
     delete[] m_outputL;
     delete[] m_outputR;
-    delete[] m_params;
+    delete[] m_LV2parameters;
 }
 
 void LV2EffectProcessor::initialize(
@@ -111,8 +119,8 @@ void LV2EffectProcessor::process(const ChannelHandle& inputHandle,
         return;
     } 
 
-    for (int i = 0; i < m_parameters.size(); i++) {
-        m_params[i] = m_parameters[i]->value();
+    for (int i = 0; i < m_engineEffectParameters.size(); i++) {
+        m_LV2parameters[i] = m_engineEffectParameters[i]->value();
     }
 
     int j = 0;
@@ -136,9 +144,9 @@ LV2EffectGroupState* LV2EffectProcessor::createGroupState(const mixxx::EnginePar
     LV2EffectGroupState * pState = new LV2EffectGroupState(bufferParameters, m_pPlugin);
     LilvInstance* handle = pState->lilvIinstance();
     if (handle) {
-        for (int i = 0; i < m_parameters.size(); i++) {
-            m_params[i] = m_parameters[i]->value();
-            lilv_instance_connect_port(handle, m_controlPortIndices[i], &m_params[i]);
+        for (int i = 0; i < m_engineEffectParameters.size(); i++) {
+            m_LV2parameters[i] = m_engineEffectParameters[i]->value();
+            lilv_instance_connect_port(handle, m_controlPortIndices[i], &m_LV2parameters[i]);
         }
 
         // We assume the audio ports are in the following order:

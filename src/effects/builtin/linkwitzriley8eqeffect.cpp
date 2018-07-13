@@ -66,15 +66,20 @@ void LinkwitzRiley8EQEffectGroupState::setFilters(int sampleRate, int lowFreq,
     m_high2->setFrequencyCorners(sampleRate, highFreq);
 }
 
-LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect(EngineEffect* pEffect)
-        : m_pPotLow(pEffect->getParameterById("low")),
-          m_pPotMid(pEffect->getParameterById("mid")),
-          m_pPotHigh(pEffect->getParameterById("high")),
-          m_pKillLow(pEffect->getParameterById("killLow")),
-          m_pKillMid(pEffect->getParameterById("killMid")),
-          m_pKillHigh(pEffect->getParameterById("killHigh")) {
+LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect() {
     m_pLoFreqCorner = new ControlProxy("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
+}
+
+
+void LinkwitzRiley8EQEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pPotLow = parameters.value("low");
+    m_pPotMid = parameters.value("mid");
+    m_pPotHigh = parameters.value("high");
+    m_pKillLow = parameters.value("killLow");
+    m_pKillMid = parameters.value("killMid");
+    m_pKillHigh = parameters.value("killHigh");
 }
 
 LinkwitzRiley8EQEffect::~LinkwitzRiley8EQEffect() {

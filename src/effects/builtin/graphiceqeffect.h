@@ -32,11 +32,14 @@ class GraphicEQEffectGroupState : public EffectState {
 
 class GraphicEQEffect : public EffectProcessorImpl<GraphicEQEffectGroupState> {
   public:
-    GraphicEQEffect(EngineEffect* pEffect);
+    GraphicEQEffect() {};
     virtual ~GraphicEQEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     void processChannel(const ChannelHandle& handle,
                         GraphicEQEffectGroupState* pState,

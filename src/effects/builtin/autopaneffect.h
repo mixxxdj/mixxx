@@ -79,11 +79,14 @@ class AutoPanGroupState : public EffectState {
 
 class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
   public:
-    AutoPanEffect(EngineEffect* pEffect);
+    AutoPanEffect() {};
     virtual ~AutoPanEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     void processChannel(const ChannelHandle& handle,
             AutoPanGroupState* pState,

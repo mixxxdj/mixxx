@@ -121,14 +121,15 @@ EffectManifestPointer PhaserEffect::getManifest() {
     return pManifest;
 }
 
-PhaserEffect::PhaserEffect(EngineEffect* pEffect)
-        : m_pStagesParameter(pEffect->getParameterById("stages")),
-          m_pLFOPeriodParameter(pEffect->getParameterById("lfo_period")),
-          m_pDepthParameter(pEffect->getParameterById("depth")),
-          m_pFeedbackParameter(pEffect->getParameterById("feedback")),
-          m_pRangeParameter(pEffect->getParameterById("range")),
-          m_pTripletParameter(pEffect->getParameterById("triplet")),
-          m_pStereoParameter(pEffect->getParameterById("stereo")) {
+void PhaserEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pStagesParameter = parameters.value("stages");
+    m_pLFOPeriodParameter = parameters.value("lfo_period");
+    m_pDepthParameter = parameters.value("depth");
+    m_pFeedbackParameter = parameters.value("feedback");
+    m_pRangeParameter = parameters.value("range");
+    m_pTripletParameter = parameters.value("triplet");
+    m_pStereoParameter = parameters.value("stereo");
 }
 
 PhaserEffect::~PhaserEffect() {

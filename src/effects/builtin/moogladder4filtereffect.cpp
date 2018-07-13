@@ -86,10 +86,11 @@ MoogLadder4FilterGroupState::~MoogLadder4FilterGroupState() {
     delete m_pHighFilter;
 }
 
-MoogLadder4FilterEffect::MoogLadder4FilterEffect(EngineEffect* pEffect)
-        : m_pLPF(pEffect->getParameterById("lpf")),
-          m_pResonance(pEffect->getParameterById("resonance")),
-          m_pHPF(pEffect->getParameterById("hpf")) {
+void MoogLadder4FilterEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pLPF = parameters.value("lpf");
+    m_pResonance = parameters.value("resonance");
+    m_pHPF = parameters.value("hpf");
 }
 
 MoogLadder4FilterEffect::~MoogLadder4FilterEffect() {

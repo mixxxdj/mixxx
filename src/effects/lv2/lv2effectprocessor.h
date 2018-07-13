@@ -46,6 +46,9 @@ class LV2EffectProcessor : public EffectProcessor {
     // callback executes process() with EffectEnableState::Disabling
     void deleteStatesForInputChannel(const ChannelHandle* inputChannel) override;
 
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
+
     void process(const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
             const CSAMPLE* pInput, CSAMPLE* pOutput,
@@ -55,12 +58,13 @@ class LV2EffectProcessor : public EffectProcessor {
   private:
     LV2EffectGroupState* createGroupState(const mixxx::EngineParameters& bufferParameters);
 
-    QList<EngineEffectParameterPointer> m_parameters;
+    EffectManifestPointer m_pManifest;
+    QList<EngineEffectParameterPointer> m_engineEffectParameters;
     float* m_inputL;
     float* m_inputR;
     float* m_outputL;
     float* m_outputR;
-    float* m_params;
+    float* m_LV2parameters;
     const LilvPlugin* m_pPlugin;
     const QList<int> m_audioPortIndices;
     const QList<int> m_controlPortIndices;

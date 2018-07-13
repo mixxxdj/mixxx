@@ -94,10 +94,10 @@ void LoudnessContourEffectGroupState::setFilters(int sampleRate, double gain) {
 
 }
 
-LoudnessContourEffect::LoudnessContourEffect(
-                EngineEffect* pEffect)
-        : m_pLoudness(pEffect->getParameterById("loudness")),
-          m_pUseGain(pEffect->getParameterById("useGain")) {
+void LoudnessContourEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pLoudness = parameters.value("loudness");
+    m_pUseGain = parameters.value("useGain");
 }
 
 LoudnessContourEffect::~LoudnessContourEffect() {

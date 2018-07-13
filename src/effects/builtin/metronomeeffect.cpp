@@ -52,9 +52,10 @@ EffectManifestPointer MetronomeEffect::getManifest() {
     return pManifest;
 }
 
-MetronomeEffect::MetronomeEffect(EngineEffect* pEffect)
-    : m_pBpmParameter(pEffect->getParameterById("bpm")),
-      m_pSyncParameter(pEffect->getParameterById("sync")) {
+void MetronomeEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pBpmParameter = parameters.value("bpm");
+    m_pSyncParameter = parameters.value("sync");
 }
 
 MetronomeEffect::~MetronomeEffect() {

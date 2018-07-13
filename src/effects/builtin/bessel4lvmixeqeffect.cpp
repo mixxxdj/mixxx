@@ -25,15 +25,19 @@ EffectManifestPointer Bessel4LVMixEQEffect::getManifest() {
     return pManifest;
 }
 
-Bessel4LVMixEQEffect::Bessel4LVMixEQEffect(EngineEffect* pEffect)
-        : m_pPotLow(pEffect->getParameterById("low")),
-          m_pPotMid(pEffect->getParameterById("mid")),
-          m_pPotHigh(pEffect->getParameterById("high")),
-          m_pKillLow(pEffect->getParameterById("killLow")),
-          m_pKillMid(pEffect->getParameterById("killMid")),
-          m_pKillHigh(pEffect->getParameterById("killHigh")) {
+Bessel4LVMixEQEffect::Bessel4LVMixEQEffect() {
     m_pLoFreqCorner = new ControlProxy("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
+}
+
+void Bessel4LVMixEQEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pPotLow = parameters.value("low");
+    m_pPotMid = parameters.value("mid");
+    m_pPotHigh = parameters.value("high");
+    m_pKillLow = parameters.value("killLow");
+    m_pKillMid = parameters.value("killMid");
+    m_pKillHigh = parameters.value("killHigh");
 }
 
 Bessel4LVMixEQEffect::~Bessel4LVMixEQEffect() {

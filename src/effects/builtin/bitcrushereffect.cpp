@@ -57,9 +57,10 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     return pManifest;
 }
 
-BitCrusherEffect::BitCrusherEffect(EngineEffect* pEffect)
-        : m_pBitDepthParameter(pEffect->getParameterById("bit_depth")),
-          m_pDownsampleParameter(pEffect->getParameterById("downsample")) {
+void BitCrusherEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pBitDepthParameter = parameters.value("bit_depth");
+    m_pDownsampleParameter = parameters.value("downsample");
 }
 
 BitCrusherEffect::~BitCrusherEffect() {

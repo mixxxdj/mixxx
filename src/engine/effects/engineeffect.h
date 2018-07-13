@@ -29,10 +29,6 @@ class EngineEffect : public EffectsRequestHandler {
         return m_pManifest->name();
     }
 
-    EngineEffectParameterPointer getParameterById(const QString& id) {
-        return m_parametersById.value(id);
-    }
-
     EffectState* createState(const mixxx::EngineParameters& bufferParameters);
 
     void loadStatesForInputChannel(const ChannelHandle* inputChannel,

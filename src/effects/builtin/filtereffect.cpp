@@ -85,10 +85,11 @@ FilterGroupState::~FilterGroupState() {
     delete m_pHighFilter;
 }
 
-FilterEffect::FilterEffect(EngineEffect* pEffect)
-        : m_pLPF(pEffect->getParameterById("lpf")),
-          m_pQ(pEffect->getParameterById("q")),
-          m_pHPF(pEffect->getParameterById("hpf")) {
+void FilterEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pLPF = parameters.value("lpf");
+    m_pQ = parameters.value("q");
+    m_pHPF = parameters.value("hpf");
 }
 
 FilterEffect::~FilterEffect() {

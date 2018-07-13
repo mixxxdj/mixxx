@@ -129,14 +129,15 @@ EffectManifestPointer TremoloEffect::getManifest() {
     return pManifest;
 }
 
-TremoloEffect::TremoloEffect(EngineEffect* pEffect)
-        : m_pDepthParameter(pEffect->getParameterById("depth")),
-          m_pRateParameter(pEffect->getParameterById("rate")),
-          m_pWidthParameter(pEffect->getParameterById("width")),
-          m_pWaveformParameter(pEffect->getParameterById("waveform")),
-          m_pPhaseParameter(pEffect->getParameterById("phase")),
-          m_pQuantizeParameter(pEffect->getParameterById("quantize")),
-          m_pTripletParameter(pEffect->getParameterById("triplet")) {
+void TremoloEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pDepthParameter = parameters.value("depth");
+    m_pRateParameter = parameters.value("rate");
+    m_pWidthParameter = parameters.value("width");
+    m_pWaveformParameter = parameters.value("waveform");
+    m_pPhaseParameter = parameters.value("phase");
+    m_pQuantizeParameter = parameters.value("quantize");
+    m_pTripletParameter = parameters.value("triplet");
 }
 
 void TremoloEffect::processChannel(const ChannelHandle& handle,

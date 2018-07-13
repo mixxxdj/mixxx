@@ -80,11 +80,12 @@ EffectManifestPointer ReverbEffect::getManifest() {
     return pManifest;
 }
 
-ReverbEffect::ReverbEffect(EngineEffect* pEffect)
-        : m_pDecayParameter(pEffect->getParameterById("decay")),
-          m_pBandWidthParameter(pEffect->getParameterById("bandwidth")),
-          m_pDampingParameter(pEffect->getParameterById("damping")),
-          m_pSendParameter(pEffect->getParameterById("send_amount")) {
+void ReverbEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pDecayParameter = parameters.value("decay");
+    m_pBandWidthParameter = parameters.value("bandwidth");
+    m_pDampingParameter = parameters.value("damping");
+    m_pSendParameter = parameters.value("send_amount");
 }
 
 ReverbEffect::~ReverbEffect() {

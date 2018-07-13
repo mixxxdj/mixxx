@@ -27,11 +27,14 @@ class MetronomeGroupState final : public EffectState {
 
 class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
   public:
-    MetronomeEffect(EngineEffect* pEffect);
+    MetronomeEffect() {};
     virtual ~MetronomeEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

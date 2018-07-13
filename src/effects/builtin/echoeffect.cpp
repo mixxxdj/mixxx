@@ -125,14 +125,15 @@ EffectManifestPointer EchoEffect::getManifest() {
     return pManifest;
 }
 
-EchoEffect::EchoEffect(EngineEffect* pEffect)
-        : m_pDelayParameter(pEffect->getParameterById("delay_time")),
-          m_pSendParameter(pEffect->getParameterById("send_amount")),
-          m_pFeedbackParameter(pEffect->getParameterById("feedback_amount")),
-          m_pPingPongParameter(pEffect->getParameterById("pingpong_amount")),
-          m_pQuantizeParameter(pEffect->getParameterById("quantize")),
-          m_pTripletParameter(pEffect->getParameterById("triplet")) {
- }
+void EchoEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pDelayParameter = parameters.value("delay_time");
+    m_pSendParameter = parameters.value("send_amount");
+    m_pFeedbackParameter = parameters.value("feedback_amount");
+    m_pPingPongParameter = parameters.value("pingpong_amount");
+    m_pQuantizeParameter = parameters.value("quantize");
+    m_pTripletParameter = parameters.value("triplet");
+}
 
 void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGroupState,
                                 const CSAMPLE* pInput,

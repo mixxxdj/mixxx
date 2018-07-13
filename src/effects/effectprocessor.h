@@ -13,8 +13,6 @@
 #include "engine/effects/message.h"
 #include "engine/channelhandle.h"
 
-class EngineEffect;
-
 // Effects are implemented as two separate classes, an EffectState subclass and
 // an EffectProcessorImpl subclass. Separating state from the DSP code allows
 // memory allocation and deletion, which is slow, to be done on the main thread
@@ -63,6 +61,9 @@ class EffectProcessor {
     // Called from main thread for garbage collection after the last audio thread
     // callback executes process() with EffectEnableState::Disabling
     virtual void deleteStatesForInputChannel(const ChannelHandle* inputChannel) = 0;
+
+    virtual void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters) = 0;
 
     // Take a buffer of audio samples as pInput, process the buffer according to
     // Effect-specific logic, and output it to the buffer pOutput. Both pInput

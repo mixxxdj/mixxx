@@ -40,11 +40,14 @@ class LinkwitzRiley8EQEffectGroupState : public EffectState {
 
 class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffectGroupState> {
   public:
-    LinkwitzRiley8EQEffect(EngineEffect* pEffect);
+    LinkwitzRiley8EQEffect();
     virtual ~LinkwitzRiley8EQEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

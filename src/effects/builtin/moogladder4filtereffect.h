@@ -28,11 +28,14 @@ class MoogLadder4FilterGroupState : public EffectState {
 
 class MoogLadder4FilterEffect : public EffectProcessorImpl<MoogLadder4FilterGroupState> {
   public:
-    MoogLadder4FilterEffect(EngineEffect* pEffect);
+    MoogLadder4FilterEffect() {};
     virtual ~MoogLadder4FilterEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

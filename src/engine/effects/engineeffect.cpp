@@ -31,6 +31,7 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
 
     // Creating the processor must come last.
     m_pProcessor = pInstantiator->instantiate(this, pManifest);
+    m_pProcessor->loadEngineEffectParameters(m_parametersById);
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
           mixxx::AudioSignal::SampleRate(96000),

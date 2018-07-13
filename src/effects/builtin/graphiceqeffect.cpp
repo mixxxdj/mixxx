@@ -133,13 +133,13 @@ void GraphicEQEffectGroupState::setFilters(int sampleRate) {
     }
 }
 
-GraphicEQEffect::GraphicEQEffect(EngineEffect* pEffect)
-        : m_oldSampleRate(44100) {
-    m_pPotLow = pEffect->getParameterById("low");
+void GraphicEQEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pPotLow = parameters.value("low");
     for (int i = 0; i < 6; i++) {
-        m_pPotMid.append(pEffect->getParameterById(QString("mid%1").arg(i)));
+        m_pPotMid.append(parameters.value(QString("mid%1").arg(i)));
     }
-    m_pPotHigh = pEffect->getParameterById("high");
+    m_pPotHigh = parameters.value("high");
 }
 
 GraphicEQEffect::~GraphicEQEffect() {

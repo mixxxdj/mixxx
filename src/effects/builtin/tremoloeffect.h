@@ -22,10 +22,13 @@ class TremoloState : public EffectState {
 
 class TremoloEffect : public EffectProcessorImpl<TremoloState> {
   public:
-    TremoloEffect(EngineEffect* pEffect);
+    TremoloEffect() {};
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

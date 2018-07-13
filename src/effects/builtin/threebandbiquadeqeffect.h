@@ -43,11 +43,14 @@ class ThreeBandBiquadEQEffectGroupState final : public EffectState {
 
 class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffectGroupState> {
   public:
-    ThreeBandBiquadEQEffect(EngineEffect* pEffect);
+    ThreeBandBiquadEQEffect();
     ~ThreeBandBiquadEQEffect() override;
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     void setFilters(int sampleRate, double lowFreqCorner, double highFreqCorner);
 

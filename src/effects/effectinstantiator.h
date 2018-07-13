@@ -22,8 +22,9 @@ class EffectProcessorInstantiator : public EffectInstantiator {
   public:
     EffectProcessor* instantiate(EngineEffect* pEngineEffect,
                                  EffectManifestPointer pManifest) {
+        Q_UNUSED(pEngineEffect);
         Q_UNUSED(pManifest);
-        return new T(pEngineEffect);
+        return new T();
     }
 };
 

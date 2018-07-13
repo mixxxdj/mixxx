@@ -24,11 +24,14 @@ struct BitCrusherGroupState : public EffectState {
 
 class BitCrusherEffect : public EffectProcessorImpl<BitCrusherGroupState> {
   public:
-    BitCrusherEffect(EngineEffect* pEffect);
+    BitCrusherEffect() {};
     virtual ~BitCrusherEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,

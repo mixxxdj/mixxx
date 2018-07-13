@@ -116,13 +116,14 @@ EffectManifestPointer FlangerEffect::getManifest() {
     return pManifest;
 }
 
-FlangerEffect::FlangerEffect(EngineEffect* pEffect)
-        : m_pSpeedParameter(pEffect->getParameterById("speed")),
-          m_pWidthParameter(pEffect->getParameterById("width")),
-          m_pManualParameter(pEffect->getParameterById("manual")),
-          m_pRegenParameter(pEffect->getParameterById("regen")),
-          m_pMixParameter(pEffect->getParameterById("mix")),
-          m_pTripletParameter(pEffect->getParameterById("triplet")) {
+void FlangerEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pSpeedParameter = parameters.value("speed");
+    m_pWidthParameter = parameters.value("width");
+    m_pManualParameter = parameters.value("manual");
+    m_pRegenParameter = parameters.value("regen");
+    m_pMixParameter = parameters.value("mix");
+    m_pTripletParameter = parameters.value("triplet");
 }
 
 FlangerEffect::~FlangerEffect() {

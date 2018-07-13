@@ -124,15 +124,19 @@ void ThreeBandBiquadEQEffectGroupState::setFilters(
 
 }
 
-ThreeBandBiquadEQEffect::ThreeBandBiquadEQEffect(EngineEffect* pEffect)
-        : m_pPotLow(pEffect->getParameterById("low")),
-          m_pPotMid(pEffect->getParameterById("mid")),
-          m_pPotHigh(pEffect->getParameterById("high")),
-          m_pKillLow(pEffect->getParameterById("killLow")),
-          m_pKillMid(pEffect->getParameterById("killMid")),
-          m_pKillHigh(pEffect->getParameterById("killHigh")) {
+ThreeBandBiquadEQEffect::ThreeBandBiquadEQEffect() {
     m_pLoFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "LoEQFrequency");
     m_pHiFreqCorner = std::make_unique<ControlProxy>("[Mixer Profile]", "HiEQFrequency");
+}
+
+void ThreeBandBiquadEQEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pPotLow = parameters.value("low");
+    m_pPotMid = parameters.value("mid");
+    m_pPotHigh = parameters.value("high");
+    m_pKillLow = parameters.value("killLow");
+    m_pKillMid = parameters.value("killMid");
+    m_pKillHigh = parameters.value("killHigh");
 }
 
 ThreeBandBiquadEQEffect::~ThreeBandBiquadEQEffect() {

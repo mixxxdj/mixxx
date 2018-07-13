@@ -119,7 +119,8 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
 
 ParametricEQEffectGroupState::ParametricEQEffectGroupState(
       const mixxx::EngineParameters& bufferParameters)
-      : EffectState(bufferParameters) {
+      : EffectState(bufferParameters),
+        m_oldSampleRate(44100) {
     for (int i = 0; i < kBandCount; i++) {
         m_oldGain.append(1.0);
         m_oldQ.append(1.75);
@@ -142,14 +143,14 @@ void ParametricEQEffectGroupState::setFilters(int sampleRate) {
     }
 }
 
-ParametricEQEffect::ParametricEQEffect(EngineEffect* pEffect)
-        : m_oldSampleRate(44100) {
-    m_pPotGain.append(pEffect->getParameterById("gain1"));
-    m_pPotQ.append(pEffect->getParameterById("q1"));
-    m_pPotCenter.append(pEffect->getParameterById("center1"));
-    m_pPotGain.append(pEffect->getParameterById("gain2"));
-    m_pPotQ.append(pEffect->getParameterById("q2"));
-    m_pPotCenter.append(pEffect->getParameterById("center2"));
+void ParametricEQEffect::loadEngineEffectParameters(
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
+    m_pPotGain.append(parameters.value("gain1"));
+    m_pPotQ.append(parameters.value("q1"));
+    m_pPotCenter.append(parameters.value("center1"));
+    m_pPotGain.append(parameters.value("gain2"));
+    m_pPotQ.append(parameters.value("q2"));
+    m_pPotCenter.append(parameters.value("center2"));
 }
 
 ParametricEQEffect::~ParametricEQEffect() {
@@ -166,8 +167,8 @@ void ParametricEQEffect::processChannel(const ChannelHandle& handle,
 
     // If the sample rate has changed, initialize the filters using the new
     // sample rate
-    if (m_oldSampleRate != bufferParameters.sampleRate()) {
-        m_oldSampleRate = bufferParameters.sampleRate();
+    if (pState->m_oldSampleRate != bufferParameters.sampleRate()) {
+        pState->m_oldSampleRate = bufferParameters.sampleRate();
         pState->setFilters(bufferParameters.sampleRate());
     }
 

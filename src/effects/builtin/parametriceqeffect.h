@@ -32,16 +32,21 @@ class ParametricEQEffectGroupState final : public EffectState {
     QList<double> m_oldCenter;
     QList<double> m_oldQ;
 
+    unsigned int m_oldSampleRate;
+
     QList<CSAMPLE*> m_pBufs;
 };
 
 class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupState> {
   public:
-    ParametricEQEffect(EngineEffect* pEffect);
+    ParametricEQEffect() {};
     virtual ~ParametricEQEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     // See effectprocessor.h
     void processChannel(const ChannelHandle& handle,
@@ -59,9 +64,6 @@ class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupSta
     QList<EngineEffectParameterPointer> m_pPotGain;
     QList<EngineEffectParameterPointer> m_pPotQ;
     QList<EngineEffectParameterPointer> m_pPotCenter;
-
-
-    unsigned int m_oldSampleRate;
 
     DISALLOW_COPY_AND_ASSIGN(ParametricEQEffect);
 };

@@ -29,11 +29,14 @@ struct FilterGroupState : public EffectState {
 
 class FilterEffect : public EffectProcessorImpl<FilterGroupState> {
   public:
-    FilterEffect(EngineEffect* pEffect);
+    FilterEffect() {};
     virtual ~FilterEffect();
 
     static QString getId();
     static EffectManifestPointer getManifest();
+
+    void loadEngineEffectParameters(
+            const QMap<QString, EngineEffectParameterPointer>& parameters);
 
     void processChannel(const ChannelHandle& handle,
                         FilterGroupState* pState,
