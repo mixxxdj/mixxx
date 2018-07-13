@@ -17,7 +17,8 @@ ReadAheadManager::ReadAheadManager()
           m_pRateControl(NULL),
           m_currentPosition(0),
           m_pReader(NULL),
-          m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+          m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
+          m_cacheMissHappened(false) {
     // For testing only: ReadAheadManagerMock
 }
 
@@ -27,7 +28,8 @@ ReadAheadManager::ReadAheadManager(CachingReader* pReader,
           m_pRateControl(NULL),
           m_currentPosition(0),
           m_pReader(pReader),
-          m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+          m_pCrossFadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
+          m_cacheMissHappened(false) {
     DEBUG_ASSERT(m_pLoopingControl != NULL);
     DEBUG_ASSERT(m_pReader != NULL);
 }
@@ -90,7 +92,12 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     // in case of a chache miss the buffer is cleared and the return value is false;
 
     if (!readSuccess) {
-        qDebug() << "##################################";
+        m_cacheMissHappened = true;
+    } else if (m_cacheMissHappened) {
+        m_cacheMissHappened = false;
+        // Apply raming gain, because the last buffer has unwanted silenced and
+        // new without fading are causing a pop.
+        SampleUtil::applyRampingGain(pOutput, 0.0, 1.0, samples_from_reader);
     }
 
     // Increment or decrement current read-ahead position
@@ -138,6 +145,7 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
 
         if (!readSuccess2) {
             qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
+            m_cacheMissHappened = true;
         }
 
         // do crossfade from the current buffer into the new loop beginning
@@ -157,6 +165,7 @@ void ReadAheadManager::addRateControl(RateControl* pRateControl) {
 // Not thread-save, call from engine thread only
 void ReadAheadManager::notifySeek(double seekPosition) {
     m_currentPosition = seekPosition;
+    m_cacheMissHappened = false;
     m_readAheadLog.clear();
 
     // TODO(XXX) notifySeek on the engine controls. EngineBuffer currently does
