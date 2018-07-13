@@ -55,7 +55,7 @@ class LV2EffectProcessor : public EffectProcessor {
   private:
     LV2EffectGroupState* createGroupState(const mixxx::EngineParameters& bufferParameters);
 
-    QList<EngineEffectParameter*> m_parameters;
+    QList<EngineEffectParameterPointer> m_parameters;
     float* m_inputL;
     float* m_inputR;
     float* m_outputL;

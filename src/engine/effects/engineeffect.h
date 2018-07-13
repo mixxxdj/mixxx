@@ -29,8 +29,8 @@ class EngineEffect : public EffectsRequestHandler {
         return m_pManifest->name();
     }
 
-    EngineEffectParameter* getParameterById(const QString& id) {
-        return m_parametersById.value(id, NULL);
+    EngineEffectParameterPointer getParameterById(const QString& id) {
+        return m_parametersById.value(id);
     }
 
     EffectState* createState(const mixxx::EngineParameters& bufferParameters);
@@ -64,8 +64,8 @@ class EngineEffect : public EffectsRequestHandler {
     ChannelHandleMap<ChannelHandleMap<EffectEnableState>> m_effectEnableStateForChannelMatrix;
     bool m_effectRampsFromDry;
     // Must not be modified after construction.
-    QVector<EngineEffectParameter*> m_parameters;
-    QMap<QString, EngineEffectParameter*> m_parametersById;
+    QVector<EngineEffectParameterPointer> m_parameters;
+    QMap<QString, EngineEffectParameterPointer> m_parametersById;
 
     const EffectsManager* m_pEffectsManager;
 

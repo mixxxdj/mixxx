@@ -59,13 +59,13 @@ class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffect
         return getId();
     }
 
-    EngineEffectParameter* m_pPotLow;
-    EngineEffectParameter* m_pPotMid;
-    EngineEffectParameter* m_pPotHigh;
+    EngineEffectParameterPointer m_pPotLow;
+    EngineEffectParameterPointer m_pPotMid;
+    EngineEffectParameterPointer m_pPotHigh;
 
-    EngineEffectParameter* m_pKillLow;
-    EngineEffectParameter* m_pKillMid;
-    EngineEffectParameter* m_pKillHigh;
+    EngineEffectParameterPointer m_pKillLow;
+    EngineEffectParameterPointer m_pKillMid;
+    EngineEffectParameterPointer m_pKillHigh;
 
     ControlProxy* m_pLoFreqCorner;
     ControlProxy* m_pHiFreqCorner;

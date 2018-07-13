@@ -14,8 +14,7 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
     const QList<EffectManifestParameterPointer>& parameters = m_pManifest->parameters();
     for (int i = 0; i < parameters.size(); ++i) {
         EffectManifestParameterPointer param = parameters.at(i);
-        EngineEffectParameter* pParameter =
-                new EngineEffectParameter(param);
+        EngineEffectParameterPointer pParameter(new EngineEffectParameter(param));
         m_parameters[i] = pParameter;
         m_parametersById[param->id()] = pParameter;
     }
@@ -47,11 +46,7 @@ EngineEffect::~EngineEffect() {
     }
     delete m_pProcessor;
     m_parametersById.clear();
-    for (int i = 0; i < m_parameters.size(); ++i) {
-        EngineEffectParameter* pParameter = m_parameters.at(i);
-        m_parameters[i] = NULL;
-        delete pParameter;
-    }
+    m_parameters.clear();
 }
 
 EffectState* EngineEffect::createState(const mixxx::EngineParameters& bufferParameters) {
@@ -77,7 +72,7 @@ void EngineEffect::deleteStatesForInputChannel(const ChannelHandle* inputChannel
 
 bool EngineEffect::processEffectsRequest(EffectsRequest& message,
                                          EffectsResponsePipe* pResponsePipe) {
-    EngineEffectParameter* pParameter = NULL;
+    EngineEffectParameterPointer pParameter;
     EffectsResponse response(message);
 
     switch (message.type) {

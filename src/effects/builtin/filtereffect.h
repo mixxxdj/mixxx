@@ -47,9 +47,9 @@ class FilterEffect : public EffectProcessorImpl<FilterGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pLPF;
-    EngineEffectParameter* m_pQ;
-    EngineEffectParameter* m_pHPF;
+    EngineEffectParameterPointer m_pLPF;
+    EngineEffectParameterPointer m_pQ;
+    EngineEffectParameterPointer m_pHPF;
 
     DISALLOW_COPY_AND_ASSIGN(FilterEffect);
 };

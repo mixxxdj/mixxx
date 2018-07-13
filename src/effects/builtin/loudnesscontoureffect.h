@@ -56,8 +56,8 @@ class LoudnessContourEffect
         return getId();
     }
 
-    EngineEffectParameter* m_pLoudness;
-    EngineEffectParameter* m_pUseGain;
+    EngineEffectParameterPointer m_pLoudness;
+    EngineEffectParameterPointer m_pUseGain;
 };
 
 #endif // LOUDNESSCONTOUREFFECT_H

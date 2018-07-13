@@ -48,9 +48,9 @@ class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pBalanceParameter;
-    EngineEffectParameter* m_pMidSideParameter;
-    EngineEffectParameter* m_pBypassFreqParameter;
+    EngineEffectParameterPointer m_pBalanceParameter;
+    EngineEffectParameterPointer m_pMidSideParameter;
+    EngineEffectParameterPointer m_pBypassFreqParameter;
 
     DISALLOW_COPY_AND_ASSIGN(BalanceEffect);
 };

@@ -60,13 +60,13 @@ class PhaserEffect : public EffectProcessorImpl<PhaserGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pStagesParameter;
-    EngineEffectParameter* m_pLFOPeriodParameter;
-    EngineEffectParameter* m_pDepthParameter;
-    EngineEffectParameter* m_pFeedbackParameter;
-    EngineEffectParameter* m_pRangeParameter;
-    EngineEffectParameter* m_pTripletParameter;
-    EngineEffectParameter* m_pStereoParameter;
+    EngineEffectParameterPointer m_pStagesParameter;
+    EngineEffectParameterPointer m_pLFOPeriodParameter;
+    EngineEffectParameterPointer m_pDepthParameter;
+    EngineEffectParameterPointer m_pFeedbackParameter;
+    EngineEffectParameterPointer m_pRangeParameter;
+    EngineEffectParameterPointer m_pTripletParameter;
+    EngineEffectParameterPointer m_pStereoParameter;
 
     //Passing the sample through a series of allpass filters
     inline CSAMPLE processSample(CSAMPLE input, CSAMPLE* oldIn, CSAMPLE* oldOut,

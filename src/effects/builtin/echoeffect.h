@@ -65,12 +65,12 @@ class EchoEffect : public EffectProcessorImpl<EchoGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pDelayParameter;
-    EngineEffectParameter* m_pSendParameter;
-    EngineEffectParameter* m_pFeedbackParameter;
-    EngineEffectParameter* m_pPingPongParameter;
-    EngineEffectParameter* m_pQuantizeParameter;
-    EngineEffectParameter* m_pTripletParameter;
+    EngineEffectParameterPointer m_pDelayParameter;
+    EngineEffectParameterPointer m_pSendParameter;
+    EngineEffectParameterPointer m_pFeedbackParameter;
+    EngineEffectParameterPointer m_pPingPongParameter;
+    EngineEffectParameterPointer m_pQuantizeParameter;
+    EngineEffectParameterPointer m_pTripletParameter;
 
     DISALLOW_COPY_AND_ASSIGN(EchoEffect);
 };

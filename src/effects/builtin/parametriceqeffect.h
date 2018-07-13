@@ -56,9 +56,9 @@ class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupSta
         return getId();
     }
 
-    QList<EngineEffectParameter*> m_pPotGain;
-    QList<EngineEffectParameter*> m_pPotQ;
-    QList<EngineEffectParameter*> m_pPotCenter;
+    QList<EngineEffectParameterPointer> m_pPotGain;
+    QList<EngineEffectParameterPointer> m_pPotQ;
+    QList<EngineEffectParameterPointer> m_pPotCenter;
 
 
     unsigned int m_oldSampleRate;

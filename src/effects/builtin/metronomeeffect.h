@@ -41,8 +41,8 @@ class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures);
   private:
-    EngineEffectParameter* m_pBpmParameter;
-    EngineEffectParameter* m_pSyncParameter;
+    EngineEffectParameterPointer m_pBpmParameter;
+    EngineEffectParameterPointer m_pSyncParameter;
 
     DISALLOW_COPY_AND_ASSIGN(MetronomeEffect);
 };

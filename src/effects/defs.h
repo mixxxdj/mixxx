@@ -3,6 +3,7 @@
 #include "engine/channelhandle.h"
 #include <array>
 #include <QSharedPointer>
+#include <memory>
 
 enum class EffectEnableState {
     Disabled,
@@ -43,6 +44,9 @@ class EffectState;
 // For sending EffectStates along the MessagePipe
 typedef ChannelHandleMap<EffectState*> EffectStatesMap;
 typedef std::array<EffectStatesMap, kNumEffectsPerUnit> EffectStatesMapArray;
+
+class EngineEffectParameter;
+typedef QSharedPointer<EngineEffectParameter> EngineEffectParameterPointer;
 
 class EffectSlot;
 typedef QSharedPointer<EffectSlot> EffectSlotPointer;

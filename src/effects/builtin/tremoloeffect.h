@@ -40,13 +40,13 @@ class TremoloEffect : public EffectProcessorImpl<TremoloState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pDepthParameter;
-    EngineEffectParameter* m_pRateParameter;
-    EngineEffectParameter* m_pWidthParameter;
-    EngineEffectParameter* m_pWaveformParameter;
-    EngineEffectParameter* m_pPhaseParameter;
-    EngineEffectParameter* m_pQuantizeParameter;
-    EngineEffectParameter* m_pTripletParameter;
+    EngineEffectParameterPointer m_pDepthParameter;
+    EngineEffectParameterPointer m_pRateParameter;
+    EngineEffectParameterPointer m_pWidthParameter;
+    EngineEffectParameterPointer m_pWaveformParameter;
+    EngineEffectParameterPointer m_pPhaseParameter;
+    EngineEffectParameterPointer m_pQuantizeParameter;
+    EngineEffectParameterPointer m_pTripletParameter;
 
     DISALLOW_COPY_AND_ASSIGN(TremoloEffect);
 };

@@ -100,9 +100,9 @@ class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pSmoothingParameter;
-    EngineEffectParameter* m_pPeriodParameter;
-    EngineEffectParameter* m_pWidthParameter;
+    EngineEffectParameterPointer m_pSmoothingParameter;
+    EngineEffectParameterPointer m_pPeriodParameter;
+    EngineEffectParameterPointer m_pWidthParameter;
 
     DISALLOW_COPY_AND_ASSIGN(AutoPanEffect);
 };

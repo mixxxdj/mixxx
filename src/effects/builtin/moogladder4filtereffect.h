@@ -47,9 +47,9 @@ class MoogLadder4FilterEffect : public EffectProcessorImpl<MoogLadder4FilterGrou
         return getId();
     }
 
-    EngineEffectParameter* m_pLPF;
-    EngineEffectParameter* m_pResonance;
-    EngineEffectParameter* m_pHPF;
+    EngineEffectParameterPointer m_pLPF;
+    EngineEffectParameterPointer m_pResonance;
+    EngineEffectParameterPointer m_pHPF;
 
     DISALLOW_COPY_AND_ASSIGN(MoogLadder4FilterEffect);
 };

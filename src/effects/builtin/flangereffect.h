@@ -68,12 +68,12 @@ class FlangerEffect : public EffectProcessorImpl<FlangerGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pSpeedParameter;
-    EngineEffectParameter* m_pWidthParameter;
-    EngineEffectParameter* m_pManualParameter;
-    EngineEffectParameter* m_pRegenParameter;
-    EngineEffectParameter* m_pMixParameter;
-    EngineEffectParameter* m_pTripletParameter;
+    EngineEffectParameterPointer m_pSpeedParameter;
+    EngineEffectParameterPointer m_pWidthParameter;
+    EngineEffectParameterPointer m_pManualParameter;
+    EngineEffectParameterPointer m_pRegenParameter;
+    EngineEffectParameterPointer m_pMixParameter;
+    EngineEffectParameterPointer m_pTripletParameter;
 
     DISALLOW_COPY_AND_ASSIGN(FlangerEffect);
 };

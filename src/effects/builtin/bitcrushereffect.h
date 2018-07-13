@@ -43,8 +43,8 @@ class BitCrusherEffect : public EffectProcessorImpl<BitCrusherGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pBitDepthParameter;
-    EngineEffectParameter* m_pDownsampleParameter;
+    EngineEffectParameterPointer m_pBitDepthParameter;
+    EngineEffectParameterPointer m_pDownsampleParameter;
 
     DISALLOW_COPY_AND_ASSIGN(BitCrusherEffect);
 };

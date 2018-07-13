@@ -50,9 +50,9 @@ class GraphicEQEffect : public EffectProcessorImpl<GraphicEQEffectGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pPotLow;
-    QList<EngineEffectParameter*> m_pPotMid;
-    EngineEffectParameter* m_pPotHigh;
+    EngineEffectParameterPointer m_pPotLow;
+    QList<EngineEffectParameterPointer> m_pPotMid;
+    EngineEffectParameterPointer m_pPotHigh;
     unsigned int m_oldSampleRate;
 
     DISALLOW_COPY_AND_ASSIGN(GraphicEQEffect);

@@ -54,10 +54,10 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
         return getId();
     }
 
-    EngineEffectParameter* m_pDecayParameter;
-    EngineEffectParameter* m_pBandWidthParameter;
-    EngineEffectParameter* m_pDampingParameter;
-    EngineEffectParameter* m_pSendParameter;
+    EngineEffectParameterPointer m_pDecayParameter;
+    EngineEffectParameterPointer m_pBandWidthParameter;
+    EngineEffectParameterPointer m_pDampingParameter;
+    EngineEffectParameterPointer m_pSendParameter;
 
     DISALLOW_COPY_AND_ASSIGN(ReverbEffect);
 };
