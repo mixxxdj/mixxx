@@ -220,9 +220,21 @@ void CachingReader::process() {
     }
 }
 
-SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer) {
+bool CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer) {
+    // If asked to read 0 samples, don't do anything. (this is a perfectly
+    // reasonable request that happens sometimes.
+    if (numSamples == 0) {
+        return true;
+    }
+
     VERIFY_OR_DEBUG_ASSERT(buffer) {
-        return 0;
+        return false;
+    }
+
+    // If no track is loaded, don't do anything.
+    if (m_readerStatus != TRACK_LOADED) {
+        SampleUtil::clear(buffer, numSamples);
+        return false;
     }
 
     // the samples are always read in forward direction
@@ -247,13 +259,6 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
         QString temp = QString("Sample = %1").arg(sample);
         kLogger.debug() << "read() invalid arguments sample:" << sample
                  << "numSamples:" << numSamples << "buffer:" << buffer;
-        return 0;
-    }
-
-    // If asked to read 0 samples, don't do anything. (this is a perfectly
-    // reasonable request that happens sometimes. If no track is loaded, don't
-    // do anything.
-    if (numSamples == 0 || m_readerStatus != TRACK_LOADED) {
         return 0;
     }
 
@@ -369,6 +374,12 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                     DEBUG_ASSERT(bufferedFrameIndexRange.empty());
                 }
                 if (bufferedFrameIndexRange.empty()) {
+                    if (chunkIndex == firstChunkIndex) {
+                        // We have not read a single frame.
+                        // Inform the calling code by returning 0
+                        // that it can fade in the next time
+                        return false;
+                    }
                     // No more readable data available. Exit the loop and
                     // finally fill the remaining buffer with silence.
                     break;
@@ -409,7 +420,7 @@ SINT CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
     // Finally fill the remaining buffer with silence
     DEBUG_ASSERT(samplesRemaining >= 0);
     SampleUtil::clear(buffer, samplesRemaining);
-    return numSamples;
+    return true;
 }
 
 void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
