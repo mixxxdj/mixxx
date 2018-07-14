@@ -366,7 +366,12 @@ CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples,
                     DEBUG_ASSERT(!pChunk ||
                             (pChunk->getState() == CachingReaderChunkForOwner::READ_PENDING));
                     Counter("CachingReader::read(): Failed to read chunk on cache miss")++;
-                    kLogger.debug() << "Cache miss for chunk with index" << chunkIndex << "- abort reading";
+                    if (kLogger.traceEnabled()) {
+                        kLogger.trace()
+                                << "Cache miss for chunk with index"
+                                << chunkIndex
+                                << "- abort reading";
+                    }
                     // Abort reading (see below)
                     DEBUG_ASSERT(bufferedFrameIndexRange.empty());
                 }
