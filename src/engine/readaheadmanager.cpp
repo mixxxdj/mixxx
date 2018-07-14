@@ -86,18 +86,21 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
     SINT start_sample = SampleUtil::roundPlayPosToFrameStart(
             m_currentPosition, kNumChannels);
 
-    bool readSuccess = m_pReader->read(
+    const auto readResult = m_pReader->read(
             start_sample, samples_from_reader, in_reverse, pOutput);
-    // read() returns a buffer filed up to "samples_from_reader".
-    // in case of a chache miss the buffer is cleared and the return value is false;
-
-    if (!readSuccess) {
+    if (readResult == CachingReader::ReadResult::UNAVAILABLE) {
+        // Cache miss - no samples written
+        SampleUtil::clear(pOutput, samples_from_reader);
+        // Set the cache miss flag to decide when to apply ramping
+        // after the following read attempts.
         m_cacheMissHappened = true;
     } else if (m_cacheMissHappened) {
-        m_cacheMissHappened = false;
-        // Apply raming gain, because the last buffer has unwanted silenced and
-        // new without fading are causing a pop.
+        // Previous read was a cache miss, but now we got something back.
+        // Apply ramping gain, because the last buffer has unwanted silenced
+        // and new without fading are causing a pop.
         SampleUtil::applyRampingGain(pOutput, 0.0, 1.0, samples_from_reader);
+        // Reset the cache miss flag, because we are now back on track.
+        m_cacheMissHappened = false;
     }
 
     // Increment or decrement current read-ahead position
@@ -140,11 +143,14 @@ SINT ReadAheadManager::getNextSamples(double dRate, CSAMPLE* pOutput,
         int loop_read_position = SampleUtil::roundPlayPosToFrameStart(
                 m_currentPosition + (in_reverse ? preloop_samples : -preloop_samples), kNumChannels);
 
-        bool readSuccess2 = m_pReader->read(
+        const auto readResult = m_pReader->read(
                 loop_read_position, samples_from_reader, in_reverse, m_pCrossFadeBuffer);
-
-        if (!readSuccess2) {
+        if (readResult == CachingReader::ReadResult::UNAVAILABLE) {
             qDebug() << "ERROR: Couldn't get all needed samples for crossfade.";
+            // Cache miss - no samples written
+            SampleUtil::clear(m_pCrossFadeBuffer, samples_from_reader);
+            // Set the cache miss flag to decide when to apply ramping
+            // after the following read attempts.
             m_cacheMissHappened = true;
         }
 

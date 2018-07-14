@@ -220,21 +220,32 @@ void CachingReader::process() {
     }
 }
 
-bool CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer) {
-    // If asked to read 0 samples, don't do anything. (this is a perfectly
-    // reasonable request that happens sometimes.
-    if (numSamples == 0) {
-        return true;
+CachingReader::ReadResult CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer) {
+    // Check for bad inputs
+    VERIFY_OR_DEBUG_ASSERT(
+            // Refuse to read from an invalid position
+            (startSample % CachingReaderChunk::kChannels == 0) &&
+            // Refuse to read from an invalid number of samples
+            (numSamples % CachingReaderChunk::kChannels == 0) && (numSamples >= 0)) {
+        kLogger.critical()
+                << "read() invalid arguments:"
+                << "startSample =" << startSample
+                << "numSamples =" << numSamples;
+        return ReadResult::UNAVAILABLE;
     }
-
     VERIFY_OR_DEBUG_ASSERT(buffer) {
-        return false;
+        return ReadResult::UNAVAILABLE;
     }
 
     // If no track is loaded, don't do anything.
     if (m_readerStatus != TRACK_LOADED) {
-        SampleUtil::clear(buffer, numSamples);
-        return false;
+        return ReadResult::UNAVAILABLE;
+    }
+
+    // If asked to read 0 samples, don't do anything. (this is a perfectly
+    // reasonable request that happens sometimes.
+    if (numSamples == 0) {
+        return ReadResult::AVAILABLE; // nothing to do
     }
 
     // the samples are always read in forward direction
@@ -244,22 +255,6 @@ bool CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
     if (reverse) {
         // Start with the last sample in buffer
         sample -= numSamples;
-    }
-
-    // Check for bad inputs
-    VERIFY_OR_DEBUG_ASSERT(sample % CachingReaderChunk::kChannels == 0) {
-        // This problem is easy to fix, but this type of call should be
-        // complained about loudly.
-        --sample;
-    }
-    VERIFY_OR_DEBUG_ASSERT(numSamples % CachingReaderChunk::kChannels == 0) {
-        --numSamples;
-    }
-    VERIFY_OR_DEBUG_ASSERT(numSamples >= 0) {
-        QString temp = QString("Sample = %1").arg(sample);
-        kLogger.debug() << "read() invalid arguments sample:" << sample
-                 << "numSamples:" << numSamples << "buffer:" << buffer;
-        return 0;
     }
 
     SINT samplesRemaining = numSamples;
@@ -274,6 +269,7 @@ bool CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                     CachingReaderChunk::samples2frames(numSamples));
     DEBUG_ASSERT(!remainingFrameIndexRange.empty());
 
+    auto result = ReadResult::AVAILABLE;
     if (!intersect(remainingFrameIndexRange, m_readableFrameIndexRange).empty()) {
         // Fill the buffer up to the first readable sample with
         // silence. This may happen when the engine is in preroll,
@@ -300,6 +296,7 @@ bool CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
             }
             samplesRemaining -= prerollSamples;
             remainingFrameIndexRange.shrinkFront(prerollFrames);
+            result = ReadResult::PARTIALLY_AVAILABLE;
         }
 
         // Read the actual samples from the audio source into the
@@ -374,11 +371,13 @@ bool CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                     DEBUG_ASSERT(bufferedFrameIndexRange.empty());
                 }
                 if (bufferedFrameIndexRange.empty()) {
-                    if (chunkIndex == firstChunkIndex) {
-                        // We have not read a single frame.
-                        // Inform the calling code by returning 0
-                        // that it can fade in the next time
-                        return false;
+                    if (samplesRemaining == numSamples) {
+                        DEBUG_ASSERT(chunkIndex == firstChunkIndex);
+                        // We have not read a single frame caused by a cache miss of
+                        // the first required chunk. Inform the calling code that no
+                        // data has been written into the buffer and to handle this
+                        // situation appropriately.
+                        return ReadResult::UNAVAILABLE;
                     }
                     // No more readable data available. Exit the loop and
                     // finally fill the remaining buffer with silence.
@@ -404,6 +403,7 @@ bool CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
                     }
                     samplesRemaining -= paddingSamples;
                     remainingFrameIndexRange.shrinkFront(paddingFrameIndexRange.length());
+                    result = ReadResult::PARTIALLY_AVAILABLE;
                 }
                 const SINT chunkSamples =
                         CachingReaderChunk::frames2samples(bufferedFrameIndexRange.length());
@@ -419,8 +419,11 @@ bool CachingReader::read(SINT startSample, SINT numSamples, bool reverse, CSAMPL
     }
     // Finally fill the remaining buffer with silence
     DEBUG_ASSERT(samplesRemaining >= 0);
-    SampleUtil::clear(buffer, samplesRemaining);
-    return true;
+    if (samplesRemaining > 0) {
+        SampleUtil::clear(buffer, samplesRemaining);
+        result = ReadResult::PARTIALLY_AVAILABLE;
+    }
+    return result;
 }
 
 void CachingReader::hintAndMaybeWake(const HintVector& hintList) {
