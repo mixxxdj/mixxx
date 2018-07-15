@@ -46,7 +46,6 @@ void LV2EffectProcessor::processChannel(const ChannelHandle& handle,
                         const EffectEnableState enableState,
                         const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
-    Q_UNUSED(enableState);
 
     for (int i = 0; i < m_engineEffectParameters.size(); i++) {
         m_LV2parameters[i] = m_engineEffectParameters[i]->value();
@@ -60,6 +59,11 @@ void LV2EffectProcessor::processChannel(const ChannelHandle& handle,
     }
 
     LilvInstance* instance = channelState->lilvInstance(m_pPlugin, bufferParameters);
+
+    if (enableState == EffectEnableState::Enabling) {
+        lilv_instance_activate(instance);
+    }
+
     lilv_instance_run(instance, bufferParameters.framesPerBuffer());
 
     j = 0;
@@ -67,6 +71,10 @@ void LV2EffectProcessor::processChannel(const ChannelHandle& handle,
         pOutput[i] = m_outputL[j];
         pOutput[i + 1] = m_outputR[j];
         j++;
+    }
+
+    if (enableState == EffectEnableState::Disabling) {
+        lilv_instance_deactivate(instance);
     }
 }
 
@@ -95,8 +103,6 @@ LV2EffectGroupState* LV2EffectProcessor::createSpecificState(
         lilv_instance_connect_port(pInstance, m_audioPortIndices[1], m_inputR);
         lilv_instance_connect_port(pInstance, m_audioPortIndices[2], m_outputL);
         lilv_instance_connect_port(pInstance, m_audioPortIndices[3], m_outputR);
-
-        lilv_instance_activate(pInstance);
     }
     return pState;
 };
