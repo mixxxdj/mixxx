@@ -50,8 +50,16 @@ EffectsManager::~EffectsManager() {
 
     // NOTE(Kshitij) : Use new functions for saving XML files
     // saveEffectChains();
-    // This must be done here, since the engineRacks are deleted via
-    // the queue
+
+    // The EffectChainSlots must be deleted before the EffectsBackends in case
+    // there is an LV2 effect currently loaded.
+    // ~LV2GroupState calls lilv_instance_free, which will segfault if called
+    // after ~LV2Backend calls lilv_world_free.
+    m_equalizerEffectChainSlots.clear();
+    m_quickEffectChainSlots.clear();
+    m_standardEffectChainSlots.clear();
+    m_outputEffectChainSlot.clear();
+    m_effectChainSlotsByGroup.clear();
     processEffectsResponses();
 
     m_effectsBackends.clear();
