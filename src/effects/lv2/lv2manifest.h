@@ -7,7 +7,7 @@
 #include "effects/defs.h"
 #include <lilv-0/lilv/lilv.h>
 
-class LV2Manifest {
+class LV2Manifest : public EffectManifest {
   public:
     enum Status {
         AVAILABLE,
@@ -17,7 +17,7 @@ class LV2Manifest {
 
     LV2Manifest(const LilvPlugin* plug, QHash<QString, LilvNode*>& properties);
     ~LV2Manifest();
-    EffectManifestPointer getEffectManifest() const;
+
     QList<int> getAudioPortIndices();
     QList<int> getControlPortIndices();
     const LilvPlugin* getPlugin();
@@ -28,7 +28,6 @@ class LV2Manifest {
     void buildEnumerationOptions(const LilvPort* port,
                                  EffectManifestParameterPointer param);
     const LilvPlugin* m_pLV2plugin;
-    EffectManifestPointer m_pEffectManifest;
 
     // This list contains:
     // position 0 -> input_left port index

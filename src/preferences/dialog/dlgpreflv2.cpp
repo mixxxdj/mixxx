@@ -31,15 +31,14 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
     qSort(allPlugins.begin(), allPlugins.end());
 
     for (const auto& effectId: allPlugins) {
-        LV2EffectManifestPointer lv2Manifest = m_pLV2Backend->getLV2Manifest(effectId);
-        EffectManifestPointer pEffectManifest = lv2Manifest->getEffectManifest();
+        LV2EffectManifestPointer pManifest = m_pLV2Backend->getLV2Manifest(effectId);
 
         QPushButton* button = new QPushButton(this);
-        button->setText(pEffectManifest->name());
+        button->setText(pManifest->name());
 
         if (!m_pLV2Backend->canInstantiateEffect(effectId)) {
             // Tooltip displaying why this effect is disabled
-            LV2Manifest::Status status = lv2Manifest->getStatus();
+            LV2Manifest::Status status = pManifest->getStatus();
             switch (status) {
                 case LV2Manifest::IO_NOT_STEREO:
                     button->setToolTip(QObject::tr("This plugin does not support "
@@ -58,7 +57,7 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
         }
 
         lv2_vertical_layout_left->addWidget(button);
-        button->setProperty("id", QVariant(pEffectManifest->id()));
+        button->setProperty("id", QVariant(pManifest->id()));
         connect(button, SIGNAL(clicked()), this, SLOT(slotDisplayParameters()));
     }
 }

@@ -26,7 +26,7 @@ void LV2EffectProcessor::loadEngineEffectParameters(
     // ports. To avoid slow string comparisons in the audio engine thread in
     // LV2EffectProcessor::process, rearrange the QMap of EngineEffectParameters by
     // ID string to an ordered QList.
-    for (const auto& pManifestParameter : m_pManifest->getEffectManifest()->parameters()) {
+    for (const auto& pManifestParameter : m_pManifest->parameters()) {
         m_engineEffectParameters.append(parameters.value(pManifestParameter->id()));
     }
 }

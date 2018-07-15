@@ -25,9 +25,8 @@ void LV2Backend::enumeratePlugins() {
             continue;
         }
         LV2EffectManifestPointer lv2Manifest(new LV2Manifest(plug, m_properties));
-        lv2Manifest->getEffectManifest()->setBackendType(getType());
-        m_registeredEffects.insert(lv2Manifest->getEffectManifest()->id(),
-                                   lv2Manifest);
+        lv2Manifest->setBackendType(getType());
+        m_registeredEffects.insert(lv2Manifest->id(), lv2Manifest);
     }
 }
 
@@ -45,7 +44,7 @@ const QList<QString> LV2Backend::getEffectIds() const {
     QList<QString> availableEffects;
     for (const auto& lv2Manifest : m_registeredEffects) {
         if (lv2Manifest->isValid()) {
-            availableEffects.append(lv2Manifest->getEffectManifest()->id());
+            availableEffects.append(lv2Manifest->id());
         }
     }
     return availableEffects;
@@ -67,7 +66,7 @@ EffectManifestPointer LV2Backend::getManifest(const QString& effectId) const {
     VERIFY_OR_DEBUG_ASSERT(m_registeredEffects.contains(effectId)) {
         return EffectManifestPointer();
     }
-    return m_registeredEffects.value(effectId)->getEffectManifest();
+    return m_registeredEffects.value(effectId);
 }
 
 std::unique_ptr<EffectProcessor> LV2Backend::createProcessor(
