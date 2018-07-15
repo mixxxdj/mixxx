@@ -88,12 +88,11 @@ AutoPanEffect::~AutoPanEffect() {
 }
 
 void AutoPanEffect::processChannel(
-          const ChannelHandle& handle, AutoPanGroupState* pGroupState,
+          AutoPanGroupState* pGroupState,
           const CSAMPLE* pInput, CSAMPLE* pOutput,
           const mixxx::EngineParameters& bufferParameters,
           const EffectEnableState enableState,
           const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
 
     if (enableState == EffectEnableState::Disabled) {
         return;

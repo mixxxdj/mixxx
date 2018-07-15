@@ -46,13 +46,12 @@ Bessel8LVMixEQEffect::~Bessel8LVMixEQEffect() {
     delete m_pHiFreqCorner;
 }
 
-void Bessel8LVMixEQEffect::processChannel(const ChannelHandle& handle,
-                                          Bessel8LVMixEQEffectGroupState* pState,
-                                          const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                          const mixxx::EngineParameters& bufferParameters,
-                                          const EffectEnableState enableState,
-                                          const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
+void Bessel8LVMixEQEffect::processChannel(
+        Bessel8LVMixEQEffectGroupState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
     if (enableState == EffectEnableState::Disabling) {

@@ -96,13 +96,12 @@ FilterEffect::~FilterEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void FilterEffect::processChannel(const ChannelHandle& handle,
-                                  FilterGroupState* pState,
-                                  const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                  const mixxx::EngineParameters& bufferParameters,
-                                  const EffectEnableState enableState,
-                                  const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
+void FilterEffect::processChannel(
+        FilterGroupState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
     double hpf;

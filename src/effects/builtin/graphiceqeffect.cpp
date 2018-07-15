@@ -145,13 +145,12 @@ void GraphicEQEffect::loadEngineEffectParameters(
 GraphicEQEffect::~GraphicEQEffect() {
 }
 
-void GraphicEQEffect::processChannel(const ChannelHandle& handle,
-                                     GraphicEQEffectGroupState* pState,
-                                     const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                     const mixxx::EngineParameters& bufferParameters,
-                                     const EffectEnableState enableState,
-                                     const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
+void GraphicEQEffect::processChannel(
+        GraphicEQEffectGroupState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
     // If the sample rate has changed, initialize the filters using the new

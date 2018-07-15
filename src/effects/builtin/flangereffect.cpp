@@ -130,13 +130,12 @@ FlangerEffect::~FlangerEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void FlangerEffect::processChannel(const ChannelHandle& handle,
-                                   FlangerGroupState* pState,
-                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                   const mixxx::EngineParameters& bufferParameters,
-                                   const EffectEnableState enableState,
-                                   const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
+void FlangerEffect::processChannel(
+        FlangerGroupState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
 
     double lfoPeriodParameter = m_pSpeedParameter->value();
     double lfoPeriodFrames;

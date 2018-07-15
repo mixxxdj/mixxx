@@ -135,14 +135,13 @@ void EchoEffect::loadEngineEffectParameters(
     m_pTripletParameter = parameters.value("triplet");
 }
 
-void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGroupState,
-                                const CSAMPLE* pInput,
-                                CSAMPLE* pOutput,
-                                const mixxx::EngineParameters& bufferParameters,
-                                const EffectEnableState enableState,
-                                const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
-
+void EchoEffect::processChannel(
+        EchoGroupState* pGroupState,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     EchoGroupState& gs = *pGroupState;
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
     double period = m_pDelayParameter->value();

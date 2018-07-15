@@ -44,13 +44,12 @@ class ReverbEffect : public EffectProcessorImpl<ReverbGroupState> {
     void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters);
 
-    // See effectprocessor.h
-    void processChannel(const ChannelHandle& handle,
-                        ReverbGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const mixxx::EngineParameters& bufferParameters,
-                        const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatures);
+    void processChannel(
+            ReverbGroupState* pState,
+            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatures) override;
 
   private:
     QString debugString() const {

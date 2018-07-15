@@ -47,15 +47,14 @@ class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffect
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters);
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
-    // See effectprocessor.h
-    void processChannel(const ChannelHandle& handle,
-                        LinkwitzRiley8EQEffectGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::EngineParameters& bufferParameters,
-                        const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState);
+    void processChannel(
+            LinkwitzRiley8EQEffectGroupState* pState,
+            const CSAMPLE* pInput, CSAMPLE *pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatureState) override;
 
   private:
     QString debugString() const {

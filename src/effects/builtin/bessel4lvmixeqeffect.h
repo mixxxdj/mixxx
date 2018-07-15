@@ -31,15 +31,14 @@ class Bessel4LVMixEQEffect : public EffectProcessorImpl<Bessel4LVMixEQEffectGrou
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters);
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
-    // See effectprocessor.h
-    void processChannel(const ChannelHandle& handle,
-                        Bessel4LVMixEQEffectGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const mixxx::EngineParameters& bufferParameters,
-                        const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState);
+    void processChannel(
+            Bessel4LVMixEQEffectGroupState* pState,
+            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatureState) override;
 
   private:
     QString debugString() const {

@@ -154,14 +154,12 @@ void BiquadFullKillEQEffect::loadEngineEffectParameters(
 // }
 
 void BiquadFullKillEQEffect::processChannel(
-        const ChannelHandle& handle,
         BiquadFullKillEQEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
     if (pState->m_oldSampleRate != bufferParameters.sampleRate() ||

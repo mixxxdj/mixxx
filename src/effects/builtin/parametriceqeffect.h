@@ -46,15 +46,14 @@ class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupSta
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters);
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
-    // See effectprocessor.h
-    void processChannel(const ChannelHandle& handle,
-                        ParametricEQEffectGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::EngineParameters& bufferParameters,
-                        const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState);
+    void processChannel(
+            ParametricEQEffectGroupState* pState,
+            const CSAMPLE* pInput, CSAMPLE *pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatureState) override;
 
   private:
     QString debugString() const {

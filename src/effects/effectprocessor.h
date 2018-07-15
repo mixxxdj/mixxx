@@ -125,11 +125,7 @@ class EffectProcessorImpl : public EffectProcessor {
     // static EffectManifest getManifest();
 
     // This is the only non-static method that subclasses need to implement.
-    // TODO(Be): remove ChannelHandle& argument? No (built-in) effects use it. Why should
-    // effects be concerned with the ChannelHandle& when process() takes care of giving
-    // it the appropriate ChannelStateHolder?
-    virtual void processChannel(const ChannelHandle& handle,
-                                EffectSpecificState* channelState,
+    virtual void processChannel(EffectSpecificState* channelState,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const mixxx::EngineParameters& bufferParameters,
                                 const EffectEnableState enableState,
@@ -152,8 +148,8 @@ class EffectProcessorImpl : public EffectProcessor {
             pState = createSpecificState(bufferParameters);
             m_channelStateMatrix[inputHandle][outputHandle] = pState;
         }
-        processChannel(inputHandle, pState, pInput, pOutput, bufferParameters,
-                       enableState, groupFeatures);
+        processChannel(pState, pInput, pOutput,
+                       bufferParameters, enableState, groupFeatures);
     }
 
     void initialize(const QSet<ChannelHandleAndGroup>& activeInputChannels,

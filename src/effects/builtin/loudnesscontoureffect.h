@@ -40,16 +40,16 @@ class LoudnessContourEffect
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters);
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
+
+    void processChannel(
+            LoudnessContourEffectGroupState* pState,
+            const CSAMPLE* pInput, CSAMPLE *pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatureState) override;
 
     void setFilters(int sampleRate);
-
-    void processChannel(const ChannelHandle& handle,
-                        LoudnessContourEffectGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::EngineParameters& bufferParameters,
-                        const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState);
 
   private:
     LoudnessContourEffect(const LoudnessContourEffect&) = delete;

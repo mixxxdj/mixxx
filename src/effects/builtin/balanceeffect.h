@@ -36,14 +36,14 @@ class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters);
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
-    void processChannel(const ChannelHandle& handle,
-                        BalanceGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const mixxx::EngineParameters& bufferParameters,
-                        const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatures);
+    void processChannel(
+            BalanceGroupState* pState,
+            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatures) override;
 
   private:
 

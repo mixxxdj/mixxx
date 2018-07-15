@@ -106,13 +106,12 @@ void BalanceEffect::loadEngineEffectParameters(
 BalanceEffect::~BalanceEffect() {
 }
 
-void BalanceEffect::processChannel(const ChannelHandle& handle,
-                               BalanceGroupState* pGroupState,
-                               const CSAMPLE* pInput, CSAMPLE* pOutput,
-                               const mixxx::EngineParameters& bufferParameters,
-                               const EffectEnableState enableState,
-                               const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
+void BalanceEffect::processChannel(
+        BalanceGroupState* pGroupState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
     CSAMPLE_GAIN balance = 0;

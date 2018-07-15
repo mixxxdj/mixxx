@@ -39,12 +39,12 @@ LV2EffectProcessor::~LV2EffectProcessor() {
     delete[] m_LV2parameters;
 }
 
-void LV2EffectProcessor::processChannel(const ChannelHandle& handle,
-                        LV2EffectGroupState* channelState,
-                        const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const mixxx::EngineParameters& bufferParameters,
-                        const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatures) {
+void LV2EffectProcessor::processChannel(
+        LV2EffectGroupState* channelState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
     for (int i = 0; i < m_engineEffectParameters.size(); i++) {

@@ -156,13 +156,12 @@ void ParametricEQEffect::loadEngineEffectParameters(
 ParametricEQEffect::~ParametricEQEffect() {
 }
 
-void ParametricEQEffect::processChannel(const ChannelHandle& handle,
-                                     ParametricEQEffectGroupState* pState,
-                                     const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                     const mixxx::EngineParameters& bufferParameters,
-                                     const EffectEnableState enableState,
-                                     const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
+void ParametricEQEffect::processChannel(
+        ParametricEQEffectGroupState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
     // If the sample rate has changed, initialize the filters using the new

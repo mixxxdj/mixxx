@@ -31,15 +31,14 @@ class BitCrusherEffect : public EffectProcessorImpl<BitCrusherGroupState> {
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters);
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
-    // See effectprocessor.h
-    void processChannel(const ChannelHandle& handle,
-                        BitCrusherGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::EngineParameters& bufferParameters,
-                        const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState);
+    void processChannel(
+            BitCrusherGroupState* pState,
+            const CSAMPLE* pInput, CSAMPLE *pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatureState) override;
 
   private:
     QString debugString() const {

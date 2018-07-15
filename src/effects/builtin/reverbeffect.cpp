@@ -92,13 +92,12 @@ ReverbEffect::~ReverbEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void ReverbEffect::processChannel(const ChannelHandle& handle,
-                                ReverbGroupState* pState,
-                                const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const mixxx::EngineParameters& bufferParameters,
-                                const EffectEnableState enableState,
-                                const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
+void ReverbEffect::processChannel(
+        ReverbGroupState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     Q_UNUSED(groupFeatures);
 
     const auto decay = m_pDecayParameter->value();

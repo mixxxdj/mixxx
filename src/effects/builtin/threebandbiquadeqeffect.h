@@ -50,17 +50,16 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters);
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
+
+    void processChannel(
+            ThreeBandBiquadEQEffectGroupState* pState,
+            const CSAMPLE* pInput, CSAMPLE *pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatureState) override;
 
     void setFilters(int sampleRate, double lowFreqCorner, double highFreqCorner);
-
-    // See effectprocessor.h
-    void processChannel(const ChannelHandle& handle,
-                        ThreeBandBiquadEQEffectGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::EngineParameters& bufferParameters,
-                        const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState);
 
   private:
     ThreeBandBiquadEQEffect(const ThreeBandBiquadEQEffect&) = delete;

@@ -62,13 +62,11 @@ MetronomeEffect::~MetronomeEffect() {
 }
 
 void MetronomeEffect::processChannel(
-        const ChannelHandle& handle,
         MetronomeGroupState* pGroupState,
         const CSAMPLE* pInput, CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
     Q_UNUSED(pInput);
 
     MetronomeGroupState* gs = pGroupState;

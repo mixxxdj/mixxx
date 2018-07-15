@@ -140,14 +140,12 @@ void TremoloEffect::loadEngineEffectParameters(
     m_pTripletParameter = parameters.value("triplet");
 }
 
-void TremoloEffect::processChannel(const ChannelHandle& handle,
-                                   TremoloState* pState,
-                                   const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                   const mixxx::EngineParameters& bufferParameters,
-                                   const EffectEnableState enableState,
-                                   const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
-
+void TremoloEffect::processChannel(
+        TremoloState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     const double width = m_pWidthParameter->value();
     const double smooth = m_pWaveformParameter->value();
     const double depth = m_pDepthParameter->value();

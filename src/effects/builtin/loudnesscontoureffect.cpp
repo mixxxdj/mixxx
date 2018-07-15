@@ -104,14 +104,12 @@ LoudnessContourEffect::~LoudnessContourEffect() {
 }
 
 void LoudnessContourEffect::processChannel(
-        const ChannelHandle& handle,
         LoudnessContourEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
     double filterGainDb = pState->m_oldFilterGainDb;

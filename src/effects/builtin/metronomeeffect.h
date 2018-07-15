@@ -34,15 +34,15 @@ class MetronomeEffect : public EffectProcessorImpl<MetronomeGroupState> {
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters);
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
-    // See effectprocessor.h
-    void processChannel(const ChannelHandle& handle,
-                        MetronomeGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const mixxx::EngineParameters& bufferParameters,
-                        const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatures);
+    void processChannel(
+            MetronomeGroupState* pState,
+            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatures) override;
+
   private:
     EngineEffectParameterPointer m_pBpmParameter;
     EngineEffectParameterPointer m_pSyncParameter;

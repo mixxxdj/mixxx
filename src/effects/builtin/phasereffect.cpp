@@ -136,14 +136,12 @@ PhaserEffect::~PhaserEffect() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void PhaserEffect::processChannel(const ChannelHandle& handle,
-                                  PhaserGroupState* pState,
-                                  const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                  const mixxx::EngineParameters& bufferParameters,
-                                  const EffectEnableState enableState,
-                                  const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
-
+void PhaserEffect::processChannel(
+        PhaserGroupState* pState,
+        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     if (enableState == EffectEnableState::Enabling) {
         pState->clear();
     }

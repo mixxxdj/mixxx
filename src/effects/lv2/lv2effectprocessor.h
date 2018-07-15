@@ -42,12 +42,13 @@ class LV2EffectProcessor final : public EffectProcessorImpl<LV2EffectGroupState>
     void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
-    void processChannel(const ChannelHandle& handle,
-                        LV2EffectGroupState* channelState,
-                        const CSAMPLE* pInput, CSAMPLE* pOutput,
-                        const mixxx::EngineParameters& bufferParameters,
-                        const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatures) override;
+    void processChannel(
+            LV2EffectGroupState* channelState,
+            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatures) override;
+
   private:
     LV2EffectGroupState* createSpecificState(
         const mixxx::EngineParameters& bufferParameters) override;

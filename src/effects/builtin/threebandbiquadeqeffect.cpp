@@ -143,14 +143,12 @@ ThreeBandBiquadEQEffect::~ThreeBandBiquadEQEffect() {
 }
 
 void ThreeBandBiquadEQEffect::processChannel(
-        const ChannelHandle& handle,
         ThreeBandBiquadEQEffectGroupState* pState,
         const CSAMPLE* pInput,
         CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-    Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
     if (pState->m_oldSampleRate != bufferParameters.sampleRate() ||

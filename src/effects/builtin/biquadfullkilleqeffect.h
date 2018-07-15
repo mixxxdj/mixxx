@@ -67,14 +67,14 @@ class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffect
     void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
-    void setFilters(int sampleRate, double lowFreqCorner, double highFreqCorner);
+    void processChannel(
+            BiquadFullKillEQEffectGroupState* pState,
+            const CSAMPLE* pInput, CSAMPLE *pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatureState) override;
 
-    void processChannel(const ChannelHandle& handle,
-                        BiquadFullKillEQEffectGroupState* pState,
-                        const CSAMPLE* pInput, CSAMPLE *pOutput,
-                        const mixxx::EngineParameters& bufferParameters,
-                        const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatureState) override;
+    void setFilters(int sampleRate, double lowFreqCorner, double highFreqCorner);
 
   private:
     BiquadFullKillEQEffect(const BiquadFullKillEQEffect&) = delete;

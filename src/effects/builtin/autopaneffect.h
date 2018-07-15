@@ -86,14 +86,14 @@ class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
     static EffectManifestPointer getManifest();
 
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters);
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
-    void processChannel(const ChannelHandle& handle,
+    void processChannel(
             AutoPanGroupState* pState,
             const CSAMPLE* pInput, CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
-            const GroupFeatureState& groupFeatures);
+            const GroupFeatureState& groupFeatures) override;
 
     double computeLawCoefficient(double position);
 
