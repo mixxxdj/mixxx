@@ -8,51 +8,49 @@
 #include "effects/defs.h"
 #include "engine/engine.h"
 
-class LV2EffectGroupState : public EffectState {
+class LV2EffectGroupState final: public EffectState {
   public:
-    LV2EffectGroupState(const mixxx::EngineParameters& bufferParameters, const LilvPlugin* pPlugin)
-            : EffectState(bufferParameters) {
-        m_pInstance = lilv_plugin_instantiate(pPlugin, bufferParameters.sampleRate(), nullptr);
+    LV2EffectGroupState(const mixxx::EngineParameters& bufferParameters)
+            : EffectState(bufferParameters),
+              m_pInstance(nullptr) {
     }
     ~LV2EffectGroupState() {
-        lilv_instance_deactivate(m_pInstance);
-        lilv_instance_free(m_pInstance);
+        if (m_pInstance) {
+            lilv_instance_deactivate(m_pInstance);
+            lilv_instance_free(m_pInstance);
+        }
     }
 
-    LilvInstance* lilvIinstance() {
+    LilvInstance* lilvInstance(const LilvPlugin* pPlugin,
+            const mixxx::EngineParameters& bufferParameters) {
+        if (!m_pInstance) {
+            m_pInstance = lilv_plugin_instantiate(
+                    pPlugin, bufferParameters.sampleRate(), nullptr);
+        }
         return m_pInstance;
     }
+
   private:
     LilvInstance* m_pInstance;
 };
 
-class LV2EffectProcessor : public EffectProcessor {
+class LV2EffectProcessor final : public EffectProcessorImpl<LV2EffectGroupState> {
   public:
     LV2EffectProcessor(LV2EffectManifestPointer pManifest);
     ~LV2EffectProcessor();
 
-    void initialize(
-            const QSet<ChannelHandleAndGroup>& activeInputChannels,
-            const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
-            const mixxx::EngineParameters& bufferParameters) override;
-    EffectState* createState(const mixxx::EngineParameters& bufferParameters) final;
-    bool loadStatesForInputChannel(const ChannelHandle* inputChannel,
-          const EffectStatesMap* pStatesMap) override;
-    // Called from main thread for garbage collection after the last audio thread
-    // callback executes process() with EffectEnableState::Disabling
-    void deleteStatesForInputChannel(const ChannelHandle* inputChannel) override;
-
     void loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters);
+            const QMap<QString, EngineEffectParameterPointer>& parameters) override;
 
-    void process(const ChannelHandle& inputHandle,
-            const ChannelHandle& outputHandle,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
-            const mixxx::EngineParameters& bufferParameters,
-            const EffectEnableState enableState,
-            const GroupFeatureState& groupFeatures) override;
+    void processChannel(const ChannelHandle& handle,
+                        LV2EffectGroupState* channelState,
+                        const CSAMPLE* pInput, CSAMPLE* pOutput,
+                        const mixxx::EngineParameters& bufferParameters,
+                        const EffectEnableState enableState,
+                        const GroupFeatureState& groupFeatures) override;
   private:
-    LV2EffectGroupState* createGroupState(const mixxx::EngineParameters& bufferParameters);
+    LV2EffectGroupState* createSpecificState(
+        const mixxx::EngineParameters& bufferParameters) override;
 
     LV2EffectManifestPointer m_pManifest;
     QList<EngineEffectParameterPointer> m_engineEffectParameters;
@@ -64,9 +62,6 @@ class LV2EffectProcessor : public EffectProcessor {
     const LilvPlugin* m_pPlugin;
     const QList<int> m_audioPortIndices;
     const QList<int> m_controlPortIndices;
-
-    QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
-    ChannelHandleMap<ChannelHandleMap<LV2EffectGroupState*>> m_channelStateMatrix;
 };
 
 

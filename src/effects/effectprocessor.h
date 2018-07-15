@@ -263,9 +263,11 @@ class EffectProcessorImpl : public EffectProcessor {
           stateMap.clear();
     };
 
-  private:
-
-    EffectSpecificState* createSpecificState(const mixxx::EngineParameters& bufferParameters) {
+  protected:
+    // Subclasses for external effects plugins may reimplement this, but
+    // subclasses for built-in effects should not.
+    virtual EffectSpecificState* createSpecificState(
+            const mixxx::EngineParameters& bufferParameters) {
         EffectSpecificState* pState = new EffectSpecificState(bufferParameters);
         if (kEffectDebugOutput) {
             qDebug() << this << "EffectProcessorImpl creating EffectState" << pState;
@@ -273,6 +275,7 @@ class EffectProcessorImpl : public EffectProcessor {
         return pState;
     };
 
+  private:
     QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
     ChannelHandleMap<ChannelHandleMap<EffectSpecificState*>> m_channelStateMatrix;
 };
