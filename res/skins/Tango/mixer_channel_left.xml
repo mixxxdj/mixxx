@@ -42,10 +42,20 @@ Variables:
         </Connection>
       </WidgetGroup><!-- /EQ + QuickEffect knobs/buttons -->
 
-      <WidgetGroup>
-        <Size>4f,1min</Size>
+      <WidgetGroup><!-- Spacer when EQ plugin is loaded & Kill buttons are shown -->
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <Size>4f,0min</Size>
+            <Connection>
+              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
         <Connection>
-          <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,loaded</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

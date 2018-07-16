@@ -71,9 +71,9 @@ Variables:
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EQ knob + Kill button -->
-      
+
       <WidgetGroup><!-- Spacer when no EQ plugin is loaded -->
-        <Size>42me,30f</Size>
+        <Size>0min,26min</Size>
         <Connection>
           <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,loaded</ConfigKey>
           <Transform><Not/></Transform>
@@ -86,18 +86,18 @@ Variables:
       b) EQ Kill buttons are hidden and no QuickEffect is loaded
       This allows a narrow knob column. -->
       <WidgetGroup>
-        <Size>1min,4f</Size>
+        <Size>0min,4f</Size>
         <Connection>
           <ConfigKey persist="true">[Master],show_eq_kill_buttons</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-      
+
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup>
-            <Size>1min,4f</Size>
+            <Size>0min,4f</Size>
             <Connection>
               <ConfigKey persist="true"><Variable name="QuickFx"/>,loaded</ConfigKey>
               <Transform><Not/></Transform>
