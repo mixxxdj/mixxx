@@ -34,9 +34,9 @@ const QString kConfigKey = "[Mixer Profile]";
 const QString kEnableEqs = "EnableEQs";
 const QString kEqsOnly = "EQsOnly";
 const QString kSingleEq = "SingleEQEffect";
-const QString kDefaultEqId = BiquadFullKillEQEffect::getId();
+const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " Built-in";
 const QString kDefaultMasterEqId = QString();
-const QString kDefaultQuickEffectId = FilterEffect::getId();
+const QString kDefaultQuickEffectId = FilterEffect::getId() + " Built-in";
 
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
@@ -94,9 +94,6 @@ DlgPrefEQ::~DlgPrefEQ() {
 
     qDeleteAll(m_deckQuickEffectSelectors);
     m_deckQuickEffectSelectors.clear();
-
-    qDeleteAll(m_filterWaveformEnableCOs);
-    m_filterWaveformEnableCOs.clear();
 }
 
 void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
@@ -110,21 +107,17 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         QString group = PlayerManager::groupForDeck(
                 m_deckEqEffectSelectors.size());
 
-        m_filterWaveformEnableCOs.append(
-                new ControlObject(ConfigKey(group, "filterWaveformEnable")));
-        m_filterWaveformEffectLoaded.append(false);
-
         // Create the drop down list for EQs
         QComboBox* eqComboBox = new QComboBox(this);
         m_deckEqEffectSelectors.append(eqComboBox);
         connect(eqComboBox, SIGNAL(currentIndexChanged(int)),
-                this, SLOT(slotEqEffectChangedOnDeck(int)));
+                this, SLOT(slotEffectChangedOnDeck(int)));
 
         // Create the drop down list for EQs
         QComboBox* quickEffectComboBox = new QComboBox(this);
         m_deckQuickEffectSelectors.append(quickEffectComboBox);
         connect(quickEffectComboBox, SIGNAL(currentIndexChanged(int)),
-                this, SLOT(slotQuickEffectChangedOnDeck(int)));
+                this, SLOT(slotEffectChangedOnDeck(int)));
 
         if (deckNo == 1) {
             m_firstSelectorLabel = label;
@@ -143,30 +136,38 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
     }
     slotPopulateDeckEffectSelectors();
     for (int i = oldDecks; i < static_cast<int>(numDecks); ++i) {
-        // Set the configured effect for box and simpleBox or Bessel8 LV-Mix EQ
+        // Set the configured effect for box and simpleBox or default
         // if none is configured
         QString group = PlayerManager::groupForDeck(i);
         QString configuredEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
                 "EffectForGroup_" + group), kDefaultEqId);
-        int selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(configuredEffect);
-        if (selectedEffectIndex < 0) {
-            selectedEffectIndex = m_deckEqEffectSelectors[i]->findData(kDefaultEqId);
-            configuredEffect = kDefaultEqId;
+
+        const EffectManifestPointer pEQManifest =
+                m_pEffectsManager->getManifestFromUniqueId(configuredEffect);
+
+        int selectedEQEffectIndex = 0;
+        if (pEQManifest) {
+            selectedEQEffectIndex = m_deckEqEffectSelectors[i]->findData(
+                QVariant(pEQManifest->uniqueId()));
+        } else {
+            // Select "None"
+            selectedEQEffectIndex = m_deckEqEffectSelectors[i]->count() - 1;
         }
-        m_deckEqEffectSelectors[i]->setCurrentIndex(selectedEffectIndex);
-        m_filterWaveformEffectLoaded[i] = m_pEffectsManager->isEQ(configuredEffect);
-        m_filterWaveformEnableCOs[i]->set(
-                m_filterWaveformEffectLoaded[i] &&
-                !CheckBoxBypass->checkState());
+
+        m_deckEqEffectSelectors[i]->setCurrentIndex(selectedEQEffectIndex);
 
         QString configuredQuickEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
                 "QuickEffectForGroup_" + group), kDefaultQuickEffectId);
-        int selectedQuickEffectIndex =
-                m_deckQuickEffectSelectors[i]->findData(configuredQuickEffect);
-        if (selectedQuickEffectIndex < 0) {
-            selectedQuickEffectIndex =
-                    m_deckEqEffectSelectors[i]->findData(kDefaultQuickEffectId);
-            configuredEffect = kDefaultQuickEffectId;
+        const EffectManifestPointer pQuickEffectManifest =
+                m_pEffectsManager->getManifestFromUniqueId(configuredQuickEffect);
+
+        int selectedQuickEffectIndex = 0;
+        if (pQuickEffectManifest) {
+            selectedQuickEffectIndex = m_deckQuickEffectSelectors[i]->findData(
+                QVariant(pQuickEffectManifest->uniqueId()));
+        } else {
+            // Select "None"
+            selectedQuickEffectIndex = m_deckQuickEffectSelectors[i]->count() - 1;
         }
         m_deckQuickEffectSelectors[i]->setCurrentIndex(selectedQuickEffectIndex);
     }
@@ -204,80 +205,62 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         filterEQ = nullptr; // take all
     }
 
-    const QList<EffectManifestPointer> availableEQEffects =
-        m_pEffectsManager->getAvailableEffectManifestsFiltered(filterEQ);
-    const QList<EffectManifestPointer> availableQuickEffects =
-        m_pEffectsManager->getAvailableEffectManifestsFiltered(hasSuperKnobLinking);
+    populateDeckBoxList(m_deckEqEffectSelectors, filterEQ);
+    populateDeckBoxList(m_deckQuickEffectSelectors, hasSuperKnobLinking);
 
-    for (QComboBox* box : m_deckEqEffectSelectors) {
+    m_inSlotPopulateDeckEffectSelectors = false;
+}
+
+void DlgPrefEQ::populateDeckBoxList(
+            const QList<QComboBox*> boxList,
+            EffectsManager::EffectManifestFilterFnc filterFunc) {
+    const QList<EffectManifestPointer> pManifestList =
+            m_pEffectsManager->getAvailableEffectManifestsFiltered(filterFunc);
+    for (QComboBox* box : boxList) {
         // Populate comboboxes with all available effects
         // Save current selection
-        QString selectedEffectId = box->itemData(box->currentIndex()).toString();
-        QString selectedEffectName = box->itemText(box->currentIndex());
+        const EffectManifestPointer pCurrentlySelectedManifest =
+                m_pEffectsManager->getManifestFromUniqueId(
+                        box->itemData(box->currentIndex()).toString());
+
         box->clear();
         int currentIndex = -1; // Nothing selected
 
-        int i;
-        for (i = 0; i < availableEQEffects.size(); ++i) {
-            EffectManifestPointer pManifest = availableEQEffects.at(i);
-            box->addItem(pManifest->name(), QVariant(pManifest->id()));
-            if (selectedEffectId == pManifest->id()) {
+        int i = 0;
+        for (const auto& pManifest : pManifestList) {
+            box->addItem(pManifest->name(), QVariant(pManifest->uniqueId()));
+            if (pCurrentlySelectedManifest &&
+                pCurrentlySelectedManifest.data() == pManifest.data()) {
                 currentIndex = i;
             }
+            ++i;
         }
         //: Displayed when no effect is selected
-        box->addItem(tr("None"), QVariant(QString("")));
-        if (selectedEffectId.isNull()) {
-            currentIndex = availableEQEffects.size(); // selects "None"
+        box->addItem(tr("None"), QVariant());
+        if (pCurrentlySelectedManifest == nullptr) {
+            currentIndex = box->count() - 1; // selects "None"
         }
-        if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
+        if (currentIndex < 0) {
             // current selection is not part of the new list
             // So we need to add it
-            box->addItem(selectedEffectName, QVariant(selectedEffectId));
+            box->addItem(pCurrentlySelectedManifest->shortName(),
+                         QVariant(pCurrentlySelectedManifest->uniqueId()));
             currentIndex = i + 1;
         }
         box->setCurrentIndex(currentIndex);
     }
-
-    for (QComboBox* box : m_deckQuickEffectSelectors) {
-        // Populate comboboxes with all available effects
-        // Save current selection
-        QString selectedEffectId = box->itemData(box->currentIndex()).toString();
-        QString selectedEffectName = box->itemText(box->currentIndex());
-        box->clear();
-        int currentIndex = -1;// Nothing selected
-
-        int i;
-        for (i = 0; i < availableQuickEffects.size(); ++i) {
-            EffectManifestPointer pManifest = availableQuickEffects.at(i);
-            box->addItem(pManifest->name(), QVariant(pManifest->id()));
-            if (selectedEffectId == pManifest->id()) {
-                currentIndex = i;
-            }
-        }
-        //: Displayed when no effect is selected
-        box->addItem(tr("None"), QVariant(QString("")));
-        if (selectedEffectId.isNull()) {
-            currentIndex = availableQuickEffects.size(); // selects "None"
-        }
-        if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
-            // current selection is not part of the new list
-            // So we need to add it
-            box->addItem(selectedEffectName, QVariant(selectedEffectId));
-            currentIndex = i + 1;
-        }
-        box->setCurrentIndex(currentIndex);
-    }
-
-    m_inSlotPopulateDeckEffectSelectors = false;
 }
 
 void DlgPrefEQ::slotSingleEqChecked(int checked) {
     bool do_hide = static_cast<bool>(checked);
     m_pConfig->set(ConfigKey(kConfigKey, kSingleEq),
                    do_hide ? QString("yes") : QString("no"));
+    int deck1EQIndex = m_deckEqEffectSelectors.at(0)->currentIndex();
+    int deck1QuickEffectIndex = m_deckQuickEffectSelectors.at(0)->currentIndex();
     for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
         if (do_hide) {
+            m_deckEqEffectSelectors.at(i-1)->setCurrentIndex(deck1EQIndex);
+            m_deckQuickEffectSelectors.at(i-1)->setCurrentIndex(deck1QuickEffectIndex);
             gridLayout_3->itemAtPosition(i, 0)->widget()->hide();
             gridLayout_3->itemAtPosition(i, 1)->widget()->hide();
             gridLayout_3->itemAtPosition(i, 2)->widget()->hide();
@@ -348,8 +331,7 @@ void DlgPrefEQ::loadSettings() {
     }
 }
 
-void DlgPrefEQ::setDefaultShelves()
-{
+void DlgPrefEQ::setDefaultShelves() {
     m_pConfig->set(ConfigKey(kConfigKey, "HiEQFrequency"), ConfigValue(2500));
     m_pConfig->set(ConfigKey(kConfigKey, "LoEQFrequency"), ConfigValue(250));
     m_pConfig->set(ConfigKey(kConfigKey, "HiEQFrequencyPrecise"), ConfigValue(2500.0));
@@ -359,11 +341,11 @@ void DlgPrefEQ::setDefaultShelves()
 void DlgPrefEQ::slotResetToDefaults() {
     slotMasterEQToDefault();
     setDefaultShelves();
-    foreach(QComboBox* pCombo, m_deckEqEffectSelectors) {
+    for (QComboBox* pCombo : m_deckEqEffectSelectors) {
         pCombo->setCurrentIndex(
                pCombo->findData(kDefaultEqId));
     }
-    foreach(QComboBox* pCombo, m_deckQuickEffectSelectors) {
+    for (QComboBox* pCombo : m_deckQuickEffectSelectors) {
         pCombo->setCurrentIndex(
                pCombo->findData(kDefaultQuickEffectId));
     }
@@ -379,52 +361,33 @@ void DlgPrefEQ::slotResetToDefaults() {
     slotApply();
 }
 
-void DlgPrefEQ::slotEqEffectChangedOnDeck(int effectIndex) {
+void DlgPrefEQ::slotEffectChangedOnDeck(int effectIndex) {
     QComboBox* c = qobject_cast<QComboBox*>(sender());
     // Check if qobject_cast was successful
-    if (c && !m_inSlotPopulateDeckEffectSelectors) {
-        int deckNumber = m_deckEqEffectSelectors.indexOf(c);
-        QString effectId = c->itemData(effectIndex).toString();
-
-        // If we are in single-effect mode and the first effect was changed,
-        // change the others as well.
-        if (deckNumber == 0 && CheckBoxSingleEqEffect->isChecked()) {
-            for (int otherDeck = 1;
-                    otherDeck < static_cast<int>(m_pNumDecks->get());
-                    ++otherDeck) {
-                QComboBox* box = m_deckEqEffectSelectors[otherDeck];
-                box->setCurrentIndex(effectIndex);
-            }
-        }
-
-        // This is required to remove a previous selected effect that does not
-        // fit to the current ShowAllEffects checkbox
-        slotPopulateDeckEffectSelectors();
+    if (!c || m_inSlotPopulateDeckEffectSelectors) {
+        return;
     }
-}
 
-void DlgPrefEQ::slotQuickEffectChangedOnDeck(int effectIndex) {
-    QComboBox* c = qobject_cast<QComboBox*>(sender());
-    // Check if qobject_cast was successful
-    if (c && !m_inSlotPopulateDeckEffectSelectors) {
-        int deckNumber = m_deckQuickEffectSelectors.indexOf(c);
-        QString effectId = c->itemData(effectIndex).toString();
-
-        // If we are in single-effect mode and the first effect was changed,
-        // change the others as well.
-        if (deckNumber == 0 && CheckBoxSingleEqEffect->isChecked()) {
-            for (int otherDeck = 1;
-                    otherDeck < static_cast<int>(m_pNumDecks->get());
-                    ++otherDeck) {
-                QComboBox* box = m_deckQuickEffectSelectors[otherDeck];
-                box->setCurrentIndex(effectIndex);
-            }
-        }
-
-        // This is required to remove a previous selected effect that does not
-        // fit to the current ShowAllEffects checkbox
-        slotPopulateDeckEffectSelectors();
+    QList<QComboBox*>* pBoxList = &m_deckEqEffectSelectors;
+    if (m_deckQuickEffectSelectors.contains(c)) {
+        pBoxList = &m_deckQuickEffectSelectors;
     }
+
+    int deckNumber = pBoxList->indexOf(c);
+    // If we are in single-effect mode and the first effect was changed,
+    // change the others as well.
+    if (deckNumber == 0 && CheckBoxSingleEqEffect->isChecked()) {
+        for (int otherDeck = 1;
+                otherDeck < static_cast<int>(m_pNumDecks->get());
+                ++otherDeck) {
+            QComboBox* box = (*pBoxList)[otherDeck];
+            box->setCurrentIndex(effectIndex);
+        }
+    }
+
+    // This is required to remove a previous selected effect that does not
+    // fit to the current ShowAllEffects checkbox
+    slotPopulateDeckEffectSelectors();
 }
 
 void DlgPrefEQ::applySelections() {
@@ -432,100 +395,49 @@ void DlgPrefEQ::applySelections() {
         return;
     }
 
+    loadEffectFunction loadFunc = std::bind(
+            &EffectsManager::loadEqualizerEffect, m_pEffectsManager,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    applySelectionsToDecks(m_deckEqEffectSelectors, m_eqIndiciesOnUpdate,
+            loadFunc, "EffectForGroup_");
+
+    loadFunc = std::bind(&EffectsManager::loadQuickEffect, m_pEffectsManager,
+            std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+    applySelectionsToDecks(m_deckQuickEffectSelectors, m_quickEffectIndiciesOnUpdate,
+            loadFunc, "QuickEffectForGroup_");
+}
+
+void DlgPrefEQ::applySelectionsToDecks(
+        const QList<QComboBox*>& boxList,
+        QList<int>& indiciesOnUpdate,
+        loadEffectFunction loadFunc,
+        const QString& configKeyPrefix) {
     int deck = 0;
-    QString firstEffectId;
-    int firstEffectIndex = 0;
-    for (QComboBox* box : m_deckEqEffectSelectors) {
-        QString effectId = box->itemData(box->currentIndex()).toString();
-        if (deck == 0) {
-            firstEffectId = effectId;
-            firstEffectIndex = box->currentIndex();
-        } else if (CheckBoxSingleEqEffect->isChecked()) {
-            effectId = firstEffectId;
-            box->setCurrentIndex(firstEffectIndex);
-        }
+    for (QComboBox* box : boxList) {
+        const EffectManifestPointer pManifest =
+                m_pEffectsManager->getManifestFromUniqueId(
+                        box->itemData(box->currentIndex()).toString());
+
         QString group = PlayerManager::groupForDeck(deck);
 
-        // Only apply the effect if it changed -- so first interrogate the
-        // loaded effect if any.
         bool needLoad = true;
-        if (m_pEffectsManager->numEqualizerEffectChainSlots() > deck) {
-            // It's not correct to get a pChainSlot by index number -- get by
-            // group name instead.
-            EffectChainSlotPointer pChainSlot =
-                    m_pEffectsManager->getEqualizerEffectChainSlot(group);
-            if (pChainSlot) {
-                EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
-                if (pEffectSlot && pEffectSlot->getManifest()->id() == effectId) {
-                    needLoad = false;
-                }
-            }
+        bool startingUp = (indiciesOnUpdate.size() < (deck + 1));
+        if (!startingUp) {
+            needLoad = (box->currentIndex() != indiciesOnUpdate[deck]);
         }
         if (needLoad) {
-            QString chainSlotGroup = EqualizerEffectChainSlot::formatEffectChainSlotGroup(group);
+            loadFunc(group, 0, pManifest);
 
-            EffectChainSlotPointer pChainSlot =
-                    m_pEffectsManager->getEqualizerEffectChainSlot(chainSlotGroup);
-
-            VERIFY_OR_DEBUG_ASSERT(pChainSlot != nullptr);
-
-            // TODO : Fetch the appropriate effect backend type
-            m_pEffectsManager->loadEqualizerEffect(chainSlotGroup, 0, effectId, EffectBackendType::Unknown);
-
-            m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_" + group),
-                    ConfigValue(effectId));
-            m_filterWaveformEnableCOs[deck]->set(m_pEffectsManager->isEQ(effectId));
-
-            // This is required to remove a previous selected effect that does not
-            // fit to the current ShowAllEffects checkbox
-            slotPopulateDeckEffectSelectors();
-        }
-        ++deck;
-    }
-
-    deck = 0;
-    for (QComboBox* box : m_deckQuickEffectSelectors) {
-        QString effectId = box->itemData(box->currentIndex()).toString();
-        QString group = PlayerManager::groupForDeck(deck);
-
-        if (deck == 0) {
-            firstEffectId = effectId;
-            firstEffectIndex = box->currentIndex();
-        } else if (CheckBoxSingleEqEffect->isChecked()) {
-            effectId = firstEffectId;
-            box->setCurrentIndex(firstEffectIndex);
-        }
-
-        // Only apply the effect if it changed -- so first interrogate the
-        // loaded effect if any.
-        bool needLoad = true;
-        if (m_pEffectsManager->numQuickEffectChainSlots() > deck) {
-            // It's not correct to get a pChainSlot by index number -- get by
-            // group name instead.
-            EffectChainSlotPointer pChainSlot =
-                    m_pEffectsManager->getQuickEffectChainSlot(group);
-            if (pChainSlot) {
-                auto pEffectSlot = pChainSlot->getEffectSlot(0);
-                if (pEffectSlot && pEffectSlot->getManifest()->id() == effectId) {
-                    needLoad = false;
-                }
+            if (!startingUp) {
+                indiciesOnUpdate[deck] = box->currentIndex();
             }
-        }
-        if (needLoad) {
-            QString chainSlotGroup = QuickEffectChainSlot::formatEffectChainSlotGroup(group);
-            EffectChainSlotPointer pChainSlot =
-                    m_pEffectsManager->getQuickEffectChainSlot(chainSlotGroup);
 
-            VERIFY_OR_DEBUG_ASSERT(pChainSlot != nullptr);
-
-            // TODO : Fetch the appropriate backend type
-            m_pEffectsManager->loadQuickEffect(chainSlotGroup, 0, effectId, EffectBackendType::Unknown);
-
-            // Force update metaknobs and parameters to match state of superknob
-            pChainSlot->setSuperParameter(pChainSlot->getSuperParameter(), true);
-
-            m_pConfig->set(ConfigKey(kConfigKey, "QuickEffectForGroup_" + group),
-                    ConfigValue(effectId));
+            QString configString;
+            if (pManifest) {
+                configString = pManifest->uniqueId();
+            }
+            m_pConfig->set(ConfigKey(kConfigKey, configKeyPrefix + group),
+                    configString);
 
             // This is required to remove a previous selected effect that does not
             // fit to the current ShowAllEffects checkbox
@@ -627,6 +539,16 @@ void DlgPrefEQ::slotUpdate() {
     slotPopulateDeckEffectSelectors();
     CheckBoxEqAutoReset->setChecked(m_bEqAutoReset);
     CheckBoxGainAutoReset->setChecked(m_bGainAutoReset);
+
+    m_eqIndiciesOnUpdate.clear();
+    for (const auto& box : m_deckEqEffectSelectors) {
+        m_eqIndiciesOnUpdate.append(box->currentIndex());
+    }
+
+    m_quickEffectIndiciesOnUpdate.clear();
+    for (const auto& box : m_deckQuickEffectSelectors) {
+        m_quickEffectIndiciesOnUpdate.append(box->currentIndex());
+    }
 }
 
 void DlgPrefEQ::slotUpdateEqAutoReset(int i) {
@@ -646,7 +568,6 @@ void DlgPrefEQ::slotBypass(int state) {
         for (const auto& box: m_deckEqEffectSelectors) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 0);
-            m_filterWaveformEnableCOs[deck]->set(0);
             deck++;
             box->setEnabled(false);
         }
@@ -658,7 +579,6 @@ void DlgPrefEQ::slotBypass(int state) {
         for (const auto& box: m_deckEqEffectSelectors) {
             QString group = getEQEffectGroupForDeck(deck);
             ControlObject::set(ConfigKey(group, "enabled"), 1);
-            m_filterWaveformEnableCOs[deck]->set(m_filterWaveformEffectLoaded[deck]);
             deck++;
             box->setEnabled(true);
         }
@@ -674,21 +594,23 @@ void DlgPrefEQ::setUpMasterEQ() {
     connect(comboBoxMasterEq, SIGNAL(currentIndexChanged(int)),
             this, SLOT(slotMasterEqEffectChanged(int)));
 
-    QString configuredEffect = m_pConfig->getValue(ConfigKey(kConfigKey,
+    const QString configuredEffectId = m_pConfig->getValue(ConfigKey(kConfigKey,
             "EffectForGroup_[Master]"), kDefaultMasterEqId);
+    const EffectManifestPointer configuredEffectManifest =
+            m_pEffectsManager->getManifestFromUniqueId(configuredEffectId);
 
     const QList<EffectManifestPointer> availableMasterEQEffects =
-        m_pEffectsManager->getAvailableEffectManifestsFiltered(isMasterEQ);
+            m_pEffectsManager->getAvailableEffectManifestsFiltered(isMasterEQ);
 
     for (const auto& pManifest : availableMasterEQEffects) {
-        comboBoxMasterEq->addItem(pManifest->name(), QVariant(pManifest->id()));
+        comboBoxMasterEq->addItem(pManifest->name(), QVariant(pManifest->uniqueId()));
     }
     //: Displayed when no effect is selected
     comboBoxMasterEq->addItem(tr("None"), QVariant());
 
-    int masterEqIndex = comboBoxMasterEq->findData(configuredEffect);
-    if (masterEqIndex < 0) {
-        masterEqIndex = availableMasterEQEffects.size(); // selects "None"
+    int masterEqIndex = availableMasterEQEffects.size(); // selects "None" by default
+    if (configuredEffectManifest) {
+        masterEqIndex = comboBoxMasterEq->findData(configuredEffectManifest->uniqueId());
     }
     comboBoxMasterEq->setCurrentIndex(masterEqIndex);
 
@@ -720,9 +642,12 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
     qDeleteAll(m_masterEQLabels);
     m_masterEQLabels.clear();
 
-    QString effectId = comboBoxMasterEq->itemData(effectIndex).toString();
+    const EffectManifestPointer pManifest =
+                m_pEffectsManager->getManifestFromUniqueId(
+                        comboBoxMasterEq->itemData(
+                                effectIndex).toString());
 
-    if (effectId.isNull()) {
+    if (pManifest == nullptr) {
         pbResetMasterEq->hide();
     } else {
         pbResetMasterEq->show();
@@ -730,8 +655,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
 
     auto pChainSlot = m_pEffectsManager->getOutputEffectChainSlot();
     if (pChainSlot) {
-        // TODO : Fetch the appropriate backend type
-        m_pEffectsManager->loadOutputEffect(0, effectId, EffectBackendType::Unknown);
+        m_pEffectsManager->loadOutputEffect(0, pManifest);
 
         auto pEffectSlot = pChainSlot->getEffectSlot(0);
 
@@ -776,8 +700,10 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
     }
 
     // Update the configured effect for the current QComboBox
-    m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_[Master]"),
-            ConfigValue(effectId));
+    if (pManifest) {
+        m_pConfig->set(ConfigKey(kConfigKey, "EffectForGroup_[Master]"),
+                ConfigValue(pManifest->uniqueId()));
+    }
 }
 
 double DlgPrefEQ::getEqFreq(int sliderVal, int minValue, int maxValue) {

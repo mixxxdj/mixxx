@@ -18,6 +18,8 @@
 #ifndef DLGPREFEQ_H
 #define DLGPREFEQ_H
 
+#include <functional>
+
 #include <QWidget>
 #include <QComboBox>
 
@@ -41,8 +43,13 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QString getQuickEffectGroupForDeck(int deck) const;
 
   public slots:
-    void slotEqEffectChangedOnDeck(int effectIndex);
-    void slotQuickEffectChangedOnDeck(int effectIndex);
+    // Apply changes to widget
+    void slotApply();
+    void slotUpdate();
+    void slotResetToDefaults();
+
+  private slots:
+    void slotEffectChangedOnDeck(int effectIndex);
     void slotNumDecksChanged(double numDecks);
     void slotSingleEqChecked(int checked);
     // Slot for toggling between advanced and basic views
@@ -51,10 +58,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotUpdateHiEQ();
     // Update Lo EQ
     void slotUpdateLoEQ();
-    // Apply changes to widget
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
     void slotUpdateEqAutoReset(int);
     void slotUpdateGainAutoReset(int);
     void slotBypass(int state);
@@ -63,10 +66,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotMasterEQToDefault();
     void setMasterEQParameter(int i, double value);
     void slotMasterEqEffectChanged(int effectIndex);
-
-  signals:
-    void apply(const QString &);
-    void effectOnChainSlot(const unsigned int, const unsigned int, QString);
 
   private:
     void loadSettings();
@@ -77,6 +76,16 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void updateBandFilter(int index, double value);
     void setUpMasterEQ();
     void applySelections();
+    void populateDeckBoxList(
+            const QList<QComboBox*> boxList,
+            EffectsManager::EffectManifestFilterFnc filterFunc);
+
+    typedef std::function<void(QString, int, EffectManifestPointer)> loadEffectFunction;
+    void applySelectionsToDecks(
+        const QList<QComboBox*>& boxList,
+        QList<int>& indiciesOnUpdate,
+        loadEffectFunction loadFunc,
+        const QString& configKeyPrefix);
 
     ControlProxy m_COLoFreq;
     ControlProxy m_COHiFreq;
@@ -88,8 +97,6 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     QLabel* m_firstSelectorLabel;
     QList<QComboBox*> m_deckEqEffectSelectors;
     QList<QComboBox*> m_deckQuickEffectSelectors;
-    QList<bool> m_filterWaveformEffectLoaded;
-    QList<ControlObject*> m_filterWaveformEnableCOs;
     ControlProxy* m_pNumDecks;
 
     bool m_inSlotPopulateDeckEffectSelectors;
@@ -102,6 +109,9 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     bool m_bEqAutoReset;
     bool m_bGainAutoReset;
+
+    QList<int> m_eqIndiciesOnUpdate;
+    QList<int> m_quickEffectIndiciesOnUpdate;
 };
 
 #endif

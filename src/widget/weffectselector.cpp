@@ -53,7 +53,7 @@ void WEffectSelector::populate() {
         QString elidedDisplayName = metrics.elidedText(pManifest->displayName(),
                                                        Qt::ElideMiddle,
                                                        width() - 2);
-        addItem(elidedDisplayName, QVariant(pManifest->id()));
+        addItem(elidedDisplayName, QVariant(pManifest->uniqueId()));
 
         // NOTE(Be): Using \n instead of : as the separator does not work in
         // QComboBox item tooltips.
@@ -76,8 +76,15 @@ void WEffectSelector::populate() {
 }
 
 void WEffectSelector::slotEffectSelected(int newIndex) {
-    const QString id = itemData(newIndex).toString();
-    m_pEffectsManager->loadEffect(m_pChainSlot, m_pEffectSlot->getEffectSlotNumber(), id);
+    const EffectManifestPointer pManifest =
+            m_pEffectsManager->getManifestFromUniqueId(
+                    itemData(newIndex).toString());
+
+    m_pEffectsManager->loadEffect(
+            m_pChainSlot,
+            m_pEffectSlot->getEffectSlotNumber(),
+            pManifest);
+
     setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
 }
 
@@ -87,7 +94,7 @@ void WEffectSelector::slotEffectUpdated() {
     if (m_pEffectSlot != nullptr) {
         if (m_pEffectSlot->getManifest() != nullptr) {
             EffectManifestPointer pManifest = m_pEffectSlot->getManifest();
-            newIndex = findData(QVariant(pManifest->id()));
+            newIndex = findData(QVariant(pManifest->uniqueId()));
         } else {
             newIndex = findData(QVariant());
         }

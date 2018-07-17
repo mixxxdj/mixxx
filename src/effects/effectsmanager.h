@@ -68,24 +68,29 @@ class EffectsManager : public QObject {
         return m_registeredOutputChannels;
     }
 
-    void loadStandardEffect(const int iChainSlotNumber,
-            const int iEffectSlotNumber, const QString& effectId,
-            EffectBackendType backendType = EffectBackendType::Unknown);
+    void loadStandardEffect(
+            const int iChainSlotNumber,
+            const int iEffectSlotNumber,
+            const EffectManifestPointer pManifest);
 
-    void loadOutputEffect(const int iEffectSlotNumber, const QString& effectId,
-            EffectBackendType backendType = EffectBackendType::Unknown);
+    void loadOutputEffect(
+            const int iEffectSlotNumber,
+            const EffectManifestPointer pManifest);
 
-    void loadQuickEffect(const QString& group,
-            const int iEffectSlotNumber, const QString& effectId,
-            EffectBackendType backendType = EffectBackendType::Unknown);
+    void loadQuickEffect(
+            const QString& group,
+            const int iEffectSlotNumber,
+            const EffectManifestPointer pManifest);
 
     void loadEqualizerEffect(const QString& group,
-            const int iEffectSlotNumber, const QString& effectId,
-            EffectBackendType backendType = EffectBackendType::Unknown);
+            const int iEffectSlotNumber,
+            const EffectManifestPointer pManifest);
 
-    void loadEffect(EffectChainSlotPointer pChainSlot,
-            const int iEffectSlotNumber, const QString& effectId,
-            EffectBackendType backendType = EffectBackendType::Unknown);
+    void loadEffect(
+            EffectChainSlotPointer pChainSlot,
+            const int iEffectSlotNumber,
+            const EffectManifestPointer pManifest);
+
     std::unique_ptr<EffectProcessor> createProcessor(
             const EffectManifestPointer pManifest);
 
@@ -95,25 +100,14 @@ class EffectsManager : public QObject {
     void addOutputEffectChainSlot();
     EffectChainSlotPointer getOutputEffectChainSlot() const;
 
-    void addEqualizerEffectChainSlot(const QString& groupName);
-    EqualizerEffectChainSlotPointer getEqualizerEffectChainSlot(const QString& group) {
-        return m_equalizerEffectChainSlots.value(group);
-    }
-    int numEqualizerEffectChainSlots() {
-        return m_equalizerEffectChainSlots.size();
-    }
-
-    void addQuickEffectChainSlot(const QString& groupName);
-    QuickEffectChainSlotPointer getQuickEffectChainSlot(const QString& group) {
-        return m_quickEffectChainSlots.value(group);
-    }
-    int numQuickEffectChainSlots() {
-        return m_quickEffectChainSlots.size();
-    }
+    void addEqualizerEffectChainSlot(const QString& deckGroupName);
+    void addQuickEffectChainSlot(const QString& deckGroupName);
 
     // NOTE(Kshitij) : Use new functions
     // void loadEffectChains();
 
+    // TODO: Remove these methods to reduce coupling between GUI and
+    // effects system implementation details.
     EffectChainSlotPointer getEffectChainSlot(const QString& group) const;
     EffectSlotPointer getEffectSlot(const QString& group);
 
@@ -134,10 +128,11 @@ class EffectsManager : public QObject {
     const QList<EffectManifestPointer> getAvailableEffectManifestsFiltered(
         EffectManifestFilterFnc filter) const;
     bool isEQ(const QString& effectId) const;
+
     void getEffectManifestAndBackend(
             const QString& effectId,
             EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const;
-    EffectManifestPointer getEffectManifest(const QString& effectId) const;
+    EffectManifestPointer getManifestFromUniqueId(const QString& uid) const;
 
     void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
     bool getEffectVisibility(EffectManifestPointer pManifest);

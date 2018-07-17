@@ -106,6 +106,7 @@ class EffectChainSlot : public QObject {
 
   protected slots:
     void sendParameterUpdate();
+    void slotControlChainSuperParameter(double v, bool force = false);
 
   protected:
     EffectSlotPointer addEffectSlot(const QString& group);
@@ -121,7 +122,6 @@ class EffectChainSlot : public QObject {
 
   private slots:
     void slotControlClear(double v);
-    void slotControlChainSuperParameter(double v, bool force = false);
     void slotControlChainSelector(double v);
     void slotControlChainNextPreset(double v);
     void slotControlChainPrevPreset(double v);

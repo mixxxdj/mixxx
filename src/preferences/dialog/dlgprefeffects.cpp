@@ -86,10 +86,10 @@ void DlgPrefEffects::clear() {
 void DlgPrefEffects::availableEffectsListItemSelected(const QModelIndex& selected) {
     QString effectId = m_availableEffectsModel.data(selected, Qt::UserRole).toString();
 
-    EffectManifestPointer pManifest = m_pEffectsManager->getEffectManifest(effectId);
-    if (!pManifest) {
+    if (effectId == QVariant().toString())
         return;
-    }
+
+    EffectManifestPointer pManifest = m_pEffectsManager->getManifestFromUniqueId(effectId);
 
     effectName->setText(pManifest->name());
     effectAuthor->setText(pManifest->author());

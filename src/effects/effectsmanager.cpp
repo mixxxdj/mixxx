@@ -125,58 +125,46 @@ void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_g
     m_registeredOutputChannels.insert(handle_group);
 }
 
-void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
-        const int iEffectSlotNumber, const QString& effectId,
-        EffectBackendType backendType) {
-    if (kEffectDebugOutput) {
-        qDebug() << debugString() << "loading effect" << iEffectSlotNumber << effectId;
-    }
-    for (const auto& pBackend : m_effectsBackends) {
-        if (pBackend->canInstantiateEffect(effectId) &&
-                (backendType == EffectBackendType::Unknown ||
-                    pBackend->getType() == backendType)) {
-            EffectManifestPointer pManifest = pBackend->getManifest(effectId);
-            std::unique_ptr<EffectProcessor> pProcessor = pBackend->createProcessor(pManifest);
-
-            pChainSlot->loadEffect(iEffectSlotNumber, pManifest, std::move(pProcessor));
-            return;
-        }
-    }
-    pChainSlot->loadEffect(iEffectSlotNumber, EffectManifestPointer(), nullptr);
-}
-
 void EffectsManager::loadStandardEffect(const int iChainSlotNumber,
-        const int iEffectSlotNumber, const QString& effectId,
-        EffectBackendType backendType) {
+        const int iEffectSlotNumber, const EffectManifestPointer pManifest) {
     auto pChainSlot = getStandardEffectChainSlot(iChainSlotNumber);
     if (pChainSlot) {
-        loadEffect(pChainSlot, iEffectSlotNumber, effectId, backendType);
+        loadEffect(pChainSlot, iEffectSlotNumber, pManifest);
     }
 }
 
 void EffectsManager::loadOutputEffect(const int iEffectSlotNumber,
-    const QString& effectId, EffectBackendType backendType) {
+    const EffectManifestPointer pManifest) {
     if (m_outputEffectChainSlot) {
-        loadEffect(m_outputEffectChainSlot, iEffectSlotNumber, effectId, backendType);
+        loadEffect(m_outputEffectChainSlot, iEffectSlotNumber, pManifest);
     }
 }
 
-void EffectsManager::loadQuickEffect(const QString& group,
-        const int iEffectSlotNumber, const QString& effectId,
-        EffectBackendType backendType) {
-    auto pChainSlot = getQuickEffectChainSlot(group);
-    if (pChainSlot) {
-        loadEffect(pChainSlot, iEffectSlotNumber, effectId, backendType);
+void EffectsManager::loadQuickEffect(const QString& deckGroup,
+        const int iEffectSlotNumber, const EffectManifestPointer pManifest) {
+    auto pChainSlot = m_quickEffectChainSlots.value(deckGroup);
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+        return;
     }
+    loadEffect(pChainSlot, iEffectSlotNumber, pManifest);
 }
 
-void EffectsManager::loadEqualizerEffect(const QString& group,
-        const int iEffectSlotNumber, const QString& effectId,
-        EffectBackendType backendType) {
-    auto pChainSlot = getEqualizerEffectChainSlot(group);
-    if (pChainSlot) {
-        loadEffect(pChainSlot, iEffectSlotNumber, effectId, backendType);
+void EffectsManager::loadEqualizerEffect(const QString& deckGroup,
+        const int iEffectSlotNumber, const EffectManifestPointer pManifest) {
+    auto pChainSlot = m_equalizerEffectChainSlots.value(deckGroup);
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+        return;
     }
+    loadEffect(pChainSlot, iEffectSlotNumber, pManifest);
+}
+
+void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
+        const int iEffectSlotNumber, const EffectManifestPointer pManifest) {
+    if (kEffectDebugOutput) {
+        qDebug() << debugString() << "loading effect" << iEffectSlotNumber << pManifest;
+    }
+    pChainSlot->loadEffect(iEffectSlotNumber, pManifest,
+                           createProcessor(pManifest));
 }
 
 std::unique_ptr<EffectProcessor> EffectsManager::createProcessor(
@@ -205,11 +193,6 @@ const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFi
         }
     }
     return list;
-}
-
-bool EffectsManager::isEQ(const QString& effectId) const {
-    EffectManifestPointer pManifest = getEffectManifest(effectId);
-    return pManifest ? pManifest->isMixingEQ() : false;
 }
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {
@@ -263,11 +246,29 @@ void EffectsManager::getEffectManifestAndBackend(
     }
 }
 
-EffectManifestPointer EffectsManager::getEffectManifest(const QString& effectId) const {
-    EffectManifestPointer pMainifest;
-    EffectsBackend* pEffectBackend;
-    getEffectManifestAndBackend(effectId, &pMainifest, &pEffectBackend);
-    return pMainifest;
+EffectManifestPointer EffectsManager::getManifestFromUniqueId(const QString& uid) const {
+    if (kEffectDebugOutput) {
+        qDebug() << "EffectsManager::getManifestFromUniqueId" << uid;
+    }
+    if (uid.isEmpty()) {
+        // Do not DEBUG_ASSERT, this may be a valid request for a nullptr to
+        // unload an effect.
+        return EffectManifestPointer();
+    }
+    int delimiterIndex = uid.lastIndexOf(" ");
+    EffectBackendType backendType = EffectManifest::backendTypeFromString(
+            uid.mid(delimiterIndex+1));
+    VERIFY_OR_DEBUG_ASSERT(backendType != EffectBackendType::Unknown) {
+        // Mixxx 2.0 - 2.2 did not store the backend type in mixxx.cfg,
+        // so this code will be executed once when upgrading to Mixxx 2.3.
+        // This debug assertion is safe to ignore in that case. If it is
+        // triggered at any later time, there is a bug somewhere.
+        // Do not manipulate the string passed to this function, just pass
+        // it directly to BuiltInBackend.
+        return m_effectsBackends.value(EffectBackendType::BuiltIn)->getManifest(uid);
+    }
+    return m_effectsBackends.value(backendType)->getManifest(
+            uid.mid(-1, delimiterIndex+1));
 }
 
 void EffectsManager::addStandardEffectChainSlots() {
@@ -301,28 +302,30 @@ EffectChainSlotPointer EffectsManager::getStandardEffectChainSlot(int unitNumber
     return m_standardEffectChainSlots.at(unitNumber);
 }
 
-void EffectsManager::addEqualizerEffectChainSlot(const QString& groupName) {
+void EffectsManager::addEqualizerEffectChainSlot(const QString& deckGroupName) {
     VERIFY_OR_DEBUG_ASSERT(!m_equalizerEffectChainSlots.contains(
-            EqualizerEffectChainSlot::formatEffectChainSlotGroup(groupName))) {
+            EqualizerEffectChainSlot::formatEffectChainSlotGroup(deckGroupName))) {
         return;
     }
 
     auto pChainSlot = EqualizerEffectChainSlotPointer(
-            new EqualizerEffectChainSlot(groupName, this));
+            new EqualizerEffectChainSlot(deckGroupName, this));
+    m_equalizerEffectChainSlots.insert(deckGroupName, pChainSlot);
+
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
-    m_equalizerEffectChainSlots.insert(pChainSlot->group(), pChainSlot);
 }
 
-void EffectsManager::addQuickEffectChainSlot(const QString& groupName) {
+void EffectsManager::addQuickEffectChainSlot(const QString& deckGroupName) {
     VERIFY_OR_DEBUG_ASSERT(!m_quickEffectChainSlots.contains(
-            QuickEffectChainSlot::formatEffectChainSlotGroup(groupName))) {
+            QuickEffectChainSlot::formatEffectChainSlotGroup(deckGroupName))) {
         return;
     }
 
     auto pChainSlot = QuickEffectChainSlotPointer(
-        new QuickEffectChainSlot(groupName, this));
+        new QuickEffectChainSlot(deckGroupName, this));
+
+    m_quickEffectChainSlots.insert(deckGroupName, pChainSlot);
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
-    m_quickEffectChainSlots.insert(pChainSlot->group(), pChainSlot);
 }
 
 EffectChainSlotPointer EffectsManager::getEffectChainSlot(const QString& group) const {

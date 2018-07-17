@@ -5,6 +5,7 @@
 #include "effects/effectsmanager.h"
 #include "effects/effectslot.h"
 #include "effects/defs.h"
+#include "util/memory.h"
 
 class StandardEffectChainSlot : public EffectChainSlot {
   public:
@@ -35,6 +36,11 @@ class QuickEffectChainSlot : public PerGroupEffectChainSlot {
   public:
     QuickEffectChainSlot(const QString& group,
                          EffectsManager* pEffectsManager);
+
+    void loadEffect(const unsigned int iEffectSlotNumber,
+                    const EffectManifestPointer pManifest,
+                    std::unique_ptr<EffectProcessor> pProcessor) override;
+
     static QString formatEffectChainSlotGroup(const QString& group);
     static QString formatEffectSlotGroup(const QString& group,
                                          const int iEffectSlotNumber = 0);
@@ -44,11 +50,17 @@ class EqualizerEffectChainSlot : public PerGroupEffectChainSlot {
   public:
     EqualizerEffectChainSlot(const QString& group,
                              EffectsManager* pEffectsManager);
+
+    void loadEffect(const unsigned int iEffectSlotNumber,
+                    const EffectManifestPointer pManifest,
+                    std::unique_ptr<EffectProcessor> pProcessor) override;
+
     static QString formatEffectChainSlotGroup(const QString& group);
     static QString formatEffectSlotGroup(const QString& group);
 
   private:
     void setupLegacyAliasesForGroup(const QString& group);
+    std::unique_ptr<ControlObject> m_pCOFilterWaveform;
 };
 
 #endif /* SPECIALEFFECTCHAINSLOTS_H */

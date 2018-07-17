@@ -292,7 +292,8 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
 
 void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
                             std::unique_ptr<EffectProcessor> pProcessor,
-                            const QSet<ChannelHandleAndGroup>& activeChannels) { unloadEffect();
+                            const QSet<ChannelHandleAndGroup>& activeChannels) {
+    unloadEffect();
 
     m_pManifest = pManifest;
 

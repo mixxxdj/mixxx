@@ -112,6 +112,14 @@ QuickEffectChainSlot::QuickEffectChainSlot(const QString& group,
     setSuperParameterDefaultValue(0.5);
 }
 
+void QuickEffectChainSlot::loadEffect(
+        const unsigned int iEffectSlotNumber,
+        const EffectManifestPointer pManifest,
+        std::unique_ptr<EffectProcessor> pProcessor) {
+    EffectChainSlot::loadEffect(iEffectSlotNumber, pManifest, std::move(pProcessor));
+    slotControlChainSuperParameter(m_pControlChainSuperParameter->get(), true);
+}
+
 QString QuickEffectChainSlot::formatEffectChainSlotGroup(const QString& group) {
     return QString("[QuickEffectRack1_%1]").arg(group);
 }
@@ -127,13 +135,24 @@ QString QuickEffectChainSlot::formatEffectSlotGroup(const QString& group,
 EqualizerEffectChainSlot::EqualizerEffectChainSlot(const QString& group,
                                                    EffectsManager* pEffectsManager)
         : PerGroupEffectChainSlot(group, formatEffectChainSlotGroup(group),
-                                  pEffectsManager) {
+                                  pEffectsManager),
+          m_pCOFilterWaveform(new ControlObject(ConfigKey(group, "filterWaveformEnable"))) {
     // Add a single effect slot
     addEffectSlot(formatEffectSlotGroup(group));
     m_effectSlots[0]->setEnabled(true);
     // DlgPrefEq loads the Effect with loadEffectToGroup
 
     setupLegacyAliasesForGroup(group);
+}
+
+void EqualizerEffectChainSlot::loadEffect(
+        const unsigned int iEffectSlotNumber,
+        const EffectManifestPointer pManifest,
+        std::unique_ptr<EffectProcessor> pProcessor) {
+    // TODO: preserve effect parameters when loading new effect. This will allow
+    // for easy comparison of the sound of different equalizer effects.
+    EffectChainSlot::loadEffect(iEffectSlotNumber, pManifest, std::move(pProcessor));
+    m_pCOFilterWaveform->set(pManifest->isMixingEQ());
 }
 
 QString EqualizerEffectChainSlot::formatEffectChainSlotGroup(const QString& group) {

@@ -73,7 +73,7 @@ QVariant EffectSettingsModel::data(const QModelIndex& index, int role) const {
     EffectProfilePtr profile = m_profiles.at(rowIndex);
     if (profile) {
         if (role == Qt::UserRole) {
-            return profile->pManifest->id();
+            return profile->pManifest->uniqueId();
         }
         int column = index.column();
         if (column == kColumnEnabled) {
