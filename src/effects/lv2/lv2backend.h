@@ -8,9 +8,8 @@
 #include <lilv-0/lilv/lilv.h>
 
 class LV2Backend : public EffectsBackend {
-    Q_OBJECT
   public:
-    LV2Backend(QObject* pParent);
+    LV2Backend();
     virtual ~LV2Backend();
 
     void enumeratePlugins();

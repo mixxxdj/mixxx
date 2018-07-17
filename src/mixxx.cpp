@@ -199,11 +199,11 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Create effect backends. We do this after creating EngineMaster to allow
     // effect backends to refer to controls that are produced by the engine.
-    BuiltInBackend* pBuiltInBackend = new BuiltInBackend(m_pEffectsManager);
-    m_pEffectsManager->addEffectsBackend(pBuiltInBackend);
+    BuiltInBackend* pBuiltInBackend = new BuiltInBackend();
+    m_pEffectsManager->addEffectsBackend(EffectsBackendPointer(pBuiltInBackend));
 #ifdef __LILV__
-    LV2Backend* pLV2Backend = new LV2Backend(m_pEffectsManager);
-    m_pEffectsManager->addEffectsBackend(pLV2Backend);
+    LV2Backend* pLV2Backend = new LV2Backend();
+    m_pEffectsManager->addEffectsBackend(EffectsBackendPointer(pLV2Backend));
 #else
     LV2Backend* pLV2Backend = nullptr;
 #endif

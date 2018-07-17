@@ -18,10 +18,9 @@ class EffectProcessor;
 // An EffectsBackend is an implementation of a provider of Effect's for use
 // within the rest of Mixxx. The job of the EffectsBackend is to both enumerate
 // and instantiate effects.
-class EffectsBackend : public QObject {
-    Q_OBJECT
+class EffectsBackend {
   public:
-    EffectsBackend(QObject* pParent, EffectBackendType type);
+    EffectsBackend(EffectBackendType type);
     virtual ~EffectsBackend();
 
     EffectBackendType getType() const {
@@ -33,9 +32,6 @@ class EffectsBackend : public QObject {
     virtual EffectManifestPointer getManifest(const QString& effectId) const;
     virtual EffectInstantiatorPointer getInstantiator(const QString& effectId) const;
     virtual bool canInstantiateEffect(const QString& effectId) const;
-
-  signals:
-    void effectRegistered(EffectManifestPointer);
 
   protected:
     void registerEffect(const QString& id,

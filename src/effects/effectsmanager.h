@@ -20,7 +20,6 @@
 
 class EngineEffectsManager;
 class EffectManifest;
-class EffectsBackend;
 
 class EffectsManager : public QObject {
     Q_OBJECT
@@ -42,7 +41,7 @@ class EffectsManager : public QObject {
     // Add an effect backend to be managed by EffectsManager. EffectsManager
     // takes ownership of the backend, and will delete it when EffectsManager is
     // being deleted. Not thread safe -- use only from the GUI thread.
-    void addEffectsBackend(EffectsBackend* pEffectsBackend);
+    void addEffectsBackend(EffectsBackendPointer pEffectsBackend);
 
     // To support cycling through effect chains, there is a global ordering of
     // chains. These methods allow you to get the next or previous chain given
@@ -150,12 +149,7 @@ class EffectsManager : public QObject {
     bool writeRequest(EffectsRequest* request);
 
   signals:
-    // TODO() Not connected. Can be used when we implement effect PlugIn loading at runtime
-    void availableEffectsUpdated(EffectManifestPointer);
     void visibleEffectsUpdated();
-
-  private slots:
-    void slotBackendRegisteredEffect(EffectManifestPointer pManifest);
 
   private:
     QString debugString() const {
@@ -167,7 +161,7 @@ class EffectsManager : public QObject {
 
     ChannelHandleFactory* m_pChannelHandleFactory;
 
-    QList<EffectsBackend*> m_effectsBackends;
+    QHash<EffectBackendType, EffectsBackendPointer> m_effectsBackends;
     QList<EffectManifestPointer> m_availableEffectManifests;
     QList<EffectManifestPointer> m_visibleEffectManifests;
 

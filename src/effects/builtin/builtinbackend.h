@@ -5,9 +5,8 @@
 #include "effects/effectsbackend.h"
 
 class BuiltInBackend : public EffectsBackend {
-    Q_OBJECT
   public:
-    BuiltInBackend(QObject* pParent);
+    BuiltInBackend();
     virtual ~BuiltInBackend();
 
   private:

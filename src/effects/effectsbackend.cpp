@@ -3,10 +3,8 @@
 #include "effects/effectsbackend.h"
 #include "effects/effectsmanager.h"
 
-EffectsBackend::EffectsBackend(QObject* pParent,
-                               EffectBackendType type)
-        : QObject(pParent),
-          m_type(type) {
+EffectsBackend::EffectsBackend(EffectBackendType type)
+         : m_type(type) {
 }
 
 EffectsBackend::~EffectsBackend() {
@@ -26,7 +24,6 @@ void EffectsBackend::registerEffect(const QString& id,
 
     m_registeredEffects[id] = RegisteredEffect(pManifest, pInstantiator);
     m_effectIds.append(id);
-    emit(effectRegistered(pManifest));
 }
 
 const QList<QString> EffectsBackend::getEffectIds() const {

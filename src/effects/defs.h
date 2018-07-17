@@ -18,6 +18,10 @@ enum class EffectBackendType {
     Unknown
 };
 
+inline uint qHash(const EffectBackendType& backendType) {
+    return static_cast<uint>(backendType);
+}
+
 enum class SignalProcessingStage {
     Prefader,
     Postfader
@@ -39,6 +43,9 @@ constexpr int kNumEffectsPerUnit = 4;
 // qDebug() in the audio engine thread. That may cause audio dropouts, so only
 // enable this when debugging the effects system.
 constexpr bool kEffectDebugOutput = false;
+
+class EffectsBackend;
+typedef QSharedPointer<EffectsBackend> EffectsBackendPointer;
 
 class EffectState;
 // For sending EffectStates along the MessagePipe
