@@ -8,68 +8,26 @@
 
 #include "effects/defs.h"
 #include "effects/effectslot.h"
-#include "effects/effectinstantiator.h"
 #include "preferences/usersettings.h"
 
-class EffectsManager;
-class EffectsBackend;
+#include "util/memory.h"
+
 class EffectProcessor;
 
-// An EffectsBackend is an implementation of a provider of Effect's for use
-// within the rest of Mixxx. The job of the EffectsBackend is to both enumerate
-// and instantiate effects.
+// EffectsBackend enumerates available effects and instantiates EffectProcessors
 class EffectsBackend {
   public:
-    EffectsBackend(EffectBackendType type);
-    virtual ~EffectsBackend();
+    virtual ~EffectsBackend() {};
 
-    EffectBackendType getType() const {
-        return m_type;
-    }
+    virtual EffectBackendType getType() const = 0;
 
     // returns a list sorted like it should be displayed in the GUI
-    virtual const QList<QString> getEffectIds() const;
-    virtual EffectManifestPointer getManifest(const QString& effectId) const;
-    virtual EffectInstantiatorPointer getInstantiator(const QString& effectId) const;
-    virtual bool canInstantiateEffect(const QString& effectId) const;
+    virtual const QList<QString> getEffectIds() const = 0;
+    virtual EffectManifestPointer getManifest(const QString& effectId) const = 0;
+    virtual bool canInstantiateEffect(const QString& effectId) const = 0;
 
-  protected:
-    void registerEffect(const QString& id,
-                        EffectManifestPointer pManifest,
-                        EffectInstantiatorPointer pInstantiator);
-
-    template <typename EffectProcessorImpl>
-    void registerEffect() {
-        registerEffect(
-                EffectProcessorImpl::getId(),
-                EffectProcessorImpl::getManifest(),
-                EffectInstantiatorPointer(
-                        new EffectProcessorInstantiator<EffectProcessorImpl>()));
-    }
-
-    EffectBackendType m_type;
-
-  private:
-    class RegisteredEffect {
-      public:
-        RegisteredEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInitator)
-            : m_pManifest(pManifest),
-              m_pInitator(pInitator) {
-        }
-
-        RegisteredEffect() {
-        }
-
-        EffectManifestPointer manifest() const { return m_pManifest; };
-        EffectInstantiatorPointer initiator() const { return m_pInitator; };
-
-      private:
-        EffectManifestPointer m_pManifest;
-        EffectInstantiatorPointer m_pInitator;
-    };
-
-    QMap<QString, RegisteredEffect> m_registeredEffects;
-    QList<QString> m_effectIds;
+    virtual std::unique_ptr<EffectProcessor> createProcessor(
+        const EffectManifestPointer pManifest) const = 0;
 };
 
 #endif /* EFFECTSBACKEND_H */

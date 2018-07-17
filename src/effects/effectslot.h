@@ -14,7 +14,6 @@
 #include "engine/engine.h"
 #include "engine/effects/engineeffect.h"
 #include "effects/effectbuttonparameterslot.h"
-#include "effects/effectinstantiator.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectparameter.h"
 #include "effects/effectparameterslot.h"
@@ -41,11 +40,16 @@ class EffectSlot : public QObject {
                EngineEffectChain* pEngineEffectChain);
     virtual ~EffectSlot();
 
+    // Call with nullptr for pManifest and pProcessor to unload an effect
+    void loadEffect(const EffectManifestPointer pManifest,
+            std::unique_ptr<EffectProcessor> pProcessor,
+            const QSet<ChannelHandleAndGroup>& activeChannels);
+
     inline int getEffectSlotNumber() const {
         return m_iEffectNumber;
     }
 
-    inline const bool isLoaded() const {
+    inline bool isLoaded() const {
         return m_pEngineEffect != nullptr;
     }
 
@@ -98,18 +102,15 @@ class EffectSlot : public QObject {
 
     // static EffectPointer createFromXml(EffectsManager* pEffectsManager,
     //                              const QDomElement& element);
-    void addToEngine(const QSet<ChannelHandleAndGroup>& activeChannels);
+    void addToEngine(std::unique_ptr<EffectProcessor>,
+            const QSet<ChannelHandleAndGroup>& activeInputChannels);
     void removeFromEngine();
 
     double getMetaknobDefault();
-    void reload(const QSet<ChannelHandleAndGroup>& activeChannels);
+    void reload(const QSet<ChannelHandleAndGroup>& activeInputChannels);
 
   public slots:
     void setMetaParameter(double v, bool force = false);
-
-    // Call with nullptr for pManifest and pInstantiator to unload an effect
-    void loadEffect(EffectManifestPointer pManifest, EffectInstantiatorPointer pInstantiator,
-            const QSet<ChannelHandleAndGroup>& activeChannels);
 
     void slotNextEffect(double v);
     void slotPrevEffect(double v);
@@ -136,9 +137,6 @@ class EffectSlot : public QObject {
     UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
     EffectManifestPointer m_pManifest;
-    EffectInstantiatorPointer m_pInstantiator;
-    QSet<ChannelHandleAndGroup> m_pActiveChannels;
-
     EngineEffect* m_pEngineEffect;
     QList<EffectParameter*> m_parameters;
     EngineEffectChain* m_pEngineEffectChain;

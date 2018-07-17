@@ -18,10 +18,8 @@
 // EffectManifest is const, it should be completely immutable. EffectManifest is
 // meant to be used in most cases as a reference, and in Qt collections, so it
 // is important that the implicit copy and assign constructors work, and that
-// the no-argument constructor be non-explicit. All methods are left virtual to
-// allow a backend to replace the entire functionality with its own (for
-// example, a database-backed manifest)
-class EffectManifest final {
+// the no-argument constructor be non-explicit.
+class EffectManifest {
   public:
     EffectManifest()
         : m_backendType(EffectBackendType::Unknown),
@@ -32,6 +30,15 @@ class EffectManifest final {
           m_metaknobDefault(0.5) {
     }
 
+    // Hack to store unique IDs in QComboBox models
+    const QString uniqueId() const {
+        return m_id + " " + backendName();
+    }
+
+    // WARNING! Effects must not be identified solely by ID string or name.
+    // ID strings and names are only unique among EffectManifests from one
+    // EffectsBackend. Use EffectManifest::operator== to compare both ID string
+    // and EffectBackendType.
     const QString& id() const {
         return m_id;
     }
@@ -142,7 +149,7 @@ class EffectManifest final {
         m_metaknobDefault = metaknobDefault;
     }
 
-    QString backendName() {
+    QString backendName() const {
         switch (m_backendType) {
             case EffectBackendType::BuiltIn:
                 return QString("Built-in");
@@ -154,7 +161,7 @@ class EffectManifest final {
     }
 
     // Use this when showing the string in the GUI
-    QString translatedBackendName() {
+    QString translatedBackendName() const {
         switch (m_backendType) {
             case EffectBackendType::BuiltIn:
                 //: Used for effects that are built into Mixxx
@@ -177,6 +184,13 @@ class EffectManifest final {
 
     bool operator==(const EffectManifest& other) const {
         return other.id() == m_id && other.backendType() == m_backendType;
+    }
+
+    bool operator<(const EffectManifest& other) const {
+        if (other.backendType() != m_backendType) {
+            return other.backendType() < m_backendType;
+        }
+        return other.id() < m_id;
     }
 
   private:

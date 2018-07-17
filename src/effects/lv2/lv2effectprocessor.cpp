@@ -4,15 +4,11 @@
 #include "util/sample.h"
 #include "util/defs.h"
 
-LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
-                                       EffectManifestPointer pManifest,
-                                       const LilvPlugin* plugin,
-                                       QList<int> audioPortIndices,
-                                       QList<int> controlPortIndices)
+LV2EffectProcessor::LV2EffectProcessor(LV2EffectManifestPointer pManifest)
             : m_pManifest(pManifest),
-              m_pPlugin(plugin),
-              m_audioPortIndices(audioPortIndices),
-              m_controlPortIndices(controlPortIndices) {
+              m_pPlugin(pManifest->getPlugin()),
+              m_audioPortIndices(pManifest->getAudioPortIndices()),
+              m_controlPortIndices(pManifest->getControlPortIndices()) {
     m_inputL = new float[MAX_BUFFER_LEN];
     m_inputR = new float[MAX_BUFFER_LEN];
     m_outputL = new float[MAX_BUFFER_LEN];
@@ -30,7 +26,7 @@ void LV2EffectProcessor::loadEngineEffectParameters(
     // ports. To avoid slow string comparisons in the audio engine thread in
     // LV2EffectProcessor::process, rearrange the QMap of EngineEffectParameters by
     // ID string to an ordered QList.
-    for (const auto& pManifestParameter : m_pManifest->parameters()) {
+    for (const auto& pManifestParameter : m_pManifest->getEffectManifest()->parameters()) {
         m_engineEffectParameters.append(parameters.value(pManifestParameter->id()));
     }
 }

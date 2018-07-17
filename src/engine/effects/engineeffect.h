@@ -11,18 +11,19 @@
 #include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
-#include "effects/effectinstantiator.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
+
+#include "util/memory.h"
 
 class EngineEffect : public EffectsRequestHandler {
   public:
     EngineEffect(EffectManifestPointer pManifest,
                  const QSet<ChannelHandleAndGroup>& activeInputChannels,
                  EffectsManager* pEffectsManager,
-                 EffectInstantiatorPointer pInstantiator);
+                 std::unique_ptr<EffectProcessor> pProcessor);
     virtual ~EngineEffect();
 
     const QString& name() const {
@@ -56,7 +57,7 @@ class EngineEffect : public EffectsRequestHandler {
     }
 
     EffectManifestPointer m_pManifest;
-    EffectProcessor* m_pProcessor;
+    std::unique_ptr<EffectProcessor> m_pProcessor;
     ChannelHandleMap<ChannelHandleMap<EffectEnableState>> m_effectEnableStateForChannelMatrix;
     bool m_effectRampsFromDry;
     // Must not be modified after construction.

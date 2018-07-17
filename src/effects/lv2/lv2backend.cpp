@@ -1,8 +1,8 @@
 #include "effects/lv2/lv2backend.h"
 #include "effects/lv2/lv2manifest.h"
+#include "effects/lv2/lv2effectprocessor.h"
 
-LV2Backend::LV2Backend()
-        : EffectsBackend(EffectBackendType::LV2) {
+LV2Backend::LV2Backend() {
     m_pWorld = lilv_world_new();
     initializeProperties();
     lilv_world_load_all(m_pWorld);
@@ -10,13 +10,11 @@ LV2Backend::LV2Backend()
 }
 
 LV2Backend::~LV2Backend() {
-    foreach(LilvNode* node, m_properties) {
+    for (LilvNode* node : m_properties) {
         lilv_node_free(node);
     }
     lilv_world_free(m_pWorld);
-    foreach(LV2Manifest* lv2Manifest, m_registeredEffects) {
-        delete lv2Manifest;
-    }
+    m_registeredEffects.clear();
 }
 
 void LV2Backend::enumeratePlugins() {
@@ -26,8 +24,8 @@ void LV2Backend::enumeratePlugins() {
         if (lilv_plugin_is_replaced(plug)) {
             continue;
         }
-        LV2Manifest* lv2Manifest = new LV2Manifest(plug, m_properties);
-        lv2Manifest->getEffectManifest()->setBackendType(m_type);
+        LV2EffectManifestPointer lv2Manifest(new LV2Manifest(plug, m_properties));
+        lv2Manifest->getEffectManifest()->setBackendType(getType());
         m_registeredEffects.insert(lv2Manifest->getEffectManifest()->id(),
                                    lv2Manifest);
     }
@@ -45,7 +43,7 @@ void LV2Backend::initializeProperties() {
 
 const QList<QString> LV2Backend::getEffectIds() const {
     QList<QString> availableEffects;
-    foreach (LV2Manifest* lv2Manifest, m_registeredEffects) {
+    for (const auto& lv2Manifest : m_registeredEffects) {
         if (lv2Manifest->isValid()) {
             availableEffects.append(lv2Manifest->getEffectManifest()->id());
         }
@@ -66,25 +64,22 @@ bool LV2Backend::canInstantiateEffect(const QString& effectId) const {
 }
 
 EffectManifestPointer LV2Backend::getManifest(const QString& effectId) const {
-    LV2Manifest* pLV2Mainfest = getLV2Manifest(effectId);
-    if (pLV2Mainfest != nullptr) {
-        return pLV2Mainfest->getEffectManifest();
+    VERIFY_OR_DEBUG_ASSERT(m_registeredEffects.contains(effectId)) {
+        return EffectManifestPointer();
     }
-    return EffectManifestPointer();
+    return m_registeredEffects.value(effectId)->getEffectManifest();
 }
 
-EffectInstantiatorPointer LV2Backend::getInstantiator(const QString& effectId) const {
-    LV2Manifest* pLV2Mainfest = getLV2Manifest(effectId);
-    if (pLV2Mainfest != nullptr) {
-        return EffectInstantiatorPointer(new LV2EffectProcessorInstantiator(
-                pLV2Mainfest->getPlugin(),
-                pLV2Mainfest->getAudioPortIndices(),
-                pLV2Mainfest->getControlPortIndices()));
+std::unique_ptr<EffectProcessor> LV2Backend::createProcessor(
+        const EffectManifestPointer pManifest) const {
+    LV2EffectManifestPointer pLV2Manifest = m_registeredEffects.value(pManifest->id());
+    VERIFY_OR_DEBUG_ASSERT(pLV2Manifest) {
+        return std::unique_ptr<EffectProcessor>(nullptr);
     }
-    return EffectInstantiatorPointer();
-
+    return std::unique_ptr<EffectProcessor>(
+        new LV2EffectProcessor(pLV2Manifest));
 }
 
-LV2Manifest* LV2Backend::getLV2Manifest(const QString& effectId) const {
+LV2EffectManifestPointer LV2Backend::getLV2Manifest(const QString& effectId) const {
     return m_registeredEffects[effectId];
 }

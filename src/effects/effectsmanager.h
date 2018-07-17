@@ -16,6 +16,7 @@
 #include "preferences/usersettings.h"
 #include "util/class.h"
 #include "util/fifo.h"
+#include "util/memory.h"
 #include "util/xml.h"
 
 class EngineEffectsManager;
@@ -85,6 +86,8 @@ class EffectsManager : public QObject {
     void loadEffect(EffectChainSlotPointer pChainSlot,
             const int iEffectSlotNumber, const QString& effectId,
             EffectBackendType backendType = EffectBackendType::Unknown);
+    std::unique_ptr<EffectProcessor> createProcessor(
+            const EffectManifestPointer pManifest);
 
     void addStandardEffectChainSlots();
     EffectChainSlotPointer getStandardEffectChainSlot(int unitNumber) const;

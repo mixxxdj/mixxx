@@ -2,7 +2,7 @@
 #define LV2EFFECTPROCESSOR_H
 
 #include "effects/effectprocessor.h"
-#include "effects/effectmanifest.h"
+#include "effects/lv2/lv2manifest.h"
 #include "engine/effects/engineeffectparameter.h"
 #include <lilv-0/lilv/lilv.h>
 #include "effects/defs.h"
@@ -28,11 +28,7 @@ class LV2EffectGroupState : public EffectState {
 
 class LV2EffectProcessor : public EffectProcessor {
   public:
-    LV2EffectProcessor(EngineEffect* pEngineEffect,
-                       EffectManifestPointer pManifest,
-                       const LilvPlugin* plugin,
-                       QList<int> audioPortIndices,
-                       QList<int> controlPortIndices);
+    LV2EffectProcessor(LV2EffectManifestPointer pManifest);
     ~LV2EffectProcessor();
 
     void initialize(
@@ -58,7 +54,7 @@ class LV2EffectProcessor : public EffectProcessor {
   private:
     LV2EffectGroupState* createGroupState(const mixxx::EngineParameters& bufferParameters);
 
-    EffectManifestPointer m_pManifest;
+    LV2EffectManifestPointer m_pManifest;
     QList<EngineEffectParameterPointer> m_engineEffectParameters;
     float* m_inputL;
     float* m_inputR;

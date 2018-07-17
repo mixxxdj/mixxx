@@ -31,7 +31,7 @@ DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
     qSort(allPlugins.begin(), allPlugins.end());
 
     for (const auto& effectId: allPlugins) {
-        LV2Manifest* lv2Manifest = m_pLV2Backend->getLV2Manifest(effectId);
+        LV2EffectManifestPointer lv2Manifest = m_pLV2Backend->getLV2Manifest(effectId);
         EffectManifestPointer pEffectManifest = lv2Manifest->getEffectManifest();
 
         QPushButton* button = new QPushButton(this);
@@ -110,12 +110,12 @@ void DlgPrefLV2::slotDisplayParameters() {
 }
 
 void DlgPrefLV2::slotApply() {
-    EffectManifestPointer pCurrentEffectManifest =
-            m_pLV2Backend->getManifest(m_currentEffectId);
-
-    if (pCurrentEffectManifest == nullptr) {
+    if (m_currentEffectId.isEmpty()) {
         return;
     }
+
+    EffectManifestPointer pCurrentEffectManifest =
+            m_pLV2Backend->getManifest(m_currentEffectId);
 
     qDebug() << "DlgPrefLV2::slotApply" << pCurrentEffectManifest.data();
     for (int i = 0; i < m_pluginParameters.size(); i++) {

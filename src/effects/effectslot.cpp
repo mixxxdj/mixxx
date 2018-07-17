@@ -101,7 +101,8 @@ EffectSlot::~EffectSlot() {
     delete m_pMetaknobSoftTakeover;
 }
 
-void EffectSlot::addToEngine(const QSet<ChannelHandleAndGroup>& activeChannels) {
+void EffectSlot::addToEngine(std::unique_ptr<EffectProcessor> pProcessor,
+        const QSet<ChannelHandleAndGroup>& activeInputChannels) {
     VERIFY_OR_DEBUG_ASSERT(m_pManifest != nullptr) {
         return;
     }
@@ -111,9 +112,9 @@ void EffectSlot::addToEngine(const QSet<ChannelHandleAndGroup>& activeChannels) 
     }
 
     m_pEngineEffect = new EngineEffect(m_pManifest,
-            activeChannels,
+            activeInputChannels,
             m_pEffectsManager,
-            m_pInstantiator);
+            std::move(pProcessor));
 
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
@@ -174,8 +175,10 @@ EffectManifestPointer EffectSlot::getManifest() const {
     return m_pManifest;
 }
 
-void EffectSlot::reload(const QSet<ChannelHandleAndGroup>& activeChannels) {
-    loadEffect(m_pManifest, m_pInstantiator, activeChannels);
+void EffectSlot::reload(const QSet<ChannelHandleAndGroup>& activeInputChannels) {
+    loadEffect(m_pManifest,
+            m_pEffectsManager->createProcessor(m_pManifest),
+            activeInputChannels);
 }
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
@@ -287,15 +290,13 @@ EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsign
     return m_buttonParameters[slotNumber];
 }
 
-void EffectSlot::loadEffect(EffectManifestPointer pManifest,
-                            EffectInstantiatorPointer pInstantiator,
-                            const QSet<ChannelHandleAndGroup>& activeChannels) {
-    unloadEffect();
+void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
+                            std::unique_ptr<EffectProcessor> pProcessor,
+                            const QSet<ChannelHandleAndGroup>& activeChannels) { unloadEffect();
 
     m_pManifest = pManifest;
-    m_pInstantiator = pInstantiator;
 
-    if (pManifest == EffectManifestPointer() || pInstantiator == EffectInstantiatorPointer()) {
+    if (pManifest == EffectManifestPointer()) {
         // No new effect to load; just unload the old effect and return.
         emit(effectChanged());
         return;
@@ -306,7 +307,8 @@ void EffectSlot::loadEffect(EffectManifestPointer pManifest,
                 this, m_pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
     }
-    addToEngine(activeChannels);
+
+    addToEngine(std::move(pProcessor), activeChannels);
 
     m_pControlLoaded->forceSet(1.0);
 

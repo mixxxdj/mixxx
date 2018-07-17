@@ -12,19 +12,22 @@ class LV2Backend : public EffectsBackend {
     LV2Backend();
     virtual ~LV2Backend();
 
-    void enumeratePlugins();
+    EffectBackendType getType() const { return EffectBackendType::LV2; };
+
     const QList<QString> getEffectIds() const;
     const QSet<QString> getDiscoveredPluginIds() const;
     EffectManifestPointer getManifest(const QString& effectId) const;
-    EffectInstantiatorPointer getInstantiator(const QString& effectId) const;
-    LV2Manifest* getLV2Manifest(const QString& effectId) const;
+    LV2EffectManifestPointer getLV2Manifest(const QString& effectId) const;
+    std::unique_ptr<EffectProcessor> createProcessor(
+            const EffectManifestPointer pManifest) const;
     bool canInstantiateEffect(const QString& effectId) const;
 
   private:
+    void enumeratePlugins();
     void initializeProperties();
     LilvWorld* m_pWorld;
     QHash<QString, LilvNode*> m_properties;
-    QHash<QString, LV2Manifest*> m_registeredEffects;
+    QHash<QString, LV2EffectManifestPointer> m_registeredEffects;
 
     QString debugString() const {
         return "LV2Backend";

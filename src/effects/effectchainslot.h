@@ -9,14 +9,16 @@
 
 #include "control/controlobject.h"
 #include "effects/defs.h"
-#include "effects/effectinstantiator.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
+#include "util/memory.h"
 
 class ControlPushButton;
 class ControlEncoder;
 class EffectChainSlot;
 class EffectsManager;
+class EffectProcessor;
+class EngineEffectChain;
 
 class EffectChainSlot : public QObject {
     Q_OBJECT
@@ -78,9 +80,9 @@ class EffectChainSlot : public QObject {
         }
     }
 
-    void loadEffect(const unsigned int iEffectSlotNumber,
-                    EffectManifestPointer pManifest,
-                    EffectInstantiatorPointer pInstantiator);
+    virtual void loadEffect(const unsigned int iEffectSlotNumber,
+                    const EffectManifestPointer pManifest,
+                    std::unique_ptr<EffectProcessor> pProcessor);
 
     void reloadAllEffects();
 
@@ -114,6 +116,7 @@ class EffectChainSlot : public QObject {
 
     EffectsManager* m_pEffectsManager;
     ControlObject* m_pControlChainMix;
+    ControlObject* m_pControlChainSuperParameter;
     QList<EffectSlotPointer> m_effectSlots;
 
   private slots:
@@ -139,7 +142,6 @@ class EffectChainSlot : public QObject {
     ControlObject* m_pControlNumEffectSlots;
     ControlObject* m_pControlChainLoaded;
     ControlPushButton* m_pControlChainEnabled;
-    ControlObject* m_pControlChainSuperParameter;
     ControlPushButton* m_pControlChainMixMode;
     ControlEncoder* m_pControlChainSelector;
     ControlPushButton* m_pControlChainNextPreset;

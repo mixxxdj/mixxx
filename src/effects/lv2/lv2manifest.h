@@ -1,6 +1,8 @@
 #ifndef LV2MANIFEST_H
 #define LV2MANIFEST_H
 
+#include <QSharedPointer>
+
 #include "effects/effectmanifest.h"
 #include "effects/defs.h"
 #include <lilv-0/lilv/lilv.h>
@@ -44,5 +46,7 @@ class LV2Manifest {
     Status m_status;
     bool m_isValid;
 };
+
+typedef QSharedPointer<LV2Manifest> LV2EffectManifestPointer;
 
 #endif // LV2MANIFEST_H

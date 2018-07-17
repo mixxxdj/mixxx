@@ -7,8 +7,9 @@
 EngineEffect::EngineEffect(EffectManifestPointer pManifest,
                            const QSet<ChannelHandleAndGroup>& activeInputChannels,
                            EffectsManager* pEffectsManager,
-                           EffectInstantiatorPointer pInstantiator)
+                           std::unique_ptr<EffectProcessor> pProcessor)
         : m_pManifest(pManifest),
+          m_pProcessor(std::move(pProcessor)),
           m_parameters(pManifest->parameters().size()),
           m_pEffectsManager(pEffectsManager) {
     const QList<EffectManifestParameterPointer>& parameters = m_pManifest->parameters();
@@ -29,9 +30,8 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
         m_effectEnableStateForChannelMatrix.insert(inputChannel.handle(), outputChannelMap);
     }
 
-    // Creating the processor must come last.
-    m_pProcessor = pInstantiator->instantiate(this, pManifest);
     m_pProcessor->loadEngineEffectParameters(m_parametersById);
+
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
           mixxx::AudioSignal::SampleRate(96000),
@@ -45,7 +45,6 @@ EngineEffect::~EngineEffect() {
     if (kEffectDebugOutput) {
         qDebug() << debugString() << "destroyed";
     }
-    delete m_pProcessor;
     m_parametersById.clear();
     m_parameters.clear();
 }

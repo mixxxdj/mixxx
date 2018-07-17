@@ -117,6 +117,26 @@ void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_g
     m_registeredOutputChannels.insert(handle_group);
 }
 
+void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
+        const int iEffectSlotNumber, const QString& effectId,
+        EffectBackendType backendType) {
+    if (kEffectDebugOutput) {
+        qDebug() << debugString() << "loading effect" << iEffectSlotNumber << effectId;
+    }
+    for (const auto& pBackend : m_effectsBackends) {
+        if (pBackend->canInstantiateEffect(effectId) &&
+                (backendType == EffectBackendType::Unknown ||
+                    pBackend->getType() == backendType)) {
+            EffectManifestPointer pManifest = pBackend->getManifest(effectId);
+            std::unique_ptr<EffectProcessor> pProcessor = pBackend->createProcessor(pManifest);
+
+            pChainSlot->loadEffect(iEffectSlotNumber, pManifest, std::move(pProcessor));
+            return;
+        }
+    }
+    pChainSlot->loadEffect(iEffectSlotNumber, EffectManifestPointer(), nullptr);
+}
+
 void EffectsManager::loadStandardEffect(const int iChainSlotNumber,
         const int iEffectSlotNumber, const QString& effectId,
         EffectBackendType backendType) {
@@ -151,24 +171,17 @@ void EffectsManager::loadEqualizerEffect(const QString& group,
     }
 }
 
-void EffectsManager::loadEffect(EffectChainSlotPointer pChainSlot,
-        const int iEffectSlotNumber, const QString& effectId,
-        EffectBackendType backendType) {
-    if (kEffectDebugOutput) {
-        qDebug() << debugString() << "loading effect" << iEffectSlotNumber << effectId;
+std::unique_ptr<EffectProcessor> EffectsManager::createProcessor(
+        const EffectManifestPointer pManifest) {
+    if (!pManifest) {
+        // This can be a valid request to unload an effect, so do not DEBUG_ASSERT.
+        return std::unique_ptr<EffectProcessor>(nullptr);
     }
-    for (auto pBackend : m_effectsBackends) {
-        if (pBackend->canInstantiateEffect(effectId) &&
-                (backendType == EffectBackendType::Unknown ||
-                    pBackend->getType() == backendType)) {
-            EffectManifestPointer pManifest = pBackend->getManifest(effectId);
-            EffectInstantiatorPointer pInstantiator = pBackend->getInstantiator(effectId);
-
-            pChainSlot->loadEffect(iEffectSlotNumber, pManifest, pInstantiator);
-            return;
-        }
+    EffectsBackendPointer pBackend = m_effectsBackends.value(pManifest->backendType());
+    VERIFY_OR_DEBUG_ASSERT(pBackend) {
+        return std::unique_ptr<EffectProcessor>(nullptr);
     }
-    pChainSlot->loadEffect(iEffectSlotNumber, EffectManifestPointer(), EffectInstantiatorPointer());
+    return pBackend->createProcessor(pManifest);
 }
 
 const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFiltered(

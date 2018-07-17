@@ -24,8 +24,7 @@
 #include "effects/builtin/metronomeeffect.h"
 #include "effects/builtin/tremoloeffect.h"
 
-BuiltInBackend::BuiltInBackend()
-        : EffectsBackend(EffectBackendType::BuiltIn) {
+BuiltInBackend::BuiltInBackend() {
     // Keep this list in a reasonable order
     // Mixing EQs
     registerEffect<Bessel4LVMixEQEffect>();
@@ -54,6 +53,46 @@ BuiltInBackend::BuiltInBackend()
     registerEffect<TremoloEffect>();
 }
 
+std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(
+        const EffectManifestPointer pManifest) const {
+    VERIFY_OR_DEBUG_ASSERT(m_registeredEffects.contains(pManifest->id())) {
+        return std::unique_ptr<EffectProcessor>(nullptr);
+    }
+    return std::unique_ptr<EffectProcessor>(
+            m_registeredEffects[pManifest->id()].initiator()->instantiate());
+}
+
 BuiltInBackend::~BuiltInBackend() {
     //qDebug() << debugString() << "destroyed";
+    m_registeredEffects.clear();
+    m_effectIds.clear();
+}
+
+void BuiltInBackend::registerEffect(const QString& id,
+                                    EffectManifestPointer pManifest,
+                                    EffectProcessorInstantiatorPointer pInstantiator) {
+    VERIFY_OR_DEBUG_ASSERT(!m_registeredEffects.contains(id)) {
+        return;
+    }
+
+    pManifest->setBackendType(getType());
+
+    m_registeredEffects[id] = RegisteredEffect(pManifest, pInstantiator);
+    m_effectIds.append(id);
+}
+
+const QList<QString> BuiltInBackend::getEffectIds() const {
+    return m_effectIds;
+}
+
+EffectManifestPointer BuiltInBackend::getManifest(const QString& effectId) const {
+    VERIFY_OR_DEBUG_ASSERT(m_registeredEffects.contains(effectId)) {
+        return EffectManifestPointer();
+    }
+    return m_registeredEffects.value(effectId).manifest();
+}
+
+
+bool BuiltInBackend::canInstantiateEffect(const QString& effectId) const {
+    return m_registeredEffects.contains(effectId);
 }
