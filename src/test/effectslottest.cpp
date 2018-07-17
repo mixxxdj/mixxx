@@ -49,18 +49,16 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     pManifest->addParameter();
     registerTestEffect(pManifest, false);
 
-    // Check the controls reflect the state of their loaded effect.
-    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(pManifest->id());
     // Enabled defaults to false in effect, slot, and engine effect.
     EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(group, "enabled")));
     EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(group, "num_parameters")));
 
-    pEffectSlot->loadEffect(pEffect, false);
+    m_pEffectsManager->loadEffect(pChainSlot, iEffectNumber,
+            pManifest->id(), EffectBackendType::Unknown);
     EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(group, "enabled")));
     EXPECT_DOUBLE_EQ(1, ControlObject::get(ConfigKey(group, "num_parameters")));
 
-    pEffect->setEnabled(true);
-    EXPECT_TRUE(pEffect->enabled());
+    pEffectSlot->setEnabled(true);
     EXPECT_DOUBLE_EQ(1, ControlObject::get(ConfigKey(group, "enabled")));
     EXPECT_DOUBLE_EQ(1, ControlObject::get(ConfigKey(group, "num_parameters")));
 

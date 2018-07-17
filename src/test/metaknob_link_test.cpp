@@ -7,7 +7,6 @@
 #include "effects/effectparameterslot.h"
 #include "effects/effectchainslot.h"
 #include "effects/specialeffectchainslots.h"
-#include "effects/effect.h"
 #include "effects/effectslot.h"
 #include "mixxxtest.h"
 #include "test/baseeffecttest.h"
@@ -54,10 +53,8 @@ class MetaLinkTest : public BaseEffectTest {
 
         registerTestEffect(pManifest, false);
 
-        // Check the controls reflect the state of their loaded effect.
-        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(pManifest->id());
-
-        m_pEffectSlot->loadEffect(pEffect, false);
+        m_pEffectsManager->loadEffect(m_pChainSlot, iEffectNumber,
+                pManifest->id(), EffectBackendType::Unknown);
 
         QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
 
@@ -118,7 +115,7 @@ TEST_F(MetaLinkTest, MetaToParameter_Softtakeover_EffectEnabled) {
     m_pControlLinkType->set(
         static_cast<double>(EffectManifestParameter::LinkType::LINKED));
     // Soft takeover should only occur when the effect is enabled.
-    m_pEffectSlot->slotEnabled(1.0);
+    m_pEffectSlot->setEnabled(1.0);
 
     // Soft takeover always ignores the first change.
     m_pEffectSlot->slotEffectMetaParameter(0.5);
@@ -158,7 +155,7 @@ TEST_F(MetaLinkTest, MetaToParameter_Softtakeover_EffectDisabled) {
 
 TEST_F(MetaLinkTest, SuperToMeta_Softtakeover_EffectEnabled) {
     // Soft takeover should only occur when the effect is enabled.
-    m_pEffectSlot->slotEnabled(1.0);
+    m_pEffectSlot->setEnabled(1.0);
 
     // Soft takeover always ignores the first change.
     m_pChainSlot->setSuperParameter(0.5);
@@ -197,7 +194,7 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     // An effect that is linked to half of a knob should be more tolerant of
     // takeover changes.
 
-    m_pEffectSlot->slotEnabled(1.0);
+    m_pEffectSlot->setEnabled(1.0);
 
     // We have to recreate the effect because we want a neutral point at
     // 0 or 1.
@@ -217,9 +214,9 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     low->setMinimum(0);
     low->setMaximum(1.0);
     registerTestEffect(pManifest, false);
-    // Check the controls reflect the state of their loaded effect.
-    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(pManifest->id());
-    m_pEffectSlot->loadEffect(pEffect, false);
+
+    m_pEffectsManager->loadEffect(m_pChainSlot, 0, pManifest->id(), EffectBackendType::Unknown);
+
     QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
     m_pControlValue.reset(new ControlProxy(group, itemPrefix));
     m_pControlLinkType.reset(new ControlProxy(group,
