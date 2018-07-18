@@ -661,9 +661,9 @@ WEffectButtonParameter*/
 WBeatSpinBox,
 #DlgAutoDJ QSpinBox {
   /* make it 2px smaller in each dimension,
-    border is added for final size */
+    border is added for final size
   width: 55px;
-  height: 22px;
+  height: 22px; */
   border: 1px solid #666;
   border-radius: 2px;
   color: #cfb32c;
@@ -673,14 +673,14 @@ WBeatSpinBox,
   font-size: 13px/13px;
   }
   WBeatSpinBox {
-    padding: 1px 2px 1px 1px;
+    padding: 0px 2px 0px 1px;
     margin: 0px -1px 2px 0px;
   }
   /* Eliminate overlapping right border for transition time in Auto DJ tab */
   #DlgAutoDJ QSpinBox {
     border-right: 0px;
     margin: 0px 0px 0px 2px;
-    padding: 1px 2px 1px 1px;
+    padding: 0px 2px 0px 1px;
   }
   WBeatSpinBox:hover,
   #DlgAutoDJ QSpinBox:hover {
