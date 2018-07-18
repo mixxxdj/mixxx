@@ -5,6 +5,7 @@
 #include <QObject>
 
 #include "broadcast/mpris/mediaplayer2player.h"
+#include "library/autodj/autodjprocessor.h"
 #include "track/track.h"
 
 class MixxxMainWindow;
@@ -12,7 +13,7 @@ class MixxxMainWindow;
 class Mpris : public QObject {
     Q_OBJECT
   public:
-    explicit Mpris(MixxxMainWindow* mixxx);
+    explicit Mpris(MixxxMainWindow* mixxx, PlayerManager* pPlayerManager);
     ~Mpris();
     void broadcastCurrentTrack();
 

@@ -14,9 +14,9 @@ namespace {
 const QString busName = "org.mpris.MediaPlayer2.mixxx";
 }
 
-Mpris::Mpris(MixxxMainWindow* pMixxx)
+Mpris::Mpris(MixxxMainWindow* pMixxx, PlayerManager* pPlayerManager)
         : m_busConnection(QDBusConnection::connectToBus(QDBusConnection::SessionBus, busName)),
-          m_pPlayer(new MediaPlayer2Player(this)) {
+          m_pPlayer(new MediaPlayer2Player(pPlayerManager, this)) {
     // Classes derived from QDBusAbstractAdaptor must be created
     // on the heap using the new operator and must not be deleted
     // by the user (they will be deleted automatically when the object
@@ -34,12 +34,10 @@ Mpris::~Mpris() {
 }
 
 void Mpris::broadcastCurrentTrack() {
-    notifyPropertyChanged("org.mpris.MediaPlayer2.Player",
-            "Metadata",
-            m_pPlayer->metadata());
-    notifyPropertyChanged("org.mpris.MediaPlayer2.Player",
-            "PlaybackStatus",
-            m_pPlayer->playbackStatus());
+    //    notifyPropertyChanged("org.mpris.MediaPlayer2.Player",
+    //                                              "Metadata", m_pPlayer->metadata());
+    //    notifyPropertyChanged("org.mpris.MediaPlayer2.Player",
+    //                                              "PlaybackStatus",m_pPlayer->playbackStatus());
 }
 
 void Mpris::notifyPropertyChanged(const QString& interface,

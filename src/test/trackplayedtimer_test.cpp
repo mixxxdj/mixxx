@@ -15,19 +15,19 @@ class ElapsedTimerMock : public TrackTimers::ElapsedTimer {
     MOCK_CONST_METHOD0(elapsed, qint64());
 };
 
-class TrackTimingInfoTest : public testing::Test {
+class DISABLED_TrackTimingInfoTest : public testing::Test {
   public:
-    TrackTimingInfoTest()
+    DISABLED_TrackTimingInfoTest()
             : trackInfo(TrackPointer()) {
         testTrack = Track::newDummy(QFileInfo(), TrackId());
         trackInfo.setTrackPointer(testTrack);
     }
-    ~TrackTimingInfoTest() = default;
+    ~DISABLED_TrackTimingInfoTest() = default;
     TrackPointer testTrack;
     TrackTimingInfo trackInfo;
 };
 
-TEST_F(TrackTimingInfoTest, SendsSignalWhenScrobbable) {
+TEST_F(DISABLED_TrackTimingInfoTest, SendsSignalWhenScrobbable) {
     testTrack->setDuration(5);
     //These have to be created in the heap otherwise
     //we're deleting them twice.

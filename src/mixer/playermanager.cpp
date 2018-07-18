@@ -152,7 +152,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
     MetadataBroadcaster* broadcaster = new MetadataBroadcaster;
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new FileListener(pConfig)));
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new ListenBrainzService(pConfig)));
-    broadcaster->addNewScrobblingService(ScrobblingServicePtr(new MprisService(pWindow)));
+    broadcaster->addNewScrobblingService(ScrobblingServicePtr(new MprisService(pWindow, this)));
     m_scrobblingManager.setMetadataBroadcaster(broadcaster);
 }
 

@@ -46,9 +46,9 @@ PlayerMock::PlayerMock(QObject* pParent, const QString& group)
         : BaseTrackPlayer(pParent, group) {
 }
 
-class DISABLED_ScrobblingTest : public ::testing::Test {
+class ScrobblingTest : public ::testing::Test {
   public:
-    DISABLED_ScrobblingTest()
+    ScrobblingTest()
             : playerManagerMock(new PlayerManagerMock),
               scrobblingManager(playerManagerMock),
               dummyPlayerLeft(nullptr, "DummyPlayerLeft"),
@@ -79,7 +79,7 @@ class DISABLED_ScrobblingTest : public ::testing::Test {
                 .WillRepeatedly(testing::Return(&dummyPlayerRight));
     }
 
-    ~DISABLED_ScrobblingTest() {
+    ~ScrobblingTest() {
         delete playerManagerMock;
     }
 
@@ -93,7 +93,7 @@ class DISABLED_ScrobblingTest : public ::testing::Test {
 };
 
 //1 track, audible the whole time
-TEST_F(DISABLED_ScrobblingTest, SingleTrackAudible) {
+TEST_F(ScrobblingTest, SingleTrackAudible) {
     std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> factory;
     factory = [this](TrackPointer pTrack) -> std::shared_ptr<TrackTimingInfo> {
         Q_UNUSED(pTrack);
@@ -125,7 +125,7 @@ TEST_F(DISABLED_ScrobblingTest, SingleTrackAudible) {
 }
 
 //1 Track, inaudible.
-TEST_F(DISABLED_ScrobblingTest, SingleTrackInaudible) {
+TEST_F(ScrobblingTest, SingleTrackInaudible) {
     std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> factory;
     factory = [this](TrackPointer pTrack) -> std::shared_ptr<TrackTimingInfo> {
         Q_UNUSED(pTrack);
@@ -144,7 +144,7 @@ TEST_F(DISABLED_ScrobblingTest, SingleTrackInaudible) {
 }
 
 //2 tracks, one audible, the other not.
-TEST_F(DISABLED_ScrobblingTest, TwoTracksUnbalanced) {
+TEST_F(ScrobblingTest, TwoTracksUnbalanced) {
     std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> factory;
     factory = [this](TrackPointer pTrack) -> std::shared_ptr<TrackTimingInfo> {
         if (pTrack == dummyTrackLeft) {

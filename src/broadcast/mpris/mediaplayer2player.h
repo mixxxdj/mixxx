@@ -5,6 +5,13 @@
 #include <QtDBus/QDBusAbstractAdaptor>
 #include <QtDBus/QDBusObjectPath>
 
+#include "mixxxmainwindow.h"
+#include "broadcast/mpris/mprisplayer.h"
+#include "control/controlproxy.h"
+
+class AutoDJProcessor;
+class PlayerManager;
+
 // this implements the Version 2.2 of
 // MPRIS D-Bus Interface Specification
 // org.mpris.MediaPlayer2.Player
@@ -30,7 +37,7 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor {
     Q_PROPERTY(bool CanControl READ canControl)
 
   public:
-    explicit MediaPlayer2Player(QObject* parent = 0);
+    explicit MediaPlayer2Player(PlayerManager* playerManager, QObject* parent);
 
     QString playbackStatus() const;
     QString loopStatus() const;
@@ -65,6 +72,9 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor {
 
   signals:
     void Seeked(qlonglong position);
+
+  private:
+    MprisPlayer m_mprisPlayer;
 };
 
 #endif // MEDIAPLAYER2PLAYER_H
