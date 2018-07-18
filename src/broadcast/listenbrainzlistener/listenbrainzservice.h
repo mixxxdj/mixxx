@@ -35,5 +35,5 @@ class ListenBrainzService : public ScrobblingService {
     QNetworkAccessManager m_manager;
     ListenBrainzSettings m_latestSettings;
     ControlPushButton m_COSettingsChanged;
-    QByteArray* m_pCurrentJSON;
+    QByteArray m_currentJSON;
 };

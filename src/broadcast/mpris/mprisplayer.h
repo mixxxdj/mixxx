@@ -3,8 +3,8 @@
 #include <QObject>
 #include <QtDBus/QDBusObjectPath>
 
-#include "mixxxmainwindow.h"
 #include "control/controlproxy.h"
+#include "mixxxmainwindow.h"
 
 class PlayerManager;
 
