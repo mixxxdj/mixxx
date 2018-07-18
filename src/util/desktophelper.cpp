@@ -35,11 +35,13 @@ namespace {
         } else if (output == "pcmanfm.desktop") {
             return ""; // pcmanfm has no --select option
         } else if (output == "nemo.desktop") {
-            return "nautilus --no-desktop --select \"%1\"";
+            return "nemo --no-desktop --select \"%1\"";
         } else if (output == "kfmclient_dir.desktop") {
             return "konqueror --select \"%1\"";
         } else if (output == "Thunar.desktop") {
             return ""; // Thunar has no --select option
+        } else if (output == "dde-file-manager.desktop") {
+            return ""; // deepin file manager has no --select option
         } else {
             qDebug() << "xdg-mime" << output << "unknown, can't select track in file browser";
             return ""; // no special command use QDesktopServices";
