@@ -105,8 +105,6 @@ WTime {
   background-color: #1e1e1e;
 }
 
-#DecksLeftContainer,
-#DecksRightContainer,
 #SkinContainer {
   background-color: #0f0f0f;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -119,13 +117,21 @@ WTime {
   padding: 1px;
 }
 
+#DeckRows234 {/*
+  This alone wouldn't work:
+  border-bottom: 1px solid #585858;
+  this does: */
+  border: 1px solid #585858;
+  border-width: 0px 0px 1px 0px;
+}
+
 #DeckRow_2_3_ArtistTitleTime {
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
 }
 
-#DeckRow_4_OverviewSpinny {
-  border-bottom: 1px solid #585858;
+#DeckRow_4_OverviewSpinny {/*
+  border-bottom: 1px solid #585858;*/
   background-color: #1e1e1e;
   padding: 0px;
 }
@@ -140,9 +146,8 @@ WTime {
 }
 
 #SpinnyContainer {
-  qproperty-layoutAlignment: 'AlignHCenter';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
-  border-bottom: 1px solid #585858;
   border-right: 1px solid #585858;
 }
 
@@ -157,35 +162,17 @@ WTime {
 #Deck3 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
-  border-right: 0px;
+  margin-right: 5px;
 
 }
-
 #Deck2,
 #Deck4 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
-  border-left: 0px;
+  margin-left: 5px;
 }
 
 #DeckContainer {
-  background-color: #0f0f0f;
-}
-
-#DeckLeftMargin {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  border: 1px solid #585858;
-  border-left: 0px;
-  border-bottom: 0px;
-  border-top: 0px;
-  background-color: #0f0f0f;
-}
-
-#DeckRightMargin {
-  border: 0px solid #585858;
-  border-top:0px;
-  border-right: 0px;
-  border-bottom: 0px;
   background-color: #0f0f0f;
 }
 

@@ -318,12 +318,21 @@
         <SizePolicy>me,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
-          <Template src="skin:deck_row_1_keyVinylFx.xml" />
+          <Template src="skin:deck_row_1_keyVinylFx.xml"/>
           <WidgetGroup>
+            <ObjectName>DeckRows234</ObjectName>
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:spinny.xml"/>
+              <WidgetGroup>
+                <SizePolicy>max,min</SizePolicy>
+                <MaximumSize>109,-1</MaximumSize>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:spinny.xml"/>
+                  <Template src="skin:deck_coverArt.xml"/>
+                </Children>
+              </WidgetGroup>
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>

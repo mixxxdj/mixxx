@@ -37,27 +37,6 @@
             </Connection>
           </WidgetGroup>
 
-          <!--WidgetGroup>
-            <ObjectName>NoBorder</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,me</SizePolicy>
-            <MinimumSize>0,0</MinimumSize>
-            <MaximumSize>,70</MaximumSize>
-            <Children/>
-            <Connection>
-              <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <MinimumSize>0,0</MinimumSize>
-            <MaximumSize>,80</MaximumSize>
-            <Children/>
-          </WidgetGroup-->
-
         </Children>
       </WidgetGroup>
 
