@@ -34,148 +34,85 @@ Description:
               </Label>
 
               <!-- push Close button to far right -->
-              <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
+              <WidgetGroup><Size>1me,1min</Size></WidgetGroup>
 
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">skin_settings</SetVariable>
                 <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
-                <SetVariable name="Size">20f,24f</SetVariable>
+                <SetVariable name="Size">20f,21f</SetVariable>
                 <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>
 
-          <!-- Each category's MinimumSize & MaximumSize need to be defined
-              in order to let them grow reasonably on big screens, as well as to
-              allow good-looking compression of items on small screens.
-              <SizePolicy> is very hard to handle in many places here due to
-              translucent covers and submenus, defining button sizes explicitly helps.
-
-              Each categroy has a padding: top 2px, bottom 2px
-              For every button we need to provide space (13-17px):
-              MinSize = (num. of buttons/rows x 13px) + 15px + 3px padding + 3px border-bottom
-              MaxSize = (num. of buttons/rows x 17px) + 15px + 3px padding + 3px border-bottom +10px
-              (let's add 10px so sections can grow on big screens) -->
-
           <!-- Decks / General -->
           <WidgetGroup><!-- 4 buttons -->
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <MinimumSize>180f,90</MinimumSize>
-            <MaximumSize>180f,115</MaximumSize>
-            <SizePolicy>me,me</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 
-              <WidgetGroup><!-- 2/4 Decks toggle -->
-                <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="TooltipId">toggle_4decks</SetVariable>
-                    <SetVariable name="state_0_text">&#9744;  4 Decks</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; 4 Decks</SetVariable>
-                    <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[Master],show_4decks</SetVariable>
-                  </Template>
-                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-                </Children>
-              </WidgetGroup>
+              <!-- 2/4 Decks toogle -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+                <SetVariable name="text">4 Decks</SetVariable>
+                <SetVariable name="Setting">[Master],show_4decks</SetVariable>
+              </Template>
 
-              <WidgetGroup><!-- 4/8 Hotcues toggle -->
-                <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="TooltipId">hotcue_toggle</SetVariable>
-                    <SetVariable name="state_0_text">&#9744;  8 Hotcues</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; 8 Hotcues</SetVariable>
-                    <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[Skin],8_hotcues</SetVariable>
-                  </Template>
-                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-                </Children>
-              </WidgetGroup>
+              <!-- 4/8 Hotcues toogle -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">hotcue_toggle</SetVariable>
+                <SetVariable name="text">8 Hotcues</SetVariable>
+                <SetVariable name="Setting">[Skin],8_hotcues</SetVariable>
+              </Template>
 
-              <WidgetGroup><!-- Rate Control toggle -->
-                <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="TooltipId">rate_toggle</SetVariable>
-                    <SetVariable name="state_0_text">&#9744;  Rate Control</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Rate Control</SetVariable>
-                    <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[Master],show_rate_control</SetVariable>
-                  </Template>
-                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-                </Children>
-              </WidgetGroup>
+              <!-- Rate Control toogle -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">rate_toggle</SetVariable>
+                <SetVariable name="text">Rate Control</SetVariable>
+                <SetVariable name="Setting">[Master],show_rate_control</SetVariable>
+              </Template>
 
-              <WidgetGroup><!-- Spinny -->
-                <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="TooltipId">show_spinny</SetVariable>
-                    <SetVariable name="state_0_text">&#9744;  Spinny</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Spinny</SetVariable>
-                    <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[Spinny],show_spinnies</SetVariable>
-                  </Template>
-                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-                </Children>
-              </WidgetGroup>
+              <!-- Vinyl Control toogle -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
+                <SetVariable name="text">Vinyl Control</SetVariable>
+                <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
+              </Template>
 
-              <WidgetGroup><!-- Vinyl Control toggle -->
-                <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
-                    <SetVariable name="state_0_text">&#9744;  Vinyl Control</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Vinyl Control</SetVariable>
-                    <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
-                  </Template>
-                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-                </Children>
-              </WidgetGroup>
+              <!-- Spinny -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">show_spinny</SetVariable>
+                <SetVariable name="text">Spinny</SetVariable>
+                <SetVariable name="Setting">[Spinny],show_spinnies</SetVariable>
+              </Template>
+
+              <!-- Cover Art -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">show_spinny</SetVariable>
+                <SetVariable name="text">Cover Art</SetVariable>
+                <SetVariable name="Setting">[Skin],show_cover_art</SetVariable>
+              </Template>
 
             </Children>
           </WidgetGroup><!-- /Deck / General -->
 
           <!--  Mixer -->
           <Template src="skin:skin_settings_labelbutton_2state.xml">
-            <SetVariable name="state_0_text">  &#9744; Mixer </SetVariable>
-            <SetVariable name="state_1_text">  &#9745; Mixer </SetVariable>
-            <SetVariable name="width">180f</SetVariable>
+            <SetVariable name="text">Mixer</SetVariable>
             <SetVariable name="Setting">[Master],show_mixer</SetVariable>
             <SetVariable name="TooltipId">show_mixer</SetVariable>
           </Template>
 
-          <WidgetGroup><!-- 4 buttons -->
+          <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <MinimumSize>180,58</MinimumSize>
-            <MaximumSize>180,84</MaximumSize>
-            <SizePolicy>me,me</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 
               <WidgetGroup><!-- EQ knobs -->
                 <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
+                <Size>180f,17f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -183,9 +120,7 @@ Description:
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <MinimumSize>180,13</MinimumSize>
-                    <MaximumSize>180,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
+                    <Size>180f,17f</Size>
                     <Connection>
                       <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
@@ -194,8 +129,7 @@ Description:
                   </WidgetGroup>
 
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">&#9744;  EQ Knobs</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; EQ Knobs</SetVariable>
+                    <SetVariable name="text">EQ Knobs</SetVariable>
                     <SetVariable name="Setting">[Master],show_eqs</SetVariable>
                   </Template>
 
@@ -204,9 +138,7 @@ Description:
 
               <WidgetGroup><!-- EQ Kill -->
                 <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
+                <Size>180f,17f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -214,9 +146,7 @@ Description:
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <MinimumSize>180,13</MinimumSize>
-                    <MaximumSize>180,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
+                    <Size>180f,17f</Size>
                     <Connection>
                       <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
@@ -225,8 +155,7 @@ Description:
                   </WidgetGroup>
 
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">&#9744;  EQ Kill</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; EQ Kill</SetVariable>
+                    <SetVariable name="text">EQ Kill</SetVariable>
                     <SetVariable name="Setting">[Master],show_eq_kill_buttons</SetVariable>
                   </Template>
 
@@ -235,9 +164,7 @@ Description:
 
               <WidgetGroup><!-- crossfader -->
                 <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
+                <Size>180f,17f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -245,9 +172,7 @@ Description:
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
-                    <MinimumSize>180,13</MinimumSize>
-                    <MaximumSize>180,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
+                    <Size>180f,17f</Size>
                     <Connection>
                       <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
@@ -256,8 +181,7 @@ Description:
                   </WidgetGroup>
 
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_1_text">&#9744;  Crossfader</SetVariable>
-                    <SetVariable name="state_0_text"> &#10004; Crossfader</SetVariable>
+                    <SetVariable name="text">Crossfader</SetVariable>
                     <SetVariable name="Setting">[Master],show_xfader</SetVariable>
                   </Template>
 
@@ -267,28 +191,21 @@ Description:
             </Children>
           </WidgetGroup><!-- /Mixer -->
 
-
           <!-- Effects -->
           <Template src="skin:skin_settings_labelbutton_2state.xml">
-            <SetVariable name="state_0_text">  &#9744; Effects </SetVariable>
-            <SetVariable name="state_1_text">  &#9745; Effects </SetVariable>
-            <SetVariable name="width">180f</SetVariable>
+            <SetVariable name="text">Effects </SetVariable>
             <SetVariable name="Setting">[EffectRack1],show</SetVariable>
             <SetVariable name="TooltipId">show_effects</SetVariable>
           </Template>
 
           <WidgetGroup><!-- 4 buttons -->
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <MinimumSize>180,58</MinimumSize>
-            <MaximumSize>180,84</MaximumSize>
-            <SizePolicy>me,me</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
               <WidgetGroup><!-- 4 Effect Units -->
                 <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
+                <Size>180f,17f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -296,9 +213,7 @@ Description:
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>
-                    <MinimumSize>180,13</MinimumSize>
-                    <MaximumSize>180,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
+                    <Size>180f,17f</Size>
                     <Connection>
                       <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
                       <Transform><Not/></Transform>
@@ -307,8 +222,7 @@ Description:
                   </WidgetGroup>
 
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">&#9744;  4 EFFECT UNITS</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; 4 EFFECT UNITS</SetVariable>
+                    <SetVariable name="text">4 EFFECT UNITS</SetVariable>
                     <SetVariable name="Setting">[Master],show_4effectunits</SetVariable>
                   </Template>
                 </Children>
@@ -316,9 +230,7 @@ Description:
 
               <WidgetGroup><!-- Super knobs -->
                 <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
+                <Size>180f,17f</Size>
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
@@ -326,9 +238,7 @@ Description:
                   <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>stacked</Layout>
-                    <MinimumSize>180,13</MinimumSize>
-                    <MaximumSize>180,17</MaximumSize>
-                    <SizePolicy>me,me</SizePolicy>
+                    <Size>180f,17f</Size>
                     <Connection>
                       <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
                       <Transform><Not/></Transform>
@@ -337,63 +247,39 @@ Description:
                   </WidgetGroup>
 
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">&#9744;  Super Knobs</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Super Knobs</SetVariable>
+                    <SetVariable name="text">Super Knobs</SetVariable>
                     <SetVariable name="Setting">[Master],show_superknobs</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /Super knobs -->
 
             </Children>
-          </WidgetGroup><!-- /Miscellaneous -->
-          <!-- Effects -->
+          </WidgetGroup><!-- /Effects -->
+
           <Label>
             <ObjectName>CategoryLabel</ObjectName>
             <Text>Miscellaneous</Text>
             <Size>180f,21f</Size>
           </Label>
 
-          <WidgetGroup><!-- 4 buttons -->
+          <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
-            <MinimumSize>180,58</MinimumSize>
-            <MaximumSize>180,84</MaximumSize>
-            <SizePolicy>me,me</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <WidgetGroup><!-- Preview Deck -->
-                <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-                  <Template src="skin:skin_settings_button_2state.xml">
- 					<SetVariable name="TooltipId">show_previewdeck</SetVariable>
-                    <SetVariable name="state_0_text">&#9744;  Preview Deck</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Preview Deck</SetVariable>
-                    <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
-                  </Template>
-                </Children>
-              </WidgetGroup><!-- /Preview Deck -->
+              <!-- Preview Deck -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">show_previewdeck</SetVariable>
+                <SetVariable name="text">Preview Deck</SetVariable>
+                <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
+              </Template>
 
-              <WidgetGroup><!-- coverart toggle -->
-                <Layout>stacked</Layout>
-                <MinimumSize>180,13</MinimumSize>
-                <MaximumSize>180,17</MaximumSize>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="state_0_text">&#9744;  Cover Art</SetVariable>
-                    <SetVariable name="state_1_text"> &#10004; Cover Art</SetVariable>
-                    <SetVariable name="width">110</SetVariable>
-                    <SetVariable name="Setting">[Library],show_coverart</SetVariable>
-                  </Template>
-                  <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-                </Children>
-              </WidgetGroup>
+              <!-- Cover Art -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="text">Cover Art in Library</SetVariable>
+                <SetVariable name="Setting">[Library],show_coverart</SetVariable>
+              </Template>
 
             </Children>
           </WidgetGroup><!-- /Miscellaneous -->

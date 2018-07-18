@@ -566,17 +566,15 @@ WEffectButtonParameter*/
  #######  Skin Settings  ########################################
 ##############################################################*/
 
-#SkinSettingsContainer{
-/*  margin-left: 5px;*/
-  border: 1px solid #585858;
-  border-width: 0px 0px 1px 1px;
-  
+#SkinSettingsContainer {
 }
 
 #SkinSettings {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  padding: 2px 0px 0px 0px;
   text-align: left;
+  padding: 2px 0px 2px 0px;
+  border: 1px solid #585858;
+  border-width: 0px 0px 1px 1px;
 
 }
 #SkinSettingsHeader {
@@ -584,36 +582,37 @@ WEffectButtonParameter*/
   padding-right: 2px;
   }
   #SkinSettingsClose {
-    border-radius:2px;
-    margin-bottom: 4px;
+    margin-bottom: 1px;
     background-color: transparent;
     image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center top;
-    }
+  }
 
 #SkinSettingsCategory {
-  padding: 2px 8px 1px 10px;
+  padding: 3px 8px 10px 9px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-    border: 1px solid #1e1e1e;
-    border-width: 0px 0px 3px 0px;
+  border: 1px solid #1e1e1e;
+  border-width: 0px 0px 3px 0px;
+  margin-bottom: 3px;
   }
   #CategoryLabel {
     font-size: 17px/17px;
     text-align: left;
-    padding: 5px 0px 0px 3px;
+    padding: 3px 0px 2px 3px;
     color: #eece33;
   }
+
 #SkinSettingsButton {
   padding-top: 1px;
   font-size: 12px/14px;
   color: #d2d2d2;
-  }
+}
 
 #SkinSettingsLabelButton {
-    font-size: 17px/17px;
-    text-align: left;
-    padding: 5px 0px 0px 3px;
-    color: #eece33;
-  }
+  font-size: 17px/21px;
+  text-align: left;
+  padding: 0px 0px 0px 3px;
+  color: #eece33;
+}
 
 #SubmenuCover {
   background-color: rgba(15, 15, 15, 180);
