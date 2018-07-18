@@ -5,9 +5,9 @@
 #include <QtDBus/QDBusAbstractAdaptor>
 #include <QtDBus/QDBusObjectPath>
 
-#include "mixxxmainwindow.h"
 #include "broadcast/mpris/mprisplayer.h"
 #include "control/controlproxy.h"
+#include "mixxxmainwindow.h"
 
 class AutoDJProcessor;
 class PlayerManager;

@@ -5,8 +5,8 @@
 #include <QDBusMessage>
 
 #include "broadcast/mpris/mediaplayer2player.h"
-#include "moc_mediaplayer2player.cpp"
 #include "mixxxmainwindow.h"
+#include "moc_mediaplayer2player.cpp"
 
 MediaPlayer2Player::MediaPlayer2Player(PlayerManager* playerManager,
         QObject* parent)
