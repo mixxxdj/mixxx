@@ -50,7 +50,9 @@ QStringList MediaPlayer2::supportedUriSchemes() const {
 }
 
 QStringList MediaPlayer2::supportedMimeTypes() const {
-    return QStringList();
+    QStringList ret;
+    ret << "audio/mpeg" << "audio/ogg";
+    return ret;
 }
 
 void MediaPlayer2::Raise() {

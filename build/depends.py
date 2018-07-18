@@ -736,6 +736,7 @@ class MixxxCore(Feature):
                    "broadcast/mpris/mpris.cpp",
                    "broadcast/mpris/mediaplayer2.cpp",
                    "broadcast/mpris/mediaplayer2player.cpp",
+                   "broadcast/mpris/mprisplayer.cpp",
                    "broadcast/mpris/mediaplayer2playlists.cpp",
                    "broadcast/mpris/mediaplayer2tracklist.cpp",
 

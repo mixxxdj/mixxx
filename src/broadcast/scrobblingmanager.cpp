@@ -223,6 +223,7 @@ bool ScrobblingManager::playerNotInTrackList(const QLinkedList<QString> &list,
 void ScrobblingManager::deletePlayerFromList(const QString &player,
                                              QLinkedList<QString> &list) {
     QLinkedList<QString>::iterator it;
+    int size = list.size();
     for (it = list.begin(); 
          it != list.end() && *it != player; 
          ++it);

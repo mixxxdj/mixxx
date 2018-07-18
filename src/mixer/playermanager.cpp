@@ -36,7 +36,7 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig, SoundManager *pSoundManager, EffectsManager *pEffectsManager,
-                             EngineMaster *pEngine, MixxxMainWindow *pWindow) :
+                             EngineMaster *pEngine, MixxxMainWindow *pWindow, AutoDJProcessor *pProcessor) :
         m_mutex(QMutex::Recursive),
         m_pConfig(pConfig),
         m_pSoundManager(pSoundManager),
@@ -94,7 +94,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig, SoundManager *pSoundMa
     MetadataBroadcaster *broadcaster = new MetadataBroadcaster;
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new FileListener(pConfig)));
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new ListenBrainzService(pConfig)));
-    broadcaster->addNewScrobblingService(ScrobblingServicePtr(new MprisService(pWindow)));
+    broadcaster->addNewScrobblingService(ScrobblingServicePtr(new MprisService(pWindow,this)));
     m_scrobblingManager.setMetadataBroadcaster(broadcaster);
 }
 

@@ -237,7 +237,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 #endif
 
     // Create the player manager. (long)
-    m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager, m_pEffectsManager, m_pEngine, this);
+    m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager, m_pEffectsManager, m_pEngine, this, nullptr);
     connect(m_pPlayerManager, SIGNAL(noMicrophoneInputConfigured()),
             this, SLOT(slotNoMicrophoneInputConfigured()));
     connect(m_pPlayerManager, SIGNAL(noDeckPassthroughInputConfigured()),
@@ -406,6 +406,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // At a later place it will newer shown up, since it is
     // immediately replaced by the real widget.
     launchProgress(100);
+
+    emit componentsInitialized();
 
     // Check direct rendering and warn user if they don't have it
     if (!CmdlineArgs::Instance().getSafeMode()) {

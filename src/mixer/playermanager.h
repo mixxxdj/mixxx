@@ -64,7 +64,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
                   SoundManager *pSoundManager,
                   EffectsManager *pEffectsManager,
                   EngineMaster *pEngine,
-                  MixxxMainWindow *pWindow);
+                  MixxxMainWindow *pWindow,
+                  AutoDJProcessor *pProcessor);
     
     virtual ~PlayerManager();
 
