@@ -25,7 +25,7 @@ MprisPlayer::MprisPlayer(PlayerManager *pPlayerManager,
            m_pWindow(pWindow),
            m_bAutoDJEnabled(false) {
     connect(m_pWindow,&MixxxMainWindow::componentsInitialized,
-            &MprisPlayer::mixxxComponentsInitialized);
+            this,&MprisPlayer::mixxxComponentsInitialized);
 }
 
 QString MprisPlayer::playbackStatus() const {

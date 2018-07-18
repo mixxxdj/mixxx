@@ -9,8 +9,7 @@
 ListenBrainzService::ListenBrainzService(UserSettingsPointer pSettings)
         :  m_request(ListenBrainzAPIURL),
            m_latestSettings(ListenBrainzSettingsManager::getPersistedSettings(pSettings)),
-           m_COSettingsChanged(kListenBrainzSettingsChanged),
-           m_pCurrentJSON(nullptr) {
+           m_COSettingsChanged(kListenBrainzSettingsChanged) {
     connect(&m_manager,&QNetworkAccessManager::finished,
             this,&ListenBrainzService::slotAPICallFinished);
     connect(&m_COSettingsChanged,&ControlPushButton::valueChanged,
@@ -26,19 +25,19 @@ void ListenBrainzService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     Q_UNUSED(pTrack);
     /*if (!pTrack || !m_latestSettings.enabled)
         return;
-    m_pCurrentJSON = new QByteArray(
+    m_currentJSON = new QByteArray(
             ListenBrainzJSONFactory::getJSONFromTrack(
                     pTrack,ListenBrainzJSONFactory::NowListening));
-    m_manager.post(m_request,*m_pCurrentJSON);*/
+    m_manager.post(m_request,*m_currentJSON);*/
 }
 
 void ListenBrainzService::slotScrobbleTrack(TrackPointer pTrack) {
     if (!pTrack || !m_latestSettings.enabled)
         return;
-    m_pCurrentJSON = new QByteArray(
+    m_currentJSON =
             ListenBrainzJSONFactory::getJSONFromTrack(
-                    pTrack,ListenBrainzJSONFactory::Single));
-    m_manager.post(m_request,*m_pCurrentJSON);
+                    pTrack,ListenBrainzJSONFactory::Single);
+    m_manager.post(m_request,m_currentJSON);
 }
 
 void ListenBrainzService::slotAllTracksPaused() {
@@ -50,8 +49,7 @@ void ListenBrainzService::slotAPICallFinished(QNetworkReply *reply) {
         qWarning() << "API call to ListenBrainz error: " <<
                    reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     }
-    delete m_pCurrentJSON;
-    m_pCurrentJSON = nullptr;
+    m_currentJSON.clear();
 }
 
 void ListenBrainzService::slotSettingsChanged(double value) {
