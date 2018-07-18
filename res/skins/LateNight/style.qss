@@ -68,7 +68,7 @@ WTime {
 #ToolBar {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   background-color: #1e1e1e;
-  padding-top: 1px;
+  padding: 2px 0px 2px 2px;
 }
 
 #UIButtonMargin {
@@ -476,7 +476,7 @@ WEffectButtonParameter*/
 
   #GuiToggleButton,
   #RecBox {
-    margin: 2px;
+    margin: 2px 3px 2px 2px;
   }
 
   #VinylButton,
@@ -867,13 +867,6 @@ border: 0px;
 
 #VUMeterBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
-#Toolbar {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border: 1px solid #585858;
-  padding: 0px;
-  background-color: #0f0f0f;
 }
 
 #ToolbarLogo {
