@@ -95,6 +95,7 @@ class MixxxMainWindow : public QMainWindow {
     void developerToolsDlgClosed(int r);
     void closeDeveloperToolsDlgChecked(int r);
     void fullScreenChanged(bool fullscreen);
+    void componentsInitialized();
 
   protected:
     /// Event filter to block certain events (eg. tooltips if tooltips are disabled)
