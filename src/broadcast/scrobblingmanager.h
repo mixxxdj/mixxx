@@ -99,7 +99,10 @@ class ScrobblingManager : public QObject {
     bool isStrayFromEngine(TrackPointer pTrack, const QString& group) const;
     bool playerNotInTrackList(const QLinkedList<QString>& list, const QString& group) const;
     void deletePlayerFromList(const QString& player, QLinkedList<QString>& list);
-    void deleteTrackInfoAndNotify(std::list<std::unique_ptr<TrackInfo>>::iterator& it);
+
+    typedef std::list<std::unique_ptr<TrackInfo>>::iterator trackInfoPointerListIterator;
+
+    void deleteTrackInfoAndNotify(trackInfoPointerListIterator& it);
   private slots:
     void slotReadyToBeScrobbled(TrackPointer pTrack);
     void slotCheckAudibleTracks();
