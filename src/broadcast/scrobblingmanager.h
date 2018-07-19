@@ -95,10 +95,13 @@ class ScrobblingManager : public QObject {
     ControlProxy m_GuiTickObject;
 
     void resetTracks();
-    bool isStrayFromEngine(TrackPointer pTrack,const QString &group) const;
+    bool isStrayFromEngine(TrackPointer pTrack, const QString &group) const;
     bool playerNotInTrackList(const QLinkedList<QString> &list, const QString &group) const;
-    void deletePlayerFromList(const QString &player,QLinkedList<QString> &list);
-    void deleteTrackInfoAndNotify(std::list<std::unique_ptr<TrackInfo>>::iterator &it);
+    void deletePlayerFromList(const QString &player, QLinkedList<QString> &list);
+
+    typedef std::list<std::unique_ptr<TrackInfo>>::iterator trackInfoPointerListIterator;
+
+    void deleteTrackInfoAndNotify(trackInfoPointerListIterator &it);
   private slots:    
     void slotReadyToBeScrobbled(TrackPointer pTrack);
     void slotCheckAudibleTracks();

@@ -186,33 +186,34 @@ void ScrobblingManager::slotPlayerEmpty() {
 }
 
 void ScrobblingManager::resetTracks() {
-    for (const TrackToBeReset &candidateTrack : m_tracksToBeReset) {
-        for (auto it = m_trackList.begin();
-             it != m_trackList.end(); 
-             ++it) {
-            auto &trackInfo = *it;
-            /* This is where the segfault happens. Steps to reproduce:
-             * - Load track
-             * - Eject track             *
-             * */
-
-            TrackWeakPointer pActualWeakPtr = trackInfo->m_pTrack;
-            std::shared_ptr<Track> pActualTrack = pActualWeakPtr.lock();
-            std::shared_ptr<Track> pCandidateTrack = trackInfo->m_pTrack.lock();
+    auto candidateIt = m_tracksToBeReset.begin();
+    while (candidateIt != m_tracksToBeReset.end()) {
+        TrackToBeReset candidateTrack = *candidateIt;
+        auto it = m_trackList.begin();
+        while (it != m_trackList.end()) {
+            auto &trackInfoPtr = *it;
+            std::shared_ptr<Track> pActualTrack = trackInfoPtr->m_pTrack.lock();
+            std::shared_ptr<Track> pCandidateTrack = candidateTrack.m_pTrack.lock();
             if (pActualTrack && pCandidateTrack && pActualTrack == pCandidateTrack) {
-                if (playerNotInTrackList(trackInfo->m_players,
+                if (playerNotInTrackList(trackInfoPtr->m_players,
                                          candidateTrack.m_playerGroup) ||
-                    isStrayFromEngine(trackInfo->m_pTrack.lock(),
+                    isStrayFromEngine(trackInfoPtr->m_pTrack.lock(),
                                       candidateTrack.m_playerGroup)) {
-                    break;                      
+                    break;
                 }
                 deletePlayerFromList(candidateTrack.m_playerGroup,
-                                     trackInfo->m_players);
-                if (trackInfo->m_players.empty()) {
+                                     trackInfoPtr->m_players);
+                if (trackInfoPtr->m_players.empty()) {
                     deleteTrackInfoAndNotify(it);
-                }                 
+                }
+                break;
             }
+            ++it;
         }
+        if (it == m_trackList.end()) {
+            qDebug() << "Added track to reset that is not in the tracked list.";
+        }
+        candidateIt = m_tracksToBeReset.erase(candidateIt);
     }
 }
 
@@ -231,10 +232,10 @@ bool ScrobblingManager::playerNotInTrackList(const QLinkedList<QString> &list,
     return false;
 }
 
-void ScrobblingManager::deletePlayerFromList(const QString &player,
-                                             QLinkedList<QString> &list) {
+void ScrobblingManager::deletePlayerFromList(
+        const QString &player,
+        QLinkedList<QString> &list) {
     QLinkedList<QString>::iterator it;
-    int size = list.size();
     for (it = list.begin(); 
          it != list.end() && *it != player; 
          ++it);
@@ -243,8 +244,7 @@ void ScrobblingManager::deletePlayerFromList(const QString &player,
     }
 }
 
-void ScrobblingManager::deleteTrackInfoAndNotify
-        (std::list<std::unique_ptr<TrackInfo>>::iterator &it) {
+void ScrobblingManager::deleteTrackInfoAndNotify(trackInfoPointerListIterator &it) {
     (*it)->m_trackInfo->pausePlayedTime();
     (*it)->m_trackInfo->resetPlayedTime();
     m_pBroadcaster->trackUnloaded(TrackPointer());
