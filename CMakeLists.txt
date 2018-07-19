@@ -3272,6 +3272,7 @@ set(
   QT_COMPONENTS
   Concurrent
   Core
+  DBus
   Gui
   Network
   OpenGL
