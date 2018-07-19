@@ -146,9 +146,17 @@ WTime {
 }
 
 #SpinnyContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';/*
+  background: transparent;*/
   background-color: #1e1e1e;
   border-right: 1px solid #585858;
+}
+
+WSpinny {/*
+  This produces artifacts in spinny bg
+  background-color: rgba(1, 1, 1, 10);
+  This makes no difference, the spinny loads some default grey bg
+  background: none;*/
 }
 
 #VisualizationContainer {

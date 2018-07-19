@@ -21,12 +21,16 @@
             <Children>
               <WidgetGroup>
                 <SizePolicy>max,min</SizePolicy>
-                <MaximumSize>109,-1</MaximumSize>
+                <MaximumSize>103,-1</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:spinny.xml"/>
                   <Template src="skin:deck_coverArt.xml"/>
                 </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],big_spinny</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup>
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>

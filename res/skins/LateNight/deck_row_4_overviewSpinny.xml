@@ -4,6 +4,21 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
+      <WidgetGroup>
+        <SizePolicy>max,min</SizePolicy>
+        <MaximumSize>54,-1</MaximumSize>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:spinny_small.xml"/>
+          <Template src="skin:deck_coverArt_small.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],big_spinny</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
       <Overview>
         <TooltipId>waveform_overview</TooltipId>
         <Channel><Variable name="channum"/></Channel>
