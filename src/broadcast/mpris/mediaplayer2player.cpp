@@ -9,9 +9,11 @@
 #include "moc_mediaplayer2player.cpp"
 
 MediaPlayer2Player::MediaPlayer2Player(PlayerManager* playerManager,
-        QObject* parent)
+        QObject* parent,
+        MixxxMainWindow* pWindow,
+        Mpris* pMpris)
         : QDBusAbstractAdaptor(parent),
-          m_mprisPlayer(playerManager, nullptr) {
+          m_mprisPlayer(playerManager, pWindow, pMpris) {
 }
 
 QString MediaPlayer2Player::playbackStatus() const {
