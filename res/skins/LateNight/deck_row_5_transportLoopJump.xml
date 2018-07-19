@@ -440,7 +440,6 @@
               <PushButton><!-- Play -->
                 <TooltipId>play_cue_set</TooltipId>
                 <NumberStates>2</NumberStates>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
                   <Pressed>buttons/btn_play_down.svg</Pressed>
@@ -457,7 +456,7 @@
                 </Connection>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
-                  <ButtonState>RigtButton</ButtonState>
+                  <ButtonState>RightButton</ButtonState>
                 </Connection>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
