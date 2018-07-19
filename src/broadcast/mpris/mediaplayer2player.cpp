@@ -7,9 +7,10 @@
 
 MediaPlayer2Player::MediaPlayer2Player(PlayerManager *playerManager,
                                        QObject *parent,
-                                       MixxxMainWindow *pWindow)
+                                       MixxxMainWindow *pWindow,
+                                       Mpris *pMpris)
         :  QDBusAbstractAdaptor(parent),
-           m_mprisPlayer(playerManager, nullptr)
+           m_mprisPlayer(playerManager, pWindow, pMpris)
 {
 }
 

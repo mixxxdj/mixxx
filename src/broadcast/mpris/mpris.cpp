@@ -16,7 +16,7 @@ namespace {
 
 Mpris::Mpris(MixxxMainWindow *pMixxx, PlayerManager *pPlayerManager)
         :  m_busConnection(QDBusConnection::connectToBus(QDBusConnection::SessionBus,busName)),
-           m_pPlayer(new MediaPlayer2Player(pPlayerManager, this, pMixxx)) {
+           m_pPlayer(new MediaPlayer2Player(pPlayerManager, this, pMixxx, this)) {
     // Classes derived from QDBusAbstractAdaptor must be created
     // on the heap using the new operator and must not be deleted
     // by the user (they will be deleted automatically when the object

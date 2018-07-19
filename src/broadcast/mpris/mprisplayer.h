@@ -5,6 +5,7 @@
 #include <mixxx.h>
 
 #include "control/controlproxy.h"
+#include "mpris.h"
 
 class PlayerManager;
 
@@ -12,7 +13,8 @@ class MprisPlayer : public QObject {
     Q_OBJECT
   public:
     MprisPlayer(PlayerManager *pPlayerManager,
-                MixxxMainWindow *pWindow);
+                MixxxMainWindow *pWindow,
+                Mpris *pMpris);
     QString playbackStatus() const;
     QString loopStatus() const;
     void setLoopStatus(const QString &value);
@@ -36,10 +38,19 @@ class MprisPlayer : public QObject {
 
   private slots:
     void mixxxComponentsInitialized();
+    void autoDJStateChanged(double enabled);
 
   private:
+
+    void broadcastPropertiesChange(bool enabled);
+
+    const QString autoDJDependentProperties[4] = {"CanGoNext",
+                                                 "CanPlay",
+                                                 "CanPause",
+                                                 "CanSeek"};
     ControlProxy m_CPAutoDjEnabled;
     PlayerManager *m_pPlayerManager;
     MixxxMainWindow *m_pWindow;
-    bool m_bAutoDJEnabled;
+    bool m_bComponentsInitialized;
+    Mpris *m_pMpris;
 };

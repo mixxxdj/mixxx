@@ -3,11 +3,11 @@
 
 #include <QObject>
 #include <QDBusConnection>
-#include "library/autodj/autodjprocessor.h"
 #include "track/track.h"
-#include "broadcast/mpris/mediaplayer2player.h"
 
+class MediaPlayer2Player;
 class MixxxMainWindow;
+class PlayerManager;
 
 class Mpris : public QObject
 {
@@ -16,11 +16,10 @@ class Mpris : public QObject
     explicit Mpris(MixxxMainWindow *mixxx, PlayerManager *pPlayerManager);
     ~Mpris();
     void broadcastCurrentTrack();
-  private:
-
     void notifyPropertyChanged(const QString &interface,
                                const QString &propertyName,
                                const QVariant &propertyValue);
+  private:
 
     QDBusConnection m_busConnection;
     MediaPlayer2Player *m_pPlayer;

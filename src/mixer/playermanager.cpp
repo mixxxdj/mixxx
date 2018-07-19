@@ -36,7 +36,7 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
 QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig, SoundManager *pSoundManager, EffectsManager *pEffectsManager,
-                             EngineMaster *pEngine, MixxxMainWindow *pWindow, AutoDJProcessor *pProcessor) :
+                             EngineMaster *pEngine, MixxxMainWindow *pWindow) :
         m_mutex(QMutex::Recursive),
         m_pConfig(pConfig),
         m_pSoundManager(pSoundManager),
