@@ -477,12 +477,14 @@ WEffectButtonParameter*/
 
 #VinylButton,
 #FxAssignButton,
-#GuiToggleButton {
+#GuiToggleButton,
+#BroadcastButton {
   border: 1px solid #585858;
   border-radius: 2px;
   }
 
   #GuiToggleButton,
+  #BroadcastButton,
   #RecBox {
     margin: 2px 3px 2px 2px;
   }
@@ -493,6 +495,7 @@ WEffectButtonParameter*/
   }
 
 #VinylButton[displayValue="0"],
+#BroadcastButton[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #FxAssignButton[displayValue="0"] {
   color: #ddd;
@@ -505,6 +508,7 @@ WEffectButtonParameter*/
 #VinylButton[displayValue="2"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
+#BroadcastButton[displayValue="1"], /* connecting: yellow */
 #FxAssignButton[displayValue="1"] {
   border: 1px solid #585858;
   border-radius: 2px;
@@ -512,6 +516,18 @@ WEffectButtonParameter*/
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #B69700,
     stop:1 #eece33);
+}
+
+#BroadcastButton[displayValue="2"] { /* good: green */
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #3F8A2B,
+    stop:1 #26A803);
+}
+
+#BroadcastButton[displayValue="3"] {  /* failure: pink */
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #962D8B,
+    stop:1 #E602CD);
 }
 
 #TristateButton {
