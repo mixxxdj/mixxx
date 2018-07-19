@@ -164,8 +164,7 @@ class EngineMaster : public QObject, public AudioSource {
     class TalkoverGainCalculator : public GainCalculator {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) const {
-            Q_UNUSED(pChannelInfo);
-            return 1.0;
+            return pChannelInfo->m_pVolumeControl->get();
         }
     };
     class OrientationVolumeGainCalculator : public GainCalculator {

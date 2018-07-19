@@ -450,10 +450,10 @@ void EngineMaster::process(const int iBufferSize) {
     // Mix all the talkover enabled channels together.
     // Effects processing is done in place to avoid unnecessary buffer copying.
     ChannelMixer::applyEffectsInPlaceAndMixChannels(
-        m_talkoverGain, &m_activeTalkoverChannels,
-        &m_channelTalkoverGainCache,
-        m_pTalkover, m_masterHandle.handle(),
-        m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
+            m_talkoverGain, &m_activeTalkoverChannels,
+            &m_channelTalkoverGainCache,
+            m_pTalkover, m_masterHandle.handle(),
+            m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
 
     // Process effects on all microphones mixed together
     // We have no metadata for mixed effect buses, so use an empty GroupFeatureState.
