@@ -153,8 +153,12 @@
                             <Template src="skin:decks_right.xml"/>
                           </Children>
                         </WidgetGroup>
-                        <Template src="skin:fx.xml"/>
-                        <Template src="skin:lower_half.xml"/>
+                        <Template src="skin:fx_rack.xml"/>
+                        <Template src="skin:samplers_rack.xml"/>
+                        <Template src="skin:mic_aux_rack.xml"/>
+                        <SingletonContainer>
+                          <ObjectName>LibrarySingleton</ObjectName>
+                        </SingletonContainer>
                       </Children>
                     </WidgetGroup>
 
