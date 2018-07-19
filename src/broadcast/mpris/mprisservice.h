@@ -2,7 +2,8 @@
 
 #include "broadcast/mpris/mpris.h"
 #include "broadcast/scrobblingservice.h"
-#include "mixxxmainwindow.h"
+
+class MixxxMainWindow;
 
 class MprisService : public ScrobblingService {
     Q_OBJECT

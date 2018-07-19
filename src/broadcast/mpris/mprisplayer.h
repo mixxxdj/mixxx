@@ -7,6 +7,7 @@
 #include "mixxxmainwindow.h"
 
 class PlayerManager;
+class MixxxMainWindow;
 
 class MprisPlayer : public QObject {
     Q_OBJECT

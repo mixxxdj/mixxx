@@ -147,7 +147,9 @@ void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack, const QStri
     }
 }
 
-void ScrobblingManager::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack, const QString& playerGroup) {
+void ScrobblingManager::slotLoadingTrack(TrackPointer pNewTrack,
+        TrackPointer pOldTrack,
+        const QString& playerGroup) {
     Q_UNUSED(pNewTrack);
     if (pOldTrack) {
         m_tracksToBeReset.append(TrackToBeReset(pOldTrack,
@@ -194,7 +196,13 @@ void ScrobblingManager::resetTracks() {
                 it != m_trackList.end();
                 ++it) {
             auto& trackInfo = *it;
-            std::shared_ptr<Track> pActualTrack = trackInfo->m_pTrack.lock();
+            /* This is where the segfault happens. Steps to reproduce:
+             * - Load track
+             * - Eject track             *
+             * */
+
+            TrackWeakPointer pActualWeakPtr = trackInfo->m_pTrack;
+            std::shared_ptr<Track> pActualTrack = pActualWeakPtr.lock();
             std::shared_ptr<Track> pCandidateTrack = trackInfo->m_pTrack.lock();
             if (pActualTrack && pCandidateTrack && pActualTrack == pCandidateTrack) {
                 if (playerNotInTrackList(trackInfo->m_players,
@@ -221,8 +229,11 @@ bool ScrobblingManager::isStrayFromEngine(TrackPointer pTrack,
 
 bool ScrobblingManager::playerNotInTrackList(const QLinkedList<QString>& list,
         const QString& group) const {
-    qDebug() << "Player added to reset yet not in track list";
-    return list.contains(group);
+    if (!list.contains(group)) {
+        qDebug() << "Player added to reset yet not in track list";
+        return true;
+    }
+    return false;
 }
 
 void ScrobblingManager::deletePlayerFromList(const QString& player,
