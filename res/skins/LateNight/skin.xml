@@ -91,6 +91,32 @@
   <MinimumSize>1344,668</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
+  <LaunchImageStyle>
+    LaunchImage {
+      background-color: #0f0f0f;
+    }
+    QLabel {
+      image: url(skin:/style/logo_LateNight_160x40.svg);
+      padding: 0;
+      margin: 0px 2px 0px 2px;
+      border: none;
+      min-width: 160px;
+      min-height: 40px;
+      max-width: 160px;
+      max-height: 40px;
+    }
+    QProgressBar {
+      background-color: #333333;
+      border: none;
+      min-width: 164px;
+      min-height: 5px;
+      max-width: 164px;
+      max-height: 5px;
+    }
+    QProgressBar::chunk {
+      background-color: #02C000;
+    }
+  </LaunchImageStyle>
 
   <Children>
     <SetVariable name="PotiMinAngle">-135</SetVariable>
