@@ -289,7 +289,8 @@ void EngineMaster::processChannels(int iBufferSize) {
             continue;
         }
 
-        if (pChannel->isTalkoverEnabled()) {
+        if (pChannel->isTalkoverEnabled() &&
+                !pChannelInfo->m_pMuteControl->toBool()) {
             // talkover is an exclusive channel
             // once talkover is enabled it is not used in
             // xFader-Mix
