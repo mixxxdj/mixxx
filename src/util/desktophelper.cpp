@@ -8,7 +8,14 @@
 #include <QUrl>
 #include <QProcess>
 
+#ifdef Q_OS_LINUX
+#include <QtDBus/QtDBus>
+#include <QFileInfo>
+#endif
+
 namespace {
+    const QString kSelectInFreedesktop = "fd";
+    const QString kSelectInXfce = "xf";
     QString sSelectInFileBrowserCommand;
 
     QString getSelectInFileBrowserCommand() {
@@ -23,28 +30,20 @@ namespace {
                 QStringList() << "query" << "default" << "inode/directory");
         proc.waitForFinished();
         output = proc.readLine().simplified();
-        if (output == "dolphin.desktop" ||
-                output == "org.kde.dolphin.desktop") {
-            return "dolphin --select \"%1\"";
-        } else if (output == "nautilus.desktop" ||
-                output == "org.gnome.Nautilus.desktop" ||
-                output == "nautilus-folder-handler.desktop") {
-            return "nautilus --no-desktop --select \"%1\"";
-        } else if (output == "caja-folder-handler.desktop") {
-            return ""; // caja has no --select option
-        } else if (output == "pcmanfm.desktop") {
-            return ""; // pcmanfm has no --select option
-        } else if (output == "nemo.desktop") {
-            return "nemo --no-desktop --select \"%1\"";
-        } else if (output == "kfmclient_dir.desktop") {
+        if (output == "kfmclient_dir.desktop") {
             return "konqueror --select \"%1\"";
         } else if (output == "Thunar.desktop") {
-            return ""; // Thunar has no --select option
-        } else if (output == "dde-file-manager.desktop") {
-            return ""; // deepin file manager has no --select option
+            return kSelectInXfce; // Thunar has no --select option
         } else {
-            qDebug() << "xdg-mime" << output << "unknown, can't select track in file browser";
-            return ""; // no special command use QDesktopServices";
+            // Known file manager with org.freedesktop.FileManager1 interface
+            // * Nautilus
+            // * Nemo
+            // * Deepin File Manager
+            // * Swordfish
+            // * Caja
+            // No solution for
+            // * pcmanfm
+            return kSelectInFreedesktop; // no special command, try Freedesktop and fallback to QDesktopServices";
         }
 #else
         return ""; // no special command use QDesktopServices";
@@ -55,6 +54,38 @@ namespace {
         int index = path.lastIndexOf(QChar('/'));
         return path.left(index);
     }
+
+#ifdef Q_OS_LINUX
+    bool selectInFreedesktop(const QString& path) {
+        const QUrl fileurl = QUrl::fromLocalFile(path);
+        const QStringList args(fileurl.toString());
+        QDBusMessage msg = QDBusMessage::createMethodCall(
+                "org.freedesktop.FileManager1",
+                "/org/freedesktop/FileManager1",
+                "org.freedesktop.FileManager1",
+                "ShowItems");
+        msg << args << "";
+        const QDBusMessage response = QDBusConnection::sessionBus().call(msg);
+        const bool success = (response.type() != QDBusMessage::MessageType::ErrorMessage);
+        return success;
+    }
+
+    bool selectInXfce(const QString& path) {
+        const QString folder = QFileInfo(path).dir().absolutePath();
+        const QString filename = QFileInfo(path).fileName();
+
+        QDBusMessage msg = QDBusMessage::createMethodCall(
+                "org.xfce.FileManager",
+                "/org/xfce/FileManager",
+                "org.xfce.FileManager",
+                "DisplayFolderAndSelect");
+        msg << folder << filename << "" << "";
+        const QDBusMessage response = QDBusConnection::sessionBus().call(msg);
+        const bool success = (response.type() != QDBusMessage::MessageType::ErrorMessage);
+        return success;
+    }
+#endif
+
 } // anonymous namespace
 
 
@@ -69,7 +100,32 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
     for (const auto& path: paths) {
         dirPath = removeChildDir(path);
         // First try to select the file in file browser
-        if (!sSelectInFileBrowserCommand.isEmpty() &&
+
+#ifdef Q_OS_LINUX
+        if (sSelectInFileBrowserCommand == kSelectInFreedesktop &&
+                QFile::exists(path)) {
+            if (!openedDirs.contains(dirPath)) {
+                if (selectInFreedesktop(path)) {
+                    openedDirs.insert(dirPath);
+                    break;
+                } else {
+                    qDebug() << "select File via Freedesktop DBus interface Failed";
+                }
+            }
+        }
+        if (sSelectInFileBrowserCommand == kSelectInXfce &&
+                QFile::exists(path)) {
+            if (!openedDirs.contains(dirPath)) {
+                if (selectInXfce(path)) {
+                    openedDirs.insert(dirPath);
+                    break;
+                } else {
+                    qDebug() << "select File via Xfce DBus interface Failed";
+                }
+            }
+        }
+#endif
+        if (sSelectInFileBrowserCommand.length() > 2 &&
                 QFile::exists(path)) {
             if (!openedDirs.contains(dirPath)) {
                 openedDirs.insert(dirPath);
