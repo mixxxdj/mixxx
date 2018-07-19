@@ -58,6 +58,15 @@
       <attribute persist="true" config_key="[SamplerRow6],expanded">0</attribute>
       <attribute persist="true" config_key="[SamplerRow7],expanded">0</attribute>
       <attribute persist="true" config_key="[SamplerRow8],expanded">0</attribute>
+      <!-- this skin uses Auxiliary master, and not mute -->
+      <attribute persist="false" config_key="[Auxiliary1],master">0</attribute>
+      <attribute persist="false" config_key="[Auxiliary1],mute">0</attribute>
+      <attribute persist="false" config_key="[Auxiliary2],master">0</attribute>
+      <attribute persist="false" config_key="[Auxiliary2],mute">0</attribute>
+      <attribute persist="false" config_key="[Auxiliary3],master">0</attribute>
+      <attribute persist="false" config_key="[Auxiliary3],mute">0</attribute>
+      <attribute persist="false" config_key="[Auxiliary4],master">0</attribute>
+      <attribute persist="false" config_key="[Auxiliary4],mute">0</attribute>
       <!-- [Tango] specific defaults -->
       <attribute persist="true" config_key="[Tango],master_mixer">1</attribute>
       <attribute persist="true" config_key="[Tango],4_FxUnits">0</attribute>

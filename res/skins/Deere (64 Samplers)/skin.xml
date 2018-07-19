@@ -39,6 +39,16 @@
 
       <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
       <attribute persist="true" config_key="[Master],show_superknobs">0</attribute>
+      
+      <!-- this skin uses Auxiliary mute, and not master -->
+      <attribute persist="false" config_key="[Auxiliary1],master">1</attribute>
+      <attribute persist="false" config_key="[Auxiliary1],mute">1</attribute>
+      <attribute persist="false" config_key="[Auxiliary2],master">1</attribute>
+      <attribute persist="false" config_key="[Auxiliary2],mute">1</attribute>
+      <attribute persist="false" config_key="[Auxiliary3],master">1</attribute>
+      <attribute persist="false" config_key="[Auxiliary3],mute">1</attribute>
+      <attribute persist="false" config_key="[Auxiliary4],master">1</attribute>
+      <attribute persist="false" config_key="[Auxiliary4],mute">1</attribute>
 
       <!--Disable hidden effect routing Buttons-->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>

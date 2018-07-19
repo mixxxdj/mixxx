@@ -57,22 +57,22 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId>mute</TooltipId>
+        <TooltipId>master_enable</TooltipId>
         <Style></Style>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
           <Pressed>btn_aux_mute_overdown.png</Pressed>
-          <Unpressed>btn_aux_mute_over.png</Unpressed>
-        </State>				
+          <Unpressed>btn_aux_mute.png</Unpressed>
+        </State>
         <State>
           <Number>1</Number>
           <Pressed>btn_aux_mute_overdown.png</Pressed>
-          <Unpressed>btn_aux_mute.png</Unpressed>
-        </State>
+          <Unpressed>btn_aux_mute_over.png</Unpressed>
+        </State>				
         <Pos>5,35</Pos>
         <Connection>
-          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],mute</ConfigKey>
+          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],master</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>

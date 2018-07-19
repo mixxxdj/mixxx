@@ -852,7 +852,7 @@ WWidgetGroup {
 }
 
 #MicTalkover,
-#AuxMute {
+#AuxEnable {
   background-color: transparent;
   image: url(skin:/buttons/btn_mic_aux_mute.svg) no-repeat center center;
 }
@@ -860,12 +860,12 @@ WWidgetGroup {
 #PlayCue[displayValue="0"]:hover,
 #SamplerPlayCue[displayValue="0"]:hover,
 #MicTalkover[displayValue="0"]:hover,
-#AuxMute[displayValue="1"]:hover {
+#AuxEnable[displayValue="0"]:hover {
   border: 1px solid #ff9900;
   }
   #PlayCue[displayValue="0"]:hover,
   #MicTalkover[displayValue="0"]:hover,
-  #AuxMute[displayValue="1"]:hover {
+  #AuxEnable[displayValue="0"]:hover {
     background-color: rgba(255, 128, 0, 100);
   }
   #SamplerPlayCue[displayValue="0"]:hover {
@@ -879,7 +879,7 @@ WWidgetGroup {
 #PlayCue[displayValue="1"],
 #SamplerPlayCue[displayValue="1"],
 #MicTalkover[displayValue="1"],
-#AuxMute[displayValue="0"],
+#AuxEnable[displayValue="1"],
 #PassthroughPlayCover,
 #LoopIndicator {
   background-color: #ff8000;
@@ -888,12 +888,12 @@ WWidgetGroup {
   #PlayCue[displayValue="1"]:hover,
   #SamplerPlayCue[displayValue="1"]:hover,
   #MicTalkover[displayValue="1"]:hover,
-  #AuxMute[displayValue="0"]:hover {
+  #AuxEnable[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
   }
 
 #MicTalkover[displayValue="0"],
-#AuxMute[displayValue="1"] {
+#AuxEnable[displayValue="0"] {
   background-color: #777;
   border: 1px solid #0f0f0f;
   }

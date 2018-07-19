@@ -443,6 +443,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Mute")
             << tr("Mutes the selected channel's audio in the master output.");
 
+    add("master_enable")
+            << tr("Master enable")
+            << tr("Hold or short click for latching to")
+            << tr("mix this input into the master output.");
+
     add("back_start")
             << tr("Fast Rewind")
             << QString("%1: %2").arg(leftClick, tr("Fast rewind through the track."))
