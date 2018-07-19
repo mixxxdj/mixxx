@@ -113,7 +113,7 @@ bool EngineEffect::processEffectsRequest(EffectsRequest& message,
                          << "value" << message.value;
             }
             pParameter = m_parameters.value(
-                message.SetParameterParameters.iParameter, NULL);
+                message.SetParameterParameters.iParameter, EngineEffectParameterPointer());
             if (pParameter) {
                 pParameter->setMinimum(message.minimum);
                 pParameter->setMaximum(message.maximum);
