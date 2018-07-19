@@ -430,12 +430,12 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         // This is the secondary clickButton function,
         // due the leak of visual feedback we do not allow a toggle
         // function
+        m_bPressed = false;
         if (m_rightButtonMode == ControlPushButton::PUSH
                 || m_iNoStates == 1) {
-            m_bPressed = false;
             setControlParameterRightUp(0.0);
-            restyleAndRepaint();
         }
+        restyleAndRepaint();
         return;
     }
 
