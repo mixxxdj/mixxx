@@ -19,19 +19,24 @@ const QString kLoopStatusNone = "None";
 const QString kLoopStatusTrack = "Track";
 // The playback loops through a list of tracks
 //const QString kLoopStatusPlaylist = "Playlist";
+const QString playerInterfaceName = "org.mpris.MediaPlayer2.Player";
 } // namespace
 
+#define AUTODJENABLED m_bComponentsInitialized && m_pCPAutoDjEnabled->toBool()
+
 MprisPlayer::MprisPlayer(PlayerManager* pPlayerManager,
-        MixxxMainWindow* pWindow)
-        : m_CPAutoDjEnabled("[AutoDJ]", "enabled"),
+        MixxxMainWindow* pWindow,
+        Mpris* pMpris)
+        : m_pCPAutoDjEnabled(nullptr),
           m_pPlayerManager(pPlayerManager),
           m_pWindow(pWindow),
-          m_bAutoDJEnabled(false) {
+          m_bComponentsInitialized(false),
+          m_pMpris(pMpris) {
     connect(m_pWindow, &MixxxMainWindow::componentsInitialized, this, &MprisPlayer::mixxxComponentsInitialized);
 }
 
 QString MprisPlayer::playbackStatus() const {
-    if (!m_bAutoDJEnabled)
+    if (!m_bComponentsInitialized)
         return kPlaybackStatusStopped;
     for (unsigned int i = 1; i <= m_pPlayerManager->numberOfDecks(); ++i) {
         if (!m_pPlayerManager->getDeck(i)->isTrackPaused()) {
@@ -42,7 +47,7 @@ QString MprisPlayer::playbackStatus() const {
 }
 
 QString MprisPlayer::loopStatus() const {
-    if (!m_bAutoDJEnabled)
+    if (!m_bComponentsInitialized)
         return kLoopStatusNone;
     return QString();
 }
@@ -92,7 +97,7 @@ qlonglong MprisPlayer::position() const {
 }
 
 bool MprisPlayer::canGoNext() const {
-    return false;
+    return AUTODJENABLED;
 }
 
 bool MprisPlayer::canGoPrevious() const {
@@ -100,15 +105,15 @@ bool MprisPlayer::canGoPrevious() const {
 }
 
 bool MprisPlayer::canPlay() const {
-    return false;
+    return AUTODJENABLED;
 }
 
 bool MprisPlayer::canPause() const {
-    return false;
+    return AUTODJENABLED;
 }
 
 bool MprisPlayer::canSeek() const {
-    return false;
+    return AUTODJENABLED;
 }
 
 void MprisPlayer::nextTrack() {
@@ -139,6 +144,22 @@ void MprisPlayer::openUri(const QString& uri) {
     Q_UNUSED(uri);
 }
 
+//Ugly hack because Control Proxy and Control Object are
 void MprisPlayer::mixxxComponentsInitialized() {
-    m_bAutoDJEnabled = true;
+    m_bComponentsInitialized = true;
+    m_pCPAutoDjEnabled = new ControlProxy(ConfigKey("[AutoDJ]", "enabled"), this);
+    m_pCPAutoDjEnabled->connectValueChanged(this, &MprisPlayer::autoDJStateChanged);
+}
+
+void MprisPlayer::autoDJStateChanged(double enabled) {
+    ;
+    broadcastPropertiesChange(enabled);
+}
+
+void MprisPlayer::broadcastPropertiesChange(bool enabled) {
+    for (const QString& property : autoDJDependentProperties) {
+        m_pMpris->notifyPropertyChanged(playerInterfaceName,
+                property,
+                enabled);
+    }
 }

@@ -4,7 +4,7 @@
 #include <QtDBus/QDBusObjectPath>
 
 #include "control/controlproxy.h"
-#include "mixxxmainwindow.h"
+#include "mpris.h"
 
 class PlayerManager;
 class MixxxMainWindow;
@@ -13,7 +13,8 @@ class MprisPlayer : public QObject {
     Q_OBJECT
   public:
     MprisPlayer(PlayerManager* pPlayerManager,
-            MixxxMainWindow* pWindow);
+            MixxxMainWindow* pWindow,
+            Mpris* pMpris);
     QString playbackStatus() const;
     QString loopStatus() const;
     void setLoopStatus(const QString& value);
@@ -37,10 +38,18 @@ class MprisPlayer : public QObject {
 
   private slots:
     void mixxxComponentsInitialized();
+    void autoDJStateChanged(double enabled);
 
   private:
-    ControlProxy m_CPAutoDjEnabled;
+    void broadcastPropertiesChange(bool enabled);
+
+    const QString autoDJDependentProperties[4] = {"CanGoNext",
+            "CanPlay",
+            "CanPause",
+            "CanSeek"};
+    ControlProxy* m_pCPAutoDjEnabled;
     PlayerManager* m_pPlayerManager;
     MixxxMainWindow* m_pWindow;
-    bool m_bAutoDJEnabled;
+    bool m_bComponentsInitialized;
+    Mpris* m_pMpris;
 };
