@@ -11,12 +11,12 @@ Variables:
   <WidgetGroup>
     <ObjectName>CategoryLabel</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>200f,21f</Size>
+    <Size>190min,21f</Size>
     <Children>
       <PushButton>
         <TooltipId><Variable name="TooltipId"/></TooltipId>
         <ObjectName>SkinSettingsLabelButton</ObjectName>
-        <Size>200f,17f</Size>
+        <Size>190min,17f</Size>
         <NumberStates>2</NumberStates>
         <RightClickIsPushButton>false</RightClickIsPushButton>
         <State>
