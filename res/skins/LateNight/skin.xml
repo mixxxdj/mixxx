@@ -106,7 +106,7 @@
       max-height: 40px;
     }
     QProgressBar {
-      background-color: #333333;
+      background: url(skin:/style/progressbar_bg.svg);
       border: none;
       min-width: 164px;
       min-height: 5px;
@@ -114,7 +114,7 @@
       max-height: 5px;
     }
     QProgressBar::chunk {
-      background-color: #02C000;
+      background: url(skin:/style/progressbar.svg);
     }
   </LaunchImageStyle>
 
