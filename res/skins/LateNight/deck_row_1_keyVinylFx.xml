@@ -86,12 +86,14 @@
         </Connection>
       </PushButton>
 
+      <WidgetGroup>  <!-- spacer -->
+        <SizePolicy>min,min</SizePolicy>
+      </WidgetGroup>
+
       <Template src="skin:vinyl_controls.xml"/>
 
       <WidgetGroup>  <!-- spacer -->
-        <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
-        <Children></Children>
       </WidgetGroup>
       
       <WidgetGroup>
