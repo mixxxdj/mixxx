@@ -20,6 +20,7 @@ namespace {
 }
 
 #define AUTODJENABLED m_bComponentsInitialized && m_CPAutoDjEnabled.toBool()
+#define AUTODJIDLE AUTODJENABLED && m_CPAutoDJIdle.toBool()
 
 MprisPlayer::MprisPlayer(PlayerManager *pPlayerManager,
                          MixxxMainWindow *pWindow,
@@ -27,6 +28,7 @@ MprisPlayer::MprisPlayer(PlayerManager *pPlayerManager,
         :  m_pPlayerManager(pPlayerManager),
            m_pWindow(pWindow),
            m_bComponentsInitialized(false),
+           m_bPropertiesEnabled(false),
            m_pMpris(pMpris) {
     connect(m_pWindow,&MixxxMainWindow::componentsInitialized,
             this,&MprisPlayer::mixxxComponentsInitialized);
@@ -67,18 +69,7 @@ void MprisPlayer::setLoopStatus(const QString &value) {
 
 QVariantMap MprisPlayer::metadata() const {
     TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
-    QVariantMap metadata;
-    if (!pTrack)
-        return metadata;
-    metadata.insert("mpris:trackid","/org/mixxx/" + pTrack->getId().toString());
-    double trackDurationSeconds = pTrack->getDuration();
-    trackDurationSeconds *= 1e6;
-    metadata.insert("mpris:length", static_cast<long long int>(trackDurationSeconds));
-    QStringList artists;
-    artists << pTrack->getArtist();
-    metadata.insert("xesam:artist", artists);
-    metadata.insert("xesam:title", pTrack->getTitle());
-    return metadata;
+    return getMetadataFromTrack(pTrack);
 }
 
 double MprisPlayer::volume() const {
@@ -90,11 +81,24 @@ void MprisPlayer::setVolume(double value) {
 }
 
 qlonglong MprisPlayer::position() const {
+    if (AUTODJIDLE) {
+        for (unsigned int i = 1; i <= m_pPlayerManager->numberOfDecks(); ++i) {
+            ControlProxy playing(ConfigKey(PlayerManager::groupForDeck(i),"play"));
+            if (playing.toBool()) {
+                DeckAttributes *pDeck = m_deckAttributes.at(i-1);
+                qlonglong playPosition =
+                        static_cast<qlonglong>(pDeck->playPosition() * //Fraction of duration
+                                               pDeck->getLoadedTrack()->getDuration() * //Duration in seconds
+                                               1e6);
+                return playPosition;
+            }
+        }
+    }
     return 0;
 }
 
 bool MprisPlayer::canGoNext() const {
-    return AUTODJENABLED;
+    return AUTODJIDLE;
 }
 
 bool MprisPlayer::canGoPrevious() const {
@@ -106,27 +110,66 @@ bool MprisPlayer::canPlay() const {
 }
 
 bool MprisPlayer::canPause() const {
-    return AUTODJENABLED;
+    return AUTODJIDLE;
 }
 
 bool MprisPlayer::canSeek() const {
-    return AUTODJENABLED;
+    return AUTODJIDLE;
 }
 
 void MprisPlayer::nextTrack() {
-
+    if (AUTODJIDLE) {
+        m_CPFadeNow.set(true);
+    }
 }
 
 void MprisPlayer::pause() {
-
+    if (AUTODJIDLE) {
+        DeckAttributes *playingDeck = findPlayingDeck();
+        if (playingDeck != nullptr) {
+            playingDeck->stop();
+            m_pMpris->notifyPropertyChanged(playerInterfaceName,"Metadata",QVariantMap());
+            m_pausedDeck = playingDeck->group;
+        }
+    }
 }
 
 void MprisPlayer::playPause() {
+    if (AUTODJIDLE) {
+        DeckAttributes *playingDeck = findPlayingDeck();
+        if (playingDeck != nullptr) {
+            playingDeck->stop();
+            m_pMpris->notifyPropertyChanged(playerInterfaceName,"Metadata",QVariantMap());
+            m_pausedDeck = playingDeck->group;
+        }
+        else {
+            ControlProxy playing(ConfigKey(m_pausedDeck,"play"));
+            BaseTrackPlayer *player = m_pPlayerManager->getPlayer(m_pausedDeck);
+            DEBUG_ASSERT(player);
+            TrackPointer pTrack = player->getLoadedTrack();
+            playing.set(true);
+            m_pMpris->notifyPropertyChanged(playerInterfaceName,
+                                            "Metadata",
+                                            getMetadataFromTrack(pTrack));
+        }
+    }
 
 }
 
 void MprisPlayer::play() {
-
+    if (AUTODJENABLED) {
+        DeckAttributes *playingDeck = findPlayingDeck();
+        if (playingDeck == nullptr) {
+            ControlProxy playing(ConfigKey(m_pausedDeck,"play"));
+            BaseTrackPlayer *player = m_pPlayerManager->getPlayer(m_pausedDeck);
+            DEBUG_ASSERT(player);
+            TrackPointer pTrack = player->getLoadedTrack();
+            playing.set(true);
+            m_pMpris->notifyPropertyChanged(playerInterfaceName,
+                                            "Metadata",
+                                            getMetadataFromTrack(pTrack));
+        }
+    }
 }
 
 void MprisPlayer::stop() {
@@ -145,16 +188,34 @@ void MprisPlayer::openUri(const QString &uri) {
 
 }
 
-//Ugly hack because Control Proxy and Control Object are
 void MprisPlayer::mixxxComponentsInitialized() {
     m_bComponentsInitialized = true;
+
     m_CPAutoDjEnabled.initialize(ConfigKey("[AutoDJ]","enabled"));
-    m_CPAutoDjEnabled.connectValueChanged(this,SLOT(autoDJStateChanged(double)));
+    m_CPFadeNow.initialize(ConfigKey("[AutoDJ]","fade_now"));
+    m_CPAutoDJIdle.initialize(ConfigKey("[AutoDJ]","idle"));
+
+    for (unsigned int i = 1; i <= m_pPlayerManager->numberOfDecks(); ++i) {
+        DeckAttributes *attributes = new DeckAttributes
+                                 (i,
+                                  m_pPlayerManager->getDeck(i),
+                                  i%2==0 ? EngineChannel::RIGHT : EngineChannel::LEFT);
+        m_deckAttributes.append(attributes);
+        connect(attributes,&DeckAttributes::playChanged,
+                this,&MprisPlayer::slotPlayChanged);
+        connect(attributes,&DeckAttributes::playPositionChanged,
+                this,&MprisPlayer::slotPlayPositionChanged);
+    }
+
+    m_CPAutoDjEnabled.connectValueChanged(this,SLOT(slotChangeProperties(double)));
+    m_CPAutoDJIdle.connectValueChanged(this,SLOT(slotAutoDJIdle(double)));
 }
 
-void MprisPlayer::autoDJStateChanged(double enabled) {
-    Q_UNUSED(enabled);
-    broadcastPropertiesChange(enabled);
+void MprisPlayer::slotChangeProperties(double enabled) {
+    if (enabled != m_bPropertiesEnabled) {
+        broadcastPropertiesChange(enabled);
+        m_bPropertiesEnabled = static_cast<bool>(enabled);
+    }
 }
 
 void MprisPlayer::broadcastPropertiesChange(bool enabled) {
@@ -163,6 +224,71 @@ void MprisPlayer::broadcastPropertiesChange(bool enabled) {
                                         property,
                                         enabled);
     }
+}
+
+QVariantMap MprisPlayer::getMetadataFromTrack(TrackPointer pTrack) const {
+    QVariantMap metadata;
+    if (!pTrack)
+        return metadata;
+    metadata.insert("mpris:trackid","/org/mixxx/" + pTrack->getId().toString());
+    double trackDurationSeconds = pTrack->getDuration();
+    trackDurationSeconds *= 1e6;
+    metadata.insert("mpris:length", static_cast<long long int>(trackDurationSeconds));
+    QStringList artists;
+    artists << pTrack->getArtist();
+    metadata.insert("xesam:artist", artists);
+    metadata.insert("xesam:title", pTrack->getTitle());
+    return metadata;
+}
+
+void MprisPlayer::slotPlayChanged(DeckAttributes *pDeck, bool playing) {
+    Q_UNUSED(pDeck);
+    DeckAttributes *playingDeck = findPlayingDeck();
+    playing = playingDeck != nullptr;
+    m_pMpris->notifyPropertyChanged(playerInterfaceName,"PlaybackStatus",
+                                    playing ? kPlaybackStatusPlaying : kPlaybackStatusPaused);
+    m_pMpris->notifyPropertyChanged(playerInterfaceName,"Metadata",
+                                    getMetadataFromTrack(
+                                            playing ? playingDeck->getLoadedTrack() :
+                                                      TrackPointer()));
+    if (playing) {
+        m_currentMetadata = playingDeck->getLoadedTrack()->getId();
+    }
+}
+
+MprisPlayer::~MprisPlayer() {
+    for (DeckAttributes *attrib : m_deckAttributes) {
+        delete attrib;
+    }
+}
+
+void MprisPlayer::slotPlayPositionChanged(DeckAttributes *pDeck, double position) {
+    if (AUTODJIDLE) {
+        qlonglong playPosition = static_cast<qlonglong>(position * //Fraction of duration
+                                                        pDeck->getLoadedTrack()->getDuration() * //Duration in seconds
+                                                        1e6);
+        m_pMpris->notifyPropertyChanged(playerInterfaceName,"Position",playPosition);
+    }
+}
+
+void MprisPlayer::slotAutoDJIdle(double idle) {
+    slotChangeProperties(idle);
+    DeckAttributes* playingDeck = findPlayingDeck();
+    if (idle && playingDeck != nullptr &&
+        m_currentMetadata != playingDeck->getLoadedTrack()->getId()) {
+        //New track just faded in.
+        m_pMpris->notifyPropertyChanged(playerInterfaceName,"Metadata",
+                                        getMetadataFromTrack(playingDeck->getLoadedTrack()));
+    }
+}
+
+DeckAttributes *MprisPlayer::findPlayingDeck() const {
+    for (int i = 0; i < m_deckAttributes.count(); ++i) {
+        if (m_deckAttributes.at(i)->isPlaying()) {
+            return m_deckAttributes.at(i);
+        }
+    }
+    return nullptr;
 }
 
 
