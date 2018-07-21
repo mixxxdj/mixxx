@@ -360,7 +360,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary button function always a Pushbutton
-        // due the leak of visual feedback we do not allow a toggle function
+        // due the lack of visual feedback we do not allow a toggle function
         if (m_rightButtonMode == ControlPushButton::PUSH ||
                 m_rightButtonMode == ControlPushButton::TRIGGER ||
                 m_iNoStates == 1) {
