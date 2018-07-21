@@ -1509,13 +1509,10 @@ QHeaderView::down-arrow {
   border-right: 1px solid #585858;
   }
   QHeaderView::up-arrow {
-    image: url(skin:/style/library_sort_up.svg);
+    image: url(skin:/style/btn_lib_sort_up.png);
     }
-    QHeaderView::up-arrow:hover {
-      image: url(skin:/style/library_sort_down.svg);
-    }
-  QHeaderView::down-arrow:hover {
-    image: url(skin:/style/library_sort_up.svg);
+  QHeaderView::down-arrow {
+    image: url(skin:/style/btn_lib_sort_down.png);
   }
 
 
