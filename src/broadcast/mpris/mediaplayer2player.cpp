@@ -1,11 +1,9 @@
-#include "mediaplayer2player.h"
+#include "broadcast/mpris/mediaplayer2player.h"
 
 #include <QApplication>
 #include <QDBusConnection>
 #include <QDBusMessage>
 
-#include "broadcast/mpris/mediaplayer2player.h"
-#include "mixxxmainwindow.h"
 #include "moc_mediaplayer2player.cpp"
 
 MediaPlayer2Player::MediaPlayer2Player(PlayerManager* playerManager,
