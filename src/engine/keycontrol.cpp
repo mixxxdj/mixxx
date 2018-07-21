@@ -24,7 +24,7 @@ KeyControl::KeyControl(QString group,
     // pitch is the distance to the original pitch in semitones
     // knob in semitones; 9.4 ct per midi step allowOutOfBounds = true;
     m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -6.0, 6.0, true);
-    // Course adjust by full semitone steps.
+    // Coarse adjust by full semitone steps.
     m_pPitch->setStepCount(12);
     // Fine adjust with semitone / 10 = 10 ct;.
     m_pPitch->setSmallStepCount(120);
@@ -36,7 +36,7 @@ KeyControl::KeyControl(QString group,
     // set by the speed slider or to the locked key.
     // pitch_adjust knob in semitones; 4.7 ct per midi step; allowOutOfBounds = true;
     m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), -3.0, 3.0, true);
-    // Course adjust by full semitone steps.
+    // Coarse adjust by full semitone steps.
     m_pPitchAdjust->setStepCount(6);
     // Fine adjust with semitone / 10 = 10 ct;.
     m_pPitchAdjust->setSmallStepCount(60);
@@ -282,11 +282,6 @@ void KeyControl::setEngineKey(double key, double key_distance) {
     mixxx::track::io::key::ChromaticKey newKey =
             KeyUtils::keyFromNumericValue(key);
 
-    if (thisFileKey == mixxx::track::io::key::INVALID ||
-        newKey == mixxx::track::io::key::INVALID) {
-        return;
-    }
-
     int stepsToTake = KeyUtils::shortestStepsToKey(thisFileKey, newKey);
     double pitchToTakeOctaves = (stepsToTake + key_distance) / 12.0;
 
@@ -345,7 +340,7 @@ void KeyControl::updatePitchAdjust() {
     // speedSliderPitchRatio must be unchanged
     double pitchAdjustKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitchAdjust);
 
-    // pitch_adjust is a offset to the pitch set by the speed controls
+    // pitch_adjust is an offset to the pitch set by the speed controls
     // calc absolute pitch
     m_pitchRateInfo.pitchTweakRatio = pitchAdjustKnobRatio;
     m_pitchRateInfo.pitchRatio = pitchAdjustKnobRatio * speedSliderPitchRatio;
