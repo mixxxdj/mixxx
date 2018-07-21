@@ -80,6 +80,7 @@ namespace {
                 "org.xfce.FileManager",
                 "DisplayFolderAndSelect");
         msg << folder << filename << "" << "";
+        qDebug() << Calling: << msg;
         const QDBusMessage response = QDBusConnection::sessionBus().call(msg);
         const bool success = (response.type() != QDBusMessage::MessageType::ErrorMessage);
         return success;
@@ -109,7 +110,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
                     openedDirs.insert(dirPath);
                     break;
                 } else {
-                    qDebug() << "select File via Freedesktop DBus interface Failed";
+                    qDebug() << "Select File via Freedesktop DBus interface failed";
                 }
             }
         }
@@ -120,7 +121,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
                     openedDirs.insert(dirPath);
                     break;
                 } else {
-                    qDebug() << "select File via Xfce DBus interface Failed";
+                    qDebug() << "Select file via Xfce DBus interface failed";
                 }
             }
         }
