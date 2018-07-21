@@ -21,7 +21,6 @@ class Mpris : public QObject {
             const QVariant& propertyValue);
 
   private:
-
     QDBusConnection m_busConnection;
     MediaPlayer2Player* m_pPlayer;
 };

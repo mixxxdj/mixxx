@@ -3,8 +3,9 @@
 #include <QObject>
 #include <QtDBus/QDBusObjectPath>
 
+#include "broadcast/mpris/mpris.h"
 #include "control/controlproxy.h"
-#include "mpris.h"
+#include "library/autodj/autodjprocessor.h"
 
 class PlayerManager;
 class MixxxMainWindow;
@@ -15,6 +16,7 @@ class MprisPlayer : public QObject {
     MprisPlayer(PlayerManager* pPlayerManager,
             MixxxMainWindow* pWindow,
             Mpris* pMpris);
+    ~MprisPlayer() override;
     QString playbackStatus() const;
     QString loopStatus() const;
     void setLoopStatus(const QString& value);
@@ -38,18 +40,30 @@ class MprisPlayer : public QObject {
 
   private slots:
     void mixxxComponentsInitialized();
-    void autoDJStateChanged(double enabled);
+    void slotChangeProperties(double enabled);
+    void slotAutoDJIdle(double idle);
+    void slotPlayChanged(DeckAttributes* pDeck, bool playing);
+    void slotPlayPositionChanged(DeckAttributes* pDeck, double position);
 
   private:
     void broadcastPropertiesChange(bool enabled);
-
-    const QString autoDJDependentProperties[4] = {"CanGoNext",
+    QVariantMap getMetadataFromTrack(TrackPointer pTrack) const;
+    DeckAttributes* findPlayingDeck() const;
+    const QString autoDJDependentProperties[4] = {
+            "CanGoNext",
             "CanPlay",
             "CanPause",
             "CanSeek"};
+
     ControlProxy* m_pCPAutoDjEnabled;
+    ControlProxy* m_pCPFadeNow;
+    ControlProxy* m_pCPAutoDJIdle;
     PlayerManager* m_pPlayerManager;
     MixxxMainWindow* m_pWindow;
-    bool m_bComponentsInitialized;
+    QString m_pausedDeck;
+    QString m_thisDeck;
+    TrackId m_currentMetadata;
+    bool m_bComponentsInitialized, m_bPropertiesEnabled;
     Mpris* m_pMpris;
+    QList<DeckAttributes*> m_deckAttributes;
 };

@@ -10,6 +10,7 @@
 
 class AutoDJProcessor;
 class PlayerManager;
+class MixxxMainWindow;
 
 // this implements the Version 2.2 of
 // MPRIS D-Bus Interface Specification
