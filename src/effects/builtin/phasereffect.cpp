@@ -35,9 +35,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
-    period->setMinimum(0.0);
-    period->setMaximum(4.0);
-    period->setDefault(1.0);
+    period->setRange(0.0, 1.0, 4.0);
 
     EffectManifestParameterPointer fb = pManifest->addParameter();
     fb->setId("feedback");
@@ -48,9 +46,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     fb->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     fb->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     fb->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    fb->setMinimum(-1.0);
-    fb->setMaximum(1.0);
-    fb->setDefault(0.0);
+    fb->setRange(-1.0, 0.0, 1.0);
 
     EffectManifestParameterPointer range = pManifest->addParameter();
     range->setId("range");
@@ -61,9 +57,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     range->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     range->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     range->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    range->setMinimum(0.05);
-    range->setMaximum(1.0);
-    range->setDefault(1.0);
+    range->setRange(0.05, 1.0, 1.0);
 
     EffectManifestParameterPointer stages = pManifest->addParameter();
     stages->setId("stages");
@@ -74,9 +68,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     stages->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     stages->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     stages->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    stages->setMinimum(1.0);
-    stages->setMaximum(6.0);
-    stages->setDefault(3.5);
+    stages->setRange(1.0, 3.5, 6.0);
 
     EffectManifestParameterPointer depth = pManifest->addParameter();
     depth->setId("depth");
@@ -88,9 +80,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    depth->setMinimum(0.5);
-    depth->setMaximum(1.0);
-    depth->setDefault(0.5);
+    depth->setRange(0.5, 0.5, 1.0);
 
     EffectManifestParameterPointer triplet = pManifest->addParameter();
     triplet->setId("triplet");
@@ -101,9 +91,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    triplet->setDefault(0);
-    triplet->setMinimum(0);
-    triplet->setMaximum(1);
+    triplet->setRange(0, 0, 1);
 
     EffectManifestParameterPointer stereo = pManifest->addParameter();
     stereo->setId("stereo");
@@ -114,9 +102,7 @@ EffectManifestPointer PhaserEffect::getManifest() {
     stereo->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     stereo->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     stereo->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    stereo->setMinimum(0);
-    stereo->setMaximum(1);
-    stereo->setDefault(0);
+    stereo->setRange(0, 0, 1);
 
     return pManifest;
 }

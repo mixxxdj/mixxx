@@ -42,9 +42,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
         "1/32 - 4 Hz if no tempo is detected"));
     speed->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC_INVERSE);
     speed->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
-    speed->setMinimum(kMinLfoBeats);
-    speed->setMaximum(kMaxLfoBeats);
-    speed->setDefault(8);
+    speed->setRange(kMinLfoBeats, 8, kMaxLfoBeats);
 
     EffectManifestParameterPointer width = pManifest->addParameter();
     width->setId("width");
@@ -55,9 +53,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    width->setDefault(kMaxLfoWidthMs / 2);
-    width->setMinimum(0.0);
-    width->setMaximum(kMaxLfoWidthMs);
+    width->setRange(0.0, kMaxLfoWidthMs / 2, kMaxLfoWidthMs);
 
     EffectManifestParameterPointer manual = pManifest->addParameter();
     manual->setId("manual");
@@ -69,9 +65,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     manual->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     manual->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     manual->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    manual->setDefault(kCenterDelayMs);
-    manual->setMinimum(kMinDelayMs);
-    manual->setMaximum(kMaxDelayMs);
+    manual->setRange(kMinDelayMs, kCenterDelayMs, kMaxDelayMs);
 
     EffectManifestParameterPointer regen = pManifest->addParameter();
     regen->setId("regen");
@@ -82,9 +76,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     regen->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     regen->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     regen->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    regen->setDefault(0.25);
-    regen->setMinimum(0.0);
-    regen->setMaximum(1.0);
+    regen->setRange(0.0, 0.25, 1.0);
 
     EffectManifestParameterPointer mix = pManifest->addParameter();
     mix->setId("mix");
@@ -96,9 +88,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     mix->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     mix->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     mix->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    mix->setDefault(1.0);
-    mix->setMinimum(0.0);
-    mix->setMaximum(1.0);
+    mix->setRange(0.0, 1.0, 1.0);
 
     EffectManifestParameterPointer triplet = pManifest->addParameter();
     triplet->setId("triplet");
@@ -109,9 +99,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    triplet->setDefault(0);
-    triplet->setMinimum(0);
-    triplet->setMaximum(1);
+    triplet->setRange(0, 0, 1);
 
     return pManifest;
 }

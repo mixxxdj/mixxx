@@ -50,20 +50,21 @@ void EffectButtonParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
         m_pEffectParameter = pEffectSlot->getButtonParameterForSlot(m_iParameterSlotNumber);
 
         if (m_pEffectParameter) {
+            m_pManifestParameter = m_pEffectParameter->manifest();
+
             // Set the number of states
             int numStates = math_max(m_pEffectParameter->manifest()->getSteps().size(), 2);
             m_pControlValue->setStates(numStates);
             //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
             double dValue = m_pEffectParameter->getValue();
-            double dMinimum = m_pEffectParameter->getMinimum();
+            double dMinimum = m_pManifestParameter->getMinimum();
             double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
-            double dMaximum = m_pEffectParameter->getMaximum();
+            double dMaximum = m_pManifestParameter->getMaximum();
             double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
-            double dDefault = m_pEffectParameter->getDefault();
+            double dDefault = m_pManifestParameter->getDefault();
 
             if (dValue > dMaximum || dValue < dMinimum ||
-                dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
-                dDefault > dMaximum || dDefault < dMinimum) {
+                dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
                 qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
             }
 
@@ -73,7 +74,7 @@ void EffectButtonParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
 
             m_pControlValue->set(dValue);
             m_pControlValue->setDefaultValue(dDefault);
-            EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
+            EffectManifestParameter::ControlHint type = m_pManifestParameter->controlHint();
             // TODO(rryan) expose this from EffectParameter
             m_pControlType->forceSet(static_cast<double>(type));
             // Default loaded parameters to loaded and unlinked
@@ -91,6 +92,7 @@ void EffectButtonParameterSlot::clear() {
     if (m_pEffectParameter) {
         m_pEffectParameter->disconnect(this);
         m_pEffectParameter = nullptr;
+        m_pManifestParameter.clear();
     }
 
     m_pEffectSlot = nullptr;
@@ -114,33 +116,33 @@ void EffectButtonParameterSlot::slotValueChanged(double v) {
 
 QDomElement EffectButtonParameterSlot::toXml(QDomDocument* doc) const {
     QDomElement parameterElement;
-    if (m_pEffectParameter != nullptr) {
-        parameterElement = doc->createElement(EffectXml::Parameter);
-        XmlParse::addElement(*doc, parameterElement,
-                             EffectXml::ParameterValue,
-                             QString::number(m_pControlValue->get()));
-    }
+    // if (m_pEffectParameter != nullptr) {
+    //     parameterElement = doc->createElement(EffectXml::Parameter);
+    //     XmlParse::addElement(*doc, parameterElement,
+    //                          EffectXml::ParameterValue,
+    //                          QString::number(m_pControlValue->get()));
+    // }
 
     return parameterElement;
 }
 
 void EffectButtonParameterSlot::loadParameterSlotFromXml(const QDomElement&
                                                   parameterElement) {
-    if (m_pEffectParameter == nullptr) {
-        return;
-    }
-    if (!parameterElement.hasChildNodes()) {
-        m_pControlValue->reset();
-    } else {
-        bool conversionWorked = false;
-        double value = XmlParse::selectNodeDouble(parameterElement,
-                                                  EffectXml::ParameterValue,
-                                                  &conversionWorked);
-        if (conversionWorked) {
-            // Need to use setParameterFrom(..., nullptr) here to
-            // trigger valueChanged() signal emission and execute slotValueChanged()
-            m_pControlValue->setParameterFrom(value, nullptr);
-        }
-        // If the conversion failed, the default value is kept.
-    }
+    // if (m_pEffectParameter == nullptr) {
+    //     return;
+    // }
+    // if (!parameterElement.hasChildNodes()) {
+    //     m_pControlValue->reset();
+    // } else {
+    //     bool conversionWorked = false;
+    //     double value = XmlParse::selectNodeDouble(parameterElement,
+    //                                               EffectXml::ParameterValue,
+    //                                               &conversionWorked);
+    //     if (conversionWorked) {
+    //         // Need to use setParameterFrom(..., nullptr) here to
+    //         // trigger valueChanged() signal emission and execute slotValueChanged()
+    //         m_pControlValue->setParameterFrom(value, nullptr);
+    //     }
+    //     // If the conversion failed, the default value is kept.
+    // }
 }

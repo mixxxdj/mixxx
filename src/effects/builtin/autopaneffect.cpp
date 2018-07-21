@@ -39,9 +39,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     period->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     period->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
-    period->setMinimum(0.0);
-    period->setMaximum(4.0);
-    period->setDefault(2.0);
+    period->setRange(0.0, 2.0, 4.0);
 
     EffectManifestParameterPointer smoothing = pManifest->addParameter();
     smoothing->setId("smoothing");
@@ -53,9 +51,8 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     smoothing->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     smoothing->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     smoothing->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    smoothing->setMinimum(0.25);
-    smoothing->setMaximum(0.50);  // there are two steps per period so max is half
-    smoothing->setDefault(0.50);
+    smoothing->setRange(0.25, 0.50, 0.50); // There are two steps per period so max is half
+
     // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to master,
     //                     make the scaleStartParameter for this be 1.
 
@@ -70,9 +67,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     width->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    width->setMinimum(0.0);
-    width->setMaximum(1.0);    // 0.02 * sampleRate => 20ms
-    width->setDefault(0.5);
+    width->setRange(0.0, 0.5, 1.0); // 0.02 * sampleRate => 20ms
 
     return pManifest;
 }

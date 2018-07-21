@@ -32,11 +32,9 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     depth->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     depth->setNeutralPointOnScale(1.0);
-    depth->setDefault(16);
     // for values -1 0 +1
     // we do not allow a 1 bit version because this causes a distortion because of the missing sign bit
-    depth->setMinimum(2);
-    depth->setMaximum(16);
+    depth->setRange(2, 16, 16);
 
     EffectManifestParameterPointer frequency = pManifest->addParameter();
     frequency->setId("downsample");
@@ -50,9 +48,7 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     frequency->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     frequency->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
     frequency->setNeutralPointOnScale(1.0);
-    frequency->setDefault(1.0);
-    frequency->setMinimum(0.02);
-    frequency->setMaximum(1.0);
+    frequency->setRange(0.02, 1.0, 1.0);
 
     return pManifest;
 }

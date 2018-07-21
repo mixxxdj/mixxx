@@ -52,9 +52,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
-    delay->setMinimum(0.0);
-    delay->setDefault(0.5);
-    delay->setMaximum(2.0);
+    delay->setRange(0.0, 0.5, 2.0);
 
     EffectManifestParameterPointer feedback = pManifest->addParameter();
     feedback->setId("feedback_amount");
@@ -65,9 +63,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     feedback->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     feedback->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     feedback->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    feedback->setMinimum(0.00);
-    feedback->setDefault(db2ratio(-3.0));
-    feedback->setMaximum(1.00);
+    feedback->setRange(0.00, db2ratio(-3.0), 1.00);
 
     EffectManifestParameterPointer pingpong = pManifest->addParameter();
     pingpong->setId("pingpong_amount");
@@ -78,9 +74,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     pingpong->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     pingpong->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     pingpong->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    pingpong->setMinimum(0.0);
-    pingpong->setDefault(0.0);
-    pingpong->setMaximum(1.0);
+    pingpong->setRange(0.0, 0.0, 1.0);
 
     EffectManifestParameterPointer send = pManifest->addParameter();
     send->setId("send_amount");
@@ -92,9 +86,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     send->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    send->setMinimum(0.0);
-    send->setDefault(db2ratio(-3.0));
-    send->setMaximum(1.0);
+    send->setRange(0.0, db2ratio(-3.0), 1.0);
 
     EffectManifestParameterPointer quantize = pManifest->addParameter();
     quantize->setId("quantize");
@@ -105,9 +97,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     quantize->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    quantize->setDefault(1);
-    quantize->setMinimum(0);
-    quantize->setMaximum(1);
+    quantize->setRange(0, 1, 1);
 
     EffectManifestParameterPointer triplet = pManifest->addParameter();
     triplet->setId("triplet");
@@ -118,9 +108,7 @@ EffectManifestPointer EchoEffect::getManifest() {
     triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    triplet->setDefault(0);
-    triplet->setMinimum(0);
-    triplet->setMaximum(1);
+    triplet->setRange(0, 0, 1);
 
     return pManifest;
 }

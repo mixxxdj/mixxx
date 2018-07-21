@@ -182,21 +182,21 @@ void EffectSlot::reload(const QSet<ChannelHandleAndGroup>& activeInputChannels) 
 }
 
 EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
-    EffectParameterSlotPointer pParameter = EffectParameterSlotPointer(
+    auto pParameterSlot = EffectParameterSlotPointer(
             new EffectParameterSlot(m_group, m_parameterSlots.size()));
-    m_parameterSlots.append(pParameter);
+    m_parameterSlots.append(pParameterSlot);
     m_pControlNumParameterSlots->forceSet(
             m_pControlNumParameterSlots->get() + 1);
-    return pParameter;
+    return pParameterSlot;
 }
 
 EffectButtonParameterSlotPointer EffectSlot::addEffectButtonParameterSlot() {
-    EffectButtonParameterSlotPointer pParameter = EffectButtonParameterSlotPointer(
+    auto pParameterSlot = EffectButtonParameterSlotPointer(
             new EffectButtonParameterSlot(m_group, m_buttonParameters.size()));
-    m_buttonParameters.append(pParameter);
+    m_buttonParameters.append(pParameterSlot);
     m_pControlNumButtonParameterSlots->forceSet(
             m_pControlNumButtonParameterSlots->get() + 1);
-    return pParameter;
+    return pParameterSlot;
 }
 
 unsigned int EffectSlot::numKnobParameters() const {
@@ -351,11 +351,11 @@ void EffectSlot::unloadEffect() {
     m_pControlLoaded->forceSet(0.0);
     m_pControlNumParameters->forceSet(0.0);
     m_pControlNumButtonParameters->forceSet(0.0);
-    for (const auto& pParameter : m_parameterSlots) {
-        pParameter->clear();
+    for (const auto& pParameterSlot : m_parameterSlots) {
+        pParameterSlot->clear();
     }
-    for (const auto& pParameter : m_buttonParameters) {
-        pParameter->clear();
+    for (const auto& pButtonParameter : m_buttonParameters) {
+        pButtonParameter->clear();
     }
 
     for (int i = 0; i < m_parameters.size(); ++i) {

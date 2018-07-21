@@ -23,41 +23,10 @@ class EffectParameter : public QObject {
                     int iParameterNumber, EffectManifestParameterPointer pParameter);
     virtual ~EffectParameter();
 
-    void addToEngine();
-    void removeFromEngine();
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Parameter Information
-    ///////////////////////////////////////////////////////////////////////////
-
     EffectManifestParameterPointer manifest() const;
-    const QString& id() const;
-    const QString& name() const;
-    const QString& shortName() const;
-    const QString& description() const;
-
-    ///////////////////////////////////////////////////////////////////////////
-    // Value Settings
-    ///////////////////////////////////////////////////////////////////////////
-
-    EffectManifestParameter::LinkType getDefaultLinkType() const;
-    EffectManifestParameter::LinkInversion getDefaultLinkInversion() const;
-    double getNeutralPointOnScale() const;
 
     double getValue() const;
-
     void setValue(double value);
-
-    double getDefault() const;
-    void setDefault(double defaultValue);
-
-    double getMinimum() const;
-    void setMinimum(double minimum);
-
-    double getMaximum() const;
-    void setMaximum(double maximum);
-
-    EffectManifestParameter::ControlHint getControlHint() const;
 
     void updateEngineState();
 
@@ -72,18 +41,12 @@ class EffectParameter : public QObject {
     static bool clampValue(double* pValue,
                            const double& minimum, const double& maximum);
     bool clampValue();
-    bool clampDefault();
-    bool clampRanges();
 
     EffectSlot* m_pEffectSlot;
     EffectsManager* m_pEffectsManager;
     int m_iParameterNumber;
     EffectManifestParameterPointer m_pParameter;
-    double m_minimum;
-    double m_maximum;
-    double m_default;
     double m_value;
-    bool m_bAddedToEngine;
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameter);
 };

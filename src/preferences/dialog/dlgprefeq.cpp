@@ -670,6 +670,8 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
             for (i = 0; i < knobNum; i++) {
                 EffectParameter* param = pEffectSlot->getKnobParameterForSlot(i);
                 if (param) {
+                    EffectManifestParameterPointer pManifestParameter = param->manifest();
+
                     // Setup Label
                     QLabel* centerFreqLabel = new QLabel(this);
                     QString labelText = param->manifest()->name();
@@ -678,10 +680,10 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                     slidersGridLayout->addWidget(centerFreqLabel, 0, i + 1, Qt::AlignCenter);
 
                     QSlider* slider = new QSlider(this);
-                    slider->setMinimum(param->getMinimum() * 100);
-                    slider->setMaximum(param->getMaximum() * 100);
+                    slider->setMinimum(pManifestParameter->getMinimum() * 100);
+                    slider->setMaximum(pManifestParameter->getMaximum() * 100);
                     slider->setSingleStep(1);
-                    slider->setValue(param->getDefault() * 100);
+                    slider->setValue(pManifestParameter->getDefault() * 100);
                     slider->setMinimumHeight(90);
                     // Set the index as a property because we need it inside slotUpdateFilter()
                     slider->setProperty("index", QVariant(i));
@@ -753,7 +755,7 @@ void DlgPrefEQ::slotMasterEQToDefault() {
         for (int i = 0; i < knobNum; i++) {
             EffectParameter* param = pEffectSlot->getKnobParameterForSlot(i);
             if (param) {
-                double defaultValue = param->getDefault();
+                double defaultValue = param->manifest()->getDefault();
                 setMasterEQParameter(i, defaultValue);
             }
         }

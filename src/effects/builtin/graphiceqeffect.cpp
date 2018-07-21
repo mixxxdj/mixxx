@@ -35,9 +35,7 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
     low->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     low->setNeutralPointOnScale(0.5);
-    low->setDefault(0);
-    low->setMinimum(-12);
-    low->setMaximum(12);
+    low->setRange(-12, 0, 12);
 
     QString paramName;
     for (int i = 0; i < 6; i++) {
@@ -57,9 +55,7 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
         mid->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
         mid->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         mid->setNeutralPointOnScale(0.5);
-        mid->setDefault(0);
-        mid->setMinimum(-12);
-        mid->setMaximum(12);
+        mid->setRange(-12, 0, 12);
     }
 
     EffectManifestParameterPointer high = pManifest->addParameter();
@@ -70,9 +66,7 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
     high->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     high->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    high->setDefault(0);
-    high->setMinimum(-12);
-    high->setMaximum(12);
+    high->setRange(-12, 0, 12);
 
     return pManifest;
 }

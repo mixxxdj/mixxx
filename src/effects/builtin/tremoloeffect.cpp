@@ -32,9 +32,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    depth->setDefault(1);
-    depth->setMinimum(0);
-    depth->setMaximum(1);
+    depth->setRange(0, 1, 1);
 
     EffectManifestParameterPointer rate = pManifest->addParameter();
     rate->setId("rate");
@@ -48,9 +46,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
         EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     rate->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     rate->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
-    rate->setDefault(1);
-    rate->setMinimum(1.0/4);
-    rate->setMaximum(8);
+    rate->setRange(1.0/4, 1, 8);
 
     EffectManifestParameterPointer width = pManifest->addParameter();
     width->setId("width");
@@ -62,9 +58,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
     width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    width->setMinimum(0.1);
-    width->setDefault(0.5);
-    width->setMaximum(0.9);
+    width->setRange(0.1, 0.5, 0.9);
 
     EffectManifestParameterPointer waveform = pManifest->addParameter();
     waveform->setId("waveform");
@@ -78,9 +72,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
         EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     waveform->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     waveform->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    waveform->setMinimum(0.005);
-    waveform->setDefault(0.5);
-    waveform->setMaximum(1);
+    waveform->setRange(0.005, 0.5, 1);
 
     EffectManifestParameterPointer phase = pManifest->addParameter();
     phase->setId("phase");
@@ -94,9 +86,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
         EffectManifestParameter::ControlHint::KNOB_LINEAR);
     phase->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     phase->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    phase->setDefault(0);
-    phase->setMinimum(0);
-    phase->setMaximum(1);
+    phase->setRange(0, 0, 1);
 
     EffectManifestParameterPointer quantize = pManifest->addParameter();
     quantize->setId("quantize");
@@ -108,9 +98,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
         EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    quantize->setDefault(1);
-    quantize->setMinimum(0);
-    quantize->setMaximum(1);
+    quantize->setRange(0, 1, 1);
 
     EffectManifestParameterPointer triplet = pManifest->addParameter();
     triplet->setId("triplet");
@@ -122,9 +110,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
         EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    triplet->setDefault(0);
-    triplet->setMinimum(0);
-    triplet->setMaximum(1);
+    triplet->setRange(0, 0, 1);
 
     return pManifest;
 }

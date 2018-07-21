@@ -35,9 +35,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
     balance->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     balance->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     balance->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    balance->setMinimum(-1.0);
-    balance->setMaximum(+1.0);
-    balance->setDefault(0.0);
+    balance->setRange(-1.0, 0.0, +1.0);
 
     EffectManifestParameterPointer midSide = pManifest->addParameter();
     midSide->setId("midSide");
@@ -52,9 +50,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
     midSide->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     midSide->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     midSide->setDefaultLinkType(EffectManifestParameter::LinkType::NONE);
-    midSide->setMinimum(-1.0);
-    midSide->setMaximum(+1.0);
-    midSide->setDefault(0.0);
+    midSide->setRange(-1.0, 0.0, +1.0);
 
     EffectManifestParameterPointer midLowPass = pManifest->addParameter();
     midLowPass->setId("bypassFreq");
@@ -67,9 +63,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
     midLowPass->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     midLowPass->setDefaultLinkType(EffectManifestParameter::LinkType::NONE);
     midLowPass->setNeutralPointOnScale(1);
-    midLowPass->setDefault(kMinCornerHz);
-    midLowPass->setMinimum(kMinCornerHz);
-    midLowPass->setMaximum(kMaxCornerHz);
+    midLowPass->setRange(kMinCornerHz, kMinCornerHz, kMaxCornerHz);
 
     return pManifest;
 }

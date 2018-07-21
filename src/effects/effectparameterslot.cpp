@@ -64,25 +64,26 @@ void EffectParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
         m_pEffectParameter = pEffectSlot->getKnobParameterForSlot(m_iParameterSlotNumber);
 
         if (m_pEffectParameter) {
-            //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
+            m_pManifestParameter = m_pEffectParameter->manifest();
+
+            // qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
             double dValue = m_pEffectParameter->getValue();
-            double dMinimum = m_pEffectParameter->getMinimum();
+            double dMinimum = m_pManifestParameter->getMinimum();
             double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
-            double dMaximum = m_pEffectParameter->getMaximum();
+            double dMaximum = m_pManifestParameter->getMaximum();
             double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
-            double dDefault = m_pEffectParameter->getDefault();
+            double dDefault = m_pManifestParameter->getDefault();
 
             if (dValue > dMaximum || dValue < dMinimum ||
-                dMinimum < dMinimumLimit || dMaximum > dMaximumLimit ||
-                dDefault > dMaximum || dDefault < dMinimum) {
+                dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
                 qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
             }
 
-            //qDebug() << debugString()
-            //         << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
-            //         .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
+            // qDebug() << debugString()
+            //          << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
+            //          .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
 
-            EffectManifestParameter::ControlHint type = m_pEffectParameter->getControlHint();
+            EffectManifestParameter::ControlHint type = m_pManifestParameter->controlHint();
             m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
             m_pControlValue->setDefaultValue(dDefault);
             m_pControlValue->set(dValue);
@@ -92,9 +93,9 @@ void EffectParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
             m_pControlLoaded->forceSet(1.0);
 
             m_pControlLinkType->set(
-                static_cast<double>(m_pEffectParameter->getDefaultLinkType()));
+                static_cast<double>(m_pManifestParameter->defaultLinkType()));
             m_pControlLinkInverse->set(
-                static_cast<double>(m_pEffectParameter->getDefaultLinkInversion()));
+                static_cast<double>(m_pManifestParameter->defaultLinkInversion()));
 
             connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
                     this, SLOT(slotParameterValueChanged(double)));
@@ -108,6 +109,7 @@ void EffectParameterSlot::clear() {
     if (m_pEffectParameter) {
         m_pEffectParameter->disconnect(this);
         m_pEffectParameter = nullptr;
+        m_pManifestParameter.clear();
     }
 
     m_pControlLoaded->forceSet(0.0);
@@ -134,7 +136,7 @@ void EffectParameterSlot::slotLinkTypeChanging(double v) {
     if (newType == EffectManifestParameter::LinkType::LINKED_LEFT ||
         newType == EffectManifestParameter::LinkType::LINKED_RIGHT ||
         newType == EffectManifestParameter::LinkType::LINKED_LEFT_RIGHT) {
-        double neutral = m_pEffectParameter->getNeutralPointOnScale();
+        double neutral = m_pManifestParameter->neutralPointOnScale();
         if (neutral > 0.0 && neutral < 1.0) {
             // Knob is already a split knob, meaning it has a positive and
             // negative effect if it's twisted above the neutral point or
@@ -174,7 +176,7 @@ void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool fo
                     return;
                 }
                 {
-                    double neutral = m_pEffectParameter->getNeutralPointOnScale();
+                    double neutral = m_pManifestParameter->neutralPointOnScale();
                     if (neutral > 0.0 && neutral < 1.0) {
                         if (inverse) {
                             // the neutral position must stick where it is
@@ -261,59 +263,59 @@ void EffectParameterSlot::slotValueChanged(double v) {
 
 QDomElement EffectParameterSlot::toXml(QDomDocument* doc) const {
     QDomElement parameterElement;
-    if (m_pEffectParameter != nullptr) {
-        parameterElement = doc->createElement(EffectXml::Parameter);
-        XmlParse::addElement(*doc, parameterElement,
-                             EffectXml::ParameterValue,
-                             QString::number(m_pControlValue->getParameter()));
-        XmlParse::addElement(*doc, parameterElement,
-                             EffectXml::ParameterLinkType,
-                             EffectManifestParameter::LinkTypeToString(
-                                static_cast<EffectManifestParameter::LinkType>(
-                                    static_cast<int>(m_pControlLinkType->get()))));
-        XmlParse::addElement(*doc, parameterElement,
-                             EffectXml::ParameterLinkInversion,
-                             QString::number(m_pControlLinkInverse->get()));
-    }
+    // if (m_pEffectParameter != nullptr) {
+    //     parameterElement = doc->createElement(EffectXml::Parameter);
+    //     XmlParse::addElement(*doc, parameterElement,
+    //                          EffectXml::ParameterValue,
+    //                          QString::number(m_pControlValue->getParameter()));
+    //     XmlParse::addElement(*doc, parameterElement,
+    //                          EffectXml::ParameterLinkType,
+    //                          EffectManifestParameter::LinkTypeToString(
+    //                             static_cast<EffectManifestParameter::LinkType>(
+    //                                 static_cast<int>(m_pControlLinkType->get()))));
+    //     XmlParse::addElement(*doc, parameterElement,
+    //                          EffectXml::ParameterLinkInversion,
+    //                          QString::number(m_pControlLinkInverse->get()));
+    // }
 
     return parameterElement;
 }
 
 void EffectParameterSlot::loadParameterSlotFromXml(const QDomElement& parameterElement) {
-    if (m_pEffectParameter == nullptr) {
-        return;
-    }
-    if (!parameterElement.hasChildNodes()) {
-        m_pControlValue->reset();
-        m_pControlLinkType->set(
-            static_cast<double>(m_pEffectParameter->getDefaultLinkType()));
-        m_pControlLinkInverse->set(
-            static_cast<double>(m_pEffectParameter->getDefaultLinkInversion()));
-    } else {
-        // Need to use setParameterFrom(..., nullptr) here to
-        // trigger valueChanged() signal emission and execute slotValueChanged()
-        bool conversionWorked = false;
-        double value = XmlParse::selectNodeDouble(parameterElement,
-                           EffectXml::ParameterValue, &conversionWorked);
-        if (conversionWorked) {
-            // Need to use setParameterFrom(..., nullptr) here to
-            // trigger valueChanged() signal emission and execute slotValueChanged()
-            m_pControlValue->setParameterFrom(value, nullptr);
-        }
-        // If the conversion failed, the default value is kept.
+    // if (m_pEffectParameter == nullptr) {
+    //     return;
+    // }
+    // if (!parameterElement.hasChildNodes()) {
+    //     m_pControlValue->reset();
+    //     m_pControlLinkType->set(
+    //         static_cast<double>(m_pEffectParameter->getDefaultLinkType()));
+    //     m_pControlLinkInverse->set(
+    //         static_cast<double>(m_pEffectParameter->getDefaultLinkInversion()));
+    // } else {
+    //     // Need to use setParameterFrom(..., nullptr) here to
+    //     // trigger valueChanged() signal emission and execute slotValueChanged()
+    //     bool conversionWorked = false;
+    //     double value = XmlParse::selectNodeDouble(parameterElement,
+    //                        EffectXml::ParameterValue, &conversionWorked);
+    //     if (conversionWorked) {
+    //         // Need to use setParameterFrom(..., nullptr) here to
+    //         // trigger valueChanged() signal emission and execute slotValueChanged()
+    //         m_pControlValue->setParameterFrom(value, nullptr);
+    //     }
+    //     // If the conversion failed, the default value is kept.
 
-        QString linkTypeString = XmlParse::selectNodeQString(parameterElement,
-                                     EffectXml::ParameterLinkType);
-        if (!linkTypeString.isEmpty()) {
-            m_pControlLinkType->set(static_cast<double>(
-                EffectManifestParameter::LinkTypeFromString(linkTypeString)));
-        }
+    //     QString linkTypeString = XmlParse::selectNodeQString(parameterElement,
+    //                                  EffectXml::ParameterLinkType);
+    //     if (!linkTypeString.isEmpty()) {
+    //         m_pControlLinkType->set(static_cast<double>(
+    //             EffectManifestParameter::LinkTypeFromString(linkTypeString)));
+    //     }
 
-        conversionWorked = false;
-        double linkInversion = XmlParse::selectNodeDouble(parameterElement,
-                                   EffectXml::ParameterLinkInversion, &conversionWorked);
-        if (conversionWorked) {
-            m_pControlLinkInverse->set(linkInversion);
-        }
-    }
+    //     conversionWorked = false;
+    //     double linkInversion = XmlParse::selectNodeDouble(parameterElement,
+    //                                EffectXml::ParameterLinkInversion, &conversionWorked);
+    //     if (conversionWorked) {
+    //         m_pControlLinkInverse->set(linkInversion);
+    //     }
+    // }
 }

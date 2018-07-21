@@ -32,9 +32,7 @@ EffectManifestPointer MetronomeEffect::getManifest() {
     period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    period->setMinimum(40);
-    period->setDefault(120);
-    period->setMaximum(208);
+    period->setRange(40, 120, 208);
 
 
     // Period unit
@@ -45,9 +43,7 @@ EffectManifestPointer MetronomeEffect::getManifest() {
     periodUnit->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     periodUnit->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     periodUnit->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    periodUnit->setDefault(1);
-    periodUnit->setMinimum(0);
-    periodUnit->setMaximum(1);
+    periodUnit->setRange(0, 1, 1);
 
     return pManifest;
 }

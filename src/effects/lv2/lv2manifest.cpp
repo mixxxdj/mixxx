@@ -69,9 +69,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 
             param->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
             param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-            param->setDefault(m_default[i]);
-            param->setMinimum(m_minimum[i]);
-            param->setMaximum(m_maximum[i]);
+            param->setRange(m_minimum[i], m_default[i], m_maximum[i]);
 
             // Set the appropriate Hints
             if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
@@ -121,23 +119,21 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             // Some plugins don't specify minimum, maximum and default values
             // In this case set the minimum and default values to 0 and
             // the maximum to the number of scale points
-            if (isnan(m_default[i])) {
-                param->setDefault(0);
-            } else {
-                param->setDefault(m_default[i]);
+            double minimum = 0;
+            double defaultValue = 0;
+            double maximum = param->getSteps().size() - 1;
+
+            if (!isnan(m_minimum[i])) {
+                minimum = m_minimum[i];
+            }
+            if (!isnan(m_default[i])) {
+                defaultValue = m_default[i];
+            }
+            if (!isnan(m_maximum[i])) {
+                maximum = m_maximum[i];
             }
 
-            if (isnan(m_minimum[i])) {
-                param->setMinimum(0);
-            } else {
-                param->setMinimum(m_minimum[i]);
-            }
-
-            if (isnan(m_maximum[i])) {
-                param->setMaximum(param->getSteps().size() - 1);
-            } else {
-                param->setMaximum(m_maximum[i]);
-            }
+            param->setRange(minimum, defaultValue, maximum);
         }
     }
 

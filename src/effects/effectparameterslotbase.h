@@ -37,6 +37,7 @@ class EffectParameterSlotBase : public QObject {
     QString m_group;
     EffectSlot* m_pEffectSlot;
     EffectParameter* m_pEffectParameter;
+    EffectManifestParameterPointer m_pManifestParameter;
 
     // Controls exposed to the rest of Mixxx
     ControlObject* m_pControlLoaded;

@@ -34,9 +34,7 @@ EffectManifestPointer FilterEffect::getManifest() {
     lpf->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
     lpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_LEFT);
     lpf->setNeutralPointOnScale(1);
-    lpf->setDefault(kMaxCorner);
-    lpf->setMinimum(kMinCorner);
-    lpf->setMaximum(kMaxCorner);
+    lpf->setRange(kMinCorner, kMaxCorner, kMaxCorner);
 
     EffectManifestParameterPointer q = pManifest->addParameter();
     q->setId("q");
@@ -48,9 +46,7 @@ EffectManifestPointer FilterEffect::getManifest() {
     q->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
-    q->setDefault(0.707106781); // 0.707106781 = Butterworth
-    q->setMinimum(0.4);
-    q->setMaximum(4.0);
+    q->setRange(0.4, 0.707106781, 4.0); // 0.707106781 = Butterworth
 
     EffectManifestParameterPointer hpf = pManifest->addParameter();
     hpf->setId("hpf");
@@ -63,9 +59,7 @@ EffectManifestPointer FilterEffect::getManifest() {
     hpf->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
     hpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_RIGHT);
     hpf->setNeutralPointOnScale(0.0);
-    hpf->setDefault(kMinCorner);
-    hpf->setMinimum(kMinCorner);
-    hpf->setMaximum(kMaxCorner);
+    hpf->setRange(kMinCorner, kMinCorner, kMaxCorner);
 
     return pManifest;
 }

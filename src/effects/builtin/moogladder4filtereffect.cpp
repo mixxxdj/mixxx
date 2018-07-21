@@ -32,9 +32,7 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
     lpf->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     lpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_LEFT);
     lpf->setNeutralPointOnScale(1);
-    lpf->setDefault(kMaxCorner);
-    lpf->setMinimum(kMinCorner);
-    lpf->setMaximum(kMaxCorner);
+    lpf->setRange(kMinCorner, kMaxCorner, kMaxCorner);
 
     EffectManifestParameterPointer q = pManifest->addParameter();
     q->setId("resonance");
@@ -44,9 +42,7 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
     q->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
-    q->setMinimum(0.0);
-    q->setMaximum(4.0);
-    q->setDefault(1.0);
+    q->setRange(0.0, 1.0, 4.0);
 
     EffectManifestParameterPointer hpf = pManifest->addParameter();
     hpf->setId("hpf");
@@ -57,9 +53,7 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
     hpf->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     hpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_RIGHT);
     hpf->setNeutralPointOnScale(0.0);
-    hpf->setDefault(kMinCorner);
-    hpf->setMinimum(kMinCorner);
-    hpf->setMaximum(kMaxCorner);
+    hpf->setRange(kMinCorner, kMinCorner, kMaxCorner);
 
     return pManifest;
 }

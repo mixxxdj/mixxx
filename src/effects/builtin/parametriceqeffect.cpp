@@ -36,9 +36,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     gain1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     gain1->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     gain1->setNeutralPointOnScale(0.5);
-    gain1->setDefault(0);
-    gain1->setMinimum(-18);
-    gain1->setMaximum(18); // dB
+    gain1->setRange(-18, 0, 18); // dB
 
     EffectManifestParameterPointer q1 = pManifest->addParameter();
     q1->setId("q1");
@@ -52,9 +50,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     q1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q1->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     q1->setNeutralPointOnScale(0.5);
-    q1->setDefault(1.75);
-    q1->setMinimum(0.5);
-    q1->setMaximum(3.0);
+    q1->setRange(0.5, 1.75, 3.0);
 
     EffectManifestParameterPointer center1 = pManifest->addParameter();
     center1->setId("center1");
@@ -66,9 +62,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     center1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     center1->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
     center1->setNeutralPointOnScale(0.5);
-    center1->setDefault(kDefaultCenter1);
-    center1->setMinimum(100);
-    center1->setMaximum(14000);
+    center1->setRange(100, kDefaultCenter1, 14000);
 
     EffectManifestParameterPointer gain2 = pManifest->addParameter();
     gain2->setId("gain2");
@@ -80,9 +74,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     gain2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     gain2->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     gain2->setNeutralPointOnScale(0.5);
-    gain2->setDefault(0);
-    gain2->setMinimum(-18);
-    gain2->setMaximum(18); // dB
+    gain2->setRange(-18, 0, 18); // dB
 
     EffectManifestParameterPointer q2 = pManifest->addParameter();
     q2->setId("q2");
@@ -96,9 +88,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     q2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q2->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     q2->setNeutralPointOnScale(0.5);
-    q2->setDefault(1.75);
-    q2->setMinimum(0.5);
-    q2->setMaximum(3.0);
+    q2->setRange(0.5, 1.75, 3.0);
 
     EffectManifestParameterPointer center2 = pManifest->addParameter();
     center2->setId("center2");
@@ -110,9 +100,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     center2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     center2->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
     center2->setNeutralPointOnScale(0.5);
-    center2->setDefault(kDefaultCenter2);
-    center2->setMinimum(100);
-    center2->setMaximum(14000);
+    center2->setRange(100, kDefaultCenter2, 14000);
 
     return pManifest;
 }

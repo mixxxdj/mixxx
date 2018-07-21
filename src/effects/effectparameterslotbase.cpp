@@ -11,6 +11,7 @@ EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
         : m_iParameterSlotNumber(iParameterSlotNumber),
           m_group(group),
           m_pEffectParameter(nullptr),
+          m_pManifestParameter(nullptr),
           m_pControlLoaded(nullptr),
           m_pControlType(nullptr),
           m_dChainParameter(0.0) {
@@ -19,35 +20,36 @@ EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
 
 EffectParameterSlotBase::~EffectParameterSlotBase() {
     m_pEffectParameter = nullptr;
+    m_pManifestParameter.clear();
     m_pEffectSlot = nullptr;
     delete m_pControlLoaded;
     delete m_pControlType;
 }
 
 QString EffectParameterSlotBase::name() const {
-    if (m_pEffectParameter) {
-        return m_pEffectParameter->name();
+    if (m_pManifestParameter) {
+        return m_pManifestParameter->name();
     }
     return QString();
 }
 
 QString EffectParameterSlotBase::shortName() const {
-    if (m_pEffectParameter) {
-        return m_pEffectParameter->shortName();
+    if (m_pManifestParameter) {
+        return m_pManifestParameter->shortName();
     }
     return QString();
 }
 
 QString EffectParameterSlotBase::description() const {
-    if (m_pEffectParameter) {
-        return m_pEffectParameter->description();
+    if (m_pManifestParameter) {
+        return m_pManifestParameter->description();
     }
     return tr("No effect loaded.");
 }
 
 EffectManifestParameterPointer EffectParameterSlotBase::getManifest() {
-    if (m_pEffectParameter) {
-        return m_pEffectParameter->manifest();
+    if (m_pManifestParameter) {
+        return m_pManifestParameter;
     }
     return EffectManifestParameterPointer();
 }

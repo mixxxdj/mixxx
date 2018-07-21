@@ -6,6 +6,8 @@
 #include <QtDebug>
 #include <QSharedPointer>
 
+#include "util/assert.h"
+
 class EffectManifestParameter;
 typedef QSharedPointer<EffectManifestParameter> EffectManifestParameterPointer;
 
@@ -202,21 +204,22 @@ class EffectManifestParameter {
     virtual const double& getDefault() const {
         return m_default;
     }
-    virtual void setDefault(const double& defaultValue) {
-        m_default = defaultValue;
-    }
 
     virtual const double& getMinimum() const {
         return m_minimum;
-    }
-    virtual void setMinimum(const double& minimum) {
-        m_minimum = minimum;
     }
 
     virtual const double& getMaximum() const {
         return m_maximum;
     }
-    virtual void setMaximum(const double& maximum) {
+
+    virtual void setRange(const double& minimum, const double& defaultValue, const double& maximum) {
+        VERIFY_OR_DEBUG_ASSERT(minimum <= defaultValue && defaultValue <= maximum) {
+            qWarning() << "Invalid Parameter Range: " << minimum << ' ' << defaultValue << ' ' << maximum;
+            return;
+        }
+        m_minimum = minimum;
+        m_default = defaultValue;
         m_maximum = maximum;
     }
 

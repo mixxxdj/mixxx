@@ -43,9 +43,7 @@ EffectManifestPointer LoudnessContourEffect::getManifest() {
     loudness->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     loudness->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     loudness->setNeutralPointOnScale(1);
-    loudness->setDefault(-kMaxLoGain / 2);
-    loudness->setMinimum(-kMaxLoGain);
-    loudness->setMaximum(0);
+    loudness->setRange(-kMaxLoGain, -kMaxLoGain / 2, 0);
 
     EffectManifestParameterPointer useGain = pManifest->addParameter();
     useGain->setId("useGain");
@@ -56,9 +54,7 @@ EffectManifestPointer LoudnessContourEffect::getManifest() {
     useGain->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
     useGain->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     useGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    useGain->setDefault(0);
-    useGain->setMinimum(0);
-    useGain->setMaximum(1);
+    useGain->setRange(0, 0, 1);
 
     return pManifest;
 }

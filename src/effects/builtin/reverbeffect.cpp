@@ -31,9 +31,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     decay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     decay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     decay->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    decay->setMinimum(0);
-    decay->setDefault(0.5);
-    decay->setMaximum(1);
+    decay->setRange(0, 0.5, 1);
 
     EffectManifestParameterPointer bandwidth = pManifest->addParameter();
     bandwidth->setId("bandwidth");
@@ -45,9 +43,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     bandwidth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     bandwidth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     bandwidth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    bandwidth->setMinimum(0);
-    bandwidth->setDefault(1);
-    bandwidth->setMaximum(1);
+    bandwidth->setRange(0, 1, 1);
 
     EffectManifestParameterPointer damping = pManifest->addParameter();
     damping->setId("damping");
@@ -58,9 +54,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     damping->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     damping->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     damping->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    damping->setMinimum(0);
-    damping->setDefault(0);
-    damping->setMaximum(1);
+    damping->setRange(0, 0, 1);
 
     EffectManifestParameterPointer send = pManifest->addParameter();
     send->setId("send_amount");
@@ -73,9 +67,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     send->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     send->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::NOT_INVERTED);
-    send->setMinimum(0);
-    send->setDefault(0);
-    send->setMaximum(1);
+    send->setRange(0, 0, 1);
 
     return pManifest;
 }
