@@ -208,7 +208,7 @@ void MprisPlayer::mixxxComponentsInitialized() {
     }
 
     m_pCPAutoDjEnabled->connectValueChanged(this, &MprisPlayer::slotChangeProperties);
-    m_pCPAutoDJIdle->connectValueChanged(this, &MprisPlayer::slotAutoDJIdle);
+    m_pCPAutoDJIdle->connectValueChanged(this, &MprisPlayer::slotChangeProperties);
 }
 
 void MprisPlayer::slotChangeProperties(double enabled) {
@@ -242,13 +242,21 @@ QVariantMap MprisPlayer::getMetadataFromTrack(TrackPointer pTrack) const {
 }
 
 void MprisPlayer::slotPlayChanged(DeckAttributes* pDeck, bool playing) {
-    Q_UNUSED(pDeck);
-    DeckAttributes* playingDeck = findPlayingDeck();
-    playing = playingDeck != nullptr;
-    m_pMpris->notifyPropertyChanged(playerInterfaceName, "PlaybackStatus", playing ? kPlaybackStatusPlaying : kPlaybackStatusPaused);
-    m_pMpris->notifyPropertyChanged(playerInterfaceName, "Metadata", getMetadataFromTrack(playing ? playingDeck->getLoadedTrack() : TrackPointer()));
-    if (playing) {
-        m_currentMetadata = playingDeck->getLoadedTrack()->getId();
+    bool otherDeckPlaying = false;
+    DeckAttributes* playingDeck = playing ? pDeck : nullptr;
+    for (int i = 0; i < m_deckAttributes.size(); ++i) {
+        if (m_deckAttributes.at(i)->group != pDeck->group &&
+                m_deckAttributes.at(i)->isPlaying()) {
+            otherDeckPlaying = true;
+            playingDeck = m_deckAttributes.at(i);
+            break;
+        }
+    }
+    m_pMpris->notifyPropertyChanged(playerInterfaceName, "PlaybackStatus", playing || otherDeckPlaying ? kPlaybackStatusPlaying : kPlaybackStatusPaused);
+    if (!playing && !otherDeckPlaying) {
+        m_pMpris->notifyPropertyChanged(playerInterfaceName, "Metadata", QVariantMap());
+    } else if (!playing || !otherDeckPlaying) {
+        m_pMpris->notifyPropertyChanged(playerInterfaceName, "Metadata", getMetadataFromTrack(playingDeck->getLoadedTrack()));
     }
 }
 
@@ -264,16 +272,6 @@ void MprisPlayer::slotPlayPositionChanged(DeckAttributes* pDeck, double position
                 pDeck->getLoadedTrack()->getDuration() *           //Duration in seconds
                 1e6);
         m_pMpris->notifyPropertyChanged(playerInterfaceName, "Position", playPosition);
-    }
-}
-
-void MprisPlayer::slotAutoDJIdle(double idle) {
-    slotChangeProperties(idle);
-    DeckAttributes* playingDeck = findPlayingDeck();
-    if (idle && playingDeck != nullptr &&
-            m_currentMetadata != playingDeck->getLoadedTrack()->getId()) {
-        //New track just faded in.
-        m_pMpris->notifyPropertyChanged(playerInterfaceName, "Metadata", getMetadataFromTrack(playingDeck->getLoadedTrack()));
     }
 }
 

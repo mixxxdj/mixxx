@@ -41,7 +41,6 @@ class MprisPlayer : public QObject {
   private slots:
     void mixxxComponentsInitialized();
     void slotChangeProperties(double enabled);
-    void slotAutoDJIdle(double idle);
     void slotPlayChanged(DeckAttributes* pDeck, bool playing);
     void slotPlayPositionChanged(DeckAttributes* pDeck, double position);
 
@@ -61,8 +60,6 @@ class MprisPlayer : public QObject {
     PlayerManager* m_pPlayerManager;
     MixxxMainWindow* m_pWindow;
     QString m_pausedDeck;
-    QString m_thisDeck;
-    TrackId m_currentMetadata;
     bool m_bComponentsInitialized, m_bPropertiesEnabled;
     Mpris* m_pMpris;
     QList<DeckAttributes*> m_deckAttributes;
