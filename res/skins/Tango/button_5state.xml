@@ -18,7 +18,6 @@ Variables:
     <ObjectName><Variable name="ObjectName"/></ObjectName>
     <Size><Variable name="Size"/></Size>
     <NumberStates>5</NumberStates>
-    <RightClickIsPushButton>true</RightClickIsPushButton>
     <State>
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
