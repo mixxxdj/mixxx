@@ -529,9 +529,6 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     EXPECT_FLOAT_EQ(getRateSliderValue(1.25),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
     EXPECT_FLOAT_EQ(150.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
-    // TODO(rryan): Re-enable with a true mock of SyncableFollower.
-    //EXPECT_FLOAT_EQ(0.9375, ControlObject::getControl(ConfigKey(m_sGroup1, "rateEngine"))->get());
-    //EXPECT_FLOAT_EQ(1.25, ControlObject::getControl(ConfigKey(m_sGroup2, "rateEngine"))->get());
 
     // Set the internal rate to 140.
     pMasterSyncSlider->set(140.0);
@@ -546,11 +543,7 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     EXPECT_FLOAT_EQ(getRateSliderValue(1.16666667),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
     EXPECT_FLOAT_EQ(140.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
-    // TODO(rryan): Re-enable with a true mock of SyncableFollower.
-    //EXPECT_FLOAT_EQ(0.5, ControlObject::getControl(ConfigKey(m_sGroup1, "rateEngine"))->get());
-    //EXPECT_FLOAT_EQ(0.6666667, ControlObject::getControl(ConfigKey(m_sGroup2, "rateEngine"))->get());
-
-}
+ }
 
 TEST_F(EngineSyncTest, MasterStopSliderCheck) {
     // If the master is playing, and stop is pushed, the sliders should stay the same.
@@ -575,8 +568,6 @@ TEST_F(EngineSyncTest, MasterStopSliderCheck) {
 
     ProcessBuffer();
 
-    // TODO(rryan): Re-enable with a true mock of SyncableFollower.
-    //EXPECT_FLOAT_EQ(0.9375, ControlObject::getControl(ConfigKey(m_sGroup2, "rateEngine"))->get());
     EXPECT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
     EXPECT_FLOAT_EQ(getRateSliderValue(0.9375),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
@@ -585,8 +576,6 @@ TEST_F(EngineSyncTest, MasterStopSliderCheck) {
 
     ProcessBuffer();
 
-    // TODO(rryan): Re-enable with a true mock of SyncableFollower.
-    //EXPECT_FLOAT_EQ(0.0, ControlObject::getControl(ConfigKey(m_sGroup2, "rateEngine"))->get());
     EXPECT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
     EXPECT_FLOAT_EQ(getRateSliderValue(0.9375),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
