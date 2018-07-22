@@ -34,7 +34,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_visualPlayPosition(NULL),
       m_playPos(-1),
       m_playPosVSample(0),
-      m_pRateControlObject(NULL),
+      m_pRateSliderCO(NULL),
       m_rate(0.0),
       m_pRateRangeControlObject(NULL),
       m_rateRange(0.0),
@@ -69,7 +69,7 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
     for (int i = 0; i < m_rendererStack.size(); ++i)
         delete m_rendererStack[i];
 
-    delete m_pRateControlObject;
+    delete m_pRateSliderCO;
     delete m_pRateRangeControlObject;
     delete m_pRateDirControlObject;
     delete m_pGainControlObject;
@@ -86,7 +86,7 @@ bool WaveformWidgetRenderer::init() {
 
     m_visualPlayPosition = VisualPlayPosition::getVisualPlayPosition(m_group);
 
-    m_pRateControlObject = new ControlProxy(
+    m_pRateSliderCO = new ControlProxy(
             m_group, "rate");
     m_pRateRangeControlObject = new ControlProxy(
             m_group, "rateRange");
@@ -113,7 +113,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     }
 
     //Fetch parameters before rendering in order the display all sub-renderers with the same values
-    m_rate = m_pRateControlObject->get();
+    m_rate = m_pRateSliderCO->get();
     m_rateDir = m_pRateDirControlObject->get();
     m_rateRange = m_pRateRangeControlObject->get();
 

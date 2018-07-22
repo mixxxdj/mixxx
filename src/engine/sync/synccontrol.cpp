@@ -29,14 +29,15 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
           m_unmultipliedTargetBeatDistance(0.0),
           m_beatDistance(0.0),
           m_prevLocalBpm(0.0),
-          m_pBpm(NULL),
-          m_pLocalBpm(NULL),
-          m_pFileBpm(NULL),
-          m_pRateSlider(NULL),
-          m_pRateDirection(NULL),
-          m_pRateRange(NULL),
-          m_pVCEnabled(NULL),
-          m_pSyncPhaseButton(NULL) {
+          m_pBpm(nullptr),
+          m_pLocalBpm(nullptr),
+          m_pFileBpm(nullptr),
+          m_pRateRatio(nullptr),
+          m_pRateSlider(nullptr),
+          m_pRateDirection(nullptr),
+          m_pRateRange(nullptr),
+          m_pVCEnabled(nullptr),
+          m_pSyncPhaseButton(nullptr) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
     m_pPlayButton = new ControlProxy(group, "play", this);
@@ -95,6 +96,8 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pFileBpm = new ControlProxy(getGroup(), "file_bpm", this);
     m_pFileBpm->connectValueChanged(SLOT(slotFileBpmChanged()),
                                     Qt::DirectConnection);
+
+    m_pRateRatio = new ControlProxy(getGroup(), "rate_ratio", this);
 
     m_pRateSlider = new ControlProxy(getGroup(), "rate", this);
     m_pRateSlider->connectValueChanged(SLOT(slotRateChanged()),
@@ -239,14 +242,8 @@ void SyncControl::setMasterBpm(double bpm) {
     }
 
     double localBpm = m_pLocalBpm->get();
-    double rateRange = m_pRateRange->get();
-    if (localBpm > 0.0 && rateRange > 0.0) {
-        double newRate = m_pRateDirection->get() *
-                ((bpm * m_masterBpmAdjustFactor / localBpm) - 1.0) /
-                rateRange;
-        m_pRateSlider->set(newRate);
-    } else {
-        m_pRateSlider->set(0);
+    if (localBpm > 0.0) {
+        m_pRateRatio->set(bpm * m_masterBpmAdjustFactor / localBpm);
     }
 }
 

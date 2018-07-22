@@ -34,6 +34,7 @@ BpmControl::BpmControl(QString group,
         m_sGroup(group) {
     m_pPlayButton = new ControlProxy(group, "play", this);
     m_pReverseButton = new ControlProxy(group, "reverse", this);
+    m_pRateRatio = new ControlProxy(group, "rate_ratio", this);
     m_pRateSlider = new ControlProxy(group, "rate", this);
     m_pRateSlider->connectValueChanged(SLOT(slotUpdateEngineBpm()),
                                        Qt::DirectConnection);
@@ -311,26 +312,10 @@ bool BpmControl::syncTempo() {
             desiredRate *= 2.0;
         }
 
-        // Subtract the base 1.0, now fDesiredRate is the percentage
-        // increase/decrease in playback rate, not the playback rate.
-        double desiredRateShift = desiredRate - 1.0;
-
-        // Ensure the rate is within reasonable boundaries. Remember, this is the
-        // percent to scale the rate, not the rate itself. If fDesiredRate was -1,
-        // that would mean the deck would be completely stopped. If fDesiredRate
-        // is 1, that means it is playing at 2x speed. This limit enforces that
-        // we are scaled between 0.5x and 2x.
-        if (desiredRateShift < 1.0 && desiredRateShift > -0.5)
+        if (desiredRate < 2.0 && desiredRate > 0.5)
         {
             m_pEngineBpm->set(m_pLocalBpm->get() * desiredRate);
-
-
-            // Adjust the rateScale. We have to divide by the range and
-            // direction to get the correct rateScale.
-            double desiredRateSlider = desiredRateShift / (m_pRateRange->get() * m_pRateDir->get());
-            // And finally, set the slider
-            m_pRateSlider->set(desiredRateSlider);
-
+            m_pRateRatio->set(desiredRate);
             return true;
         }
     }
@@ -727,15 +712,13 @@ void BpmControl::slotUpdateEngineBpm() {
 }
 
 void BpmControl::slotUpdateRateSlider() {
-    // Adjust rate slider position to reflect change in rate range.
     double localBpm = m_pLocalBpm->get();
-    double rateScale = m_pRateDir->get() * m_pRateRange->get();
-    if (localBpm == 0.0 || rateScale == 0.0) {
+    if (localBpm == 0.0) {
         return;
     }
 
-    double dRateSlider = (m_pEngineBpm->get() / localBpm - 1.0) / rateScale;
-    m_pRateSlider->set(dRateSlider);
+    double dRateRatio = m_pEngineBpm->get() / localBpm;
+    m_pRateRatio->set(dRateRatio);
 }
 
 void BpmControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {

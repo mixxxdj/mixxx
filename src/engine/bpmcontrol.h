@@ -105,6 +105,7 @@ class BpmControl : public EngineControl {
     ControlProxy* m_pPlayButton;
     QAtomicInt m_oldPlayButton;
     ControlProxy* m_pReverseButton;
+    ControlProxy* m_pRateRatio;
     ControlProxy* m_pRateSlider;
     ControlObject* m_pQuantize;
     ControlProxy* m_pRateRange;

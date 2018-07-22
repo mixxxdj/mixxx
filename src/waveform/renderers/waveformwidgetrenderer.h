@@ -132,7 +132,7 @@ class WaveformWidgetRenderer {
     QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     double m_playPos;
     int m_playPosVSample;
-    ControlProxy* m_pRateControlObject;
+    ControlProxy* m_pRateSliderCO;
     double m_rate;
     ControlProxy* m_pRateRangeControlObject;
     double m_rateRange;

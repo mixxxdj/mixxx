@@ -23,6 +23,7 @@ VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
     trackSampleRate = new ControlProxy(group, "track_samplerate", this);
     vinylSeek = new ControlProxy(group, "vinylcontrol_seek", this);
     m_pVCRate = new ControlProxy(group, "vinylcontrol_rate", this);
+    m_pRateRatio = new ControlProxy(group, "rate_ratio", this);
     m_pRateSlider = new ControlProxy(group, "rate", this);
     playButton = new ControlProxy(group, "play", this);
     duration = new ControlProxy(group, "duration", this);

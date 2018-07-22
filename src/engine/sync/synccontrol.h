@@ -129,6 +129,7 @@ class SyncControl : public EngineControl, public Syncable {
     ControlProxy* m_pBpm;
     ControlProxy* m_pLocalBpm;
     ControlProxy* m_pFileBpm;
+    ControlProxy* m_pRateRatio;
     ControlProxy* m_pRateSlider;
     ControlProxy* m_pRateDirection;
     ControlProxy* m_pRateRange;

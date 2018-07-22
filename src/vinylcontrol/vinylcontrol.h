@@ -41,6 +41,10 @@ class VinylControl : public QObject {
     ControlProxy* m_pVCRate;
     // Reflects the mean value (filtered for display) used of m_pVCRate during
     // VC and and is used to change the speed/pitch of the song without VC
+    // 1.0 = original rate
+    ControlProxy* m_pRateRatio;
+    // Reflects the mean value (filtered for display) used of m_pVCRate during
+    // VC and and is used to change the speed/pitch of the song without VC
     // 0.0 = original rate
     ControlProxy* m_pRateSlider;
     // The ControlObject used to get the duration of the current song.

@@ -673,7 +673,7 @@ void VinylControlXwax::enableConstantMode() {
     mode->slotSet((double)m_iVCMode);
     togglePlayButton(true);
     double rate = m_pVCRate->get();
-    m_pRateSlider->set(m_pRateDir->get() * (fabs(rate) - 1.0) / m_pRateRange->get());
+    m_pRateRatio->set(fabs(rate));
     m_pVCRate->set(rate);
 }
 
@@ -682,7 +682,7 @@ void VinylControlXwax::enableConstantMode(double rate) {
     m_iVCMode = MIXXX_VCMODE_CONSTANT;
     mode->slotSet((double)m_iVCMode);
     togglePlayButton(true);
-    m_pRateSlider->set(m_pRateDir->get() * (fabs(rate) - 1.0) / m_pRateRange->get());
+    m_pRateRatio->set(fabs(rate));
     m_pVCRate->set(rate);
 }
 
