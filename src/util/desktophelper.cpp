@@ -32,7 +32,8 @@ namespace {
         output = proc.readLine().simplified();
         if (output == "kfmclient_dir.desktop") {
             return "konqueror --select \"%1\"";
-        } else if (output == "Thunar.desktop") {
+        } else if (output == "Thunar.desktop" ||
+                output == "Thunar-folder-handler.desktop") {
             return kSelectInXfce; // Thunar has no --select option
         } else {
             // Known file manager with org.freedesktop.FileManager1 interface
