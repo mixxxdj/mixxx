@@ -95,6 +95,7 @@ public:
     void notifySeek(double dNewPlaypos, bool adjustingPhase) override;
 
   public slots:
+    void slotRateRatioChanged(double);
     void slotReverseRollActivate(double);
     void slotControlRatePermDown(double);
     void slotControlRatePermDownSmall(double);
@@ -130,18 +131,19 @@ public:
     static double m_dPermanentRateChangeCoarse;
     static double m_dPermanentRateChangeFine;
 
-    ControlPushButton *buttonRateTempDown;
-    ControlPushButton *buttonRateTempDownSmall;
-    ControlPushButton *buttonRateTempUp;
-    ControlPushButton *buttonRateTempUpSmall;
+    ControlPushButton* buttonRateTempDown;
+    ControlPushButton* buttonRateTempDownSmall;
+    ControlPushButton* buttonRateTempUp;
+    ControlPushButton* buttonRateTempUpSmall;
 
-    ControlPushButton *buttonRatePermDown;
-    ControlPushButton *buttonRatePermDownSmall;
-    ControlPushButton *buttonRatePermUp;
-    ControlPushButton *buttonRatePermUpSmall;
+    ControlPushButton* buttonRatePermDown;
+    ControlPushButton* buttonRatePermDownSmall;
+    ControlPushButton* buttonRatePermUp;
+    ControlPushButton* buttonRatePermUpSmall;
 
-    ControlObject *m_pRateDir;
-    ControlObject *m_pRateRange;
+    ControlObject* m_pRateRatio;
+    ControlObject* m_pRateDir;
+    ControlObject* m_pRateRange;
     ControlPotmeter* m_pRateSlider;
     ControlPotmeter* m_pRateSearch;
     ControlPushButton* m_pReverseButton;

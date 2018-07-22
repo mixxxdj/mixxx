@@ -41,6 +41,13 @@ RateControl::RateControl(QString group,
       m_dRateTempRampbackChange(0.0) {
     m_pScratchController = new PositionScratchController(group);
 
+    // This is the resulting rate ratio that can used for dispaly or calculations.
+    // The track original rate ratio is 1.
+    m_pRateRatio = new ControlObject(ConfigKey(group, "rate_ratio"));
+    connect(m_pRateRatio, SIGNAL(valueChanged(double)),
+            this, SLOT(slotRateRatioChanged(double)),
+            Qt::DirectConnection);
+
     m_pRateDir = new ControlObject(ConfigKey(group, "rate_dir"));
     m_pRateRange = new ControlPotmeter(ConfigKey(group, "rateRange"), 0.01, 0.90);
     // Allow rate slider to go out of bounds so that master sync rate
@@ -173,6 +180,7 @@ RateControl::RateControl(QString group,
 }
 
 RateControl::~RateControl() {
+    delete m_pRateRatio;
     delete m_pRateSlider;
     delete m_pRateRange;
     delete m_pRateDir;
@@ -269,6 +277,16 @@ double RateControl::getPermanentRateChangeCoarseAmount() {
 //static
 double RateControl::getPermanentRateChangeFineAmount() {
     return m_dPermanentRateChangeFine;
+}
+
+void RateControl::slotRateRatioChanged(double v) {
+    double rateRange = m_pRateRange->get();
+    if (rateRange > 0.0) {
+        double newRate = m_pRateDir->get() * (v - 1) / rateRange;
+        m_pRateSlider->set(newRate);
+    } else {
+        m_pRateSlider->set(0);
+    }
 }
 
 void RateControl::slotReverseRollActivate(double v) {
