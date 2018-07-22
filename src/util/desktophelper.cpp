@@ -80,7 +80,7 @@ namespace {
                 "org.xfce.FileManager",
                 "DisplayFolderAndSelect");
         msg << folder << filename << "" << "";
-        qDebug() << Calling: << msg;
+        qDebug() << "Calling:" << msg;
         const QDBusMessage response = QDBusConnection::sessionBus().call(msg);
         const bool success = (response.type() != QDBusMessage::MessageType::ErrorMessage);
         return success;
