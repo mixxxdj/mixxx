@@ -143,7 +143,6 @@
               <PushButton>
                 <TooltipId>beats_translate_curpos</TooltipId>
                 <NumberStates>1</NumberStates>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
                   <Pressed>buttons/btn_beat_curpos_over.svg</Pressed>

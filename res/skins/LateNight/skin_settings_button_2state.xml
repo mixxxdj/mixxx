@@ -13,7 +13,6 @@ Variables:
     <ObjectName>SkinSettingsButton</ObjectName>
     <Size>180min,17f</Size>
     <NumberStates>2</NumberStates>
-    <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
       <Number>0</Number>
       <Text>&#9744;  <Variable name="text"/></Text>
