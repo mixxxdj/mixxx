@@ -42,7 +42,8 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor
     explicit MediaPlayer2Player(PlayerManager *playerManager,
                                 QObject *parent,
                                 MixxxMainWindow *pWindow,
-                                Mpris *pMpris);
+                                Mpris *pMpris,
+                                UserSettingsPointer pSettings);
 
     QString playbackStatus() const;
     QString loopStatus() const;

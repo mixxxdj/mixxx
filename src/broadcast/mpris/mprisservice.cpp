@@ -1,8 +1,10 @@
 
 #include "broadcast/mpris/mprisservice.h"
 
-MprisService::MprisService(MixxxMainWindow *pWindow, PlayerManager *pPlayer)
-        : m_mpris(pWindow, pPlayer) {
+MprisService::MprisService(MixxxMainWindow *pWindow,
+                           PlayerManager *pPlayer,
+                           UserSettingsPointer pSettings)
+        : m_mpris(pWindow, pPlayer, pSettings) {
 
 }
 

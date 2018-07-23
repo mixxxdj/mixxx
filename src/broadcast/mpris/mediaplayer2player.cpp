@@ -8,9 +8,10 @@
 MediaPlayer2Player::MediaPlayer2Player(PlayerManager *playerManager,
                                        QObject *parent,
                                        MixxxMainWindow *pWindow,
-                                       Mpris *pMpris)
+                                       Mpris *pMpris,
+                                       UserSettingsPointer pSettings)
         :  QDBusAbstractAdaptor(parent),
-           m_mprisPlayer(playerManager, pWindow, pMpris)
+           m_mprisPlayer(playerManager, pWindow, pMpris, pSettings)
 {
 }
 
@@ -107,7 +108,6 @@ void MediaPlayer2Player::PlayPause() {
 }
 
 void MediaPlayer2Player::Stop() {
-    m_mprisPlayer.stop();
 }
 
 void MediaPlayer2Player::Play() {
