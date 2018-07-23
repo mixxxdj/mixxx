@@ -93,7 +93,6 @@ class SyncControl : public EngineControl, public Syncable {
     // should match against.
     double determineBpmMultiplier(double myBpm, double targetBpm) const;
     void updateTargetBeatDistance();
-    double calcRateRatio();
 
     QString m_sGroup;
     // The only reason we have this pointer is an optimzation so that the
@@ -130,9 +129,6 @@ class SyncControl : public EngineControl, public Syncable {
     ControlProxy* m_pLocalBpm;
     ControlProxy* m_pFileBpm;
     ControlProxy* m_pRateRatio;
-    ControlProxy* m_pRateSlider;
-    ControlProxy* m_pRateDirection;
-    ControlProxy* m_pRateRange;
     ControlProxy* m_pVCEnabled;
     ControlProxy* m_pPassthroughEnabled;
     ControlProxy* m_pEjectButton;
