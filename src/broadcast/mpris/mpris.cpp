@@ -14,9 +14,15 @@ namespace {
 const QString busName = "org.mpris.MediaPlayer2.mixxx";
 }
 
-Mpris::Mpris(MixxxMainWindow* pMixxx, PlayerManager* pPlayerManager)
+Mpris::Mpris(MixxxMainWindow* pMixxx,
+        PlayerManager* pPlayerManager,
+        UserSettingsPointer pSettings)
         : m_busConnection(QDBusConnection::connectToBus(QDBusConnection::SessionBus, busName)),
-          m_pPlayer(new MediaPlayer2Player(pPlayerManager, this, pMixxx, this)) {
+          m_pPlayer(new MediaPlayer2Player(pPlayerManager,
+                  this,
+                  pMixxx,
+                  this,
+                  pSettings)) {
     // Classes derived from QDBusAbstractAdaptor must be created
     // on the heap using the new operator and must not be deleted
     // by the user (they will be deleted automatically when the object

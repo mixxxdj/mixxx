@@ -15,7 +15,9 @@ class MprisPlayer : public QObject {
   public:
     MprisPlayer(PlayerManager* pPlayerManager,
             MixxxMainWindow* pWindow,
-            Mpris* pMpris);
+            Mpris* pMpris,
+            UserSettingsPointer pSettings);
+
     ~MprisPlayer() override;
     QString playbackStatus() const;
     QString loopStatus() const;
@@ -33,7 +35,6 @@ class MprisPlayer : public QObject {
     void pause();
     void playPause();
     void play();
-    void stop();
     void seek(qlonglong offset);
     void setPosition(const QDBusObjectPath& trackId, qlonglong position);
     void openUri(const QString& uri);
@@ -43,10 +44,12 @@ class MprisPlayer : public QObject {
     void slotChangeProperties(double enabled);
     void slotPlayChanged(DeckAttributes* pDeck, bool playing);
     void slotPlayPositionChanged(DeckAttributes* pDeck, double position);
+    void slotVolumeChanged(double volume);
 
   private:
     void broadcastPropertiesChange(bool enabled);
     QVariantMap getMetadataFromTrack(TrackPointer pTrack) const;
+    double getAverageVolume() const;
     DeckAttributes* findPlayingDeck() const;
     const QString autoDJDependentProperties[4] = {
             "CanGoNext",
@@ -57,10 +60,12 @@ class MprisPlayer : public QObject {
     ControlProxy* m_pCPAutoDjEnabled;
     ControlProxy* m_pCPFadeNow;
     ControlProxy* m_pCPAutoDJIdle;
+    QList<ControlProxy*> m_CPDeckVolumes;
     PlayerManager* m_pPlayerManager;
     MixxxMainWindow* m_pWindow;
     QString m_pausedDeck;
     bool m_bComponentsInitialized, m_bPropertiesEnabled;
     Mpris* m_pMpris;
     QList<DeckAttributes*> m_deckAttributes;
+    UserSettingsPointer m_pSettings;
 };

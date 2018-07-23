@@ -9,7 +9,8 @@ class MprisService : public ScrobblingService {
     Q_OBJECT
   public:
     explicit MprisService(MixxxMainWindow* pWindow,
-            PlayerManager* pPlayer);
+            PlayerManager* pPlayer,
+            UserSettingsPointer pSettings);
     void slotBroadcastCurrentTrack(TrackPointer pTrack) override;
     void slotScrobbleTrack(TrackPointer pTrack) override;
     void slotAllTracksPaused() override;

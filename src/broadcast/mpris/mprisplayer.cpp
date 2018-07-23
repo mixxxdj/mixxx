@@ -15,10 +15,10 @@ const QString kPlaybackStatusStopped = "Stopped";
 
 // the playback will stop when there are no more tracks to play
 const QString kLoopStatusNone = "None";
-// The current track will start again from the begining once it has finished playing
+// The current track will start again from the beginning once it has finished playing
 const QString kLoopStatusTrack = "Track";
 // The playback loops through a list of tracks
-//const QString kLoopStatusPlaylist = "Playlist";
+const QString kLoopStatusPlaylist = "Playlist";
 const QString playerInterfaceName = "org.mpris.MediaPlayer2.Player";
 } // namespace
 
@@ -27,7 +27,8 @@ const QString playerInterfaceName = "org.mpris.MediaPlayer2.Player";
 
 MprisPlayer::MprisPlayer(PlayerManager* pPlayerManager,
         MixxxMainWindow* pWindow,
-        Mpris* pMpris)
+        Mpris* pMpris,
+        UserSettingsPointer pSettings)
         : m_pCPAutoDjEnabled(nullptr),
           m_pCPFadeNow(nullptr),
           m_pCPAutoDJIdle(nullptr),
@@ -35,40 +36,44 @@ MprisPlayer::MprisPlayer(PlayerManager* pPlayerManager,
           m_pWindow(pWindow),
           m_bComponentsInitialized(false),
           m_bPropertiesEnabled(false),
-          m_pMpris(pMpris) {
+          m_pMpris(pMpris),
+          m_pSettings(pSettings) {
     connect(m_pWindow, &MixxxMainWindow::componentsInitialized, this, &MprisPlayer::mixxxComponentsInitialized);
 }
 
 QString MprisPlayer::playbackStatus() const {
-    if (!m_bComponentsInitialized)
+    if (!AUTODJENABLED)
         return kPlaybackStatusStopped;
-    for (unsigned int i = 1; i <= m_pPlayerManager->numberOfDecks(); ++i) {
-        if (!m_pPlayerManager->getDeck(i)->isTrackPaused()) {
+    for (DeckAttributes* attrib : m_deckAttributes) {
+        if (attrib->isPlaying())
             return kPlaybackStatusPlaying;
-        }
     }
     return kPlaybackStatusPaused;
 }
 
 QString MprisPlayer::loopStatus() const {
-    if (!m_bComponentsInitialized)
+    if (!AUTODJENABLED)
         return kLoopStatusNone;
-    return QString();
+    for (DeckAttributes* attrib : m_deckAttributes) {
+        if (attrib->isRepeat() && attrib->isPlaying())
+            return kLoopStatusTrack;
+    }
+    return m_pSettings->getValue(ConfigKey("[Auto DJ]", "Requeue"), false)
+            ? kLoopStatusPlaylist
+            : kLoopStatusNone;
 }
 
 void MprisPlayer::setLoopStatus(const QString& value) {
-    double repeat = 0.0;
-    if (value == kLoopStatusTrack) {
-        repeat = 1.0;
-    }
-
-    TrackPointer pTrack;
-    int deckIndex = PlayerInfo::instance().getCurrentPlayingDeck();
-    if (deckIndex >= 0) {
-        QString group = PlayerManager::groupForDeck(deckIndex);
-        ConfigKey key(group, "repeat");
-        ControlObject::set(key, repeat);
-        // TODO: Decide when how to handle playlist repeat mode
+    if (value == kLoopStatusNone || value == kLoopStatusTrack) {
+        for (DeckAttributes* attribute : m_deckAttributes) {
+            attribute->setRepeat(value == kLoopStatusTrack);
+        }
+        m_pSettings->setValue(ConfigKey("[Auto DJ]", "Requeue"), false);
+    } else {
+        for (DeckAttributes* attribute : m_deckAttributes) {
+            attribute->setRepeat(false);
+        }
+        m_pSettings->setValue(ConfigKey("[Auto DJ]", "Requeue"), true);
     }
 }
 
@@ -78,11 +83,14 @@ QVariantMap MprisPlayer::metadata() const {
 }
 
 double MprisPlayer::volume() const {
-    return 0;
+    return getAverageVolume();
 }
 
 void MprisPlayer::setVolume(double value) {
-    Q_UNUSED(value);
+    for (DeckAttributes* attrib : m_deckAttributes) {
+        ControlProxy volume(ConfigKey(attrib->group, "volume"));
+        volume.set(value);
+    }
 }
 
 qlonglong MprisPlayer::position() const {
@@ -175,9 +183,6 @@ void MprisPlayer::play() {
     }
 }
 
-void MprisPlayer::stop() {
-}
-
 void MprisPlayer::seek(qlonglong offset) {
     Q_UNUSED(offset);
 }
@@ -205,6 +210,9 @@ void MprisPlayer::mixxxComponentsInitialized() {
         m_deckAttributes.append(attributes);
         connect(attributes, &DeckAttributes::playChanged, this, &MprisPlayer::slotPlayChanged);
         connect(attributes, &DeckAttributes::playPositionChanged, this, &MprisPlayer::slotPlayPositionChanged);
+        ControlProxy* volume = new ControlProxy(ConfigKey(attributes->group, "volume"));
+        m_CPDeckVolumes.append(volume);
+        volume->connectValueChanged(this, &MprisPlayer::slotVolumeChanged);
     }
 
     m_pCPAutoDjEnabled->connectValueChanged(this, &MprisPlayer::slotChangeProperties);
@@ -282,4 +290,24 @@ DeckAttributes* MprisPlayer::findPlayingDeck() const {
         }
     }
     return nullptr;
+}
+
+void MprisPlayer::slotVolumeChanged(double volume) {
+    Q_UNUSED(volume);
+    double averageVolume = getAverageVolume();
+    m_pMpris->notifyPropertyChanged(playerInterfaceName, "Volume", averageVolume);
+}
+
+double MprisPlayer::getAverageVolume() const {
+    double averageVolume = 0.0;
+    unsigned int numberOfPlayingDecks = 0;
+    for (DeckAttributes* attrib : m_deckAttributes) {
+        if (attrib->isPlaying()) {
+            ControlProxy volume(ConfigKey(attrib->group, "volume"));
+            averageVolume += volume.get();
+            ++numberOfPlayingDecks;
+        }
+    }
+    averageVolume /= numberOfPlayingDecks;
+    return averageVolume;
 }

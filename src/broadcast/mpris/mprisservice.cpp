@@ -3,8 +3,10 @@
 
 #include "moc_mprisservice.cpp"
 
-MprisService::MprisService(MixxxMainWindow* pWindow, PlayerManager* pPlayer)
-        : m_mpris(pWindow, pPlayer) {
+MprisService::MprisService(MixxxMainWindow* pWindow,
+        PlayerManager* pPlayer,
+        UserSettingsPointer pSettings)
+        : m_mpris(pWindow, pPlayer, pSettings) {
 }
 
 void MprisService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
