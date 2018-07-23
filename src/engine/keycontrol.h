@@ -3,6 +3,7 @@
 
 #include "engine/enginecontrol.h"
 #include "control/controlvalue.h"
+#include "util/parented_ptr.h"
 
 class ControlObject;
 class ControlPotmeter;
@@ -51,9 +52,7 @@ class KeyControl : public EngineControl {
     void updateRate();
 
     // ControlObjects that come from EngineBuffer
-    ControlObject* m_pRateSlider;
-    ControlObject* m_pRateRange;
-    ControlObject* m_pRateDir;
+    parented_ptr<ControlProxy> m_pRateRatio;
 
     ControlObject* m_pVCRate;
     ControlObject* m_pVCEnabled;

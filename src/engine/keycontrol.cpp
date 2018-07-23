@@ -76,29 +76,9 @@ KeyControl::KeyControl(QString group,
     m_keyunlockMode = new ControlPushButton(ConfigKey(group, "keyunlockMode"));
     m_keyunlockMode->setButtonMode(ControlPushButton::TOGGLE);
 
-    // In case of vinyl control "rate" is a filtered mean value for display
-    m_pRateSlider = ControlObject::getControl(ConfigKey(group, "rate"));
-    connect(m_pRateSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateChanged()),
-            Qt::DirectConnection);
-    connect(m_pRateSlider, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotRateChanged()),
-            Qt::DirectConnection);
-
-    m_pRateRange = ControlObject::getControl(ConfigKey(group, "rateRange"));
-    connect(m_pRateRange, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateChanged()),
-            Qt::DirectConnection);
-    connect(m_pRateRange, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotRateChanged()),
-            Qt::DirectConnection);
-
-    m_pRateDir = ControlObject::getControl(ConfigKey(group, "rate_dir"));
-    connect(m_pRateDir, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateChanged()),
-            Qt::DirectConnection);
-    connect(m_pRateDir, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotRateChanged()),
+    // In case of vinyl control "rate_ratio" is a filtered mean value for display
+    m_pRateRatio = make_parented<ControlProxy>(ConfigKey(group, "rate_ratio"), this);
+    m_pRateRatio->connectValueChanged(SLOT(slotRateChanged()),
             Qt::DirectConnection);
 
     m_pVCEnabled = ControlObject::getControl(ConfigKey(group, "vinylcontrol_enabled"));
@@ -175,7 +155,7 @@ void KeyControl::updateRate() {
     if(m_pVCEnabled && m_pVCEnabled->toBool()) {
         m_pitchRateInfo.tempoRatio = m_pVCRate->get();
     } else {
-        m_pitchRateInfo.tempoRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+        m_pitchRateInfo.tempoRatio = m_pRateRatio->get();
     }
 
     if (m_pitchRateInfo.tempoRatio == 0) {
