@@ -993,13 +993,6 @@ add_library(
   src/broadcast/listenbrainzlistener/networkmanager.cpp
   src/broadcast/listenbrainzlistener/networkreply.cpp
   src/broadcast/listenbrainzlistener/networkrequest.cpp
-  src/broadcast/mpris/mpris.cpp
-  src/broadcast/mpris/mprisservice.cpp
-  src/broadcast/mpris/mprisplayer.cpp
-  src/broadcast/mpris/mediaplayer2.cpp
-  src/broadcast/mpris/mediaplayer2player.cpp
-  src/broadcast/mpris/mediaplayer2playlists.cpp
-  src/broadcast/mpris/mediaplayer2tracklist.cpp
   src/broadcast/metadatabroadcast.cpp
   src/broadcast/scrobblingmanager.cpp
   src/control/control.cpp
@@ -4507,6 +4500,25 @@ if(BROADCAST)
   target_compile_definitions(mixxx-lib PUBLIC __BROADCAST__)
   if(QML)
     target_compile_definitions(mixxx-qml-lib PUBLIC __BROADCAST__)
+  endif()
+endif()
+
+if(UNIX AND NOT APPLE)
+  # MPRIS implementation using QtDbus
+  option(MPRIS "MPRIS implementation using QtDbus" ON)
+  if(MPRIS)
+    target_sources(
+      mixxx-lib
+      PRIVATE
+        src/broadcast/mpris/mediaplayer2.cpp
+        src/broadcast/mpris/mediaplayer2player.cpp
+        src/broadcast/mpris/mediaplayer2playlists.cpp
+        src/broadcast/mpris/mediaplayer2tracklist.cpp
+        src/broadcast/mpris/mpris.cpp
+        src/broadcast/mpris/mprisplayer.cpp
+        src/broadcast/mpris/mprisservice.cpp
+    )
+    target_compile_definitions(mixxx-lib PUBLIC __MPRIS__)
   endif()
 endif()
 
