@@ -91,10 +91,10 @@ void MprisPlayer::setVolume(double value) {
 
 qlonglong MprisPlayer::position() const {
     if (AUTODJIDLE) {
-        for (unsigned int i = 1; i <= m_pPlayerManager->numberOfDecks(); ++i) {
+        for (unsigned int i = 0; i < m_pPlayerManager->numberOfDecks(); ++i) {
             ControlProxy playing(ConfigKey(PlayerManager::groupForDeck(i),"play"));
             if (playing.toBool()) {
-                DeckAttributes *pDeck = m_deckAttributes.at(i-1);
+                DeckAttributes *pDeck = m_deckAttributes.at(i);
                 qlonglong playPosition =
                         static_cast<qlonglong>(pDeck->playPosition() * //Fraction of duration
                                                pDeck->getLoadedTrack()->getDuration() * //Duration in seconds
@@ -182,11 +182,35 @@ void MprisPlayer::play() {
 }
 
 void MprisPlayer::seek(qlonglong offset) {
-
+    if (AUTODJIDLE) {
+        DeckAttributes *playingDeck = findPlayingDeck();
+        VERIFY_OR_DEBUG_ASSERT(playingDeck) {
+            return;
+        }
+        double durationSeconds = playingDeck->getLoadedTrack()->getDuration();
+        double newPosition = playingDeck->playPosition() + offset / (durationSeconds * 1e6);
+        playingDeck->setPlayPosition(newPosition);
+    }
 }
 
 void MprisPlayer::setPosition(const QDBusObjectPath &trackId, qlonglong position) {
-
+    if (AUTODJIDLE) {
+        DeckAttributes *playingDeck = findPlayingDeck();
+        VERIFY_OR_DEBUG_ASSERT(playingDeck) {
+            return;
+        }
+        QString path = trackId.path();
+        int lastSlashIndex = path.lastIndexOf('/');
+        VERIFY_OR_DEBUG_ASSERT(lastSlashIndex != -1) {
+            return;
+        }
+        int id = path.right(path.size()-lastSlashIndex-1).toInt();
+        if (id != playingDeck->getLoadedTrack()->getId().value()) {
+            return;
+        }
+        double newPosition = position / (playingDeck->getLoadedTrack()->getDuration() * 1e6);
+        playingDeck->setPlayPosition(newPosition);
+    }
 }
 
 void MprisPlayer::openUri(const QString &uri) {
