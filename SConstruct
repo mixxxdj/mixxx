@@ -58,6 +58,7 @@ available_features = [features.Mad,
                       features.LocaleCompare,
                       features.Lilv,
                       features.Battery,
+                      features.MPRIS,
 
                       # "Features" of dubious quality
                       features.PerfTools,

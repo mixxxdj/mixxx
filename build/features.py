@@ -1363,3 +1363,34 @@ class QtKeychain(Feature):
 
     def depends(self, build):
         return [depends.QtKeychain]
+
+class MPRIS(Feature):
+    def description(self):
+        return "MPRIS implementation using QtDbus"
+
+    def enabled(self,build):
+        build.flags['mpris'] = util.get_flags(build.env, 'mpris', 0)
+        if int(build.flags['mpris']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('mpris', 'Set to 1 to enable MPRIS implementation to broadcast current track and interact with Mixxx', 0)
+
+    def configure(self,build,conf):
+        if build.platform_is_linux and self.enabled(build):
+            build.env.Append(CPPDEFINES='__MPRIS__')
+
+    def sources(self,build):
+        if build.platform_is_linux:
+            return ["broadcast/mpris/mprisservice.cpp",
+                    "broadcast/mpris/mpris.cpp",
+                    "broadcast/mpris/mediaplayer2.cpp",
+                    "broadcast/mpris/mediaplayer2player.cpp",
+                    "broadcast/mpris/mprisplayer.cpp",
+                    "broadcast/mpris/mediaplayer2playlists.cpp",
+                    "broadcast/mpris/mediaplayer2tracklist.cpp"]
+        return []
+    def depends(self,build):
+        return [depends.QtDBus]
+

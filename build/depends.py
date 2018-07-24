@@ -698,6 +698,13 @@ class QtKeychain(Dependence):
             raise Exception(
                 "Could not find qtkeychain.")
 
+class QtDBus(Dependence):
+    def configure(self, build, conf):
+        libs = ['Qt5DBus']
+        if not conf.CheckLib(libs):
+            raise Exception('Couldn\'t find Qt5Dbus5 library.')
+
+
 class MixxxCore(Feature):
 
     def description(self):
@@ -732,13 +739,13 @@ class MixxxCore(Feature):
                    "broadcast/listenbrainzlistener/networkreply.cpp",
                    "broadcast/listenbrainzlistener/listenbrainzservice.cpp",
                    "broadcast/listenbrainzlistener/listenbrainzjsonfactory.cpp",
-                   "broadcast/mpris/mprisservice.cpp",
-                   "broadcast/mpris/mpris.cpp",
-                   "broadcast/mpris/mediaplayer2.cpp",
-                   "broadcast/mpris/mediaplayer2player.cpp",
-                   "broadcast/mpris/mprisplayer.cpp",
-                   "broadcast/mpris/mediaplayer2playlists.cpp",
-                   "broadcast/mpris/mediaplayer2tracklist.cpp",
+                   # "broadcast/mpris/mprisservice.cpp",
+                   # "broadcast/mpris/mpris.cpp",
+                   # "broadcast/mpris/mediaplayer2.cpp",
+                   # "broadcast/mpris/mediaplayer2player.cpp",
+                   # "broadcast/mpris/mprisplayer.cpp",
+                   # "broadcast/mpris/mediaplayer2playlists.cpp",
+                   # "broadcast/mpris/mediaplayer2tracklist.cpp",
 
                    "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefcontroller.cpp",

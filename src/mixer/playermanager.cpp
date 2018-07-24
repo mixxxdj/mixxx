@@ -94,7 +94,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig, SoundManager *pSoundMa
     MetadataBroadcaster *broadcaster = new MetadataBroadcaster;
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new FileListener(pConfig)));
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new ListenBrainzService(pConfig)));
-#ifdef __LINUX__
+#ifdef __MPRIS__
     broadcaster->addNewScrobblingService(ScrobblingServicePtr(new MprisService(pWindow, this, pConfig)));
 #endif
     m_scrobblingManager.setMetadataBroadcaster(broadcaster);
