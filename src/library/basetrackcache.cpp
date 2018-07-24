@@ -39,7 +39,8 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                     << "grouping"
                     << "comment"
                     << "title"
-                    << "genre";
+                    << "genre"
+                    << "crate";
 
     // Convert all the search column names to their field indexes because we use
     // them a bunch.
