@@ -7,7 +7,9 @@
 #include "analyzer/analyzerqueue.h"
 #include "broadcast/filelistener/filelistener.h"
 #include "broadcast/listenbrainzlistener/listenbrainzservice.h"
+#ifdef __MPRIS__
 #include "broadcast/mpris/mprisservice.h"
+#endif
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"

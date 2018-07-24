@@ -12,7 +12,6 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "broadcast/scrobblingmanager.h"
-#include "broadcast/mpris/mpris.h"
 
 class AnalyzerQueue;
 class Auxiliary;
