@@ -28,11 +28,11 @@ void MediaPlayer2Player::setLoopStatus(const QString& value) {
 }
 
 double MediaPlayer2Player::rate() const {
-    return 1.0;
+    return m_mprisPlayer.rate();
 }
 
 void MediaPlayer2Player::setRate(double value) {
-    Q_UNUSED(value);
+    m_mprisPlayer.setRate(value);
 }
 
 bool MediaPlayer2Player::shuffle() const {
@@ -60,7 +60,7 @@ qlonglong MediaPlayer2Player::position() const {
 }
 
 double MediaPlayer2Player::minimumRate() const {
-    return 1.0;
+    return -1.0;
 }
 
 double MediaPlayer2Player::maximumRate() const {
@@ -114,12 +114,20 @@ void MediaPlayer2Player::Play() {
 }
 
 void MediaPlayer2Player::Seek(qlonglong offset) {
-    m_mprisPlayer.seek(offset);
+    bool success;
+    qlonglong newPosition = m_mprisPlayer.seek(offset, success);
+    if (success) {
+        emit Seeked(newPosition);
+    }
 }
 
 void MediaPlayer2Player::SetPosition(const QDBusObjectPath& trackId,
         qlonglong position) {
-    m_mprisPlayer.setPosition(trackId, position);
+    bool success;
+    qlonglong newPosition = m_mprisPlayer.setPosition(trackId, position, success);
+    if (success) {
+        emit Seeked(newPosition);
+    }
 }
 
 void MediaPlayer2Player::OpenUri(const QString& uri) {

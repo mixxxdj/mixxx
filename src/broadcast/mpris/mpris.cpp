@@ -40,10 +40,9 @@ Mpris::~Mpris() {
 }
 
 void Mpris::broadcastCurrentTrack() {
-    //    notifyPropertyChanged("org.mpris.MediaPlayer2.Player",
-    //                                              "Metadata", m_pPlayer->metadata());
-    //    notifyPropertyChanged("org.mpris.MediaPlayer2.Player",
-    //                                              "PlaybackStatus",m_pPlayer->playbackStatus());
+    notifyPropertyChanged("org.mpris.MediaPlayer2.Player",
+            "Metadata",
+            m_pPlayer->metadata());
 }
 
 void Mpris::notifyPropertyChanged(const QString& interface,

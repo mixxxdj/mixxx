@@ -14,7 +14,10 @@ class MprisService : public ScrobblingService {
     void slotBroadcastCurrentTrack(TrackPointer pTrack) override;
     void slotScrobbleTrack(TrackPointer pTrack) override;
     void slotAllTracksPaused() override;
+  private slots:
+    void slotComponentsInitialized();
 
   private:
     Mpris m_mpris;
+    ControlProxy m_CPAutoDJEnabled;
 };
