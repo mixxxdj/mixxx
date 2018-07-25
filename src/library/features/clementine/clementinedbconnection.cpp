@@ -106,16 +106,13 @@ QList<struct ClementineDbConnection::PlaylistEntry> ClementineDbConnection::getP
                 continue;
 
             //Search for track in mixxx lib to provide bpm information
-            //TODO Bugfix for "%" encodings in filepaths, as it seams that these files cannot found by TrackCollection
-            QString location = QUrl::fromEncoded(query.value(2).toByteArray(), QUrl::StrictMode).toString();
-            location.remove(0,7);
+            QString location = QUrl::fromEncoded(query.value(2).toByteArray(), QUrl::StrictMode).toLocalFile();
             bool track_already_in_library = false;
             TrackPointer pTrack = dao.getOrAddTrack(location, true, &track_already_in_library);
 
             entry.artist = query.value(4).toString();
             entry.title = query.value(1).toString();
             entry.trackId = query.value(0).toInt();
-
             long long duration = query.value(3).toLongLong();
             entry.year = query.value(5).toInt();
             entry.album = query.value(6).toString();
@@ -133,7 +130,7 @@ QList<struct ClementineDbConnection::PlaylistEntry> ClementineDbConnection::getP
 
             if(entry.artist == "" && entry.title == ""){
                 entry.artist = "Unknown";
-                entry.title = entry.uri.toString().split(QDir::separator()).last();
+                entry.title = location.split(QDir::separator()).last();
             }
             if(entry.bpm == -1){
                 entry.bpm=0;
