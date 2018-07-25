@@ -119,6 +119,7 @@ void ClementineFeature::activate() {
     m_pClementinePlaylistModel->setTableModel(0); // Gets the master playlist
     emit(showTrackModel(m_pClementinePlaylistModel));
     emit(enableCoverArtDisplay(false));
+    showBreadCrumb();
 }
 
 void ClementineFeature::activateChild(const QModelIndex& index) {
