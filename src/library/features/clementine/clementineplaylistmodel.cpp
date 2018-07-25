@@ -130,7 +130,7 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
 
         if (!list.isEmpty()) {
             beginInsertRows(QModelIndex(), 0, list.size() - 1);
-			int i = 1;
+            int i = 1;
             foreach (struct ClementineDbConnection::PlaylistEntry entry, list) {
                 query.bindValue(":" CLM_VIEW_ORDER, i++);
                 query.bindValue(":" CLM_ARTIST, entry.artist);

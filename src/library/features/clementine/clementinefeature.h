@@ -20,11 +20,11 @@ class ClementinePlaylistModel;
 class ClementineFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
   public:
-	ClementineFeature(UserSettingsPointer pConfig,
-	                               Library* pLibrary,
-	                               QObject* parent,
-	                               TrackCollection* pTrackCollection);
-	virtual ~ClementineFeature();
+    ClementineFeature(UserSettingsPointer pConfig,
+                                   Library* pLibrary,
+                                   QObject* parent,
+                                   TrackCollection* pTrackCollection);
+    virtual ~ClementineFeature();
     static bool isSupported();
     static void prepareDbPath(UserSettingsPointer pConfig);
 

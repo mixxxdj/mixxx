@@ -18,7 +18,7 @@ ClementineDbConnection::~ClementineDbConnection() {
 }
 
 void ClementineDbConnection::setTrackCollection(TrackCollection* pTrackCollection) {
-	m_pTrackCollection = pTrackCollection;
+    m_pTrackCollection = pTrackCollection;
 }
 
 bool ClementineDbConnection::open(const QString& databaseFile) {
@@ -71,84 +71,84 @@ QList<struct ClementineDbConnection::PlaylistEntry> ClementineDbConnection::getP
 
     QString queryString;
 
-	queryString = QString(
-		"SELECT "
-		"ROWID, "
-		"playlist_items.title, "              // 1
-		"playlist_items.filename, "           // 2
-		"playlist_items.length, "             // 3
-		"playlist_items.artist, "             // 4
-		"playlist_items.year, "               // 5
-		"playlist_items.album, "              // 6
-		"playlist_items.rating, "             // 7
-		"playlist_items.genre, "              // 8
-		"playlist_items.track, "              // 9
-		//"playlist_items.DateAddedStamp, "   //
-		"playlist_items.bpm, "                // 10
-		"playlist_items.bitrate, "            // 11
-		"playlist_items.comment, "            // 12
-		"playlist_items.playcount, "          // 13
-		"playlist_items.composer, "           // 14
-		"playlist_items.grouping, "           // 15
-		"playlist_items.type, "           // 16
-		"playlist_items.albumartist "           // 17
-		"FROM playlist_items "
-		"WHERE playlist_items.playlist = %1")
-			.arg(playlistId);
+    queryString = QString(
+        "SELECT "
+        "ROWID, "
+        "playlist_items.title, "              // 1
+        "playlist_items.filename, "           // 2
+        "playlist_items.length, "             // 3
+        "playlist_items.artist, "             // 4
+        "playlist_items.year, "               // 5
+        "playlist_items.album, "              // 6
+        "playlist_items.rating, "             // 7
+        "playlist_items.genre, "              // 8
+        "playlist_items.track, "              // 9
+        //"playlist_items.DateAddedStamp, "   //
+        "playlist_items.bpm, "                // 10
+        "playlist_items.bitrate, "            // 11
+        "playlist_items.comment, "            // 12
+        "playlist_items.playcount, "          // 13
+        "playlist_items.composer, "           // 14
+        "playlist_items.grouping, "           // 15
+        "playlist_items.type, "           // 16
+        "playlist_items.albumartist "           // 17
+        "FROM playlist_items "
+        "WHERE playlist_items.playlist = %1")
+            .arg(playlistId);
 
 
     query.prepare(queryString);
     TrackDAO& dao = m_pTrackCollection->getTrackDAO();
     if (query.exec()) {
         while (query.next()) {
-        	QString type =  query.value(16).toString();
-        	if(type != "File")
-        		continue;
+            QString type =  query.value(16).toString();
+            if(type != "File")
+                continue;
 
-        	//Search for track in mixxx lib to provide bpm information
-        	//TODO Bugfix for "%" encodings in filepaths, as it seams that these files cannot found by TrackCollection
+            //Search for track in mixxx lib to provide bpm information
+            //TODO Bugfix for "%" encodings in filepaths, as it seams that these files cannot found by TrackCollection
             QString location = QUrl::fromEncoded(query.value(2).toByteArray(), QUrl::StrictMode).toString();
             location.remove(0,7);
             bool track_already_in_library = false;
             TrackPointer pTrack = dao.getOrAddTrack(location, true, &track_already_in_library);
 
-			entry.artist = query.value(4).toString();
-			entry.title = query.value(1).toString();
-			entry.trackId = query.value(0).toInt();
+            entry.artist = query.value(4).toString();
+            entry.title = query.value(1).toString();
+            entry.trackId = query.value(0).toInt();
 
-			long long duration = query.value(3).toLongLong();
-			entry.year = query.value(5).toInt();
-			entry.album = query.value(6).toString();
-			entry.albumartist = query.value(17).toString();
-			entry.uri = QUrl::fromEncoded(query.value(2).toByteArray(), QUrl::StrictMode);
-			entry.rating = query.value(7).toInt();
-			entry.genre = query.value(8).toString();
-			entry.grouping = query.value(15).toString();
-			entry.tracknumber = query.value(9).toInt();
-			entry.bpm = query.value(10).toInt();
-			entry.bitrate = query.value(11).toInt();
-			entry.comment = query.value(12).toString();
-			entry.playcount = query.value(13).toInt();
-			entry.composer = query.value(14).toString();
+            long long duration = query.value(3).toLongLong();
+            entry.year = query.value(5).toInt();
+            entry.album = query.value(6).toString();
+            entry.albumartist = query.value(17).toString();
+            entry.uri = QUrl::fromEncoded(query.value(2).toByteArray(), QUrl::StrictMode);
+            entry.rating = query.value(7).toInt();
+            entry.genre = query.value(8).toString();
+            entry.grouping = query.value(15).toString();
+            entry.tracknumber = query.value(9).toInt();
+            entry.bpm = query.value(10).toInt();
+            entry.bitrate = query.value(11).toInt();
+            entry.comment = query.value(12).toString();
+            entry.playcount = query.value(13).toInt();
+            entry.composer = query.value(14).toString();
 
-			if(entry.artist == "" && entry.title == ""){
-				entry.artist = "Unknown";
-				entry.title = entry.uri.toString().split(QDir::separator()).last();
-			}
-			if(entry.bpm == -1){
-				entry.bpm=0;
-			}
-			if(duration == -1){
-				entry.duration=0;
-			}
-			else{
-				entry.duration=int(duration/1000000000);
-			}
+            if(entry.artist == "" && entry.title == ""){
+                entry.artist = "Unknown";
+                entry.title = entry.uri.toString().split(QDir::separator()).last();
+            }
+            if(entry.bpm == -1){
+                entry.bpm=0;
+            }
+            if(duration == -1){
+                entry.duration=0;
+            }
+            else{
+                entry.duration=int(duration/1000000000);
+            }
 
-			//If found im mixxx lib overwrite information
+            //If found im mixxx lib overwrite information
             if(track_already_in_library){
-				entry.bpm = pTrack->getBpm();
-				entry.duration = pTrack->getDurationInt();
+                entry.bpm = pTrack->getBpm();
+                entry.duration = pTrack->getDurationInt();
             }
 
             list.append(entry);
