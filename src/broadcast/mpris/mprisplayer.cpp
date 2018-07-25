@@ -1,4 +1,6 @@
 
+#include <QtGlobal>
+
 #include "broadcast/mpris/mprisplayer.h"
 #include "mixer/deck.h"
 #include "mixer/playermanager.h"
@@ -181,36 +183,63 @@ void MprisPlayer::play() {
     }
 }
 
-void MprisPlayer::seek(qlonglong offset) {
+qlonglong MprisPlayer::seek(qlonglong offset, bool &success) {
     if (AUTODJIDLE) {
         DeckAttributes *playingDeck = findPlayingDeck();
         VERIFY_OR_DEBUG_ASSERT(playingDeck) {
-            return;
+            success = false;
+            return 0;
         }
         double durationSeconds = playingDeck->getLoadedTrack()->getDuration();
         double newPosition = playingDeck->playPosition() + offset / (durationSeconds * 1e6);
+        if (newPosition < 0.0) {
+            success = true;
+            newPosition = 0.0;
+            playingDeck->setPlayPosition(newPosition);
+            return 0;
+        }
+        if (newPosition > 1.0) {
+            success = true;
+            nextTrack();
+            return 0;
+        }
         playingDeck->setPlayPosition(newPosition);
+        success = true;
+        return static_cast<qlonglong>(durationSeconds*1e6) + offset;
     }
+    success = false;
+    return 0;
 }
 
-void MprisPlayer::setPosition(const QDBusObjectPath &trackId, qlonglong position) {
+qlonglong MprisPlayer::setPosition(const QDBusObjectPath &trackId, qlonglong position, bool &success) {
     if (AUTODJIDLE) {
         DeckAttributes *playingDeck = findPlayingDeck();
         VERIFY_OR_DEBUG_ASSERT(playingDeck) {
-            return;
+            success = false;
+            return 0;
         }
         QString path = trackId.path();
         int lastSlashIndex = path.lastIndexOf('/');
         VERIFY_OR_DEBUG_ASSERT(lastSlashIndex != -1) {
-            return;
+            success = false;
+            return 0;
         }
         int id = path.right(path.size()-lastSlashIndex-1).toInt();
         if (id != playingDeck->getLoadedTrack()->getId().value()) {
-            return;
+            success = false;
+            return 0;
         }
         double newPosition = position / (playingDeck->getLoadedTrack()->getDuration() * 1e6);
+        if (newPosition < 0.0 || newPosition > 1.0) {
+            success = false;
+            return 0;
+        }
         playingDeck->setPlayPosition(newPosition);
+        success = true;
+        return position;
     }
+    success = false;
+    return 0;
 }
 
 void MprisPlayer::openUri(const QString &uri) {
@@ -274,6 +303,8 @@ QVariantMap MprisPlayer::getMetadataFromTrack(TrackPointer pTrack) const {
 }
 
 void MprisPlayer::slotPlayChanged(DeckAttributes *pDeck, bool playing) {
+    if (!AUTODJENABLED)
+        return;
     bool otherDeckPlaying = false;
     DeckAttributes *playingDeck = playing ? pDeck : nullptr;
     for (unsigned int i = 0; i < m_deckAttributes.size(); ++i) {
@@ -340,6 +371,26 @@ double MprisPlayer::getAverageVolume() const {
     }
     averageVolume /= numberOfPlayingDecks;
     return averageVolume;
+}
+
+double MprisPlayer::rate() const {
+    DeckAttributes *playingDeck = findPlayingDeck();
+    if (playingDeck != nullptr) {
+        ControlProxy rate(ConfigKey(
+                PlayerManager::groupForDeck(playingDeck->index-1),"rate"));
+        return rate.get();
+    }
+    return 0;
+}
+
+void MprisPlayer::setRate(double value) {
+    DeckAttributes *playingDeck = findPlayingDeck();
+    if (playingDeck != nullptr) {
+        ControlProxy rate(ConfigKey(
+                PlayerManager::groupForDeck(playingDeck->index-1),"rate"));
+        double clampedValue = qBound(-1.0,value,1.0);
+        rate.set(clampedValue);
+    }
 }
 
 

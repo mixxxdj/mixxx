@@ -5,12 +5,14 @@ MprisService::MprisService(MixxxMainWindow *pWindow,
                            PlayerManager *pPlayer,
                            UserSettingsPointer pSettings)
         : m_mpris(pWindow, pPlayer, pSettings) {
-
+    connect(pWindow,&MixxxMainWindow::componentsInitialized,
+            this,&MprisService::slotComponentsInitialized);
 }
 
 void MprisService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
-    Q_UNUSED(pTrack);
-    m_mpris.broadcastCurrentTrack();
+    if (!m_CPAutoDJEnabled.toBool()) {
+        m_mpris.broadcastCurrentTrack();
+    }
 }
 
 void MprisService::slotScrobbleTrack(TrackPointer pTrack) {
@@ -18,6 +20,10 @@ void MprisService::slotScrobbleTrack(TrackPointer pTrack) {
 }
 
 void MprisService::slotAllTracksPaused() {
+}
+
+void MprisService::slotComponentsInitialized() {
+    m_CPAutoDJEnabled.initialize(ConfigKey("[AutoDJ]","enabled"));
 }
 
 
