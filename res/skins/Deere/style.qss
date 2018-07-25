@@ -1029,7 +1029,7 @@ WEffectSelector {
   }
 
   WEffectSelector::item:selected {
-    background-color: #08080;
+    background-color: #080808;
   }
 
   /* currently loaded effect */
