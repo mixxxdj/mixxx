@@ -5,7 +5,6 @@ from . import util
 from .mixxx import Dependence, Feature
 import SCons.Script as SCons
 
-
 class PortAudio(Dependence):
 
     def configure(self, build, conf):
@@ -1017,6 +1016,10 @@ class MixxxCore(Feature):
                    "library/features/banshee/bansheedbconnection.cpp",
                    "library/features/banshee/bansheefeature.cpp",
                    "library/features/banshee/bansheeplaylistmodel.cpp",
+
+                   "library/features/clementine/clementinedbconnection.cpp", 
+                   "library/features/clementine/clementinefeature.cpp", 
+                   "library/features/clementine/clementineplaylistmodel.cpp", 
                    
                    "library/features/baseplaylist/baseplaylistfeature.cpp",
 

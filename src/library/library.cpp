@@ -15,6 +15,7 @@
 #include "library/features/analysis/analysisfeature.h"
 #include "library/features/autodj/autodjfeature.h"
 #include "library/features/banshee/bansheefeature.h"
+#include "library/features/clementine/clementinefeature.h"
 #include "library/features/browse/browsefeature.h"
 #include "library/features/crates/cratefeature.h"
 #include "library/features/history/historyfeature.h"
@@ -796,6 +797,12 @@ void Library::createFeatures(
         BansheeFeature::prepareDbPath(pConfig);
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(pConfig, this, this, m_pTrackCollection));
+        }
+    }
+    if (pConfig->getValue(ConfigKey(kConfigGroup,"ShowClementineLibrary"), true)) {
+        ClementineFeature::prepareDbPath(pConfig);
+        if (ClementineFeature::isSupported()) {
+            addFeature(new ClementineFeature(pConfig, this, this, m_pTrackCollection));
         }
     }
     if (ITunesFeature::isSupported() &&
