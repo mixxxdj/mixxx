@@ -267,11 +267,7 @@ bool BpmControl::syncTempo() {
     // The goal is for this deck's effective BPM to equal the other decks.
     //
     // thisBpm = otherBpm
-    //
-    // The overall rate is the product of range, direction, and scale plus 1:
-    //
-    // rate = 1.0 + rateDir * rateRange * rateScale
-    //
+    ///
     // An effective BPM is the file-bpm times the rate:
     //
     // bpm = fileBpm * rate

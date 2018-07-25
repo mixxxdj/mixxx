@@ -423,7 +423,6 @@ void SyncControl::slotFileBpmChanged() {
 }
 
 void SyncControl::slotRateChanged() {
-    // This slot is fired by rate, rate_dir, and rateRange changes.
     double bpm = m_pLocalBpm ? m_pLocalBpm->get() * m_pRateRatio->get() : 0.0;
     //qDebug() << getGroup() << "SyncControl::slotRateChanged" << rate << bpm;
     if (bpm > 0) {
