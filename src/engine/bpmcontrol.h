@@ -97,7 +97,6 @@ class BpmControl : public EngineControl {
     }
     bool syncTempo();
     double calcSyncAdjustment(double my_percentage, bool userTweakingSync);
-    double calcRateRatio() const;
 
     friend class SyncControl;
 
@@ -106,10 +105,7 @@ class BpmControl : public EngineControl {
     QAtomicInt m_oldPlayButton;
     ControlProxy* m_pReverseButton;
     ControlProxy* m_pRateRatio;
-    ControlProxy* m_pRateSlider;
     ControlObject* m_pQuantize;
-    ControlProxy* m_pRateRange;
-    ControlProxy* m_pRateDir;
 
     // ControlObjects that come from QuantizeControl
     QScopedPointer<ControlProxy> m_pNextBeat;

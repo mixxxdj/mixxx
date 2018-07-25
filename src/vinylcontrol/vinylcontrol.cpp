@@ -24,7 +24,6 @@ VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
     vinylSeek = new ControlProxy(group, "vinylcontrol_seek", this);
     m_pVCRate = new ControlProxy(group, "vinylcontrol_rate", this);
     m_pRateRatio = new ControlProxy(group, "rate_ratio", this);
-    m_pRateSlider = new ControlProxy(group, "rate", this);
     playButton = new ControlProxy(group, "play", this);
     duration = new ControlProxy(group, "duration", this);
     mode = new ControlProxy(group, "vinylcontrol_mode", this);
@@ -33,9 +32,7 @@ VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
             group, "vinylcontrol_wantenabled", this);
     cueing = new ControlProxy(group, "vinylcontrol_cueing", this);
     scratching = new ControlProxy(group, "vinylcontrol_scratching", this);
-    m_pRateRange = new ControlProxy(group, "rateRange", this);
     vinylStatus = new ControlProxy(group, "vinylcontrol_status", this);
-    m_pRateDir = new ControlProxy(group, "rate_dir", this);
     loopEnabled = new ControlProxy(group, "loop_enabled", this);
     signalenabled = new ControlProxy(
             group, "vinylcontrol_signal_enabled", this);
