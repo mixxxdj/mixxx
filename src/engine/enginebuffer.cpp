@@ -1171,8 +1171,15 @@ void EngineBuffer::processSeek(bool paused) {
             position = m_filepos_play;
             adjustingPhase = true;
             break;
+        case SEEK_STANDARD:
+            if (m_pQuantize->toBool()) {
+                seekType |= SEEK_PHASE;
+            }
+            // new position was already set above
+            break;
         case SEEK_EXACT:
-        case SEEK_STANDARD: // = SEEK_EXACT | SEEK_PHASE
+        case SEEK_EXACT_PHASE: // artificial state = SEEK_EXACT | SEEK_PHASE
+        case SEEK_STANDARD_PHASE: // artificial state = SEEK_STANDARD | SEEK_PHASE
             // new position was already set above
             break;
         default:
@@ -1180,7 +1187,7 @@ void EngineBuffer::processSeek(bool paused) {
             return;
     }
 
-    if (!paused && ((seekType & SEEK_PHASE) || m_pQuantize->toBool())) {
+    if (!paused && (seekType & SEEK_PHASE)) {
         position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
     }
     if (position != m_filepos_play) {
