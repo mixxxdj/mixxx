@@ -43,7 +43,8 @@ RateControl::RateControl(QString group,
 
     // This is the resulting rate ratio that can used for dispaly or calculations.
     // The track original rate ratio is 1.
-    m_pRateRatio = new ControlObject(ConfigKey(group, "rate_ratio"));
+    m_pRateRatio = new ControlObject(ConfigKey(group, "rate_ratio"),
+                  true, false, false, 1.0);
     connect(m_pRateRatio, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateRatioChanged(double)),
             Qt::DirectConnection);

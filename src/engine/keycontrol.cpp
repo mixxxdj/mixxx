@@ -202,11 +202,11 @@ void KeyControl::updateRate() {
                 // don't reset to linear pitch, instead adopt speedSliderPitchRatio
                 // change as pitchTweakRatio
                 m_pitchRateInfo.pitchTweakRatio *=
-                 (speedSliderPitchRatio / m_pitchRateInfo.tempoRatio);
+                        (speedSliderPitchRatio / m_pitchRateInfo.tempoRatio);
                 // adopt pitch_adjust now so that it doesn't jump and resets key
                 // when touching pitch_adjust knob after unlock with offset key
                 m_pPitchAdjust->set(
-                    KeyUtils::powerOf2ToSemitoneChange(m_pitchRateInfo.pitchTweakRatio));
+                        KeyUtils::powerOf2ToSemitoneChange(m_pitchRateInfo.pitchTweakRatio));
             } else {
                 // If 'current' aka 'not original' key was locked
                 if (m_keylockMode->get() == kLockCurrentKey) {
