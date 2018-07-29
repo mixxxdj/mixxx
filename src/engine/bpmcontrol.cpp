@@ -76,6 +76,7 @@ BpmControl::BpmControl(QString group,
     // bpm_up / bpm_down steps by 1
     // bpm_up_small / bpm_down_small steps by 0.1
     m_pEngineBpm = new ControlLinPotmeter(ConfigKey(group, "bpm"), 1, 200, 1, 0.1, true);
+    m_pEngineBpm->set(0.0);
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotUpdateRateSlider()),
             Qt::DirectConnection);
