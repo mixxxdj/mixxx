@@ -28,6 +28,10 @@ RateControl::RampMode RateControl::m_eRateRampMode;
 const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
 
+namespace {
+const double kRateUltraRange = 0.5; // +-50 %
+} // anonymous namespace
+
 RateControl::RateControl(QString group,
                          UserSettingsPointer pConfig)
     : EngineControl(group, pConfig),
@@ -61,6 +65,14 @@ RateControl::RateControl(QString group,
             ConfigKey(group, "rate"), -1.0, 1.0, true);
     connect(m_pRateSlider, &ControlObject::valueChanged,
             this, &RateControl::slotRateSliderChanged,
+            Qt::DirectConnection);
+
+    // Allow rate utra slider to go out of bounds so that master sync rate
+    // adjustments are not capped.
+    m_pRateUltraSlider = new ControlPotmeter(
+            ConfigKey(group, "rate_ultra"), -1.0, 1.0, true);
+    connect(m_pRateUltraSlider, SIGNAL(valueChanged(double)),
+            this, SLOT(slotRateSliderChanged(double)),
             Qt::DirectConnection);
 
     // Search rate. Rate used when searching in sound. This overrules the
@@ -175,6 +187,7 @@ RateControl::RateControl(QString group,
 RateControl::~RateControl() {
     delete m_pRateRatio;
     delete m_pRateSlider;
+    delete m_pRateUltraSlider;
     delete m_pRateRange;
     delete m_pRateDir;
     delete m_pSyncMode;
@@ -283,13 +296,21 @@ void RateControl::slotRateSliderChanged(double v) {
 }
 
 void RateControl::slotRateRatioChanged(double v) {
+    /* Classic mode without rate_ultra
     double rateRange = m_pRateRange->get();
     if (rateRange > 0.0) {
         double newRate = m_pRateDir->get() * (v - 1) / rateRange;
         m_pRateSlider->set(newRate);
+        m_pRateUltraSlider->set(0.0);
     } else {
         m_pRateSlider->set(0);
+        m_pRateUltraSlider->set(0.0);
     }
+    */
+
+    double newRateUltra = m_pRateDir->get() * (v - 1) / kRateUltraRange;
+    m_pRateSlider->set(0.0);
+    m_pRateUltraSlider->set(newRateUltra);
 }
 
 void RateControl::slotReverseRollActivate(double v) {

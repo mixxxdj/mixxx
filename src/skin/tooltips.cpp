@@ -500,6 +500,11 @@ void Tooltips::addStandardTooltips() {
             << tr("Changes the track playback speed (affects both the tempo and the pitch). If keylock is enabled, only the tempo is affected.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
+    add("rate_ultra")
+            << tr("Ultra Speed Control")
+            << tr("Changes the track playback speed with a wide range (affects both the tempo and the pitch). If keylock is enabled, only the tempo is affected.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
     add("pitch")
             << tr("Pitch Control")
             << tr("Changes the track pitch independent of the tempo.")

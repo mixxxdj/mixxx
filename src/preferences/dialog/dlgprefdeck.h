@@ -108,7 +108,6 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     ControlProxy* m_pNumDecks;
     ControlProxy* m_pNumSamplers;
     QList<ControlProxy*> m_cueControls;
-    QList<ControlProxy*> m_rateControls;
     QList<ControlProxy*> m_rateDirectionControls;
     QList<ControlProxy*> m_rateRangeControls;
     QList<ControlProxy*> m_keylockModeControls;

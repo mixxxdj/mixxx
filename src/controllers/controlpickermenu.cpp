@@ -126,6 +126,8 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                              tr("Toggle keylock mode"), speedMenu);
     addDeckAndSamplerControl("rate", tr("Playback Speed"),
                              tr("Playback speed control (Vinyl \"Pitch\" slider)"), speedMenu, true);
+    addDeckAndSamplerControl("rate_ultra", tr("Wide Range Playback Speed"),
+                             tr("Playback speed control with a wide range (Vinyl \"Ultra-Pitch\" slider)"), speedMenu, true);
     addDeckAndSamplerControl("pitch", tr("Pitch (Musical key)"),
                              tr("Pitch control (does not affect tempo), center is original pitch"), speedMenu, true);
     addDeckAndSamplerControl("pitch_adjust", tr("Pitch Adjust"),
