@@ -751,16 +751,29 @@ MixtrackPlatinum.scratch_accumulator[1] = 0;
 MixtrackPlatinum.scratch_accumulator[2] = 0;
 MixtrackPlatinum.scratch_accumulator[3] = 0;
 MixtrackPlatinum.scratch_accumulator[4] = 0;
+MixtrackPlatinum.last_scratch_tick = [];
 MixtrackPlatinum.wheelTurn = function (channel, control, value, status, group) {
     var deck = channel + 1;
     var direction;
     var newValue;
     if (value < 64) {
-        newValue = value;
         direction = true;
     } else {
-        newValue = value - 128;
         direction = false;
+    }
+
+    // if the platter is spun fast enough, value will wrap past the 64 midpoint
+    // but the platter will be spinning in the opposite direction we expect it
+    // to be
+    var delta = Math.abs(MixtrackPlatinum.last_scratch_tick[deck] - value);
+    if (MixtrackPlatinum.scratch_direction[deck] !== null && MixtrackPlatinum.scratch_direction[deck] != direction && delta < 64) {
+        direction = !direction;
+    }
+
+    if (direction) {
+        newValue = value;
+    } else {
+        newValue = value - 128;
     }
 
     // detect searching the track
@@ -785,6 +798,7 @@ MixtrackPlatinum.wheelTurn = function (channel, control, value, status, group) {
         MixtrackPlatinum.scratch_accumulator[deck] = 0;
     }
 
+    MixtrackPlatinum.last_scratch_tick[deck] = value;
     MixtrackPlatinum.scratch_direction[deck] = direction;
     MixtrackPlatinum.scratch_accumulator[deck] += Math.abs(newValue);
 
