@@ -40,7 +40,7 @@
 	https://qt-project.org/doc/qt-4.8/stylesheet.html
 
 	Debugging:
-	To outline WidgetGroups change all occurrences (exept this one ;-) of
+	To outline WidgetGroups change all occurrences (except this one ;-) of
 	"QGroupBox { border: 0px solid" to "QGroupBox { border: 1px solid"
 
 	Parent WidgedGroups are outlined one pixel solid red;
@@ -253,7 +253,7 @@
 					<Children>
 		                <WidgetGroup>
 			                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-							<Layout>vertical</Layout>			                
+							<Layout>vertical</Layout>
 							<Children>
 	      						<Template src="skin:deck.xml">
 								    <SetVariable name="channum">1</SetVariable>
@@ -389,13 +389,13 @@
 				    <WidgetGroup>
 				      <SizePolicy>me,min</SizePolicy>
 				      <Layout>horizontal</Layout>
-				      <Style>QGroupBox { border: 0px solid yellow; margin: 1px 0px 6px 0px;} </Style>
+				      <Style>QGroupBox { border: 0px solid yellow; margin: 0px;}</Style>
 				      <Children>
-						<WidgetGroup>
-							<ObjectName>EffectLeftBorder</ObjectName>
-							<Size>3f,44f</Size>
-							<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-						</WidgetGroup>
+					<WidgetGroup>
+					  <ObjectName>EffectLeftBorder</ObjectName>
+					  <Size>3f,43f</Size>
+					  <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
+					</WidgetGroup>
 				        <Template src="skin:looping.xml">
 				          <SetVariable name="channum">1</SetVariable>
 				        </Template>
@@ -416,9 +416,9 @@
 				      <Not/>
 				    </Transform>
 				  </Connection>
-				</WidgetGroup>	
-			    <Template src="skin:effectrow.xml"/>	
-				<Template src="skin:srcrow.xml"/>	
+				</WidgetGroup>
+			    <Template src="skin:effectrow.xml"/>
+				<Template src="skin:srcrow.xml"/>
 			    <Template src="skin:samplerrow.xml">
 					<SetVariable name="rownum">1</SetVariable>
 					<SetVariable name="samplernum1">1</SetVariable>
@@ -433,7 +433,7 @@
 					<SetVariable name="samplernum2">4</SetVariable>
 	                <SetVariable name="samplernum3">7</SetVariable>
 	                <SetVariable name="samplernum4">8</SetVariable>
-				</Template>	
+				</Template>
 				<!--
 				**********************************************
 				Library / Preview Deck / Search / Tree view
