@@ -789,8 +789,7 @@ WBeatSpinBox,
   text-transform: uppercase;
   border-right: 1px solid #585858;
   text-align: center;
-  padding-top: 2px;
-  padding-bottom: 2px;
+  padding: 2px 3px;
 }
 
 #PreviewTitle {

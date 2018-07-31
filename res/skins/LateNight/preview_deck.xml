@@ -26,7 +26,7 @@
                   <Label>
                     <ObjectName>PreviewLabel</ObjectName>
                     <TooltipId>text</TooltipId>
-                    <Size>68f,15min</Size>
+                    <SizePolicy>min,min</SizePolicy>
                     <Text>Preview</Text>
                     <Connection>
                       <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
