@@ -49,6 +49,9 @@ void TrackTimingInfo::setTimer(TrackTimers::RegularTimer* timer) {
 }
 
 void TrackTimingInfo::slotCheckIfScrobbable() {
+    if (m_isTrackScrobbable) {
+        return;
+    }
     qint64 msInTimer = 0;
     if (m_pElapsedTimer->isValid()) {
         msInTimer = m_pElapsedTimer->elapsed();

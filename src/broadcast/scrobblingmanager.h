@@ -1,8 +1,11 @@
+#include <memory>
+
 #pragma once
 
+#include <QHash>
 #include <QLinkedList>
-#include <QMutex>
 #include <QObject>
+#include <QSet>
 #include <QString>
 #include <functional>
 
@@ -19,15 +22,13 @@ class PlayerManagerInterface;
 class TrackAudibleStrategy {
   public:
     virtual ~TrackAudibleStrategy() = default;
-    virtual bool isTrackAudible(TrackPointer pTrack,
-            BaseTrackPlayer* pPlayer) const = 0;
+    virtual bool isPlayerAudible(BaseTrackPlayer* pPlayer) const = 0;
 };
 
 class TotalVolumeThreshold : public TrackAudibleStrategy {
   public:
     TotalVolumeThreshold(QObject* parent, double threshold);
-    bool isTrackAudible(TrackPointer pTrack,
-            BaseTrackPlayer* pPlayer) const override;
+    bool isPlayerAudible(BaseTrackPlayer* pPlayer) const override;
     void setVolumeThreshold(double volume);
 
   private:
@@ -41,6 +42,8 @@ class TotalVolumeThreshold : public TrackAudibleStrategy {
 
     double m_volumeThreshold;
 };
+
+typedef std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> TrackTimingFactory;
 
 class ScrobblingManager : public QObject {
     Q_OBJECT
@@ -56,53 +59,43 @@ class ScrobblingManager : public QObject {
   public slots:
     void slotTrackPaused(TrackPointer pPausedTrack);
     void slotTrackResumed(TrackPointer pResumedTrack, const QString& playerGroup);
-    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack, const QString& playerGroup);
     void slotNewTrackLoaded(TrackPointer pNewTrack, const QString& playerGroup);
-    void slotPlayerEmpty();
 
   private:
     struct TrackInfo {
-        TrackWeakPointer m_pTrack;
         std::shared_ptr<TrackTimingInfo> m_trackInfo;
-        QLinkedList<QString> m_players;
-        explicit TrackInfo(TrackPointer pTrack)
-                : m_pTrack(pTrack), m_trackInfo(new TrackTimingInfo(pTrack)) {
+        QSet<QString> m_players;
+        void init(const TrackTimingFactory& factory,
+                const TrackPointer& pTrack) {
+            if (factory) {
+                m_trackInfo = factory(pTrack);
+            } else {
+                m_trackInfo = std::make_shared<TrackTimingInfo>(pTrack);
+            }
         }
     };
-    struct TrackToBeReset {
-        TrackWeakPointer m_pTrack;
-        QString m_playerGroup;
-        TrackToBeReset(TrackPointer pTrack, const QString& playerGroup)
-                : m_pTrack(pTrack),
-                  m_playerGroup(playerGroup) {
-        }
-    };
+
+#ifdef MIXXX_BUILD_DEBUG
+    friend QDebug operator<<(QDebug debug, const ScrobblingManager::TrackInfo& info);
+#endif
+
+    QHash<TrackId, TrackInfo> m_trackInfoHashDict;
 
     PlayerManagerInterface* m_pManager;
 
     std::unique_ptr<MetadataBroadcasterInterface> m_pBroadcaster;
 
-    std::list<std::unique_ptr<TrackInfo>> m_trackList;
-    QLinkedList<TrackToBeReset> m_tracksToBeReset;
 
     std::unique_ptr<TrackAudibleStrategy> m_pAudibleStrategy;
 
     std::unique_ptr<TrackTimers::RegularTimer> m_pTimer;
 
-    std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> m_trackInfoFactory;
+    TrackTimingFactory m_trackInfoFactory;
 
     bool m_scrobbledAtLeastOnce;
 
     ControlProxy m_GuiTickObject;
 
-    void resetTracks();
-    bool isStrayFromEngine(TrackPointer pTrack, const QString& group) const;
-    bool playerNotInTrackList(const QLinkedList<QString>& list, const QString& group) const;
-    void deletePlayerFromList(const QString& player, QLinkedList<QString>& list);
-
-    typedef std::list<std::unique_ptr<TrackInfo>>::iterator trackInfoPointerListIterator;
-
-    void deleteTrackInfoAndNotify(trackInfoPointerListIterator& it);
   private slots:
     void slotReadyToBeScrobbled(TrackPointer pTrack);
     void slotCheckAudibleTracks();

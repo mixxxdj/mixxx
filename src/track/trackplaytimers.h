@@ -22,7 +22,7 @@ class RegularTimer : public QObject {
   public:
     RegularTimer() = default;
     virtual ~RegularTimer() = default;
-    virtual void start(int msec) = 0;
+    virtual void start(double msec) = 0;
     virtual bool isActive() const = 0;
   public slots:
     virtual void stop() = 0;
@@ -35,7 +35,7 @@ class GUITickTimer : public RegularTimer {
   public:
     GUITickTimer();
     ~GUITickTimer() override = default;
-    void start(int msec) override;
+    void start(double msec) override;
     bool isActive() const override;
     void stop() override;
 

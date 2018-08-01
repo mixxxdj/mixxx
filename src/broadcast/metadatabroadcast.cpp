@@ -8,29 +8,23 @@ MetadataBroadcaster::MetadataBroadcaster()
 }
 
 void MetadataBroadcaster::slotAttemptScrobble(TrackPointer pTrack) {
-    for (auto it = m_trackedTracks.begin();
-            it != m_trackedTracks.end();
-            ++it) {
-        if (*it == GracePeriod(0, pTrack)) {
-            GracePeriod& trackPeriod = *it;
-            if ((trackPeriod.hasBeenEjected &&
-                        (trackPeriod.m_msElapsed > m_gracePeriodSeconds * 1000.0)) ||
-                    trackPeriod.firstTimeLoaded) {
-                for (auto& service : m_scrobblingServices) {
-                    service->slotScrobbleTrack(pTrack);
-                }
-                trackPeriod.hasBeenEjected = false;
-                trackPeriod.firstTimeLoaded = false;
-                trackPeriod.m_numberOfScrobbles++;
+    if (m_trackedTracks.contains(pTrack->getId())) {
+        GracePeriod trackPeriod = m_trackedTracks.value(pTrack->getId());
+        if ((trackPeriod.m_hasBeenEjected &&
+                    trackPeriod.m_msSinceEjection >
+                            m_gracePeriodSeconds * 1000.0) ||
+                trackPeriod.m_firstTimeLoaded) {
+            for (auto& service : m_scrobblingServices) {
+                service->slotScrobbleTrack(pTrack);
             }
-            break;
+            trackPeriod.m_hasBeenEjected = false;
+            trackPeriod.m_firstTimeLoaded = false;
+            trackPeriod.m_timesTrackHasBeenScrobbled++;
         }
     }
 }
 
 void MetadataBroadcaster::slotNowListening(TrackPointer pTrack) {
-    if (!pTrack)
-        return;
     for (const auto& service : m_scrobblingServices) {
         service->slotBroadcastCurrentTrack(pTrack);
     }
@@ -42,10 +36,6 @@ void MetadataBroadcaster::slotAllTracksPaused() {
     }
 }
 
-const QList<TrackId> MetadataBroadcaster::getTrackedTracks() {
-    return {};
-}
-
 MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService(const ScrobblingServicePtr& newService) {
     m_scrobblingServices.push_back(newService);
     return *this;
@@ -54,34 +44,25 @@ MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService(const
 void MetadataBroadcaster::newTrackLoaded(TrackPointer pTrack) {
     if (!pTrack)
         return;
-    QListIterator<GracePeriod> it(m_trackedTracks);
-    if (!it.findNext(GracePeriod(0, pTrack))) {
-        GracePeriod newPeriod(0, pTrack);
-        m_trackedTracks.append(newPeriod);
+    if (!m_trackedTracks.contains(pTrack->getId())) {
+        m_trackedTracks.insert(pTrack->getId(), GracePeriod());
     }
 }
 
 void MetadataBroadcaster::trackUnloaded(TrackPointer pTrack) {
     if (!pTrack)
         return;
-    for (auto it = m_trackedTracks.begin();
-            it != m_trackedTracks.end();
-            ++it) {
-        if (*it == GracePeriod(0, pTrack)) {
-            it->firstTimeLoaded = false;
-            it->hasBeenEjected = true;
-            it->m_msElapsed = 0;
-            break;
-        }
+    if (m_trackedTracks.contains(pTrack->getId())) {
+        m_trackedTracks[pTrack->getId()].m_firstTimeLoaded = false;
+        m_trackedTracks[pTrack->getId()].m_hasBeenEjected = true;
+        m_trackedTracks[pTrack->getId()].m_msSinceEjection = 0.0;
     }
 }
 
 void MetadataBroadcaster::guiTick(double timeSinceLastTick) {
-    for (auto it = m_trackedTracks.begin();
-            it != m_trackedTracks.end();
-            ++it) {
-        if (it->hasBeenEjected) {
-            it->m_msElapsed += timeSinceLastTick;
+    for (auto it : m_trackedTracks) {
+        if (it.m_hasBeenEjected) {
+            it.m_msSinceEjection += timeSinceLastTick;
         }
     }
 }

@@ -9,8 +9,8 @@ TrackTimers::GUITickTimer::GUITickTimer()
           m_timeoutSent(false) {
 }
 
-void TrackTimers::GUITickTimer::start(int msec) {
-    m_msTarget = static_cast<double>(msec);
+void TrackTimers::GUITickTimer::start(double msec) {
+    m_msTarget = msec;
     m_msSoFar = 0.0;
     m_isActive = true;
     m_timeoutSent = false;

@@ -39,7 +39,7 @@ class ElapsedTimerMock : public TrackTimers::ElapsedTimer {
 class AudibleStrategyMock : public TrackAudibleStrategy {
   public:
     ~AudibleStrategyMock() override = default;
-    MOCK_CONST_METHOD2(isTrackAudible, bool(TrackPointer, BaseTrackPlayer*));
+    MOCK_CONST_METHOD1(isPlayerAudible, bool(BaseTrackPlayer*));
 };
 
 PlayerMock::PlayerMock(QObject* pParent, const QString& group)
@@ -117,7 +117,7 @@ TEST_F(ScrobblingTest, SingleTrackAudible) {
         return trackInfo;
     };
     scrobblingManager.setTrackInfoFactory(factory);
-    EXPECT_CALL(*strategyMock, isTrackAudible(_, _))
+    EXPECT_CALL(*strategyMock, isPlayerAudible(_))
             .WillOnce(testing::Return(true));
     EXPECT_CALL(*broadcastMock, slotAttemptScrobble(_));
     dummyPlayerLeft.emitTrackLoaded(dummyTrackLeft);
@@ -136,7 +136,7 @@ TEST_F(ScrobblingTest, SingleTrackInaudible) {
         return trackInfo;
     };
     scrobblingManager.setTrackInfoFactory(factory);
-    EXPECT_CALL(*strategyMock, isTrackAudible(_, _))
+    EXPECT_CALL(*strategyMock, isPlayerAudible(_))
             .WillOnce(testing::Return(false));
     dummyPlayerLeft.emitTrackLoaded(dummyTrackLeft);
     dummyPlayerLeft.emitTrackResumed(dummyTrackLeft);
@@ -175,9 +175,9 @@ TEST_F(ScrobblingTest, TwoTracksUnbalanced) {
         }
     };
     scrobblingManager.setTrackInfoFactory(factory);
-    EXPECT_CALL(*strategyMock, isTrackAudible(dummyTrackLeft, _))
+    EXPECT_CALL(*strategyMock, isPlayerAudible(&dummyPlayerLeft))
             .WillOnce(testing::Return(false));
-    EXPECT_CALL(*strategyMock, isTrackAudible(dummyTrackRight, _))
+    EXPECT_CALL(*strategyMock, isPlayerAudible(&dummyPlayerRight))
             .WillOnce(testing::Return(true));
     EXPECT_CALL(*broadcastMock, slotAttemptScrobble(dummyTrackRight));
     dummyPlayerLeft.emitTrackLoaded(dummyTrackLeft);

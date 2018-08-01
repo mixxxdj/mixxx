@@ -19,5 +19,5 @@ class MprisService : public ScrobblingService {
 
   private:
     Mpris m_mpris;
-    ControlProxy m_CPAutoDJEnabled;
+    ControlProxy* m_pCPAutoDJEnabled;
 };
