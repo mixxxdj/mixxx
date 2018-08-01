@@ -58,7 +58,7 @@ class EffectSlot : public QObject {
     EffectKnobParameterSlotPointer getEffectParameterSlot(unsigned int slotNumber);
     EffectKnobParameterSlotPointer getEffectParameterSlotForConfigKey(unsigned int slotNumber);
     inline const QList<EffectKnobParameterSlotPointer>& getEffectParameterSlots() const {
-        return m_parameterSlots;
+        return m_knobParameterSlots;
     };
 
     unsigned int numButtonParameterSlots() const;
@@ -140,7 +140,7 @@ class EffectSlot : public QObject {
     EngineEffect* m_pEngineEffect;
     QList<EffectParameter*> m_parameters;
     EngineEffectChain* m_pEngineEffectChain;
-    QList<EffectKnobParameterSlotPointer> m_parameterSlots;
+    QList<EffectKnobParameterSlotPointer> m_knobParameterSlots;
     QList<EffectButtonParameterSlotPointer> m_buttonParameters;
 
     ControlObject* m_pControlLoaded;

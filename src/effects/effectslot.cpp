@@ -183,8 +183,8 @@ void EffectSlot::reload(const QSet<ChannelHandleAndGroup>& activeInputChannels) 
 
 EffectKnobParameterSlotPointer EffectSlot::addEffectParameterSlot() {
     auto pParameterSlot = EffectKnobParameterSlotPointer(
-            new EffectParameterSlot(m_group, m_parameterSlots.size()));
-    m_parameterSlots.append(pParameterSlot);
+            new EffectParameterSlot(m_group, m_knobParameterSlots.size()));
+    m_knobParameterSlots.append(pParameterSlot);
     m_pControlNumParameterSlots->forceSet(
             m_pControlNumParameterSlots->get() + 1);
     return pParameterSlot;
@@ -261,7 +261,7 @@ double EffectSlot::getMetaknobDefault() {
 }
 
 unsigned int EffectSlot::numParameterSlots() const {
-    return m_parameterSlots.size();
+    return m_knobParameterSlots.size();
 }
 
 unsigned int EffectSlot::numButtonParameterSlots() const {
@@ -274,11 +274,11 @@ void EffectSlot::setEnabled(bool enabled) {
 
 EffectKnobParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int slotNumber) {
     //qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
-    if (slotNumber >= static_cast<unsigned int>(m_parameterSlots.size())) {
+    if (slotNumber >= static_cast<unsigned int>(m_knobParameterSlots.size())) {
         qWarning() << "WARNING: slotNumber out of range";
         return EffectKnobParameterSlotPointer();
     }
-    return m_parameterSlots[slotNumber];
+    return m_knobParameterSlots[slotNumber];
 }
 
 EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsigned int slotNumber) {
@@ -314,7 +314,7 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
     m_pControlLoaded->forceSet(1.0);
 
     unsigned int iNumKnobParameters = numKnobParameters();
-    while (static_cast<unsigned int>(m_parameterSlots.size())
+    while (static_cast<unsigned int>(m_knobParameterSlots.size())
             < iNumKnobParameters) {
         addEffectParameterSlot();
     }
@@ -325,7 +325,7 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
         addEffectButtonParameterSlot();
     }
 
-    for (const auto& pParameter : m_parameterSlots) {
+    for (const auto& pParameter : m_knobParameterSlots) {
         pParameter->loadEffect(this);
     }
     for (const auto& pParameter : m_buttonParameters) {
@@ -351,7 +351,7 @@ void EffectSlot::unloadEffect() {
     m_pControlLoaded->forceSet(0.0);
     m_pControlNumParameters->forceSet(0.0);
     m_pControlNumButtonParameters->forceSet(0.0);
-    for (const auto& pParameterSlot : m_parameterSlots) {
+    for (const auto& pParameterSlot : m_knobParameterSlots) {
         pParameterSlot->clear();
     }
     for (const auto& pButtonParameter : m_buttonParameters) {
@@ -397,7 +397,7 @@ void EffectSlot::slotClear(double v) {
 }
 
 void EffectSlot::syncSofttakeover() {
-    for (const auto& pParameterSlot : m_parameterSlots) {
+    for (const auto& pParameterSlot : m_knobParameterSlots) {
         pParameterSlot->syncSofttakeover();
     }
 }
@@ -427,7 +427,7 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
     if (!m_pControlEnabled->toBool()) {
         force = true;
     }
-    for (const auto& pParameterSlot : m_parameterSlots) {
+    for (const auto& pParameterSlot : m_knobParameterSlots) {
         pParameterSlot->onEffectMetaParameterChanged(v, force);
     }
 }
@@ -450,7 +450,7 @@ QDomElement EffectSlot::toXml(QDomDocument* doc) const {
 
     // QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
 
-    // for (const auto& pParameter : m_parameterSlots) {
+    // for (const auto& pParameter : m_knobParameterSlots) {
     //     QDomElement parameterElement = pParameter->toXml(doc);
     //     if (!parameterElement.hasChildNodes()) {
     //         continue;
@@ -510,7 +510,7 @@ void EffectSlot::loadEffectSlotFromXml(const QDomElement& effectElement) {
     // }
 
     // QMap<QString, EffectParameterSlotBasePointer> parametersById;
-    // for (const auto& pParameter : m_parameterSlots) {
+    // for (const auto& pParameter : m_knobParameterSlots) {
     //     EffectManifestParameterPointer manifest = pParameter->getManifest();
     //     if (manifest) {
     //         parametersById.insert(manifest->id(), pParameter);
