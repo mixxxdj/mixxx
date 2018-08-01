@@ -82,7 +82,7 @@ class ScrobblingManager : public QObject {
     friend QDebug operator<<(QDebug debug, const ScrobblingManager::TrackInfo& info);
 #endif
 
-    QHash<TrackId,TrackInfo> m_trackInfoHashDict;
+    QHash<TrackId, TrackInfo> m_trackInfoHashDict;
 
     PlayerManagerInterface *m_pManager;
 

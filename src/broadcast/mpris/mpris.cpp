@@ -17,7 +17,7 @@ namespace {
 Mpris::Mpris(MixxxMainWindow *pMixxx,
              PlayerManager *pPlayerManager,
              UserSettingsPointer pSettings)
-        :  m_busConnection(QDBusConnection::connectToBus(QDBusConnection::SessionBus,busName)),
+        :  m_busConnection(QDBusConnection::connectToBus(QDBusConnection::SessionBus, busName)),
            m_pPlayer(new MediaPlayer2Player(pPlayerManager,
                                             this, pMixxx,
                                             this, pSettings)) {

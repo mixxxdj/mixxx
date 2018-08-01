@@ -24,7 +24,7 @@ class FileListener: public ScrobblingService {
   private:
 
     struct WrittenMetadata {
-        QString title,artist;
+        QString title, artist;
         bool isEmpty() {
             return title.isEmpty() && artist.isEmpty();
         }

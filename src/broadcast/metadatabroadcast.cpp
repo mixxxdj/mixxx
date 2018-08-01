@@ -48,7 +48,7 @@ void MetadataBroadcaster::newTrackLoaded(TrackPointer pTrack) {
     if (!pTrack)
         return;
     if (!m_trackedTracks.contains(pTrack->getId())) {
-        m_trackedTracks.insert(pTrack->getId(),GracePeriod());
+        m_trackedTracks.insert(pTrack->getId(), GracePeriod());
     }
 }
 
