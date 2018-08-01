@@ -60,9 +60,7 @@ QString MprisPlayer::loopStatus() const {
         if (attrib->isRepeat() && attrib->isPlaying())
             return kLoopStatusTrack;
     }
-    return m_pSettings->getValue(ConfigKey("[Auto DJ]", "Requeue"), false)
-            ? kLoopStatusPlaylist
-            : kLoopStatusNone;
+    return m_pSettings->getValue(ConfigKey("[Auto DJ]", "Requeue"), false) ? kLoopStatusPlaylist : kLoopStatusNone;
 }
 
 void MprisPlayer::setLoopStatus(const QString& value) {

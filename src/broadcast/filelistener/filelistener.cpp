@@ -20,11 +20,7 @@ FileListener::FileListener(UserSettingsPointer pConfig)
 
     connect(this, SIGNAL(deleteFile()), newWorker, SLOT(slotDeleteFile()));
 
-    connect(this, SIGNAL(deleteFile()), newWorker, SLOT(slotDeleteFile()));
-
     connect(this, SIGNAL(moveFile(QString)), newWorker, SLOT(slotMoveFile(QString)));
-
-    connect(this, SIGNAL(writeMetadataToFile(QByteArray)), newWorker, SLOT(slotWriteMetadataToFile(QByteArray)));
 
     connect(this, SIGNAL(writeMetadataToFile(QByteArray)), newWorker, SLOT(slotWriteMetadataToFile(QByteArray)));
 
