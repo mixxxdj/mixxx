@@ -392,11 +392,6 @@ void PlayerManager::addDeckInner() {
     connect(pDeck,&Deck::newTrackLoaded,
             [this,group] (TrackPointer pTrack) -> void
             {m_scrobblingManager.slotNewTrackLoaded(pTrack,group);});
-    connect(pDeck,&Deck::loadingTrack,
-            [this,group] (TrackPointer pOldTrack,TrackPointer pNewTrack) -> void
-            {m_scrobblingManager.slotLoadingTrack(pOldTrack,pNewTrack,group);});
-    connect(pDeck,SIGNAL(playerEmpty()),
-            &m_scrobblingManager, SLOT(slotPlayerEmpty()));   
 
     if (m_pAnalyzerQueue) {
         connect(pDeck, SIGNAL(newTrackLoaded(TrackPointer)),

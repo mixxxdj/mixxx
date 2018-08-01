@@ -27,26 +27,20 @@ class MetadataBroadcaster : public MetadataBroadcasterInterface {
     Q_OBJECT    
   private:
     struct GracePeriod {
-        double m_msElapsed;
-        unsigned int m_numberOfScrobbles = 0;
-        TrackId m_trackId;
-        bool firstTimeLoaded = true;
-        bool hasBeenEjected = false;
-        GracePeriod(double msElapsed,TrackPointer pTrack) :
-        m_msElapsed(msElapsed),m_trackId(pTrack->getId()) {}
-        bool operator==(const GracePeriod &other) const {
-          return m_trackId == other.m_trackId;
-        }
+        double m_msSinceEjection;
+        unsigned int m_timesTrackHasBeenScrobbled = 0;
+        bool m_firstTimeLoaded = true;
+        bool m_hasBeenEjected = false;
+        GracePeriod() :
+        m_msSinceEjection(0.0) {}
     };  
   public:   
 
     MetadataBroadcaster();
-    QLinkedList<TrackId> getTrackedTracks();
-    MetadataBroadcasterInterface& 
+    MetadataBroadcasterInterface&
         addNewScrobblingService(const ScrobblingServicePtr &newService) override;
     void newTrackLoaded(TrackPointer pTrack) override;
     void trackUnloaded(TrackPointer pTrack) override;
-    void setGracePeriod(unsigned int seconds);
     void slotNowListening(TrackPointer pTrack) override;
     void slotAttemptScrobble(TrackPointer pTrack) override;
     void slotAllTracksPaused() override;
@@ -54,6 +48,6 @@ class MetadataBroadcaster : public MetadataBroadcasterInterface {
 
   private:    
     unsigned int m_gracePeriodSeconds;
-    QLinkedList<GracePeriod> m_trackedTracks;
+    QHash<TrackId,GracePeriod> m_trackedTracks;
     QLinkedList<ScrobblingServicePtr> m_scrobblingServices;
 };

@@ -3,7 +3,6 @@
 
 MetadataFileWorker::MetadataFileWorker(const QString &filePath)
         :  m_file(filePath) {
-
 }
 
 void MetadataFileWorker::slotDeleteFile() {
