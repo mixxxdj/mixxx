@@ -26,7 +26,7 @@ class RegularTimerMock : public TrackTimers::RegularTimer {
     Q_OBJECT
   public:
     ~RegularTimerMock() = default;
-    MOCK_METHOD1(start, void(int));
+    MOCK_METHOD1(start, void(double));
     MOCK_CONST_METHOD0(isActive, bool());
     MOCK_METHOD0(stop, void());
 };

@@ -116,18 +116,12 @@ void MediaPlayer2Player::Play() {
 void MediaPlayer2Player::Seek(qlonglong offset) {
     bool success;
     qlonglong newPosition = m_mprisPlayer.seek(offset, success);
-    if (success) {
-        emit Seeked(newPosition);
-    }
 }
 
 void MediaPlayer2Player::SetPosition(const QDBusObjectPath& trackId,
         qlonglong position) {
     bool success;
     qlonglong newPosition = m_mprisPlayer.setPosition(trackId, position, success);
-    if (success) {
-        emit Seeked(newPosition);
-    }
 }
 
 void MediaPlayer2Player::OpenUri(const QString& uri) {

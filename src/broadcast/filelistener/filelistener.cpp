@@ -36,22 +36,28 @@ FileListener::FileListener(UserSettingsPointer pConfig)
 }
 
 FileListener::~FileListener() {
+    emit clearFile();
     m_workerThread.quit();
     m_workerThread.wait();
 }
 
 void FileListener::slotBroadcastCurrentTrack(TrackPointer pTrack) {
-    if (!pTrack)
+    if (!m_latestSettings.enabled) {
         return;
-    m_fileContents.title = pTrack->getTitle();
-    m_fileContents.artist = pTrack->getArtist();
-    QString writtenString(m_latestSettings.fileFormatString);
-    writtenString.replace("$author", pTrack->getArtist()).replace("$title", pTrack->getTitle()) += '\n';
-    QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
-    DEBUG_ASSERT(codec);
-    QByteArray fileContents = codec->fromUnicode(writtenString);
-    m_tracksPaused = false;
-    emit writeMetadataToFile(fileContents);
+    }
+    if (!pTrack) {
+        emit clearFile();
+    } else {
+        m_fileContents.title = pTrack->getTitle();
+        m_fileContents.artist = pTrack->getArtist();
+        QString writtenString(m_latestSettings.fileFormatString);
+        writtenString.replace("$author", pTrack->getArtist()).replace("$title", pTrack->getTitle()) += '\n';
+        QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
+        DEBUG_ASSERT(codec);
+        QByteArray fileContents = codec->fromUnicode(writtenString);
+        m_tracksPaused = false;
+        emit writeMetadataToFile(fileContents);
+    }
 }
 
 void FileListener::slotScrobbleTrack(TrackPointer pTrack) {
@@ -59,6 +65,9 @@ void FileListener::slotScrobbleTrack(TrackPointer pTrack) {
 }
 
 void FileListener::slotAllTracksPaused() {
+    if (!m_latestSettings.enabled) {
+        return;
+    }
     m_tracksPaused = true;
     emit clearFile();
 }
