@@ -13,7 +13,6 @@ Variables:
     <MaximumSize>182,17</MaximumSize>
     <SizePolicy>min,me</SizePolicy>
     <NumberStates>3</NumberStates>
-    <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>

@@ -12,8 +12,8 @@ QString ReverbEffect::getId() {
 // static
 EffectManifestPointer ReverbEffect::getManifest() {
     EffectManifestPointer pManifest(new EffectManifest());
-
     pManifest->setAddDryToWet(true);
+    pManifest->setEffectRampsFromDry(true);
 
     pManifest->setId(getId());
     pManifest->setName(QObject::tr("Reverb"));
@@ -100,15 +100,10 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
     Q_UNUSED(handle);
     Q_UNUSED(groupFeatures);
 
-    if (!pState || !m_pDecayParameter || !m_pBandWidthParameter || !m_pDampingParameter || !m_pSendParameter) {
-        qWarning() << "Could not retrieve all effect parameters";
-        return;
-    }
-
     const auto decay = m_pDecayParameter->value();
     const auto bandwidth = m_pBandWidthParameter->value();
     const auto damping = m_pDampingParameter->value();
-    const auto send = m_pSendParameter->value();
+    const auto sendCurrent = m_pSendParameter->value();
 
     // Reinitialize the effect when turning it on to prevent replaying the old buffer
     // from the last time the effect was enabled.
@@ -118,7 +113,18 @@ void ReverbEffect::processChannel(const ChannelHandle& handle,
         pState->reverb.init(bufferParameters.sampleRate());
         pState->sampleRate = bufferParameters.sampleRate();
     }
+
     pState->reverb.processBuffer(pInput, pOutput,
                                  bufferParameters.samplesPerBuffer(),
-                                 bandwidth, decay, damping, send);
+                                 bandwidth, decay, damping, sendCurrent, pState->sendPrevious);
+
+    // The ramping of the send parameter handles ramping when enabling, so
+    // this effect must handle ramping to dry when disabling itself (instead
+    // of being handled by EngineEffect::process).
+    if (enableState == EffectEnableState::Disabling) {
+        SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, bufferParameters.samplesPerBuffer());
+        pState->sendPrevious = 0;
+    } else {
+        pState->sendPrevious = sendCurrent;
+    }
 }

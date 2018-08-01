@@ -1,10 +1,30 @@
-==== 2.1 2018-04-15 ====
+==== 2.1.1 2018-06-13 ====
+After two month it is time to do a bugfix release of Mixxx 2.1.
+Here is a quick summary of what is new in Mixxx 2.1.1:
+
+* Require Soundtouch 2.0 to avoid segfault lp1577042 
+* Imrpoved Skins including library view fix lp1773709 lp1772202 lp1763953
+* Fix crash when importing ID3v2 APIC frames lp1774790
+* Synchronize execution of Vamp analyzers lp1743256
+* DlgTrackInfo: Mismatching signal/slot connection
+* Detect M4A decoding errors on Windows lp1766834
+* Fix spinback inertia effect
+* Fix decoding fixes and upgrade DB schema lp1766042 lp1769717
+* Fix integration of external track libraries lp1766360
+* Fix memory leak when loading cover art lp1767068
+* Fix clearing of ReplayGain gain/ratio in file tags lp1766094
+* Fix crash when removing a quick link lp1510068
+* Fidlib: Thread-safe and reentrant generation of filters lp1765210 
+* Fix unresponsive scrolling through crates & playlists using encoder lp1719474
+* Swap default values for temp/perm rate changes lp1764254
+
+==== 2.1.0 2018-04-15 ====
 After two years of hard work, we are pleased to announce Mixxx 2.1. We
 have overhauled the effects system, redesigned the skins, added and improved
 lots of controller mappings, rewrote the audio file decoders twice, and of
 course fixed a bunch of bugs. Download it!
 
-Here is a quick summary of what is new in Mixxx 2.1:
+Here is a quick summary of what is new in Mixxx 2.1.0:
   * Graphical interface scales for high resolution screens
   * Overhauled Deere and LateNight skins
   * New Tango skin

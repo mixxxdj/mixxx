@@ -113,6 +113,10 @@ ConfigValue::ConfigValue(int iValue)
     : value(QString::number(iValue)) {
 }
 
+ConfigValue::ConfigValue(double dValue)
+    : value(QString::number(dValue)) {
+}
+
 void ConfigValue::valCopy(const ConfigValue& configValue) {
     value = configValue.value;
 }

@@ -14,7 +14,7 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
                        bool rgbRenderer);
     virtual ~GLSLWaveformWidget();
 
-    virtual void resize(int width, int height);
+    void resize(int width, int height, float devicePixelRatio) override;
 
   protected:
     virtual void castToQWidget();
@@ -33,7 +33,7 @@ class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
     GLSLFilteredWaveformWidget(const char* group, QWidget* parent);
     virtual ~GLSLFilteredWaveformWidget() {}
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSLFilteredWaveform; }
+    WaveformWidgetType::Type getType() const override { return WaveformWidgetType::GLSLFilteredWaveform; }
 
     static inline QString getWaveformWidgetName() { return tr("Filtered"); }
     static inline bool useOpenGl() { return true; }
@@ -46,7 +46,7 @@ class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
     GLSLRGBWaveformWidget(const char* group, QWidget* parent);
     virtual ~GLSLRGBWaveformWidget() {}
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSLRGBWaveform; }
+    WaveformWidgetType::Type getType() const override { return WaveformWidgetType::GLSLRGBWaveform; }
 
     static inline QString getWaveformWidgetName() { return tr("RGB"); }
     static inline bool useOpenGl() { return true; }

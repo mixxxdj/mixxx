@@ -480,7 +480,8 @@ WEffectButtonParameter*/
   border-radius: 2px;
   }
 
-  #GuiToggleButton {
+  #GuiToggleButton,
+  #RecBox {
     margin: 2px;
   }
 
@@ -565,6 +566,63 @@ WEffectButtonParameter*/
       stop:0 #d80000,
       stop:1 #910000);
     margin-right: 2px;
+}
+
+/*################################################################
+ #######  Skin Settings  ########################################
+##############################################################*/
+
+#SkinSettingsContainer{
+/*  margin-left: 5px;*/
+  border: 1px solid #585858;
+  border-width: 0px 0px 1px 1px;
+  
+}
+
+#SkinSettings {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding: 2px 0px 0px 0px;
+  text-align: left;
+
+}
+#SkinSettingsHeader {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding-right: 2px;
+  }
+  #SkinSettingsClose {
+    border-radius:2px;
+    margin-bottom: 4px;
+    background-color: transparent;
+    image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center top;
+    }
+
+#SkinSettingsCategory {
+  padding: 2px 8px 1px 10px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+    border: 1px solid #1e1e1e;
+    border-width: 0px 0px 3px 0px;
+  }
+  #CategoryLabel {
+    font-size: 17px/17px;
+    text-align: left;
+    padding: 5px 0px 0px 3px;
+    color: #eece33;
+  }
+#SkinSettingsButton {
+  padding-top: 1px;
+  font-size: 12px/14px;
+  color: #d2d2d2;
+  }
+
+#SkinSettingsLabelButton {
+    font-size: 17px/17px;
+    text-align: left;
+    padding: 5px 0px 0px 3px;
+    color: #eece33;
+  }
+
+#SubmenuCover {
+  background-color: rgba(15, 15, 15, 180);
 }
 
 /*################################################################
@@ -994,15 +1052,11 @@ border: 0px;
   border-top: 1px solid #585858;
   /*border-bottom: 1px solid #585858;*/
   padding-bottom: 0px;
-  padding-left: 5px;
-  padding-right: 5px;
   padding-top: 5px;
 }
 
 #SamplerDeck {
   margin-top: 5px;
-  margin-left: 5px;
-  margin-right: 5px;
   border: 1px solid #585858;
   background-color: #1e1e1e;
 }
@@ -1097,11 +1151,11 @@ border: 0px;
 }
 
 #EffectUnit1, #EffectUnit3 {
-  margin: 5px 5px 2px 2px;
+  margin: 5px 5px 2px 0px;
 }
 
 #EffectUnit2, #EffectUnit4 {
-  margin: 5px 2px 2px 5px;
+  margin: 5px 0px 2px 5px;
 }
 
 #EffectRows {
@@ -1509,13 +1563,10 @@ QHeaderView::down-arrow {
   border-right: 1px solid #585858;
   }
   QHeaderView::up-arrow {
-    image: url(skin:/style/library_sort_up.svg);
+    image: url(skin:/style/btn_lib_sort_up.png);
     }
-    QHeaderView::up-arrow:hover {
-      image: url(skin:/style/library_sort_down.svg);
-    }
-  QHeaderView::down-arrow:hover {
-    image: url(skin:/style/library_sort_up.svg);
+  QHeaderView::down-arrow {
+    image: url(skin:/style/btn_lib_sort_down.png);
   }
 
 
