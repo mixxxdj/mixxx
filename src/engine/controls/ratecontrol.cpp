@@ -308,8 +308,10 @@ void RateControl::slotRateRatioChanged(double v) {
     }
     */
 
-    double newRateUltra = m_pRateDir->get() * (v - 1) / kRateUltraRange;
-    m_pRateSlider->set(0.0);
+    // never change rate slider programatically
+    double newRateUltra =
+            (((v - 1) * m_pRateDir->get()) -
+             (m_pRateRange->get() * m_pRateSlider->get())) / kRateUltraRange;
     m_pRateUltraSlider->set(newRateUltra);
 }
 
