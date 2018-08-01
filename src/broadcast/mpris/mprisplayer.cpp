@@ -60,7 +60,7 @@ QString MprisPlayer::loopStatus() const {
 
 }
 
-void MprisPlayer::setLoopStatus(const QString &value) {
+void MprisPlayer::setLoopStatus(const QString& value) {
     if (value == kLoopStatusNone || value == kLoopStatusTrack) {
         for (DeckAttributes *attribute : m_deckAttributes) {
             attribute->setRepeat(value == kLoopStatusTrack);
@@ -183,7 +183,7 @@ void MprisPlayer::play() {
     }
 }
 
-qlonglong MprisPlayer::seek(qlonglong offset, bool &success) {
+qlonglong MprisPlayer::seek(qlonglong offset, bool& success) {
     if (AUTODJIDLE) {
         DeckAttributes *playingDeck = findPlayingDeck();
         VERIFY_OR_DEBUG_ASSERT(playingDeck) {
@@ -211,7 +211,7 @@ qlonglong MprisPlayer::seek(qlonglong offset, bool &success) {
     return 0;
 }
 
-qlonglong MprisPlayer::setPosition(const QDBusObjectPath &trackId, qlonglong position, bool &success) {
+qlonglong MprisPlayer::setPosition(const QDBusObjectPath& trackId, qlonglong position, bool& success) {
     if (AUTODJIDLE) {
         DeckAttributes *playingDeck = findPlayingDeck();
         VERIFY_OR_DEBUG_ASSERT(playingDeck) {
@@ -242,7 +242,7 @@ qlonglong MprisPlayer::setPosition(const QDBusObjectPath &trackId, qlonglong pos
     return 0;
 }
 
-void MprisPlayer::openUri(const QString &uri) {
+void MprisPlayer::openUri(const QString& uri) {
 
 }
 
@@ -280,7 +280,7 @@ void MprisPlayer::slotChangeProperties(double enabled) {
 }
 
 void MprisPlayer::broadcastPropertiesChange(bool enabled) {
-    for (const QString &property : autoDJDependentProperties) {
+    for (const QString& property : autoDJDependentProperties) {
         m_pMpris->notifyPropertyChanged(playerInterfaceName,
                                         property,
                                         enabled);

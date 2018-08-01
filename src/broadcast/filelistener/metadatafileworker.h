@@ -6,7 +6,7 @@
 class MetadataFileWorker : public QObject {
     Q_OBJECT
   public:
-    explicit MetadataFileWorker(const QString &filePath);
+    explicit MetadataFileWorker(const QString& filePath);
   public slots:
     void slotDeleteFile();
     void slotMoveFile(QString destination);

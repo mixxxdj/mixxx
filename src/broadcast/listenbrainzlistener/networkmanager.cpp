@@ -6,7 +6,7 @@
 #include "broadcast/listenbrainzlistener/networkreply.h"
 
 
-NetworkReply* FakeNetworkManager::post(const NetworkRequest *request, const QByteArray &data) {
+NetworkReply* FakeNetworkManager::post(const NetworkRequest *request, const QByteArray& data) {
     NetworkReply *reply = new FakeNetworkReply;
     FakeNetworkReply *fakeReply = qobject_cast<FakeNetworkReply*>(reply);
     fakeReply->setNetworkError(QNetworkReply::NoError);

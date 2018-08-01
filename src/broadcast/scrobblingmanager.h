@@ -54,13 +54,13 @@ class ScrobblingManager : public QObject {
     void setAudibleStrategy(TrackAudibleStrategy *pStrategy);
     void setMetadataBroadcaster(MetadataBroadcasterInterface *pBroadcast);
     void setTimer(TrackTimers::RegularTimer *timer);
-    void setTrackInfoFactory(const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> &factory);
+    void setTrackInfoFactory(const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)>& factory);
     bool hasScrobbledAnyTrack() const;
 
   public slots:
     void slotTrackPaused(TrackPointer pPausedTrack);
-    void slotTrackResumed(TrackPointer pResumedTrack, const QString &playerGroup);
-    void slotNewTrackLoaded(TrackPointer pNewTrack, const QString &playerGroup);
+    void slotTrackResumed(TrackPointer pResumedTrack, const QString& playerGroup);
+    void slotNewTrackLoaded(TrackPointer pNewTrack, const QString& playerGroup);
 
   private:
 

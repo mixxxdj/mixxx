@@ -87,7 +87,7 @@ void ScrobblingManager::setTimer(TrackTimers::RegularTimer *timer) {
 }
 
 void ScrobblingManager::setTrackInfoFactory(
-    const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> &factory) {
+    const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)>& factory) {
     m_trackInfoFactory = factory;
 }
 
@@ -114,7 +114,7 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
     m_trackInfoHashDict[pPausedTrack->getId()].m_trackInfo->pausePlayedTime();
 }
 
-void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack, const QString &playerGroup) {
+void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack, const QString& playerGroup) {
     BaseTrackPlayer *player = m_pManager->getPlayer(playerGroup);
     if (!m_trackInfoHashDict.contains(pResumedTrack->getId())) {
         m_trackInfoHashDict[pResumedTrack->getId()].init(m_trackInfoFactory, pResumedTrack);
@@ -131,7 +131,7 @@ void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack, const QStri
     }
 }
 
-void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack, const QString &playerGroup) {
+void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack, const QString& playerGroup) {
     //Empty player gives a null pointer.
     if (!pNewTrack) {
         return;

@@ -18,9 +18,9 @@ class Mpris : public QObject
                    UserSettingsPointer pSettings);
     ~Mpris();
     void broadcastCurrentTrack();
-    void notifyPropertyChanged(const QString &interface,
-                               const QString &propertyName,
-                               const QVariant &propertyValue);
+    void notifyPropertyChanged(const QString& interface,
+                               const QString& propertyName,
+                               const QVariant& propertyValue);
   private:
 
     QDBusConnection m_busConnection;

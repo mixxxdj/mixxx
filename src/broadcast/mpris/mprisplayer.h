@@ -21,7 +21,7 @@ class MprisPlayer : public QObject {
     ~MprisPlayer() override;
     QString playbackStatus() const;
     QString loopStatus() const;
-    void setLoopStatus(const QString &value);
+    void setLoopStatus(const QString& value);
     double rate() const;
     void setRate(double value);
     QVariantMap metadata() const;
@@ -37,9 +37,9 @@ class MprisPlayer : public QObject {
     void pause();
     void playPause();
     void play();
-    qlonglong seek(qlonglong offset, bool &success);
-    qlonglong setPosition(const QDBusObjectPath &trackId, qlonglong position, bool &success);
-    void openUri(const QString &uri);
+    qlonglong seek(qlonglong offset, bool& success);
+    qlonglong setPosition(const QDBusObjectPath& trackId, qlonglong position, bool& success);
+    void openUri(const QString& uri);
 
   private slots:
     void mixxxComponentsInitialized();

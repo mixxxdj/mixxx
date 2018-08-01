@@ -1,7 +1,7 @@
 
 #include "broadcast/filelistener/metadatafileworker.h"
 
-MetadataFileWorker::MetadataFileWorker(const QString &filePath)
+MetadataFileWorker::MetadataFileWorker(const QString& filePath)
         :  m_file(filePath) {
 }
 

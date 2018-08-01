@@ -18,7 +18,7 @@ class MetadataBroadcasterInterface : public QObject {
   public:
     virtual ~MetadataBroadcasterInterface() = default;
     virtual MetadataBroadcasterInterface& 
-        addNewScrobblingService(const ScrobblingServicePtr &newService) = 0;
+        addNewScrobblingService(const ScrobblingServicePtr& newService) = 0;
     virtual void newTrackLoaded(TrackPointer pTrack) = 0;
     virtual void trackUnloaded(TrackPointer pTrack) = 0;
 };
@@ -38,7 +38,7 @@ class MetadataBroadcaster : public MetadataBroadcasterInterface {
 
     MetadataBroadcaster();
     MetadataBroadcasterInterface&
-        addNewScrobblingService(const ScrobblingServicePtr &newService) override;
+        addNewScrobblingService(const ScrobblingServicePtr& newService) override;
     void newTrackLoaded(TrackPointer pTrack) override;
     void trackUnloaded(TrackPointer pTrack) override;
     void slotNowListening(TrackPointer pTrack) override;

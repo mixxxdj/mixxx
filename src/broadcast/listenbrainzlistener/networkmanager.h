@@ -12,7 +12,7 @@ class NetworkRequest;
 class NetworkManager : public QObject {
     Q_OBJECT
   public:
-    virtual NetworkReply *post(const NetworkRequest *request, const QByteArray &data) = 0;
+    virtual NetworkReply *post(const NetworkRequest *request, const QByteArray& data) = 0;
   signals:
     void finished(NetworkReply *reply);
 };
@@ -20,5 +20,5 @@ class NetworkManager : public QObject {
 class FakeNetworkManager : public NetworkManager {
     Q_OBJECT
   public:
-    NetworkReply *post(const NetworkRequest *request, const QByteArray &data) override;
+    NetworkReply *post(const NetworkRequest *request, const QByteArray& data) override;
 };

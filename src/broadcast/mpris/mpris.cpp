@@ -42,9 +42,9 @@ void Mpris::broadcastCurrentTrack() {
                                               "Metadata", m_pPlayer->metadata());
 }
 
-void Mpris::notifyPropertyChanged(const QString &interface,
-                                  const QString &propertyName,
-                                  const QVariant &propertyValue) {
+void Mpris::notifyPropertyChanged(const QString& interface,
+                                  const QString& propertyName,
+                                  const QVariant& propertyValue) {
     QDBusMessage signal = QDBusMessage::createSignal(
             "/org/mpris/MediaPlayer2",
             "org.freedesktop.DBus.Properties",
