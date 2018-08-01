@@ -25,8 +25,8 @@ void ListenBrainzService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
         return;
     m_currentJSON = new QByteArray(
             ListenBrainzJSONFactory::getJSONFromTrack(
-                    pTrack,ListenBrainzJSONFactory::NowListening));
-    m_manager.post(m_request,*m_currentJSON);*/
+                    pTrack, ListenBrainzJSONFactory::NowListening));
+    m_manager.post(m_request, *m_currentJSON);*/
 }
 
 void ListenBrainzService::slotScrobbleTrack(TrackPointer pTrack) {
