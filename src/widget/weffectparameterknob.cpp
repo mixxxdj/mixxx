@@ -2,7 +2,7 @@
 #include "widget/weffectparameterknob.h"
 
 void WEffectParameterKnob::setupEffectParameterSlot(const ConfigKey& configKey) {
-    EffectParameterSlotPointer pParameterSlot =
+    EffectKnobParameterSlotPointer pParameterSlot =
             m_pEffectsManager->getEffectParameterSlot(configKey);
     if (!pParameterSlot) {
         qWarning() << "EffectParameterKnob" << configKey <<
@@ -13,7 +13,7 @@ void WEffectParameterKnob::setupEffectParameterSlot(const ConfigKey& configKey) 
 }
 
 void WEffectParameterKnob::setEffectParameterSlot(
-        EffectParameterSlotPointer pParameterSlot) {
+        EffectKnobParameterSlotPointer pParameterSlot) {
     m_pEffectParameterSlot = pParameterSlot;
     if (m_pEffectParameterSlot) {
         connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),

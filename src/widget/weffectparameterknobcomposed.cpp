@@ -7,7 +7,7 @@ const QString groupClose = "]";
 } // anonymous namespace
 
 void WEffectParameterKnobComposed::setupEffectParameterSlot(const ConfigKey& configKey) {
-    EffectParameterSlotPointer pParameterSlot =
+    EffectKnobParameterSlotPointer pParameterSlot =
             m_pEffectsManager->getEffectParameterSlot(configKey);
     if (!pParameterSlot) {
         qWarning() << "EffectParameterKnobComposed" << configKey <<
@@ -18,7 +18,7 @@ void WEffectParameterKnobComposed::setupEffectParameterSlot(const ConfigKey& con
 }
 
 void WEffectParameterKnobComposed::setEffectParameterSlot(
-        EffectParameterSlotPointer pParameterSlot) {
+        EffectKnobParameterSlotPointer pParameterSlot) {
     m_pEffectParameterSlot = pParameterSlot;
     if (m_pEffectParameterSlot) {
         connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),

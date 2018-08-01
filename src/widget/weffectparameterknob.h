@@ -27,7 +27,7 @@ class WEffectParameterKnob : public WKnob {
   private:
     // Set the EffectParameterSlot that should be monitored by this
     // WEffectKnobComposed.
-    void setEffectParameterSlot(EffectParameterSlotPointer pParameterSlot);
+    void setEffectParameterSlot(EffectKnobParameterSlotPointer pParameterSlot);
 
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;

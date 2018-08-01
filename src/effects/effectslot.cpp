@@ -181,8 +181,8 @@ void EffectSlot::reload(const QSet<ChannelHandleAndGroup>& activeInputChannels) 
             activeInputChannels);
 }
 
-EffectParameterSlotPointer EffectSlot::addEffectParameterSlot() {
-    auto pParameterSlot = EffectParameterSlotPointer(
+EffectKnobParameterSlotPointer EffectSlot::addEffectParameterSlot() {
+    auto pParameterSlot = EffectKnobParameterSlotPointer(
             new EffectParameterSlot(m_group, m_parameterSlots.size()));
     m_parameterSlots.append(pParameterSlot);
     m_pControlNumParameterSlots->forceSet(
@@ -272,11 +272,11 @@ void EffectSlot::setEnabled(bool enabled) {
     m_pControlEnabled->set(enabled);
 }
 
-EffectParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int slotNumber) {
+EffectKnobParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int slotNumber) {
     //qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
     if (slotNumber >= static_cast<unsigned int>(m_parameterSlots.size())) {
         qWarning() << "WARNING: slotNumber out of range";
-        return EffectParameterSlotPointer();
+        return EffectKnobParameterSlotPointer();
     }
     return m_parameterSlots[slotNumber];
 }
