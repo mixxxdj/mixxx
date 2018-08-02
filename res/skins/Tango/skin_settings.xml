@@ -59,7 +59,7 @@ Description:
           <WidgetGroup><!-- Decks | 12 buttons/rows 13-17px, 1 fixed row 15px -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,205</MinimumSize>
-            <MaximumSize>200,260</MaximumSize>
+            <MaximumSize>200,280</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -78,6 +78,11 @@ Description:
                 <SetVariable name="text">Symmetric Time/Duration</SetVariable>
                 <SetVariable name="Setting">[Tango],symmetric_time</SetVariable>
               </Template>
+
+              <WidgetGroup><!-- Expanding spacer -->
+                <MaximumSize>i,8</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+              </WidgetGroup>
 
               <WidgetGroup><!-- HotCue settings -->
                 <MinimumSize>182,13</MinimumSize>
@@ -256,6 +261,11 @@ Description:
                 </Children>
               </WidgetGroup><!-- /Permanent deck controls -->
 
+              <WidgetGroup><!-- Expanding spacer -->
+                <MaximumSize>i,8</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+              </WidgetGroup>
+
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">BPM/Sync &amp; Pitch Fader</SetVariable>
                 <SetVariable name="Setting">[Master],show_rate_control</SetVariable>
@@ -302,6 +312,11 @@ Description:
                   </WidgetGroup>
                 </Children>
               </WidgetGroup><!-- Pitch/Key submenu -->
+
+              <WidgetGroup><!-- Expanding spacer -->
+                <MaximumSize>i,8</MaximumSize>
+                <SizePolicy>me,me</SizePolicy>
+              </WidgetGroup>
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Track Comment</SetVariable>
@@ -455,7 +470,7 @@ Description:
           <WidgetGroup><!-- 5 buttons -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,78</MinimumSize>
-            <MaximumSize>220,112</MaximumSize>
+            <MaximumSize>220,120</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -538,7 +553,7 @@ Description:
                   </WidgetGroup>
 
                   <Template src="skin:../Tango/skin_settings_button_2state.xml">
-                    <SetVariable name="text">EQ Knobs</SetVariable>
+                    <SetVariable name="text">EQ &amp; QuickEffect Knobs</SetVariable>
                     <SetVariable name="Setting">[Master],show_eqs</SetVariable>
                   </Template>
 
@@ -631,7 +646,7 @@ Description:
           <WidgetGroup><!-- 2 buttons (1 commented out) -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,26</MinimumSize>
-            <MaximumSize>200,62</MaximumSize>
+            <MaximumSize>200,54</MaximumSize>
             <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
@@ -739,7 +754,7 @@ Description:
           <WidgetGroup>
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,45</MinimumSize>
-            <MaximumSize>200,72</MaximumSize>
+            <MaximumSize>200,84</MaximumSize>
             <SizePolicy>me,me</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
