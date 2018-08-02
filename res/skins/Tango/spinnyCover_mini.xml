@@ -8,12 +8,12 @@ Variables:
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>SpinnyCoverMini</ObjectName>
-    <SizePolicy>min,min</SizePolicy>
+    <ObjectName>SpinnyCover_Container</ObjectName>
+    <SizePolicy>max,me</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
 
-      <!-- spinny -->
+      <!-- Spinny with/without Cover Art -->
       <WidgetGroup>
         <Size>50f,50f</Size>
         <Layout>vertical</Layout>
@@ -30,7 +30,7 @@ Variables:
             <PathGhost scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator_ghost.svg</PathGhost>
             <ShowCover>false</ShowCover>
             <Connection>
-              <ConfigKey persist="true">[Tango],spinnyWithCoverArt</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -47,28 +47,41 @@ Variables:
             <PathGhost scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator_ghost.svg</PathGhost>
             <ShowCover>true</ShowCover>
             <Connection>
-              <ConfigKey persist="true">[Tango],spinnyWithCoverArt</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </Spinny>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],spinny_or_cover</ConfigKey>
-          <Transform><Not/></Transform>
+          <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
 
-      <CoverArt>
-        <TooltipId>coverart</TooltipId>
-        <Size>50f,50f</Size>
-        <Group>[Channel<Variable name="chanNum"/>]</Group>
-        <DefaultCover>skin:/graphics/cover_default_mini_<Variable name="chanNum"/>.svg</DefaultCover>
+      <!-- Cover Art only -->
+      <WidgetGroup>
+        <ObjectName>SpinnyCover</ObjectName>
+        <SizePolicy>max,max</SizePolicy>
+        <MaximumSize>50,50</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <CoverArt>
+            <TooltipId>coverart</TooltipId>
+            <Size>50f,50f</Size>
+            <Group>[Channel<Variable name="chanNum"/>]</Group>
+            <DefaultCover>skin:/graphics/cover_default_mini_<Variable name="chanNum"/>.svg</DefaultCover>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </CoverArt>
+        </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],spinny_or_cover</ConfigKey>
+          <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+          <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </CoverArt>
+      </WidgetGroup>
 
     </Children>
   </WidgetGroup>
