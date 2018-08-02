@@ -166,11 +166,18 @@
 									<SignalColor>#191F24</SignalColor>
 									<PlayPosColor>#00FF00</PlayPosColor>
 									<DefaultMark>
-										<Align>top</Align>
+										<Align>bottom|right</Align>
 										<Color>#FD0564</Color>
 										<TextColor>#FFFFFF</TextColor>
 										<Text> %1 </Text>
 									</DefaultMark>
+                  <Mark>
+                    <Control>cue_point</Control>
+                    <Text>C</Text>
+                    <Align>top|right</Align>
+                    <Color>#FF001C</Color>
+                    <TextColor>#FFFFFF</TextColor>
+                  </Mark>
 									<Connection>
 										<ConfigKey>[Sampler<Variable name="samplernum"/>],playposition</ConfigKey>
 										<EmitOnDownPress>false</EmitOnDownPress>
