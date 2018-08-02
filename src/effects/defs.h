@@ -58,8 +58,8 @@ typedef QSharedPointer<EngineEffectParameter> EngineEffectParameterPointer;
 class EffectSlot;
 typedef QSharedPointer<EffectSlot> EffectSlotPointer;
 
-class EffectParameterSlot;
-typedef QSharedPointer<EffectParameterSlot> EffectKnobParameterSlotPointer;
+class EffectKnobParameterSlot;
+typedef QSharedPointer<EffectKnobParameterSlot> EffectKnobParameterSlotPointer;
 
 class EffectButtonParameterSlot;
 typedef QSharedPointer<EffectButtonParameterSlot> EffectButtonParameterSlotPointer;

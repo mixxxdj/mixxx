@@ -351,7 +351,7 @@ EffectSlotPointer EffectsManager::getEffectSlot(
     return pEffectSlot;
 }
 
-EffectKnobParameterSlotPointer EffectsManager::getEffectParameterSlot(
+EffectKnobParameterSlotPointer EffectsManager::getEffectKnobParameterSlot(
         const ConfigKey& configKey) {
     EffectSlotPointer pEffectSlot =
              getEffectSlot(configKey.group);
@@ -362,7 +362,7 @@ EffectKnobParameterSlotPointer EffectsManager::getEffectParameterSlot(
     QRegExp intRegEx(".*(\\d+).*");
     intRegEx.indexIn(configKey.item);
     EffectKnobParameterSlotPointer pParameterSlot =
-            pEffectSlot->getEffectParameterSlot(intRegEx.cap(1).toInt() - 1);
+            pEffectSlot->getEffectKnobParameterSlot(intRegEx.cap(1).toInt() - 1);
     return pParameterSlot;
 }
 

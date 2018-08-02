@@ -19,7 +19,7 @@ void WEffectParameter::setup(const QDomNode& node, const SkinContext& context) {
             EffectWidgetUtils::getParameterSlotFromNode(
                     node, context, pEffectSlot);
     if (pParameterSlot) {
-        setEffectParameterSlot(pParameterSlot);
+        setEffectKnobParameterSlot(pParameterSlot);
     } else {
         SKIN_WARNING(node, context)
                 << "EffectParameter node could not attach to effect parameter";

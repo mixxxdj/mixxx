@@ -3,16 +3,16 @@
 
 void WEffectParameterKnob::setupEffectParameterSlot(const ConfigKey& configKey) {
     EffectKnobParameterSlotPointer pParameterSlot =
-            m_pEffectsManager->getEffectParameterSlot(configKey);
+            m_pEffectsManager->getEffectKnobParameterSlot(configKey);
     if (!pParameterSlot) {
         qWarning() << "EffectParameterKnob" << configKey <<
                 "is not an effect parameter.";
         return;
     }
-    setEffectParameterSlot(pParameterSlot);
+    setEffectKnobParameterSlot(pParameterSlot);
 }
 
-void WEffectParameterKnob::setEffectParameterSlot(
+void WEffectParameterKnob::setEffectKnobParameterSlot(
         EffectKnobParameterSlotPointer pParameterSlot) {
     m_pEffectParameterSlot = pParameterSlot;
     if (m_pEffectParameterSlot) {

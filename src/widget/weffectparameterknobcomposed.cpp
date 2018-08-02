@@ -8,16 +8,16 @@ const QString groupClose = "]";
 
 void WEffectParameterKnobComposed::setupEffectParameterSlot(const ConfigKey& configKey) {
     EffectKnobParameterSlotPointer pParameterSlot =
-            m_pEffectsManager->getEffectParameterSlot(configKey);
+            m_pEffectsManager->getEffectKnobParameterSlot(configKey);
     if (!pParameterSlot) {
         qWarning() << "EffectParameterKnobComposed" << configKey <<
                 "is not an effect parameter.";
         return;
     }
-    setEffectParameterSlot(pParameterSlot);
+    setEffectKnobParameterSlot(pParameterSlot);
 }
 
-void WEffectParameterKnobComposed::setEffectParameterSlot(
+void WEffectParameterKnobComposed::setEffectKnobParameterSlot(
         EffectKnobParameterSlotPointer pParameterSlot) {
     m_pEffectParameterSlot = pParameterSlot;
     if (m_pEffectParameterSlot) {

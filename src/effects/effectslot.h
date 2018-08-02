@@ -16,7 +16,7 @@
 #include "effects/effectbuttonparameterslot.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectparameter.h"
-#include "effects/effectparameterslot.h"
+#include "effects/effectknobparameterslot.h"
 #include "util/class.h"
 
 class EffectProcessor;
@@ -27,7 +27,7 @@ class EngineEffect;
 class EngineEffectChain;
 class ControlProxy;
 class EffectParameter;
-class EffectParameterSlot;
+class EffectKnobParameterSlot;
 
 class EffectSlot : public QObject {
     Q_OBJECT
@@ -54,10 +54,10 @@ class EffectSlot : public QObject {
     }
 
     unsigned int numParameterSlots() const;
-    EffectKnobParameterSlotPointer addEffectParameterSlot();
-    EffectKnobParameterSlotPointer getEffectParameterSlot(unsigned int slotNumber);
-    EffectKnobParameterSlotPointer getEffectParameterSlotForConfigKey(unsigned int slotNumber);
-    inline const QList<EffectKnobParameterSlotPointer>& getEffectParameterSlots() const {
+    EffectKnobParameterSlotPointer addEffectKnobParameterSlot();
+    EffectKnobParameterSlotPointer getEffectKnobParameterSlot(unsigned int slotNumber);
+    EffectKnobParameterSlotPointer getEffectKnobParameterSlotForConfigKey(unsigned int slotNumber);
+    inline const QList<EffectKnobParameterSlotPointer>& getEffectKnobParameterSlots() const {
         return m_knobParameterSlots;
     };
 

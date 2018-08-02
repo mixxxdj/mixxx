@@ -63,7 +63,7 @@ class EffectWidgetUtils {
                                                 &parameterNumberOk);
         if (parameterNumberOk) {
             // XML effect nodes are 1-indexed.
-            return pEffectSlot->getEffectParameterSlot(parameterNumber - 1);
+            return pEffectSlot->getEffectKnobParameterSlot(parameterNumber - 1);
         }
         return EffectParameterSlotBasePointer();
     }

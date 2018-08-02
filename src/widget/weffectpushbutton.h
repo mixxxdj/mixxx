@@ -32,9 +32,9 @@ class WEffectPushButton : public WPushButton {
     void slotActionChosen(QAction* action);
 
   private:
-    // Set the EffectParameterSlot that should be monitored by this
+    // Set the EffectKnobParameterSlot that should be monitored by this
     // WEffectKnobComposed.
-    void setEffectParameterSlot(EffectButtonParameterSlotPointer pParameterSlot);
+    void setEffectKnobParameterSlot(EffectButtonParameterSlotPointer pParameterSlot);
 
 
     EffectsManager* m_pEffectsManager;

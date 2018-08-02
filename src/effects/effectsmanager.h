@@ -111,7 +111,7 @@ class EffectsManager : public QObject {
     EffectChainSlotPointer getEffectChainSlot(const QString& group) const;
     EffectSlotPointer getEffectSlot(const QString& group);
 
-    EffectKnobParameterSlotPointer getEffectParameterSlot(
+    EffectKnobParameterSlotPointer getEffectKnobParameterSlot(
             const ConfigKey& configKey);
     EffectButtonParameterSlotPointer getEffectButtonParameterSlot(
             const ConfigKey& configKey);

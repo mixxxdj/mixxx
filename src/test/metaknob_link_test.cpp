@@ -4,7 +4,7 @@
 #include <QScopedPointer>
 
 #include "controllers/softtakeover.h"
-#include "effects/effectparameterslot.h"
+#include "effects/effectknobparameterslot.h"
 #include "effects/effectchainslot.h"
 #include "effects/specialeffectchainslots.h"
 #include "effects/effectslot.h"
@@ -56,7 +56,7 @@ class MetaLinkTest : public BaseEffectTest {
         m_pEffectsManager->loadEffect(m_pChainSlot, iEffectNumber,
                 pManifest->id(), EffectBackendType::Unknown);
 
-        QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
+        QString itemPrefix = EffectKnobParameterSlot::formatItemPrefix(0);
 
         m_pControlValue.reset(new ControlProxy(group, itemPrefix));
 
@@ -217,7 +217,7 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
 
     m_pEffectsManager->loadEffect(m_pChainSlot, 0, pManifest->id(), EffectBackendType::Unknown);
 
-    QString itemPrefix = EffectParameterSlot::formatItemPrefix(0);
+    QString itemPrefix = EffectKnobParameterSlot::formatItemPrefix(0);
     m_pControlValue.reset(new ControlProxy(group, itemPrefix));
     m_pControlLinkType.reset(new ControlProxy(group,
             itemPrefix + QString("_link_type")));

@@ -66,7 +66,7 @@ EffectSlot::EffectSlot(const QString& group,
             this, SLOT(slotClear(double)));
 
     for (unsigned int i = 0; i < kDefaultMaxParameters; ++i) {
-        addEffectParameterSlot();
+        addEffectKnobParameterSlot();
         addEffectButtonParameterSlot();
     }
 
@@ -181,9 +181,9 @@ void EffectSlot::reload(const QSet<ChannelHandleAndGroup>& activeInputChannels) 
             activeInputChannels);
 }
 
-EffectKnobParameterSlotPointer EffectSlot::addEffectParameterSlot() {
+EffectKnobParameterSlotPointer EffectSlot::addEffectKnobParameterSlot() {
     auto pParameterSlot = EffectKnobParameterSlotPointer(
-            new EffectParameterSlot(m_group, m_knobParameterSlots.size()));
+            new EffectKnobParameterSlot(m_group, m_knobParameterSlots.size()));
     m_knobParameterSlots.append(pParameterSlot);
     m_pControlNumParameterSlots->forceSet(
             m_pControlNumParameterSlots->get() + 1);
@@ -272,8 +272,8 @@ void EffectSlot::setEnabled(bool enabled) {
     m_pControlEnabled->set(enabled);
 }
 
-EffectKnobParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int slotNumber) {
-    //qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
+EffectKnobParameterSlotPointer EffectSlot::getEffectKnobParameterSlot(unsigned int slotNumber) {
+    //qDebug() << debugString() << "getEffectKnobParameterSlot" << slotNumber;
     if (slotNumber >= static_cast<unsigned int>(m_knobParameterSlots.size())) {
         qWarning() << "WARNING: slotNumber out of range";
         return EffectKnobParameterSlotPointer();
@@ -282,7 +282,7 @@ EffectKnobParameterSlotPointer EffectSlot::getEffectParameterSlot(unsigned int s
 }
 
 EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsigned int slotNumber) {
-    //qDebug() << debugString() << "getEffectParameterSlot" << slotNumber;
+    //qDebug() << debugString() << "getEffectKnobParameterSlot" << slotNumber;
     if (slotNumber >= static_cast<unsigned int>(m_buttonParameters.size())) {
         qWarning() << "WARNING: slotNumber out of range";
         return EffectButtonParameterSlotPointer();
@@ -316,7 +316,7 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
     unsigned int iNumKnobParameters = numKnobParameters();
     while (static_cast<unsigned int>(m_knobParameterSlots.size())
             < iNumKnobParameters) {
-        addEffectParameterSlot();
+        addEffectKnobParameterSlot();
     }
 
     unsigned int iNumButtonParameters = numButtonParameters();

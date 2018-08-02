@@ -1,6 +1,6 @@
 #include <QtDebug>
 
-#include "effects/effectparameterslot.h"
+#include "effects/effectknobparameterslot.h"
 
 #include "effects/effectslot.h"
 #include "effects/effectparameter.h"
@@ -11,7 +11,7 @@
 #include "controllers/softtakeover.h"
 #include "util/xml.h"
 
-EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
+EffectKnobParameterSlot::EffectKnobParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(group, iParameterSlotNumber) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
 
@@ -47,7 +47,7 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
     clear();
 }
 
-EffectParameterSlot::~EffectParameterSlot() {
+EffectKnobParameterSlot::~EffectKnobParameterSlot() {
     // qDebug() << debugString() << "destroyed";
     delete m_pControlValue;
     // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
@@ -56,7 +56,7 @@ EffectParameterSlot::~EffectParameterSlot() {
     delete m_pSoftTakeover;
 }
 
-void EffectParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
+void EffectKnobParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
     // qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     clear();
     if (pEffectSlot) {
@@ -104,7 +104,7 @@ void EffectParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
     emit(updated());
 }
 
-void EffectParameterSlot::clear() {
+void EffectKnobParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
         m_pEffectParameter->disconnect(this);
@@ -123,12 +123,12 @@ void EffectParameterSlot::clear() {
     emit(updated());
 }
 
-void EffectParameterSlot::slotParameterValueChanged(double value) {
+void EffectKnobParameterSlot::slotParameterValueChanged(double value) {
     //qDebug() << debugString() << "slotParameterValueChanged" << value.toDouble();
     m_pControlValue->set(value);
 }
 
-void EffectParameterSlot::slotLinkTypeChanging(double v) {
+void EffectKnobParameterSlot::slotLinkTypeChanging(double v) {
     m_pSoftTakeover->ignoreNext();
     EffectManifestParameter::LinkType newType =
         static_cast<EffectManifestParameter::LinkType>(
@@ -155,12 +155,12 @@ void EffectParameterSlot::slotLinkTypeChanging(double v) {
     m_pControlLinkType->setAndConfirm(static_cast<double>(newType));
 }
 
-void EffectParameterSlot::slotLinkInverseChanged(double v) {
+void EffectKnobParameterSlot::slotLinkInverseChanged(double v) {
     Q_UNUSED(v);
     m_pSoftTakeover->ignoreNext();
 }
 
-void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
+void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
     m_dChainParameter = parameter;
     if (m_pEffectParameter != nullptr) {
         // Intermediate cast to integer is needed for VC++.
@@ -246,22 +246,22 @@ void EffectParameterSlot::onEffectMetaParameterChanged(double parameter, bool fo
     }
 }
 
-void EffectParameterSlot::syncSofttakeover() {
+void EffectKnobParameterSlot::syncSofttakeover() {
     double parameter = m_pControlValue->getParameter();
     m_pSoftTakeover->ignore(m_pControlValue, parameter);
 }
 
-double EffectParameterSlot::getValueParameter() const {
+double EffectKnobParameterSlot::getValueParameter() const {
     return m_pControlValue->getParameter();
 }
 
-void EffectParameterSlot::slotValueChanged(double v) {
+void EffectKnobParameterSlot::slotValueChanged(double v) {
     if (m_pEffectParameter) {
         m_pEffectParameter->setValue(v);
     }
 }
 
-QDomElement EffectParameterSlot::toXml(QDomDocument* doc) const {
+QDomElement EffectKnobParameterSlot::toXml(QDomDocument* doc) const {
     QDomElement parameterElement;
     // if (m_pEffectParameter != nullptr) {
     //     parameterElement = doc->createElement(EffectXml::Parameter);
@@ -281,7 +281,7 @@ QDomElement EffectParameterSlot::toXml(QDomDocument* doc) const {
     return parameterElement;
 }
 
-void EffectParameterSlot::loadParameterSlotFromXml(const QDomElement& parameterElement) {
+void EffectKnobParameterSlot::loadParameterSlotFromXml(const QDomElement& parameterElement) {
     // if (m_pEffectParameter == nullptr) {
     //     return;
     // }

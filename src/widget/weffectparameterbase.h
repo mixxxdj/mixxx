@@ -20,9 +20,9 @@ class WEffectParameterBase : public WLabel {
     void parameterUpdated();
 
   protected:
-    // Set the EffectParameterSlot that should be monitored by this
+    // Set the EffectKnobParameterSlot that should be monitored by this
     // WEffectParameterBase.
-    void setEffectParameterSlot(EffectParameterSlotBasePointer pEffectParameterSlot);
+    void setEffectKnobParameterSlot(EffectParameterSlotBasePointer pEffectKnobParameterSlot);
 
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;

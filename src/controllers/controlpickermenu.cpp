@@ -6,7 +6,7 @@
 #include "engine/loopingcontrol.h"
 #include "effects/specialeffectchainslots.h"
 #include "effects/effectslot.h"
-#include "effects/effectparameterslot.h"
+#include "effects/effectknobparameterslot.h"
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {
@@ -641,7 +641,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                         StandardEffectChainSlot::formatEffectSlotGroup(
                             iEffectUnitNumber - 1,
                             iEffectSlotNumber - 1);
-                const QString parameterSlotItemPrefix = EffectParameterSlot::formatItemPrefix(
+                const QString parameterSlotItemPrefix = EffectKnobParameterSlot::formatItemPrefix(
                         iParameterSlotNumber - 1);
                 QMenu* parameterSlotMenu = addSubmenu(
                     m_parameterStr.arg(iParameterSlotNumber),

@@ -27,10 +27,10 @@ void WEffectPushButton::setupEffectParameterSlot(const ConfigKey& configKey) {
                 "is not an effect button parameter.";
         return;
     }
-    setEffectParameterSlot(pParameterSlot);
+    setEffectKnobParameterSlot(pParameterSlot);
 }
 
-void WEffectPushButton::setEffectParameterSlot(
+void WEffectPushButton::setEffectKnobParameterSlot(
         EffectButtonParameterSlotPointer pParameterSlot) {
     m_pEffectParameterSlot = pParameterSlot;
     if (m_pEffectParameterSlot) {
