@@ -168,7 +168,7 @@
 									<DefaultMark>
 										<Align>bottom|right</Align>
 										<Color>#FD0564</Color>
-										<TextColor>#FFFFFF</TextColor>
+										<TextColor>#000000</TextColor>
 										<Text> %1 </Text>
 									</DefaultMark>
                   <Mark>
@@ -176,7 +176,7 @@
                     <Text>C</Text>
                     <Align>top|right</Align>
                     <Color>#FF001C</Color>
-                    <TextColor>#FFFFFF</TextColor>
+                    <TextColor>#000000</TextColor>
                   </Mark>
 									<Connection>
 										<ConfigKey>[Sampler<Variable name="samplernum"/>],playposition</ConfigKey>
