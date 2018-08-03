@@ -84,7 +84,11 @@ class EffectChainSlot : public QObject {
                     const EffectManifestPointer pManifest,
                     std::unique_ptr<EffectProcessor> pProcessor);
 
-    void reloadAllEffects();
+    // TODO : Remove these functions once the GUI for parameter rearrangement is implemented
+    void hideEffectParameter(EffectManifestPointer pManifest,
+            const unsigned int position);
+    void setEffectParameterPosition(EffectManifestPointer pManifest,
+            const unsigned int parameterId, const unsigned int position);
 
   signals:
     // Signal that whoever is in charge of this EffectChainSlot should load the

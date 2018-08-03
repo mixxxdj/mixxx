@@ -26,7 +26,7 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     }
 
     // Load the parameter of the given effect into this EffectButtonParameterSlot
-    void loadEffect(EffectSlot* pEffectSlot);
+    void loadParameter(EffectParameter* pEffectParameter);
 
     // Clear the currently loaded effect
     void clear();

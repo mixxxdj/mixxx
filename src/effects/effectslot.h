@@ -107,7 +107,10 @@ class EffectSlot : public QObject {
     void removeFromEngine();
 
     double getMetaknobDefault();
-    void reload(const QSet<ChannelHandleAndGroup>& activeInputChannels);
+
+    void hideEffectParameter(const unsigned int parameterId);
+    void setEffectParameterPosition(const unsigned int parameterId,
+            const unsigned int position);
 
   public slots:
     void setMetaParameter(double v, bool force = false);
@@ -129,6 +132,7 @@ class EffectSlot : public QObject {
         return QString("EffectSlot(%1)").arg(m_group);
     }
 
+    void loadParameters();
     void sendParameterUpdate();
     void unloadEffect();
 
@@ -142,6 +146,8 @@ class EffectSlot : public QObject {
     EngineEffectChain* m_pEngineEffectChain;
     QList<EffectKnobParameterSlotPointer> m_knobParameterSlots;
     QList<EffectButtonParameterSlotPointer> m_buttonParameterSlots;
+    QList<int> m_knobParameterSlotPositionToManifestIndex;
+    QList<int> m_buttonParameterSlotPositionToManifestIndex;
 
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlEnabled;

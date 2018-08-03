@@ -56,51 +56,54 @@ EffectKnobParameterSlot::~EffectKnobParameterSlot() {
     delete m_pSoftTakeover;
 }
 
-void EffectKnobParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
-    // qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
+void EffectKnobParameterSlot::loadParameter(EffectParameter* pEffectParameter) {
+    // qDebug() << debugString() << "loadParameter" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     clear();
-    if (pEffectSlot) {
-        // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffectSlot->getKnobParameterForSlot(m_iParameterSlotNumber);
 
-        if (m_pEffectParameter) {
-            m_pManifestParameter = m_pEffectParameter->manifest();
-
-            // qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
-            double dValue = m_pEffectParameter->getValue();
-            double dMinimum = m_pManifestParameter->getMinimum();
-            double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
-            double dMaximum = m_pManifestParameter->getMaximum();
-            double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
-            double dDefault = m_pManifestParameter->getDefault();
-
-            if (dValue > dMaximum || dValue < dMinimum ||
-                dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
-                qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
-            }
-
-            // qDebug() << debugString()
-            //          << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
-            //          .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
-
-            EffectManifestParameter::ControlHint type = m_pManifestParameter->controlHint();
-            m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
-            m_pControlValue->setDefaultValue(dDefault);
-            m_pControlValue->set(dValue);
-            // TODO(rryan) expose this from EffectParameter
-            m_pControlType->forceSet(static_cast<double>(type));
-            // Default loaded parameters to loaded and unlinked
-            m_pControlLoaded->forceSet(1.0);
-
-            m_pControlLinkType->set(
-                static_cast<double>(m_pManifestParameter->defaultLinkType()));
-            m_pControlLinkInverse->set(
-                static_cast<double>(m_pManifestParameter->defaultLinkInversion()));
-
-            connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
-                    this, SLOT(slotParameterValueChanged(double)));
-        }
+    VERIFY_OR_DEBUG_ASSERT(EffectSlot::isKnobParameter(pEffectParameter)) {
+        return;
     }
+
+    m_pEffectParameter = pEffectParameter;
+
+    if (m_pEffectParameter) {
+        m_pManifestParameter = m_pEffectParameter->manifest();
+
+        // qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
+        double dValue = m_pEffectParameter->getValue();
+        double dMinimum = m_pManifestParameter->getMinimum();
+        double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
+        double dMaximum = m_pManifestParameter->getMaximum();
+        double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
+        double dDefault = m_pManifestParameter->getDefault();
+
+        if (dValue > dMaximum || dValue < dMinimum ||
+            dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
+            qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
+        }
+
+        // qDebug() << debugString()
+        //          << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
+        //          .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
+
+        EffectManifestParameter::ControlHint type = m_pManifestParameter->controlHint();
+        m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
+        m_pControlValue->setDefaultValue(dDefault);
+        m_pControlValue->set(dValue);
+        // TODO(rryan) expose this from EffectParameter
+        m_pControlType->forceSet(static_cast<double>(type));
+        // Default loaded parameters to loaded and unlinked
+        m_pControlLoaded->forceSet(1.0);
+
+        m_pControlLinkType->set(
+            static_cast<double>(m_pManifestParameter->defaultLinkType()));
+        m_pControlLinkInverse->set(
+            static_cast<double>(m_pManifestParameter->defaultLinkInversion()));
+
+        connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
+                this, SLOT(slotParameterValueChanged(double)));
+    }
+
     emit(updated());
 }
 

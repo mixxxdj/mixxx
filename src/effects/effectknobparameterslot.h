@@ -28,7 +28,7 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
     }
 
     // Load the parameter of the given effect into this EffectKnobParameterSlot
-    void loadEffect(EffectSlot* pEffectSlot);
+    void loadParameter(EffectParameter* pEffectParameter);
 
     double getValueParameter() const;
 

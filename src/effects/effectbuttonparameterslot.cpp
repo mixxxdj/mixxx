@@ -38,52 +38,53 @@ EffectButtonParameterSlot::~EffectButtonParameterSlot() {
     delete m_pControlValue;
 }
 
-void EffectButtonParameterSlot::loadEffect(EffectSlot* pEffectSlot) {
-    // qDebug() << debugString() << "loadEffect" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
+void EffectButtonParameterSlot::loadParameter(EffectParameter* pEffectParameter) {
+    // qDebug() << debugString() << "loadParameter" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     if (m_pEffectParameter) {
         clear();
     }
 
-    if (pEffectSlot) {
-        m_pEffectSlot = pEffectSlot;
-        // Returns null if it doesn't have a parameter for that number
-        m_pEffectParameter = pEffectSlot->getButtonParameterForSlot(m_iParameterSlotNumber);
-
-        if (m_pEffectParameter) {
-            m_pManifestParameter = m_pEffectParameter->manifest();
-
-            // Set the number of states
-            int numStates = math_max(m_pEffectParameter->manifest()->getSteps().size(), 2);
-            m_pControlValue->setStates(numStates);
-            //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
-            double dValue = m_pEffectParameter->getValue();
-            double dMinimum = m_pManifestParameter->getMinimum();
-            double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
-            double dMaximum = m_pManifestParameter->getMaximum();
-            double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
-            double dDefault = m_pManifestParameter->getDefault();
-
-            if (dValue > dMaximum || dValue < dMinimum ||
-                dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
-                qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
-            }
-
-            // qDebug() << debugString()
-            //         << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
-            //         .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
-
-            m_pControlValue->set(dValue);
-            m_pControlValue->setDefaultValue(dDefault);
-            EffectManifestParameter::ControlHint type = m_pManifestParameter->controlHint();
-            // TODO(rryan) expose this from EffectParameter
-            m_pControlType->forceSet(static_cast<double>(type));
-            // Default loaded parameters to loaded and unlinked
-            m_pControlLoaded->forceSet(1.0);
-
-            connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
-                    this, SLOT(slotParameterValueChanged(double)));
-        }
+    VERIFY_OR_DEBUG_ASSERT(EffectSlot::isButtonParameter(pEffectParameter)) {
+        return;
     }
+
+    m_pEffectParameter = pEffectParameter;
+
+    if (m_pEffectParameter) {
+        m_pManifestParameter = m_pEffectParameter->manifest();
+
+        // Set the number of states
+        int numStates = math_max(m_pEffectParameter->manifest()->getSteps().size(), 2);
+        m_pControlValue->setStates(numStates);
+        //qDebug() << debugString() << "Loading effect parameter" << m_pEffectParameter->name();
+        double dValue = m_pEffectParameter->getValue();
+        double dMinimum = m_pManifestParameter->getMinimum();
+        double dMinimumLimit = dMinimum; // TODO(rryan) expose limit from EffectParameter
+        double dMaximum = m_pManifestParameter->getMaximum();
+        double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
+        double dDefault = m_pManifestParameter->getDefault();
+
+        if (dValue > dMaximum || dValue < dMinimum ||
+            dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
+            qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
+        }
+
+        // qDebug() << debugString()
+        //         << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
+        //         .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
+
+        m_pControlValue->set(dValue);
+        m_pControlValue->setDefaultValue(dDefault);
+        EffectManifestParameter::ControlHint type = m_pManifestParameter->controlHint();
+        // TODO(rryan) expose this from EffectParameter
+        m_pControlType->forceSet(static_cast<double>(type));
+        // Default loaded parameters to loaded and unlinked
+        m_pControlLoaded->forceSet(1.0);
+
+        connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
+                this, SLOT(slotParameterValueChanged(double)));
+    }
+
     emit(updated());
 }
 

@@ -410,15 +410,29 @@ void EffectsManager::setup() {
 //     m_pEffectChainManager->loadEffectChains();
 // }
 
-void EffectsManager::refreshAllChainSlots() {
+void EffectsManager::setEffectParameterPosition(EffectManifestPointer pManifest,
+        const unsigned int parameterId, const unsigned int position) {
     for (auto& pChainSlot : m_standardEffectChainSlots) {
-        pChainSlot->reloadAllEffects();
+        pChainSlot->setEffectParameterPosition(pManifest, parameterId, position);
     }
     for (auto& pChainSlot : m_equalizerEffectChainSlots) {
-        pChainSlot->reloadAllEffects();
+        pChainSlot->setEffectParameterPosition(pManifest, parameterId, position);
     }
     for (auto& pChainSlot : m_quickEffectChainSlots) {
-        pChainSlot->reloadAllEffects();
+        pChainSlot->setEffectParameterPosition(pManifest, parameterId, position);
+    }
+}
+
+void EffectsManager::hideEffectParameter(EffectManifestPointer pManifest,
+        const unsigned int position) {
+    for (auto& pChainSlot : m_standardEffectChainSlots) {
+        pChainSlot->hideEffectParameter(pManifest, position);
+    }
+    for (auto& pChainSlot : m_equalizerEffectChainSlots) {
+        pChainSlot->hideEffectParameter(pManifest, position);
+    }
+    for (auto& pChainSlot : m_quickEffectChainSlots) {
+        pChainSlot->hideEffectParameter(pManifest, position);
     }
 }
 

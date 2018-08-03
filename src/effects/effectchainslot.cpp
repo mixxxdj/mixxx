@@ -192,9 +192,21 @@ void EffectChainSlot::loadEffect(const unsigned int iEffectSlotNumber,
                                                  m_enabledInputChannels);
 }
 
-void EffectChainSlot::reloadAllEffects() {
-    for (EffectSlotPointer pSlot : m_effectSlots) {
-        pSlot->reload(m_enabledInputChannels);
+void EffectChainSlot::hideEffectParameter(EffectManifestPointer pManifest,
+        const unsigned int position) {
+    for (EffectSlotPointer pEffectSlot : m_effectSlots) {
+        if (pEffectSlot->getManifest() == pManifest) {
+            pEffectSlot->hideEffectParameter(position);
+        }
+    }
+}
+
+void EffectChainSlot::setEffectParameterPosition(EffectManifestPointer pManifest,
+        const unsigned int parameterId, const unsigned int position) {
+    for (EffectSlotPointer pEffectSlot : m_effectSlots) {
+        if (pEffectSlot->getManifest() == pManifest) {
+            pEffectSlot->setEffectParameterPosition(parameterId, position);
+        }
     }
 }
 
@@ -232,14 +244,14 @@ void EffectChainSlot::setSuperParameterDefaultValue(double value) {
 
 EffectSlotPointer EffectChainSlot::addEffectSlot(const QString& group) {
     // qDebug() << debugString() << "addEffectSlot" << group;
-    EffectSlot* pEffectSlot = new EffectSlot(group, m_pEffectsManager, m_effectSlots.size(), m_pEngineEffectChain);
+    EffectSlotPointer pEffectSlot = EffectSlotPointer(
+            new EffectSlot(group, m_pEffectsManager, m_effectSlots.size(), m_pEngineEffectChain));
 
-    EffectSlotPointer pSlot(pEffectSlot);
-    m_effectSlots.append(pSlot);
+    m_effectSlots.append(pEffectSlot);
     int numEffectSlots = m_pControlNumEffectSlots->get() + 1;
     m_pControlNumEffectSlots->forceSet(numEffectSlots);
     m_pControlChainFocusedEffect->setStates(numEffectSlots);
-    return pSlot;
+    return pEffectSlot;
 }
 
 void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_group,
@@ -276,8 +288,8 @@ EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
 }
 
 void EffectChainSlot::slotControlClear(double v) {
-    for (EffectSlotPointer pSlot : m_effectSlots) {
-        pSlot->slotClear(v);
+    for (EffectSlotPointer pEffectSlot : m_effectSlots) {
+        pEffectSlot->slotClear(v);
     }
 }
 
@@ -285,8 +297,8 @@ void EffectChainSlot::slotControlChainSuperParameter(double v, bool force) {
     // qDebug() << debugString() << "slotControlChainSuperParameter" << v;
 
     m_pControlChainSuperParameter->set(v);
-    for (const auto& pSlot : m_effectSlots) {
-        pSlot->setMetaParameter(v, force);
+    for (const auto& pEffectSlot : m_effectSlots) {
+        pEffectSlot->setMetaParameter(v, force);
     }
 }
 
