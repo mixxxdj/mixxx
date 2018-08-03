@@ -6,7 +6,7 @@ ListenBrainzSettings ListenBrainzSettingsManager::s_latestSettings;
 
 ListenBrainzSettingsManager::ListenBrainzSettingsManager(
                 UserSettingsPointer pSettings,
-                const ListenBrainzWidgets &widgets)
+                const ListenBrainzWidgets& widgets)
         :  m_widgets(widgets),
            m_pUserSettings(pSettings),
            m_CPSettingsChanged(kListenBrainzSettingsChanged) {

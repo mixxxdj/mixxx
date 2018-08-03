@@ -27,7 +27,7 @@ struct ListenBrainzSettings {
 class ListenBrainzSettingsManager : public QObject {
     Q_OBJECT
   public:
-    ListenBrainzSettingsManager(UserSettingsPointer pSettings, const ListenBrainzWidgets &widgets);
+    ListenBrainzSettingsManager(UserSettingsPointer pSettings, const ListenBrainzWidgets& widgets);
     static ListenBrainzSettings getPersistedSettings(UserSettingsPointer pSettings);
     static ListenBrainzSettings getLatestSettings();
     void applySettings();
