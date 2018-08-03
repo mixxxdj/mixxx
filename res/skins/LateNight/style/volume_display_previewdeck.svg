@@ -8,16 +8,45 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    width="10"
-   height="45"
-   id="svg5757">
+   height="47"
+   id="svg5757"
+   sodipodi:docname="volume_display_previewdeck.svg"
+   inkscape:version="0.92.3 (unknown)"
+   inkscape:export-filename="/home/ronso/Downloads/mixxx_source/src/latenight-spinny-skinmenu-toolbar/res/skins/LateNight/style/volume_display_previewdeck.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="740"
+     id="namedview307"
+     showgrid="false"
+     inkscape:snap-bbox="true"
+     inkscape:snap-page="true"
+     inkscape:zoom="20.977778"
+     inkscape:cx="0.60223143"
+     inkscape:cy="37.888902"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg5757" />
   <defs
      id="defs5759">
     <inkscape:path-effect
        effect="spiro"
-       id="path-effect7280" />
+       id="path-effect7280"
+       is_visible="true" />
     <linearGradient
        x1="3"
        y1="1"
@@ -986,7 +1015,8 @@
     </linearGradient>
     <inkscape:path-effect
        effect="spiro"
-       id="path-effect4478-7" />
+       id="path-effect4478-7"
+       is_visible="true" />
     <linearGradient
        x1="3"
        y1="1"
@@ -1540,6 +1570,15 @@
        id="linearGradient15412"
        xlink:href="#linearGradient6345"
        gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       x1="2"
+       y1="1008.3622"
+       x2="2"
+       y2="1051.3622"
+       id="linearGradient15370-3"
+       xlink:href="#linearGradient6345"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(0,-2)" />
   </defs>
   <metadata
      id="metadata5762">
@@ -1555,21 +1594,23 @@
   </metadata>
   <rect
      width="10"
-     height="45"
+     height="47"
      x="0"
-     y="-3.5527137e-15"
+     y="-2.5791593e-08"
      id="rect12208"
-     style="color:#000000;fill:#0f0f0f;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+     style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#0f0f0f;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
   <path
-     d="M 1,45 1,0 0,0 0,45"
+     d="M 1,46.999998 V -1e-7 H 0 V 46.999998"
      id="path7278"
-     style="fill:#2d2d2d;fill-opacity:1;stroke:none;display:inline" />
+     style="display:inline;fill:#2d2d2d;fill-opacity:1;stroke:none;stroke-width:0.99999994"
+     inkscape:connector-curvature="0" />
   <path
-     d="M 10,45 10,0 9,0 9,45"
+     d="M 10,46.999998 V -1e-7 H 9 V 46.999998"
      id="path4476"
-     style="fill:#2d2d2d;fill-opacity:1;stroke:none;display:inline" />
+     style="display:inline;fill:#2d2d2d;fill-opacity:1;stroke:none;stroke-width:0.99999994"
+     inkscape:connector-curvature="0" />
   <g
-     transform="translate(0,-1007.3622)"
+     transform="translate(0,-1005.3622)"
      id="g7282"
      style="fill:url(#linearGradient7820);fill-opacity:1">
     <rect
@@ -1578,153 +1619,160 @@
        x="2"
        y="1008.3622"
        id="use4520"
-       style="color:#000000;fill:url(#linearGradient15370);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15370);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1010.3622"
        id="use4522"
-       style="color:#000000;fill:url(#linearGradient15372);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15372);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1012.3622"
        id="use4524"
-       style="color:#000000;fill:url(#linearGradient15374);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15374);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1014.3622"
        id="use4526"
-       style="color:#000000;fill:url(#linearGradient15376);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15376);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1016.3622"
        id="use4528"
-       style="color:#000000;fill:url(#linearGradient15378);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15378);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1018.3622"
        id="use4530"
-       style="color:#000000;fill:url(#linearGradient15380);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15380);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1020.3622"
        id="use4532"
-       style="color:#000000;fill:url(#linearGradient15382);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15382);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1022.3622"
        id="use4534"
-       style="color:#000000;fill:url(#linearGradient15384);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15384);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1024.3622"
        id="use4536"
-       style="color:#000000;fill:url(#linearGradient15386);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15386);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1026.3622"
        id="use4538"
-       style="color:#000000;fill:url(#linearGradient15388);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15388);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1028.3622"
        id="use4540"
-       style="color:#000000;fill:url(#linearGradient15390);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15390);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1030.3622"
        id="use4542"
-       style="color:#000000;fill:url(#linearGradient15392);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15392);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1032.3622"
        id="use4544"
-       style="color:#000000;fill:url(#linearGradient15394);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15394);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1034.3622"
        id="use4546"
-       style="color:#000000;fill:url(#linearGradient15396);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15396);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1036.3622"
        id="use4548"
-       style="color:#000000;fill:url(#linearGradient15398);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15398);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1038.3622"
        id="use4550"
-       style="color:#000000;fill:url(#linearGradient15400);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15400);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1040.3622"
        id="use4552"
-       style="color:#000000;fill:url(#linearGradient15402);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15402);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1042.3622"
        id="use4554"
-       style="color:#000000;fill:url(#linearGradient15404);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15404);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1044.3622"
        id="use4556"
-       style="color:#000000;fill:url(#linearGradient15406);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15406);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1046.3622"
        id="use4558"
-       style="color:#000000;fill:url(#linearGradient15408);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15408);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1048.3622"
        id="use4560"
-       style="color:#000000;fill:url(#linearGradient15410);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15410);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
     <rect
        width="6"
        height="1"
        x="2"
        y="1050.3622"
        id="use4562"
-       style="color:#000000;fill:url(#linearGradient15412);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15412);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
+    <rect
+       width="6"
+       height="1"
+       x="2"
+       y="1006.3622"
+       id="use4520-3"
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient15370-3);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.36000001;marker:none;enable-background:accumulate" />
   </g>
 </svg>
