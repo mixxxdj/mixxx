@@ -55,10 +55,13 @@
            <bool>false</bool>
           </property>
           <property name="editable">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="insertPolicy">
            <enum>QComboBox::NoInsert</enum>
+          </property>
+          <property name="sizeAdjustPolicy">
+           <enum>QComboBox::AdjustToContents</enum>
           </property>
          </widget>
         </item>
