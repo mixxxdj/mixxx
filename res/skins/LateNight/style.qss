@@ -56,9 +56,6 @@ WTime {
   qproperty-layoutAlignment: 'AlignCenter';
   border-radius: 2px;
   }
-  #Stars:hover {
-    background-color: #0f0f0f;
-  }
   WStarRating {
     color: #f0bb2b;
     font-weight: bold;
