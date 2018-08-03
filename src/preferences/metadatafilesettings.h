@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QObject>
 #include <QPushButton>
+#include <QStyledItemDelegate>
 
 #include "control/controlproxy.h"
 #include "preferences/usersettings.h"
@@ -44,12 +45,29 @@ struct FileWidgets {
     QPushButton* changeFilePathButton;
 };
 
+class ComboboxDelegate : public QStyledItemDelegate {
+    Q_OBJECT
+  public:
+    void paint(QPainter* painter,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) const override;
+
+  protected:
+    bool editorEvent(QEvent* event,
+            QAbstractItemModel* model,
+            const QStyleOptionViewItem& option,
+            const QModelIndex& index) override;
+  signals:
+    void moreButtonPressed();
+};
+
 class MetadataFileSettings : public QObject {
     Q_OBJECT
   public:
     MetadataFileSettings(UserSettingsPointer pSettings,
             const FileWidgets& widgets,
             QWidget* dialogWidget);
+    ~MetadataFileSettings();
     static FileSettings getLatestSettings();
     static FileSettings getPersistedSettings(const UserSettingsPointer& pSettings);
     void applySettings();
@@ -58,6 +76,7 @@ class MetadataFileSettings : public QObject {
 
   private:
     void setupWidgets();
+    void setupEncodingComboBox();
     void updateLatestSettingsAndNotify();
     void persistSettings();
     void resetSettingsToDefault();
@@ -69,6 +88,10 @@ class MetadataFileSettings : public QObject {
     static FileSettings s_latestSettings;
     FileWidgets m_widgets;
     QWidget* m_pDialogWidget;
+    ComboboxDelegate* m_pDelegate;
+    QStyledItemDelegate* m_pNormalDelegate;
+    QList<QByteArray> m_remainingCodecs;
   private slots:
     void slotFilepathButtonClicked();
+    void slotMoreButtonComboboxPressed();
 };
