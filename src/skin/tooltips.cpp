@@ -744,9 +744,9 @@ void Tooltips::addStandardTooltips() {
     add("EffectUnit_mix_mode")
             << tr("Mix Mode")
             << tr("Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit") + "\n"
-            << tr("D/W mode: Mix knob crossfades between dry and wet\n"
+            << tr("Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet\n"
                   "Use this to change the sound of the track with EQ and filter effects.") + "\n"
-            << tr("D+W mode: Mix knob adds wet to dry\n"
+            << tr("Dry+Wet mode (flat dry line): Mix knob adds wet to dry\n"
                   "Use this to change only the effected (wet) signal with EQ and filter effects.");
 
     add("EffectUnit_super1")
