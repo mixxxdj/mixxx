@@ -122,16 +122,16 @@
                     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
                     <DefaultMark>
                       <Align>bottom|right</Align>
-                      <Color>#FFFFFF</Color>
-                      <TextColor>#00FF00</TextColor>
+                      <Color>#00FF00</Color>
+                      <TextColor>#FFFFFF</TextColor>
                       <Text> %1 </Text>
                     </DefaultMark>
                     <Mark>
                       <Control>cue_point</Control>
                       <Text> C </Text>
-                      <Align>top</Align>
+                      <Align>top|right</Align>
                       <Color>#FF001C</Color>
-                      <TextColor>#00FF00</TextColor>
+                      <TextColor>#FFFFFF</TextColor>
                     </Mark>
                     <Connection>
                       <ConfigKey>[PreviewDeck1],playposition</ConfigKey>
