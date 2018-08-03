@@ -105,7 +105,7 @@
           <Unpressed>skin:/buttons/btn_fx_mixmode_d+w.svg</Unpressed>
         </State>
         <Connection>
-          <ConfigKey>[EffectRack1_EffectUnit1],mix_mode</ConfigKey>
+          <ConfigKey>[EffectRack1_EffectUnit2],mix_mode</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
       </PushButton>

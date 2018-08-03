@@ -9,9 +9,9 @@
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    id="svg8"
    version="1.1"
-   viewBox="0 0 44 20"
+   viewBox="0 0 40 20"
    height="20"
-   width="44"
+   width="40"
    sodipodi:docname="ic_fx_mixmode_d+w.svg"
    inkscape:version="0.92.3 (unknown)">
   <sodipodi:namedview
@@ -59,11 +59,11 @@
   <path
      inkscape:connector-curvature="0"
      id="path817"
-     d="M 10.292336,5.219671 H 33.707664"
+     d="M 8.292336,5.2196711 H 31.707664"
      style="display:inline;fill:none;fill-rule:evenodd;stroke:#c8c8c8;stroke-width:1.99999976;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.99215686" />
   <path
      inkscape:connector-curvature="0"
      id="path817-3"
-     d="M 33.707664,5.219671 C 17.316934,8.8026153 10.292336,14.774189 10.292336,14.774189"
+     d="M 31.707664,5.2196711 C 15.316934,8.8026154 8.292336,14.774189 8.292336,14.774189"
      style="display:inline;fill:none;fill-rule:evenodd;stroke:#c143ff;stroke-width:1.99999976;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
 </svg>
