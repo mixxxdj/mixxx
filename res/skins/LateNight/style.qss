@@ -475,13 +475,15 @@ WEffectButtonParameter*/
 #VinylButton,
 #FxAssignButton,
 #GuiToggleButton,
-#BroadcastButton {
+#BroadcastButton,
+#SettingsButton {
   border: 1px solid #585858;
   border-radius: 2px;
   }
 
   #GuiToggleButton,
   #BroadcastButton,
+  #SettingsButton,
   #RecBox {
     margin: 2px 3px 2px 2px;
   }
@@ -493,6 +495,7 @@ WEffectButtonParameter*/
 
 #VinylButton[displayValue="0"],
 #BroadcastButton[displayValue="0"],
+#SettingsButton[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #FxAssignButton[displayValue="0"] {
   color: #ddd;
@@ -506,6 +509,7 @@ WEffectButtonParameter*/
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
 #BroadcastButton[displayValue="1"], /* connecting: yellow */
+#SettingsButton[displayValue="1"],
 #FxAssignButton[displayValue="1"] {
   border: 1px solid #585858;
   border-radius: 2px;
@@ -513,6 +517,14 @@ WEffectButtonParameter*/
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #B69700,
     stop:1 #eece33);
+}
+
+#SettingsButton[displayValue="0"] {
+  image: url(skin:/buttons/btn_settings_off.svg) no-repeat left center;
+}
+
+#SettingsButton[displayValue="1"] {
+  image: url(skin:/buttons/btn_settings_on.svg) no-repeat left center;
 }
 
 #BroadcastButton[displayValue="2"] { /* good: green */
