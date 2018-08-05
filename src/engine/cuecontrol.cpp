@@ -53,6 +53,8 @@ CueControl::CueControl(QString group,
 
     m_pCueMode = new ControlObject(ConfigKey(group, "cue_mode"));
 
+    m_pSeekOnLoadMode = new ControlObject(ConfigKey(group, "seekonload_mode"));
+
     m_pCueSet = new ControlPushButton(ConfigKey(group, "cue_set"));
     m_pCueSet->setButtonMode(ControlPushButton::TRIGGER);
     connect(m_pCueSet, SIGNAL(valueChanged(double)),
@@ -149,6 +151,7 @@ CueControl::~CueControl() {
     delete m_pCuePoint;
     delete m_pCueSource;
     delete m_pCueMode;
+    delete m_pSeekOnLoadMode;
     delete m_pCueSet;
     delete m_pCueClear;
     delete m_pCueGoto;
@@ -270,16 +273,31 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     // Update COs with cues from track.
     trackCuesUpdated();
 
-    // If cue recall is ON in the prefs, then we're supposed to seek to the cue
-    // point on song load.
-    if (isCueRecallEnabled() && (m_pCuePoint->get() >= 0.0)) {
-        seekExact(m_pCuePoint->get());
-    } else if (!(m_pVinylControlEnabled->get() &&
-            m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
-        // If cuerecall is off, seek to zero unless
-        // vinylcontrol is on and set to absolute.  This allows users to
-        // load tracks and have the needle-drop be maintained.
+    // Seek track according to SeekOnLoadMode.
+    SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
+    switch (seekOnLoadMode) {
+    case SEEK_ON_LOAD_ZERO_POS:
         seekExact(0.0);
+        break;
+    case SEEK_ON_LOAD_MAIN_CUE:
+        seekExact(m_pCuePoint->get());
+        break;
+    case SEEK_ON_LOAD_ADJ_START:
+        seekExact(m_pAutoDJStartPosition->get());
+        break;
+    default:
+        // Respect cue recall preference option.
+        if (isCueRecallEnabled() && m_pCuePoint->get() != -1.0) {
+            // If cue recall is ON and main cue point is set, seek to it.
+            seekExact(m_pCuePoint->get());
+        } else if (!(m_pVinylControlEnabled->get() &&
+                     m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
+            // Otherwise, seek to zero unless vinylcontrol is on and
+            // set to absolute. This allows users to load tracks and
+            // have the needle-drop be maintained.
+            seekExact(0.0);
+        }
+        break;
     }
 }
 
@@ -333,6 +351,8 @@ void CueControl::trackCuesUpdated() {
         }
     }
 
+    SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
+
     if (pLoadCue) {
         bool wasTrackAtCue = isTrackAtCue();
 
@@ -341,7 +361,9 @@ void CueControl::trackCuesUpdated() {
         m_pCueSource->set(pLoadCue->getSource());
 
         // If track was at cue, move track along with cue.
-        if ((wasTrackAtCue || getCurrentSample() == 0.0) && isCueRecallEnabled()) {
+        if ((wasTrackAtCue || getCurrentSample() == 0.0) &&
+                (seekOnLoadMode == SEEK_ON_LOAD_MAIN_CUE ||
+                 (seekOnLoadMode == SEEK_ON_LOAD_DEFAULT && isCueRecallEnabled()))) {
             seekExact(pLoadCue->getPosition());
         }
     } else {
@@ -350,8 +372,16 @@ void CueControl::trackCuesUpdated() {
     }
 
     if (pStartCue) {
+        bool wasTrackAtStart = isTrackAtADJStart();
+
+        // Update COs.
         m_pAutoDJStartPosition->set(pStartCue->getPosition());
         m_pAutoDJStartSource->set(pStartCue->getSource());
+
+        // If track was at AutoDJ start, move track along with it.
+        if (wasTrackAtStart && seekOnLoadMode == SEEK_ON_LOAD_ADJ_START) {
+            seekExact(pStartCue->getPosition());
+        }
     } else {
         m_pAutoDJStartPosition->set(-1.0);
         m_pAutoDJStartSource->set(Cue::UNKNOWN);
@@ -1167,6 +1197,10 @@ bool CueControl::isTrackAtCue() {
     return (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f);
 }
 
+bool CueControl::isTrackAtADJStart() {
+    return (fabs(getCurrentSample() - m_pAutoDJStartPosition->get()) < 1.0f);
+}
+
 bool CueControl::isPlayingByPlayButton() {
     return m_pPlay->toBool() &&
             !m_iCurrentlyPreviewingHotcues && !m_bPreviewing;
@@ -1175,6 +1209,10 @@ bool CueControl::isPlayingByPlayButton() {
 bool CueControl::isCueRecallEnabled() {
     // Note that [Controls],CueRecall == 0 corresponds to "ON", not "OFF".
     return getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"), 0) == 0;
+}
+
+SeekOnLoadMode CueControl::getSeekOnLoadMode() {
+    return seekOnLoadModeFromDouble(m_pSeekOnLoadMode->get());
 }
 
 

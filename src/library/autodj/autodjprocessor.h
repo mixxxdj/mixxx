@@ -7,6 +7,7 @@
 
 #include "preferences/usersettings.h"
 #include "control/controlproxy.h"
+#include "engine/cuecontrol.h"
 #include "engine/enginechannel.h"
 #include "library/playlisttablemodel.h"
 #include "track/track.h"
@@ -61,6 +62,14 @@ class DeckAttributes : public QObject {
         m_repeat.set(enabled ? 1.0 : 0.0);
     }
 
+    SeekOnLoadMode seekOnLoadMode() const {
+        return seekOnLoadModeFromDouble(m_seekOnLoadMode.get());
+    }
+
+    void setSeekOnLoadMode(SeekOnLoadMode mode) {
+        m_seekOnLoadMode.set(mode);
+    }
+
     double startPosition() const {
         return m_startPos.get();
     }
@@ -109,6 +118,7 @@ class DeckAttributes : public QObject {
     ControlProxy m_playPos;
     ControlProxy m_play;
     ControlProxy m_repeat;
+    ControlProxy m_seekOnLoadMode;
     ControlProxy m_startPos;
     ControlProxy m_endPos;
     ControlProxy m_sampleRate;

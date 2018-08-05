@@ -27,6 +27,7 @@ DeckAttributes::DeckAttributes(int index,
           m_playPos(group, "playposition"),
           m_play(group, "play"),
           m_repeat(group, "repeat"),
+          m_seekOnLoadMode(group, "seekonload_mode"),
           m_startPos(group, "autodj_start_position"),
           m_endPos(group, "autodj_end_position"),
           m_sampleRate(group, "track_samplerate"),
@@ -314,6 +315,9 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         qDebug() << "Auto DJ enabled";
 
+        deck1.setSeekOnLoadMode(SEEK_ON_LOAD_ADJ_START);
+        deck2.setSeekOnLoadMode(SEEK_ON_LOAD_ADJ_START);
+
         connect(&deck1, SIGNAL(playPositionChanged(DeckAttributes*, double)),
                 this, SLOT(playerPositionChanged(DeckAttributes*, double)));
         connect(&deck2, SIGNAL(playPositionChanged(DeckAttributes*, double)),
@@ -392,6 +396,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         qDebug() << "Auto DJ disabled";
         m_eState = ADJ_DISABLED;
+        deck1.setSeekOnLoadMode(SEEK_ON_LOAD_DEFAULT);
+        deck2.setSeekOnLoadMode(SEEK_ON_LOAD_DEFAULT);
         deck1.disconnect(this);
         deck2.disconnect(this);
         m_pCOCrossfader->set(0);

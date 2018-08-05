@@ -18,6 +18,23 @@ class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
 
+enum SeekOnLoadMode {
+    SEEK_ON_LOAD_DEFAULT = 0,  // Use CueRecall preference setting
+    SEEK_ON_LOAD_ZERO_POS = 1,  // Use 0:00.000
+    SEEK_ON_LOAD_MAIN_CUE = 2,  // Use main cue point
+    SEEK_ON_LOAD_ADJ_START = 3,  // Use AutoDJ start point
+    SEEK_ON_LOAD_NUM_MODES
+};
+
+inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
+    // msvs does not allow to cast from double to an enum
+    SeekOnLoadMode mode = static_cast<SeekOnLoadMode>(int(value));
+    if (mode >= SEEK_ON_LOAD_NUM_MODES || mode < 0) {
+        return SEEK_ON_LOAD_DEFAULT;
+    }
+    return mode;
+}
+
 class HotcueControl : public QObject {
     Q_OBJECT
   public:
@@ -92,8 +109,10 @@ class CueControl : public EngineControl {
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtCue();
+    bool isTrackAtADJStart();
     bool isPlayingByPlayButton();
     bool isCueRecallEnabled();
+    SeekOnLoadMode getSeekOnLoadMode();
 
   public slots:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
@@ -150,6 +169,7 @@ class CueControl : public EngineControl {
     ControlObject* m_pCuePoint;
     ControlObject* m_pCueSource;
     ControlObject* m_pCueMode;
+    ControlObject* m_pSeekOnLoadMode;
     ControlPushButton* m_pCueSet;
     ControlPushButton* m_pCueClear;
     ControlPushButton* m_pCueCDJ;
