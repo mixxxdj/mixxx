@@ -33,7 +33,6 @@
 				<TooltipId>EffectUnit_deck_enabled</TooltipId>
 				<Style></Style>
 				<NumberStates>2</NumberStates>
-				<RightClickIsPushButton>true</RightClickIsPushButton>
 				<State>
 					<Number>0</Number>
 					<Pressed>btn_hotcue1_<Variable name="effectunitnum"/>_down.png</Pressed>
@@ -97,7 +96,7 @@
 		        <Size>17f,5f</Size>
 		        <BackPath>btn_mix.png</BackPath>
 		        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-				<Pos>53,18</Pos>
+				<Pos>53,16</Pos>
 	        </WidgetGroup>
 
 			<Knob>
@@ -105,17 +104,37 @@
 				<Style></Style>
 				<NumberStates>63</NumberStates>
 				<Path>knobs/knob_rotary_s%1.png</Path>
-				<Pos>49,29</Pos>
+				<Pos>49,24</Pos>
 				<Connection>
 					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],mix</ConfigKey>
 				</Connection>
 			</Knob>
 
+		    <PushButton>
+			    <TooltipId>EffectUnit_mix_mode</TooltipId>
+			    <Style></Style>
+			    <NumberStates>2</NumberStates>
+			    <State>
+				    <Number>0</Number>
+				    <Pressed>btn_fxmix_d-w.svg</Pressed>
+				    <Unpressed>btn_fxmix_d-w.svg</Unpressed>
+			    </State>
+			    <State>
+				    <Number>1</Number>
+				    <Pressed>btn_fxmix_d+w.svg</Pressed>
+				    <Unpressed>btn_fxmix_d+w.svg</Unpressed>
+			    </State>
+			    <Pos>54,49</Pos>
+			    <Connection>
+				    <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],mix_mode</ConfigKey>
+			    </Connection>
+		    </PushButton>
+
 	        <WidgetGroup>
 		        <Size>29f,5f</Size>
 		        <BackPath>btn_super.png</BackPath>
 		        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-				<Pos>76,18</Pos>
+				<Pos>76,16</Pos>
 	        </WidgetGroup>
 
 			<Knob>
@@ -123,7 +142,7 @@
 				<Style></Style>
 				<NumberStates>63</NumberStates>
 				<Path>knobs/knob_rotary_s%1.png</Path>
-				<Pos>77,29</Pos>
+				<Pos>77,24</Pos>
 				<Connection>
 					<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],super1</ConfigKey>
 				</Connection>

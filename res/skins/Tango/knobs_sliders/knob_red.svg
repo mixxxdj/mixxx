@@ -7,10 +7,34 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    width="30"
-   height="30"
-   id="svg4023">
+   height="26"
+   id="svg4023"
+   sodipodi:docname="knob_red.svg"
+   inkscape:version="0.92.3 (unknown)">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="781"
+     inkscape:window-height="480"
+     id="namedview2360"
+     showgrid="false"
+     inkscape:zoom="7.8666667"
+     inkscape:cx="21.737288"
+     inkscape:cy="15"
+     inkscape:window-x="601"
+     inkscape:window-y="157"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg4023" />
   <defs
      id="defs4033" />
   <metadata
@@ -26,7 +50,8 @@
     </rdf:RDF>
   </metadata>
   <path
-     d="m 13.210985,3.533349 c 0,-0.9052183 0.597425,-1.6961867 1.790434,-1.6961867 1.136864,0 1.790436,0.7825526 1.790436,1.6961867 l -5.17e-4,5.6336564 c -0.0042,1.0378006 -0.719154,1.6984586 -1.79033,1.6984586 -1.071175,0 -1.790435,-0.648827 -1.790435,-1.6984586 0,0 0.0016,1.8095066 4.12e-4,-5.6336564 z"
+     d="m 13.210985,3.532885 c 0,-0.9052183 0.597425,-1.6961867 1.790434,-1.6961867 1.136864,0 1.790436,0.7825526 1.790436,1.6961867 l -5.17e-4,5.6336564 C 16.787138,10.204342 16.072184,10.865 15.001008,10.865 c -1.071175,0 -1.790435,-0.648827 -1.790435,-1.6984586 0,0 0.0016,1.8095066 4.12e-4,-5.6336564 z"
      id="path4029"
-     style="fill:#ff6c00;fill-opacity:1;stroke:#0f0f0f;stroke-width:0.99999994;stroke-opacity:1" />
+     style="fill:#ff6c00;fill-opacity:1;stroke:#0f0f0f;stroke-width:0.99999994;stroke-opacity:1"
+     inkscape:connector-curvature="0" />
 </svg>

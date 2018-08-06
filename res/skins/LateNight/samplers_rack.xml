@@ -35,5 +35,9 @@
       </WidgetGroup>
 
     </Children>
+    <Connection>
+      <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

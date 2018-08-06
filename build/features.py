@@ -1298,7 +1298,7 @@ class Lilv(Feature):
                 raise Exception('Missing liblilv-0 (needs at least 0.5)')
 
             build.env.Append(CPPDEFINES='__LILV__')
-        build.env.ParseConfig('pkg-config lilv-0 --silence-errors \
+            build.env.ParseConfig('pkg-config lilv-0 --silence-errors \
                                   --cflags --libs')
 
     def sources(self, build):

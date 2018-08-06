@@ -20,16 +20,7 @@ Description:
       <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
       <!-- Headphone controls greyed out if no headphone device configured -->
-      <WidgetGroup>
-        <ObjectName>MixerbarCover</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>me,me</SizePolicy>
-        <Connection>
-          <ConfigKey>[Master],headEnabled</ConfigKey>
-          <BindProperty>visible</BindProperty>
-          <Transform><Not/></Transform>
-        </Connection>
-      </WidgetGroup>
+      <Template src="skin:preview_headmixer_cover.xml"/>
 
       <!-- actual headphone controls -->
       <WidgetGroup>

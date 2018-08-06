@@ -120,7 +120,7 @@ Description:
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],crossfader</ConfigKey>
+          <ConfigKey persist="true">[Master],show_xfader</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Crossfader -->

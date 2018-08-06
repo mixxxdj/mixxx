@@ -13,7 +13,7 @@
           <WidgetGroup>
             <ObjectName>AlignLeftTop</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
+            <SizePolicy>i,min</SizePolicy>
             <Children>
               <TrackProperty>
                 <ObjectName>TitleText</ObjectName>
@@ -30,8 +30,8 @@
           <WidgetGroup>
             <ObjectName>AlignRightTop</ObjectName>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>100,</MinimumSize>
+            <SizePolicy>p,min</SizePolicy>
+            <MinimumSize>80,</MinimumSize>
             <Children>
               <NumberPos>
                 <ObjectName>PlayPositionText</ObjectName>
