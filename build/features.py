@@ -1369,7 +1369,10 @@ class MPRIS(Feature):
         return "MPRIS implementation using QtDbus"
 
     def enabled(self,build):
-        build.flags['mpris'] = util.get_flags(build.env, 'mpris', 0)
+        if build.platform_is_linux:
+            build.flags['mpris'] = util.get_flags(build.env, 'mpris', 1)
+        else:
+            build.flags['mpris'] = util.get_flags(build.env, 'mpris', 0)
         if int(build.flags['mpris']):
             return True
         return False

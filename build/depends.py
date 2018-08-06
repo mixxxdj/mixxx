@@ -741,13 +741,6 @@ class MixxxCore(Feature):
                    "broadcast/listenbrainzlistener/networkreply.cpp",
                    "broadcast/listenbrainzlistener/listenbrainzservice.cpp",
                    "broadcast/listenbrainzlistener/listenbrainzjsonfactory.cpp",
-                   # "broadcast/mpris/mprisservice.cpp",
-                   # "broadcast/mpris/mpris.cpp",
-                   # "broadcast/mpris/mediaplayer2.cpp",
-                   # "broadcast/mpris/mediaplayer2player.cpp",
-                   # "broadcast/mpris/mprisplayer.cpp",
-                   # "broadcast/mpris/mediaplayer2playlists.cpp",
-                   # "broadcast/mpris/mediaplayer2tracklist.cpp",
 
                    "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefcontroller.cpp",

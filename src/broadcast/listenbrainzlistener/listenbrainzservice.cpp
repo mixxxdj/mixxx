@@ -60,9 +60,3 @@ void ListenBrainzService::slotSettingsChanged(double value) {
         }
     }
 }
-
-
-
-
-
-
