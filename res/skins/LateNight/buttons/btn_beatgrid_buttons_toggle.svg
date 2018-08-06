@@ -7,10 +7,43 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    width="24"
    height="24"
-   id="svg2">
+   id="svg2"
+   sodipodi:docname="btn_beatgrid_buttons_toggle.svg"
+   inkscape:version="0.92.3 (unknown)">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="740"
+     id="namedview20"
+     showgrid="true"
+     inkscape:snap-bbox="true"
+     inkscape:snap-bbox-edge-midpoints="true"
+     inkscape:bbox-paths="true"
+     inkscape:snap-smooth-nodes="true"
+     inkscape:snap-global="true"
+     inkscape:zoom="19.666667"
+     inkscape:cx="8.701574"
+     inkscape:cy="14.938348"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2">
+    <inkscape:grid
+       type="xygrid"
+       id="grid891" />
+  </sodipodi:namedview>
   <metadata
      id="metadata14">
     <rdf:RDF>
@@ -19,24 +52,27 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <defs
      id="defs12" />
   <path
-     d="m 9,21 h 2 L 11,3 9,3 z"
+     d="M 9.0000004,9 H 11 V 21 H 9.0000004 Z"
      id="path4753-7-3"
-     style="fill:#888888;fill-opacity:1" />
+     style="fill:#888888;fill-opacity:1;stroke-width:1"
+     inkscape:connector-curvature="0" />
   <path
-     d="m 14,21 h 2 L 16,3 14,3 z"
+     d="m 14,3.0000003 h 2 V 16 h -2 z"
      id="path4753-7-3-6"
-     style="fill:#888888;fill-opacity:1" />
+     style="fill:#888888;fill-opacity:1;stroke-width:0.99999994"
+     inkscape:connector-curvature="0" />
   <path
-     d="m 19,21 h 2 L 21,3 19,3 z"
+     d="m 19,3.0000003 h 2 V 20 h -2 z"
      id="path4753-7-3-6-7"
-     style="fill:#888888;fill-opacity:1" />
+     style="fill:#888888;fill-opacity:1;stroke-width:0.99999994"
+     inkscape:connector-curvature="0" />
   <g
      transform="matrix(0,0.88132606,-1,0,49,-4.8132606)"
      id="g4021-3"
@@ -66,27 +102,30 @@
      id="g4021-3-6-3"
      style="fill:#d2d2d2;fill-opacity:1" />
   <path
-     d="M 4,21 H 6 L 6,3 4,3 z"
+     d="m 4.0000004,10 h 2 v 11 h -2 z"
      id="path4753-7-3-5"
-     style="fill:#888888;fill-opacity:1" />
+     style="fill:#888888;fill-opacity:1;stroke-width:0.99999988"
+     inkscape:connector-curvature="0" />
   <g
-     transform="matrix(-0.68547588,0,0,0.77777784,15.854759,1.222221)"
-     id="g4021"
-     style="fill:#d2d2d2;fill-opacity:1">
+     transform="matrix(-0.51119587,0.44559228,-0.505593,-0.58003036,28.908888,20.827665)"
+     id="g4021-6-3"
+     style="fill:#d2d2d2;fill-opacity:1;stroke-width:1.01081777"
+     inkscape:transform-center-x="-4.9646495"
+     inkscape:transform-center-y="6.0155621">
     <path
-       d="m 37.625,-5 -0.1875,2.625 c -0.660189,0.1643495 -1.276506,0.433133 -1.84375,0.78125 l -1.96875,-1.75 -1.96875,1.96875 1.75,1.96875 C 33.062425,1.1568921 32.787338,1.7815016 32.625,2.4375 L 30,2.625 l 0,2.75 2.625,0.1875 c 0.163854,0.662125 0.430997,1.2793462 0.78125,1.84375 l -1.75,1.96875 1.96875,1.96875 2,-1.75 c 0.558506,0.3359883 1.16437,0.588624 1.8125,0.75 L 37.625,13 l 2.75,0 0.1875,-2.625 c 0.660189,-0.16435 1.276506,-0.4331332 1.84375,-0.78125 l 1.96875,1.75 1.96875,-1.96875 -1.75,-1.96875 C 44.937575,6.8431079 45.212662,6.2184985 45.375,5.5625 L 48,5.375 48,2.625 45.375,2.4375 C 45.21065,1.7773111 44.941867,1.160994 44.59375,0.59375 l 1.75,-1.96875 -1.96875,-1.96875 -1.96875,1.75 C 41.843108,-1.937575 41.218498,-2.2126623 40.5625,-2.375 L 40.375,-5 37.625,-5 z M 39,1 c 1.650472,0 3,1.3495281 3,3 0,1.650472 -1.349528,3 -3,3 -1.650472,0 -3,-1.349528 -3,-3 0,-1.6504719 1.349528,-3 3,-3 z"
-       transform="matrix(1.1346538,0,0,1,-34.251499,6)"
-       id="rect3922"
-       style="color:#000000;fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#d2d2d2;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.57238352;marker:none;enable-background:accumulate"
+       d="M 12,3 C 10.716299,3 9.6660156,4.0502839 9.6660156,5.3339844 V 17.130859 c -1.6125423,0.850104 -2.7304687,2.523923 -2.7304687,4.464844 0,1.942213 1.1182856,3.617407 2.7324219,4.466797 v -3.195611 c 0,-1.2837 1.0502842,-2.333984 2.3339842,-2.333984 1.283701,0 2.332031,1.050284 2.332031,2.333984 V 26.0625 c 1.614136,-0.84939 2.732422,-2.524584 2.732422,-4.466797 0,-1.942472 -1.118355,-3.617365 -2.732422,-4.466797 V 5.3339844 C 14.333984,4.0502839 13.283701,3 12,3 Z"
+       transform="matrix(-1.4588405,0,0,1.2857142,27.506085,3.1428575)"
+       id="rect3922-2-6"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="sscscssscscss" />
   </g>
   <g
-     transform="matrix(-0.68547588,0,0,0.77777784,15.854759,1.2222212)"
-     id="g4021-6"
-     style="fill:#d2d2d2;fill-opacity:1">
-    <path
-       d="m 39,1 c 1.650472,0 3,1.3495281 3,3 0,1.650472 -1.349528,3 -3,3 -1.650472,0 -3,-1.349528 -3,-3 0,-1.6504719 1.349528,-3 3,-3 z"
-       transform="matrix(1.1346538,0,0,1,-34.251499,6)"
-       id="rect3922-2"
-       style="color:#000000;fill:#1a1a1a;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-  </g>
+     transform="matrix(-1.4882312,0,0,1.6886273,26.883288,4.7085349)"
+     id="g4021-6-3-3"
+     style="fill:#d2d2d2;fill-opacity:1;stroke-width:0.46059769" />
+  <g
+     transform="matrix(-0.68547588,0,0,0.77777784,18.855238,13.81768)"
+     id="g4021-6-3-7"
+     style="fill:#d2d2d2;fill-opacity:1" />
 </svg>

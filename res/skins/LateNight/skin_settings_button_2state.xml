@@ -1,6 +1,7 @@
 <!--
 Description:
-  3-state button for skin settings menu.
+  2-state button for skin settings menu.
+  Can be squeezed so that all skin settings categories fit on small screens.
 Variables:
   width         :
   state_X_text  : label text for state X
@@ -8,25 +9,18 @@ Variables:
 -->
 <Template>
   <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
     <ObjectName>SkinSettingsButton</ObjectName>
-    <MinimumSize><Variable name="width"/>,13</MinimumSize>
-    <MaximumSize>182,17</MaximumSize>
-    <SizePolicy>min,me</SizePolicy>
-    <NumberStates>3</NumberStates>
-    <RightClickIsPushButton>false</RightClickIsPushButton>
+    <Size>180min,17f</Size>
+    <NumberStates>2</NumberStates>
     <State>
       <Number>0</Number>
-      <Text><Variable name="state_0_text"/></Text>
+      <Text>&#9744;  <Variable name="text"/></Text>
       <Alignment>left</Alignment>
     </State>
     <State>
       <Number>1</Number>
-      <Text><Variable name="state_1_text"/></Text>
-      <Alignment>left</Alignment>
-    </State>
-    <State>
-      <Number>2</Number>
-      <Text><Variable name="state_2_text"/></Text>
+      <Text> &#10004; <Variable name="text"/></Text>
       <Alignment>left</Alignment>
     </State>
     <Connection>

@@ -19,7 +19,6 @@
           <TooltipId>EffectUnit_show_parameters</TooltipId>
           <Size>39f,24f</Size>
           <NumberStates>2</NumberStates>
-          <RightClickIsPushButton>true</RightClickIsPushButton>
           <State>
             <Number>0</Number>
             <Pressed>skin:/buttons/btn_fxExpand.svg</Pressed>
@@ -53,7 +52,6 @@
           <TooltipId>EffectUnit_show_parameters</TooltipId>
           <Size>39f,24f</Size>
           <NumberStates>2</NumberStates>
-          <RightClickIsPushButton>true</RightClickIsPushButton>
           <State>
             <Number>0</Number>
             <Pressed>skin:/buttons/btn_fxExpand.svg</Pressed>

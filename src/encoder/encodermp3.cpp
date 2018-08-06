@@ -28,7 +28,7 @@
 // of values for the slider.
 // The threshold of bitrate (CBR/ABR) at which the encoder
 // with switch to mono encoding
-const int EncoderMp3::MONO_BITRATE_TRESHOLD = 100;
+const int EncoderMp3::MONO_BITRATE_THRESHOLD = 100;
 // The threshold of quality (VBR) at which the encoder
 // with switch to mono encoding. Values from 0 to 6 encode at 44Khz
 const int EncoderMp3::MONO_VBR_THRESHOLD = 8;
@@ -269,7 +269,7 @@ void EncoderMp3::setEncoderSettings(const EncoderSettings& settings)
     m_encoding_mode = (modeoption==0) ? vbr_off : (modeoption==1) ? vbr_abr : vbr_default;
 
     if (m_encoding_mode == vbr_off) {
-        if (m_bitrate > MONO_BITRATE_TRESHOLD ) {
+        if (m_bitrate > MONO_BITRATE_THRESHOLD ) {
             m_stereo_mode = JOINT_STEREO;
         } else {
             m_stereo_mode = MONO;

@@ -38,9 +38,9 @@ mixxx::Duration WaveformWidgetAbstract::render() {
     return mixxx::Duration();
 }
 
-void WaveformWidgetAbstract::resize(int width, int height) {
+void WaveformWidgetAbstract::resize(int width, int height, float devicePixelRatio) {
     if (m_widget) {
         m_widget->resize(width, height);
     }
-    WaveformWidgetRenderer::resize(width, height);
+    WaveformWidgetRenderer::resize(width, height, devicePixelRatio);
 }

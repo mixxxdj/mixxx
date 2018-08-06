@@ -51,7 +51,8 @@ void WWaveformViewer::setup(const QDomNode& node, const SkinContext& context) {
 
 void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
     if (m_waveformWidget) {
-        m_waveformWidget->resize(width(), height());
+        m_waveformWidget->resize(width(), height(),
+                                 WaveformWidgetFactory::getDevicePixelRatio());
     }
 }
 
@@ -217,6 +218,12 @@ void WWaveformViewer::setZoom(int zoom) {
 
 void WWaveformViewer::setDisplayBeatGridAlpha(int alpha) {
     m_waveformWidget->setDisplayBeatGridAlpha(alpha);
+}
+
+void WWaveformViewer::setPlayMarkerPosition(double position) {
+    if (m_waveformWidget) {
+        m_waveformWidget->setPlayMarkerPosition(position);
+    }
 }
 
 void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) {

@@ -106,9 +106,17 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setVSyncType(int vsType);
     int getVSyncType();
 
+    void setPlayMarkerPosition(double position);
+    double getPlayMarkerPosition() const { return m_playMarkerPosition; }
+
     void notifyZoomChange(WWaveformViewer *viewer);
 
     WaveformWidgetType::Type autoChooseWidgetType() const;
+
+    // Returns the devicePixelRatio for the current window. This is the scaling
+    // factor between screen pixels and "device independent pixels". For
+    // example, on macOS with a retina display the ratio is 2.
+    static float getDevicePixelRatio();
 
   signals:
     void waveformUpdateTick();
@@ -160,6 +168,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     float m_frameCnt;
     double m_actualFrameRate;
     int m_vSyncType;
+    double m_playMarkerPosition;
 };
 
 #endif // WAVEFORMWIDGETFACTORY_H

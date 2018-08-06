@@ -26,7 +26,7 @@
 
               <Label>
                 <ObjectName>DuckingTitle</ObjectName>
-                <Size>65f,17f</Size>
+                <Size>60f,17f</Size>
                 <Text>Ducking</Text>
                 <Alignment>center</Alignment>
               </Label>
@@ -150,6 +150,18 @@
 
       <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
 
+      <WidgetGroup>
+        <Size>5f,1min</Size>
+        <Connection>
+          <ConfigKey>[Master],skin_settings</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
     </Children>
+    <Connection>
+      <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

@@ -79,6 +79,8 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotSetWaveformOverviewType(int)));
     connect(clearCachedWaveforms, SIGNAL(clicked()),
             this, SLOT(slotClearCachedWaveforms()));
+    connect(playMarkerPositionSlider, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSetPlayMarkerPosition(int)));
 }
 
 DlgPrefWaveform::~DlgPrefWaveform() {
@@ -110,6 +112,7 @@ void DlgPrefWaveform::slotUpdate() {
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
+    playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition() * 100);
     beatGridAlphaSpinBox->setValue(factory->beatGridAlpha());
     beatGridAlphaSlider->setValue(factory->beatGridAlpha());
 
@@ -173,6 +176,9 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Beat grid alpha default is 90
     beatGridAlphaSlider->setValue(90);
     beatGridAlphaSpinBox->setValue(90);
+
+    // 50 (center) is default
+    playMarkerPositionSlider->setValue(50);
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
@@ -241,6 +247,12 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
 void DlgPrefWaveform::slotSetBeatGridAlpha(int alpha) {
     m_pConfig->setValue(ConfigKey("[Waveform]", "beatGridAlpha"), alpha);
     WaveformWidgetFactory::instance()->setDisplayBeatGridAlpha(alpha);
+}
+
+void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
+    // QSlider works with integer values, so divide the percentage given by the
+    // slider value by 100 to get a fraction of the waveform width.
+    WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

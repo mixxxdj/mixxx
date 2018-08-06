@@ -13,8 +13,8 @@
 		<ObjectName>EffectParameterKnob</ObjectName>
 		<Layout>vertical</Layout>
 		<SizePolicy>me,f</SizePolicy>
-		<MinimumSize>-1,50</MinimumSize>
-		<MaximumSize>-1,50</MaximumSize>
+		<MinimumSize>-1,46</MinimumSize>
+		<MaximumSize>-1,46</MaximumSize>
 		<Children>
 			<EffectParameterName>
 				<Style>
@@ -36,18 +36,20 @@
 
 			<WidgetGroup>
 				<Layout>vertical</Layout>
-				<Size>38,34</Size>
 				<Children>
-					<EffectParameterKnob>
-						<NumberStates>64</NumberStates>
-						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Connection>
-							<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/></ConfigKey>
-						</Connection>
-					</EffectParameterKnob>
-
+					<WidgetGroup>
+						<Layout>horizontal</Layout>
+						<Children>
+							<EffectParameterKnob>
+								<NumberStates>64</NumberStates>
+								<Path>knobs/knob_rotary_s%1.png</Path>
+								<Connection>
+									<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/></ConfigKey>
+								</Connection>
+							</EffectParameterKnob>
+						</Children>
+					</WidgetGroup>
 					<PushButton>
-						<Size>38f,3f</Size>
 						<TooltipId>EffectSlot_parameter_link_type</TooltipId>
 						<NumberStates>5</NumberStates>
 						<State>
@@ -82,7 +84,6 @@
 					</PushButton>
 
 					<PushButton>
-						<Size>38f,3f</Size>
 						<TooltipId>EffectSlot_parameter_inversion</TooltipId>
 						<NumberStates>2</NumberStates>
 						<State>
