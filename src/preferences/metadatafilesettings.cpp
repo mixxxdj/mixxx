@@ -141,6 +141,7 @@ void MetadataFileSettings::cancelSettings() {
 void MetadataFileSettings::setupEncodingComboBox() {
     m_widgets.encodingBox->clear();
     QList<QByteArray> codecs = QTextCodec::availableCodecs();
+    std::sort(codecs.begin(), codecs.end());
 
     QList<QByteArray> preferredCodecs = {
             "latin1",
@@ -164,12 +165,14 @@ void MetadataFileSettings::setupEncodingComboBox() {
         connect(m_pDelegate, &ComboboxDelegate::moreButtonPressed, this, &MetadataFileSettings::slotMoreButtonComboboxPressed);
 
         m_remainingCodecs = codecs;
+        m_widgets.encodingBox->setEditable(false);
     }
 
     else {
         for (const QByteArray& codec : codecs) {
             m_widgets.encodingBox->addItem(codec);
         }
+        m_widgets.encodingBox->setEditable(true);
     }
     m_widgets.encodingBox->setCurrentText(s_latestSettings.fileEncoding);
 }
