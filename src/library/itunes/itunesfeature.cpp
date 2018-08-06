@@ -701,9 +701,25 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
 
                     bool success = query_insert_to_playlists.exec();
                     if (!success) {
-                        qDebug() << "SQL Error in ITunesTableModel.cpp: line" << __LINE__
-                                 << " " << query_insert_to_playlists.lastError();
-                        return;
+                        if (query_insert_to_playlists.lastError().number() == 19) {
+                            // #define SQLITE_CONSTRAINT  19  Abort due to constraint violation
+                            // We assume a duplicate Playluist name
+                            playlistname += QString(" #%1").arg(playlist_id);
+                            query_insert_to_playlists.bindValue(":name", playlistname );
+
+                            bool success = query_insert_to_playlists.exec();
+                            if (!success) {
+                                // unexpected error
+                                qDebug() << "SQL Error in itunesfeature.cpp: line" << __LINE__
+                                             << " " << query_insert_to_playlists.lastError();
+                                return;
+                            }
+                        } else {
+                            // unexpected error
+                            qDebug() << "SQL Error in itunesfeature.cpp: line" << __LINE__
+                                     << " " << query_insert_to_playlists.lastError();
+                            return;
+                        }
                     }
                     //append the playlist to the child model
                     root->appendChild(playlistname);
