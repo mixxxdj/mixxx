@@ -123,7 +123,7 @@ bool MprisPlayer::canPlay() const {
 }
 
 bool MprisPlayer::canPause() const {
-    return AUTODJIDLE;
+    return true;
 }
 
 bool MprisPlayer::canSeek() const {
@@ -143,6 +143,10 @@ void MprisPlayer::pause() {
             playingDeck->stop();
             m_pMpris->notifyPropertyChanged(playerInterfaceName, "Metadata", QVariantMap());
             m_pausedDeck = playingDeck->group;
+        }
+    } else {
+        for (DeckAttributes* attribute : m_deckAttributes) {
+            attribute->stop();
         }
     }
 }
