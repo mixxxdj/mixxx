@@ -20,7 +20,30 @@ Variables:
       <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
       <!-- Greyed out if no headphone device is configured -->
-      <Template src="skin:preview_headmixer_cover.xml"/>
+      <WidgetGroup>
+        <ObjectName>GuiCover</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <WidgetGroup><Size>0f,19f</Size></WidgetGroup>
+          <Label>
+            <ObjectName>UnconfiguredHeadphoneTextPrevDeck</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Text>No Headphone</Text>
+          </Label>
+          <Label>
+            <ObjectName>UnconfiguredHeadphoneTextPrevDeck</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Text>device configured!</Text>
+          </Label>
+          <WidgetGroup><Size>0f,0me</Size></WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],headEnabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
+        </Connection>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>PreviewDeck</ObjectName>

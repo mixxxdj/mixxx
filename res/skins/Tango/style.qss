@@ -56,12 +56,19 @@ WWidgetGroup {
     text-align: center;
     color: #fff;
   }
-  #UnconfiguredHeadphoneText {
-    margin-left: 5px;
+  #UnconfiguredHeadphoneText,
+  #UnconfiguredHeadphoneTextPrevDeck {
     background-color: rgba(51, 51, 51, 200);
     font-size: 12px/12px;
     color: #aaa;
-  }
+    }
+    #UnconfiguredHeadphoneText {
+      margin-left: 5px;
+    }
+    #UnconfiguredHeadphoneTextPrevDeck {
+      margin-left: 25px;
+      padding: 1px 0px;
+    }
 
 
 /* splitters between

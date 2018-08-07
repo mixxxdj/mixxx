@@ -20,7 +20,28 @@ Description:
       <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
       <!-- Headphone controls greyed out if no headphone device configured -->
-      <Template src="skin:preview_headmixer_cover.xml"/>
+      <WidgetGroup>
+        <ObjectName>GuiCover</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Label>
+            <ObjectName>UnconfiguredHeadphoneText</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Text>No Headphone</Text>
+          </Label>
+          <Label>
+            <ObjectName>UnconfiguredHeadphoneText</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Text>device configured!</Text>
+          </Label>
+        </Children>
+        <Connection>
+          <ConfigKey>[Master],headEnabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
+        </Connection>
+      </WidgetGroup>
 
       <!-- actual headphone controls -->
       <WidgetGroup>

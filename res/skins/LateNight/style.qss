@@ -1184,7 +1184,7 @@ border: 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
   border-left: 1px solid #585858;
-  padding: 0px 2px;
+  padding: 1px 1px 1px 2px;
 }
 
 #FxUnit1_ExpandCollapseButton,
