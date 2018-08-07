@@ -18,6 +18,12 @@
 #include "util/lcs.h"
 #include "util/sandbox.h"
 
+#ifdef __SQLITE3__
+#include <sqlite3.h>
+#else // __SQLITE3__
+#define SQLITE_CONSTRAINT  19 // Abort due to constraint violation
+#endif // __SQLITE3__
+
 const QString ITunesFeature::ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
 
 QString localhost_token() {
@@ -701,9 +707,8 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
 
                     bool success = query_insert_to_playlists.exec();
                     if (!success) {
-                        if (query_insert_to_playlists.lastError().number() == 19) {
-                            // #define SQLITE_CONSTRAINT  19  Abort due to constraint violation
-                            // We assume a duplicate Playluist name
+                        if (query_insert_to_playlists.lastError().number() == SQLITE_CONSTRAINT) {
+                            // We assume a duplicate Playlist name
                             playlistname += QString(" #%1").arg(playlist_id);
                             query_insert_to_playlists.bindValue(":name", playlistname );
 
@@ -712,7 +717,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                                 // unexpected error
                                 qDebug() << "SQL Error in itunesfeature.cpp: line" << __LINE__
                                              << " " << query_insert_to_playlists.lastError();
-                                return;
+                                break;
                             }
                         } else {
                             // unexpected error
