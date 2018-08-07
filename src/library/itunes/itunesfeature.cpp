@@ -715,14 +715,12 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                             bool success = query_insert_to_playlists.exec();
                             if (!success) {
                                 // unexpected error
-                                qDebug() << "SQL Error in itunesfeature.cpp: line" << __LINE__
-                                             << " " << query_insert_to_playlists.lastError();
+                                LOG_FAILED_QUERY(query_insert_to_playlists);
                                 break;
                             }
                         } else {
                             // unexpected error
-                            qDebug() << "SQL Error in itunesfeature.cpp: line" << __LINE__
-                                     << " " << query_insert_to_playlists.lastError();
+                            LOG_FAILED_QUERY(query_insert_to_playlists);
                             return;
                         }
                     }
