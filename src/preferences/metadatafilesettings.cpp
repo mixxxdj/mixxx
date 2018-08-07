@@ -3,6 +3,7 @@
 #include <QLineEdit>
 #include <QFileDialog>
 #include <QAbstractItemView>
+#include <QMouseEvent>
 #include <algorithm>
 
 #include "metadatafilesettings.h"
