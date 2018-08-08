@@ -427,7 +427,7 @@ void Tooltips::addStandardTooltips() {
             << QString("%1 %2: %3").arg(leftClick, whileStopped, cueWhileStopped)
             << cueHint
             << quantizeSnap
-            << QString("%1: %2").arg(rightClick, cueWhileStopped);
+            << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."));
     add("cue_gotoandplay_cue_default")
             << tr("Play")
             << QString("%1: %2").arg(leftClick, tr("Plays track from the cue point."))
