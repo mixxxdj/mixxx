@@ -80,11 +80,12 @@ Variables:
                 <Children>
                   <Template src="skin:button_2state_right_display.xml">
                     <SetVariable name="ObjectName">PlayCue</SetVariable>
+                    <SetVariable name="TooltipId">play_start</SetVariable>
                     <SetVariable name="Size">24f,34f</SetVariable>
                     <SetVariable name="state_0_icon">play_previewdeck.svg</SetVariable>
                     <SetVariable name="state_1_icon">pause_previewdeck.svg</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,start</SetVariable>
                     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
                   </Template>
                   <!--	Turns Orange when playing Cue/HotCue.
