@@ -70,7 +70,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
 
     m_database = QSqlDatabase::cloneDatabase(pTrackCollection->database(), "ITUNES_SCANNER");
 
-    //Open the database connection in this thread.
+    // Open the database connection in this thread.
     if (!m_database.open()) {
         qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
     }
@@ -120,6 +120,16 @@ void ITunesFeature::activate() {
 void ITunesFeature::activate(bool forceReload) {
     //qDebug("ITunesFeature::activate()");
     if (!m_isActivated || forceReload) {
+
+        //Delete all table entries of iTunes feature
+        ScopedTransaction transaction(m_database);
+        clearTable("itunes_playlist_tracks");
+        clearTable("itunes_library");
+        clearTable("itunes_playlists");
+        transaction.commit();
+
+        emit(showTrackModel(m_pITunesTrackModel));
+
         SettingsDAO settings(m_pTrackCollection->database());
         QString dbSetting(settings.getValue(ITDB_PATH_KEY));
         // if a path exists in the database, use it
@@ -140,10 +150,9 @@ void ITunesFeature::activate(bool forceReload) {
             // if the path we got between the default and the database doesn't
             // exist, ask for a new one and use/save it if it exists
             m_dbfile = QFileDialog::getOpenFileName(
-                NULL, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
+                    NULL, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
             QFileInfo dbFile(m_dbfile);
             if (m_dbfile.isEmpty() || !dbFile.exists()) {
-                emit(showTrackModel(m_pITunesTrackModel));
                 return;
             }
 
@@ -171,9 +180,9 @@ void ITunesFeature::activate(bool forceReload) {
         m_title = tr("(loading) iTunes");
         // calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this, true));
+    } else {
+        emit(showTrackModel(m_pITunesTrackModel));
     }
-
-    emit(showTrackModel(m_pITunesTrackModel));
     emit(enableCoverArtDisplay(false));
 }
 
@@ -238,7 +247,7 @@ QString ITunesFeature::getiTunesMusicPath() {
     return musicFolder;
 }
 
-void ITunesFeature::guessMusicLibraryMountpoint(QXmlStreamReader &xml) {
+void ITunesFeature::guessMusicLibraryMountpoint(QXmlStreamReader& xml) {
     // Normally the Folder Layout it some thing like that
     // iTunes/
     // iTunes/Album Artwork
@@ -331,16 +340,9 @@ TreeItem* ITunesFeature::importLibrary() {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
 
-    //Delete all table entries of iTunes feature
-    ScopedTransaction transaction(m_database);
-    clearTable("itunes_playlist_tracks");
-    clearTable("itunes_library");
-    clearTable("itunes_playlists");
-    transaction.commit();
-
     qDebug() << "ITunesFeature::importLibrary() ";
 
-    transaction.transaction();
+    ScopedTransaction transaction(m_database);
 
     // By default set m_mixxxItunesRoot and m_dbItunesRoot to strip out
     // file://localhost/ from the URL. When we load the user's iTunes XML
@@ -381,7 +383,7 @@ TreeItem* ITunesFeature::importLibrary() {
     }
 
     itunes_file.close();
-    
+
     if (isMusicFolderLocatedAfterTracks) {
         qDebug() << "Updating iTunes real path from " << m_dbItunesRoot << " to " << m_mixxxItunesRoot;
         // In some iTunes files "Music Folder" XML node is located at the end of file. So, we need to 
@@ -402,16 +404,19 @@ TreeItem* ITunesFeature::importLibrary() {
 
     if (xml.hasError()) {
         // do error handling
-        qDebug() << "Cannot process iTunes music collection";
-        qDebug() << "XML ERROR: " << xml.errorString();
-        if (playlist_root)
+        qDebug() << "Abbort processing iTunes music collection";
+        qDebug() << "line:" << xml.lineNumber() <<
+                "column:" << xml.columnNumber() <<
+                "error:" << xml.errorString();
+        if (playlist_root) {
             delete playlist_root;
+        }
         playlist_root = NULL;
     }
     return playlist_root;
 }
 
-void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
+void ITunesFeature::parseTracks(QXmlStreamReader& xml) {
     bool in_container_dictionary = false;
     bool in_track_dictionary = false;
     QSqlQuery query(m_database);
@@ -425,7 +430,7 @@ void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
 
     qDebug() << "Parse iTunes music collection";
 
-    //read all sunsequent <dict> until we reach the closing ENTRY tag
+    // read all sunsequent <dict> until we reach the closing ENTRY tag
     while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
 
@@ -435,9 +440,9 @@ void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
                     in_container_dictionary = true;
                     continue;
                 } else if (in_container_dictionary && !in_track_dictionary) {
-                    //We are in a <dict> tag that holds track information
+                    // We are in a <dict> tag that holds track information
                     in_track_dictionary = true;
-                    //Parse track here
+                    // Parse track here
                     parseTrack(xml, query);
                 }
             }
@@ -456,7 +461,7 @@ void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
     }
 }
 
-void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
+void ITunesFeature::parseTrack(QXmlStreamReader& xml, QSqlQuery& query) {
     //qDebug() << "----------------TRACK-----------------";
     int id = -1;
     QString title;
@@ -604,7 +609,7 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     }
 }
 
-TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader &xml) {
+TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader& xml) {
     qDebug() << "Parse iTunes playlists";
     TreeItem* rootItem = new TreeItem(this);
     QSqlQuery query_insert_to_playlists(m_database);
@@ -645,8 +650,8 @@ bool ITunesFeature::readNextStartElement(QXmlStreamReader& xml) {
     return false;
 }
 
-void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert_to_playlists,
-                                  QSqlQuery &query_insert_to_playlist_tracks, TreeItem* root) {
+void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert_to_playlists,
+                                  QSqlQuery& query_insert_to_playlist_tracks, TreeItem* root) {
     //qDebug() << "Parse Playlist";
 
     QString playlistname;
