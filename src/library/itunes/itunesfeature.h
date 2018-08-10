@@ -70,8 +70,6 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     QString m_mixxxItunesRoot;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
-
-    static const QString ITDB_PATH_KEY;
 };
 
 #endif // ITUNESFEATURE_H
