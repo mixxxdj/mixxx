@@ -380,7 +380,7 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="106"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
-        <translation type="unfinished"/>
+        <translation>请在使用实况直播功能之前至少启用一条连接。</translation>
     </message>
 </context>
 <context>
@@ -388,22 +388,22 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="426"/>
         <source>Can&apos;t use secure password storage: keychain access failed.</source>
-        <translation type="unfinished"/>
+        <translation>无法使用安全密码存储: 密钥链访问失败。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="457"/>
         <source>Secure password retrieval unsuccessful: keychain access failed.</source>
-        <translation type="unfinished"/>
+        <translation>安全密码存储提取不成功: 密钥链访问失败。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="467"/>
         <source>Settings error</source>
-        <translation type="unfinished"/>
+        <translation>设置错误</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="468"/>
         <source>&lt;b&gt;Error with settings for &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;b&gt;&apos;%1&apos; 的设置出现错误: &lt;/b&gt;&lt;br&gt;</translation>
     </message>
 </context>
 <context>
@@ -421,17 +421,17 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
         <source>Status</source>
-        <translation type="unfinished"/>
+        <translation>状态</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="176"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>已断开</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
         <source>Connecting...</source>
-        <translation type="unfinished"/>
+        <translation>正在连接···</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
@@ -2398,12 +2398,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="431"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>添加至自动 DJ 队列（替换）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="432"/>
         <source>Replace Auto DJ Queue with selected tracks</source>
-        <translation type="unfinished"/>
+        <translation>使用选中的轨道替换自动 DJ 队列</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="492"/>
@@ -3676,7 +3676,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="14"/>
         <source>Live Broadcasting Preferences</source>
-        <translation>在线广播选项</translation>
+        <translation>实况直播选项</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="504"/>
@@ -3706,7 +3706,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="20"/>
         <source>Live Broadcasting source connections</source>
-        <translation type="unfinished"/>
+        <translation>实况直播源连接</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="65"/>
@@ -3731,7 +3731,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="124"/>
         <source>Turn on Live Broadcasting when applying these settings</source>
-        <translation type="unfinished"/>
+        <translation>当应用这些设置时开启实况直播</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="153"/>
@@ -9038,7 +9038,7 @@ Fully right: Sine wave</source>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="71"/>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="72"/>
         <source>Waveform</source>
-        <translation type="unfinished"/>
+        <translation>波形</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="87"/>
@@ -12414,17 +12414,17 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="75"/>
         <source>Load to</source>
-        <translation type="unfinished"/>
+        <translation>载入到</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="77"/>
         <source>Deck</source>
-        <translation>碟机</translation>
+        <translation>碟盘</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="79"/>
         <source>Sampler</source>
-        <translation>采样器</translation>
+        <translation>采样</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="86"/>
@@ -12470,7 +12470,7 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="454"/>
         <source>Export To File Tags</source>
-        <translation type="unfinished"/>
+        <translation>导出文件属性</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="458"/>
@@ -12480,7 +12480,7 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="467"/>
         <source>BPM and Beatgrid</source>
-        <translation type="unfinished"/>
+        <translation>拍速和拍格</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="471"/>
@@ -12490,17 +12490,17 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="475"/>
         <source>Cue Point</source>
-        <translation type="unfinished"/>
+        <translation>切点</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="479"/>
         <source>Hotcues</source>
-        <translation>热切点（Hotcues）</translation>
+        <translation>即时切点</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="483"/>
         <source>Loop</source>
-        <translation type="unfinished"/>
+        <translation>循环</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="487"/>
@@ -12510,7 +12510,7 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="491"/>
         <source>Waveform</source>
-        <translation type="unfinished"/>
+        <translation>波形</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="495"/>
@@ -12520,7 +12520,7 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="833"/>
         <source>Deck %1</source>
-        <translation>碟机 %1</translation>
+        <translation>碟盘 %1</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1578"/>
@@ -12552,22 +12552,22 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="500"/>
         <source>Lock BPM</source>
-        <translation>锁定 BPM</translation>
+        <translation>拍速锁定</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="501"/>
         <source>Unlock BPM</source>
-        <translation>取消锁定 BPM</translation>
+        <translation>拍速解锁</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="508"/>
         <source>Double BPM</source>
-        <translation>BPM 加倍</translation>
+        <translation>拍速倍增</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="509"/>
         <source>Halve BPM</source>
-        <translation>BPM 减半</translation>
+        <translation>拍速倍减</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="510"/>
@@ -12582,7 +12582,7 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="853"/>
         <source>Sampler %1</source>
-        <translation>采样器 %1</translation>
+        <translation>采样 %1</translation>
     </message>
 </context>
 <context>

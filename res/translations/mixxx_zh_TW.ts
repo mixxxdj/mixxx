@@ -21,12 +21,12 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="66"/>
         <source>Crates</source>
-        <translation>板條箱</translation>
+        <translation>唱片箱</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="86"/>
         <source>Remove Crate as Track Source</source>
-        <translation>刪除作為跟蹤源的板條箱</translation>
+        <translation>從音軌清單删除唱片箱</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="97"/>
@@ -36,7 +36,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="276"/>
         <source>Add Crate as Track Source</source>
-        <translation>添加箱作為跟蹤源</translation>
+        <translation>加入唱片箱至音軌清單</translation>
     </message>
 </context>
 <context>
@@ -12448,7 +12448,7 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="475"/>
         <source>Cue Point</source>
-        <translation type="unfinished"/>
+        <translation>播放點</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="479"/>

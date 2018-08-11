@@ -2929,7 +2929,7 @@
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="104"/>
         <source>Credits</source>
-        <translation type="unfinished"/>
+        <translation>Crediti</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="130"/>

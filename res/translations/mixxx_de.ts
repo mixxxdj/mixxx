@@ -4596,7 +4596,7 @@ Wenn keiner existiert, zum Anfang des Titels springen.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="344"/>
         <source>Keylock mode</source>
-        <translation>Tonhöhensperre-Modus</translation>
+        <translation>Tonhöhensperr-Modus</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="357"/>
@@ -4681,7 +4681,7 @@ Wenn keiner existiert, zum Anfang des Titels springen.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="557"/>
         <source>Keyunlock mode</source>
-        <translation>Keylock-Deaktivierungsmodus</translation>
+        <translation>Tonhöhenentsperr-Modus</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="564"/>

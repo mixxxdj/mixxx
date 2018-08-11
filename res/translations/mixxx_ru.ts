@@ -390,12 +390,12 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="426"/>
         <source>Can&apos;t use secure password storage: keychain access failed.</source>
-        <translation type="unfinished"/>
+        <translation>Не удаётся использовать хранилище паролей: нет доступа к связке ключей.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="457"/>
         <source>Secure password retrieval unsuccessful: keychain access failed.</source>
-        <translation type="unfinished"/>
+        <translation>Не удалось найти защищённый пароль: нет доступа к связке ключей.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="467"/>
@@ -405,7 +405,7 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="468"/>
         <source>&lt;b&gt;Error with settings for &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;b&gt;Ошибка с настройками для &quot;%1&quot;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
 </context>
 <context>
@@ -443,7 +443,7 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
         <source>Failed</source>
-        <translation type="unfinished"/>
+        <translation>Ошибка</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="185"/>
@@ -2230,42 +2230,42 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="347"/>
         <source>Jump / Move Loop Forward %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Прыгнуть / Переместить петлю вперёд на %1 ударов</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="348"/>
         <source>Jump / Move Loop Backward %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Прыгнуть / Переместить петлю назад на %1 ударов</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="349"/>
         <source>Jump forward by %1 beats, or if a loop is enabled, move the loop forward %1 beats</source>
-        <translation type="unfinished"/>
+        <translation>Прыгнуть вперёд на %1 ударов, или если лупинг включен, переместить петлю вперёд на %1 ударов.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="350"/>
         <source>Jump backward by %1 beats, or if a loop is enabled, move the loop backward %1 beats</source>
-        <translation type="unfinished"/>
+        <translation>Прыгнуть назадна %1 ударов, или если лупинг включен, переместить петлю назад на %1 ударов.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
         <source>Beat Jump / Loop Move Forward Selected Beats</source>
-        <translation type="unfinished"/>
+        <translation>Перейти вперёд / Передвинуть петлю вперёд на выбранное количество ударов</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
         <source>Jump forward by the selected number of beats, or if a loop is enabled, move the loop forward by the selected number of beats</source>
-        <translation type="unfinished"/>
+        <translation>Перейти вперёд на выбранное количество ударов, или, если петля активна, передвинуть петлю вперёд на выбранное количество ударов.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="352"/>
         <source>Beat Jump / Loop Move Backward Selected Beats</source>
-        <translation type="unfinished"/>
+        <translation>Перейти назад / Передвинуть петлю назад на выбранное количество ударов</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="352"/>
         <source>Jump backward by the selected number of beats, or if a loop is enabled, move the loop backward by the selected number of beats</source>
-        <translation type="unfinished"/>
+        <translation>Перейти назад на выбранное количество ударов, или, если петля активна, передвинуть петлю назад на выбранное количество ударов.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="371"/>
@@ -2385,12 +2385,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="416"/>
         <source>Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys</source>
-        <translation type="unfinished"/>
+        <translation>Переключать элементы управления используя ручку, как при нажатии клавиш TAB/SHIFT+TAB</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="419"/>
         <source>Go to the currently selected item</source>
-        <translation type="unfinished"/>
+        <translation>Перейти к выбранному пункту</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="420"/>

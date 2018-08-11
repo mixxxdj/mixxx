@@ -2390,12 +2390,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="419"/>
         <source>Go to the currently selected item</source>
-        <translation type="unfinished"/>
+        <translation>Vés a l&apos;element seleccionat actualment</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="420"/>
         <source>Choose the currently selected item and advance forward one pane if appropriate</source>
-        <translation type="unfinished"/>
+        <translation>Tria l&apos;element seleccionat actualment i avança un panell si és apropiat</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="431"/>
@@ -2929,12 +2929,12 @@
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="104"/>
         <source>Credits</source>
-        <translation type="unfinished"/>
+        <translation>Crèdits</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="130"/>
         <source>License</source>
-        <translation type="unfinished"/>
+        <translation>Llicència</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="152"/>
@@ -4267,22 +4267,22 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="252"/>
         <source>Effect options</source>
-        <translation type="unfinished"/>
+        <translation>Opcions d&apos;efecte</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="258"/>
         <source>Load behavior</source>
-        <translation type="unfinished"/>
+        <translation>Comportament al carregar</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="267"/>
         <source>Keep metaknob position</source>
-        <translation type="unfinished"/>
+        <translation>Manté la posició del metaknob</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="277"/>
         <source>Reset metaknob to effect default</source>
-        <translation type="unfinished"/>
+        <translation>Reinicia el metaknob al valor per defecte de l&apos;efecte</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="33"/>
@@ -5131,7 +5131,7 @@ i permet que es pugui ajustar el to per a una mescla harmònica.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="227"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
-        <translation>Metadades significa tots els detalls de la pista (artista, títol, comptador de reproducció, etc.) així com les graelles de rtime, Hotcues i bucles. Aquesta acció només afecta a la llibreria de Mixxx. Els fitxers del disc no es canviaran ni s&apos;esborraran.</translation>
+        <translation>Metadades significa tots els detalls de la pista (artista, títol, comptador de reproducció, etc.) així com les graelles de rtime, Hotcues i bucles. Aquesta acció només afecta a la biblioteca del Mixxx. Els fitxers del disc no es canviaran ni s&apos;esborraran.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="235"/>
@@ -5240,7 +5240,7 @@ i permet que es pugui ajustar el to per a una mescla harmònica.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="172"/>
         <source>Export: Write modified track metadata from the library into file tags</source>
-        <translation>Exporta: Escriu les metadades de la pista que hagin canviat de la llibreria a les etiquetes del fitxer</translation>
+        <translation>Exporta: Escriu les metadades de la pista que hagin canviat de la biblioteca a les etiquetes del fitxer</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="182"/>
@@ -5290,7 +5290,7 @@ i permet que es pugui ajustar el to per a una mescla harmònica.</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="255"/>
         <source>Edit metadata after clicking selected track</source>
-        <translation type="unfinished"/>
+        <translation>Edita les metadades al fer clic en la pista seleccionada</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="268"/>
@@ -6333,7 +6333,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="464"/>
         <source>Generate waveforms when analyzing library</source>
-        <translation>Genera els gràfics d&apos;ona a l&apos;analitzar la llibreria</translation>
+        <translation>Genera els gràfics d&apos;ona a l&apos;analitzar la biblioteca</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="476"/>
@@ -7288,7 +7288,7 @@ OpenGL.</translation>
     <message>
         <location filename="../../src/library/library.cpp" line="360"/>
         <source>Could not add the directory to your library. Either this directory is already in your library or you are currently rescanning your library.</source>
-        <translation>No s&apos;ha pogut afegir la carpeta a la Biblioteca. O bé ja hi és, o bé s&apos;està escanejant la vostra llibreria en aquests moments.</translation>
+        <translation>No s&apos;ha pogut afegir la carpeta a la Biblioteca. O bé ja hi és, o bé s&apos;està escanejant la vostra biblioteca en aquests moments.</translation>
     </message>
 </context>
 <context>
@@ -7760,7 +7760,7 @@ Si us plau, seleccioneu primer un dispositiu d&apos;entrada a les preferències 
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation>Ara és possible que el Mixxx mostri les caràtules.
-Voleu escanejar ara la llibreria cercant les caràtules?</translation>
+Voleu escanejar ara la biblioteca cercant les caràtules?</translation>
     </message>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="442"/>
@@ -10341,12 +10341,12 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="772"/>
         <source>Route the left crossfader bus through this effect unit.</source>
-        <translation type="unfinished"/>
+        <translation>Redirigeix el bus esquerre del crossfader a través d&apos;aquesta unitat d&apos;efectes.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="777"/>
         <source>Route the right crossfader bus through this effect unit.</source>
-        <translation type="unfinished"/>
+        <translation>Redirigeix el bus dret del crossfader a través d&apos;aquesta unitat d&apos;efectes.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="843"/>
@@ -10371,7 +10371,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="886"/>
         <source>Save the collection of samples loaded in the samplers.</source>
-        <translation type="unfinished"/>
+        <translation>Desa la col·leció de mostres carregades als reproductors de mostres.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="889"/>
@@ -10381,7 +10381,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="890"/>
         <source>Load a previously saved collection of samples into the samplers.</source>
-        <translation type="unfinished"/>
+        <translation>Carrega als reproductors de mostres una col·lecció de mostres desada anteriorment.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="723"/>

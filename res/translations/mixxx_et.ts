@@ -21,7 +21,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="66"/>
         <source>Crates</source>
-        <translation>Loomingud</translation>
+        <translation>Plaadikastid</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="86"/>
@@ -2784,19 +2784,19 @@
         <location filename="../../src/library/crate/cratefeature.cpp" line="132"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="140"/>
         <source>Crates</source>
-        <translation>Loomingud</translation>
+        <translation>Plaadikastid</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="81"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="85"/>
         <source>Import Crate</source>
-        <translation>Impordi Loomingud</translation>
+        <translation>Impordi kast</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="89"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="666"/>
         <source>Export Crate</source>
-        <translation>Ekspordi Loomingud</translation>
+        <translation>Ekspordi kast</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="330"/>
@@ -2806,18 +2806,18 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="623"/>
         <source>An unknown error occurred while creating crate: </source>
-        <translation>Teadmata viga esines loomingu loomisel </translation>
+        <translation>Plaadikasti loomisel esines tudmatu viga: </translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="385"/>
         <source>Rename Crate</source>
-        <translation>Nimeta Looming ümber</translation>
+        <translation>Nimeta plaadikast ümber</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="396"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="403"/>
         <source>Renaming Crate Failed</source>
-        <translation>Loomingu ümbernimetamine ebaõnnestus</translation>
+        <translation>Plaadikasti ümbernimetamine ebaõnnestus</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="622"/>
@@ -2847,12 +2847,12 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="397"/>
         <source>A crate cannot have a blank name.</source>
-        <translation>Looming ei saa olla nimetud</translation>
+        <translation>Plaadikasti nimi ei saa olla tühi.</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="404"/>
         <source>A crate by that name already exists.</source>
-        <translation>Looming eksisteerib juba sellise nimega</translation>
+        <translation>Sellise nimega kast on juba olemas.</translation>
     </message>
 </context>
 <context>
@@ -2860,7 +2860,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="36"/>
         <source>New Crate</source>
-        <translation>Uus Looming</translation>
+        <translation>Uus kast</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="43"/>
@@ -2878,25 +2878,25 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="62"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="80"/>
         <source>Creating Crate Failed</source>
-        <translation>Loomingu loomine ebaõnnestus</translation>
+        <translation>Kasti loomine ebaõnnestus</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="55"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="109"/>
         <source>A crate cannot have a blank name.</source>
-        <translation>Looming ei saa olla nimetud</translation>
+        <translation>Plaadikasti nimi ei saa olla tühi.</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="63"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="116"/>
         <source>A crate by that name already exists.</source>
-        <translation>Looming eksisteerib juba sellise nimega</translation>
+        <translation>Sellise nimega kast on juba olemas.</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="81"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="150"/>
         <source>An unknown error occurred while creating crate: </source>
-        <translation>Teadmata viga esines loomingu loomisel </translation>
+        <translation>Plaadikasti loomisel esines tundmatu viga:</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="90"/>
@@ -12364,7 +12364,7 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="86"/>
         <source>Crates</source>
-        <translation>Loomingud</translation>
+        <translation>Plaadikastid</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="94"/>
