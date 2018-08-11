@@ -119,7 +119,7 @@ bool MprisPlayer::canGoPrevious() const {
 }
 
 bool MprisPlayer::canPlay() const {
-    return AUTODJENABLED;
+    return true;
 }
 
 bool MprisPlayer::canPause() const {
@@ -172,18 +172,23 @@ void MprisPlayer::playPause() {
 }
 
 void MprisPlayer::play() {
-    if (AUTODJENABLED) {
-        DeckAttributes* playingDeck = findPlayingDeck();
-        if (playingDeck == nullptr) {
-            ControlProxy playing(ConfigKey(m_pausedDeck, "play"));
-            BaseTrackPlayer* player = m_pPlayerManager->getPlayer(m_pausedDeck);
-            DEBUG_ASSERT(player);
-            TrackPointer pTrack = player->getLoadedTrack();
-            playing.set(true);
-            m_pMpris->notifyPropertyChanged(playerInterfaceName,
-                    "Metadata",
-                    getMetadataFromTrack(pTrack));
-        }
+    if (!m_bComponentsInitialized) {
+        return;
+    }
+    if (!m_pCPAutoDjEnabled->toBool()) {
+        m_pCPAutoDjEnabled->set(true);
+        return;
+    }
+    DeckAttributes *playingDeck = findPlayingDeck();
+    if (playingDeck == nullptr) {
+        ControlProxy playing(ConfigKey(m_pausedDeck, "play"));
+        BaseTrackPlayer *player = m_pPlayerManager->getPlayer(m_pausedDeck);
+        DEBUG_ASSERT(player);
+        TrackPointer pTrack = player->getLoadedTrack();
+        playing.set(true);
+        m_pMpris->notifyPropertyChanged(playerInterfaceName,
+                                        "Metadata",
+                                        getMetadataFromTrack(pTrack));
     }
 }
 
@@ -300,6 +305,19 @@ QVariantMap MprisPlayer::getMetadataFromTrack(TrackPointer pTrack) const {
     artists << pTrack->getArtist();
     metadata.insert("xesam:artist", artists);
     metadata.insert("xesam:title", pTrack->getTitle());
+    CoverInfo coverInfo = pTrack->getCoverInfoWithLocation();
+    if (coverInfo.type == CoverInfoRelative::FILE) {
+        QString path = coverInfo.trackLocation + coverInfo.coverLocation;
+        qDebug() << "Cover art path: " << path;
+        QString urlString = "file://" + path;
+        QUrl fileUrl(urlString,QUrl::StrictMode);
+        if (!fileUrl.isValid()) {
+            qDebug() << "Invalid URL: " << fileUrl;
+        }
+        else {
+            metadata.insert("mpris:artUrl",fileUrl);
+        }
+    }
     return metadata;
 }
 
