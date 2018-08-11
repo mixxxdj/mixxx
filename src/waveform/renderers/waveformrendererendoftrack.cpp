@@ -61,7 +61,7 @@ void WaveformRendererEndOfTrack::setup(const QDomNode& node, const SkinContext& 
         m_color.setNamedColor(endOfTrackColorName);
         m_color = WSkinColor::getCorrectColor(m_color);
     }
-    m_pen = QPen(QBrush(m_color), 2.5 * scaleFactor());
+    m_pen = QPen(QBrush(m_color), 2.5);
     generateBackRects();
 }
 

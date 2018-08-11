@@ -44,7 +44,6 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_gain(1.0),
       m_pTrackSamplesControlObject(NULL),
       m_trackSamples(0.0),
-      m_scaleFactor(1.0),
       m_playMarkerPosition(s_defaultPlayMarkerPosition) {
 
     //qDebug() << "WaveformWidgetRenderer";
@@ -128,7 +127,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
     // Allow waveform to spread one visual sample across a hundred pixels
     // NOTE: The hundred pixel limit is totally arbitrary. Theoretically,
     // there should be no limit to how far the waveforms can be zoomed in.
-    double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust) / m_scaleFactor;
+    double visualSamplePerPixel = m_zoomFactor * (1.0 + m_rateAdjust);
     m_visualSamplePerPixel = math_max(0.01, visualSamplePerPixel);
 
     TrackPointer pTrack(m_pTrack);
@@ -273,7 +272,6 @@ void WaveformWidgetRenderer::resize(int width, int height, float devicePixelRati
 
 void WaveformWidgetRenderer::setup(
         const QDomNode& node, const SkinContext& context) {
-    m_scaleFactor = context.getScaleFactor();
     QString orientationString = context.selectString(node, "Orientation").toLower();
     if (orientationString == "vertical") {
         m_orientation = Qt::Vertical;
@@ -283,7 +281,6 @@ void WaveformWidgetRenderer::setup(
 
     m_colors.setup(node, context);
     for (int i = 0; i < m_rendererStack.size(); ++i) {
-        m_rendererStack[i]->setScaleFactor(m_scaleFactor);
         m_rendererStack[i]->setup(node, context);
     }
 }

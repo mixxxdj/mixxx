@@ -60,16 +60,14 @@ void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
         // compatibility.
         setPixmapBackground(
                 context.getPixmapSource(backPathNode),
-                context.selectScaleMode(backPathNode, Paintable::FIXED),
-                context.getScaleFactor());
+                context.selectScaleMode(backPathNode, Paintable::FIXED));
     }
 
     QDomElement vuNode = context.selectElement(node, "PathVu");
     // The implicit default in <1.12.0 was FIXED so we keep it for backwards
     // compatibility.
     setPixmaps(context.getPixmapSource(vuNode), bHorizontal,
-               context.selectScaleMode(vuNode, Paintable::FIXED),
-               context.getScaleFactor());
+               context.selectScaleMode(vuNode, Paintable::FIXED));
 
     m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
     if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100) {
@@ -94,9 +92,8 @@ void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
 
 void WVuMeter::setPixmapBackground(
         PixmapSource source,
-        Paintable::DrawMode mode,
-        double scaleFactor) {
-    m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
+        Paintable::DrawMode mode) {
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
@@ -106,8 +103,8 @@ void WVuMeter::setPixmapBackground(
 }
 
 void WVuMeter::setPixmaps(PixmapSource source, bool bHorizontal,
-                          Paintable::DrawMode mode, double scaleFactor ) {
-    m_pPixmapVu = WPixmapStore::getPaintable(source, mode, scaleFactor);
+                          Paintable::DrawMode mode) {
+    m_pPixmapVu = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
         qDebug() << "WVuMeter: Error loading vu pixmap" << source.getPath();
     } else {

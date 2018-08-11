@@ -45,11 +45,11 @@ QString Paintable::DrawModeToString(DrawMode mode) {
     return "FIXED";
 }
 
-Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFactor)
+Paintable::Paintable(const PixmapSource& source, DrawMode mode)
         : m_drawMode(mode),
           m_source(source) {
     if (!source.isSVG()) {
-        m_pPixmap.reset(WPixmapStore::getPixmapNoCache(source.getPath(), scaleFactor));
+        m_pPixmap.reset(WPixmapStore::getPixmapNoCache(source.getPath()));
     } else {
         auto pSvg = std::make_unique<QSvgRenderer>();
         if (!source.getSvgSourceData().isEmpty()) {
@@ -79,7 +79,7 @@ Paintable::Paintable(const PixmapSource& source, DrawMode mode, double scaleFact
 #endif
             // The SVG renderer doesn't directly support tiling, so we render
             // it to a pixmap which will then get tiled.
-            QImage copy_buffer(m_pSvg->defaultSize() * scaleFactor, QImage::Format_ARGB32);
+            QImage copy_buffer(m_pSvg->defaultSize(), QImage::Format_ARGB32);
             copy_buffer.fill(0x00000000);  // Transparent black.
             QPainter painter(&copy_buffer);
             m_pSvg->render(&painter);
@@ -251,23 +251,5 @@ void Paintable::drawInternal(const QRectF& targetRect, QPainter* pPainter,
             m_pSvg->render(pPainter, targetRect);
             pPainter->restore();
         }
-    }
-}
-
-// static
-QString Paintable::getAltFileName(const QString& fileName) {
-    // Detect if the alternate image file exists and, if it does,
-    // return its path instead
-    QStringList temp = fileName.split('.');
-    if (temp.length() != 2) {
-        return fileName;
-    }
-
-    QString newFileName = temp[0] + QString::fromAscii("@2x.") + temp[1];
-    QFile file(newFileName);
-    if (QFileInfo(file).exists()) {
-        return newFileName;
-    } else {
-        return fileName;
     }
 }

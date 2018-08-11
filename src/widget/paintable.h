@@ -30,7 +30,7 @@ class Paintable {
         TILE
     };
 
-    Paintable(const PixmapSource& source, DrawMode mode, double scaleFactor);
+    Paintable(const PixmapSource& source, DrawMode mode);
 
     QSize size() const;
     int width() const;
@@ -50,7 +50,6 @@ class Paintable {
 
     static DrawMode DrawModeFromString(const QString& str);
     static QString DrawModeToString(DrawMode mode);
-    static QString getAltFileName(const QString& fileName);
 
   private:
     void drawInternal(const QRectF& targetRect, QPainter* pPainter,

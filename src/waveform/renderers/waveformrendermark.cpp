@@ -133,7 +133,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
     // Load the pixmap from file -- takes precedence over text.
     if (!markProperties.m_pixmapPath.isEmpty()) {
         QString path = markProperties.m_pixmapPath;
-        QImage image = *WImageStore::getImage(path, scaleFactor());
+        QImage image = *WImageStore::getImage(path);
         //QImage image = QImage(path);
         // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.
@@ -163,7 +163,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
         //QFont font("Bitstream Vera Sans");
         //QFont font("Helvetica");
         QFont font; // Uses the application default
-        font.setPointSizeF(10 * scaleFactor());
+        font.setPointSizeF(10);
         font.setStretch(100);
         font.setWeight(75);
 

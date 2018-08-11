@@ -16,15 +16,12 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
 void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     clear();
 
-    double scaleFactor = context.getScaleFactor();
-
     // Set background pixmap if available
     QDomElement backPathElement = context.selectElement(node, "BackPath");
     if (!backPathElement.isNull()) {
         setPixmapBackground(
                 context.getPixmapSource(backPathElement),
-                context.selectScaleMode(backPathElement, Paintable::STRETCH),
-                scaleFactor);
+                context.selectScaleMode(backPathElement, Paintable::STRETCH));
     }
 
     // Set knob pixmap if available
@@ -32,17 +29,13 @@ void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     if (!knobNode.isNull()) {
         setPixmapKnob(
                 context.getPixmapSource(knobNode),
-                context.selectScaleMode(knobNode, Paintable::STRETCH),
-                scaleFactor);
+                context.selectScaleMode(knobNode, Paintable::STRETCH));
     }
 
     context.hasNodeSelectDouble(node, "MinAngle", &m_dMinAngle);
     context.hasNodeSelectDouble(node, "MaxAngle", &m_dMaxAngle);
     context.hasNodeSelectDouble(node, "KnobCenterXOffset", &m_dKnobCenterXOffset);
     context.hasNodeSelectDouble(node, "KnobCenterYOffset", &m_dKnobCenterYOffset);
-
-    m_dKnobCenterXOffset *= scaleFactor;
-    m_dKnobCenterYOffset *= scaleFactor;
 }
 
 void WKnobComposed::clear() {
@@ -51,9 +44,8 @@ void WKnobComposed::clear() {
 }
 
 void WKnobComposed::setPixmapBackground(PixmapSource source,
-                                        Paintable::DrawMode mode,
-                                        double scaleFactor) {
-    m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
+                                        Paintable::DrawMode mode) {
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
@@ -61,9 +53,8 @@ void WKnobComposed::setPixmapBackground(PixmapSource source,
 }
 
 void WKnobComposed::setPixmapKnob(PixmapSource source,
-                                  Paintable::DrawMode mode,
-                                  double scaleFactor) {
-    m_pKnob = WPixmapStore::getPaintable(source, mode, scaleFactor);
+                                  Paintable::DrawMode mode) {
+    m_pKnob = WPixmapStore::getPaintable(source, mode);
     if (m_pKnob.isNull() || m_pKnob->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading knob pixmap:" << source.getPath();

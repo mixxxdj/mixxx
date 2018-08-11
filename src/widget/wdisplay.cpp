@@ -43,8 +43,7 @@ void WDisplay::setup(const QDomNode& node, const SkinContext& context) {
     QDomElement backPathNode = context.selectElement(node, "BackPath");
     if (!backPathNode.isNull()) {
         setPixmapBackground(context.getPixmapSource(backPathNode),
-                            context.selectScaleMode(backPathNode, Paintable::TILE),
-                            context.getScaleFactor());
+                            context.selectScaleMode(backPathNode, Paintable::TILE));
     }
 
     // Number of states
@@ -59,7 +58,7 @@ void WDisplay::setup(const QDomNode& node, const SkinContext& context) {
             context.selectScaleMode(pathNode, Paintable::FIXED);
     for (int i = 0; i < m_pixmaps.size(); ++i) {
         setPixmap(&m_pixmaps, i, context.makeSkinPath(path.arg(i)),
-                  pathMode, context.getScaleFactor());
+                  pathMode);
     }
 
     // See if disabled images is defined, and load them...
@@ -73,7 +72,7 @@ void WDisplay::setup(const QDomNode& node, const SkinContext& context) {
         for (int i = 0; i < m_disabledPixmaps.size(); ++i) {
             setPixmap(&m_disabledPixmaps, i,
                       context.makeSkinPath(disabledPath.arg(i)),
-                      disabledMode, context.getScaleFactor());
+                      disabledMode);
         }
         m_bDisabledLoaded = true;
     }
@@ -99,9 +98,8 @@ void WDisplay::resetPositions() {
 }
 
 void WDisplay::setPixmapBackground(PixmapSource source,
-                                   Paintable::DrawMode mode,
-                                   double scaleFactor) {
-    m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
+                                   Paintable::DrawMode mode) {
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
@@ -112,14 +110,13 @@ void WDisplay::setPixmap(
         QVector<PaintablePointer>* pPixmaps,
         int iPos,
         const QString& filename,
-        Paintable::DrawMode mode,
-        double scaleFactor) {
+        Paintable::DrawMode mode) {
     if (iPos < 0 || iPos >= pPixmaps->size()) {
         return;
     }
 
     PixmapSource source(filename);
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode, scaleFactor);
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode);
     if (pPixmap.isNull() || pPixmap->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading pixmap:" << filename;

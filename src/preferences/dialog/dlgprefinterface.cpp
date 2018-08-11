@@ -16,7 +16,6 @@
 #include "mixxx.h"
 #include "util/screensaver.h"
 #include "defs_urls.h"
-#include "util/autohidpi.h"
 
 DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
                                  SkinLoader* pSkinLoader,

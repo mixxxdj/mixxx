@@ -142,7 +142,6 @@ class WaveformWidgetRenderer {
     double m_gain;
     ControlProxy* m_pTrackSamplesControlObject;
     int m_trackSamples;
-    double m_scaleFactor;
     double m_playMarkerPosition;   // 0.0 - left, 0.5 - center, 1.0 - right
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG

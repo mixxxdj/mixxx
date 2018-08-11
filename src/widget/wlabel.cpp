@@ -26,13 +26,10 @@ WLabel::WLabel(QWidget* pParent)
           WBaseWidget(this),
           m_skinText(),
           m_longText(),
-          m_elideMode(Qt::ElideNone),
-          m_scaleFactor(1.0) {
+          m_elideMode(Qt::ElideNone) {
 }
 
 void WLabel::setup(const QDomNode& node, const SkinContext& context) {
-    m_scaleFactor = context.getScaleFactor();
-
     // Colors
     QPalette pal = palette(); // we have to copy out the palette to edit it since it's const (probably for threadsafety)
 
@@ -54,8 +51,6 @@ void WLabel::setup(const QDomNode& node, const SkinContext& context) {
         double dFontSize = strFontSize.toDouble(&widthOk);
         if (widthOk && dFontSize >= 0) {
             QFont fonti = font();
-            // We do not scale the font here, because in most cases
-            // this is overridden by the style sheet font size
             fonti.setPointSizeF(dFontSize);
             setFont(fonti);
         }
@@ -124,17 +119,6 @@ void WLabel::setText(const QString& text) {
 bool WLabel::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
-    } else if (pEvent->type() == QEvent::FontChange) {
-        const QFont& fonti = font();
-        // Change the new font on the fly by casting away its constancy
-        // using setFont() here, would results into a recursive loop
-        // resetting the font to the original css values.
-        // Only scale pixel size fonts, point size fonts are scaled by the OS
-        if (fonti.pixelSize() > 0) {
-            const_cast<QFont&>(fonti).setPixelSize(fonti.pixelSize() * m_scaleFactor);
-        }
-        // measure text with the new font
-        setText(m_longText);
     }
     return QLabel::event(pEvent);
 }

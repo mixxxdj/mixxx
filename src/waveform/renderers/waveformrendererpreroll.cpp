@@ -56,7 +56,7 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
         //painter->setRenderHint(QPainter::HighQualityAntialiasing);
         //painter->setBackgroundMode(Qt::TransparentMode);
         painter->setWorldMatrixEnabled(false);
-        painter->setPen(QPen(QBrush(m_color), std::max(1.0, scaleFactor())));
+        painter->setPen(QPen(QBrush(m_color), 1));
 
         // Rotate if drawing vertical waveforms
         if (m_waveformRenderer->getOrientation() == Qt::Vertical) {

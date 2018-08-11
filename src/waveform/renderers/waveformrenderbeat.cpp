@@ -66,7 +66,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setRenderHint(QPainter::Antialiasing);
 
     QPen beatPen(m_beatColor);
-    beatPen.setWidthF(std::max(1.0, scaleFactor()));
+    beatPen.setWidthF(1);
     painter->setPen(beatPen);
 
     const Qt::Orientation orientation = m_waveformRenderer->getOrientation();

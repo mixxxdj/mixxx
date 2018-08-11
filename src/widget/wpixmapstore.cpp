@@ -14,12 +14,11 @@ QSharedPointer<ImgSource> WPixmapStore::m_loader
 
 // static
 PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
-                                            Paintable::DrawMode mode,
-                                            double scaleFactor) {
+                                            Paintable::DrawMode mode) {
     if (source.isEmpty()) {
         return PaintablePointer();
     }
-    QString key = source.getId() + QString::number(mode) + QString::number(scaleFactor);
+    QString key = source.getId() + QString::number(mode);
 
     // See if we have a cached value for the pixmap.
     PaintablePointer pPaintable = m_paintableCache.value(
@@ -29,7 +28,7 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
         return pPaintable;
     }
 
-    pPaintable = PaintablePointer(new Paintable(source, mode, scaleFactor));
+    pPaintable = PaintablePointer(new Paintable(source, mode));
 
     m_paintableCache.insert(key, pPaintable);
     return pPaintable;
@@ -37,10 +36,9 @@ PaintablePointer WPixmapStore::getPaintable(PixmapSource source,
 
 // static
 QPixmap* WPixmapStore::getPixmapNoCache(
-        const QString& fileName,
-        double scaleFactor) {
+        const QString& fileName) {
     QPixmap* pPixmap = nullptr;
-    QImage* img = m_loader->getImage(fileName, scaleFactor);
+    QImage* img = m_loader->getImage(fileName);
 #if QT_VERSION >= 0x040700
     pPixmap = new QPixmap();
     pPixmap->convertFromImage(*img);

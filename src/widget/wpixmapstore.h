@@ -40,9 +40,8 @@ class WPixmapStore {
   public:
     static PaintablePointer getPaintable(
             PixmapSource source,
-            Paintable::DrawMode mode,
-            double scaleFactor);
-    static QPixmap* getPixmapNoCache(const QString& fileName, double scaleFactor);
+            Paintable::DrawMode mode);
+    static QPixmap* getPixmapNoCache(const QString& fileName);
     static void setLoader(QSharedPointer<ImgSource> ld);
     static void correctImageColors(QImage* p);
     static bool willCorrectColors();

@@ -1227,7 +1227,6 @@ class MixxxCore(Feature):
                    "util/cmdlineargs.cpp",
                    "util/audiosignal.cpp",
                    "util/widgethider.cpp",
-                   "util/autohidpi.cpp",
                    "util/screensaver.cpp",
                    "util/indexrange.cpp",
 

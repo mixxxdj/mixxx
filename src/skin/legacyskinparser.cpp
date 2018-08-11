@@ -829,7 +829,7 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
 
     QString filename = m_pContext->selectString(node, "Path");
     QPixmap* background = WPixmapStore::getPixmapNoCache(
-        m_pContext->makeSkinPath(filename), m_pContext->getScaleFactor());
+        m_pContext->makeSkinPath(filename));
 
     bg->move(0, 0);
     if (background != NULL && !background->isNull()) {
@@ -1693,10 +1693,8 @@ QWidget* LegacySkinParser::parseEffectButtonParameterName(const QDomElement& nod
 void LegacySkinParser::setupPosition(const QDomNode& node, QWidget* pWidget) {
     QString pos;
     if (m_pContext->hasNodeSelectString(node, "Pos", &pos)) {
-        QString xs = pos.left(pos.indexOf(","));
-        QString ys = pos.mid(pos.indexOf(",") + 1);
-        int x = m_pContext->scaleToWidgetSize(xs);
-        int y = m_pContext->scaleToWidgetSize(ys);
+        int x = pos.left(pos.indexOf(",")).toInt();
+        int y = pos.mid(pos.indexOf(",") + 1).toInt();
         pWidget->move(x,y);
     }
 }
@@ -1733,18 +1731,18 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
     QString size;
     if (m_pContext->hasNodeSelectString(node, "MinimumSize", &size)) {
         int comma = size.indexOf(",");
-        QString xs = size.left(comma);
-        QString ys = size.mid(comma + 1);
+        bool widthOk = false;
+        bool heightOk = false;
+        int x = size.left(comma).toInt(&widthOk);
+        int y = size.mid(comma + 1).toInt(&heightOk);
+        widthOk = widthOk && x >= 0;
+        heightOk = heightOk && y >= 0;
 
-        int x = m_pContext->scaleToWidgetSize(xs);
-        int y = m_pContext->scaleToWidgetSize(ys);
-
-        // -1 means do not set.
-        if (x >= 0 && y >= 0) {
+        if (widthOk && heightOk) {
             pWidget->setMinimumSize(x, y);
-        } else if (x >= 0) {
+        } else if (widthOk && !heightOk) {
             pWidget->setMinimumWidth(x);
-        } else if (y >= 0) {
+        } else if (!widthOk && heightOk) {
             pWidget->setMinimumHeight(y);
         } else {
             SKIN_WARNING(node, *m_pContext)
@@ -1755,18 +1753,18 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
 
     if (m_pContext->hasNodeSelectString(node, "MaximumSize", &size)) {
         int comma = size.indexOf(",");
-        QString xs = size.left(comma);
-        QString ys = size.mid(comma+1);
+        bool widthOk = false;
+        bool heightOk = false;
+        int x = size.left(comma).toInt(&widthOk);
+        int y = size.mid(comma + 1).toInt(&heightOk);
+        widthOk = widthOk && x >= 0;
+        heightOk = heightOk && y >= 0;
 
-        int x = m_pContext->scaleToWidgetSize(xs);
-        int y = m_pContext->scaleToWidgetSize(ys);
-
-        // -1 means do not set.
-        if (x >= 0 && y >= 0) {
+        if (widthOk && heightOk) {
             pWidget->setMaximumSize(x, y);
-        } else if (x >= 0) {
+        } else if (widthOk && !heightOk) {
             pWidget->setMaximumWidth(x);
-        } else if (y >= 0) {
+        } else if (!widthOk && heightOk) {
             pWidget->setMaximumHeight(y);
         } else {
             SKIN_WARNING(node, *m_pContext)
@@ -1823,8 +1821,14 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
             hasVerticalPolicy = true;
         }
 
-        int x = m_pContext->scaleToWidgetSize(xs);
-        if (x >= 0) {
+        bool widthOk = false;
+        bool heightOk = false;
+        int x = size.left(comma).toInt(&widthOk);
+        int y = size.mid(comma + 1).toInt(&heightOk);
+        widthOk = widthOk && x >= 0;
+        heightOk = heightOk && y >= 0;
+
+        if (widthOk) {
             if (hasHorizontalPolicy &&
                     sizePolicy.horizontalPolicy() == QSizePolicy::Fixed) {
                 //qDebug() << "setting width fixed to" << x;
@@ -1835,8 +1839,7 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
             }
         }
 
-        int y = m_pContext->scaleToWidgetSize(ys);
-        if (y >= 0) {
+        if (heightOk) {
             if (hasVerticalPolicy &&
                     sizePolicy.verticalPolicy() == QSizePolicy::Fixed) {
                 //qDebug() << "setting height fixed to" << x;
@@ -1892,42 +1895,6 @@ QString LegacySkinParser::getStyleFromNode(const QDomNode& node) {
                                                 fileBytes.length());
             }
         }
-
-// This section can be enabled on demand. It is useful to tweak
-// pixel sized values for different scalings. But we should know if this is
-// actually used when migrating to Qt5
-#if 0
-        // now load style files with suffix for HiDPI scaling.
-        // We follow here the Gnome/Unity scaling slider approach, where
-        // the widgets are scaled by an integer value once the slider is
-        // greater or equal to the next integer step.
-        // This should help to scale the GUI along with the native widgets once
-        // we are on Qt 5.
-        double scaleFactor = m_pContext->getScaleFactor();
-        if (scaleFactor >= 3) {
-            // Try to load with @3x suffix
-            QFileInfo info(file);
-            QString strNewName = info.path() + "/" + info.baseName() + "@3x."
-                    + info.completeSuffix();
-            QFile file(strNewName);
-            if (file.open(QIODevice::ReadOnly)) {
-                QByteArray fileBytes = file.readAll();
-                style.prepend(QString::fromLocal8Bit(fileBytes.constData(),
-                                               fileBytes.length()));
-            }
-        } else if (scaleFactor >= 2) {
-            // Try to load with @2x suffix
-            QFileInfo info(file);
-            QString strNewName = info.path() + "/" + info.baseName() + "@2x."
-                    + info.completeSuffix();
-            QFile file(strNewName);
-            if (file.open(QIODevice::ReadOnly)) {
-                QByteArray fileBytes = file.readAll();
-                style.prepend(QString::fromLocal8Bit(fileBytes.constData(),
-                                               fileBytes.length()));
-            }
-        }
-#endif
     } else {
         // If no src attribute, use the node data as text.
         style = styleElement.text();

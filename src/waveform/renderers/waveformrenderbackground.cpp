@@ -50,8 +50,7 @@ void WaveformRenderBackground::generateImage() {
     m_backgroundImage = QImage();
     if (!m_backgroundPixmapPath.isEmpty()) {
         QImage backgroundImage = *WImageStore::getImage(
-                m_backgroundPixmapPath,
-                scaleFactor());
+                m_backgroundPixmapPath);
 
         if (!backgroundImage.isNull()) {
             if (backgroundImage.width() == m_waveformRenderer->getWidth() &&

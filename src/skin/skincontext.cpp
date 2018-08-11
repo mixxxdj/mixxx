@@ -31,13 +31,6 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
     if (!hooksPattern.isNull()) {
         m_hookRx.setPattern(hooksPattern.toString());
     }
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    // Load the config option once, here, rather than in setupSize.
-    m_scaleFactor = m_pConfig->getValue(ConfigKey("[Config]","ScaleFactor"), 1.0);
-#else
-    m_scaleFactor = 1.0;
-#endif
 }
 
 SkinContext::SkinContext(const SkinContext& parent)
@@ -49,8 +42,7 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_parentGlobal(m_pScriptEngine->globalObject()),
           m_hookRx(parent.m_hookRx),
           m_pSvgCache(parent.m_pSvgCache),
-          m_pSingletons(parent.m_pSingletons),
-          m_scaleFactor(parent.m_scaleFactor) {
+          m_pSingletons(parent.m_pSingletons) {
     // we generate a new global object to preserve the scope between
     // a context and its children
     setXmlPath(parent.m_xmlPath);
@@ -254,13 +246,4 @@ QDebug SkinContext::logWarning(const char* file, const int line,
                                   node.nodeName())
                              .toUtf8()
                              .constData();
-}
-
-int SkinContext::scaleToWidgetSize(QString& size) const {
-    bool widthOk = false;
-    double dSize = size.toDouble(&widthOk);
-    if (widthOk && dSize >= 0) {
-        return static_cast<int>(round(dSize * m_scaleFactor));
-    }
-    return -1;
 }

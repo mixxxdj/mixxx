@@ -68,12 +68,10 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     virtual void setup(const QDomNode& node, const SkinContext& context);
     void setPixmapBackground(
             PixmapSource source,
-            Paintable::DrawMode mode,
-            double scaleFactor);
+            Paintable::DrawMode mode);
     void setPixmapBackgroundHighlighted(
             PixmapSource source,
-            Paintable::DrawMode mode,
-            double scaleFactor);
+            Paintable::DrawMode mode);
     void addWidget(QWidget* pChild);
 
   signals:

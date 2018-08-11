@@ -14,22 +14,22 @@ QSharedPointer<ImgSource> WImageStore::m_loader
         = QSharedPointer<ImgSource>(new ImgLoader());
 
 // static
-QImage* WImageStore::getImageNoCache(const QString& fileName, double scaleFactor) {
-    return getImageNoCache(PixmapSource(fileName), scaleFactor);
+QImage* WImageStore::getImageNoCache(const QString& fileName) {
+    return getImageNoCache(PixmapSource(fileName));
 }
 
 // static
-std::shared_ptr<QImage> WImageStore::getImage(const QString& fileName, double scaleFactor) {
-    return getImage(PixmapSource(fileName), scaleFactor);
+std::shared_ptr<QImage> WImageStore::getImage(const QString& fileName) {
+    return getImage(PixmapSource(fileName));
 }
 
 // static
-std::shared_ptr<QImage> WImageStore::getImage(const PixmapSource& source, double scaleFactor) {
+std::shared_ptr<QImage> WImageStore::getImage(const PixmapSource& source) {
     if (source.isEmpty()) {
         return nullptr;
     }
     // Search for Image in list
-    QString key = source.getId() + QString::number(scaleFactor);
+    QString key = source.getId();
 
     QHash<QString, std::weak_ptr<QImage> >::iterator it = m_dictionary.find(key);
     if (it != m_dictionary.end()) {
@@ -40,7 +40,7 @@ std::shared_ptr<QImage> WImageStore::getImage(const PixmapSource& source, double
     // Image wasn't found, construct it
     //qDebug() << "WImageStore Loading Image from file" << source.getPath();
 
-    auto pLoadedImage = std::shared_ptr<QImage>(getImageNoCache(source, scaleFactor), &deleteImage);
+    auto pLoadedImage = std::shared_ptr<QImage>(getImageNoCache(source), &deleteImage);
 
     if (!pLoadedImage) {
         return nullptr;
@@ -56,7 +56,7 @@ std::shared_ptr<QImage> WImageStore::getImage(const PixmapSource& source, double
 }
 
 // static
-QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFactor) {
+QImage* WImageStore::getImageNoCache(const PixmapSource& source) {
     if (source.isSVG()) {
         QSvgRenderer renderer;
 
@@ -75,14 +75,13 @@ QImage* WImageStore::getImageNoCache(const PixmapSource& source, double scaleFac
             return nullptr;
         }
 
-        auto pImage = new QImage(renderer.defaultSize() * scaleFactor,
-                            QImage::Format_ARGB32);
+        auto pImage = new QImage(renderer.defaultSize(), QImage::Format_ARGB32);
         pImage->fill(0x00000000);  // Transparent black.
         QPainter painter(pImage);
         renderer.render(&painter);
         return pImage;
     } else {
-        return m_loader->getImage(source.getPath(), scaleFactor);
+        return m_loader->getImage(source.getPath());
     }
 }
 

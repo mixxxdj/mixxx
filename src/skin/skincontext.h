@@ -260,12 +260,6 @@ class SkinContext {
         return m_hookRx;
     }
 
-    int scaleToWidgetSize(QString& size) const;
-
-    double getScaleFactor() const {
-        return m_scaleFactor;
-    }
-
   private:
     PixmapSource getPixmapSourceInner(const QString& filename) const;
 
@@ -292,7 +286,6 @@ class SkinContext {
     // The SingletonContainer map is passed to child SkinContexts, so that all
     // templates in the tree can share a single map.
     QSharedPointer<SingletonMap> m_pSingletons;
-    double m_scaleFactor;
 };
 
 #endif /* SKINCONTEXT_H */

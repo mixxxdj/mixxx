@@ -30,19 +30,10 @@ class WaveformRendererAbstract {
         m_dirty = dirty;
     }
 
-    double scaleFactor() const {
-        return m_scaleFactor;
-    }
-    void setScaleFactor(double scaleFactor) {
-        m_scaleFactor = scaleFactor;
-    }
-
     WaveformWidgetRenderer* m_waveformRenderer;
 
   private:
-
     bool m_dirty;
-    double m_scaleFactor;
 
     friend class WaveformWidgetRenderer;
 };

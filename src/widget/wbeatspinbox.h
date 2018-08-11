@@ -34,30 +34,5 @@ class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
 
     ControlProxy m_valueControl;
     static QRegExp s_regexpBlacklist;
-
-    // for font scaling
-    bool event(QEvent* pEvent) override;
-    double m_scaleFactor;
 };
-
-// This is an inherited class that supports font scaling
-class WBeatLineEdit : public QLineEdit {
-    Q_OBJECT
-  public:
-    explicit WBeatLineEdit(QWidget* parent=0)
-        : QLineEdit(parent),
-          m_scaleFactor(1.0) {
-    }
-
-    void setScaleFactor(double scaleFactor) {
-        m_scaleFactor = scaleFactor;
-    }
-
-  private:
-    bool event(QEvent* pEvent) override;
-    double m_scaleFactor;
-};
-
-
-
 #endif

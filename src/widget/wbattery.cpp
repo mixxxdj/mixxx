@@ -19,24 +19,21 @@ void WBattery::setup(const QDomNode& node, const SkinContext& context) {
     if (!backPath.isNull()) {
         setPixmap(&m_pPixmapBack,
                   context.getPixmapSource(backPath),
-                  context.selectScaleMode(backPath, Paintable::TILE),
-                  context.getScaleFactor());
+                  context.selectScaleMode(backPath, Paintable::TILE));
     }
 
     QDomElement unknownPath = context.selectElement(node, "PixmapUnknown");
     if (!unknownPath.isNull()) {
         setPixmap(&m_pPixmapUnknown,
                   context.getPixmapSource(unknownPath),
-                  context.selectScaleMode(unknownPath, Paintable::TILE),
-                  context.getScaleFactor());
+                  context.selectScaleMode(unknownPath, Paintable::TILE));
     }
 
     QDomElement chargedPath = context.selectElement(node, "PixmapCharged");
     if (!chargedPath.isNull()) {
         setPixmap(&m_pPixmapCharged,
                   context.getPixmapSource(chargedPath),
-                  context.selectScaleMode(chargedPath, Paintable::TILE),
-                  context.getScaleFactor());
+                  context.selectScaleMode(chargedPath, Paintable::TILE));
     }
 
     int numberStates = context.selectInt(node, "NumberStates");
@@ -55,7 +52,7 @@ void WBattery::setup(const QDomNode& node, const SkinContext& context) {
                                                            Paintable::TILE);
         for (int i = 0; i < m_chargingPixmaps.size(); ++i) {
             PixmapSource source = context.getPixmapSource(chargingPath.arg(i));
-            setPixmap(&m_chargingPixmaps[i], source, mode, context.getScaleFactor());
+            setPixmap(&m_chargingPixmaps[i], source, mode);
         }
     }
 
@@ -67,7 +64,7 @@ void WBattery::setup(const QDomNode& node, const SkinContext& context) {
                                                            Paintable::TILE);
         for (int i = 0; i < m_dischargingPixmaps.size(); ++i) {
             PixmapSource source = context.getPixmapSource(dischargingPath.arg(i));
-            setPixmap(&m_dischargingPixmaps[i], source, mode, context.getScaleFactor());
+            setPixmap(&m_dischargingPixmaps[i], source, mode);
         }
     }
 
@@ -142,8 +139,8 @@ void WBattery::update() {
 }
 
 void WBattery::setPixmap(PaintablePointer* ppPixmap, const PixmapSource& source,
-                         Paintable::DrawMode mode, double scaleFactor) {
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode, scaleFactor);
+                         Paintable::DrawMode mode) {
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode);
     if (pPixmap.isNull() || pPixmap->isNull()) {
         qDebug() << this << "Error loading pixmap:" << source.getPath();
     } else {
