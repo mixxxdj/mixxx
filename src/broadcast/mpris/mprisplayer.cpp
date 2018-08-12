@@ -2,9 +2,12 @@
 #include <QtGlobal>
 
 #include "broadcast/mpris/mprisplayer.h"
+#include "library/coverartcache.h"
 #include "mixer/deck.h"
 #include "mixer/playermanager.h"
 #include "mixer/playerinfo.h"
+#include "mprisplayer.h"
+
 
 namespace {
 
@@ -36,6 +39,12 @@ MprisPlayer::MprisPlayer(PlayerManager *pPlayerManager,
            m_pSettings(pSettings) {
     connect(m_pWindow, &MixxxMainWindow::componentsInitialized,
             this, &MprisPlayer::mixxxComponentsInitialized);
+    QMetaObject::Connection connection =
+            connect(CoverArtCache::createInstance(),&CoverArtCache::coverFound,
+                    this,&MprisPlayer::slotCoverArtFound);
+    if (!connection) {
+        qWarning() << "Couldn't connect CoverFound";
+    }
 }
 
 QString MprisPlayer::playbackStatus() const {
@@ -75,9 +84,10 @@ void MprisPlayer::setLoopStatus(const QString& value) {
     }
 }
 
-QVariantMap MprisPlayer::metadata() const {
+QVariantMap MprisPlayer::metadata() {
     TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
-    return getMetadataFromTrack(pTrack);
+    requestMetadataFromTrack(pTrack, false);
+    return getVariantMapMetadata();
 }
 
 double MprisPlayer::volume() const {
@@ -164,9 +174,6 @@ void MprisPlayer::playPause() {
             DEBUG_ASSERT(player);
             TrackPointer pTrack = player->getLoadedTrack();
             playing.set(true);
-            m_pMpris->notifyPropertyChanged(playerInterfaceName,
-                                            "Metadata",
-                                            getMetadataFromTrack(pTrack));
         }
     }
 
@@ -187,9 +194,6 @@ void MprisPlayer::play() {
         DEBUG_ASSERT(player);
         TrackPointer pTrack = player->getLoadedTrack();
         playing.set(true);
-        m_pMpris->notifyPropertyChanged(playerInterfaceName,
-                                        "Metadata",
-                                        getMetadataFromTrack(pTrack));
     }
 }
 
@@ -297,18 +301,25 @@ void MprisPlayer::broadcastPropertiesChange(bool enabled) {
     }
 }
 
-QVariantMap MprisPlayer::getMetadataFromTrack(TrackPointer pTrack) const {
-    QVariantMap metadata;
+void MprisPlayer::requestMetadataFromTrack(TrackPointer pTrack, bool requestCover) {
     if (!pTrack)
-        return metadata;
-    metadata.insert("mpris:trackid", "/org/mixxx/" + pTrack->getId().toString());
+        return;
+    m_currentMetadata.trackPath =
+            "/org/mixxx/" + pTrack->getId().toString();
     double trackDurationSeconds = pTrack->getDuration();
     trackDurationSeconds *= 1e6;
-    metadata.insert("mpris:length", static_cast<long long int>(trackDurationSeconds));
+    m_currentMetadata.trackDuration =
+            static_cast<long long int>(trackDurationSeconds);
     QStringList artists;
     artists << pTrack->getArtist();
-    metadata.insert("xesam:artist", artists);
-    metadata.insert("xesam:title", pTrack->getTitle());
+    m_currentMetadata.artists = artists;
+    m_currentMetadata.title = pTrack->getTitle();
+    if (requestCover) {
+        requestCoverartUrl(pTrack);
+    }
+}
+
+void MprisPlayer::requestCoverartUrl(TrackPointer pTrack) {
     CoverInfo coverInfo = pTrack->getCoverInfoWithLocation();
     if (coverInfo.type == CoverInfoRelative::FILE) {
         QString path = coverInfo.trackLocation + coverInfo.coverLocation;
@@ -317,12 +328,19 @@ QVariantMap MprisPlayer::getMetadataFromTrack(TrackPointer pTrack) const {
         QUrl fileUrl(urlString,QUrl::StrictMode);
         if (!fileUrl.isValid()) {
             qDebug() << "Invalid URL: " << fileUrl;
+            return;
         }
-        else {
-            metadata.insert("mpris:artUrl",fileUrl);
-        }
+        m_currentMetadata.coverartUrl = urlString;
+        broadcastCurrentMetadata();
     }
-    return metadata;
+    else if (coverInfo.type == CoverInfoRelative::METADATA) {
+        CoverArtCache *cache = CoverArtCache::instance();
+        QPixmap coverPixMap = cache->requestCover(coverInfo,
+                                                  this,
+                                                  0,
+                                                  false,
+                                                  true);
+    }
 }
 
 void MprisPlayer::slotPlayChanged(DeckAttributes *pDeck, bool playing) {
@@ -347,8 +365,7 @@ void MprisPlayer::slotPlayChanged(DeckAttributes *pDeck, bool playing) {
                                         QVariantMap());
     }
     else if (!playing || !otherDeckPlaying) {
-        m_pMpris->notifyPropertyChanged(playerInterfaceName, "Metadata",
-                                        getMetadataFromTrack(playingDeck->getLoadedTrack()));
+        requestMetadataFromTrack(playingDeck->getLoadedTrack(), true);
     }
 }
 
@@ -414,6 +431,41 @@ void MprisPlayer::setRate(double value) {
         double clampedValue = qBound(-1.0, value, 1.0);
         rate.set(clampedValue);
     }
+}
+
+void MprisPlayer::slotCoverArtFound(const QObject *requestor,
+                                    const CoverInfoRelative &info,
+                                    QPixmap pixmap,
+                                    bool fromCache) {
+
+    if (!pixmap.isNull()) {
+        QImage coverImage = pixmap.toImage();
+        QString imagePath = QDir::tempPath() + "/" + qHash(m_currentMetadata.title)
+                + "jpg";
+        bool success = coverImage.save(imagePath,"JPG");
+        if (!success) {
+            qDebug() << "Couldn't write metadata cover art";
+            return;
+        }
+        m_currentMetadata.coverartUrl = imagePath;
+    }
+    broadcastCurrentMetadata();
+
+}
+
+void MprisPlayer::broadcastCurrentMetadata() {
+    m_pMpris->notifyPropertyChanged(playerInterfaceName, "Metadata",
+                                    getVariantMapMetadata());
+}
+
+QVariantMap MprisPlayer::getVariantMapMetadata() {
+    QVariantMap metadata;
+    metadata.insert("mpris:trackid", m_currentMetadata.trackPath);
+    metadata.insert("mpris:length", m_currentMetadata.trackDuration);
+    metadata.insert("xesam:artist", m_currentMetadata.artists);
+    metadata.insert("xesam:title", m_currentMetadata.title);
+    metadata.insert("mpris:artUrl",m_currentMetadata.coverartUrl);
+    return metadata;
 }
 
 

@@ -43,7 +43,7 @@ void MediaPlayer2Player::setShuffle(bool value) {
     Q_UNUSED(value);
 }
 
-QVariantMap MediaPlayer2Player::metadata() const {
+QVariantMap MediaPlayer2Player::metadata() {
     return m_mprisPlayer.metadata();
 }
 
