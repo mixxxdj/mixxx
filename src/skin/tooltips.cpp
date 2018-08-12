@@ -417,16 +417,26 @@ void Tooltips::addStandardTooltips() {
 
     QString whilePlaying = tr("(while playing)");
     QString whileStopped = tr("(while stopped)");
+    QString cueWhilePlaying = tr("Stops track at cue point, OR go to cue point and play after release (CUP mode).");
+    QString cueWhileStopped = tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
+            "OR preview from it (Denon mode).");
+    QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Interface.");
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
-            << QString("%1 %2: %3").arg(leftClick, whilePlaying, tr("Stops track at cue point, OR go to cue point and play after release (CUP mode)."))
-            << QString("%1 %2: %3").arg(leftClick, whileStopped, tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
-                                                                    "OR preview from it (Denon mode)."))
-            << tr("Hint: Change the default cue mode in Preferences -> Interface.")
+            << QString("%1 %2: %3").arg(leftClick, whilePlaying, cueWhilePlaying)
+            << QString("%1 %2: %3").arg(leftClick, whileStopped, cueWhileStopped)
+            << cueHint
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."));
+    add("cue_gotoandplay_cue_default")
+            << tr("Play")
+            << QString("%1: %2").arg(leftClick, tr("Plays track from the cue point."))
+            << QString("%1 %2: %3").arg(rightClick, whilePlaying, cueWhilePlaying)
+            << QString("%1 %2: %3").arg(rightClick, whileStopped, cueWhileStopped)
+            << cueHint
+            << quantizeSnap;
 
-    add("pfl")
+      add("pfl")
             << tr("Headphone")
             << tr("Sends the selected channel's audio to the headphone output,")
             << tr("selected in Preferences -> Sound Hardware.");

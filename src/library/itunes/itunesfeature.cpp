@@ -18,6 +18,12 @@
 #include "util/lcs.h"
 #include "util/sandbox.h"
 
+#ifdef __SQLITE3__
+#include <sqlite3.h>
+#else // __SQLITE3__
+#define SQLITE_CONSTRAINT  19 // Abort due to constraint violation
+#endif // __SQLITE3__
+
 namespace {
 
 const QString ITDB_PATH_KEY = "mixxx.itunesfeature.itdbpath";
@@ -730,9 +736,22 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
 
                     bool success = query_insert_to_playlists.exec();
                     if (!success) {
-                        qDebug() << "SQL Error in ITunesTableModel.cpp: line" << __LINE__
-                                 << " " << query_insert_to_playlists.lastError();
-                        return;
+                        if (query_insert_to_playlists.lastError().number() == SQLITE_CONSTRAINT) {
+                            // We assume a duplicate Playlist name
+                            playlistname += QString(" #%1").arg(playlist_id);
+                            query_insert_to_playlists.bindValue(":name", playlistname );
+
+                            bool success = query_insert_to_playlists.exec();
+                            if (!success) {
+                                // unexpected error
+                                LOG_FAILED_QUERY(query_insert_to_playlists);
+                                break;
+                            }
+                        } else {
+                            // unexpected error
+                            LOG_FAILED_QUERY(query_insert_to_playlists);
+                            return;
+                        }
                     }
                     //append the playlist to the child model
                     root->appendChild(playlistname);
