@@ -50,7 +50,7 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor {
     void setRate(double value);
     bool shuffle() const;
     void setShuffle(bool value);
-    QVariantMap metadata() const;
+    QVariantMap metadata();
     double volume() const;
     void setVolume(double value);
     qlonglong position() const;

@@ -24,7 +24,7 @@ class MprisPlayer : public QObject {
     void setLoopStatus(const QString& value);
     double rate() const;
     void setRate(double value);
-    QVariantMap metadata() const;
+    QVariantMap metadata();
     double volume() const;
     void setVolume(double value);
     qlonglong position() const;
@@ -47,10 +47,16 @@ class MprisPlayer : public QObject {
     void slotPlayChanged(DeckAttributes* pDeck, bool playing);
     void slotPlayPositionChanged(DeckAttributes* pDeck, double position);
     void slotVolumeChanged(double volume);
+    void slotCoverArtFound(const QObject* requestor,
+            const CoverInfo& info,
+            const QPixmap& pixmap);
 
   private:
     void broadcastPropertiesChange(bool enabled);
-    QVariantMap getMetadataFromTrack(TrackPointer pTrack) const;
+    void requestMetadataFromTrack(TrackPointer pTrack, bool requestCover);
+    void requestCoverartUrl(TrackPointer pTrack);
+    void broadcastCurrentMetadata();
+    QVariantMap getVariantMapMetadata();
     double getAverageVolume() const;
     DeckAttributes* findPlayingDeck() const;
     const QString autoDJDependentProperties[4] = {
@@ -70,4 +76,14 @@ class MprisPlayer : public QObject {
     Mpris* m_pMpris;
     QList<DeckAttributes*> m_deckAttributes;
     UserSettingsPointer m_pSettings;
+
+    struct CurrentMetadata {
+        QString trackPath;
+        long long int trackDuration;
+        QStringList artists;
+        QString title;
+        QString coverartUrl;
+    };
+
+    CurrentMetadata m_currentMetadata;
 };

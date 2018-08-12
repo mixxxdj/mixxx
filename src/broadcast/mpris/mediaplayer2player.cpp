@@ -43,7 +43,7 @@ void MediaPlayer2Player::setShuffle(bool value) {
     Q_UNUSED(value);
 }
 
-QVariantMap MediaPlayer2Player::metadata() const {
+QVariantMap MediaPlayer2Player::metadata() {
     return m_mprisPlayer.metadata();
 }
 
@@ -115,13 +115,13 @@ void MediaPlayer2Player::Play() {
 
 void MediaPlayer2Player::Seek(qlonglong offset) {
     bool success;
-    qlonglong newPosition = m_mprisPlayer.seek(offset, success);
+    m_mprisPlayer.seek(offset, success);
 }
 
 void MediaPlayer2Player::SetPosition(const QDBusObjectPath& trackId,
         qlonglong position) {
     bool success;
-    qlonglong newPosition = m_mprisPlayer.setPosition(trackId, position, success);
+    m_mprisPlayer.setPosition(trackId, position, success);
 }
 
 void MediaPlayer2Player::OpenUri(const QString& uri) {
