@@ -267,6 +267,10 @@ void CueControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
             this, SLOT(trackCuesUpdated()),
             Qt::DirectConnection);
 
+    connect(m_pLoadedTrack.get(), SIGNAL(beatsUpdated()),
+            this, SLOT(trackBeatsUpdated()),
+            Qt::DirectConnection);
+
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
@@ -354,18 +358,7 @@ void CueControl::trackCuesUpdated() {
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
 
     if (pLoadCue) {
-        bool wasTrackAtCue = isTrackAtCue();
-
-        // Update COs.
-        m_pCuePoint->set(pLoadCue->getPosition());
-        m_pCueSource->set(pLoadCue->getSource());
-
-        // If track was at cue, move track along with cue.
-        if ((wasTrackAtCue || getCurrentSample() == 0.0) &&
-                (seekOnLoadMode == SEEK_ON_LOAD_MAIN_CUE ||
-                 (seekOnLoadMode == SEEK_ON_LOAD_DEFAULT && isCueRecallEnabled()))) {
-            seekExact(pLoadCue->getPosition());
-        }
+        setCue(pLoadCue->getPosition(), pLoadCue->getSource());
     } else {
         m_pCuePoint->set(-1.0);
         m_pCueSource->set(Cue::UNKNOWN);
@@ -399,6 +392,41 @@ void CueControl::trackCuesUpdated() {
     for (int i = 0; i < m_iNumHotCues; ++i) {
         if (!active_hotcues.contains(i)) {
             detachCue(i);
+        }
+    }
+}
+
+void CueControl::trackBeatsUpdated() {
+    if (!m_pLoadedTrack)
+        return;
+
+    setCue(m_pCuePoint->get(), (Cue::CueSource)m_pCueSource->get());
+}
+
+void CueControl::setCue(double position, Cue::CueSource source) {
+    bool wasTrackAtCue = isTrackAtCue();
+
+    // Snap automatically-placed cue point to nearest beat
+    if (position != -1.0 && source != Cue::MANUAL) {
+        BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+        if (pBeats) {
+            double closestBeat = pBeats->findClosestBeat(position);
+            if (closestBeat != -1.0) {
+                position = closestBeat;
+            }
+        }
+    }
+
+    // Update COs
+    m_pCuePoint->set(position);
+    m_pCueSource->set(source);
+
+    // Make track follow the cue point
+    if ((wasTrackAtCue || getCurrentSample() == 0.0) && position != -1.0) {
+        SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
+        if ((seekOnLoadMode == SEEK_ON_LOAD_DEFAULT && isCueRecallEnabled()) ||
+                seekOnLoadMode == SEEK_ON_LOAD_MAIN_CUE) {
+            seekExact(position);
         }
     }
 }

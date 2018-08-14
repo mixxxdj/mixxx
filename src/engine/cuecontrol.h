@@ -120,6 +120,7 @@ class CueControl : public EngineControl {
   private slots:
     void cueUpdated();
     void trackCuesUpdated();
+    void trackBeatsUpdated();
     void hotcueSet(HotcueControl* pControl, double v);
     void hotcueGoto(HotcueControl* pControl, double v);
     void hotcueGotoAndPlay(HotcueControl* pControl, double v);
@@ -152,6 +153,7 @@ class CueControl : public EngineControl {
     void createControls();
     void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
+    void setCue(double position, Cue::CueSource source);
 
     bool m_bPreviewing;
     ControlObject* m_pPlay;

@@ -343,8 +343,6 @@ class Track : public QObject {
 
     void afterKeysUpdated(QMutexLocker* pLock);
 
-    bool updateCuePoint(double position, Cue::CueSource source);
-
     enum class DurationRounding {
         SECONDS, // rounded to full seconds
         NONE     // unmodified

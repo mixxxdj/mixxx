@@ -357,17 +357,9 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 
-    // Try to update main cue point. This is needed in order to keep automatically
-    // placed cue point on beat. Note that updateCuePoint() will only change
-    // cue point if its source is not manual.
-    bool bCueModified = updateCuePoint(m_record.getCuePoint(), m_cueSource);
-
     markDirtyAndUnlock(pLock);
     emit(bpmUpdated(bpmValue));
     emit(beatsUpdated());
-    if (bCueModified) {
-        emit(cuesUpdated());
-    }
 }
 
 BeatsPointer Track::getBeats() const {
@@ -734,26 +726,9 @@ int Track::getAnalyzerProgress() const {
 void Track::setCuePoint(double position, Cue::CueSource source) {
     QMutexLocker lock(&m_qMutex);
 
-    if (updateCuePoint(position, source)) {
-        markDirtyAndUnlock(&lock);
-        emit(cuesUpdated());
-    }
-}
-
-bool Track::updateCuePoint(double position, Cue::CueSource source) {
-    // If source is not manual, snap cue point to nearest beat.
-    if (source != Cue::MANUAL && position != -1.0) {
-        if (m_pBeats) {
-            double closest_beat = m_pBeats->findClosestBeat(position);
-            if (closest_beat != -1.0) {
-                position = closest_beat;
-            }
-        }
-    }
-
     if (!compareAndSet(&m_record.refCuePoint(), position) && !compareAndSet(&m_cueSource, source)) {
         // Nothing changed.
-        return false;
+        return;
     }
 
     // Store the cue point in a load cue
@@ -774,7 +749,8 @@ bool Track::updateCuePoint(double position, Cue::CueSource source) {
         m_cueSource = Cue::UNKNOWN;
     }
 
-    return true;
+    markDirtyAndUnlock(&lock);
+    emit(cuesUpdated());
 }
 
 double Track::getCuePoint() const {
