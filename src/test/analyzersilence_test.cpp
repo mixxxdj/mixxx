@@ -51,12 +51,12 @@ TEST_F(AnalyzerSilenceTest, SilenceTrack) {
     analyzeTrack();
 
     CuePointer pBeginCue = pTrack->findCueByType(Cue::BEGIN);
-    EXPECT_EQ(pBeginCue->getPosition(), 0.0);
-    EXPECT_EQ(pBeginCue->getSource(), Cue::AUTOMATIC);
+    EXPECT_DOUBLE_EQ(0.0, pBeginCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pBeginCue->getSource());
 
     CuePointer pEndCue = pTrack->findCueByType(Cue::END);
-    EXPECT_EQ(pEndCue->getPosition(), nTrackSampleDataLength);
-    EXPECT_EQ(pEndCue->getSource(), Cue::AUTOMATIC);
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pEndCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pEndCue->getSource());
 }
 
 TEST_F(AnalyzerSilenceTest, EndToEndToneTrack) {
@@ -69,12 +69,12 @@ TEST_F(AnalyzerSilenceTest, EndToEndToneTrack) {
     analyzeTrack();
 
     CuePointer pBeginCue = pTrack->findCueByType(Cue::BEGIN);
-    EXPECT_EQ(pBeginCue->getPosition(), 0.0);
-    EXPECT_EQ(pBeginCue->getSource(), Cue::AUTOMATIC);
+    EXPECT_DOUBLE_EQ(0.0, pBeginCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pBeginCue->getSource());
 
     CuePointer pEndCue = pTrack->findCueByType(Cue::END);
-    EXPECT_EQ(pEndCue->getPosition(), nTrackSampleDataLength);
-    EXPECT_EQ(pEndCue->getSource(), Cue::AUTOMATIC);
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pEndCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pEndCue->getSource());
 }
 
 TEST_F(AnalyzerSilenceTest, ToneTrackWithSilence) {
@@ -97,12 +97,12 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilence) {
     analyzeTrack();
 
     CuePointer pBeginCue = pTrack->findCueByType(Cue::BEGIN);
-    EXPECT_EQ(pBeginCue->getPosition(), nTrackSampleDataLength / 4);
-    EXPECT_EQ(pBeginCue->getSource(), Cue::AUTOMATIC);
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength / 4, pBeginCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pBeginCue->getSource());
 
     CuePointer pEndCue = pTrack->findCueByType(Cue::END);
-    EXPECT_EQ(pEndCue->getPosition(), 3 * nTrackSampleDataLength / 4);
-    EXPECT_EQ(pEndCue->getSource(), Cue::AUTOMATIC);
+    EXPECT_DOUBLE_EQ(3 * nTrackSampleDataLength / 4, pEndCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pEndCue->getSource());
 }
 
 TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
@@ -137,12 +137,12 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
     analyzeTrack();
 
     CuePointer pBeginCue = pTrack->findCueByType(Cue::BEGIN);
-    EXPECT_EQ(pBeginCue->getPosition(), oneFifthOfTrackLength);
-    EXPECT_EQ(pBeginCue->getSource(), Cue::AUTOMATIC);
+    EXPECT_DOUBLE_EQ(oneFifthOfTrackLength, pBeginCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pBeginCue->getSource());
 
     CuePointer pEndCue = pTrack->findCueByType(Cue::END);
-    EXPECT_EQ(pEndCue->getPosition(), 4 * oneFifthOfTrackLength);
-    EXPECT_EQ(pEndCue->getSource(), Cue::AUTOMATIC);
+    EXPECT_DOUBLE_EQ(4 * oneFifthOfTrackLength, pEndCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pEndCue->getSource());
 }
 
 TEST_F(AnalyzerSilenceTest, UpdateNonUserAdjustedCues) {
@@ -171,11 +171,11 @@ TEST_F(AnalyzerSilenceTest, UpdateNonUserAdjustedCues) {
 
     analyzeTrack();
 
-    EXPECT_EQ(pBeginCue->getPosition(), halfTrackLength);
-    EXPECT_EQ(pBeginCue->getSource(), Cue::AUTOMATIC);
+    EXPECT_DOUBLE_EQ(halfTrackLength, pBeginCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pBeginCue->getSource());
 
-    EXPECT_EQ(pEndCue->getPosition(), nTrackSampleDataLength);
-    EXPECT_EQ(pEndCue->getSource(), Cue::AUTOMATIC);
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pEndCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pEndCue->getSource());
 }
 
 TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
@@ -206,11 +206,11 @@ TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
 
     analyzeTrack();
 
-    EXPECT_EQ(pBeginCue->getPosition(), kManualStartPosition);
-    EXPECT_EQ(pBeginCue->getSource(), Cue::MANUAL);
+    EXPECT_DOUBLE_EQ(kManualStartPosition, pBeginCue->getPosition());
+    EXPECT_EQ(Cue::MANUAL, pBeginCue->getSource());
 
-    EXPECT_EQ(pEndCue->getPosition(), kManualEndPosition);
-    EXPECT_EQ(pEndCue->getSource(), Cue::MANUAL);
+    EXPECT_DOUBLE_EQ(kManualEndPosition, pEndCue->getPosition());
+    EXPECT_EQ(Cue::MANUAL, pEndCue->getSource());
 }
 
 }
