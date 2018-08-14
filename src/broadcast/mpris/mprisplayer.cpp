@@ -1,5 +1,6 @@
 
 #include <QtGlobal>
+#include <QCryptographicHash>
 
 #include "broadcast/mpris/mprisplayer.h"
 #include "library/coverartcache.h"
@@ -438,18 +439,22 @@ void MprisPlayer::slotCoverArtFound(const QObject *requestor,
                                     QPixmap pixmap,
                                     bool fromCache) {
 
-    if (!pixmap.isNull()) {
+    if (!pixmap.isNull() && requestor == this) {
         QImage coverImage = pixmap.toImage();
-        QString imagePath = QDir::tempPath() + "/" + qHash(m_currentMetadata.title)
-                + "jpg";
+        QByteArray hash = QCryptographicHash::hash(
+                m_currentMetadata.title.toUtf8() +
+                m_currentMetadata.artists.at(0).toUtf8(),
+                QCryptographicHash::Sha1);
+        QString imagePath = QDir::tempPath() + "/" + hash
+                + ".jpg";
         bool success = coverImage.save(imagePath,"JPG");
         if (!success) {
             qDebug() << "Couldn't write metadata cover art";
             return;
         }
         m_currentMetadata.coverartUrl = imagePath;
+        broadcastCurrentMetadata();
     }
-    broadcastCurrentMetadata();
 
 }
 
