@@ -726,7 +726,9 @@ int Track::getAnalyzerProgress() const {
 void Track::setCuePoint(double position, Cue::CueSource source) {
     QMutexLocker lock(&m_qMutex);
 
-    if (!compareAndSet(&m_record.refCuePoint(), position) && !compareAndSet(&m_cueSource, source)) {
+    bool positionModified = compareAndSet(&m_record.refCuePoint(), position);
+    bool sourceModified = compareAndSet(&m_cueSource, source);
+    if (!positionModified && !sourceModified) {
         // Nothing changed.
         return;
     }
@@ -825,7 +827,10 @@ void Track::removeCuesOfType(Cue::CueType type) {
             dirty = true;
         }
     }
-    if (compareAndSet(&m_record.refCuePoint(), -1.0) || compareAndSet(&m_cueSource, Cue::UNKNOWN)) {
+    if (compareAndSet(&m_record.refCuePoint(), -1.0)) {
+        dirty = true;
+    }
+    if (compareAndSet(&m_cueSource, Cue::UNKNOWN)) {
         dirty = true;
     }
     if (dirty) {
