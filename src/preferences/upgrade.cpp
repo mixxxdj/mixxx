@@ -47,119 +47,121 @@ Upgrade::~Upgrade() {
 // configuration and the location of the file may change between releases.
 UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
-/*  Pre-1.7.0:
-*
-*   Since we didn't store version numbers in the config file prior to 1.7.0,
-*   we check to see if the user is upgrading if his config files are in the old location,
-*   since we moved them in 1.7.0. This code takes care of moving them.
-*/
+    /*  Pre-1.7.0:
+    *
+    *   Since we didn't store version numbers in the config file prior to 1.7.0,
+    *   we check to see if the user is upgrading if his config files are in the old location,
+    *   since we moved them in 1.7.0. This code takes care of moving them.
+    */
 
-    QDir oldLocation = QDir(QDir::homePath());
+    // If we are running portable, do not try reading configuration outside our directory
+    if (! CmdlineArgs::Instance().getIsPortable()) {
+        QDir oldLocation = QDir(QDir::homePath());
 #ifdef __WINDOWS__
-    QFileInfo* pre170Config = new QFileInfo(oldLocation.filePath("mixxx.cfg"));
+        QFileInfo* pre170Config = new QFileInfo(oldLocation.filePath("mixxx.cfg"));
 #else
-    QFileInfo* pre170Config = new QFileInfo(oldLocation.filePath(".mixxx.cfg"));
+        QFileInfo* pre170Config = new QFileInfo(oldLocation.filePath(".mixxx.cfg"));
 #endif
 
-    if (pre170Config->exists()) {
+        if (pre170Config->exists()) {
 
-        // Move the files to their new location
-        QDir newLocation = QDir(settingsPath);
+            // Move the files to their new location
+            QDir newLocation = QDir(settingsPath);
 
-        if (!newLocation.exists()) {
-            qDebug() << "Creating new settings directory" << newLocation.absolutePath();
-            newLocation.mkpath(".");
-        }
-
-        QString errorText = "Error moving your %1 file %2 to the new location %3: \n";
-
-#ifdef __WINDOWS__
-        QString oldFilePath = oldLocation.filePath("mixxxtrack.xml");
-#else
-        QString oldFilePath = oldLocation.filePath(".mixxxtrack.xml");
-#endif
-
-        QString newFilePath = newLocation.filePath("mixxxtrack.xml");
-        QFile* oldFile = new QFile(oldFilePath);
-        if (oldFile->exists()) {
-            if (oldFile->copy(newFilePath)) {
-                oldFile->remove();
+            if (!newLocation.exists()) {
+                qDebug() << "Creating new settings directory" << newLocation.absolutePath();
+                newLocation.mkpath(".");
             }
-            else {
-                if (oldFile->error()==14) qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "Error #" << oldFile->error();
-            }
-        }
-        delete oldFile;
+
+            QString errorText = "Error moving your %1 file %2 to the new location %3: \n";
 
 #ifdef __WINDOWS__
-        oldFilePath = oldLocation.filePath("mixxxbpmschemes.xml");
+            QString oldFilePath = oldLocation.filePath("mixxxtrack.xml");
 #else
-        oldFilePath = oldLocation.filePath(".mixxxbpmscheme.xml");
+            QString oldFilePath = oldLocation.filePath(".mixxxtrack.xml");
 #endif
-        newFilePath = newLocation.filePath("mixxxbpmscheme.xml");
-        oldFile = new QFile(oldFilePath);
-        if (oldFile->exists()) {
+
+            QString newFilePath = newLocation.filePath("mixxxtrack.xml");
+            QFile* oldFile = new QFile(oldFilePath);
+            if (oldFile->exists()) {
+                if (oldFile->copy(newFilePath)) {
+                    oldFile->remove();
+                }
+                else {
+                    if (oldFile->error()==14) qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "The destination file already exists.";
+                    else qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+                }
+            }
+            delete oldFile;
+
+#ifdef __WINDOWS__
+            oldFilePath = oldLocation.filePath("mixxxbpmschemes.xml");
+#else
+            oldFilePath = oldLocation.filePath(".mixxxbpmscheme.xml");
+#endif
+            newFilePath = newLocation.filePath("mixxxbpmscheme.xml");
+            oldFile = new QFile(oldFilePath);
+            if (oldFile->exists()) {
+                if (oldFile->copy(newFilePath))
+                    oldFile->remove();
+                    else {
+                        if (oldFile->error()==14) qDebug() << errorText.arg("settings", oldFilePath, newFilePath) << "The destination file already exists.";
+                        else qDebug() << errorText.arg("settings", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+                    }
+                }
+                delete oldFile;
+#ifdef __WINDOWS__
+            oldFilePath = oldLocation.filePath("MixxxMIDIBindings.xml");
+#else
+            oldFilePath = oldLocation.filePath(".MixxxMIDIBindings.xml");
+#endif
+            newFilePath = newLocation.filePath("MixxxMIDIBindings.xml");
+            oldFile = new QFile(oldFilePath);
+            if (oldFile->exists()) {
+                qWarning() << "The MIDI mapping file format has changed in this version of Mixxx. You will need to reconfigure your MIDI controller. See the Wiki for full details on the new format.";
+                if (oldFile->copy(newFilePath))
+                    oldFile->remove();
+                    else {
+                        if (oldFile->error()==14) qDebug() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "The destination file already exists.";
+                        else qDebug() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+                    }
+                }
+                // Tidy up
+                delete oldFile;
+#ifdef __WINDOWS__
+            QFile::remove(oldLocation.filePath("MixxxMIDIDevice.xml")); // Obsolete file, so just delete it
+#else
+            QFile::remove(oldLocation.filePath(".MixxxMIDIDevice.xml")); // Obsolete file, so just delete it
+#endif
+
+#ifdef __WINDOWS__
+            oldFilePath = oldLocation.filePath("mixxx.cfg");
+#else
+            oldFilePath = oldLocation.filePath(".mixxx.cfg");
+#endif
+            newFilePath = newLocation.filePath(SETTINGS_FILE);
+            oldFile = new QFile(oldFilePath);
             if (oldFile->copy(newFilePath))
                 oldFile->remove();
             else {
-                if (oldFile->error()==14) qDebug() << errorText.arg("settings", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qDebug() << errorText.arg("settings", oldFilePath, newFilePath) << "Error #" << oldFile->error();
-            }
-        }
-        delete oldFile;
-#ifdef __WINDOWS__
-        oldFilePath = oldLocation.filePath("MixxxMIDIBindings.xml");
-#else
-        oldFilePath = oldLocation.filePath(".MixxxMIDIBindings.xml");
-#endif
-        newFilePath = newLocation.filePath("MixxxMIDIBindings.xml");
-        oldFile = new QFile(oldFilePath);
-        if (oldFile->exists()) {
-            qWarning() << "The MIDI mapping file format has changed in this version of Mixxx. You will need to reconfigure your MIDI controller. See the Wiki for full details on the new format.";
-            if (oldFile->copy(newFilePath))
-                oldFile->remove();
-            else {
-                if (oldFile->error()==14) qDebug() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qDebug() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "Error #" << oldFile->error();
-            }
-        }
-        // Tidy up
-        delete oldFile;
-#ifdef __WINDOWS__
-        QFile::remove(oldLocation.filePath("MixxxMIDIDevice.xml")); // Obsolete file, so just delete it
-#else
-        QFile::remove(oldLocation.filePath(".MixxxMIDIDevice.xml")); // Obsolete file, so just delete it
-#endif
-
-#ifdef __WINDOWS__
-        oldFilePath = oldLocation.filePath("mixxx.cfg");
-#else
-        oldFilePath = oldLocation.filePath(".mixxx.cfg");
-#endif
-        newFilePath = newLocation.filePath(SETTINGS_FILE);
-        oldFile = new QFile(oldFilePath);
-        if (oldFile->copy(newFilePath))
-            oldFile->remove();
-        else {
                 if (oldFile->error()==14) qDebug() << errorText.arg("configuration", oldFilePath, newFilePath) << "The destination file already exists.";
                 else qDebug() << errorText.arg("configuration", oldFilePath, newFilePath) << "Error #" << oldFile->error();
             }
-        delete oldFile;
+            delete oldFile;
 
+        }
+        // Tidy up
+        delete pre170Config;
     }
-    // Tidy up
-    delete pre170Config;
     // End pre-1.7.0 code
 
-
-/***************************************************************************
-*                           Post-1.7.0 upgrade code
-*
-*   Add entries to the IF ladder below if anything needs to change from the
-*   previous to the current version. This allows for incremental upgrades
-*   in case a user upgrades from a few versions prior.
-****************************************************************************/
+    /***************************************************************************
+    *                           Post-1.7.0 upgrade code
+    *
+    *   Add entries to the IF ladder below if anything needs to change from the
+    *   previous to the current version. This allows for incremental upgrades
+    *   in case a user upgrades from a few versions prior.
+    ****************************************************************************/
 
     // Read the config file from home directory
     UserSettingsPointer config(new ConfigObject<ConfigValue>(
@@ -167,7 +169,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     QString configVersion = config->getValueString(ConfigKey("[Config]","Version"));
 
-    if (configVersion.isEmpty()) {
+    // If running portable, we avoid reading old configuration outside of our directory
+    if (configVersion.isEmpty() && ! CmdlineArgs::Instance().getIsPortable()) {
 
 #ifdef __APPLE__
         qDebug() << "Config version is empty, trying to read pre-1.9.0 config";

@@ -13,16 +13,27 @@ CmdlineArgs::CmdlineArgs()
       m_safeMode(false),
       m_debugAssertBreak(false),
       m_settingsPathSet(false),
+      m_isPortable(false),
       m_logLevel(mixxx::kLogLevelDefault),
-      m_logFlushLevel(mixxx::kLogFlushLevelDefault),
-// We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
+      m_logFlushLevel(mixxx::kLogFlushLevelDefault) {
+
+    QDir mixxxDir(QCoreApplication::applicationDirPath());
+    if (mixxxDir.cd("settings")) {
+        // We are running portable because there is a settings dir near
+        // Mixxx executable so we use this directory to store settings.
+        m_settingsPath = mixxxDir.absolutePath();
+        m_isPortable = true;
+    } else {
+        // Default values
+        // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
 #ifdef __LINUX__
-    m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
+        m_settingsPath = QDir::homePath().append("/").append(SETTINGS_PATH);
 #else
-    // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
-    // to QDir::filePath elsewhere in the code. This is candidate for removal.
-    m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).append("/")) {
+        // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
+        // to QDir::filePath elsewhere in the code. This is candidate for removal.
+        m_settingsPath = QDesktopServices::storageLocation(QDesktopServices::DataLocation).append("/");
 #endif
+    }
 }
 
 bool CmdlineArgs::Parse(int &argc, char **argv) {
