@@ -1195,3 +1195,98 @@ env.Append(BUILDERS = {'BuildUbuntuPackage' : versiondebbld})
 if 'makeubuntu' in COMMAND_LINE_TARGETS:
         makeubuntu = env.BuildUbuntuPackage("blah", "defs_version.h" ) #(binary_files)
         env.Alias('makeubuntu', makeubuntu)
+
+
+def copyDirectory(src, dest):
+    try:
+        shutil.copytree(src, dest)
+    # Directories are the same
+    except shutil.Error as e:
+        print('Directory not copied. Error: %s' % e)
+    # Any error saying that the directory doesn't exist
+    except OSError as e:
+        print('Directory not copied. Error: %s' % e)
+
+def BuildPortablePackage(target, source, env):
+    print("==== Mixxx Post-Build Checks ====")
+    print("You have built version %s" % mixxx_version)
+    if build.build_is_debug:
+        print("YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!")
+    print("Binary has size ", end='')
+    if build.platform_is_windows:
+        os.system('for %I in ('+dist_dir+'\mixxx.exe) do @echo %~zI')
+    else:
+        os.system('ls -lh '+dist_dir+'/mixxx.exe | cut -d \' \' -f 5')
+    print("Archive file ", end='')
+    package_name = 'mixxx-portable'
+    package_version = mixxx_version
+    if build.platform_is_windows:
+        package_system = "windows"
+        arch = "-x64" if build.machine_is_64bit else "-x86"
+    elif build.platform_is_osx:
+        package_system = "osxintel"
+        arch = ""
+    elif build.platform_is_bsd:
+        package_system = "bsd"
+        arch = "-amd64" if build.machine_is_64bit else "-x86"
+    else: # Linux
+        package_system = "linux"
+        arch = "-amd64" if build.machine_is_64bit else "-x86"
+    directory_name = '%s-%s%s' % (package_name, package_version, arch)
+    archive_name = '%s-%s-%s%s.zip' % (package_name, package_version, package_system, arch)
+    print('directory_name: {}'.format(directory_name))
+    print('archive_name: {}'.format(archive_name))
+    print(archive_name)
+    print("Top line of README, check version:")
+    if build.platform_is_windows:
+        os.system('for /l %l in (1,1,1) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" README ^| findstr /r "^%l:"\') do @echo %b')
+    else:
+        os.system('head -n 1 README')
+    print("Top 2 lines of LICENSE, check version and copyright dates:")
+    if build.platform_is_windows:
+        os.system('for /l %l in (1,1,2) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" LICENSE ^| findstr /r "^%l:"\') do @echo %b')
+    else:
+        os.system('head -n 2 LICENSE')
+
+    print("Installing Mixxx the portable way in temporary directory...")
+    # Ensure temporary target directory is empty before populating
+    shutil.rmtree('portable/{}'.format(directory_name), ignore_errors=True)
+    os.makedirs('portable/{}'.format(directory_name))
+    os.makedirs('portable/{}/res'.format(directory_name))
+    os.makedirs('portable/{}/settings'.format(directory_name))
+
+    # Handle all subdirectories of dist_dir
+    print('  . Copying subdirectories:')
+    for subdir in next(os.walk(dist_dir))[1]:
+        print('    - {}'.format(subdir))
+
+        # subdirectories to copy to top-level directory
+        if subdir in ['plugins']:
+            copyDirectory('{}/{}'.format(dist_dir, subdir),
+                          'portable/{}/{}'.format(directory_name, subdir))
+        else:
+            copyDirectory('{}/{}'.format(dist_dir, subdir),
+                          'portable/{}/res/{}'.format(directory_name, subdir))
+
+    print('  . Copying binary files:')
+    for file in mixxx_bin:
+        print('    - {}'.format(file))
+        shutil.copy2('{}/{}'.format(dist_dir, os.path.basename(str(file))),
+                                    'portable/{}/{}'.format(directory_name, os.path.basename(str(file))))
+
+    print("Now building portable package...")
+    # Zip the directory_name into target archive file
+    os.chdir('portable')
+    os.system('7z a ../{} {}'.format(archive_name, directory_name))
+    os.chdir('..')
+
+    print("Cleanup temporary portable installation")
+    shutil.rmtree('portable/{}'.format(directory_name), ignore_errors=True)
+
+#Build the portable package if "makeportable" was passed as an argument
+versionprtbld = Builder(action = BuildPortablePackage)
+env.Append(BUILDERS = {'BuildPortablePackage' : versionprtbld})
+
+if 'makeportable' in COMMAND_LINE_TARGETS:
+        makeportable = env.BuildPortablePackage("blah", "defs_version.h" ) #(binary_files)
+        env.Alias('makeportable', makeportable)
