@@ -76,10 +76,6 @@ MixtrackPlatinum.init = function(id, debug) {
         midi.sendShortMsg(0x90 | i, 0x07, 0x7F);
     }
 
-    // init bpm_tap leds
-    midi.sendShortMsg(0x98, 0x04, engine.getValue('[Channel1]', 'bpm_tap') ? 0x7F : 0x01);
-    midi.sendShortMsg(0x99, 0x04, engine.getValue('[Channel2]', 'bpm_tap') ? 0x7F : 0x01);
-
     // effects
     MixtrackPlatinum.effects = new components.ComponentContainer();
     MixtrackPlatinum.effects[1] = new MixtrackPlatinum.EffectUnit([1, 3]);
@@ -262,6 +258,21 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers, allowFocusWhenParametersHid
         relative: true, // this disables soft takeover
     });
 
+    this.BpmTapButton = function () {
+        this.group = '[Channel' + eu.currentUnitNumber + ']';
+        this.midi = [0x97 + eu.currentUnitNumber, 0x04];
+        components.Button.call(this);
+    };
+    this.BpmTapButton.prototype = new components.Button({
+        type: components.Button.prototype.types.push,
+        key: 'bpm_tap',
+        off: 0x01,
+        connect: function () {
+            this.group = '[Channel' + eu.currentUnitNumber + ']';
+            components.Button.prototype.connect.call(this);
+        },
+    });
+
     this.EffectEnableButton = function (number) {
         this.number = number;
         this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
@@ -289,6 +300,8 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers, allowFocusWhenParametersHid
         this.knobs[n] = new this.EffectUnitKnob(n);
         this.enableButtons[n] = new this.EffectEnableButton(n);
     }
+
+    this.bpmTap = new this.BpmTapButton();
 
     this.knobs.reconnectComponents();
     this.enableButtons.reconnectComponents();
