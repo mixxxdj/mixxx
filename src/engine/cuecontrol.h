@@ -113,6 +113,7 @@ class CueControl : public EngineControl {
     bool isPlayingByPlayButton();
     bool isCueRecallEnabled();
     SeekOnLoadMode getSeekOnLoadMode();
+    Cue::CueSource getCueSource();
 
   public slots:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;

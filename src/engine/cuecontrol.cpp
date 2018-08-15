@@ -400,7 +400,7 @@ void CueControl::trackBeatsUpdated() {
     if (!m_pLoadedTrack)
         return;
 
-    setCue(m_pCuePoint->get(), (Cue::CueSource)m_pCueSource->get());
+    setCue(m_pCuePoint->get(), getCueSource());
 }
 
 void CueControl::setCue(double position, Cue::CueSource source) {
@@ -1241,6 +1241,15 @@ bool CueControl::isCueRecallEnabled() {
 
 SeekOnLoadMode CueControl::getSeekOnLoadMode() {
     return seekOnLoadModeFromDouble(m_pSeekOnLoadMode->get());
+}
+
+Cue::CueSource CueControl::getCueSource() {
+    // msvs does not allow to cast from double to an enum
+    Cue::CueSource source = static_cast<Cue::CueSource>(int(m_pCueSource->get()));
+    if (source < 0 || source > 2) {
+        return Cue::UNKNOWN;
+    }
+    return source;
 }
 
 
