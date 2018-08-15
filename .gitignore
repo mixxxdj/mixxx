@@ -13,6 +13,7 @@
 
 dist32
 dist64
+portable/
 
 src/mixxx.rc.include
 src/mixxx.res
@@ -50,6 +51,8 @@ build/wix/subdirs/*.wxs
 # based on .tmpl template file for the second one.
 build/wix/bundle/bundleloc.wxs
 build/wix/ProductID.wxi
+
+mixxx-portable*.zip
 
 *.obj
 *.pdb
