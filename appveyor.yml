@@ -58,6 +58,7 @@ after_test:
 artifacts:
   - path: '*.exe'
   - path: '*.msi'
+  - path: 'mixxx-portable*.zip'
 on_success:
   - echo "*** SUCCESS ***"
 on_failure:
