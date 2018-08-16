@@ -13,7 +13,7 @@
 
 dist32
 dist64
-portable/
+/portable/
 
 src/mixxx.rc.include
 src/mixxx.res

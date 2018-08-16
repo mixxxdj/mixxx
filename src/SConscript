@@ -1270,9 +1270,15 @@ def BuildPortablePackage(target, source, env):
 
     print('  . Copying binary files:')
     for file in mixxx_bin:
-        print('    - {}'.format(file))
+        print('    - {}'.format(os.path.basename(str(file))))
         shutil.copy2('{}/{}'.format(dist_dir, os.path.basename(str(file))),
                                     'portable/{}/{}'.format(directory_name, os.path.basename(str(file))))
+
+    print('  . Copying documentation:')
+    for file in ['CHANGELOG', 'LICENCE', 'build/portable/README.md']:
+        print('    - {}'.format(os.path.basename(str(file))))
+        shutil.copy2('{}/{}'.format(dist_dir, os.path.basename(str(file))),
+                     'portable/{}/{}'.format(directory_name, os.path.basename(str(file))))
 
     print("Now building portable package...")
     # Zip the directory_name into target archive file
