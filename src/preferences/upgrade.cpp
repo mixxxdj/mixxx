@@ -57,12 +57,14 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     // If we are running portable, do not try reading configuration outside our directory
     if (! CmdlineArgs::Instance().getIsPortable()) {
         QDir oldLocation = QDir(QDir::homePath());
+
 #ifdef __WINDOWS__
-        QFileInfo* pre170Config = new QFileInfo(oldLocation.filePath("mixxx.cfg"));
+        Qstring pre170ConfigFile = "mixxx.cfg";
 #else
-        QFileInfo* pre170Config = new QFileInfo(oldLocation.filePath(".mixxx.cfg"));
+        Qstring pre170ConfigFile = ".mixxx.cfg";
 #endif
 
+        QFileInfo* pre170Config = new QFileInfo(oldLocation.filePath(pre170ConfigFile));
         if (pre170Config->exists()) {
 
             // Move the files to their new location
@@ -76,11 +78,12 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             QString errorText = "Error moving your %1 file %2 to the new location %3: \n";
 
 #ifdef __WINDOWS__
-            QString oldFilePath = oldLocation.filePath("mixxxtrack.xml");
+            QString pre170MixxxTrackFile = "mixxxtrack.xml";
 #else
-            QString oldFilePath = oldLocation.filePath(".mixxxtrack.xml");
+            QString pre170MixxxTrackFile = ".mixxxtrack.xml";
 #endif
 
+            QString oldFilePath = oldLocation.filePath(pre170MixxxTrackFile);
             QString newFilePath = newLocation.filePath("mixxxtrack.xml");
             QFile* oldFile = new QFile(oldFilePath);
             if (oldFile->exists()) {
@@ -95,10 +98,11 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             delete oldFile;
 
 #ifdef __WINDOWS__
-            oldFilePath = oldLocation.filePath("mixxxbpmschemes.xml");
+            QString pre170MixxxBPMScheme = "mixxxbpmschemes.xml";
 #else
-            oldFilePath = oldLocation.filePath(".mixxxbpmscheme.xml");
+            QString pre170MixxxBPMScheme = ".mixxxbpmscheme.xml";
 #endif
+            oldFilePath = oldLocation.filePath(pre170MixxxBPMScheme);
             newFilePath = newLocation.filePath("mixxxbpmscheme.xml");
             oldFile = new QFile(oldFilePath);
             if (oldFile->exists()) {
@@ -110,11 +114,13 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                     }
                 }
                 delete oldFile;
+
 #ifdef __WINDOWS__
-            oldFilePath = oldLocation.filePath("MixxxMIDIBindings.xml");
+            QString pre170MIDIBindings = "MixxxMIDIBindings.xml";
 #else
-            oldFilePath = oldLocation.filePath(".MixxxMIDIBindings.xml");
+            QString pre170MIDIBindings = ".MixxxMIDIBindings.xml";
 #endif
+            oldFilePath = oldLocation.filePath(pre170MIDIBindings);
             newFilePath = newLocation.filePath("MixxxMIDIBindings.xml");
             oldFile = new QFile(oldFilePath);
             if (oldFile->exists()) {
@@ -128,17 +134,16 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                 }
                 // Tidy up
                 delete oldFile;
-#ifdef __WINDOWS__
-            QFile::remove(oldLocation.filePath("MixxxMIDIDevice.xml")); // Obsolete file, so just delete it
-#else
-            QFile::remove(oldLocation.filePath(".MixxxMIDIDevice.xml")); // Obsolete file, so just delete it
-#endif
 
 #ifdef __WINDOWS__
-            oldFilePath = oldLocation.filePath("mixxx.cfg");
+            QString pre170MIDIDevices = "MixxxMIDIDevice.xml";
 #else
-            oldFilePath = oldLocation.filePath(".mixxx.cfg");
+            QString pre170MIDIDevices = ".MixxxMIDIDevice.xml";
 #endif
+
+            QFile::remove(oldLocation.filePath(pre170MIDIDevices)); // Obsolete file, so just delete it
+
+            oldFilePath = oldLocation.filePath(pre170ConfigFile);
             newFilePath = newLocation.filePath(SETTINGS_FILE);
             oldFile = new QFile(oldFilePath);
             if (oldFile->copy(newFilePath))
