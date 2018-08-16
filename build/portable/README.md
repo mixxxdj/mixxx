@@ -4,17 +4,17 @@
 
 The Mixxx binary itself is the same for portable or normal installation.
 Portable status is determined at runtime if Mixxx finds directories named
-`settings` and `res` at the same place the executable resides.
+`mixxx-settings` and `mixxx-resources` at the same place the executable resides.
 It will them use its resources from the `res` subdirectory and store all
-settings from the `settings` subdirectory. No attempt will be made to access or
-upgrade configuration outside of that directory. This allow you to used
+settings from the `mixxx-settings` subdirectory. No attempt will be made to
+access or upgrade configuration outside of that directory. This allow you to use
 different portable Mixxx versions without any sharing between their
 configuration.
 
 ## Upgrade
 
 If you want to upgrade from one portable version to another, simply copy the
-`settings` directory in the old version to the new one.
+`mixxx-settings` directory in the old version to the new one.
 
 ## Track management
 

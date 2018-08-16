@@ -18,8 +18,8 @@ CmdlineArgs::CmdlineArgs()
       m_logFlushLevel(mixxx::kLogFlushLevelDefault) {
 
     QDir mixxxDir(QCoreApplication::applicationDirPath());
-    if (mixxxDir.cd("settings")) {
-        // We are running portable because there is a settings dir near
+    if (mixxxDir.cd("mixxx-settings")) {
+        // We are running portable because there is a mixxx-settings dir near
         // Mixxx executable so we use this directory to store settings.
         m_settingsPath = mixxxDir.absolutePath();
         m_isPortable = true;

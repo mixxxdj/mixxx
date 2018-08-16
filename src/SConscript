@@ -1252,8 +1252,8 @@ def BuildPortablePackage(target, source, env):
     # Ensure temporary target directory is empty before populating
     shutil.rmtree('portable/{}'.format(directory_name), ignore_errors=True)
     os.makedirs('portable/{}'.format(directory_name))
-    os.makedirs('portable/{}/res'.format(directory_name))
-    os.makedirs('portable/{}/settings'.format(directory_name))
+    os.makedirs('portable/{}/mixxx-resources'.format(directory_name))
+    os.makedirs('portable/{}/mixxx-settings'.format(directory_name))
 
     # Handle all subdirectories of dist_dir
     print('  . Copying subdirectories:')
@@ -1266,7 +1266,7 @@ def BuildPortablePackage(target, source, env):
                           'portable/{}/{}'.format(directory_name, subdir))
         else:
             copyDirectory('{}/{}'.format(dist_dir, subdir),
-                          'portable/{}/res/{}'.format(directory_name, subdir))
+                          'portable/{}/mixxx-resources/{}'.format(directory_name, subdir))
 
     print('  . Copying binary files:')
     for file in mixxx_bin:
