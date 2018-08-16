@@ -8,12 +8,17 @@ MixtrackPlatinum.init = function(id, debug) {
     var byteArray = [0xF0, 0x00, 0x01, 0x3F, 0x7F, 0x3A, 0x60, 0x00, 0x04, 0x04, 0x01, 0x00, 0x00, 0xF7];
     midi.sendSysexMsg(byteArray, byteArray.length);
 
+    // effects
+    MixtrackPlatinum.effects = new components.ComponentContainer();
+    MixtrackPlatinum.effects[1] = new MixtrackPlatinum.EffectUnit([1, 3]);
+    MixtrackPlatinum.effects[2] = new MixtrackPlatinum.EffectUnit([2, 4]);
 
+    // decks
     MixtrackPlatinum.decks = new components.ComponentContainer();
-    MixtrackPlatinum.decks[1] = new MixtrackPlatinum.Deck(1, 0x00);
-    MixtrackPlatinum.decks[2] = new MixtrackPlatinum.Deck(2, 0x01);
-    MixtrackPlatinum.decks[3] = new MixtrackPlatinum.Deck(3, 0x02);
-    MixtrackPlatinum.decks[4] = new MixtrackPlatinum.Deck(4, 0x03);
+    MixtrackPlatinum.decks[1] = new MixtrackPlatinum.Deck(1, 0x00, MixtrackPlatinum.effects[1]);
+    MixtrackPlatinum.decks[2] = new MixtrackPlatinum.Deck(2, 0x01, MixtrackPlatinum.effects[2]);
+    MixtrackPlatinum.decks[3] = new MixtrackPlatinum.Deck(3, 0x02, MixtrackPlatinum.effects[1]);
+    MixtrackPlatinum.decks[4] = new MixtrackPlatinum.Deck(4, 0x03, MixtrackPlatinum.effects[2]);
 
     MixtrackPlatinum.sampler = new MixtrackPlatinum.Sampler();
     MixtrackPlatinum.browse = new MixtrackPlatinum.BrowseKnob();
@@ -75,11 +80,6 @@ MixtrackPlatinum.init = function(id, debug) {
         MixtrackPlatinum.wheel[i] = true;
         midi.sendShortMsg(0x90 | i, 0x07, 0x7F);
     }
-
-    // effects
-    MixtrackPlatinum.effects = new components.ComponentContainer();
-    MixtrackPlatinum.effects[1] = new MixtrackPlatinum.EffectUnit([1, 3]);
-    MixtrackPlatinum.effects[2] = new MixtrackPlatinum.EffectUnit([2, 4]);
 
     // zero vu meters
     midi.sendShortMsg(0xBF, 0x44, 0);
@@ -198,7 +198,7 @@ MixtrackPlatinum.shutdown = function() {
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
-MixtrackPlatinum.EffectUnit = function (unitNumbers, allowFocusWhenParametersHidden) {
+MixtrackPlatinum.EffectUnit = function (unitNumbers) {
     var eu = this;
 
     this.setCurrentUnit = function (newNumber) {
@@ -255,6 +255,23 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers, allowFocusWhenParametersHid
         group: this.group,
         inKey: 'super1',
         relative: true, // this disables soft takeover
+        connect: function() {
+            this.connections[0] = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
+            this.connections[0].trigger();
+        },
+        disconnect: function() {
+            this.connections[0].disconnect();
+        },
+        onFocusChange: function(value, group, control) {
+            if (value === 0) {
+                this.group = eu.group;
+                this.inKey = 'super1';
+            }
+            else {
+                this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber + '_Effect' + value + ']';
+                this.inKey = 'meta';
+            }
+        },
     });
 
     this.BpmTapButton = function () {
@@ -270,6 +287,23 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers, allowFocusWhenParametersHid
             this.group = '[Channel' + eu.currentUnitNumber + ']';
             components.Button.prototype.connect.call(this);
         },
+        input: function (channel, control, value, status, group) {
+            components.Button.prototype.input.call(this, channel, control, value, status, group);
+            if (this.isPress(channel, control, value, status)) {
+                eu.forEachComponent(function (component) {
+                    if (component.tap !== undefined) {
+                        component.tap();
+                    }
+                });
+            }
+            else {
+                eu.forEachComponent(function (component) {
+                    if (component.untap !== undefined) {
+                        component.untap();
+                    }
+                });
+            }
+        },
     });
 
     this.EffectEnableButton = function (number) {
@@ -277,12 +311,25 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers, allowFocusWhenParametersHid
         this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
                       '_Effect' + this.number + ']';
         this.midi = [0x97 + eu.currentUnitNumber, this.number - 1];
+        this.inToggle = components.Button.prototype.inToggle;
+        this.flash_timer = null;
+
         components.Button.call(this);
     };
     this.EffectEnableButton.prototype = new components.Button({
         type: components.Button.prototype.types.powerWindow,
-        key: 'enabled',
+        outKey: 'enabled',
+        inKey: 'enabled',
         off: 0x01,
+        tap: function() {
+            this.inKey = 'enabled';
+            this.type = components.Button.prototype.types.toggle;
+            this.inToggle = this.toggle_focused_effect;
+        },
+        untap: function() {
+            this.type = components.Button.prototype.types.powerWindow;
+            this.inToggle = components.Button.prototype.inToggle;
+        },
         shift:  function() {
             this.inKey = 'next_effect';
             this.type = components.Button.prototype.types.push;
@@ -290,6 +337,76 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers, allowFocusWhenParametersHid
         unshift: function() {
             this.inKey = 'enabled';
             this.type = components.Button.prototype.types.powerWindow;
+        },
+        output: function(value, group, control) {
+            var focused_effect = engine.getValue(eu.group, "focused_effect");
+            if (focused_effect !== this.number) {
+                engine.stopTimer(this.flash_timer);
+                this.flash_timer = null;
+                components.Button.prototype.output.call(this, value, group, control);
+            }
+            else {
+                this.startFlash();
+            }
+        },
+        toggle_focused_effect: function() {
+            if (engine.getValue(eu.group, "focused_effect") === this.number) {
+                engine.setValue(eu.group, "show_focus", 0);
+                engine.setValue(eu.group, "show_parameters", 0);
+                engine.setValue(eu.group, "focused_effect", 0);
+            }
+            else {
+                engine.setValue(eu.group, "show_focus", 1);
+                engine.setValue(eu.group, "show_parameters", 1);
+                engine.setValue(eu.group, "focused_effect", this.number);
+            }
+        },
+        connect: function() {
+            components.Button.prototype.connect.call(this);
+            this.fx_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
+        },
+        disconnect: function() {
+            components.Button.prototype.disconnect.call(this);
+            this.fx_connection.disconnect();
+        },
+        onFocusChange: function(value, group, control) {
+            if (value === this.number) {
+                this.startFlash();
+            }
+            else {
+                this.stopFlash();
+            }
+        },
+        startFlash: function() {
+            // already flashing
+            if (this.flash_timer) {
+                engine.stopTimer(this.flash_timer);
+            }
+
+            this.flash_state = false;
+            this.send(this.on);
+
+            var time = 500;
+            if (this.inGetValue() > 0) {
+                time = 150;
+            }
+
+            var button = this;
+            this.flash_timer = engine.beginTimer(time, function() {
+                if (button.flash_state) {
+                    button.send(button.on);
+                    button.flash_state = false;
+                }
+                else {
+                    button.send(button.off);
+                    button.flash_state = true;
+                }
+            });
+        },
+        stopFlash: function() {
+            engine.stopTimer(this.flash_timer);
+            this.flash_timer = null;
+            this.trigger();
         },
     });
 
@@ -311,8 +428,11 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers, allowFocusWhenParametersHid
 };
 MixtrackPlatinum.EffectUnit.prototype = new components.ComponentContainer();
 
-MixtrackPlatinum.Deck = function(deck_nums, midi_chan) {
-    components.Deck.call(this, deck_nums);
+MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
+    var deck = this;
+    var eu = effects_unit;
+
+    components.Deck.call(this, number);
     this.play_button = new components.PlayButton({
         midi: [0x90 + midi_chan, 0x00],
         off: 0x01,
@@ -428,29 +548,47 @@ MixtrackPlatinum.Deck = function(deck_nums, midi_chan) {
         shiftOffset: -0x10,
     });
 
-    this.high_eq = new components.Pot({
-        group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
-        inKey: 'parameter3',
+    this.EqEffectKnob = function (group, in_key, fx_key) {
+        this.unshift_group = group;
+        this.unshift_key = in_key;
+        this.fx_key = fx_key;
+        components.Pot.call(this, {
+            group: group,
+            inKey: in_key,
+        });
+    };
+    this.EqEffectKnob.prototype = new components.Pot({
+        shift: function() {
+            var focused_effect = engine.getValue(eu.group, "focused_effect");
+            if (focused_effect === 0) return;
+
+            this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber + '_Effect' + focused_effect + ']';
+            this.inKey = this.fx_key;
+            this.disconnect();
+            this.connect();
+        },
+        unshift: function() {
+            this.group = this.unshift_group;
+            this.inKey = this.unshift_key;
+            this.disconnect();
+            this.connect();
+        },
     });
 
-    this.mid_eq = new components.Pot({
-        group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
-        inKey: 'parameter2',
-    });
+    var eq_group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
+    this.high_eq = new this.EqEffectKnob(eq_group, 'parameter3', 'parameter1');
+    this.mid_eq = new this.EqEffectKnob(eq_group, 'parameter2', 'parameter2');
+    this.low_eq = new this.EqEffectKnob(eq_group, 'parameter1', 'parameter3');
 
-    this.low_eq = new components.Pot({
-        group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
-        inKey: 'parameter1',
-    });
+    this.filter = new this.EqEffectKnob(
+        '[QuickEffectRack1_' + this.currentDeck + ']',
+        'super1',
+        'parameter4');
 
-    this.filter = new components.Pot({
-        group: '[QuickEffectRack1_' + this.currentDeck + ']',
-        inKey: 'super1',
-    });
-
-    this.gain = new components.Pot({
-        inKey: 'pregain',
-    });
+    this.gain = new this.EqEffectKnob(
+        this.currentDeck,
+        'pregain',
+        'parameter5');
 
     this.reconnectComponents(function (c) {
         if (c.group === undefined) {
