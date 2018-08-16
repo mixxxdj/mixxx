@@ -1590,11 +1590,11 @@
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel1]]</group>
-                <key>super1</key>
+                <key>MixtrackPlatinum.decks[1].filter.input</key>
                 <status>0xB0</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1617,20 +1617,20 @@
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel2]]</group>
-                <key>super1</key>
+                <key>MixtrackPlatinum.decks[2].filter.input</key>
                 <status>0xB1</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter1</key>
+                <key>MixtrackPlatinum.decks[1].low_eq.input</key>
                 <status>0xB0</status>
                 <midino>0x19</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1653,29 +1653,29 @@
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel3]]</group>
-                <key>super1</key>
+                <key>MixtrackPlatinum.decks[3].filter.input</key>
                 <status>0xB2</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter1</key>
+                <key>MixtrackPlatinum.decks[2].low_eq.input</key>
                 <status>0xB1</status>
                 <midino>0x19</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter2</key>
+                <key>MixtrackPlatinum.decks[1].mid_eq.input</key>
                 <status>0xB0</status>
                 <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1698,38 +1698,38 @@
             </control>
             <control>
                 <group>[QuickEffectRack1_[Channel4]]</group>
-                <key>super1</key>
+                <key>MixtrackPlatinum.decks[4].filter.input</key>
                 <status>0xB3</status>
                 <midino>0x1A</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter1</key>
+                <key>MixtrackPlatinum.decks[3].low_eq.input</key>
                 <status>0xB2</status>
                 <midino>0x19</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter2</key>
+                <key>MixtrackPlatinum.decks[2].mid_eq.input</key>
                 <status>0xB1</status>
                 <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
-                <key>parameter3</key>
+                <key>MixtrackPlatinum.decks[1].high_eq.input</key>
                 <status>0xB0</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1743,92 +1743,92 @@
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter1</key>
+                <key>MixtrackPlatinum.decks[4].low_eq.input</key>
                 <status>0xB3</status>
                 <midino>0x19</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter2</key>
+                <key>MixtrackPlatinum.decks[3].mid_eq.input</key>
                 <status>0xB2</status>
                 <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
-                <key>parameter3</key>
+                <key>MixtrackPlatinum.decks[2].high_eq.input</key>
                 <status>0xB1</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>pregain</key>
+                <key>MixtrackPlatinum.decks[1].gain.input</key>
                 <status>0xB0</status>
                 <midino>0x16</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter2</key>
+                <key>MixtrackPlatinum.decks[4].mid_eq.input</key>
                 <status>0xB3</status>
                 <midino>0x18</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
-                <key>parameter3</key>
+                <key>MixtrackPlatinum.decks[3].high_eq.input</key>
                 <status>0xB2</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>pregain</key>
+                <key>MixtrackPlatinum.decks[2].gain.input</key>
                 <status>0xB1</status>
                 <midino>0x16</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
-                <key>parameter3</key>
+                <key>MixtrackPlatinum.decks[4].high_eq.input</key>
                 <status>0xB3</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>pregain</key>
+                <key>MixtrackPlatinum.decks[3].gain.input</key>
                 <status>0xB2</status>
                 <midino>0x16</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>pregain</key>
+                <key>MixtrackPlatinum.decks[4].gain.input</key>
                 <status>0xB3</status>
                 <midino>0x16</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>

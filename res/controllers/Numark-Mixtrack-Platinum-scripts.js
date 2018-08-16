@@ -431,6 +431,30 @@ MixtrackPlatinum.Deck = function(deck_nums, midi_chan) {
         shiftOffset: -0x10,
     });
 
+    this.high_eq = new components.Pot({
+        group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
+        inKey: 'parameter3',
+    });
+
+    this.mid_eq = new components.Pot({
+        group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
+        inKey: 'parameter2',
+    });
+
+    this.low_eq = new components.Pot({
+        group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
+        inKey: 'parameter1',
+    });
+
+    this.filter = new components.Pot({
+        group: '[QuickEffectRack1_' + this.currentDeck + ']',
+        inKey: 'super1',
+    });
+
+    this.gain = new components.Pot({
+        inKey: 'pregain',
+    });
+
     this.reconnectComponents(function (c) {
         if (c.group === undefined) {
             c.group = this.currentDeck;
