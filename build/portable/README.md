@@ -7,9 +7,9 @@ Portable status is determined at runtime if Mixxx finds directories named
 `mixxx-settings` and `mixxx-resources` at the same place the executable resides.
 It will them use its resources from the `res` subdirectory and store all
 settings from the `mixxx-settings` subdirectory. No attempt will be made to
-access or upgrade configuration outside of that directory. This allow you to use
-different portable Mixxx versions without any sharing between their
-configuration.
+access or upgrade configuration outside of that directory. This allows you to
+use different portable Mixxx versions with completely separate/isolated
+configurations.
 
 ## Upgrade
 
@@ -19,9 +19,9 @@ If you want to upgrade from one portable version to another, simply copy the
 ## Track management
 
 Currently, Mixxx can't handle relative library folders so if you store portable
-Mixxx and your track on a removable drive, be aware that a different mountpoint
-of drive letter (depending on your OS) for that drive will lead to missing
-tracks (Mixxx is unable to find its tracks himself).
+Mixxx and your tracks on a removable drive, be aware that a different mountpoint
+or drive letter (depending on your OS) for that drive will lead to missing
+tracks because Mixxx will not be able to find them on its own.
 To recover your tracks, You need to manually add your music directory to the
 library preferences and let Mixxx browse your music folder. It should
 automatically recover missing tracks.
@@ -31,7 +31,7 @@ automatically recover missing tracks.
 If you plan to use portable Mixxx directly from a removable media (USB key or
 external hard drive), chose a drive with good performance as all access to
 Mixxx configuration database and logging will be made on that removable media.
-It is recommended to copy the portable Mixxx folder on the hard drive of the
+It is recommended to copy the portable Mixxx folder to the hard drive of the
 computer you use before using portable Mixxx and to copy back the settings
 folder to your removable media after you have finished using Mixxx to backup
 your latest data.
