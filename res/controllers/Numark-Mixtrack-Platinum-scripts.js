@@ -248,13 +248,12 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers, allowFocusWhenParametersHid
         },
     });
 
-    this.EffectUnitKnob = function (number) {
-        this.number = number;
-        this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber + '_Effect' + this.number + ']';
+    this.EffectUnitTouchStrip = function() {
         components.Pot.call(this);
     };
-    this.EffectUnitKnob.prototype = new components.Pot({
-        inKey: 'meta',
+    this.EffectUnitTouchStrip.prototype = new components.Pot({
+        group: this.group,
+        inKey: 'super1',
         relative: true, // this disables soft takeover
     });
 
@@ -294,16 +293,14 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers, allowFocusWhenParametersHid
         },
     });
 
-    this.knobs = new components.ComponentContainer();
+    this.touch_strip = new this.EffectUnitTouchStrip();
     this.enableButtons = new components.ComponentContainer();
     for (var n = 1; n <= 3; n++) {
-        this.knobs[n] = new this.EffectUnitKnob(n);
         this.enableButtons[n] = new this.EffectEnableButton(n);
     }
 
     this.bpmTap = new this.BpmTapButton();
 
-    this.knobs.reconnectComponents();
     this.enableButtons.reconnectComponents();
 
     this.forEachComponent(function (component) {

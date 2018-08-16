@@ -1935,15 +1935,6 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1_Effect3]</group>
-                <key>MixtrackPlatinum.effects[1].knobs[3].input</key>
-                <status>0xB8</status>
-                <midino>0x02</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Master]</group>
                 <key>crossfader</key>
                 <status>0xBF</status>
@@ -1953,26 +1944,8 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit1_Effect2]</group>
-                <key>MixtrackPlatinum.effects[1].knobs[2].input</key>
-                <status>0xB8</status>
-                <midino>0x01</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[EffectRack1_EffectUnit2_Effect3]</group>
-                <key>MixtrackPlatinum.effects[2].knobs[3].input</key>
-                <status>0xB9</status>
-                <midino>0x02</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
-                <key>MixtrackPlatinum.effects[1].knobs[1].input</key>
+                <key>MixtrackPlatinum.effects[1].touch_strip.input</key>
                 <status>0xB8</status>
                 <midino>0x00</midino>
                 <options>
@@ -1980,17 +1953,8 @@
                 </options>
             </control>
             <control>
-                <group>[EffectRack1_EffectUnit2_Effect2]</group>
-                <key>MixtrackPlatinum.effects[2].knobs[2].input</key>
-                <status>0xB9</status>
-                <midino>0x01</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
-                <key>MixtrackPlatinum.effects[2].knobs[1].input</key>
+                <key>MixtrackPlatinum.effects[2].touch_strip.input</key>
                 <status>0xB9</status>
                 <midino>0x00</midino>
                 <options>
