@@ -359,6 +359,10 @@ MprisPlayer::~MprisPlayer() {
     for (DeckAttributes* attrib : m_deckAttributes) {
         delete attrib;
     }
+    for (const QString& image : m_coverArtImages) {
+        QFile imageFile(image);
+        imageFile.remove();
+    }
 }
 
 void MprisPlayer::slotPlayPositionChanged(DeckAttributes* pDeck, double position) {
@@ -432,6 +436,7 @@ void MprisPlayer::slotCoverArtFound(const QObject* requestor,
                         m_currentMetadata.artists.at(0).toUtf8(),
                 QCryptographicHash::Sha1);
         QString imagePath = QDir::tempPath() + "/" + hash + ".jpg";
+        m_coverArtImages.append(imagePath);
         bool success = coverImage.save(imagePath, "JPG");
         if (!success) {
             qDebug() << "Couldn't write metadata cover art";
