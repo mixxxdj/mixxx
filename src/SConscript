@@ -1277,7 +1277,7 @@ def BuildPortablePackage(target, source, env):
     print('  . Copying documentation:')
     for file in ['CHANGELOG', 'LICENCE', 'build/portable/README.md']:
         print('    - {}'.format(os.path.basename(file)))
-        shutil.copy2('{}'.format(file)),
+        shutil.copy2('{}'.format(file),
                      'portable/{}/{}'.format(directory_name, os.path.basename(file)))
 
     print("Now building portable package...")
