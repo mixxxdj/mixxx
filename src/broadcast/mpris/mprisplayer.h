@@ -89,4 +89,5 @@ class MprisPlayer : public QObject {
     };
 
     CurrentMetadata m_currentMetadata;
+    QLinkedList<QString> m_coverArtImages;
 };
