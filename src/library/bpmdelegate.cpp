@@ -69,10 +69,10 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
     //
     // Here's how you would typically style the LibraryBPMButton:
     // #LibraryBPMButton::indicator:checked {
-    //   image: url(:/images/library/ic_library_checked.png);
+    //   image: url(:/images/library/ic_library_checked.svg);
     // }
     // #LibraryBPMButton::indicator:unchecked {
-    //  image: url(:/images/library/ic_library_unchecked.png);
+    //  image: url(:/images/library/ic_library_unchecked.svg);
     // }
     QStyleOptionViewItemV4 opt = option;
     initStyleOption(&opt, index);
