@@ -44,7 +44,7 @@ CrateFeature::CrateFeature(Library* pLibrary,
                            UserSettingsPointer pConfig)
         : LibraryFeature(pConfig),
           m_cratesIcon(":/images/library/ic_library_crates.svg"),
-          m_lockedCrateIcon(":/images/library/ic_library_locked.svg"),
+          m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pTrackCollection),
           m_crateTableModel(this, pTrackCollection) {
 

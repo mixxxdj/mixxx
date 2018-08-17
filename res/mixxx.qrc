@@ -6,18 +6,21 @@
         <file>images/ic_mixxx_window.png</file>
       <!-- mouse icon for drag'n'drop actions. won't work with SVG -->
         <file>images/library/ic_library_drag_and_drop.png</file>
+      <!-- open/closed lock icons for BPM button -->
+        <file>images/library/ic_library_locked.svg</file>
+        <file>images/library/ic_library_unlocked.svg</file>
+      <!-- lock icon for crates, playlists & history -->
+        <file>images/library/ic_library_locked_tracklist.svg</file>
         <file>images/library/cover_default.png</file>
         <file>images/library/ic_library_cross.svg</file>
         <file>images/library/ic_library_autodj.svg</file>
         <file>images/library/ic_library_banshee.svg</file>
         <file>images/library/ic_library_computer.svg</file> <!-- from Gnome high contrast icons LGPL 2.1 -->
-        <file>images/library/ic_library_locked.svg</file>
         <file>images/library/ic_library_crates.svg</file>
         <file>images/library/ic_library_history.svg</file>
         <file>images/library/ic_library_history_current.svg</file>
         <file>images/library/ic_library_itunes.svg</file>
         <file>images/library/ic_library_tracks.svg</file> <!-- from Gnome high contrast icons LGPL 2.1 -->
-        <file>images/library/ic_library_locked_tracklist.svg</file>
         <file>images/library/ic_library_playlist.svg</file>
         <file>images/library/ic_library_prepare.svg</file>
         <file>images/library/ic_library_preview_pause.svg</file>
@@ -26,7 +29,6 @@
         <file>images/library/ic_library_recordings.svg</file>
         <file>images/library/ic_library_rhythmbox.svg</file>
         <file>images/library/ic_library_traktor.svg</file>
-        <file>images/library/ic_library_unlocked.svg</file>
         <file>images/mixxx_logo.svg</file> <!-- logo in 'About' dialog -->
         <file>images/mixxx_icon.svg</file> <!-- icon in 'About' dialog -->
         <file>images/mixxx-icon-logo-symbolic.svg</file> <!-- default launch image -->

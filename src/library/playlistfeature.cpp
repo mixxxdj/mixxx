@@ -178,7 +178,7 @@ void PlaylistFeature::buildPlaylistList() {
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
     if (m_playlistDao.isPlaylistLocked(playlist_id)) {
-        item->setIcon(QIcon(":/images/library/ic_library_locked.svg"));
+        item->setIcon(QIcon(":/images/library/ic_library_locked_tracklist.svg"));
     } else {
         item->setIcon(QIcon());
     }
