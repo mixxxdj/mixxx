@@ -37,7 +37,8 @@ MprisPlayer::MprisPlayer(PlayerManager *pPlayerManager,
            m_bComponentsInitialized(false),
            m_bPropertiesEnabled(false),
            m_pMpris(pMpris),
-           m_pSettings(pSettings) {
+           m_pSettings(pSettings),
+           m_currentCoverArtFile(QDir::tempPath() + "/coverArt.jpg") {
     connect(m_pWindow, &MixxxMainWindow::componentsInitialized,
             this, &MprisPlayer::mixxxComponentsInitialized);
     QMetaObject::Connection connection =
@@ -342,6 +343,10 @@ void MprisPlayer::requestCoverartUrl(TrackPointer pTrack) {
                                                   false,
                                                   true);
     }
+    else {
+        m_currentMetadata.coverartUrl.clear();
+        broadcastCurrentMetadata();
+    }
 }
 
 void MprisPlayer::slotPlayChanged(DeckAttributes *pDeck, bool playing) {
@@ -373,10 +378,6 @@ void MprisPlayer::slotPlayChanged(DeckAttributes *pDeck, bool playing) {
 MprisPlayer::~MprisPlayer() {
     for (DeckAttributes *attrib : m_deckAttributes) {
         delete attrib;
-    }
-    for (const QString &image : m_coverArtImages) {
-        QFile imageFile(image);
-        imageFile.remove();
     }
 }
 
@@ -445,19 +446,14 @@ void MprisPlayer::slotCoverArtFound(const QObject *requestor,
 
     if (!pixmap.isNull() && requestor == this) {
         QImage coverImage = pixmap.toImage();
-        QByteArray hash = QCryptographicHash::hash(
-                m_currentMetadata.title.toUtf8() +
-                m_currentMetadata.artists.at(0).toUtf8(),
-                QCryptographicHash::Sha1);
-        QString imagePath = QDir::tempPath() + "/" + hash
-                + ".jpg";
-        m_coverArtImages.append(imagePath);
-        bool success = coverImage.save(imagePath,"JPG");
+        m_currentCoverArtFile.open(QIODevice::WriteOnly);
+        bool success = coverImage.save(&m_currentCoverArtFile,"JPG");
         if (!success) {
             qDebug() << "Couldn't write metadata cover art";
             return;
         }
-        m_currentMetadata.coverartUrl = imagePath;
+        m_currentCoverArtFile.close();
+        m_currentMetadata.coverartUrl = QDir::tempPath() + "/coverArt.jpg";
         broadcastCurrentMetadata();
     }
 
@@ -477,5 +473,3 @@ QVariantMap MprisPlayer::getVariantMapMetadata() {
     metadata.insert("mpris:artUrl",m_currentMetadata.coverartUrl);
     return metadata;
 }
-
-
