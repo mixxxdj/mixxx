@@ -59,9 +59,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         QDir oldLocation = QDir(QDir::homePath());
 
 #ifdef __WINDOWS__
-        Qstring pre170ConfigFile = "mixxx.cfg";
+        QString pre170ConfigFile = "mixxx.cfg";
 #else
-        Qstring pre170ConfigFile = ".mixxx.cfg";
+        QString pre170ConfigFile = ".mixxx.cfg";
 #endif
 
         QFileInfo* pre170Config = new QFileInfo(oldLocation.filePath(pre170ConfigFile));
