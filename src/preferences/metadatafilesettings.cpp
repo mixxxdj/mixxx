@@ -19,15 +19,17 @@ MetadataFileSettings::MetadataFileSettings(UserSettingsPointer pSettings,
           m_CPSettingsChanged(kFileSettingsChanged),
           m_widgets(widgets),
           m_pDialogWidget(dialogWidget),
-          m_pDelegate(new ComboboxDelegate),
-          m_pNormalDelegate(new QStyledItemDelegate) {
+          m_fileEncodings{
+                  "UTF-8",
+                  "latin1",
+                  "Windows-1251",
+                  "Windows-1252",
+                  "Shift-JIS",
+                  "GB18030",
+                  "EUC-KR",
+                  "EUC-JP"} {
     s_latestSettings = getPersistedSettings(pSettings);
     setupWidgets();
-}
-
-MetadataFileSettings::~MetadataFileSettings() {
-    delete m_pDelegate;
-    delete m_pNormalDelegate;
 }
 
 FileSettings MetadataFileSettings::getPersistedSettings(const UserSettingsPointer& pSettings) {
@@ -140,78 +142,16 @@ void MetadataFileSettings::cancelSettings() {
 
 void MetadataFileSettings::setupEncodingComboBox() {
     m_widgets.encodingBox->clear();
-    QList<QByteArray> codecs = QTextCodec::availableCodecs();
-    std::sort(codecs.begin(), codecs.end());
 
-    QList<QByteArray> preferredCodecs = {
-            "latin1",
-            "UTF-8"};
-
-    for (const QByteArray& codec : preferredCodecs) {
-        m_widgets.encodingBox->addItem(codec);
-        codecs.removeAll(codec);
+    for (const QByteArray& fileEncoding : m_fileEncodings) {
+        DEBUG_ASSERT(QTextCodec::codecForName(fileEncoding) != nullptr);
+        m_widgets.encodingBox->addItem(fileEncoding);
     }
 
-    if (preferredCodecs.contains(s_latestSettings.fileEncoding)) {
-        m_widgets.encodingBox->view()->setItemDelegate(m_pDelegate);
-        QAbstractItemModel* comboboxModel = m_widgets.encodingBox->model();
-        comboboxModel->insertRow(
-                comboboxModel->rowCount());
-        comboboxModel->setData(
-                comboboxModel->index(comboboxModel->rowCount() - 1, 0),
-                true,
-                Qt::UserRole);
-
-        connect(m_pDelegate, &ComboboxDelegate::moreButtonPressed, this, &MetadataFileSettings::slotMoreButtonComboboxPressed);
-
-        m_remainingCodecs = codecs;
-        m_widgets.encodingBox->setEditable(false);
+    if (!m_fileEncodings.contains(QTextCodec::codecForLocale()->name())) {
+        m_widgets.encodingBox->addItem(QTextCodec::codecForLocale()->name());
+        DEBUG_ASSERT(QTextCodec::codecForName(QTextCodec::codecForLocale()->name()) != nullptr);
     }
 
-    else {
-        for (const QByteArray& codec : codecs) {
-            m_widgets.encodingBox->addItem(codec);
-        }
-        m_widgets.encodingBox->setEditable(true);
-    }
     m_widgets.encodingBox->setCurrentText(s_latestSettings.fileEncoding);
-}
-
-void MetadataFileSettings::slotMoreButtonComboboxPressed() {
-    QAbstractItemModel* model = m_widgets.encodingBox->model();
-    model->removeRow(model->rowCount() - 1);
-    m_widgets.encodingBox->view()->setItemDelegate(m_pNormalDelegate);
-    for (const QByteArray& codec : m_remainingCodecs) {
-        m_widgets.encodingBox->addItem(codec);
-    }
-    m_widgets.encodingBox->setEditable(true);
-}
-
-void ComboboxDelegate::paint(QPainter* painter,
-        const QStyleOptionViewItem& option,
-        const QModelIndex& index) const {
-    if (index.row() == 2) {
-        QStyleOptionButton buttonOption;
-        buttonOption.rect = option.rect;
-        buttonOption.state = QStyle::State_Raised;
-        buttonOption.text = "More...";
-        QApplication::style()->drawControl(QStyle::CE_PushButton,
-                &buttonOption,
-                painter);
-    } else {
-        QStyledItemDelegate::paint(painter, option, index);
-    }
-}
-
-bool ComboboxDelegate::editorEvent(QEvent* event, QAbstractItemModel* model, const QStyleOptionViewItem& option, const QModelIndex& index) {
-    if (event->type() == QEvent::MouseButtonPress &&
-            model->data(index, Qt::UserRole).toBool()) {
-        QMouseEvent* mouseEvent = dynamic_cast<QMouseEvent*>(event);
-        DEBUG_ASSERT(mouseEvent);
-        if (mouseEvent->button() == Qt::LeftButton) {
-            emit moreButtonPressed();
-            return true;
-        }
-    }
-    return QStyledItemDelegate::editorEvent(event, model, option, index);
 }

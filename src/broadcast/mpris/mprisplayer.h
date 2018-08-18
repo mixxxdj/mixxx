@@ -2,8 +2,8 @@
 
 #include <QLinkedList>
 #include <QObject>
-#include <QtDBus/QDBusObjectPath>
 #include <QTemporaryFile>
+#include <QtDBus/QDBusObjectPath>
 
 #include "broadcast/mpris/mpris.h"
 #include "control/controlproxy.h"
