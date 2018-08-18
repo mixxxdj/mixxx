@@ -680,29 +680,6 @@ class BuildTime(Feature):
             build.env.Append(CPPDEFINES='DISABLE_BUILDTIME')
 
 
-class QDebug(Feature):
-    def description(self):
-        return "Debugging message output"
-
-    def enabled(self, build):
-        build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 1)
-        if build.platform_is_windows:
-            if build.build_is_debug:
-                # Turn general debugging flag on too if debug build is specified
-                build.flags['qdebug'] = 1
-        if int(build.flags['qdebug']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add(
-            'qdebug', 'Set to 1 to enable verbose console debug output.', 1)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            build.env.Append(CPPDEFINES='QT_NO_DEBUG_OUTPUT')
-
-
 class Verbose(Feature):
     def description(self):
         return "Verbose compilation output"
