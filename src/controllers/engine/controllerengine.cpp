@@ -6,7 +6,7 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
-#include "controllers/controllerengine.h"
+#include "controllers/engine/controllerengine.h"
 
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"

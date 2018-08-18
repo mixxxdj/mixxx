@@ -12,7 +12,7 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "controllers/controllerengine.h"
+#include "controllers/engine/controllerengine.h"
 #include "controllers/controllervisitor.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetinfo.h"

@@ -780,7 +780,6 @@ class MixxxCore(Feature):
 
                    "src/controllers/controller.cpp",
                    "src/controllers/controllerdebug.cpp",
-                   "src/controllers/controllerengine.cpp",
                    "src/controllers/controllerenumerator.cpp",
                    "src/controllers/controllerlearningeventfilter.cpp",
                    "src/controllers/controllermanager.cpp",
@@ -796,7 +795,7 @@ class MixxxCore(Feature):
                    "src/controllers/delegates/midiopcodedelegate.cpp",
                    "src/controllers/delegates/midibytedelegate.cpp",
                    "src/controllers/delegates/midioptionsdelegate.cpp",
-                   "src/controllers/learningutils.cpp",
+                   "src/controllers/engine/controllerengine.cpp",
                    "src/controllers/midi/midimessage.cpp",
                    "src/controllers/midi/midiutils.cpp",
                    "src/controllers/midi/midicontroller.cpp",

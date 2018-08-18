@@ -3,7 +3,7 @@
 
 #include <QVector>
 
-#include "controllers/controllerengine.h"
+#include "controllers/engine/controllerengine.h"
 #include "controllers/controllerdebug.h"
 #include "control/controlproxy.h"
 
