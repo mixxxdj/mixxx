@@ -82,7 +82,7 @@ midi.sendShortMsg(0x90,0x68,0x7F);// deck+ button led on
 }
 
 
-// loop otions start
+// loop options start
 VestaxVCI1003DEX.loopin = function (channel, control, value, status, group) {if(value==0x7F)   {engine.setValue(active_deck,"loop_in",1);}}
 
 VestaxVCI1003DEX.loopout = function (channel, control, value, status, group) {if(value==0x7F)   {engine.setValue(active_deck,"loop_out",1);}}
@@ -92,7 +92,7 @@ VestaxVCI1003DEX.reloop_exit = function (channel, control, value, status, group)
 VestaxVCI1003DEX.loopMinus = function (channel, control, value, status, group) {if (value == 0x7F){engine.setValue(active_deck,"loop_halve",1);}}
 VestaxVCI1003DEX.loopPlus = function (channel, control, value, status, group) {if (value == 0x7F){engine.setValue(active_deck,"loop_double",1);}}
 
-// loop otions end
+// loop options end
 
 // deck specific buttons start
 
@@ -437,7 +437,7 @@ active_deck_number=1
 midi.sendShortMsg(0x90,0x67,0x7F);// deck- button led on
 midi.sendShortMsg(0x80,0x68,0x7F);// deck+ button led off
 
-// TODO SOFTTAKEOVER does not work(mixxbug) , AUTOLOOP LEDs, LOOP BAHAVIOUR with keylock on(mixxxbug) , cue shuffle mode,loopmove mode?
+// TODO SOFTTAKEOVER does not work(mixxbug) , AUTOLOOP LEDs, LOOP BEHAVIOUR with keylock on(mixxxbug) , cue shuffle mode,loopmove mode?
 engine.softTakeover("[Channel1]", "rate", true); // wtf does not work
 
 currentCue1=1;
