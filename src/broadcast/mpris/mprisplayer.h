@@ -3,6 +3,7 @@
 #include <QLinkedList>
 #include <QObject>
 #include <QtDBus/QDBusObjectPath>
+#include <QTemporaryFile>
 
 #include "broadcast/mpris/mpris.h"
 #include "control/controlproxy.h"
@@ -87,5 +88,5 @@ class MprisPlayer : public QObject {
     };
 
     CurrentMetadata m_currentMetadata;
-    QFile m_currentCoverArtFile;
+    QTemporaryFile m_currentCoverArtFile;
 };
