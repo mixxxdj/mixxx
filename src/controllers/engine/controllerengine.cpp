@@ -8,6 +8,7 @@
 
 #include "controllers/engine/controllerengine.h"
 
+#include "controllers/engine/controllerenginejsproxy.h"
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "control/controlobject.h"
@@ -190,16 +191,19 @@ void ControllerEngine::initializeScriptEngine() {
 
     // Make this ControllerEngine instance available to scripts as 'engine'.
     QJSValue engineGlobalObject = m_pEngine->globalObject();
-    engineGlobalObject.setProperty("engine", m_pEngine->newQObject(this));
+    ControllerEngineJSProxy* proxy = new ControllerEngineJSProxy(this);
+    engineGlobalObject.setProperty("engine", m_pEngine->newQObject(proxy));
 
     if (m_pController) {
         qDebug() << "Controller in script engine is:" << m_pController->getName();
 
+        ControllerJSProxy* controllerProxy = new ControllerJSProxy(m_pController);
+
         // Make the Controller instance available to scripts
-        engineGlobalObject.setProperty("controller", m_pEngine->newQObject(m_pController));
+        engineGlobalObject.setProperty("controller", m_pEngine->newQObject(controllerProxy));
 
         // ...under the legacy name as well
-        engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pController));
+        engineGlobalObject.setProperty("midi", m_pEngine->newQObject(controllerProxy));
     }
 
 //    m_pBaClass = new ByteArrayClass(m_pEngine);

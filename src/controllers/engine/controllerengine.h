@@ -26,6 +26,7 @@
 class Controller;
 class ControlObjectScript;
 class ControllerEngine;
+class ControllerEngineJSProxy;
 
 // ScriptConnection represents a connection between
 // a ControlObject and a script callback function that gets executed when
@@ -101,35 +102,35 @@ class ControllerEngine : public QObject {
     void triggerScriptConnection(const ScriptConnection conn);
 
   protected:
-    Q_INVOKABLE double getValue(QString group, QString name);
-    Q_INVOKABLE void setValue(QString group, QString name, double newValue);
-    Q_INVOKABLE double getParameter(QString group, QString name);
-    Q_INVOKABLE void setParameter(QString group, QString name, double newValue);
-    Q_INVOKABLE double getParameterForValue(QString group, QString name, double value);
-    Q_INVOKABLE void reset(QString group, QString name);
-    Q_INVOKABLE double getDefaultValue(QString group, QString name);
-    Q_INVOKABLE double getDefaultParameter(QString group, QString name);
-    Q_INVOKABLE QJSValue makeConnection(QString group, QString name,
+    double getValue(QString group, QString name);
+    void setValue(QString group, QString name, double newValue);
+    double getParameter(QString group, QString name);
+    void setParameter(QString group, QString name, double newValue);
+    double getParameterForValue(QString group, QString name, double value);
+    void reset(QString group, QString name);
+    double getDefaultValue(QString group, QString name);
+    double getDefaultParameter(QString group, QString name);
+    QJSValue makeConnection(QString group, QString name,
                                             const QJSValue callback);
     // DEPRECATED: Use makeConnection instead.
-    Q_INVOKABLE QJSValue connectControl(QString group, QString name,
+    QJSValue connectControl(QString group, QString name,
                                             const QJSValue passedCallback,
                                             bool disconnect = false);
     // Called indirectly by the objects returned by connectControl
-    Q_INVOKABLE void trigger(QString group, QString name);
-    Q_INVOKABLE void log(QString message);
-    Q_INVOKABLE int beginTimer(int interval, QJSValue scriptCode, bool oneShot = false);
-    Q_INVOKABLE void stopTimer(int timerId);
-    Q_INVOKABLE void scratchEnable(int deck, int intervalsPerRev, double rpm,
-                                   double alpha, double beta, bool ramp = true);
-    Q_INVOKABLE void scratchTick(int deck, int interval);
-    Q_INVOKABLE void scratchDisable(int deck, bool ramp = true);
-    Q_INVOKABLE bool isScratching(int deck);
-    Q_INVOKABLE void softTakeover(QString group, QString name, bool set);
-    Q_INVOKABLE void softTakeoverIgnoreNextValue(QString group, QString name);
-    Q_INVOKABLE void brake(int deck, bool activate, double factor=1.0, double rate=1.0);
-    Q_INVOKABLE void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
-    Q_INVOKABLE void softStart(int deck, bool activate, double factor=1.0);
+    void trigger(QString group, QString name);
+    void log(QString message);
+    int beginTimer(int interval, QJSValue scriptCode, bool oneShot = false);
+    void stopTimer(int timerId);
+    void scratchEnable(int deck, int intervalsPerRev, double rpm,
+                       double alpha, double beta, bool ramp = true);
+    void scratchTick(int deck, int interval);
+    void scratchDisable(int deck, bool ramp = true);
+    bool isScratching(int deck);
+    void softTakeover(QString group, QString name, bool set);
+    void softTakeoverIgnoreNextValue(QString group, QString name);
+    void brake(int deck, bool activate, double factor=1.0, double rate=1.0);
+    void spinback(int deck, bool activate, double factor=1.8, double rate=-10.0);
+    void softStart(int deck, bool activate, double factor=1.0);
 
     // Handler for timers that scripts set.
     virtual void timerEvent(QTimerEvent *event);
@@ -218,6 +219,7 @@ class ControllerEngine : public QObject {
     QFileSystemWatcher m_scriptWatcher;
     QList<QString> m_lastScriptPaths;
 
+    friend class ControllerEngineJSProxy;
     friend class ControllerEngineTest;
 };
 
