@@ -89,5 +89,5 @@ class MprisPlayer : public QObject {
     };
 
     CurrentMetadata m_currentMetadata;
-    QFile m_currentCoverArtFile;
+    QTemporaryFile m_currentCoverArtFile;
 };
