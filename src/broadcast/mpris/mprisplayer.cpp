@@ -42,8 +42,7 @@ MprisPlayer::MprisPlayer(PlayerManager* pPlayerManager,
           m_bComponentsInitialized(false),
           m_bPropertiesEnabled(false),
           m_pMpris(pMpris),
-          m_pSettings(pSettings),
-          m_currentCoverArtFile(QDir::tempPath() + "/coverArt.jpg") {
+          m_pSettings(pSettings) {
     connect(m_pWindow, &MixxxMainWindow::componentsInitialized, this, &MprisPlayer::mixxxComponentsInitialized);
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -431,14 +430,14 @@ void MprisPlayer::slotCoverArtFound(const QObject* requestor,
 
     if (!pixmap.isNull() && requestor == this) {
         QImage coverImage = pixmap.toImage();
-        m_currentCoverArtFile.open(QIODevice::WriteOnly);
+        m_currentCoverArtFile.open();
         bool success = coverImage.save(&m_currentCoverArtFile, "JPG");
         if (!success) {
             qDebug() << "Couldn't write metadata cover art";
             return;
         }
         m_currentCoverArtFile.close();
-        m_currentMetadata.coverartUrl = QDir::tempPath() + "/coverArt.jpg";
+        m_currentMetadata.coverartUrl = m_currentCoverArtFile.fileName();
         broadcastCurrentMetadata();
     }
 }
