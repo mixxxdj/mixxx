@@ -101,14 +101,14 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
 }
 
 /* ------------------------------------------------------------------
-Purpose: Turn a snippet of JS into a QScriptValue function.
+Purpose: Turn a snippet of JS into a QJSValue function.
          Wrapping it in an anonymous function allows any JS that
          evaluates to a function to be used in MIDI mapping XML files
          and ensures the function is executed with the correct
          'this' object.
 Input:   QString snippet of JS that evaluates to a function,
          int number of arguments that the function takes
-Output:  QScriptValue of JS snippet wrapped in an anonymous function
+Output:  QJSValue of JS snippet wrapped in an anonymous function
 ------------------------------------------------------------------- */
 QJSValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
                                                 int numberOfArgs) {
@@ -305,35 +305,6 @@ bool ControllerEngine::evaluate(const QString& filepath) {
     return ret;
 }
 
-//bool ControllerEngine::syntaxIsValid(const QString& scriptCode) {
-//    if (m_pEngine == nullptr) {
-//        return false;
-//    }
-//
-//    QScriptSyntaxCheckResult result = m_pEngine->checkSyntax(scriptCode);
-//    QString error = "";
-//    switch (result.state()) {
-//        case (QScriptSyntaxCheckResult::Valid): break;
-//        case (QScriptSyntaxCheckResult::Intermediate):
-//            error = "Incomplete code";
-//            break;
-//        case (QScriptSyntaxCheckResult::Error):
-//            error = "Syntax error";
-//            break;
-//    }
-//    if (error!="") {
-//        error = QString("%1: %2 at line %3, column %4 of script code:\n%5\n")
-//                .arg(error,
-//                     result.errorMessage(),
-//                     QString::number(result.errorLineNumber()),
-//                     QString::number(result.errorColumnNumber()),
-//                     scriptCode);
-//
-//        scriptErrorDialog(error);
-//        return false;
-//    }
-//    return true;
-//}
 
 /* -------- ------------------------------------------------------
 Purpose: Evaluate & run script code
@@ -348,16 +319,12 @@ bool ControllerEngine::internalExecute(QJSValue thisObject,
         return false;
     }
 
-//    if (!syntaxIsValid(scriptCode)) {
-//        return false;
-//    }
-
     QJSValue scriptFunction = m_pEngine->evaluate(scriptCode);
 
-//    if (handleEvaluationException()) {
-//        qDebug() << "Exception evaluating:" << scriptCode;
-//        return false;
-//    }
+    if (handleEvaluationException(scriptFunction)) {
+        qDebug() << "Exception evaluating:" << scriptCode;
+        return false;
+    }
 
     if (!scriptFunction.isCallable()) {
         // scriptCode was plain code called in evaluate above
@@ -404,13 +371,8 @@ bool ControllerEngine::internalExecute(QJSValue thisObject, QJSValue functionObj
 
     // If it does happen to be a function, call it.
     QJSValue rc = functionObject.callWithInstance(thisObject, args);
-//    if (!rc.isValid()) {
-//        qDebug() << "QScriptValue is not a function or ...";
-//        return false;
-//    }
 
-    return true;
-//    return !handleEvaluationException();
+    return !handleEvaluationException(rc);
 }
 
 bool ControllerEngine::internalExecute(QJSValue functionObject,
@@ -455,7 +417,7 @@ bool ControllerEngine::execute(QJSValue function, const QByteArray data,
     return internalExecute(m_pEngine->globalObject(), function, args);
 }
 
-// Check if a script threw an exception. If so, register that the source
+// Check if a script evaluation threw an exception. If so, register that the source
 // file threw and error and show error dialog.
 //
 // Input: QJSValue returned from evaluation
@@ -857,7 +819,7 @@ QJSValue ControllerEngine::connectControl(
 
         actualCallbackFunction = m_pEngine->evaluate(passedCallback.toString());
 
-        if (/*handleEvaluationException() ||*/ !actualCallbackFunction.isCallable()) {
+        if (handleEvaluationException(actualCallbackFunction) || !actualCallbackFunction.isCallable()) {
             qWarning() << "Could not evaluate callback function:"
                         << passedCallback.toString();
             return QJSValue(false);
