@@ -136,9 +136,6 @@ class ControllerEngine : public QObject {
     virtual void timerEvent(QTimerEvent *event);
 
   public slots:
-    // Evaluate a script file
-    bool evaluate(const QString& filepath);
-
     // Execute a basic MIDI message callback.
     bool execute(QJSValue function,
                  unsigned char channel,

@@ -292,21 +292,6 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: Validate script syntax, then evaluate() it so the
-            functions are registered & available for use.
-   Input:   -
-   Output:  -
-   -------- ------------------------------------------------------ */
-// TODO: is this even called?
-bool ControllerEngine::evaluate(const QString& filepath) {
-    QList<QString> dummy;
-    bool ret = evaluate(filepath, dummy);
-
-    return ret;
-}
-
-
-/* -------- ------------------------------------------------------
 Purpose: Evaluate & run script code
 Input:   'this' object if applicable, Code string
 Output:  false if an exception
