@@ -9,6 +9,7 @@
 #include "controllers/engine/controllerengine.h"
 
 #include "controllers/engine/controllerenginejsproxy.h"
+#include "controllers/engine/controllerengineexceptions.h"
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "control/controlobject.h"
@@ -125,8 +126,8 @@ QJSValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
         QString wrapperArgs = wrapperArgList.join(",");
         QString wrappedCode = "(function (" + wrapperArgs + ") { (" +
                                 codeSnippet + ")(" + wrapperArgs + "); })";
-        wrappedFunction = m_pEngine->evaluate(wrappedCode);
-        handleEvaluationException(wrappedFunction);
+
+        wrappedFunction = evaluateProgram(wrappedCode);
         m_scriptWrappedFunctionCache[codeSnippet] = wrappedFunction;
     }
     return wrappedFunction;
@@ -222,7 +223,7 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
     // scriptPaths holds the paths to search in when we're looking for scripts
     bool result = true;
     for (const ControllerPreset::ScriptFileInfo& script : scripts) {
-        if (!evaluate(script.name, scriptPaths)) {
+        if (!evaluateScriptFile(script.name, scriptPaths)) {
             result = false;
         }
 
@@ -300,13 +301,12 @@ bool ControllerEngine::internalExecute(QJSValue thisObject,
                                        const QString& scriptCode) {
     // A special version of safeExecute since we're evaluating strings, not actual functions
     //  (execute() would print an error that it's not a function every time a timer fires.)
-    if (m_pEngine == nullptr) {
-        return false;
-    }
+    QJSValue scriptFunction;
 
-    QJSValue scriptFunction = m_pEngine->evaluate(scriptCode);
-
-    if (handleEvaluationException(scriptFunction)) {
+    try {
+    	scriptFunction = evaluateProgram(scriptCode);
+    } catch (EvaluationException& exception) {
+    	presentErrorDialogForEvaluationException(exception);
         qDebug() << "Exception evaluating:" << scriptCode;
         return false;
     }
@@ -335,11 +335,6 @@ Output:  false if an exception
 -------- ------------------------------------------------------ */
 bool ControllerEngine::internalExecute(QJSValue thisObject, QJSValue functionObject,
                                        QJSValueList args) {
-    if (m_pEngine == nullptr) {
-        qDebug() << "ControllerEngine::execute: No script engine exists!";
-        return false;
-    }
-
     if (functionObject.isError()) {
         qDebug() << "ControllerEngine::internalExecute:"
                  << functionObject.toString();
@@ -357,7 +352,13 @@ bool ControllerEngine::internalExecute(QJSValue thisObject, QJSValue functionObj
     // If it does happen to be a function, call it.
     QJSValue rc = functionObject.callWithInstance(thisObject, args);
 
-    return !handleEvaluationException(rc);
+    try {
+    	handleEvaluationException(rc);
+    } catch (EvaluationException& exception) {
+    	presentErrorDialogForEvaluationException(exception);
+    	return false;
+    }
+    return true;
 }
 
 bool ControllerEngine::internalExecute(QJSValue functionObject,
@@ -407,37 +408,51 @@ bool ControllerEngine::execute(QJSValue function, const QByteArray data,
 //
 // Input: QJSValue returned from evaluation
 // Output: true if there was an exception, false otherwise.
-bool ControllerEngine::handleEvaluationException(QJSValue &returnedValue) {
-    if (m_pEngine == nullptr) {
-        return false;
-    }
+QJSValue ControllerEngine::evaluateProgram(const QString& program, const QString& fileName,
+		int lineNumber) {
+	if (m_pEngine == nullptr) {
+		throw NullEngineException();
+	}
 
-    // TODO: add test for this
-    if (returnedValue.isError()) {
-        // TODO: compare with message property
-        QString errorMessage = returnedValue.toString();
-        QString line = returnedValue.property("lineNumber").toString();
-        QString backtrace = returnedValue.property("stack").toString();
-        QString filename = returnedValue.property("filename").toString();
+	QJSValue evaluationResult = m_pEngine->evaluate(program, fileName, lineNumber);
+	handleEvaluationException(evaluationResult);
 
-        QStringList error;
-        error << (filename.isEmpty() ? "" : filename) << errorMessage << line;
-        m_scriptErrors.insert((filename.isEmpty() ? "passed code" : filename), error);
+    return evaluationResult;
+}
 
-        QString errorText = tr("Uncaught exception at line %1 in file %2: %3")
-                .arg(line, (filename.isEmpty() ? "" : filename), errorMessage);
+void ControllerEngine::handleEvaluationException(QJSValue evaluationResult) {
+	// TODO: add test for this
+	if (evaluationResult.isError()) {
+		// TODO: compare with message property
+		QString errorMessage = evaluationResult.toString();
+		QString line = evaluationResult.property("lineNumber").toString();
+		QString backtrace = evaluationResult.property("stack").toString();
+		QString filename = evaluationResult.property("filename").toString();
 
-        if (filename.isEmpty())
-            errorText = tr("Uncaught exception at line %1 in passed code: %2")
-                    .arg(line, errorMessage);
+		QStringList error;
+		error << (filename.isEmpty() ? "" : filename) << errorMessage << line;
+		m_scriptErrors.insert((filename.isEmpty() ? "passed code" : filename), error);
 
-        scriptErrorDialog(ControllerDebug::enabled() ?
-                QString("%1\nBacktrace:\n%2")
-                .arg(errorText, backtrace) : errorText);
+		throw EvaluationException(errorMessage, line, backtrace, filename);
+	}
+}
 
-        return true;
-    }
-    return false;
+void ControllerEngine::presentErrorDialogForEvaluationException(EvaluationException exception) {
+	QString filename = exception.filename;
+	QString errorMessage = exception.errorMessage;
+	QString line = exception.line;
+	QString backtrace = exception.backtrace;
+
+	QString errorText = tr("Uncaught exception at line %1 in file %2: %3")
+			.arg(line, (filename.isEmpty() ? "" : filename), errorMessage);
+
+	if (filename.isEmpty())
+		errorText = tr("Uncaught exception at line %1 in passed code: %2")
+				.arg(line, errorMessage);
+
+	scriptErrorDialog(ControllerDebug::enabled() ?
+			QString("%1\nBacktrace:\n%2")
+			.arg(errorText, backtrace) : errorText);
 }
 
 /*  -------- ------------------------------------------------------
@@ -802,9 +817,15 @@ QJSValue ControllerEngine::connectControl(
             return QJSValue(false);
         }
 
-        actualCallbackFunction = m_pEngine->evaluate(passedCallback.toString());
+        bool exceptionHappened = false;
 
-        if (handleEvaluationException(actualCallbackFunction) || !actualCallbackFunction.isCallable()) {
+        try {
+        	actualCallbackFunction = evaluateProgram(passedCallback.toString());
+        } catch (EvaluationException& exception) {
+        	exceptionHappened = true;
+        }
+
+        if (exceptionHappened || !actualCallbackFunction.isCallable()) {
             qWarning() << "Could not evaluate callback function:"
                         << passedCallback.toString();
             return QJSValue(false);
@@ -881,7 +902,7 @@ void ControllerEngine::trigger(QString group, QString name) {
    Input:   Script filename
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
-bool ControllerEngine::evaluate(const QString& scriptName, QList<QString> scriptPaths) {
+bool ControllerEngine::evaluateScriptFile(const QString& scriptName, QList<QString> scriptPaths) {
     if (m_pEngine == nullptr) {
         return false;
     }
@@ -932,46 +953,28 @@ bool ControllerEngine::evaluate(const QString& scriptName, QList<QString> script
     scriptCode.append('\n');
     input.close();
 
-    // Check syntax
-//    QScriptSyntaxCheckResult result = m_pEngine->checkSyntax(scriptCode);
-    QString error = "";
-//    switch (result.state()) {
-//        case (QScriptSyntaxCheckResult::Valid): break;
-//        case (QScriptSyntaxCheckResult::Intermediate):
-//            error = "Incomplete code";
-//            break;
-//        case (QScriptSyntaxCheckResult::Error):
-//            error = "Syntax error";
-//            break;
-//    }
-//    if (error != "") {
-//        error = QString("%1 at line %2, column %3 in file %4: %5")
-//                    .arg(error,
-//                         QString::number(result.errorLineNumber()),
-//                         QString::number(result.errorColumnNumber()),
-//                         filename, result.errorMessage());
-//
-//        qWarning() << "ControllerEngine:" << error;
-//        if (m_bPopups) {
-//            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-//            props->setType(DLG_WARNING);
-//            props->setTitle("Controller script file error");
-//            props->setText(QString("There was an error in the controller script file %1.").arg(filename));
-//            props->setInfoText("The functionality provided by this script file will be disabled.");
-//            props->setDetails(error);
-//
-//            ErrorDialogHandler::instance()->requestErrorDialog(props);
-//        }
-//        return false;
-//    }
-
     // Evaluate the code
-    QJSValue scriptFunction = m_pEngine->evaluate(scriptCode, filename);
+    try {
+    	QJSValue scriptFunction = evaluateProgram(scriptCode, filename);
+    } catch (EvaluationException& exception) {
+    	error = QString("%1 at line %2 in file %4: %5")
+					.arg(error,
+						 exception.line,
+						 exception.filename, exception.errorMessage);
 
-    // Record errors
-//    if (handleEvaluationException()) {
-//        return false;
-//    }
+		qWarning() << "ControllerEngine:" << error;
+		if (m_bPopups) {
+			ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+			props->setType(DLG_WARNING);
+			props->setTitle("Controller script file error");
+			props->setText(QString("There was an error in the controller script file %1.").arg(filename));
+			props->setInfoText("The functionality provided by this script file will be disabled.");
+			props->setDetails(error);
+
+			ErrorDialogHandler::instance()->requestErrorDialog(props);
+		}
+    	return false;
+    }
 
     return true;
 }
