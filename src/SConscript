@@ -593,6 +593,39 @@ if build.platform_is_windows:
                 sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
                 env.Alias('mixxx', sql_dlls)
 
+pbchecksAlreadyPrinted = False
+
+def PostBuildChecks():
+    global mixxx_version
+    global pbchecksAlreadyPrinted
+    if pbchecksAlreadyPrinted:
+        return
+    pbchecksAlreadyPrinted = True
+
+    print('\n==== Mixxx Post-Build Checks ====')
+    print('You have built version {}'.format(mixxx_version))
+
+    if build.build_is_debug:
+        print('\nYOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!\n')
+
+    print("Binary has size ", end='')
+    if build.platform_is_windows:
+        os.system('for %I in ('+dist_dir+'\mixxx.exe) do @echo %~zI')
+    else:
+        os.system('ls -lh '+dist_dir+'/mixxx | cut -d \' \' -f 5')
+
+    print("\nTop line of README, check version:")
+    if build.platform_is_windows:
+        os.system('for /l %l in (1,1,1) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" README ^| findstr /r "^%l:"\') do @echo %b')
+    else:
+        os.system('head -n 1 README')
+    print("\nTop 2 lines of LICENSE, check version and copyright dates:")
+    if build.platform_is_windows:
+        os.system('for /l %l in (1,1,2) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" LICENSE ^| findstr /r "^%l:"\') do @echo %b')
+    else:
+        os.system('head -n 2 LICENSE')
+
+
 def win32_find_program_via_registry(program_name):
     # Windows registry access to find where program is installed
     import _winreg
@@ -627,33 +660,15 @@ def win32_find_program_via_registry(program_name):
     return program_location
 
 def BuildRelease(target, source, env):
-    print("==== Mixxx Post-Build Checks ====")
-    print("You have built version %s" % mixxx_version)
-    if build.build_is_debug:
-        print("YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!")
-    print("Binary has size ", end='')
-    if build.platform_is_windows:
-        os.system('for %I in ('+dist_dir+'\mixxx.exe) do @echo %~zI')
-    else:
-        os.system('ls -lh '+dist_dir+'/mixxx.exe | cut -d \' \' -f 5')
+    PostBuildChecks()
+    print('\n\nNow building MSI package\n')
     print("Installer file ", end='')
     package_name = 'mixxx'
-
     package_version = construct_version(build, mixxx_version, branch_name,
                                         vcs_revision)
     arch = "x64" if build.machine_is_64bit else "x86"
     exe_name = '%s-%s-%s.msi' % (package_name, package_version, arch)
     print(exe_name)
-    print("Top line of README, check version:")
-    if build.platform_is_windows:
-        os.system('for /l %l in (1,1,1) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" README ^| findstr /r "^%l:"\') do @echo %b')
-    else:
-        os.system('head -n 1 README')
-    print("Top 2 lines of LICENSE, check version and copyright dates:")
-    if build.platform_is_windows:
-        os.system('for /l %l in (1,1,2) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" LICENSE ^| findstr /r "^%l:"\') do @echo %b')
-    else:
-        os.system('head -n 2 LICENSE')
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
         # TODO(XXX): Installing a runtime isn't specific to MSVS?
@@ -920,6 +935,7 @@ def BuildRelease(target, source, env):
         print("Aborted building installer")
 
 # Do release things
+
 versionbld = Builder(action = BuildRelease, suffix = '.foo', src_suffix = '.bar')
 env.Append(BUILDERS = {'BuildRelease' : versionbld})
 
@@ -956,21 +972,10 @@ def ubuntu_cleanup():
 # Build the Ubuntu package
 def BuildUbuntuPackage(target, source, env):
         global mixxx_version
-        print("==== Mixxx Post-Build Checks ====")
-        print("You have built version " + mixxx_version)
-        print("\n\n")
-
-        print("Top line of README, check version:")
-        os.system('head -n 1 README')
-        print()
-        print("Top 2 lines of LICENSE, check version and copyright dates:")
-        os.system('head -n 2 LICENSE')
-        print()
+        PostBuildChecks()
+        print("\n\nNow building DEB package...\n")
         print("Top line of debian/ubuntu changelog, check version:")
         os.system('head -n 1 build/debian/changelog')
-        print()
-
-        print("Now building DEB package...")
         print()
 
         arch = 'amd64' if build.machine_is_64bit else 'i386'
@@ -1208,15 +1213,8 @@ def copyDirectory(src, dest):
         print('Directory not copied. Error: %s' % e)
 
 def BuildPortablePackage(target, source, env):
-    print("==== Mixxx Post-Build Checks ====")
-    print("You have built version %s" % mixxx_version)
-    if build.build_is_debug:
-        print("YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!")
-    print("Binary has size ", end='')
-    if build.platform_is_windows:
-        os.system('for %I in ('+dist_dir+'\mixxx.exe) do @echo %~zI')
-    else:
-        os.system('ls -lh '+dist_dir+'/mixxx.exe | cut -d \' \' -f 5')
+    PostBuildChecks()
+    print('\n\nNow building portable package\n')
     print("Archive file ", end='')
     package_name = 'mixxx-portable'
     package_version = mixxx_version
@@ -1237,16 +1235,6 @@ def BuildPortablePackage(target, source, env):
     print('directory_name: {}'.format(directory_name))
     print('archive_name: {}'.format(archive_name))
     print(archive_name)
-    print("Top line of README, check version:")
-    if build.platform_is_windows:
-        os.system('for /l %l in (1,1,1) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" README ^| findstr /r "^%l:"\') do @echo %b')
-    else:
-        os.system('head -n 1 README')
-    print("Top 2 lines of LICENSE, check version and copyright dates:")
-    if build.platform_is_windows:
-        os.system('for /l %l in (1,1,2) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" LICENSE ^| findstr /r "^%l:"\') do @echo %b')
-    else:
-        os.system('head -n 2 LICENSE')
 
     print("Installing Mixxx the portable way in temporary directory...")
     # Ensure temporary target directory is empty before populating
