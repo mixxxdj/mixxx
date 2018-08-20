@@ -741,6 +741,7 @@ class MixxxCore(Feature):
                    "broadcast/listenbrainzlistener/networkreply.cpp",
                    "broadcast/listenbrainzlistener/listenbrainzservice.cpp",
                    "broadcast/listenbrainzlistener/listenbrainzjsonfactory.cpp",
+                   "broadcast/lastfm/lastfmservice.cpp",
 
                    "controllers/dlgcontrollerlearning.cpp",
                    "controllers/dlgprefcontroller.cpp",
@@ -773,6 +774,7 @@ class MixxxCore(Feature):
                    "preferences/broadcastprofile.cpp",
                    "preferences/metadatafilesettings.cpp",
                    "preferences/listenbrainzsettings.cpp",
+                   "preferences/lastfmsettings.cpp",
                    "preferences/upgrade.cpp",
                    "preferences/dlgpreferencepage.cpp",
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>668</width>
-    <height>514</height>
+    <width>721</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -150,6 +150,22 @@
        <widget class="QLineEdit" name="listenBrainzUserTokenLineEdit">
         <property name="enabled">
          <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="LastFmGroupbox">
+     <property name="title">
+      <string>LastFM options</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="QCheckBox" name="enableLastFmBox">
+        <property name="text">
+         <string>Enable Last.FM metadata broadcast</string>
         </property>
        </widget>
       </item>

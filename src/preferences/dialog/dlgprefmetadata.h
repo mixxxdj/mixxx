@@ -5,22 +5,8 @@
 #include "preferences/dialog/ui_dlgprefmetadatadlg.h"
 #include "preferences/metadatafilesettings.h"
 #include "preferences/listenbrainzsettings.h"
+#include "preferences/lastfmsettings.h"
 #include "preferences/usersettings.h"
-
-namespace Ui {
-    class fileListenerBox;
-}
-
-namespace {
-
-
-    const ConfigKey kListenbrainzEnabled =
-            ConfigKey("[Livemetadata]","ListenbrainzEnabled");
-
-
-};
-
-
 
 class DlgPrefMetadata : public DlgPreferencePage, public Ui::DlgPrefMetadataDlg {
   Q_OBJECT
@@ -35,9 +21,12 @@ class DlgPrefMetadata : public DlgPreferencePage, public Ui::DlgPrefMetadataDlg 
     UserSettingsPointer m_pSettings;
     MetadataFileSettings *m_pFileSettings;
     ListenBrainzSettingsManager *m_pListenBrainzSettings;
+    LastFMSettingsManager *m_pLastFMSettings;
     void setFileSettings();
 
     void setListenBrainzSettings();
+
+    void setLastFMSettings();
 };
 
 
