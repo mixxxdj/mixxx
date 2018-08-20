@@ -102,6 +102,8 @@ bool ScrobblingManager::hasScrobbledAnyTrack() const {
 }
 
 void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
+    if (!pPausedTrack)
+        return;
     if (!m_trackInfoHashDict.contains(pPausedTrack->getId())) {
         m_trackInfoHashDict[pPausedTrack->getId()].init(m_trackInfoFactory, pPausedTrack);
     }
@@ -120,6 +122,8 @@ void ScrobblingManager::slotTrackPaused(TrackPointer pPausedTrack) {
 }
 
 void ScrobblingManager::slotTrackResumed(TrackPointer pResumedTrack, const QString& playerGroup) {
+    if (!pResumedTrack)
+        return;
     BaseTrackPlayer* player = m_pManager->getPlayer(playerGroup);
     if (!m_trackInfoHashDict.contains(pResumedTrack->getId())) {
         m_trackInfoHashDict[pResumedTrack->getId()].init(m_trackInfoFactory, pResumedTrack);
