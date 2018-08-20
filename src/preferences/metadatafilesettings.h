@@ -51,6 +51,7 @@ class MetadataFileSettings : public QObject {
     MetadataFileSettings(UserSettingsPointer pSettings,
             const FileWidgets& widgets,
             QWidget* dialogWidget);
+    ~MetadataFileSettings() = default;
     static FileSettings getLatestSettings();
     static FileSettings getPersistedSettings(const UserSettingsPointer& pSettings);
     void applySettings();
