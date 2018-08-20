@@ -12,6 +12,7 @@
 PreviewButtonDelegate::PreviewButtonDelegate(QTableView* parent, int column)
         : TableItemDelegate(parent),
           m_pTableView(parent),
+          m_pButton(NULL),
           m_isOneCellInEditMode(false),
           m_column(column) {
     m_pPreviewDeckPlay = new ControlProxy(
@@ -25,18 +26,11 @@ PreviewButtonDelegate::PreviewButtonDelegate(QTableView* parent, int column)
     connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
-    // The button needs to be parented to receive the parent styles
-    m_pButton = make_parented<QPushButton>(parent);
+    m_pButton = new QPushButton("", m_pTableView);
     m_pButton->setObjectName("LibraryPreviewButton");
     m_pButton->setCheckable(true);
     m_pButton->setChecked(false);
-    // We need to hide the button that it is not painted by the QObject tree    
     m_pButton->hide();
-    // Set visible to stop resizing in the background 
-    // which may lead to a crash when already referenced by a painter obeject 
-    // during the render() call. 
-    m_pButton->setAttribute(Qt::WA_WState_Visible);
-
     connect(m_pTableView, SIGNAL(entered(QModelIndex)),
             this, SLOT(cellEntered(QModelIndex)));
 }
