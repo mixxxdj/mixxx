@@ -17,12 +17,16 @@ CmdlineArgs::CmdlineArgs()
       m_logLevel(mixxx::kLogLevelDefault),
       m_logFlushLevel(mixxx::kLogFlushLevelDefault) {
 
-    QDir mixxxDir(QCoreApplication::applicationDirPath());
-    if (mixxxDir.cd("mixxx-settings")) {
-        // We are running portable because there is a mixxx-settings dir near
-        // Mixxx executable so we use this directory to store settings.
-        m_settingsPath = mixxxDir.absolutePath();
+    QFileInfo mixxxExecutable(QCoreApplication::applicationFilePath());
+    QString mixxxExecutableName = mixxxExecutable.baseName();
+
+    if (mixxxExecutableName.compare("mixxx-portable", Qt::CaseInsensitive) == 0) {
+        // We are running portable
         m_isPortable = true;
+        QDir settingsDir(QCoreApplication::applicationDirPath().append("/mixxx-settings"));
+        m_settingsPath = settingsDir.absolutePath();
+        QDir resourceDir(QCoreApplication::applicationDirPath().append("/mixxx-resources"));
+        m_resourcePath = resourceDir.absolutePath();
     } else {
         // Default values
         // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
@@ -60,6 +64,7 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
             m_settingsPathSet=true;
         } else if (argv[i] == QString("--resourcePath") && i+1 < argc) {
             m_resourcePath = QString::fromLocal8Bit(argv[i+1]);
+            m_resourcePathSet=true;
             i++;
         } else if (argv[i] == QString("--pluginPath") && i+1 < argc) {
             m_pluginPath = QString::fromLocal8Bit(argv[i+1]);
@@ -111,6 +116,19 @@ when a critical error occurs unless this is set properly.\n", stdout);
             m_safeMode = true;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--debugAssertBreak", Qt::CaseInsensitive)) {
             m_debugAssertBreak = true;
+        } else if (QString::fromLocal8Bit(argv[i]).contains("--portable", Qt::CaseInsensitive)) {
+            m_isPortable = true;
+            // Do not overwrite settingsPath or resourcePath if they already
+            // have been set by command line arguments. Specific command-line
+            // arguments takes precedence.
+            if (!m_settingsPathSet) {
+                QDir settingsDir(QCoreApplication::applicationDirPath().append("/mixxx-settings"));
+                m_settingsPath = settingsDir.absolutePath();
+            }
+            if (!m_resourcePathSet) {
+                QDir resourceDir(QCoreApplication::applicationDirPath().append("/mixxx-resources"));
+                m_resourcePath = resourceDir.absolutePath();
+            }
         } else {
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
         }
@@ -175,6 +193,13 @@ void CmdlineArgs::printUsage() {
 --logFlushLevel LEVEL   Sets the the logging level at which the log buffer\n\
                         is flushed to mixxx.log. LEVEL is one of the values\n\
                         defined at --logLevel above.\n\
+\n\
+--portable              Run Mixxx as a portable application.\n\
+                        Settings and resources are exclusively stored in\n\
+                        and accessed from subdirectories where Mixxx executable\n\
+                        is located.\n\
+                        This is the default mode when Mixxx executable is named\n\
+                        mixxx-portable\n\
 \n"
 #ifdef MIXXX_BUILD_DEBUG
 "\

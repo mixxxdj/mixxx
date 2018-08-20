@@ -49,6 +49,7 @@ class CmdlineArgs final {
     bool m_safeMode;
     bool m_debugAssertBreak;
     bool m_settingsPathSet; // has --settingsPath been set on command line ?
+    bool m_resourcePathSet; // has --resourcePath been set on command line ?
     bool m_isPortable; // if we run portable, we shouldn't try to access outside our directory
     mixxx::LogLevel m_logLevel; // Level of stderr logging message verbosity
     mixxx::LogLevel m_logFlushLevel; // Level of mixx.log file flushing

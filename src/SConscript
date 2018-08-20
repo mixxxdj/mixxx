@@ -1261,6 +1261,15 @@ def BuildPortablePackage(target, source, env):
         print('    - {}'.format(os.path.basename(str(file))))
         shutil.copy2('{}/{}'.format(dist_dir, os.path.basename(str(file))),
                                     'portable/{}/{}'.format(directory_name, os.path.basename(str(file))))
+    if build.platform_is_windows:
+        shutil.move('portable/{}/mixxx.exe'.format(directory_name),
+                    'portable/{}/mixxx-portable.exe'.format(directory_name))
+    elif build.platform_is_osx:
+        shutil.move('portable/{}/Mixxx'.format(directory_name),
+                    'portable/{}/Mixxx-portable'.format(directory_name))
+    else:
+        shutil.move('portable/{}/mixxx'.format(directory_name),
+                    'portable/{}/mixxx-portable'.format(directory_name))
 
     print('  . Copying documentation:')
     for file in ['CHANGELOG', 'LICENSE', 'build/portable/README.md']:

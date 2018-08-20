@@ -25,10 +25,7 @@ QString computeResourcePath() {
         // running out of a build root ('res' dir exists or our path ends with
         // '_build') and if not then we fall back on a platform-specific method
         // of determining the resource path (see comments below).
-        if (mixxxDir.cd("mixxx-resources")) {
-            // We are running portable
-            qResourcePath = mixxxDir.absolutePath();
-        } else if (mixxxDir.cd("res")) {
+        if (mixxxDir.cd("res")) {
             // We are running out of the repository root.
             qResourcePath = mixxxDir.absolutePath();
         } else if (mixxxDir.absolutePath().endsWith("_build") &&

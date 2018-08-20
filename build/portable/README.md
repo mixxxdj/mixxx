@@ -3,13 +3,22 @@
 ## How it works
 
 The Mixxx binary itself is the same for portable or normal installation.
-Portable status is determined at runtime if Mixxx finds directories named
-`mixxx-settings` and `mixxx-resources` at the same place the executable resides.
-It will them use its resources from the `res` subdirectory and store all
-settings from the `mixxx-settings` subdirectory. No attempt will be made to
-access or upgrade configuration outside of that directory. This allows you to
-use different portable Mixxx versions with completely separate/isolated
-configurations.
+Portable status is determined at runtime if Mixxx executable is named
+`mixxx-portable` (case insensitive and without extension) or if the `--portable`
+command-line argument is passed to Mixxx.
+
+In portable mode, Mixxx looks for its resource files (like skins, controller
+mappings, translations and so on) in a sundirectory `mixxx-resources` at the
+same place the executable resides (location can be overwritten with the
+command-line option `--resourcePath`).
+
+It also store all settings in a subdirectory `mixxx-settings`
+at the same place the executable resides (location can be overwritten with the
+command-line option `--settingsPath`).
+
+No attempt will be made to access or upgrade configuration outside of this
+`mixxx-settings` directory. This allows you to use different portable Mixxx
+versions with completely separate/isolated configurations.
 
 ## Upgrade
 
