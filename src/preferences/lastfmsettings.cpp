@@ -5,6 +5,9 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QDesktopServices>
+#include <QMessageBox>
+#include <algorithm>
+#include <QCryptographicHash>
 
 #include "broadcast/networkaccessmanager.h"
 #include "lastfmsettings.h"
@@ -12,14 +15,14 @@
 LastFMSettings LastFMSettingsManager::s_latestSettings;
 
 LastFMSettingsManager::LastFMSettingsManager(UserSettingsPointer pSettings,
-                                             const LastFMWidgets& widgets)
+                                             const LastFMWidgets &widgets,
+                                             QWidget *parent)
         :  m_widgets(widgets),
            m_pUserSettings(pSettings),
            m_CPSettingsChanged(kLastFMSettingsChanged),
-           apiKey("1047c802fb9bee75d12459f7cee02fea"),
-           apiSecret("1e0fcb14744c596ff074ea404e7ecad2"),
            m_networkRequest(rootApiUrl),
-           m_pNetworkReply(nullptr) {
+           m_pNetworkReply(nullptr),
+           m_parent(parent) {
     s_latestSettings = getPersistedSettings(pSettings);
     m_authenticated = s_latestSettings.authenticated;
     m_sessionToken = s_latestSettings.sessionToken;
@@ -27,7 +30,7 @@ LastFMSettingsManager::LastFMSettingsManager(UserSettingsPointer pSettings,
     connect(widgets.m_pEnabled,&QCheckBox::toggled,
             [this] (bool toggled){
                 if (toggled && !s_latestSettings.authenticated) {
-                    requestAccessToken();
+                    presentAuthorizationDialog();
                 }
             }
     );
@@ -93,12 +96,39 @@ void LastFMSettingsManager::resetSettingsToDefault() {
     s_latestSettings.sessionToken = defaultLastFMSessionToken;
 }
 
+void LastFMSettingsManager::presentAuthorizationDialog() {
+    QString text = "Would you like to open a new tab in your browser"
+                   " to authorize Mixxx to submit the metadata of the tracks"
+                   " you listen to Last.FM?";
+    QMessageBox question(m_parent);
+    question.setInformativeText(text);
+    question.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    int result = question.exec();
+    if (result == QMessageBox::Yes) {
+        requestAccessToken();
+        text = "Have you authorized Mixxx?";
+        question.setInformativeText(text);
+        result = question.exec();
+        if (result == QMessageBox::Yes) {
+            requestSessionToken();
+        }
+        else {
+            m_widgets.m_pEnabled->setChecked(false);
+        }
+    }
+    else {
+        m_widgets.m_pEnabled->setChecked(false);
+    }
+}
+
 void LastFMSettingsManager::requestAccessToken() {
-    QString method = "auth.requestToken";
+    QString method = "auth.getToken";
     QUrlQuery urlQuery;
     urlQuery.addQueryItem("method",method);
     urlQuery.addQueryItem("api_key",apiKey);
-    urlQuery.addQueryItem("api_sig",getSignature(method));
+    urlQuery.addQueryItem("api_sig", getSignature({qMakePair(QString("api_key"),apiKey),
+                                                   qMakePair(QString("method"),method),
+                                                   qMakePair(QString("format"),QString("json"))}));
     urlQuery.addQueryItem("format","json");
     QUrl url(rootApiUrl);
     url.setQuery(urlQuery);
@@ -110,7 +140,7 @@ void LastFMSettingsManager::requestAccessToken() {
         QByteArray response = m_pNetworkReply->readAll();
         qDebug() << "Access token response: " << response;
         QJsonObject json = QJsonDocument::fromJson(response).object();
-        accessToken = json[QString("token")].toString();
+        accessToken = json["token"].toString();
         requestUserAuthorization();
     });
 }
@@ -126,7 +156,43 @@ void LastFMSettingsManager::requestUserAuthorization() {
 }
 
 
-QString LastFMSettingsManager::getSignature(const QString &method, const QString &token) {
-    return QString();
+QString LastFMSettingsManager::getSignature(const QList<QPair<QString, QString>> &parameters) {
+    QString joinedParams;
+    QList<QPair<QString,QString>> sorted(parameters);
+    std::sort(sorted.begin(),sorted.end());
+    for (const QPair<QString,QString>& argument : sorted) {
+        joinedParams += argument.first + argument.second;
+    }
+    joinedParams += apiSecret;
+    QByteArray digest =
+            QCryptographicHash::hash(joinedParams.toUtf8(),QCryptographicHash::Md5);
+    qDebug() << "Signature digest: " << digest;
+    return QString::fromUtf8(digest.toHex());
+}
+
+void LastFMSettingsManager::requestSessionToken() {
+    QUrlQuery urlQuery;
+    urlQuery.addQueryItem("api_key",apiKey);
+    urlQuery.addQueryItem("token",accessToken);
+    urlQuery.addQueryItem("method","auth.getSession");
+    urlQuery.addQueryItem("format","json");
+    urlQuery.addQueryItem("api_sig",getSignature({qMakePair(QString("api_key"),apiKey),
+                                                  qMakePair(QString("token"),accessToken),
+                                                  qMakePair(QString("method"),QString("auth.getSession")),
+                                                  qMakePair(QString("format"),QString("json"))}));
+    QUrl url(rootApiUrl);
+    url.setQuery(urlQuery);
+    qDebug() << "Session token URL: " << url;
+    m_networkRequest.setUrl(url);
+    m_pNetworkReply = NetworkAccessManager::instance()->get(m_networkRequest);
+    connect(m_pNetworkReply,&QNetworkReply::finished,
+            [this]() {
+        QByteArray response = m_pNetworkReply->readAll();
+        qDebug() << "Session token response: " << response;
+        QJsonObject json = QJsonDocument::fromJson(response).object();
+        m_sessionToken = json["session"].toObject()["key"].toString();
+        qDebug() << "Session token string: " << m_sessionToken;
+        m_authenticated = true;
+    });
 }
 

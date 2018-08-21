@@ -33,7 +33,9 @@ struct LastFMSettings {
 class LastFMSettingsManager : public QObject {
     Q_OBJECT
   public:
-    LastFMSettingsManager(UserSettingsPointer pSettings, const LastFMWidgets& widgets);
+    LastFMSettingsManager(UserSettingsPointer pSettings,
+                          const LastFMWidgets &widgets,
+                          QWidget *parent);
     static LastFMSettings getPersistedSettings(UserSettingsPointer pSettings);
     static LastFMSettings getLatestSettings();
     void applySettings();
@@ -47,10 +49,12 @@ class LastFMSettingsManager : public QObject {
     void persistSettings();
     void resetSettingsToDefault();
 
+    void presentAuthorizationDialog();
     void requestAccessToken();
     void requestUserAuthorization();
+    void requestSessionToken();
 
-    QString getSignature(const QString& method,const QString& token = QString());
+    QString getSignature(const QList<QPair<QString, QString>> &parameters);
 
     LastFMWidgets m_widgets;
     UserSettingsPointer m_pUserSettings;
@@ -59,6 +63,7 @@ class LastFMSettingsManager : public QObject {
     QString apiKey, apiSecret, accessToken;
     QNetworkRequest m_networkRequest;
     QNetworkReply *m_pNetworkReply;
+    QWidget *m_parent;
 
     bool m_authenticated;
     QString m_sessionToken;

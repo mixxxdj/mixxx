@@ -36,7 +36,7 @@ void DlgPrefMetadata::setListenBrainzSettings() {
 void DlgPrefMetadata::setLastFMSettings() {
     LastFMWidgets widgets;
     widgets.m_pEnabled = enableLastFmBox;
-    m_pLastFMSettings = new LastFMSettingsManager(m_pSettings,widgets);
+    m_pLastFMSettings = new LastFMSettingsManager(m_pSettings, widgets, this);
 }
 
 void DlgPrefMetadata::slotApply() {
