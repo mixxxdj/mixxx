@@ -2,9 +2,12 @@
 
 #include <QObject>
 #include <QCheckBox>
+#include <QNetworkRequest>
 
 #include "preferences/usersettings.h"
 #include "control/controlproxy.h"
+
+class QNetworkReply;
 
 namespace {
     const ConfigKey kLastFMEnabled("[Livemetadata]","LastFMEnabled");
@@ -14,6 +17,8 @@ namespace {
     const bool defaultLastFMEnabled = false;
     const bool defaultLastFMAuthenticated = false;
     const QString defaultLastFMSessionToken = "NoToken";
+    const QUrl rootApiUrl("http://ws.audioscrobbler.com/2.0/");
+    const QUrl authenticationUrl("http://www.last.fm/api/auth/");
 }
 
 struct LastFMWidgets {
@@ -42,10 +47,18 @@ class LastFMSettingsManager : public QObject {
     void persistSettings();
     void resetSettingsToDefault();
 
+    void requestAccessToken();
+    void requestUserAuthorization();
+
+    QString getSignature(const QString& method,const QString& token = QString());
+
     LastFMWidgets m_widgets;
     UserSettingsPointer m_pUserSettings;
     static LastFMSettings s_latestSettings;
     ControlProxy m_CPSettingsChanged;
+    QString apiKey, apiSecret, accessToken;
+    QNetworkRequest m_networkRequest;
+    QNetworkReply *m_pNetworkReply;
 
     bool m_authenticated;
     QString m_sessionToken;

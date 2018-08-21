@@ -5,12 +5,13 @@
 #include "broadcast/listenbrainzlistener/listenbrainzservice.h"
 #include "broadcast/listenbrainzlistener/listenbrainzjsonfactory.h"
 #include "broadcast/listenbrainzlistener/networkmanager.h"
+#include "broadcast/networkaccessmanager.h"
 
 ListenBrainzService::ListenBrainzService(UserSettingsPointer pSettings)
         :  m_request(ListenBrainzAPIURL),
            m_latestSettings(ListenBrainzSettingsManager::getPersistedSettings(pSettings)),
            m_COSettingsChanged(kListenBrainzSettingsChanged) {
-    connect(&m_manager, &QNetworkAccessManager::finished,
+    connect(NetworkAccessManager::createInstance(), &QNetworkAccessManager::finished,
             this, &ListenBrainzService::slotAPICallFinished);
     connect(&m_COSettingsChanged, &ControlPushButton::valueChanged,
             this, &ListenBrainzService::slotSettingsChanged);
@@ -37,7 +38,7 @@ void ListenBrainzService::slotScrobbleTrack(TrackPointer pTrack) {
     m_currentJSON =
             ListenBrainzJSONFactory::getJSONFromTrack(
                     pTrack, ListenBrainzJSONFactory::Single);
-    m_manager.post(m_request, m_currentJSON);
+    m_pReply = NetworkAccessManager::instance()->post(m_request, m_currentJSON);
 }
 
 void ListenBrainzService::slotAllTracksPaused() {
@@ -45,7 +46,7 @@ void ListenBrainzService::slotAllTracksPaused() {
 }
 
 void ListenBrainzService::slotAPICallFinished(QNetworkReply *reply) {
-    if (reply->error() != QNetworkReply::NoError) {
+    if (reply == m_pReply && reply->error() != QNetworkReply::NoError) {
         qWarning() << "API call to ListenBrainz error: " <<
                    reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     }

@@ -31,7 +31,7 @@ class ListenBrainzService : public ScrobblingService {
     void slotSettingsChanged(double value);
   private:
     QNetworkRequest m_request;
-    QNetworkAccessManager m_manager;
+    QNetworkReply *m_pReply;
     ListenBrainzSettings m_latestSettings;
     ControlPushButton m_COSettingsChanged;
     QByteArray m_currentJSON;
