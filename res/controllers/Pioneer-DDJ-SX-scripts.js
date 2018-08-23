@@ -62,8 +62,8 @@ var PioneerDDJSX = function() {};
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
 
-// Sets the jogwheels sensivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
-PioneerDDJSX.jogwheelSensivity = 1;
+// Sets the jogwheels sensitivity. 1 is default, 2 is twice as sensitive, 0.5 is half as sensitive.
+PioneerDDJSX.jogwheelSensitivity = 1;
 
 // Sets how much more sensitive the jogwheels get when holding shift.
 // Set to 1 to disable jogwheel sensitivity increase when holding shift (default: 10).
@@ -2164,7 +2164,7 @@ PioneerDDJSX.triggerVinylLed = function(deck) {
 };
 
 PioneerDDJSX.pitchBendFromJog = function(group, movement) {
-    engine.setValue(group, "jog", movement / 5 * PioneerDDJSX.jogwheelSensivity);
+    engine.setValue(group, "jog", movement / 5 * PioneerDDJSX.jogwheelSensitivity);
 };
 
 
