@@ -252,15 +252,13 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
         components.Pot.call(this);
     };
     this.EffectUnitTouchStrip.prototype = new components.Pot({
-        group: this.group,
-        inKey: 'super1',
         relative: true, // this disables soft takeover
         connect: function() {
-            this.connections[0] = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
-            this.connections[0].trigger();
+            this.focus_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
+            this.focus_connection.trigger();
         },
         disconnect: function() {
-            this.connections[0].disconnect();
+            this.focus_connection.disconnect();
         },
         onFocusChange: function(value, group, control) {
             if (value === 0) {
