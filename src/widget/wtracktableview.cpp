@@ -7,6 +7,7 @@
 #include <QWidgetAction>
 #include <QCheckBox>
 #include <QLinkedList>
+#include <QScrollBar>
 
 #include "widget/wtracktableview.h"
 
@@ -1736,11 +1737,10 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     }
 
     // Save the selection
-    const QList<TrackId> trackIds = getSelectedTrackIds();
+    const QList<TrackId> slectedTrackIds = getSelectedTrackIds();
+    int savedHScrollBarPos = horizontalScrollBar()->value();
 
     sortByColumn(headerSection);
-
-    QItemSelectionModel* currentSelection = selectionModel();
 
     // Find a visible column
     int visibleColumn = 0;
@@ -1748,10 +1748,11 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         visibleColumn++;
     }
 
+    QItemSelectionModel* currentSelection = selectionModel();
     currentSelection->reset(); // remove current selection
 
     QMap<int,int> selectedRows;
-    for (const auto& trackId : trackIds) {
+    for (const auto& trackId : slectedTrackIds) {
 
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
         // code is broken for playlists because it assumes each trackid is in
@@ -1784,6 +1785,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         scrollTo(first, QAbstractItemView::EnsureVisible);
         //scrollTo(first, QAbstractItemView::PositionAtCenter);
     }
+
+    horizontalScrollBar()->setValue(savedHScrollBarPos);
 }
 
 void WTrackTableView::slotLockBpm() {
