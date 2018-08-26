@@ -576,19 +576,19 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     });
 
     var eq_group = '[EqualizerRack1_' + this.currentDeck + '_Effect1]';
-    this.high_eq = new this.EqEffectKnob(eq_group, 'parameter3', 'parameter1');
-    this.mid_eq = new this.EqEffectKnob(eq_group, 'parameter2', 'parameter2');
-    this.low_eq = new this.EqEffectKnob(eq_group, 'parameter1', 'parameter3');
+    this.high_eq = new this.EqEffectKnob(eq_group, 'parameter3', 'parameter3');
+    this.mid_eq = new this.EqEffectKnob(eq_group, 'parameter2', 'parameter4');
+    this.low_eq = new this.EqEffectKnob(eq_group, 'parameter1', 'parameter5');
 
     this.filter = new this.EqEffectKnob(
         '[QuickEffectRack1_' + this.currentDeck + ']',
         'super1',
-        'parameter4');
+        'parameter1');
 
     this.gain = new this.EqEffectKnob(
         this.currentDeck,
         'pregain',
-        'parameter5');
+        'parameter2');
 
     this.reconnectComponents(function (c) {
         if (c.group === undefined) {
