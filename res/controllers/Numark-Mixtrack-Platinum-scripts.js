@@ -250,6 +250,8 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
 
     this.EffectUnitTouchStrip = function() {
         components.Pot.call(this);
+        this.firstValueRecived = true;
+        this.connect();
     };
     this.EffectUnitTouchStrip.prototype = new components.Pot({
         relative: true, // this disables soft takeover
