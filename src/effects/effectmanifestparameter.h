@@ -7,12 +7,20 @@
 #include <QSharedPointer>
 
 #include "util/assert.h"
+#include "effects/defs.h"
 
 class EffectManifestParameter;
 typedef QSharedPointer<EffectManifestParameter> EffectManifestParameterPointer;
 
+
 class EffectManifestParameter {
   public:
+    enum class EffectParameterType {
+        Knob,
+        Button,
+        NumTypes
+    };
+
     enum class ControlHint {
         UNKNOWN = 0,
         KNOB_LINEAR,
@@ -134,11 +142,24 @@ class EffectManifestParameter {
     // Usage hints
     ////////////////////////////////////////////////////////////////////////////////
 
+    virtual const EffectParameterType& parameterType() const {
+        return m_parameterType;
+    }
+
+    virtual void setParameterType(const EffectParameterType parameterType) {
+        m_parameterType = parameterType;
+    }
+
     virtual ControlHint controlHint() const {
         return m_controlHint;
     }
     virtual void setControlHint(ControlHint controlHint) {
         m_controlHint = controlHint;
+        if (controlHint == ControlHint::TOGGLE_STEPPING) {
+            setParameterType(EffectParameterType::Button);
+        } else {
+            setParameterType(EffectParameterType::Knob);
+        }
     }
 
     virtual SemanticHint semanticHint() const {
@@ -240,6 +261,7 @@ class EffectManifestParameter {
     QString m_shortName;
     QString m_description;
 
+    EffectParameterType m_parameterType;
     ControlHint m_controlHint;
     SemanticHint m_semanticHint;
     UnitsHint m_unitsHint;
@@ -261,6 +283,11 @@ class EffectManifestParameter {
     bool m_showInParametertSlot;
 };
 
+inline uint qHash(const EffectManifestParameter::EffectParameterType& parameterType) {
+    return static_cast<uint>(parameterType);
+}
+
 QDebug operator<<(QDebug dbg, const EffectManifestParameter& parameter);
+
 
 #endif /* EFFECTMANIFESTPARAMETER_H */

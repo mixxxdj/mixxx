@@ -7,8 +7,8 @@ const QString groupClose = "]";
 } // anonymous namespace
 
 void WEffectParameterKnobComposed::setupEffectParameterSlot(const ConfigKey& configKey) {
-    EffectKnobParameterSlotPointer pParameterSlot =
-            m_pEffectsManager->getEffectKnobParameterSlot(configKey);
+    EffectParameterSlotBasePointer pParameterSlot =
+            m_pEffectsManager->getEffectParameterSlot(EffectManifestParameter::EffectParameterType::Knob, configKey);
     if (!pParameterSlot) {
         qWarning() << "EffectParameterKnobComposed" << configKey <<
                 "is not an effect parameter.";
@@ -18,7 +18,7 @@ void WEffectParameterKnobComposed::setupEffectParameterSlot(const ConfigKey& con
 }
 
 void WEffectParameterKnobComposed::setEffectKnobParameterSlot(
-        EffectKnobParameterSlotPointer pParameterSlot) {
+        EffectParameterSlotBasePointer pParameterSlot) {
     m_pEffectParameterSlot = pParameterSlot;
     if (m_pEffectParameterSlot) {
         connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),

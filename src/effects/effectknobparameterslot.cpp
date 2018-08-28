@@ -13,6 +13,8 @@
 
 EffectKnobParameterSlot::EffectKnobParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(group, iParameterSlotNumber) {
+    m_parameterType = EffectManifestParameter::EffectParameterType::Knob;
+
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
 
     m_pControlValue = new ControlEffectKnob(
@@ -60,7 +62,8 @@ void EffectKnobParameterSlot::loadParameter(EffectParameter* pEffectParameter) {
     // qDebug() << debugString() << "loadParameter" << (pEffectSlot ? pEffectSlot->getManifest().name() : "(null)");
     clear();
 
-    VERIFY_OR_DEBUG_ASSERT(EffectSlot::isKnobParameter(pEffectParameter)) {
+    VERIFY_OR_DEBUG_ASSERT(pEffectParameter->manifest()->parameterType() ==
+            EffectManifestParameter::EffectParameterType::Knob) {
         return;
     }
 

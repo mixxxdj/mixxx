@@ -351,33 +351,18 @@ EffectSlotPointer EffectsManager::getEffectSlot(
     return pEffectSlot;
 }
 
-EffectKnobParameterSlotPointer EffectsManager::getEffectKnobParameterSlot(
-        const ConfigKey& configKey) {
+EffectParameterSlotBasePointer EffectsManager::getEffectParameterSlot(
+        const EffectManifestParameter::EffectParameterType parameterType, const ConfigKey& configKey) {
     EffectSlotPointer pEffectSlot =
              getEffectSlot(configKey.group);
     VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
-        return EffectKnobParameterSlotPointer();
+        return EffectParameterSlotBasePointer();
     }
 
     QRegExp intRegEx(".*(\\d+).*");
     intRegEx.indexIn(configKey.item);
-    EffectKnobParameterSlotPointer pParameterSlot =
-            pEffectSlot->getEffectKnobParameterSlot(intRegEx.cap(1).toInt() - 1);
-    return pParameterSlot;
-}
-
-EffectButtonParameterSlotPointer EffectsManager::getEffectButtonParameterSlot(
-        const ConfigKey& configKey) {
-    EffectSlotPointer pEffectSlot =
-             getEffectSlot(configKey.group);
-    VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {
-        return EffectButtonParameterSlotPointer();
-    }
-
-    QRegExp intRegEx(".*(\\d+).*");
-    intRegEx.indexIn(configKey.item);
-    EffectButtonParameterSlotPointer pParameterSlot =
-            pEffectSlot->getEffectButtonParameterSlot(intRegEx.cap(1).toInt() - 1);
+    EffectParameterSlotBasePointer pParameterSlot = pEffectSlot->getEffectParameterSlot(
+            parameterType, intRegEx.cap(1).toInt() - 1);
     return pParameterSlot;
 }
 

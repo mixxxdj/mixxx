@@ -11,6 +11,7 @@
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
 #include "effects/specialeffectchainslots.h"
+#include "effects/effectmanifestparameter.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "preferences/usersettings.h"
@@ -111,10 +112,8 @@ class EffectsManager : public QObject {
     EffectChainSlotPointer getEffectChainSlot(const QString& group) const;
     EffectSlotPointer getEffectSlot(const QString& group);
 
-    EffectKnobParameterSlotPointer getEffectKnobParameterSlot(
-            const ConfigKey& configKey);
-    EffectButtonParameterSlotPointer getEffectButtonParameterSlot(
-            const ConfigKey& configKey);
+    EffectParameterSlotBasePointer getEffectParameterSlot(
+            const EffectManifestParameter::EffectParameterType parameterType, const ConfigKey& configKey);
 
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);

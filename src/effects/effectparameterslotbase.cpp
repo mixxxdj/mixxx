@@ -47,6 +47,10 @@ QString EffectParameterSlotBase::description() const {
     return tr("No effect loaded.");
 }
 
+EffectManifestParameter::EffectParameterType EffectParameterSlotBase::parameterType() const {
+    return m_parameterType;
+}
+
 EffectManifestParameterPointer EffectParameterSlotBase::getManifest() {
     if (m_pManifestParameter) {
         return m_pManifestParameter;

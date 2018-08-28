@@ -32,8 +32,6 @@ class EffectKnobParameterSlot;
 class EffectSlot : public QObject {
     Q_OBJECT
   public:
-    typedef bool (*ParameterFilterFnc)(EffectParameter*);
-
     EffectSlot(const QString& group,
                EffectsManager* pEffectsManager,
                const unsigned int iEffectNumber,
@@ -53,20 +51,9 @@ class EffectSlot : public QObject {
         return m_pEngineEffect != nullptr;
     }
 
-    unsigned int numParameterSlots() const;
-    EffectKnobParameterSlotPointer addEffectKnobParameterSlot();
-    EffectKnobParameterSlotPointer getEffectKnobParameterSlot(unsigned int slotNumber);
-    EffectKnobParameterSlotPointer getEffectKnobParameterSlotForConfigKey(unsigned int slotNumber);
-    inline const QList<EffectKnobParameterSlotPointer>& getEffectKnobParameterSlots() const {
-        return m_knobParameterSlots;
-    };
-
-    unsigned int numButtonParameterSlots() const;
-    EffectButtonParameterSlotPointer addEffectButtonParameterSlot();
-    EffectButtonParameterSlotPointer getEffectButtonParameterSlot(unsigned int slotNumber);
-    inline const QList<EffectButtonParameterSlotPointer>& getEffectButtonParameterSlots() const {
-        return m_buttonParameterSlots;
-    };
+    void addEffectParameterSlot(EffectManifestParameter::EffectParameterType parameterType);
+    EffectParameterSlotBasePointer getEffectParameterSlot(
+            EffectManifestParameter::EffectParameterType parameterType, unsigned int slotNumber);
 
     double getMetaParameter() const;
 
@@ -85,16 +72,10 @@ class EffectSlot : public QObject {
 
     EffectManifestPointer getManifest() const;
 
-    unsigned int numKnobParameters() const;
-    unsigned int numButtonParameters() const;
+    unsigned int numParameters(EffectManifestParameter::EffectParameterType parameterType) const;
 
-    static bool isButtonParameter(EffectParameter* parameter);
-    static bool isKnobParameter(EffectParameter* parameter);
-
-    EffectParameter* getFilteredParameterForSlot(
-            ParameterFilterFnc filterFnc, unsigned int slotNumber);
-    EffectParameter* getKnobParameterForSlot(unsigned int slotNumber);
-    EffectParameter* getButtonParameterForSlot(unsigned int slotNumber);
+    EffectParameter* getParameterForSlot(EffectManifestParameter::EffectParameterType parameterType,
+            unsigned int slotNumber);
 
     void setEnabled(bool enabled);
 
@@ -137,6 +118,7 @@ class EffectSlot : public QObject {
     void unloadEffect();
 
     const unsigned int m_iEffectNumber;
+    QHash<EffectManifestParameter::EffectParameterType, unsigned int> m_iNumParameterSlots;
     const QString m_group;
     UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
@@ -144,17 +126,11 @@ class EffectSlot : public QObject {
     EngineEffect* m_pEngineEffect;
     QList<EffectParameter*> m_parameters;
     EngineEffectChain* m_pEngineEffectChain;
-    QList<EffectKnobParameterSlotPointer> m_knobParameterSlots;
-    QList<EffectButtonParameterSlotPointer> m_buttonParameterSlots;
-    QList<int> m_knobParameterSlotPositionToManifestIndex;
-    QList<int> m_buttonParameterSlotPositionToManifestIndex;
+    QList<EffectParameterSlotBasePointer> m_parameterSlots;
+    QHash<EffectManifestParameter::EffectParameterType, QList<int>> m_parameterSlotPositionToManifestIndex;
 
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlEnabled;
-    ControlObject* m_pControlNumParameters;
-    ControlObject* m_pControlNumParameterSlots;
-    ControlObject* m_pControlNumButtonParameters;
-    ControlObject* m_pControlNumButtonParameterSlots;
     ControlObject* m_pControlNextEffect;
     ControlObject* m_pControlPrevEffect;
     ControlEncoder* m_pControlEffectSelector;

@@ -23,9 +23,20 @@ class EffectParameterSlotBase : public QObject {
     EffectParameterSlotBase(const QString& group, const unsigned int iParameterSlotNumber);
     virtual ~EffectParameterSlotBase();
 
+    // Load the parameter of the given effect into this EffectButtonParameterSlot
+    virtual void loadParameter(EffectParameter* pEffectParameter) = 0;
+
+    // Clear the currently loaded effect
+    virtual void clear() = 0;
+
+    virtual void syncSofttakeover() = 0;
+
+    virtual void onEffectMetaParameterChanged(double parameter, bool force=false) = 0;
+
     QString name() const;
     QString shortName() const;
     QString description() const;
+    EffectManifestParameter::EffectParameterType parameterType() const;
     EffectManifestParameterPointer getManifest();
 
     virtual QDomElement toXml(QDomDocument* doc) const = 0;
@@ -41,6 +52,7 @@ class EffectParameterSlotBase : public QObject {
     EffectSlot* m_pEffectSlot;
     EffectParameter* m_pEffectParameter;
     EffectManifestParameterPointer m_pManifestParameter;
+    EffectManifestParameter::EffectParameterType m_parameterType;
 
     // Controls exposed to the rest of Mixxx
     ControlObject* m_pControlLoaded;

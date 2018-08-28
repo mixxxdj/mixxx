@@ -29,18 +29,6 @@ EffectSlot::EffectSlot(const QString& group,
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlLoaded->setReadOnly();
 
-    m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
-    m_pControlNumParameters->setReadOnly();
-
-    m_pControlNumParameterSlots = new ControlObject(ConfigKey(m_group, "num_parameterslots"));
-    m_pControlNumParameterSlots->setReadOnly();
-
-    m_pControlNumButtonParameters = new ControlObject(ConfigKey(m_group, "num_button_parameters"));
-    m_pControlNumButtonParameters->setReadOnly();
-
-    m_pControlNumButtonParameterSlots = new ControlObject(ConfigKey(m_group, "num_button_parameterslots"));
-    m_pControlNumButtonParameterSlots->setReadOnly();
-
     // Default to disabled to prevent accidental activation of effects
     // at the beginning of a set.
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
@@ -66,8 +54,8 @@ EffectSlot::EffectSlot(const QString& group,
             this, SLOT(slotClear(double)));
 
     for (unsigned int i = 0; i < kDefaultMaxParameters; ++i) {
-        addEffectKnobParameterSlot();
-        addEffectButtonParameterSlot();
+        addEffectParameterSlot(EffectManifestParameter::EffectParameterType::Knob);
+        addEffectParameterSlot(EffectManifestParameter::EffectParameterType::Button);
     }
 
     m_pControlMetaParameter = new ControlPotmeter(ConfigKey(m_group, "meta"), 0.0, 1.0);
@@ -79,8 +67,6 @@ EffectSlot::EffectSlot(const QString& group,
     m_pMetaknobSoftTakeover = new SoftTakeover();
 
     m_pControlLoaded->forceSet(0.0);
-    m_pControlNumParameters->forceSet(0.0);
-    m_pControlNumButtonParameters->forceSet(0.0);
 }
 
 EffectSlot::~EffectSlot() {
@@ -88,10 +74,6 @@ EffectSlot::~EffectSlot() {
     unloadEffect();
 
     delete m_pControlLoaded;
-    delete m_pControlNumParameters;
-    delete m_pControlNumParameterSlots;
-    delete m_pControlNumButtonParameters;
-    delete m_pControlNumButtonParameterSlots;
     delete m_pControlNextEffect;
     delete m_pControlPrevEffect;
     delete m_pControlEffectSelector;
@@ -175,64 +157,36 @@ EffectManifestPointer EffectSlot::getManifest() const {
     return m_pManifest;
 }
 
-EffectKnobParameterSlotPointer EffectSlot::addEffectKnobParameterSlot() {
-    auto pParameterSlot = EffectKnobParameterSlotPointer(
-            new EffectKnobParameterSlot(m_group, m_knobParameterSlots.size()));
-    m_knobParameterSlots.append(pParameterSlot);
-    m_pControlNumParameterSlots->forceSet(
-            m_pControlNumParameterSlots->get() + 1);
-    return pParameterSlot;
+void EffectSlot::addEffectParameterSlot(EffectManifestParameter::EffectParameterType parameterType) {
+    EffectParameterSlotBasePointer pParameterSlot = EffectParameterSlotBasePointer();
+    if (parameterType == EffectManifestParameter::EffectParameterType::Knob) {
+        pParameterSlot = static_cast<EffectParameterSlotBasePointer> (
+                new EffectKnobParameterSlot(m_group, m_iNumParameterSlots[parameterType]));
+    } else if (parameterType == EffectManifestParameter::EffectParameterType::Button) {
+        pParameterSlot = static_cast<EffectParameterSlotBasePointer> (
+                new EffectButtonParameterSlot(m_group, m_iNumParameterSlots[parameterType]));
+    }
+    ++m_iNumParameterSlots[parameterType];
+    m_parameterSlots.append(pParameterSlot);
 }
 
-EffectButtonParameterSlotPointer EffectSlot::addEffectButtonParameterSlot() {
-    auto pParameterSlot = EffectButtonParameterSlotPointer(
-            new EffectButtonParameterSlot(m_group, m_buttonParameterSlots.size()));
-    m_buttonParameterSlots.append(pParameterSlot);
-    m_pControlNumButtonParameterSlots->forceSet(
-            m_pControlNumButtonParameterSlots->get() + 1);
-    return pParameterSlot;
-}
-
-unsigned int EffectSlot::numKnobParameters() const {
+unsigned int EffectSlot::numParameters(EffectManifestParameter::EffectParameterType parameterType) const {
     unsigned int num = 0;
     for (auto const& pParameter : m_parameters) {
-        if (pParameter->manifest()->controlHint() !=
-                EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
+        if (parameterType == pParameter->manifest()->parameterType()) {
             ++num;
         }
     }
     return num;
 }
 
-unsigned int EffectSlot::numButtonParameters() const {
-    unsigned int num = 0;
-    for (auto const& pParameter : m_parameters) {
-        if (pParameter->manifest()->controlHint() ==
-                EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
-            ++num;
-        }
-    }
-    return num;
-}
-
-// static
-bool EffectSlot::isButtonParameter(EffectParameter* parameter) {
-    return  parameter->manifest()->controlHint() ==
-            EffectManifestParameter::ControlHint::TOGGLE_STEPPING;
-}
-
-// static
-bool EffectSlot::isKnobParameter(EffectParameter* parameter) {
-    return !isButtonParameter(parameter);
-}
-
-EffectParameter* EffectSlot::getFilteredParameterForSlot(ParameterFilterFnc filterFnc,
-                                                         unsigned int slotNumber) {
+EffectParameter* EffectSlot::getParameterForSlot(EffectManifestParameter::EffectParameterType parameterType,
+                                                 unsigned int slotNumber) {
     // It's normal to ask for a parameter that doesn't exist. Callers must check
     // for NULL.
     unsigned int num = 0;
     for (const auto& parameter: m_parameters) {
-        if (parameter->manifest()->showInParameterSlot() && filterFnc(parameter)) {
+        if (parameter->manifest()->showInParameterSlot() && parameter->manifest()->parameterType() == parameterType) {
             if(num == slotNumber) {
                 return parameter;
             }
@@ -242,46 +196,28 @@ EffectParameter* EffectSlot::getFilteredParameterForSlot(ParameterFilterFnc filt
     return nullptr;
 }
 
-EffectParameter* EffectSlot::getKnobParameterForSlot(unsigned int slotNumber) {
-    return getFilteredParameterForSlot(isKnobParameter, slotNumber);
-}
-
-EffectParameter* EffectSlot::getButtonParameterForSlot(unsigned int slotNumber) {
-    return getFilteredParameterForSlot(isButtonParameter, slotNumber);
-}
-
 double EffectSlot::getMetaknobDefault() {
     return m_pManifest->metaknobDefault();
-}
-
-unsigned int EffectSlot::numParameterSlots() const {
-    return m_knobParameterSlots.size();
-}
-
-unsigned int EffectSlot::numButtonParameterSlots() const {
-    return m_buttonParameterSlots.size();
 }
 
 void EffectSlot::setEnabled(bool enabled) {
     m_pControlEnabled->set(enabled);
 }
 
-EffectKnobParameterSlotPointer EffectSlot::getEffectKnobParameterSlot(unsigned int slotNumber) {
-    //qDebug() << debugString() << "getEffectKnobParameterSlot" << slotNumber;
-    if (slotNumber >= static_cast<unsigned int>(m_knobParameterSlots.size())) {
-        qWarning() << "WARNING: slotNumber out of range";
-        return EffectKnobParameterSlotPointer();
-    }
-    return m_knobParameterSlots[slotNumber];
-}
+EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(EffectManifestParameter::EffectParameterType parameterType,
+                                                                  unsigned int slotNumber) {
+    // qDebug() << debugString() << "getEffectParameterSlot" << static_cast<int>(parameterType) << ' ' << slotNumber;
 
-EffectButtonParameterSlotPointer EffectSlot::getEffectButtonParameterSlot(unsigned int slotNumber) {
-    //qDebug() << debugString() << "getEffectKnobParameterSlot" << slotNumber;
-    if (slotNumber >= static_cast<unsigned int>(m_buttonParameterSlots.size())) {
-        qWarning() << "WARNING: slotNumber out of range";
-        return EffectButtonParameterSlotPointer();
+    int iSlotNumber = 0;
+    for (const auto& pParameterSlot : m_parameterSlots) {
+        if (pParameterSlot->parameterType() == parameterType) {
+            if (iSlotNumber == slotNumber) {
+                return pParameterSlot;
+            }
+            ++iSlotNumber;
+        }
     }
-    return m_buttonParameterSlots[slotNumber];
+    return EffectParameterSlotBasePointer();
 }
 
 void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
@@ -297,19 +233,17 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
         return;
     }
 
-    m_knobParameterSlotPositionToManifestIndex.clear();
-    m_buttonParameterSlotPositionToManifestIndex.clear();
+    for (auto& parameterMapping : m_parameterSlotPositionToManifestIndex) {
+        parameterMapping.clear();
+    }
+
     int index = 0;
     for (const auto& pManifestParameter: m_pManifest->parameters()) {
         EffectParameter* pParameter = new EffectParameter(
                 this, m_pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
 
-        if (isKnobParameter(pParameter)) {
-            m_knobParameterSlotPositionToManifestIndex.push_back(index);
-        } else {
-            m_buttonParameterSlotPositionToManifestIndex.push_back(index);
-        }
+        m_parameterSlotPositionToManifestIndex[pManifestParameter->parameterType()].push_back(index);
         ++index;
     }
 
@@ -331,44 +265,39 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
 }
 
 void EffectSlot::loadParameters() {
-    unsigned int iKnobParameter = 0;
-    for (int i=0 ; i<m_knobParameterSlotPositionToManifestIndex.size() ; ++i) {
-        const int iParameterPosition = m_knobParameterSlotPositionToManifestIndex.value(i, -1);
-        auto pParameter = m_parameters.value(iParameterPosition, nullptr);
+    int numTypes = static_cast<int> (EffectManifestParameter::EffectParameterType::NumTypes);
+    for (int parameterTypeId=0 ; parameterTypeId<numTypes ; ++parameterTypeId) {
+        const EffectManifestParameter::EffectParameterType parameterType =
+                static_cast<EffectManifestParameter::EffectParameterType> (parameterTypeId);
+        unsigned int iParameter = 0;
+        unsigned int numParameterSlots = m_iNumParameterSlots[parameterType];
+        for (int i=0 ; i<m_parameterSlotPositionToManifestIndex[parameterType].size() ; ++i) {
+            const int iParameterPosition = m_parameterSlotPositionToManifestIndex[parameterType].value(i, -1);
 
-        VERIFY_OR_DEBUG_ASSERT(pParameter != nullptr) {
-            continue;
+            auto pParameter = m_parameters.value(iParameterPosition, nullptr);
+
+            VERIFY_OR_DEBUG_ASSERT(pParameter != nullptr) {
+                continue;
+            }
+
+            if (iParameter < numParameterSlots) {
+                auto pParameterSlot = getEffectParameterSlot(parameterType, iParameter);
+                VERIFY_OR_DEBUG_ASSERT(pParameterSlot != nullptr) {
+                    break;
+                }
+                pParameterSlot->loadParameter(pParameter);
+                ++iParameter;
+            }
         }
-
-        if (iKnobParameter < m_knobParameterSlots.size()) {
-            m_knobParameterSlots.at(iKnobParameter)->loadParameter(pParameter);
-            ++iKnobParameter;
+        while (iParameter < numParameterSlots) {
+            auto pParameterSlot = getEffectParameterSlot(parameterType, iParameter);
+            VERIFY_OR_DEBUG_ASSERT(pParameterSlot != nullptr) {
+                break;
+            }
+            pParameterSlot->clear();
+            ++iParameter;
         }
     }
-    while (iKnobParameter < m_knobParameterSlots.size()) {
-        m_knobParameterSlots.at(iKnobParameter)->clear();
-        ++iKnobParameter;
-    }
-
-    unsigned int iButtonParameter = 0;
-    for (int i=0 ; i<m_buttonParameterSlotPositionToManifestIndex.size() ; ++i) {
-        const int iParameterPosition = m_buttonParameterSlotPositionToManifestIndex.value(i, -1);
-        auto pParameter = m_parameters.value(iParameterPosition, nullptr);
-
-        VERIFY_OR_DEBUG_ASSERT(pParameter != nullptr) {
-            continue;
-        }
-
-        if (iButtonParameter < m_buttonParameterSlots.size()) {
-            m_buttonParameterSlots.at(iButtonParameter)->loadParameter(pParameter);
-            ++iButtonParameter;
-        }
-    }
-    while (iButtonParameter < m_buttonParameterSlots.size()) {
-        m_buttonParameterSlots.at(iButtonParameter)->clear();
-        ++iButtonParameter;
-    }
-
 }
 
 void EffectSlot::unloadEffect() {
@@ -377,13 +306,8 @@ void EffectSlot::unloadEffect() {
     }
 
     m_pControlLoaded->forceSet(0.0);
-    m_pControlNumParameters->forceSet(0.0);
-    m_pControlNumButtonParameters->forceSet(0.0);
-    for (const auto& pParameterSlot : m_knobParameterSlots) {
+    for (const auto& pParameterSlot : m_parameterSlots) {
         pParameterSlot->clear();
-    }
-    for (const auto& pButtonParameter : m_buttonParameterSlots) {
-        pButtonParameter->clear();
     }
 
     for (int i = 0; i < m_parameters.size(); ++i) {
@@ -398,23 +322,22 @@ void EffectSlot::unloadEffect() {
 }
 
 void EffectSlot::hideEffectParameter(const unsigned int parameterId) {
-    m_knobParameterSlotPositionToManifestIndex.removeAll(parameterId);
-    m_buttonParameterSlotPositionToManifestIndex.removeAll(parameterId);
+    for (auto& parameterMapping : m_parameterSlotPositionToManifestIndex) {
+        parameterMapping.removeAll(parameterId);
+    }
 
     loadParameters();
 }
 
 void EffectSlot::setEffectParameterPosition(const unsigned int parameterId,
         const unsigned int position) {
-    m_knobParameterSlotPositionToManifestIndex.removeAll(parameterId);
-    m_buttonParameterSlotPositionToManifestIndex.removeAll(parameterId);
+    for (auto& parameterMapping : m_parameterSlotPositionToManifestIndex) {
+        parameterMapping.removeAll(parameterId);
+    }
+
     auto pParameter = m_parameters.at(parameterId);
     if (pParameter) {
-        if (isButtonParameter(pParameter)) {
-            m_buttonParameterSlotPositionToManifestIndex.insert(position, parameterId);
-        } else {
-            m_knobParameterSlotPositionToManifestIndex.insert(position, parameterId);
-        }
+        m_parameterSlotPositionToManifestIndex[pParameter->manifest()->parameterType()].insert(position, parameterId);
         loadParameters();
     }
 }
@@ -447,8 +370,10 @@ void EffectSlot::slotClear(double v) {
 }
 
 void EffectSlot::syncSofttakeover() {
-    for (const auto& pParameterSlot : m_knobParameterSlots) {
-        pParameterSlot->syncSofttakeover();
+    for (const auto pParameterSlot : m_parameterSlots) {
+        if (pParameterSlot->parameterType() == EffectManifestParameter::EffectParameterType::Knob) {
+            pParameterSlot->syncSofttakeover();
+        }
     }
 }
 
@@ -477,8 +402,10 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
     if (!m_pControlEnabled->toBool()) {
         force = true;
     }
-    for (const auto& pParameterSlot : m_knobParameterSlots) {
-        pParameterSlot->onEffectMetaParameterChanged(v, force);
+    for (const auto& pParameterSlot : m_parameterSlots) {
+        if (pParameterSlot->parameterType() == EffectManifestParameter::EffectParameterType::Knob) {
+            pParameterSlot->onEffectMetaParameterChanged(v, force);
+        }
     }
 }
 

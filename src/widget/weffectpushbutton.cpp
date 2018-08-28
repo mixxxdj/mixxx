@@ -20,8 +20,8 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
 }
 
 void WEffectPushButton::setupEffectParameterSlot(const ConfigKey& configKey) {
-    EffectButtonParameterSlotPointer pParameterSlot =
-            m_pEffectsManager->getEffectButtonParameterSlot(configKey);
+    EffectParameterSlotBasePointer pParameterSlot =
+            m_pEffectsManager->getEffectParameterSlot(EffectManifestParameter::EffectParameterType::Button, configKey);
     if (!pParameterSlot) {
         qWarning() << "EffectPushButton" << configKey <<
                 "is not an effect button parameter.";
@@ -31,7 +31,7 @@ void WEffectPushButton::setupEffectParameterSlot(const ConfigKey& configKey) {
 }
 
 void WEffectPushButton::setEffectKnobParameterSlot(
-        EffectButtonParameterSlotPointer pParameterSlot) {
+        EffectParameterSlotBasePointer pParameterSlot) {
     m_pEffectParameterSlot = pParameterSlot;
     if (m_pEffectParameterSlot) {
         connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
