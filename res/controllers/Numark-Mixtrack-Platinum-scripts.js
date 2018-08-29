@@ -20,6 +20,14 @@ MixtrackPlatinum.init = function(id, debug) {
     var byteArray = [0xF0, 0x00, 0x01, 0x3F, 0x7F, 0x3A, 0x60, 0x00, 0x04, 0x04, 0x01, 0x00, 0x00, 0xF7];
     midi.sendSysexMsg(byteArray, byteArray.length);
 
+    // initialize some leds
+    MixtrackPlatinum.effects.forEachComponent(function (component) {
+        component.trigger();
+    });
+    MixtrackPlatinum.decks.forEachComponent(function (component) {
+        component.trigger();
+    });
+
     MixtrackPlatinum.sampler = new MixtrackPlatinum.Sampler();
     MixtrackPlatinum.browse = new MixtrackPlatinum.BrowseKnob();
 
