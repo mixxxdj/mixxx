@@ -565,15 +565,15 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
             var focused_effect = engine.getValue(eu.group, "focused_effect");
             if (focused_effect === 0) return;
 
+            this.disconnect();
             this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber + '_Effect' + focused_effect + ']';
             this.inKey = this.fx_key;
-            this.disconnect();
             this.connect();
         },
         unshift: function() {
+            this.disconnect();
             this.group = this.unshift_group;
             this.inKey = this.unshift_key;
-            this.disconnect();
             this.connect();
         },
     });
