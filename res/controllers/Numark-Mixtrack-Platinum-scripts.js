@@ -431,6 +431,7 @@ MixtrackPlatinum.EffectUnit.prototype = new components.ComponentContainer();
 MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     var deck = this;
     var eu = effects_unit;
+    this.active = (number == 1 || number == 2);
 
     components.Deck.call(this, number);
     this.play_button = new components.PlayButton({
@@ -760,21 +761,16 @@ MixtrackPlatinum.positionCallback = function(value, group, control) {
     midi.sendShortMsg(0xB0 | midi_chan, 0x06, spinner);
 };
 
-MixtrackPlatinum.deck_active = [
-    true,
-    true,
-    false,
-    false,
-];
 MixtrackPlatinum.deckSwitch = function (channel, control, value, status, group) {
-    MixtrackPlatinum.deck_active[channel] = value == 0x7F;
+    var deck = channel + 1;
+    MixtrackPlatinum.decks[deck].active = value == 0x7F;
 
     // change effects racks
-    if (MixtrackPlatinum.deck_active[channel] && (channel == 0x00 || channel == 0x02)) {
-        MixtrackPlatinum.effects[1].setCurrentUnit(channel + 1);
+    if (MixtrackPlatinum.decks[deck].active && (channel == 0x00 || channel == 0x02)) {
+        MixtrackPlatinum.effects[1].setCurrentUnit(deck);
     }
-    else if (MixtrackPlatinum.deck_active[channel] && (channel == 0x01 || channel == 0x03)) {
-        MixtrackPlatinum.effects[2].setCurrentUnit(channel + 1);
+    else if (MixtrackPlatinum.decks[deck].active && (channel == 0x01 || channel == 0x03)) {
+        MixtrackPlatinum.effects[2].setCurrentUnit(deck);
     }
 
     // also zero vu meters
@@ -803,16 +799,16 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
             level = 81;
         }
 
-        if (group == '[Channel1]' && MixtrackPlatinum.deck_active[0]) {
+        if (group == '[Channel1]' && MixtrackPlatinum.decks[1].active) {
             midi.sendShortMsg(0xBF, 0x44, level);
         }
-        else if (group == '[Channel3]' && MixtrackPlatinum.deck_active[2]) {
+        else if (group == '[Channel3]' && MixtrackPlatinum.decks[3].active) {
             midi.sendShortMsg(0xBF, 0x44, level);
         }
-        else if (group == '[Channel2]' && MixtrackPlatinum.deck_active[1]) {
+        else if (group == '[Channel2]' && MixtrackPlatinum.decks[2].active) {
             midi.sendShortMsg(0xBF, 0x45, level);
         }
-        else if (group == '[Channel4]' && MixtrackPlatinum.deck_active[3]) {
+        else if (group == '[Channel4]' && MixtrackPlatinum.decks[4].active) {
             midi.sendShortMsg(0xBF, 0x45, level);
         }
     }
