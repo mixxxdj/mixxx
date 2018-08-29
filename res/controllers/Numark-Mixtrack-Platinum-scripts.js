@@ -493,9 +493,11 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
 
     this.pitch = new components.Pot({
         inKey: 'rate',
-        relative: true,
         invert: true,
     });
+    if (!this.active) {
+        this.pitch.firstValueReceived = true;
+    }
 
     this.loop_in = new components.Button({
         midi: [0x94 + midi_chan, 0x38],
@@ -599,6 +601,11 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
 
     this.setActive = function(active) {
         this.active = active;
+
+        if (!active) {
+            // trigger soft takeover on the pitch control
+            this.pitch.disconnect();
+        }
     };
 };
 
