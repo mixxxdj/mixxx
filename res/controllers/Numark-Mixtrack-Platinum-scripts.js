@@ -596,6 +596,10 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
             c.group = this.currentDeck;
         }
     });
+
+    this.setActive = function(active) {
+        this.active = active;
+    };
 };
 
 MixtrackPlatinum.Deck.prototype = new components.Deck();
@@ -763,7 +767,7 @@ MixtrackPlatinum.positionCallback = function(value, group, control) {
 
 MixtrackPlatinum.deckSwitch = function (channel, control, value, status, group) {
     var deck = channel + 1;
-    MixtrackPlatinum.decks[deck].active = value == 0x7F;
+    MixtrackPlatinum.decks[deck].setActive(value == 0x7F);
 
     // change effects racks
     if (MixtrackPlatinum.decks[deck].active && (channel == 0x00 || channel == 0x02)) {
