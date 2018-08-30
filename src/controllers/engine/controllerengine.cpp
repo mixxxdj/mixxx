@@ -426,7 +426,6 @@ QJSValue ControllerEngine::evaluateProgram(const QString& program, const QString
 void ControllerEngine::handleEvaluationException(QJSValue evaluationResult) {
 	// TODO: add test for this
 	if (evaluationResult.isError()) {
-		// TODO: compare with message property
 		QString errorMessage = evaluationResult.toString();
 		QString line = evaluationResult.property("lineNumber").toString();
 		QString backtrace = evaluationResult.property("stack").toString();
