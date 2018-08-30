@@ -7,6 +7,15 @@
 /* global midi                                                        */
 ////////////////////////////////////////////////////////////////////////
 
+
+/******************
+ * CONFIG OPTIONS *
+ ******************/
+
+// should wheel be enabled on startup?
+var EnableWheel = true;
+
+
 var MixtrackPlatinum = {};
 
 MixtrackPlatinum.init = function(id, debug) {
@@ -93,9 +102,9 @@ MixtrackPlatinum.init = function(id, debug) {
         // slip indicator
         led(group, 'slip_enabled', i, 0x0F);
 
-        // start in wheel/vinyl mode
-        MixtrackPlatinum.wheel[i] = true;
-        midi.sendShortMsg(0x90 | i, 0x07, 0x7F);
+        // initialize wheel mode (and leds)
+        MixtrackPlatinum.wheel[i] = EnableWheel;
+        midi.sendShortMsg(0x90 | i, 0x07, EnableWheel ? 0x7F : 0x01);
     }
 
     // zero vu meters
