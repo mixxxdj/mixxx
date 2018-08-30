@@ -4,7 +4,7 @@
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
 #include "preferences/usersettings.h"
-#include "controllers/controllerengine.h"
+#include "controllers/engine/controllerengine.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/softtakeover.h"
 #include "test/mixxxtest.h"
@@ -29,9 +29,13 @@ class ControllerEngineTest : public MixxxTest {
     }
 
     bool execute(const QString& functionName) {
-        QScriptValue function = cEngine->wrapFunctionCode(functionName, 0);
-        return cEngine->internalExecute(QScriptValue(), function,
-                                        QScriptValueList());
+        QJSValue function = cEngine->wrapFunctionCode(functionName, 0);
+        return cEngine->internalExecute(QJSValue(), function,
+                                        QJSValueList());
+    }
+
+    bool evaluateScriptFile(const QString& scriptName, QList<QString> scriptPaths = QList<QString>()) {
+    	return cEngine->evaluateScriptFile(scriptName, scriptPaths);
     }
 
     ControllerEngine *cEngine;
@@ -39,7 +43,7 @@ class ControllerEngineTest : public MixxxTest {
 
 TEST_F(ControllerEngineTest, commonScriptHasNoErrors) {
     QString commonScript = "./res/controllers/common-controller-scripts.js";
-    cEngine->evaluate(commonScript);
+    evaluateScriptFile(commonScript);
     EXPECT_FALSE(cEngine->hasErrors(commonScript));
 }
 
@@ -214,7 +218,7 @@ TEST_F(ControllerEngineTest, trigger) {
         "  engine.setValue('[Test]', 'passed', pass + 1.0); };"
         "var connection = engine.connectControl('[Test]', 'co', reaction);"
         "engine.trigger('[Test]', 'co');"));
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
@@ -242,7 +246,7 @@ TEST_F(ControllerEngineTest, connectControl_ByString) {
         "  engine.connectControl('[Test]', 'co', 'reaction', 1);"
         "  engine.trigger('[Test]', 'co'); }"));
 
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
@@ -270,7 +274,7 @@ TEST_F(ControllerEngineTest, connectControl_ByStringForbidDuplicateConnections) 
         "engine.connectControl('[Test]', 'co', 'reaction');"
         "engine.trigger('[Test]', 'co');"));
 
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
@@ -306,7 +310,7 @@ TEST_F(ControllerEngineTest,
         "};"
     ));
 
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     execute("changeTestCoValue");
     // ControlObjectScript connections are processed via QueuedConnection. Use
@@ -334,7 +338,7 @@ TEST_F(ControllerEngineTest, connectControl_ByFunction) {
         "var connection = engine.connectControl('[Test]', 'co', reaction);"
         "connection.trigger();"));
 
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
@@ -358,7 +362,7 @@ TEST_F(ControllerEngineTest, connectControl_ByFunctionAllowDuplicateConnections)
         // to trigger, so it should trigger all of them.
         "engine.trigger('[Test]', 'co');"));
 
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
@@ -386,7 +390,7 @@ TEST_F(ControllerEngineTest, connectControl_toDisconnectRemovesAllConnections) {
         "  engine.connectControl('[Test]', 'co', reaction, 1);"
         "  engine.trigger('[Test]', 'co'); }"));
 
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
@@ -411,7 +415,7 @@ TEST_F(ControllerEngineTest, connectControl_ByLambda) {
         "  connection.disconnect();"
         "  engine.trigger('[Test]', 'co'); }"));
 
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
@@ -438,7 +442,7 @@ TEST_F(ControllerEngineTest, connectionObject_Disconnect) {
         "  connection.disconnect();"
         "  engine.trigger('[Test]', 'co'); }"));
 
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
@@ -478,7 +482,7 @@ TEST_F(ControllerEngineTest, connectionObject_DisconnectByPassingToConnectContro
         "                        connection2, true);"
         "  engine.trigger('[Test]', 'co'); }"));
 
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
@@ -518,7 +522,7 @@ TEST_F(ControllerEngineTest, connectionObject_MakesIndependentConnection) {
         "}"
     ));
 
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     execute("changeTestCoValue");
     // ControlObjectScript connections are processed via QueuedConnection. Use
@@ -555,7 +559,7 @@ TEST_F(ControllerEngineTest, connectionObject_trigger) {
         "connection1.trigger();"
     ));
 
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // The counter should have been incremented exactly once.
     EXPECT_DOUBLE_EQ(1.0, counter->get());
@@ -580,7 +584,7 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
         "var someObject = new TestObject();"
         "someObject.connection.trigger();"));
 
-    cEngine->evaluate(script->fileName());
+    evaluateScriptFile(script->fileName());
     EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
     // ControlObjectScript connections are processed via QueuedConnection. Use
     // processEvents() to cause Qt to deliver them.
