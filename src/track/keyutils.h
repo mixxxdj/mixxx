@@ -16,8 +16,10 @@ class KeyUtils {
         INVALID = 0,
         CUSTOM = 1,
         OPEN_KEY = 2,
-        LANCELOT = 3,
-        TRADITIONAL = 4,
+        OPEN_KEY_MIXED = 3,
+        LANCELOT = 4,
+        LANCELOT_MIXED = 5,
+        TRADITIONAL = 6,
         KEY_NOTATION_MAX
     };
 

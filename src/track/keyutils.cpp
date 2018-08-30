@@ -215,10 +215,20 @@ QString KeyUtils::keyToString(ChromaticKey key,
         bool major = keyIsMajor(key);
         int number = keyToOpenKeyNumber(key);
         return QString::number(number) + (major ? "d" : "m");
+    } else if (notation == OPEN_KEY_MIXED) {
+        bool major = keyIsMajor(key);
+        int number = keyToOpenKeyNumber(key);
+        QString trad = s_traditionalKeyNames[static_cast<int>(key)];
+        return QString::number(number) + (major ? "d" : "m") + "/" + trad;
     } else if (notation == LANCELOT) {
         bool major = keyIsMajor(key);
         int number = openKeyNumberToLancelotNumber(keyToOpenKeyNumber(key));
         return QString::number(number) + (major ? "B" : "A");
+    } else if (notation == LANCELOT_MIXED) {
+        bool major = keyIsMajor(key);
+        int number = openKeyNumberToLancelotNumber(keyToOpenKeyNumber(key));
+        QString trad = s_traditionalKeyNames[static_cast<int>(key)];
+        return QString::number(number) + (major ? "B" : "A") + "/" + trad;
     } else if (notation == TRADITIONAL) {
         return s_traditionalKeyNames[static_cast<int>(key)];
     }
