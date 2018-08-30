@@ -188,10 +188,11 @@ bool lintPresetInfo(const PresetInfo& preset) {
 TEST_F(ControllerPresetValidationTest, MidiPresetsValid) {
     foreach (const PresetInfo& preset,
              m_pEnumerator->getPresetsByExtension(MIDI_PRESET_EXTENSION)) {
-        qDebug() << "Validating" << preset.getPath();
-        EXPECT_TRUE(preset.isValid());
-        EXPECT_TRUE(lintPresetInfo(preset));
-        EXPECT_TRUE(testLoadPreset(preset));
+        qDebug() << "Validating " << preset.getPath();
+        std::string errorDescription = "Error while validating " + preset.getPath().toStdString();
+        EXPECT_TRUE(preset.isValid()) << errorDescription;
+        EXPECT_TRUE(lintPresetInfo(preset)) << errorDescription;
+        EXPECT_TRUE(testLoadPreset(preset)) << errorDescription;
     }
 }
 
@@ -199,9 +200,10 @@ TEST_F(ControllerPresetValidationTest, HidPresetsValid) {
     foreach (const PresetInfo& preset,
              m_pEnumerator->getPresetsByExtension(HID_PRESET_EXTENSION)) {
         qDebug() << "Validating" << preset.getPath();
-        EXPECT_TRUE(preset.isValid());
-        EXPECT_TRUE(lintPresetInfo(preset));
-        EXPECT_TRUE(testLoadPreset(preset));
+        std::string errorDescription = "Error while validating " + preset.getPath().toStdString();
+        EXPECT_TRUE(preset.isValid()) << errorDescription;
+        EXPECT_TRUE(lintPresetInfo(preset)) << errorDescription;
+        EXPECT_TRUE(testLoadPreset(preset)) << errorDescription;
     }
 }
 
@@ -209,8 +211,9 @@ TEST_F(ControllerPresetValidationTest, BulkPresetsValid) {
     foreach (const PresetInfo& preset,
              m_pEnumerator->getPresetsByExtension(BULK_PRESET_EXTENSION)) {
         qDebug() << "Validating" << preset.getPath();
-        EXPECT_TRUE(preset.isValid());
-        EXPECT_TRUE(lintPresetInfo(preset));
-        EXPECT_TRUE(testLoadPreset(preset));
+        std::string errorDescription = "Error while validating " + preset.getPath().toStdString();
+        EXPECT_TRUE(preset.isValid()) << errorDescription;
+        EXPECT_TRUE(lintPresetInfo(preset)) << errorDescription;
+        EXPECT_TRUE(testLoadPreset(preset)) << errorDescription;
     }
 }
