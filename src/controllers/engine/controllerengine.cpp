@@ -430,7 +430,7 @@ void ControllerEngine::handleEvaluationException(QJSValue evaluationResult) {
 		QString errorMessage = evaluationResult.toString();
 		QString line = evaluationResult.property("lineNumber").toString();
 		QString backtrace = evaluationResult.property("stack").toString();
-		QString filename = evaluationResult.property("filename").toString();
+		QString filename = evaluationResult.property("fileName").toString();
 
 		QStringList error;
 		error << (filename.isEmpty() ? "" : filename) << errorMessage << line;
