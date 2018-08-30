@@ -1,3 +1,12 @@
+////////////////////////////////////////////////////////////////////////
+// JSHint configuration                                               //
+////////////////////////////////////////////////////////////////////////
+/* global engine                                                      */
+/* global script                                                      */
+/* global print                                                       */
+/* global midi                                                        */
+////////////////////////////////////////////////////////////////////////
+
 var MixtrackPlatinum = {};
 
 MixtrackPlatinum.init = function(id, debug) {
