@@ -913,10 +913,11 @@ MixtrackPlatinum.scratchEnable = function (deck) {
 MixtrackPlatinum.touching = [];
 MixtrackPlatinum.searching = [];
 MixtrackPlatinum.wheelTouch = function (channel, control, value, status, group) {
-    // ignore touch events if not in vinyl mode
-    if (!MixtrackPlatinum.shift && value === 0x7F && !MixtrackPlatinum.wheel[channel]) return;
-
     var deck = channel + 1;
+
+    // ignore touch events if not in vinyl mode
+    if (!MixtrackPlatinum.shift && !MixtrackPlatinum.searching[deck] && !MixtrackPlatinum.wheel[channel]) return;
+
     MixtrackPlatinum.touching[deck] = 0x7F == value;
 
 
