@@ -15,6 +15,9 @@
 // should wheel be enabled on startup?
 var EnableWheel = true;
 
+// should we show time elapsed by default? (otherwise time remaining will be shown)
+var ShowTimeElapsed = true;
+
 
 var MixtrackPlatinum = {};
 
@@ -105,6 +108,10 @@ MixtrackPlatinum.init = function(id, debug) {
         // initialize wheel mode (and leds)
         MixtrackPlatinum.wheel[i] = EnableWheel;
         midi.sendShortMsg(0x90 | i, 0x07, EnableWheel ? 0x7F : 0x01);
+
+        // initialize elapsed/remaining mode
+        MixtrackPlatinum.show_elapsed[i] = ShowTimeElapsed;
+        midi.sendShortMsg(0x90 | i, 0x46, ShowTimeElapsed ? 0x00 : 0x7F);
     }
 
     // zero vu meters
@@ -753,13 +760,7 @@ MixtrackPlatinum.channelMap = {
     "[Channel4]": 0x03,
 };
 
-MixtrackPlatinum.show_elapsed = [
-    true,
-    true,
-    true,
-    true,
-];
-
+MixtrackPlatinum.show_elapsed = [];
 MixtrackPlatinum.elapsedToggle = function (channel, control, value, status, group) {
     if (value != 0x7F) return;
     MixtrackPlatinum.show_elapsed[channel] = !MixtrackPlatinum.show_elapsed[channel];
