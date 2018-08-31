@@ -123,7 +123,7 @@ and allows you to pitch adjust them for harmonic mixing.</string>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="radioNotationLancelotMixed">
+         <widget class="QRadioButton" name="radioNotationLancelotTraditional">
           <property name="text">
             <string>Lancelot/Traditional</string>
           </property>
@@ -137,7 +137,7 @@ and allows you to pitch adjust them for harmonic mixing.</string>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="radioNotationOpenKeyMixed">
+         <widget class="QRadioButton" name="radioNotationOpenKeyTraditional">
           <property name="text">
             <string>OpenKey/Traditional</string>
           </property>

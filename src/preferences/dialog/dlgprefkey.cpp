@@ -79,12 +79,12 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
 
     connect(radioNotationOpenKey, SIGNAL(toggled(bool)),
             this, SLOT(setNotationOpenKey(bool)));
-    connect(radioNotationOpenKeyMixed, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationOpenKeyMixed(bool)));
+    connect(radioNotationOpenKeyTraditional, SIGNAL(toggled(bool)),
+            this, SLOT(setNotationOpenKeyTraditional(bool)));
     connect(radioNotationLancelot, SIGNAL(toggled(bool)),
             this, SLOT(setNotationLancelot(bool)));
-    connect(radioNotationLancelotMixed, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationLancelotMixed(bool)));
+    connect(radioNotationLancelotTraditional, SIGNAL(toggled(bool)),
+            this, SLOT(setNotationLancelotTraditional(bool)));
     connect(radioNotationTraditional, SIGNAL(toggled(bool)),
             this, SLOT(setNotationTraditional(bool)));
     connect(radioNotationCustom, SIGNAL(toggled(bool)),
@@ -106,15 +106,15 @@ void DlgPrefKey::loadSettings() {
     if (notation == KEY_NOTATION_OPEN_KEY) {
         radioNotationOpenKey->setChecked(true);
         setNotationOpenKey(true);
-    } else if (notation == KEY_NOTATION_OPEN_KEY_MIXED) {
-        radioNotationOpenKeyMixed->setChecked(true);
-        setNotationOpenKeyMixed(true);
+    } else if (notation == KEY_NOTATION_OPEN_KEY_TRADITIONAL) {
+        radioNotationOpenKeyTraditional->setChecked(true);
+        setNotationOpenKeyTraditional(true);
     } else if (notation == KEY_NOTATION_LANCELOT) {
         radioNotationLancelot->setChecked(true);
         setNotationLancelot(true);
-    } else if (notation == KEY_NOTATION_LANCELOT_MIXED) {
-        radioNotationLancelotMixed->setChecked(true);
-        setNotationLancelotMixed(true);
+    } else if (notation == KEY_NOTATION_LANCELOT_TRADITIONAL) {
+        radioNotationLancelotTraditional->setChecked(true);
+        setNotationLancelotTraditional(true);
     } else if (notation == KEY_NOTATION_TRADITIONAL) {
         radioNotationTraditional->setChecked(true);
         setNotationTraditional(true);
@@ -202,12 +202,12 @@ void DlgPrefKey::slotApply() {
         if (radioNotationOpenKey->isChecked()) {
             notation_name = KEY_NOTATION_OPEN_KEY;
             notation_type = KeyUtils::OPEN_KEY;
-        } else if (radioNotationOpenKeyMixed->isChecked()) {
-            notation_name = KEY_NOTATION_OPEN_KEY_MIXED;
-            notation_type = KeyUtils::OPEN_KEY_MIXED;
-        } else if (radioNotationLancelotMixed->isChecked()) {
-            notation_name = KEY_NOTATION_LANCELOT_MIXED;
-            notation_type = KeyUtils::LANCELOT_MIXED;
+        } else if (radioNotationOpenKeyTraditional->isChecked()) {
+            notation_name = KEY_NOTATION_OPEN_KEY_TRADITIONAL;
+            notation_type = KeyUtils::OPEN_KEY_TRADITIONAL;
+        } else if (radioNotationLancelotTraditional->isChecked()) {
+            notation_name = KEY_NOTATION_LANCELOT_TRADITIONAL;
+            notation_type = KeyUtils::LANCELOT_TRADITIONAL;
         } else if (radioNotationTraditional->isChecked()) {
             notation_name = KEY_NOTATION_TRADITIONAL;
             notation_type = KeyUtils::TRADITIONAL;
@@ -285,9 +285,9 @@ void DlgPrefKey::setNotationOpenKey(bool active) {
     }
 }
 
-void DlgPrefKey::setNotationOpenKeyMixed(bool active) {
+void DlgPrefKey::setNotationOpenKeyTraditional(bool active) {
     if (active) {
-        setNotation(KeyUtils::OPEN_KEY_MIXED);
+        setNotation(KeyUtils::OPEN_KEY_TRADITIONAL);
     }
 }
 
@@ -297,8 +297,8 @@ void DlgPrefKey::setNotationLancelot(bool active) {
     }
 }
 
-void DlgPrefKey::setNotationLancelotMixed(bool active) {
+void DlgPrefKey::setNotationLancelotTraditional(bool active) {
     if (active) {
-        setNotation(KeyUtils::LANCELOT_MIXED);
+        setNotation(KeyUtils::LANCELOT_TRADITIONAL);
     }
 }

@@ -33,9 +33,9 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
 
     void setNotation(KeyUtils::KeyNotation notation);
     void setNotationOpenKey(bool);
-    void setNotationOpenKeyMixed(bool);
+    void setNotationOpenKeyTraditional(bool);
     void setNotationLancelot(bool);
-    void setNotationLancelotMixed(bool);
+    void setNotationLancelotTraditional(bool);
     void setNotationTraditional(bool);
     void setNotationCustom(bool);
 
