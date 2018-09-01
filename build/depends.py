@@ -596,14 +596,6 @@ class FpClassify(Dependence):
                 env['CCFLAGS'].remove('-ffast-math')
         return env.Object('src/util/fpclassify.cpp')
 
-class QtScriptByteArray(Dependence):
-    def configure(self, build, conf):
-        build.env.Append(CPPPATH='#lib/qtscript-bytearray')
-
-    def sources(self, build):
-        return ['lib/qtscript-bytearray/bytearrayclass.cpp',
-                'lib/qtscript-bytearray/bytearrayprototype.cpp']
-
 class PortAudioRingBuffer(Dependence):
     def configure(self, build, conf):
         build.env.Append(CPPPATH='#lib/portaudio')
@@ -1436,7 +1428,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
-                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME]
+                Reverb, FpClassify, PortAudioRingBuffer, LAME]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

@@ -15,7 +15,6 @@
 #include <QJSEngine>
 #include <QJSValue>
 
-#include "bytearrayclass.h"
 #include "preferences/usersettings.h"
 #include "controllers/controllerpreset.h"
 #include "controllers/softtakeover.h"
@@ -167,7 +166,6 @@ class ControllerEngine : public QObject {
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
 
   private:
-//    bool syntaxIsValid(const QString& scriptCode);
     bool evaluateScriptFile(const QString& scriptName, QList<QString> scriptPaths);
     bool internalExecute(QJSValue thisObject, const QString& scriptCode);
     bool internalExecute(const QString& scriptCode);
@@ -183,6 +181,8 @@ class ControllerEngine : public QObject {
     void stopAllTimers();
 
     void callFunctionOnObjects(QList<QString>, const QString&, QJSValueList args = QJSValueList());
+    // Convert a byteArray to a JS typed array over an ArrayBuffer
+    QJSValue byteArrayToScriptValue(const QByteArray byteArray);
     // Throws EvaluationException and NullEngineException.
     QJSValue evaluateProgram(const QString& program, const QString& fileName = QString(),
     		int lineNumber = 1);
@@ -210,7 +210,6 @@ class ControllerEngine : public QObject {
     };
     QHash<int, TimerInfo> m_timers;
     SoftTakeoverCtrl m_st;
-    ByteArrayClass* m_pBaClass;
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator;
@@ -220,6 +219,7 @@ class ControllerEngine : public QObject {
     QVarLengthArray<AlphaBetaFilter*> m_scratchFilters;
     QHash<int, int> m_scratchTimers;
     QHash<QString, QJSValue> m_scriptWrappedFunctionCache;
+    QJSValue m_byteArrayToScriptValueJSFunction;
     // Filesystem watcher for script auto-reload
     QFileSystemWatcher m_scriptWatcher;
     QList<QString> m_lastScriptPaths;

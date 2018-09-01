@@ -34,8 +34,7 @@ const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 ControllerEngine::ControllerEngine(Controller* controller)
         : m_pEngine(nullptr),
           m_pController(controller),
-          m_bPopups(true),
-          m_pBaClass(nullptr) {
+          m_bPopups(true) {
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
 
@@ -99,6 +98,17 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
         controllerDebug("ControllerEngine: Executing" << prefixName << "." << function);
         init.callWithInstance(prefix, args);
     }
+}
+
+QJSValue ControllerEngine::byteArrayToScriptValue(const QByteArray byteArray) {
+	// The QJSEngine converts the QByteArray to an ArrayBuffer object.
+	QJSValue arrayBuffer = m_pEngine->toScriptValue(byteArray);
+	// We convert the ArrayBuffer to a Uint8 typed array so we can access its bytes
+	// with the [] operator.
+	QJSValue m_byteArrayToScriptValueJSFunction = evaluateProgram("(function(arg1) { return new Uint8Array(arg1) })");
+    QJSValueList args;
+    args << arrayBuffer;
+    return m_byteArrayToScriptValueJSFunction.call(args);
 }
 
 /* ------------------------------------------------------------------
@@ -176,9 +186,6 @@ void ControllerEngine::gracefulShutdown() {
         delete coScript;
         ++it;
     }
-
-    delete m_pBaClass;
-    m_pBaClass = nullptr;
 }
 
 bool ControllerEngine::isReady() {
@@ -207,8 +214,7 @@ void ControllerEngine::initializeScriptEngine() {
         engineGlobalObject.setProperty("midi", m_pEngine->newQObject(controllerProxy));
     }
 
-//    m_pBaClass = new ByteArrayClass(m_pEngine);
-//    engineGlobalObject.setProperty("ByteArray", m_pBaClass->constructor());
+    m_byteArrayToScriptValueJSFunction = evaluateProgram("(function(arg1) { return new Uint8Array(arg1) })");
 }
 
 /* -------- ------------------------------------------------------
@@ -401,7 +407,7 @@ bool ControllerEngine::execute(QJSValue function, const QByteArray data,
         return false;
     }
     QJSValueList args;
-//    args << m_pBaClass->newInstance(data);
+    args << byteArrayToScriptValue(data);
     args << QJSValue(data.size());
     return internalExecute(m_pEngine->globalObject(), function, args);
 }
