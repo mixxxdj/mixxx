@@ -191,11 +191,11 @@ class Qt(Dependence):
 
     DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
-                         'windows': 'C:\\qt\\5.10.1'}
+                         'windows': 'C:\\qt\\5.11.1'}
 
     DEFAULT_QT5DIRS32 = {'linux': '/usr/lib/i386-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
-                         'windows': 'C:\\qt\\5.10.1'}
+                         'windows': 'C:\\qt\\5.11.1'}
 
     @staticmethod
     def qt5_enabled(build):
@@ -258,6 +258,7 @@ class Qt(Dependence):
                     'QtEventDispatcherSupport',
                     'QtFontDatabaseSupport',
                     'QtThemeSupport',
+                    'QtWindowsUIAutomationSupport',
                 ])
         return qt_modules
 
