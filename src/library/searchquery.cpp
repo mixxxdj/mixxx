@@ -166,6 +166,26 @@ QString TextFilterNode::toSql() const {
     return concatSqlClauses(searchClauses, "OR");
 }
 
+bool NullTextFilterNode::match(const TrackPointer& pTrack) const {
+    for (const auto& sqlColumn: m_sqlColumns) {
+        QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
+        if (!value.isValid() || !qVariantCanConvert<QString>(value)) {
+            continue;
+        }
+        // only use the major coloumn
+        return value.toString().isEmpty();
+    }
+    return false;
+}
+
+QString NullTextFilterNode::toSql() const {
+    for (const auto& sqlColumn: m_sqlColumns) {
+        // only use the major coloumn
+        return QString("%1 IS NULL").arg(sqlColumn);
+    }
+    return QString();
+}
+
 CrateFilterNode::CrateFilterNode(const CrateStorage* pCrateStorage,
                                  const QString& crateNameLike)
     : m_pCrateStorage(pCrateStorage),
@@ -193,9 +213,35 @@ QString CrateFilterNode::toSql() const {
             m_pCrateStorage->formatQueryForTrackIdsByCrateNameLike(m_crateNameLike));
 }
 
+
+NoCrateFilterNode::NoCrateFilterNode(const CrateStorage* pCrateStorage)
+    : m_pCrateStorage(pCrateStorage),
+      m_matchInitialized(false) {
+}
+
+bool NoCrateFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_matchInitialized) {
+        CrateTrackSelectResult crateTracks(
+             m_pCrateStorage->selectAllTracksSorted());
+
+        while (crateTracks.next()) {
+            m_matchingTrackIds.push_back(crateTracks.trackId());
+        }
+
+        m_matchInitialized = true;
+    }
+
+    return !std::binary_search(m_matchingTrackIds.begin(), m_matchingTrackIds.end(), pTrack->getId());
+}
+
+QString NoCrateFilterNode::toSql() const {
+    return QString("id NOT IN (%1)").arg(CrateStorage::formatQueryForTrackIdsWithCrate());
+}
+
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
         : m_sqlColumns(sqlColumns),
           m_bOperatorQuery(false),
+          m_bNullQuery(false),
           m_operator("="),
           m_dOperatorArgument(0.0),
           m_bRangeQuery(false),
@@ -210,6 +256,11 @@ NumericFilterNode::NumericFilterNode(
 }
 
 void NumericFilterNode::init(QString argument) {
+    if (argument == "\"\"") {
+        m_bNullQuery = true;
+        return;
+    }
+
     QRegExp operatorMatcher("^(>|>=|=|<|<=)(.*)$");
     if (operatorMatcher.indexIn(argument) != -1) {
         m_operator = operatorMatcher.cap(1);
@@ -244,6 +295,9 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn: m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
         if (!value.isValid() || !qVariantCanConvert<double>(value)) {
+            if (m_bNullQuery) {
+                return true;
+            }
             continue;
         }
 
@@ -265,6 +319,14 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
 }
 
 QString NumericFilterNode::toSql() const {
+    if (m_bNullQuery) {
+        for (const auto& sqlColumn: m_sqlColumns) {
+            // only use the major coloumn
+            return QString("%1 IS NULL").arg(sqlColumn);
+        }
+        return QString();
+    }
+
     if (m_bOperatorQuery) {
         QStringList searchClauses;
         for (const auto& sqlColumn: m_sqlColumns) {

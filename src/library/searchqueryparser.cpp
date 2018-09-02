@@ -67,7 +67,7 @@ QString SearchQueryParser::getTextArgument(QString argument,
                                            QStringList* tokens) const {
     // If the argument is empty, assume the user placed a space after an
     // advanced search command. Consume another token and treat that as the
-    // argument. TODO(XXX) support quoted search phrases as arguments
+    // argument.
     argument = argument.trimmed();
     if (argument.length() == 0) {
         if (tokens->length() > 0) {
@@ -99,8 +99,14 @@ QString SearchQueryParser::getTextArgument(QString argument,
             tokens->push_front(remaining);
         }
 
-        // Slice off the quote and everything after.
-        argument = argument.left(quote_index);
+        if (quote_index == 0) {
+            // We have found an explicit empty string ""
+            // return it as "" to distingish it from anunfinished empty string
+            argument = "\"\"";
+        } else {
+            // Slice off the quote and everything after.
+            argument = argument.left(quote_index);
+        }
     }
 
     return argument;
@@ -125,7 +131,18 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             QString argument = getTextArgument(
                 m_textFilterMatcher.cap(2), &tokens).trimmed();
 
-            if (!argument.isEmpty()) {
+            if (argument == "\"\"") {
+                qDebug() << "argument explicit empty";
+                if (field == "crate") {
+                    pNode = std::make_unique<NoCrateFilterNode>(
+                          &m_pTrackCollection->crates());
+                    qDebug() << pNode->toSql();
+                } else {
+                    pNode = std::make_unique<NullTextFilterNode>(
+                          m_pTrackCollection->database(), m_fieldToSqlColumns[field]);
+                    qDebug() << pNode->toSql();
+                }
+            } else if (!argument.isEmpty()) {
                 if (field == "crate") {
                     pNode = std::make_unique<CrateFilterNode>(
                           &m_pTrackCollection->crates(), argument);
@@ -153,8 +170,13 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                     mixxx::track::io::key::ChromaticKey key =
                             KeyUtils::guessKeyFromText(argument);
                     if (key == mixxx::track::io::key::INVALID) {
-                        pNode = std::make_unique<TextFilterNode>(
-                                m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
+                        if (argument == "\"\"") {
+                            pNode = std::make_unique<NullTextFilterNode>(
+                                    m_pTrackCollection->database(), m_fieldToSqlColumns[field]);
+                        } else {
+                            pNode = std::make_unique<TextFilterNode>(
+                                    m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
+                        }
                     } else {
                         pNode = std::make_unique<KeyFilterNode>(key, fuzzy);
                     }

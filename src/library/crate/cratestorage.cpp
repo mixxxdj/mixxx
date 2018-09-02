@@ -462,6 +462,17 @@ QString CrateStorage::formatQueryForTrackIdsByCrateNameLike(
             escapedCrateNameLike);
 }
 
+//static
+QString CrateStorage::formatQueryForTrackIdsWithCrate() {
+    return QString("SELECT DISTINCT %1 FROM %2 JOIN %3 ON %4=%5 ORDER BY %1").arg(
+            CRATETRACKSTABLE_TRACKID,
+            CRATE_TRACKS_TABLE,
+            CRATE_TABLE,
+            CRATETRACKSTABLE_CRATEID,
+            CRATETABLE_ID);
+}
+
+
 
 CrateTrackSelectResult CrateStorage::selectCrateTracksSorted(CrateId crateId) const {
     FwdSqlQuery query(m_database, QString(
@@ -514,8 +525,6 @@ CrateSummarySelectResult CrateStorage::selectCratesWithTrackCount(const QList<Tr
     }
 }
 
-
-
 CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QString& crateNameLike) const {
     FwdSqlQuery query(m_database, QString(
             "SELECT %1,%2 FROM %3 JOIN %4 ON %5 = %6 WHERE %7 LIKE :crateNameLike ORDER BY %1").arg(
@@ -535,6 +544,22 @@ CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QSt
     }
 }
 
+CrateTrackSelectResult CrateStorage::selectAllTracksSorted() const {
+    FwdSqlQuery query(m_database, QString(
+            "SELECT %1,%2 FROM %3 JOIN %4 ON %5 = %6 ORDER BY %1").arg(
+                    CRATETRACKSTABLE_TRACKID,
+                    CRATETRACKSTABLE_CRATEID,
+                    CRATE_TRACKS_TABLE,
+                    CRATE_TABLE,
+                    CRATETABLE_ID,
+                    CRATETRACKSTABLE_CRATEID,
+                    CRATETABLE_NAME));
+    if (query.execPrepared()) {
+        return CrateTrackSelectResult(std::move(query));
+    } else {
+        return CrateTrackSelectResult();
+    }
+}
 
 QSet<CrateId> CrateStorage::collectCrateIdsOfTracks(const QList<TrackId>& trackIds) const {
     // NOTE(uklotzde): One query per track id. This could be optimized
