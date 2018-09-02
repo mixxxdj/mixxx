@@ -577,6 +577,11 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         sendShifted: true,
         shiftChannel: true,
         shiftOffset: -0x10,
+        input: function(channel, control, value, status) {
+            if (this.isPress(channel, control, value, status)) {
+                engine.setValue(deck.currentDeck, "loop_scale", 0.5);
+            }
+        },
     });
 
     this.loop_double = new components.Button({
@@ -586,6 +591,11 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         sendShifted: true,
         shiftChannel: true,
         shiftOffset: -0x10,
+        input: function(channel, control, value, status) {
+            if (this.isPress(channel, control, value, status)) {
+                engine.setValue(deck.currentDeck, "loop_scale", 2.0);
+            }
+        },
     });
 
     this.EqEffectKnob = function (group, in_key, fx_key) {
