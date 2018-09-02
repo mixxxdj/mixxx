@@ -1918,11 +1918,11 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>headGain</key>
+                <key>MixtrackPlatinum.head_gain.input</key>
                 <status>0xBF</status>
                 <midino>0x0C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>

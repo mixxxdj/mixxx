@@ -37,6 +37,11 @@ MixtrackPlatinum.init = function(id, debug) {
     MixtrackPlatinum.decks[3] = new MixtrackPlatinum.Deck(3, 0x02, MixtrackPlatinum.effects[1]);
     MixtrackPlatinum.decks[4] = new MixtrackPlatinum.Deck(4, 0x03, MixtrackPlatinum.effects[2]);
 
+    MixtrackPlatinum.sampler = new MixtrackPlatinum.Sampler();
+
+    // headphone gain
+    MixtrackPlatinum.head_gain = new MixtrackPlatinum.HeadGain(MixtrackPlatinum.sampler);
+
     // exit demo mode
     var byteArray = [0xF0, 0x00, 0x01, 0x3F, 0x7F, 0x3A, 0x60, 0x00, 0x04, 0x04, 0x01, 0x00, 0x00, 0xF7];
     midi.sendSysexMsg(byteArray, byteArray.length);
@@ -49,7 +54,6 @@ MixtrackPlatinum.init = function(id, debug) {
         component.trigger();
     });
 
-    MixtrackPlatinum.sampler = new MixtrackPlatinum.Sampler();
     MixtrackPlatinum.browse = new MixtrackPlatinum.BrowseKnob();
 
     // helper functions
@@ -657,6 +661,41 @@ MixtrackPlatinum.Sampler = function() {
 
 MixtrackPlatinum.Sampler.prototype = new components.ComponentContainer();
 
+MixtrackPlatinum.HeadGain = function(sampler) {
+    components.Pot.call(this);
+
+    this.shifted = false;
+    this.sampler = sampler;
+    this.sampler.forEachComponent(function(component) {
+        engine.softTakeover(component.group, 'volume', true);
+    });
+};
+MixtrackPlatinum.HeadGain.prototype = new components.Pot({
+    group: '[Master]',
+    inKey: 'headGain',
+    input: function (channel, control, value, status, group) {
+        if (this.shifted) {
+            // make head gain control the sampler volume when shifted
+            var pot = this;
+            this.sampler.forEachComponent(function(component) {
+                engine.setParameter(component.group, 'volume', pot.inValueScale(value));
+            });
+        } else {
+            components.Pot.prototype.input.call(this, channel, control, value, status, group);
+        }
+    },
+    shift: function() {
+        this.shifted = true;
+        this.disconnect();
+        this.sampler.forEachComponent(function(component) {
+            engine.softTakeoverIgnoreNextValue(component.group, 'volume');
+        });
+    },
+    unshift: function() {
+        this.shifted = false;
+    },
+});
+
 MixtrackPlatinum.BrowseKnob = function() {
     this.knob = new components.Encoder({
         group: '[Library]',
@@ -1057,6 +1096,7 @@ MixtrackPlatinum.shiftToggle = function (channel, control, value, status, group)
         MixtrackPlatinum.sampler.shift();
         MixtrackPlatinum.effects.shift();
         MixtrackPlatinum.browse.shift();
+        MixtrackPlatinum.head_gain.shift();
 
         // reset the beat jump scratch accumulators
         MixtrackPlatinum.scratch_accumulator[1] = 0;
@@ -1069,5 +1109,6 @@ MixtrackPlatinum.shiftToggle = function (channel, control, value, status, group)
         MixtrackPlatinum.sampler.unshift();
         MixtrackPlatinum.effects.unshift();
         MixtrackPlatinum.browse.unshift();
+        MixtrackPlatinum.head_gain.unshift();
     }
 };
