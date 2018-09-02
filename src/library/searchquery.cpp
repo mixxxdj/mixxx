@@ -185,11 +185,14 @@ bool CrateFilterNode::match(const TrackPointer& pTrack) const {
         m_matchInitialized = true;
     }
 
-    return std::binary_search(m_matchingTrackIds.begin(), m_matchingTrackIds.end(), pTrack->getId());
+    return std::binary_search(m_matchingTrackIds.begin(),
+            m_matchingTrackIds.end(), pTrack->getId());
 }
 
 QString CrateFilterNode::toSql() const {
-    return QString("id IN (%1)").arg(CrateStorage::formatQueryForTrackIdsByCrateNameLike(m_crateNameLike));
+    return QString("id IN (%1)").arg(
+            m_pCrateStorage->formatQueryForTrackIdsByCrateNameLike(
+                    m_crateNameLike));
 }
 
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)

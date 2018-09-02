@@ -490,7 +490,7 @@ void BaseTrackCache::filterAndSort(const QSet<TrackId>& trackIds,
     }
 
     std::unique_ptr<QueryNode> pQuery(parseQuery(
-        searchQuery, extraFilter, idStrings));
+            searchQuery, extraFilter, idStrings));
 
     QString filter = pQuery->toSql();
     if (!filter.isEmpty()) {
