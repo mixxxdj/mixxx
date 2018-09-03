@@ -983,6 +983,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // Perform scaling of Reader buffer into buffer.
             double framesRead =
                     m_pScale->scaleBuffer(pOutput, iBufferSize);
+
             // TODO(XXX): The result framesRead might not be an integer value.
             // Converting to samples here does not make sense. All positional
             // calculations should be done in frames instead of samples! Otherwise
@@ -1170,8 +1171,15 @@ void EngineBuffer::processSeek(bool paused) {
             position = m_filepos_play;
             adjustingPhase = true;
             break;
+        case SEEK_STANDARD:
+            if (m_pQuantize->toBool()) {
+                seekType |= SEEK_PHASE;
+            }
+            // new position was already set above
+            break;
         case SEEK_EXACT:
-        case SEEK_STANDARD: // = SEEK_EXACT | SEEK_PHASE
+        case SEEK_EXACT_PHASE: // artificial state = SEEK_EXACT | SEEK_PHASE
+        case SEEK_STANDARD_PHASE: // artificial state = SEEK_STANDARD | SEEK_PHASE
             // new position was already set above
             break;
         default:
@@ -1179,7 +1187,7 @@ void EngineBuffer::processSeek(bool paused) {
             return;
     }
 
-    if (!paused && ((seekType & SEEK_PHASE) || m_pQuantize->toBool())) {
+    if (!paused && (seekType & SEEK_PHASE)) {
         position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
     }
     if (position != m_filepos_play) {

@@ -446,8 +446,10 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'qico')
                 build.env.Append(LIBS = 'qsvg')
                 build.env.Append(LIBS = 'qtga')
-                build.env.Append(LIBS = 'qgif')
-                build.env.Append(LIBS = 'qjpeg')
+                # not needed with Qt4
+                if qt5:
+                    build.env.Append(LIBS = 'qgif')
+                    build.env.Append(LIBS = 'qjpeg')
 
                 # accessibility plugins (gone in Qt5)
                 if not qt5:

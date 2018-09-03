@@ -26,7 +26,7 @@
                   <Label>
                     <ObjectName>PreviewLabel</ObjectName>
                     <TooltipId>text</TooltipId>
-                    <Size>68f,15min</Size>
+                    <SizePolicy>min,min</SizePolicy>
                     <Text>Preview</Text>
                     <Connection>
                       <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
@@ -86,7 +86,6 @@
                       <PushButton>
                         <TooltipId>play_start</TooltipId>
                         <NumberStates>2</NumberStates>
-                        <RightClickIsPushButton>true</RightClickIsPushButton>
                         <State>
                           <Number>0</Number>
                           <Pressed>buttons/btn_play_preview_down.svg</Pressed>
@@ -123,16 +122,16 @@
                     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
                     <DefaultMark>
                       <Align>bottom|right</Align>
-                      <Color>#FFFFFF</Color>
-                      <TextColor>#00FF00</TextColor>
+                      <Color>#00FF00</Color>
+                      <TextColor>#FFFFFF</TextColor>
                       <Text> %1 </Text>
                     </DefaultMark>
                     <Mark>
                       <Control>cue_point</Control>
                       <Text> C </Text>
-                      <Align>top</Align>
+                      <Align>top|right</Align>
                       <Color>#FF001C</Color>
-                      <TextColor>#00FF00</TextColor>
+                      <TextColor>#FFFFFF</TextColor>
                     </Mark>
                     <Connection>
                       <ConfigKey>[PreviewDeck1],playposition</ConfigKey>

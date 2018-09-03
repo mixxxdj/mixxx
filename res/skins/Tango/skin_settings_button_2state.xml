@@ -14,15 +14,14 @@ Variables:
     <MaximumSize>182,17</MaximumSize>
     <SizePolicy>min,me</SizePolicy>
     <NumberStates>2</NumberStates>
-    <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
       <Number>0</Number>
-      <Text><Variable name="state_0_text"/></Text>
+      <Text> &#9744;  <Variable name="text"/></Text>
       <Alignment>left</Alignment>
     </State>
     <State>
       <Number>1</Number>
-      <Text><Variable name="state_1_text"/></Text>
+      <Text> &#10004;  <Variable name="text"/></Text>
       <Alignment>left</Alignment>
     </State>
     <Connection>

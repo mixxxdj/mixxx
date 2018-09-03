@@ -52,6 +52,10 @@
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
               </SingletonContainer>
 
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_MixModeButton</ObjectName>
+              </SingletonContainer>
+
               <WidgetGroup><Size>,5f</Size></WidgetGroup>
 
               <SingletonContainer>

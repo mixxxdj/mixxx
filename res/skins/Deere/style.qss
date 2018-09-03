@@ -1029,7 +1029,7 @@ WEffectSelector {
   }
 
   WEffectSelector::item:selected {
-    background-color: #08080;
+    background-color: #080808;
   }
 
   /* currently loaded effect */
@@ -1355,7 +1355,7 @@ WStarRating {
 
 #EffectUnitControls {
   padding: 2px;
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   qproperty-layoutSpacing: 2;
 }
 
@@ -1484,19 +1484,18 @@ WRecordingDuration {
 /* The effect unit mix mode button toggles between
 two different modes that are not "on" or "off", so
 do not highlight either state. */
+#EffectUnitMixModeButton {
+  margin: 1px 4px;
+  border-radius: 2px;
+}
+
 #EffectUnitMixModeButton[value="0"]:hover,
 #EffectUnitMixModeButton[value="1"]:hover {
-    color: #D2D2D2;
     background-color: #5F5F5F;
-    border: 0px solid #5F5F5F;
 }
 
 #EffectUnitMixModeButton[value="1"] {
-    color: #D2D2D2;
     background-color: #4B4B4B;
-    border: 1px solid #4B4B4B;
-    border-radius: 2px;
-    outline: none;
 }
 
 

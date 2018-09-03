@@ -1483,6 +1483,7 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     pButtonBeatsync1->set(1.0);
     ProcessBuffer();
 
+    // these values were determined experimentally
     // 0.15480806100370784 in case quantize is enabled
     ASSERT_DOUBLE_EQ(0.16263690384739582, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 
@@ -1492,8 +1493,56 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     pButtonBeatsync1->set(1.0);
     ProcessBuffer();
 
+    // these values were determined experimentally
     // 0.19933910991038406 in case quantize is disabled
     ASSERT_DOUBLE_EQ(0.19350798541791794, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
 
 }
+
+
+TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    ControlObject::set(ConfigKey(m_sGroup1, "beat_distance"), 0.2);
+    pFileBpm1->set(130.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    auto pHotCueActivate = std::make_unique<ControlProxy>(m_sGroup2, "hotcue_1_activate");
+    ControlObject::set(ConfigKey(m_sGroup2, "beat_distance"), 0.8);
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 100, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+    pFileBpm2->set(100.0);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+
+    // store a hot cue
+    pHotCueActivate->set(1.0);
+    ProcessBuffer();
+    pHotCueActivate->set(0.0);
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 0.0);
+    // preview a hot cue without quantize
+    pHotCueActivate->set(1.0);
+    ProcessBuffer();
+
+    // the value was determined experimentally
+    ASSERT_DOUBLE_EQ(0.019349962207105064, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
+
+    pHotCueActivate->set(0.0);
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 1.0);
+    // preview a hot cue with quantize
+    pHotCueActivate->set(1.0);
+    ProcessBuffer();
+
+    // the value was determined experimentally 
+    ASSERT_DOUBLE_EQ(0.11997394884298185, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
+
+    pHotCueActivate->set(0.0);
+    ProcessBuffer();
+}
+
 

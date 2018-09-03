@@ -8,11 +8,36 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
-   width="96"
-   height="96"
+   width="100"
+   height="100"
    id="svg2"
-   style="enable-background:new">
+   style="enable-background:new"
+   sodipodi:docname="spinny1_mask.svg"
+   inkscape:version="0.92.3 (unknown)">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="740"
+     id="namedview5661"
+     showgrid="false"
+     inkscape:snap-page="true"
+     inkscape:zoom="4.9166667"
+     inkscape:cx="3.1636507"
+     inkscape:cy="70.530097"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
   <defs
      id="defs4">
     <linearGradient
@@ -63,7 +88,7 @@
        id="radialGradient3335"
        xlink:href="#linearGradient3861"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-2.002552,2.5076256)" />
+       gradientTransform="matrix(1.0416667,0,0,1.0416667,-2.0859917,2.6121102)" />
     <linearGradient
        x1="48.010761"
        y1="0.07037171"
@@ -72,7 +97,7 @@
        id="linearGradient3338"
        xlink:href="#linearGradient3851"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.96248721,0,0,0.96503687,1.8784665,1.8438788)" />
+       gradientTransform="matrix(1.0025909,0,0,1.0052468,1.956736,1.9207072)" />
   </defs>
   <metadata
      id="metadata7">
@@ -87,7 +112,7 @@
     </rdf:RDF>
   </metadata>
   <g
-     transform="translate(0,-956.36218)"
+     transform="translate(0,-952.36218)"
      id="layer1"
      style="display:none">
     <image
@@ -99,7 +124,8 @@
   </g>
   <g
      id="layer4"
-     style="display:none">
+     style="display:none"
+     transform="translate(0,4)">
     <rect
        width="96"
        height="96"
@@ -109,31 +135,38 @@
        style="fill:#2f290a;fill-opacity:1;fill-rule:nonzero;stroke:none" />
   </g>
   <path
-     d="M 94,48 A 46,46 0 1 1 2,48 46,46 0 1 1 94,48 z"
+     d="M 97.916667,50 A 47.916667,47.916667 0 1 1 2.0833333,50 47.916667,47.916667 0 1 1 97.916667,50 Z"
      id="path3849"
-     style="opacity:0.4;fill:url(#linearGradient3338);fill-opacity:1;fill-rule:nonzero;stroke:none" />
+     style="opacity:0.4;fill:url(#linearGradient3338);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.04166663"
+     inkscape:connector-curvature="0" />
   <path
-     d="m 68.076782,48 a 20.076782,20.076782 0 0 1 -40.153564,0 20.076782,20.076782 0 1 1 40.153564,0 z"
+     d="m 70.913315,50 a 20.913315,20.913315 0 0 1 -41.82663,0 20.913315,20.913315 0 1 1 41.82663,0 z"
      id="path3859"
-     style="opacity:0.4;fill:url(#radialGradient3335);fill-opacity:1;fill-rule:nonzero;stroke:none" />
+     style="opacity:0.4;fill:url(#radialGradient3335);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.04166663"
+     inkscape:connector-curvature="0" />
   <path
-     d="m 52,48 a 4,4 0 0 1 -8,0 4,4 0 1 1 8,0 z"
+     d="m 54.166667,50 a 4.166667,4.166667 0 0 1 -8.333334,0 4.166667,4.166667 0 1 1 8.333334,0 z"
      id="path3830"
-     style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+     style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1.04166663"
+     inkscape:connector-curvature="0" />
   <g
      id="layer3"
-     style="opacity:0.95999995;display:none">
+     style="display:none;opacity:0.95999995"
+     transform="translate(0,4)">
     <path
-       d="M 46,3.7264493 C 45.96903,2.8335721 46.545072,1.949526 47.936937,1.9914377 49.328802,2.0333497 49.963562,2.675413 49.984216,3.742233 L 50,42.800846 C 50,43.482472 48.712307,43.913653 47.950679,43.9057 47.18905,43.897748 46.015784,43.447975 46,42.800846 z"
+       d="M 46,3.7264493 C 45.96903,2.8335721 46.545072,1.949526 47.936937,1.9914377 49.328802,2.0333497 49.963562,2.675413 49.984216,3.742233 L 50,42.800846 C 50,43.482472 48.712307,43.913653 47.950679,43.9057 47.18905,43.897748 46.015784,43.447975 46,42.800846 Z"
        id="rect3776"
-       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       inkscape:connector-curvature="0" />
   </g>
   <path
-     d="M 0,0 0,96 96,96 96,0 0,0 z M 48,3 C 59.76833,3 71.491034,7.8660391 79.8125,16.1875 88.133966,24.508961 93,36.23167 93,48 93,59.76833 88.133966,71.491039 79.8125,79.8125 l -0.09375,0.09375 C 71.403068,88.170618 59.724203,93 48,93 36.23167,93 24.508966,88.133961 16.1875,79.8125 L 16.09375,79.71875 C 7.8293765,71.403073 3,59.724203 3,48 3,36.23167 7.8660341,24.508961 16.1875,16.1875 24.508966,7.8660391 36.23167,3 48,3 z"
+     d="M 0,0 V 100 H 100 V 0 Z m 50,3.125 c 12.258677,0 24.469827,5.0687906 33.138021,13.736979 C 91.806215,25.530168 96.875,37.741323 96.875,50 c 0,12.258677 -5.068785,24.469832 -13.736979,33.138021 l -0.09766,0.09766 C 74.378196,91.844394 62.212711,96.875 50,96.875 37.741323,96.875 25.530173,91.806209 16.861979,83.138021 l -0.09766,-0.09766 C 8.1556005,74.378201 3.125,62.212711 3.125,50 3.125,37.741323 8.1937855,25.530168 16.861979,16.861979 25.530173,8.1937906 37.741323,3.125 50,3.125 Z"
      id="rect3033"
-     style="color:#000000;fill:#1e1e1e;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:11.19999981;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+     style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:#1e1e1e;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:11.66666603;marker:none;enable-background:accumulate"
+     inkscape:connector-curvature="0" />
   <path
-     d="M 93.000002,48 A 45.000001,45 0 0 1 3.0000002,48 45.000001,45 0 1 1 93.000002,48 z"
+     d="M 96.875002,50 A 46.875001,46.875 0 0 1 3.1250002,50 46.875001,46.875 0 1 1 96.875002,50 Z"
      id="path4919"
-     style="fill:none;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;enable-background:new" />
+     style="display:inline;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;enable-background:new"
+     inkscape:connector-curvature="0" />
 </svg>

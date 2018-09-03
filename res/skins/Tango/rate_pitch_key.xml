@@ -184,7 +184,7 @@ Variables:
 
     </Children>
     <Connection>
-      <ConfigKey>[Tango],pitch_fader</ConfigKey>
+      <ConfigKey>[Master],show_rate_control</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup><!-- /RateContainer -->
