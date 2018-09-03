@@ -14,10 +14,8 @@ SkinContext::SkinContext(UserSettingsPointer pConfig,
         : m_xmlPath(xmlPath),
           m_pConfig(pConfig),
           m_pScriptEngine(new QScriptEngine()),
-          m_pScriptDebugger(new QScriptEngineDebugger()),
           m_pSvgCache(new QHash<QString, QDomElement>()),
           m_pSingletons(new SingletonMap()) {
-    enableDebugger(true);
     // the extensions are imported once and will be passed to the children
     // global object as properties of the parent's global object.
     importScriptExtension("console");
@@ -45,7 +43,6 @@ SkinContext::SkinContext(const SkinContext& parent)
           m_pConfig(parent.m_pConfig),
           m_variables(parent.variables()),
           m_pScriptEngine(parent.m_pScriptEngine),
-          m_pScriptDebugger(parent.m_pScriptDebugger),
           m_parentGlobal(m_pScriptEngine->globalObject()),
           m_hookRx(parent.m_hookRx),
           m_pSvgCache(parent.m_pSvgCache),
@@ -233,17 +230,6 @@ QScriptValue SkinContext::importScriptExtension(const QString& extensionName) {
 
 const QSharedPointer<QScriptEngine> SkinContext::getScriptEngine() const {
     return m_pScriptEngine;
-}
-
-void SkinContext::enableDebugger(bool state) const {
-    if (CmdlineArgs::Instance().getDeveloper() && m_pConfig != NULL &&
-            m_pConfig->getValueString(ConfigKey("[ScriptDebugger]", "Enabled")) == "1") {
-        if (state) {
-            m_pScriptDebugger->attachTo(m_pScriptEngine.data());
-        } else {
-            m_pScriptDebugger->detach();
-        }
-    }
 }
 
 QDebug SkinContext::logWarning(const char* file, const int line,

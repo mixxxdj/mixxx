@@ -7,7 +7,6 @@
 #include <QDomElement>
 #include <QScriptEngine>
 #include <QDir>
-#include <QScriptEngineDebugger>
 #include <QtDebug>
 #include <QSharedPointer>
 #include <QRegExp>
@@ -244,7 +243,6 @@ class SkinContext {
                                 int lineNumber=1);
     QScriptValue importScriptExtension(const QString& extensionName);
     const QSharedPointer<QScriptEngine> getScriptEngine() const;
-    void enableDebugger(bool state) const;
 
     QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
 
@@ -283,7 +281,6 @@ class SkinContext {
 
     QHash<QString, QString> m_variables;
     QSharedPointer<QScriptEngine> m_pScriptEngine;
-    QSharedPointer<QScriptEngineDebugger> m_pScriptDebugger;
     QScriptValue m_parentGlobal;
     QRegExp m_hookRx;
 
