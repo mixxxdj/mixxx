@@ -200,9 +200,16 @@ void ControllerEngine::initializeScriptEngine() {
     // Create the Script Engine
     m_pEngine = new QScriptEngine(this);
 
+    m_loadedScriptsPaths = QSet<QString>();
+
     // Make this ControllerEngine instance available to scripts as 'engine'.
     QScriptValue engineGlobalObject = m_pEngine->globalObject();
     engineGlobalObject.setProperty("engine", m_pEngine->newQObject(this));
+
+    QScriptValue includeFun = m_pEngine->newFunction(include);
+    // Attach "this" to the function so we can get it in static function "include".
+    includeFun.setData(m_pEngine->toScriptValue(this));
+    engineGlobalObject.setProperty("include", includeFun);
 
     if (m_pController) {
         qDebug() << "Controller in script engine is:" << m_pController->getName();
@@ -547,6 +554,57 @@ ControlObjectScript* ControllerEngine::getControlObjectScript(const QString& gro
         }
     }
     return coScript;
+}
+
+// Static
+QScriptValue ControllerEngine::include(QScriptContext *context, QScriptEngine *engine) {
+    // Our current context is a function call.
+    // The filename is defined in the global parent context.
+    if (!context) {
+        qWarning() << "ControllerEngine::include: context is null";
+        return QScriptValue();
+    }
+    QScriptContext* parentContext = context->parentContext();
+    QScriptContextInfo parentContextInfo(parentContext);
+
+    // This is the name of the file that contains the include.
+    // We build the path to the included file relative to it.
+    QString parentFileName = parentContextInfo.fileName();
+
+    // If no filename info is provided, we ignore the include
+    // This prevents snippets of js in the xml to include JS files.
+    if (parentFileName.isEmpty() || parentFileName.isNull()) {
+        qWarning() << "ControllerEngine: Could not determine the file that executed the include.";
+        return QScriptValue();
+    }
+    QString parentFilePath = QFileInfo(parentFileName).path();
+    QDir parentDir(parentFilePath);
+
+    if (context->argumentCount() != 1 || !context->argument(0).isString()) {
+        QString errorString = QString("ControllerEngine: include statement expects one single string parameter. File: %1, Line %2")
+                .arg(parentFileName, QString::number(parentContextInfo.lineNumber()));
+        return context->throwError(QScriptContext::TypeError, errorString);
+    }
+    QString includedFileName = context->argument(0).toString();
+    QString includedAbsoluteFileName = parentDir.absoluteFilePath(includedFileName);
+
+    ControllerPreset::ScriptFileInfo fileInfo = ControllerPreset::ScriptFileInfo();
+    fileInfo.name = includedAbsoluteFileName;
+    fileInfo.functionPrefix = "";
+
+    // Get instance of ControllerEngine attached to function call
+    ControllerEngine* self = qscriptvalue_cast<ControllerEngine*>(context->callee().data());
+    QList<ControllerPreset::ScriptFileInfo> fileInfoList;
+    fileInfoList.append(fileInfo);
+    bool loadSuccess = self->loadScriptFiles(self->m_lastScriptPaths, fileInfoList);
+
+    if (!loadSuccess) {
+        QString errorString = QString("ControllerEngine: error while including file %1, from file %2")
+                .arg(parentFileName, includedAbsoluteFileName);
+        return context->throwError(QScriptContext::UnknownError, errorString);
+    }
+
+    return QScriptValue(QScriptValue::UndefinedValue);
 }
 
 /* -------- ------------------------------------------------------
@@ -945,12 +1003,18 @@ bool ControllerEngine::evaluate(const QString& scriptName, QList<QString> script
             filename = scriptPathDir.absoluteFilePath(scriptName);
             input.setFileName(filename);
             if (input.exists())  {
-                qDebug() << "ControllerEngine: Watching JS File:" << filename;
-                m_scriptWatcher.addPath(filename);
                 break;
             }
         }
     }
+
+    if (m_loadedScriptsPaths.contains(filename)) {
+        qDebug() << "ControllerEngine: " << filename << "already included. Skipping...";
+        return true;
+    }
+
+    qDebug() << "ControllerEngine: Watching JS File:" << filename;
+    m_scriptWatcher.addPath(filename);
 
     qDebug() << "ControllerEngine: Loading" << filename;
 
@@ -1011,6 +1075,7 @@ bool ControllerEngine::evaluate(const QString& scriptName, QList<QString> script
     }
 
     // Evaluate the code
+    m_loadedScriptsPaths.insert(filename);
     QScriptValue scriptFunction = m_pEngine->evaluate(scriptCode, filename);
 
     // Record errors
