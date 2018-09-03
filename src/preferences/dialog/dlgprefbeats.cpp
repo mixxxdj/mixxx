@@ -48,7 +48,7 @@ DlgPrefBeats::~DlgPrefBeats() {
 }
 
 void DlgPrefBeats::loadSettings() {
-    if(m_pconfig->getValueString(
+    if (m_pconfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_BEAT_PLUGIN_ID)).isEmpty()) {
         slotResetToDefaults();
         slotApply();    // Write to config file so AnalyzerBeats can get the data

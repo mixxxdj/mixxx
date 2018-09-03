@@ -31,7 +31,7 @@ class SyncControl : public EngineControl, public Syncable {
     SyncMode getSyncMode() const;
     void notifySyncModeChanged(SyncMode mode);
     void notifyOnlyPlayingSyncable();
-    void requestSyncPhase();
+    void requestSync();
     bool isPlaying() const;
 
     double getBeatDistance() const;
@@ -136,6 +136,7 @@ class SyncControl : public EngineControl, public Syncable {
     ControlProxy* m_pPassthroughEnabled;
     ControlProxy* m_pEjectButton;
     ControlProxy* m_pSyncPhaseButton;
+    ControlProxy* m_pQuantize;
 };
 
 

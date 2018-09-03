@@ -1,5 +1,6 @@
 #include <QPainter>
 #include <QPushButton>
+#include <QTableView>
 
 #include "library/previewbuttondelegate.h"
 #include "library/trackmodel.h"
@@ -8,9 +9,9 @@
 #include "track/track.h"
 #include "control/controlproxy.h"
 
-PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
-        : QStyledItemDelegate(parent),
-          m_pTableView(NULL),
+PreviewButtonDelegate::PreviewButtonDelegate(QTableView* parent, int column)
+        : TableItemDelegate(parent),
+          m_pTableView(parent),
           m_pButton(NULL),
           m_isOneCellInEditMode(false),
           m_column(column) {
@@ -25,24 +26,21 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
     connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
-    if (QTableView *tableView = qobject_cast<QTableView*>(parent)) {
-        m_pTableView = tableView;
-        m_pButton = new QPushButton("", m_pTableView);
-        m_pButton->setObjectName("LibraryPreviewButton");
-        m_pButton->setCheckable(true);
-        m_pButton->setChecked(false);
-        m_pButton->hide();
-        connect(m_pTableView, SIGNAL(entered(QModelIndex)),
-                this, SLOT(cellEntered(QModelIndex)));
-    }
+    m_pButton = new QPushButton("", m_pTableView);
+    m_pButton->setObjectName("LibraryPreviewButton");
+    m_pButton->setCheckable(true);
+    m_pButton->setChecked(false);
+    m_pButton->hide();
+    connect(m_pTableView, SIGNAL(entered(QModelIndex)),
+            this, SLOT(cellEntered(QModelIndex)));
 }
 
 PreviewButtonDelegate::~PreviewButtonDelegate() {
 }
 
-QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
-                                             const QStyleOptionViewItem &option,
-                                             const QModelIndex &index) const {
+QWidget* PreviewButtonDelegate::createEditor(QWidget* parent,
+                                             const QStyleOptionViewItem& option,
+                                             const QModelIndex& index) const {
     Q_UNUSED(option);
     QPushButton* btn = new QPushButton(parent);
     btn->setObjectName("LibraryPreviewButton");
@@ -58,23 +56,23 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget *parent,
     return btn;
 }
 
-void PreviewButtonDelegate::setEditorData(QWidget *editor,
-                                          const QModelIndex &index) const {
+void PreviewButtonDelegate::setEditorData(QWidget* editor,
+                                          const QModelIndex& index) const {
     Q_UNUSED(editor);
     Q_UNUSED(index);
 }
 
-void PreviewButtonDelegate::setModelData(QWidget *editor,
-                                         QAbstractItemModel *model,
-                                         const QModelIndex &index) const {
+void PreviewButtonDelegate::setModelData(QWidget* editor,
+                                         QAbstractItemModel* model,
+                                         const QModelIndex& index) const {
     Q_UNUSED(editor);
     Q_UNUSED(model);
     Q_UNUSED(index);
 }
 
-void PreviewButtonDelegate::paint(QPainter *painter,
-                                  const QStyleOptionViewItem &option,
-                                  const QModelIndex &index) const {
+void PreviewButtonDelegate::paintItem(QPainter* painter,
+                                  const QStyleOptionViewItem& option,
+                                  const QModelIndex& index) const {
     // Let the editor paint in this case
     if (index == m_currentEditedCellIndex) {
         return;
@@ -90,26 +88,20 @@ void PreviewButtonDelegate::paint(QPainter *painter,
     // it's playing.
     m_pButton->setChecked(index.data().toBool() && playing);
 
-    if (option.state == QStyle::State_Selected) {
-        painter->fillRect(option.rect, option.palette.base());
-    }
-
-    painter->save();
     // Render button at the desired position
     painter->translate(option.rect.topLeft());
     m_pButton->render(painter);
-    painter->restore();
 }
 
-void PreviewButtonDelegate::updateEditorGeometry(QWidget *editor,
-                                                 const QStyleOptionViewItem &option,
-                                                 const QModelIndex &index) const {
+void PreviewButtonDelegate::updateEditorGeometry(QWidget* editor,
+                                                 const QStyleOptionViewItem& option,
+                                                 const QModelIndex& index) const {
     Q_UNUSED(index);
     editor->setGeometry(option.rect);
 }
 
-QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem &option,
-                                      const QModelIndex &index) const {
+QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem& option,
+                                      const QModelIndex& index) const {
     Q_UNUSED(option);
     Q_UNUSED(index);
     if (!m_pButton) {
@@ -118,7 +110,7 @@ QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem &option,
     return m_pButton->sizeHint();
 }
 
-void PreviewButtonDelegate::cellEntered(const QModelIndex &index) {
+void PreviewButtonDelegate::cellEntered(const QModelIndex& index) {
     if (!m_pTableView) {
         return;
     }

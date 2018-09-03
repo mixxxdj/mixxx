@@ -9,23 +9,23 @@
 #include "util/xml.h"
 
 Effect::Effect(EffectsManager* pEffectsManager,
-               const EffectManifest& manifest,
+               EffectManifestPointer pManifest,
                EffectInstantiatorPointer pInstantiator)
         : QObject(), // no parent
           m_pEffectsManager(pEffectsManager),
-          m_manifest(manifest),
+          m_pManifest(pManifest),
           m_pInstantiator(pInstantiator),
           m_pEngineEffect(NULL),
           m_bAddedToEngine(false),
           m_bEnabled(false) {
-    foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
+    for (const auto& pManifestParameter: m_pManifest->parameters()) {
         EffectParameter* pParameter = new EffectParameter(
-            this, pEffectsManager, m_parameters.size(), parameter);
+                this, pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
-        if (m_parametersById.contains(parameter.id())) {
+        if (m_parametersById.contains(pParameter->id())) {
             qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
         }
-        m_parametersById[parameter.id()] = pParameter;
+        m_parametersById[pParameter->id()] = pParameter;
     }
     //qDebug() << debugString() << "created" << this;
 }
@@ -56,7 +56,7 @@ void Effect::addToEngine(EngineEffectChain* pChain, int iIndex,
         return;
     }
 
-    m_pEngineEffect = new EngineEffect(m_manifest,
+    m_pEngineEffect = new EngineEffect(m_pManifest,
             activeInputChannels,
             m_pEffectsManager,
             m_pInstantiator);
@@ -107,8 +107,8 @@ EngineEffect* Effect::getEngineEffect() {
     return m_pEngineEffect;
 }
 
-const EffectManifest& Effect::getManifest() const {
-    return m_manifest;
+EffectManifestPointer Effect::getManifest() const {
+    return m_pManifest;
 }
 
 void Effect::setEnabled(bool enabled) {
@@ -137,7 +137,8 @@ void Effect::sendParameterUpdate() {
 unsigned int Effect::numKnobParameters() const {
     unsigned int num = 0;
     foreach(const EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().controlHint() != EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
+        if (parameter->manifest()->controlHint() !=
+                EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
             ++num;
         }
     }
@@ -147,7 +148,8 @@ unsigned int Effect::numKnobParameters() const {
 unsigned int Effect::numButtonParameters() const {
     unsigned int num = 0;
     foreach(const EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().controlHint() == EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
+        if (parameter->manifest()->controlHint() ==
+                EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
             ++num;
         }
     }
@@ -165,7 +167,7 @@ EffectParameter* Effect::getParameterById(const QString& id) const {
 
 // static
 bool Effect::isButtonParameter(EffectParameter* parameter) {
-    return  parameter->manifest().controlHint() ==
+    return  parameter->manifest()->controlHint() ==
             EffectManifestParameter::ControlHint::TOGGLE_STEPPING;
 }
 
@@ -179,8 +181,8 @@ EffectParameter* Effect::getFilteredParameterForSlot(ParameterFilterFnc filterFn
     // It's normal to ask for a parameter that doesn't exist. Callers must check
     // for NULL.
     unsigned int num = 0;
-    foreach(EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().showInParameterSlot() && filterFnc(parameter)) {
+    for (const auto& parameter: m_parameters) {
+        if (parameter->manifest()->showInParameterSlot() && filterFnc(parameter)) {
             if(num == slotNumber) {
                 return parameter;
             }
@@ -212,5 +214,5 @@ EffectPointer Effect::createFromXml(EffectsManager* pEffectsManager,
 }
 
 double Effect::getMetaknobDefault() {
-    return m_manifest.metaknobDefault();
+    return m_pManifest->metaknobDefault();
 }

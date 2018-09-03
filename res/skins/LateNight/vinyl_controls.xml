@@ -2,12 +2,12 @@
   <WidgetGroup>
     <ObjectName>VinylControls</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>max,min</SizePolicy>
+    <SizePolicy>max,f</SizePolicy>
     <Children>
 
       <WidgetGroup>
         <ObjectName>AlignVCenter</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>f,f</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
           <StatusLight>

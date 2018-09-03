@@ -194,15 +194,23 @@ void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
 
 void CoverArtCache::guessCover(TrackPointer pTrack) {
     if (pTrack) {
-        kLogger.debug() << "Guessing cover art for" << pTrack->getLocation();
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Guessing cover art for"
+                    << pTrack->getLocation();
+        }
         CoverInfo cover = CoverArtUtils::guessCoverInfo(*pTrack);
         pTrack->setCoverInfo(cover);
     }
 }
 
 void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
-    kLogger.debug() << "Guessing cover art for"
-             << tracks.size() << "tracks";
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "Guessing cover art for"
+                << tracks.size()
+                << "tracks";
+    }
     foreach (TrackPointer pTrack, tracks) {
         guessCover(pTrack);
     }

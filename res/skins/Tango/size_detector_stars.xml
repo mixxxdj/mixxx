@@ -2,7 +2,7 @@
 Description:
   Size-aware container that decides whether Star Rating fits in between
   HotCues and deck controls, to avoid squeezed deck controls and on the
-  other hand let HotCue buttons auto-shrink only if necessesary.
+  other hand let HotCue buttons auto-shrink only if necessary.
   It contains spacers for 4/8 HotCues, each deck control button i.e. separate
   Cue, keylock, quantize etc.
 

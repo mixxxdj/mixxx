@@ -87,8 +87,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
 
-    void setDisplayBeatGrid(bool sync);
-    bool isBeatGridEnabled() const { return m_beatGridEnabled; }
+    void setDisplayBeatGridAlpha(int alpha);
+    int beatGridAlpha() const { return m_beatGridAlpha; }
 
     void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
@@ -105,6 +105,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void startVSync(GuiTick* pGuiTick);
     void setVSyncType(int vsType);
     int getVSyncType();
+
+    void setPlayMarkerPosition(double position);
+    double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
     void notifyZoomChange(WWaveformViewer *viewer);
 
@@ -151,7 +154,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_openGLAvailable;
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
-    bool m_beatGridEnabled;
+    int m_beatGridAlpha;
 
     VSyncThread* m_vsyncThread;
 
@@ -160,6 +163,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     float m_frameCnt;
     double m_actualFrameRate;
     int m_vSyncType;
+    double m_playMarkerPosition;
 };
 
 #endif // WAVEFORMWIDGETFACTORY_H

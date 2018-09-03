@@ -12,10 +12,11 @@ import os
 # iX86-linux-gnu
 # x86_64-linux-gnu
 
-# platform = [win, osx, bsd, linux]
+# target = [windows, osx, bsd, linux]
 # machine = [iX86, x86_64, powerpc, powerpc64]
 # toolchain = [gnu, msvc]
-# target = [debug, release]
+# build = [debug, release]
+# optimize = [off, portable, native, legacy, fastbuild, 0, 1, 2]
 
 # If you don't specify your platform, we autodetect platform/machine using
 # python. If you don't specify your machine then we pick iX86 by default
@@ -55,6 +56,7 @@ available_features = [features.Mad,
                       features.ColorDiagnostics,
                       features.Sanitizers,
                       features.LocaleCompare,
+                      features.Lilv,
                       features.Battery,
 
                       # "Features" of dubious quality

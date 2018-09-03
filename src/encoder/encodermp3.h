@@ -19,7 +19,7 @@ class EncoderCallback;
 
 class EncoderMp3 : public Encoder {
   public:
-    static const int MONO_BITRATE_TRESHOLD;
+    static const int MONO_BITRATE_THRESHOLD;
     static const int MONO_VBR_THRESHOLD;
     static const int MONO_VBR_OFFSET;
 

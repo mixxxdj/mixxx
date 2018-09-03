@@ -67,11 +67,12 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_overviewNormalized(false),
         m_openGLAvailable(false),
         m_openGLShaderAvailable(false),
-        m_beatGridEnabled(true),
+        m_beatGridAlpha(90),
         m_vsyncThread(NULL),
         m_frameCnt(0),
         m_actualFrameRate(0),
-        m_vSyncType(0) {
+        m_vSyncType(0),
+        m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
 
     m_visualGain[All] = 1.0;
     m_visualGain[Low] = 1.0;
@@ -224,8 +225,8 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
     }
 
-    bool showBeatGrid = m_config->getValue(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), m_beatGridEnabled);
-    setDisplayBeatGrid(showBeatGrid);
+    int beatGridAlpha = m_config->getValue(ConfigKey("[Waveform]", "beatGridAlpha"), m_beatGridAlpha);
+    setDisplayBeatGridAlpha(beatGridAlpha);
 
     WaveformWidgetType::Type type = static_cast<WaveformWidgetType::Type>(
             m_config->getValueString(ConfigKey("[Waveform]","WaveformType")).toInt(&ok));
@@ -251,6 +252,10 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     } else {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
+
+    m_playMarkerPosition = m_config->getValue(ConfigKey("[Waveform]","PlayMarkerPosition"),
+            WaveformWidgetRenderer::s_defaultPlayMarkerPosition);
+    setPlayMarkerPosition(m_playMarkerPosition);
 
     return true;
 }
@@ -300,7 +305,8 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
     }
 
     viewer->setZoom(m_defaultZoom);
-    viewer->setDisplayBeatGrid(m_beatGridEnabled);
+    viewer->setDisplayBeatGridAlpha(m_beatGridAlpha);
+    viewer->setPlayMarkerPosition(m_playMarkerPosition);
     viewer->update();
 
     qDebug() << "WaveformWidgetFactory::setWaveformWidget - waveform widget added in factory, index" << index;
@@ -388,6 +394,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         TrackPointer pTrack = previousWidget->getTrackInfo();
         //previousWidget->hold();
         int previousZoom = previousWidget->getZoomFactor();
+        double previousPlayMarkerPosition = previousWidget->getPlayMarkerPosition();
         delete previousWidget;
         WWaveformViewer* viewer = holder.m_waveformViewer;
         WaveformWidgetAbstract* widget = createWaveformWidget(m_type, holder.m_waveformViewer);
@@ -395,6 +402,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         viewer->setWaveformWidget(widget);
         viewer->setup(holder.m_skinNodeCache, holder.m_skinContextCache);
         viewer->setZoom(previousZoom);
+        viewer->setPlayMarkerPosition(previousPlayMarkerPosition);
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.
         //viewer->resize(viewer->size());
@@ -437,18 +445,14 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
     }
 }
 
-void WaveformWidgetFactory::setDisplayBeatGrid(bool sync) {
-    m_beatGridEnabled = sync;
-    if (m_config) {
-        m_config->set(ConfigKey("[Waveform]", "beatGridLinesCheckBox"), ConfigValue(m_beatGridEnabled));
-    }
-
+void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
+    m_beatGridAlpha = alpha;
     if (m_waveformWidgetHolders.size() == 0) {
         return;
     }
 
     for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
-        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGrid(m_beatGridEnabled);
+        m_waveformWidgetHolders[i].m_waveformWidget->setDisplayBeatGridAlpha(m_beatGridAlpha);
     }
 
 }
@@ -467,6 +471,18 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
     m_overviewNormalized = normalize;
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
+    }
+}
+
+void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
+    //qDebug() << "setPlayMarkerPosition, position=" << position;
+    m_playMarkerPosition = position;
+    if (m_config) {
+        m_config->setValue(ConfigKey("[Waveform]", "PlayMarkerPosition"), m_playMarkerPosition);
+    }
+
+    for (const auto& holder : m_waveformWidgetHolders) {
+        holder.m_waveformWidget->setPlayMarkerPosition(m_playMarkerPosition);
     }
 }
 
@@ -509,7 +525,7 @@ void WaveformWidgetFactory::render() {
                         pWaveformWidget->getWidget()->isVisible()) {
                     (void)pWaveformWidget->render();
                 }
-                // qDebug() << "render" << i << m_vsyncThread->elapsed();
+                //qDebug() << "render" << i << m_vsyncThread->elapsed();
             }
         }
 

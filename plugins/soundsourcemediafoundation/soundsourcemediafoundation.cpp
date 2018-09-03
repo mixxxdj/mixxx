@@ -25,7 +25,7 @@ constexpr SINT kLeftoverSize = 4096; // in CSAMPLE's, this seems to be the size 
 // https://developer.apple.com/library/ios/technotes/tn2258/_index.html
 // "It must also be assumed that without an explicit value, the playback
 // system will trim 2112 samples from the AAC decoder output when starting
-// playback from any point in the bistream."
+// playback from any point in the bitstream."
 constexpr SINT kNumberOfPrefetchFrames = 2112;
 
 // Only read the first audio stream
@@ -42,6 +42,11 @@ template<class T> static void safeRelease(T **ppT) {
 } // anonymous namespace
 
 namespace mixxx {
+
+// TODO(XXX): Remove this ugly "extern" hack after getting rid of
+// the broken plugin architecture.
+LogLevel g_logLevel;
+LogLevel g_logFlushLevel;
 
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
         : SoundSourcePlugin(url, "m4a"),
@@ -803,9 +808,11 @@ SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl
 } // namespace mixxx
 
 extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider() {
+mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider(int logLevel, int logFlushLevel) {
     // SoundSourceProviderMediaFoundation is stateless and a single instance
     // can safely be shared
+    mixxx::g_logLevel = static_cast<mixxx::LogLevel>(logLevel);
+    mixxx::g_logFlushLevel = static_cast<mixxx::LogLevel>(logFlushLevel);
     static mixxx::SoundSourceProviderMediaFoundation singleton;
     return &singleton;
 }

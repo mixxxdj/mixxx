@@ -24,6 +24,7 @@ class WaveformWidgetRenderer {
     static const int s_waveformMinZoom;
     static const int s_waveformMaxZoom;
     static const int s_waveformDefaultZoom;
+    static const double s_defaultPlayMarkerPosition;
 
   public:
     explicit WaveformWidgetRenderer(const char* group);
@@ -45,6 +46,7 @@ class WaveformWidgetRenderer {
     void setZoom(int zoom);
 
     void setDisplayBeatGrid(bool set);
+    void setDisplayBeatGridAlpha(int alpha);
 
     double getVisualSamplePerPixel() const { return m_visualSamplePerPixel;};
     double getAudioSamplePerPixel() const { return m_audioSamplePerPixel;};
@@ -73,7 +75,7 @@ class WaveformWidgetRenderer {
     double getGain() const { return m_gain;}
     int getTrackSamples() const { return m_trackSamples;}
 
-    bool isBeatGridEnabled() const { return m_enableBeatGrid; }
+    int beatGridAlpha() const { return m_alphaBeatGrid; }
 
     void resize(int width, int height);
     int getHeight() const { return m_height;}
@@ -91,6 +93,17 @@ class WaveformWidgetRenderer {
     }
 
     void setTrack(TrackPointer track);
+
+    double getPlayMarkerPosition() {
+        return m_playMarkerPosition;
+    }
+
+    void setPlayMarkerPosition(double newPos) {
+        VERIFY_OR_DEBUG_ASSERT(newPos >= 0.0 && newPos <= 1.0) {
+            newPos = math_clamp(newPos, 0.0, 1.0);
+        }
+        m_playMarkerPosition = newPos;
+    }
 
   protected:
     const char* m_group;
@@ -110,7 +123,7 @@ class WaveformWidgetRenderer {
     double m_visualSamplePerPixel;
     double m_audioSamplePerPixel;
 
-    bool m_enableBeatGrid;
+    int m_alphaBeatGrid;
 
     //TODO: vRince create some class to manage control/value
     //ControlConnection
@@ -128,6 +141,7 @@ class WaveformWidgetRenderer {
     ControlProxy* m_pTrackSamplesControlObject;
     int m_trackSamples;
     double m_scaleFactor;
+    double m_playMarkerPosition;   // 0.0 - left, 0.5 - center, 1.0 - right
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     PerformanceTimer* m_timer;

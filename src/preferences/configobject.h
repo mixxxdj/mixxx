@@ -71,6 +71,7 @@ class ConfigValue {
     // convenience. All other types must be explicit.
     ConfigValue(const QString& value);
     explicit ConfigValue(int value);
+    explicit ConfigValue(double value);
     explicit ConfigValue(const QDomNode& /* node */) {
         reportFatalErrorAndQuit("ConfigValue from QDomNode not implemented here");
     }
