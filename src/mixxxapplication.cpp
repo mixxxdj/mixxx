@@ -11,6 +11,24 @@
 // plugins we link in build/depends.py.
 #ifdef QT_NODLL
 #include <QtPlugin>
+#if QT_VERSION >= 0x050000
+// sqldrivers plugins
+Q_IMPORT_PLUGIN(QSQLiteDriverPlugin)
+// platform plugins
+Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+// style plugins
+Q_IMPORT_PLUGIN(QWindowsVistaStylePlugin)
+// imageformats plugins
+Q_IMPORT_PLUGIN(QSvgPlugin)
+Q_IMPORT_PLUGIN(QSvgIconPlugin)
+Q_IMPORT_PLUGIN(QICOPlugin)
+Q_IMPORT_PLUGIN(QTgaPlugin)
+Q_IMPORT_PLUGIN(QJpegPlugin)
+Q_IMPORT_PLUGIN(QGifPlugin)
+// accessible plugins
+// TODO(rryan): This is supposed to exist but does not in our builds.
+//Q_IMPORT_PLUGIN(AccessibleFactory)
+#else 
 // iconengines plugins
 Q_IMPORT_PLUGIN(qsvgicon)
 // imageformats plugins
@@ -19,6 +37,7 @@ Q_IMPORT_PLUGIN(qico)
 Q_IMPORT_PLUGIN(qtga)
 // accessible plugins
 Q_IMPORT_PLUGIN(qtaccessiblewidgets)
+#endif
 #endif
 
 

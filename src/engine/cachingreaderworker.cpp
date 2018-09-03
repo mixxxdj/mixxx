@@ -42,7 +42,9 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
     // actually available.
     const auto chunkFrameIndexRange = pChunk->frameIndexRange(m_pAudioSource);
     if (intersect(chunkFrameIndexRange, m_readableFrameIndexRange).empty()) {
-        return ReaderStatusUpdate(CHUNK_READ_INVALID, pChunk, m_readableFrameIndexRange);
+        ReaderStatusUpdate result;
+        result.init(CHUNK_READ_INVALID, pChunk, m_readableFrameIndexRange);
+        return result;
     }
 
     // Try to read the data required for the chunk from the audio source
@@ -77,7 +79,9 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
                 << "from originally"
                 << m_pAudioSource->frameIndexRange();
     }
-    return ReaderStatusUpdate(status, pChunk, m_readableFrameIndexRange);
+    ReaderStatusUpdate result;
+    result.init(status, pChunk, m_readableFrameIndexRange);
+    return result;
 }
 
 // WARNING: Always called from a different thread (GUI)
@@ -91,10 +95,10 @@ void CachingReaderWorker::run() {
     unsigned static id = 0; //the id of this thread, for debugging purposes
     QThread::currentThread()->setObjectName(QString("CachingReaderWorker %1").arg(++id));
 
-    CachingReaderChunkReadRequest request;
-
     Event::start(m_tag);
     while (!load_atomic(m_stop)) {
+        // Request is initialized by reading from FIFO
+        CachingReaderChunkReadRequest request;
         if (m_newTrackAvailable) {
             TrackPointer pLoadTrack;
             { // locking scope
@@ -130,7 +134,7 @@ mixxx::AudioSourcePointer openAudioSourceForReading(const TrackPointer& pTrack, 
 
 void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     ReaderStatusUpdate status;
-    status.status = TRACK_NOT_LOADED;
+    status.init(TRACK_NOT_LOADED);
 
     if (!pTrack) {
         // Unload track
@@ -179,8 +183,9 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     // be decreased to avoid repeated reading of corrupt audio data.
     m_readableFrameIndexRange = m_pAudioSource->frameIndexRange();
 
-    status.readableFrameIndexRange = m_readableFrameIndexRange;
     status.status = TRACK_LOADED;
+    status.readableFrameIndexRangeStart = m_readableFrameIndexRange.start();
+    status.readableFrameIndexRangeEnd = m_readableFrameIndexRange.end();
     m_pReaderStatusFIFO->writeBlocking(&status, 1);
 
     // Clear the chunks to read list.

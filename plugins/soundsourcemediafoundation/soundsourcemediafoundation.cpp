@@ -351,10 +351,31 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
         }
         DEBUG_ASSERT(pSample != nullptr);
         SINT readerFrameIndex = m_streamUnitConverter.toFrameIndex(streamPos);
-        DEBUG_ASSERT(
-                (m_currentFrameIndex == kUnknownFrameIndex) || // unknown position after seeking
-                (m_currentFrameIndex == readerFrameIndex));
-        m_currentFrameIndex = readerFrameIndex;
+        if (m_currentFrameIndex == kUnknownFrameIndex) {
+            // Unknown position after seeking
+            m_currentFrameIndex = readerFrameIndex;
+            /*
+            kLogger.debug()
+                    << "Stream position (in sample frames) after seeking:"
+                    << "target =" << writableSampleFrames.frameIndexRange().end()
+                    << "current =" << readerFrameIndex;
+            */
+        } else {
+            // Both positions should match, otherwise readerFrameIndex
+            // is inaccurate due to rounding errors after conversion from
+            // stream units to frames! But if this ever happens we better
+            // trust m_currentFrameIndex that is continuously updated while
+            // reading in forward direction.
+            VERIFY_OR_DEBUG_ASSERT(m_currentFrameIndex == readerFrameIndex) {
+                kLogger.debug()
+                        << "streamPos [100 ns] =" << streamPos
+                        << ", sampleRate [Hz] =" << sampleRate();
+                kLogger.warning()
+                        << "Stream position (in sample frames) while reading is inaccurate:"
+                        << "expected =" << m_currentFrameIndex
+                        << "actual =" << readerFrameIndex;
+            }
+        }
 
         DWORD dwSampleBufferCount = 0;
         HRESULT hrGetBufferCount =

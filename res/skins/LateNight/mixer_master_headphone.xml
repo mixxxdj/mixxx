@@ -174,9 +174,9 @@
                 <Children>
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="Size">35f,30f</SetVariable>
-                    <SetVariable name="TooltipId">master_gain</SetVariable>
-                    <SetVariable name="group">[Booth]</SetVariable>
-                    <SetVariable name="control">gain</SetVariable>
+                    <SetVariable name="TooltipId">booth_gain</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">booth_gain</SetVariable>
                   </Template>
 
                   <Label>

@@ -191,15 +191,15 @@ class Qt(Dependence):
 
     DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
-                         'windows': 'C:\\qt\\5.0.1'}
+                         'windows': 'C:\\qt\\5.10.1'}
 
     DEFAULT_QT5DIRS32 = {'linux': '/usr/lib/i386-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
-                         'windows': 'C:\\qt\\5.0.1'}
+                         'windows': 'C:\\qt\\5.10.1'}
 
     @staticmethod
     def qt5_enabled(build):
-        return int(util.get_flags(build.env, 'qt5', 0))
+        return int(util.get_flags(build.env, 'qt5', 1))
 
     @staticmethod
     def uic(build):
@@ -233,12 +233,32 @@ class Qt(Dependence):
     def enabled_modules(build):
         qt5 = Qt.qt5_enabled(build)
         qt_modules = [
-            'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
-            'QtSql', 'QtScript', 'QtNetwork',
-            'QtTest', 'QtScriptTools'
+            # Keep alphabetized.
+            'QtCore',
+            'QtGui',
+            'QtNetwork',
+            'QtOpenGL',
+            'QtScript',
+            'QtScriptTools',
+            'QtSql',
+            'QtSvg',
+            'QtTest',
+            'QtXml',
         ]
         if qt5:
-            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
+            qt_modules.extend([
+                # Keep alphabetized.
+                'QtConcurrent',
+                'QtWidgets',
+            ])
+            if build.platform_is_windows:
+                qt_modules.extend([
+                    # Keep alphabetized.
+                    'QtAccessibilitySupport',
+                    'QtEventDispatcherSupport',
+                    'QtFontDatabaseSupport',
+                    'QtThemeSupport',
+                ])
         return qt_modules
 
     @staticmethod
@@ -391,6 +411,23 @@ class Qt(Dependence):
                 # QtNetwork openssl-linked
                 build.env.Append(LIBS = 'crypt32')
 
+                # New libraries required by Qt5.
+                if qt5:
+                    build.env.Append(LIBS = 'dwmapi')  # qtwindows
+                    build.env.Append(LIBS = 'iphlpapi')  # qt5network
+                    build.env.Append(LIBS = 'libEGL')  # qt5opengl
+                    build.env.Append(LIBS = 'libGLESv2')  # qt5opengl
+                    build.env.Append(LIBS = 'mpr')  # qt5core
+                    build.env.Append(LIBS = 'netapi32')  # qt5core
+                    build.env.Append(LIBS = 'userenv')  # qt5core
+                    build.env.Append(LIBS = 'uxtheme')  # ?
+                    build.env.Append(LIBS = 'version')  # ?
+
+                    build.env.Append(LIBS = 'qtfreetype')
+                    build.env.Append(LIBS = 'qtharfbuzz')
+                    build.env.Append(LIBS = 'qtlibpng')
+                    build.env.Append(LIBS = 'qtpcre2')
+
                 # NOTE(rryan): If you are adding a plugin here, you must also
                 # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
                 # for it. Not all imageformats plugins are built as .libs when
@@ -409,11 +446,33 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'qico')
                 build.env.Append(LIBS = 'qsvg')
                 build.env.Append(LIBS = 'qtga')
+                build.env.Append(LIBS = 'qgif')
+                build.env.Append(LIBS = 'qjpeg')
 
-                # accessibility plugins
-                build.env.Append(LIBPATH=[
-                    os.path.join(build.env['QTDIR'],'plugins/accessible')])
-                build.env.Append(LIBS = 'qtaccessiblewidgets')
+                # accessibility plugins (gone in Qt5)
+                if not qt5:
+                    build.env.Append(LIBPATH=[
+                        os.path.join(build.env['QTDIR'],'plugins/accessible')])
+                    build.env.Append(LIBS = 'qtaccessiblewidgets')
+
+                # platform plugins (new in Qt5 for Windows)
+                if qt5:
+                    build.env.Append(LIBPATH=[
+                        os.path.join(build.env['QTDIR'],'plugins/platforms')])
+                    build.env.Append(LIBS = 'qwindows')
+
+                # styles (new in Qt5 for Windows)
+                if qt5:
+                    build.env.Append(LIBPATH=[
+                        os.path.join(build.env['QTDIR'],'plugins/styles')])
+                    build.env.Append(LIBS = 'qwindowsvistastyle')
+
+                # sqldrivers (new in Qt5? or did we just start enabling them)
+                if qt5:
+                    build.env.Append(LIBPATH=[
+                        os.path.join(build.env['QTDIR'],'plugins/sqldrivers')])
+                    build.env.Append(LIBS = 'qsqlite')
+
 
 
         # Set the rpath for linux/bsd/osx.
@@ -1265,9 +1324,17 @@ class MixxxCore(Feature):
 
             # In a release build we want to disable all Q_ASSERTs in Qt headers
             # that we include. We can't define QT_NO_DEBUG because that would
-            # mean turning off QDebug output. qt_noop() is what Qt defines
-            # Q_ASSERT to be when QT_NO_DEBUG is defined.
-            build.env.Append(CPPDEFINES="'Q_ASSERT(x)=qt_noop()'")
+            # mean turning off QDebug output. qt_noop() is what Qt defined
+            # Q_ASSERT to be when QT_NO_DEBUG is defined in Qt 5.9 and earlier.
+            # Now it is defined as static_cast<void>(false&&(x)) to support use
+            # in constexpr functions. We still use qt_noop on Windows since we
+            # can't specify static_cast<void>(false&&(x)) in a commandline
+            # macro definition, but it seems VS 2015 isn't bothered by the use
+            # qt_noop here, so we can keep it.
+            if build.platform_is_windows:
+                build.env.Append(CPPDEFINES="'Q_ASSERT(x)=qt_noop()'")
+            else:
+                build.env.Append(CPPDEFINES="'Q_ASSERT(x)=static_cast<void>(false&&(x))'")
 
         if int(SCons.ARGUMENTS.get('debug_assertions_fatal', 0)):
             build.env.Append(CPPDEFINES='MIXXX_DEBUG_ASSERTIONS_FATAL')
@@ -1329,10 +1396,13 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='/MP')
 
             # Generate debugging information for compilation units and
-            # executables linked regardless of whether we are creating a debug
-            # build. Having PDB files for our releases is helpful for debugging.
-            build.env.Append(LINKFLAGS='/DEBUG')
-            build.env.Append(CCFLAGS='/Zi /Fd${TARGET}.pdb')
+            # executables linked if we are creating a debug build or bundling
+            # PDBs is enabled.  Having PDB files for our releases is helpful for
+            # debugging, but increases link times and memory usage
+            # significantly.
+            if build.build_is_debug or build.bundle_pdbs:
+                build.env.Append(LINKFLAGS='/DEBUG')
+                build.env.Append(CCFLAGS='/Zi /Fd${TARGET}.pdb')
 
             if build.build_is_debug:
                 # Important: We always build Mixxx with the Multi-Threaded DLL
