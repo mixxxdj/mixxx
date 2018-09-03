@@ -729,7 +729,7 @@ void ScriptConnection::executeCallback(double value) const {
     args << QJSValue(value);
     args << QJSValue(key.group);
     args << QJSValue(key.item);
-    QJSValue func = callback; // copy function because QScriptValue::call is not const
+    QJSValue func = callback; // copy function because QJSValue::call is not const
     QJSValue result = func.call(args);
     if (result.isError()) {
         qWarning() << "ControllerEngine: Invocation of connection " << id.toString()
@@ -813,7 +813,7 @@ QJSValue ControllerEngine::connectControl(
                            group + ", " + name + ") which is non-existent, ignoring.";
         }
         // This is inconsistent with other failures, which return false.
-        // QScriptValue() with no arguments is undefined in JavaScript.
+        // QJSValue() with no arguments is undefined in JavaScript.
         return QJSValue();
     }
 

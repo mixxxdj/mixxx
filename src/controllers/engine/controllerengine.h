@@ -54,11 +54,6 @@ class ScriptConnection {
 class ScriptConnectionInvokableWrapper : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString id READ readId)
-    // We cannot expose ConfigKey directly since it's not a
-    // QObject
-    //Q_PROPERTY(ConfigKey key READ key)
-    // There's little use in exposing the function...
-    //Q_PROPERTY(QScriptValue function READ function)
   public:
     ScriptConnectionInvokableWrapper(ScriptConnection conn) {
         m_scriptConnection = conn;
