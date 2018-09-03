@@ -11,13 +11,10 @@ GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* w
         : WaveformRendererSignalBase(waveformWidgetRenderer),
           m_unitQuadListId(-1),
           m_textureId(0),
-          m_loadedWaveform(0),
-          m_frameBuffersValid(false),
-          m_framebuffer(NULL),
+          m_textureRenderedWaveformCompletion(0),
           m_bDumpPng(false),
           m_shadersValid(false),
-          m_rgbShader(rgbShader),
-          m_frameShaderProgram(NULL) {
+          m_rgbShader(rgbShader) {
 }
 
 GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
@@ -27,11 +24,6 @@ GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
 
     if (m_frameShaderProgram) {
         m_frameShaderProgram->removeAllShaders();
-        delete m_frameShaderProgram;
-    }
-
-    if (m_framebuffer) {
-        delete m_framebuffer;
     }
 }
 
@@ -85,7 +77,7 @@ bool GLSLWaveformRendererSignal::loadTexture() {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
     ConstWaveformPointer waveform;
     int dataSize = 0;
-    const WaveformData* data = NULL;
+    const WaveformData* data = nullptr;
 
     if (trackInfo) {
         waveform = trackInfo->getWaveform();
@@ -103,20 +95,22 @@ bool GLSLWaveformRendererSignal::loadTexture() {
         glGenTextures(1, &m_textureId);
 
         int error = glGetError();
-        if (error)
+        if (error) {
             qDebug() << "GLSLWaveformRendererSignal::loadTexture - m_textureId" << m_textureId << "error" << error;
+        }
     }
 
     glBindTexture(GL_TEXTURE_2D, m_textureId);
 
     int error = glGetError();
-    if (error)
+    if (error) {
         qDebug() << "GLSLWaveformRendererSignal::loadTexture - bind error" << error;
+    }
 
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    if (waveform != NULL && data != NULL) {
+    if (waveform != nullptr && data != nullptr) {
         // Waveform ensures that getTextureSize is a multiple of
         // getTextureStride so there is no rounding here.
         int textureWidth = waveform->getTextureStride();
@@ -125,10 +119,11 @@ bool GLSLWaveformRendererSignal::loadTexture() {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureWidth, textureHeight, 0,
                      GL_RGBA, GL_UNSIGNED_BYTE, data);
         int error = glGetError();
-        if (error)
+        if (error) {
             qDebug() << "GLSLWaveformRendererSignal::loadTexture - glTexImage2D error" << error;
+        }
     } else {
-        glDeleteTextures(1,&m_textureId);
+        glDeleteTextures(1, &m_textureId);
         m_textureId = 0;
     }
 
@@ -139,8 +134,9 @@ bool GLSLWaveformRendererSignal::loadTexture() {
 
 void GLSLWaveformRendererSignal::createGeometry() {
 
-    if (m_unitQuadListId != -1)
+    if (m_unitQuadListId != -1) {
         return;
+    }
 
 #ifndef __OPENGLES__
 
@@ -174,34 +170,28 @@ void GLSLWaveformRendererSignal::createGeometry() {
 #endif
 }
 
-void GLSLWaveformRendererSignal::createFrameBuffers()
-{
-    m_frameBuffersValid = false;
+void GLSLWaveformRendererSignal::createFrameBuffers() {
+    const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+    // We create a frame buffer that is 4x the size of the renderer itself to
+    // "oversample" the texture relative to the surface we're drawing on.
+    const int oversamplingFactor = 4;
+    const int bufferWidth = oversamplingFactor * m_waveformRenderer->getWidth() * devicePixelRatio;
+    const int bufferHeight = oversamplingFactor * m_waveformRenderer->getHeight() * devicePixelRatio;
 
-    int bufferWidth = m_waveformRenderer->getWidth();
-    int bufferHeight = m_waveformRenderer->getHeight();
+    m_framebuffer = std::make_unique<QGLFramebufferObject>(bufferWidth,
+                                                           bufferHeight);
 
-    if (m_framebuffer)
-        delete m_framebuffer;
-
-    //should work with any version of OpenGl
-    m_framebuffer = new QGLFramebufferObject(bufferWidth * 4, bufferHeight * 4);
-
-    if (!m_framebuffer->isValid())
+    if (!m_framebuffer->isValid()) {
         qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
-
-    m_frameBuffersValid = m_framebuffer->isValid();
-
-    //qDebug() << m_waveformRenderer->getWidth();
-    //qDebug() << m_waveformRenderer->getWidth()*3;
-    //qDebug() << bufferWidth;
+    }
 }
 
 bool GLSLWaveformRendererSignal::onInit() {
-    m_loadedWaveform = 0;
+    m_textureRenderedWaveformCompletion = 0;
 
-    if (!m_frameShaderProgram)
-        m_frameShaderProgram = new QGLShaderProgram();
+    if (!m_frameShaderProgram) {
+        m_frameShaderProgram = std::make_unique<QGLShaderProgram>();
+    }
 
     if (!loadShaders()) {
         return false;
@@ -245,12 +235,12 @@ void GLSLWaveformRendererSignal::onResize() {
 }
 
 void GLSLWaveformRendererSignal::slotWaveformUpdated() {
-    m_loadedWaveform = 0;
+    m_textureRenderedWaveformCompletion = 0;
     loadTexture();
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    if (!m_frameBuffersValid || !m_shadersValid) {
+    if (!m_framebuffer || !m_framebuffer->isValid() || !m_shadersValid) {
         return;
     }
 
@@ -270,19 +260,19 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     }
 
     const WaveformData* data = waveform->data();
-    if (data == NULL) {
+    if (data == nullptr) {
         return;
     }
 
     // save the GL state set for QPainter
     painter->beginNativePainting();
 
-    //NOTE: (vRince) completion can change during loadTexture
-    //do not remove currenCompletion temp variable !
+    // NOTE(vRince): completion can change during loadTexture
+    // do not remove currenCompletion temp variable !
     const int currentCompletion = waveform->getCompletion();
-    if (m_loadedWaveform < currentCompletion) {
+    if (m_textureRenderedWaveformCompletion < currentCompletion) {
         loadTexture();
-        m_loadedWaveform = currentCompletion;
+        m_textureRenderedWaveformCompletion = currentCompletion;
     }
 
     // Per-band gain from the EQ knobs.
@@ -406,9 +396,14 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_TEXTURE_2D);
 
-    //paint buffer into viewport
+    // paint buffer into viewport
     {
-        glViewport(0, 0, m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
+        // OpenGL pixels are real screen pixels, not device independent
+        // pixels like QPainter provides. We scale the viewport by the
+        // devicePixelRatio to render the texture to the surface.
+        const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
+        glViewport(0, 0, devicePixelRatio * m_waveformRenderer->getWidth(),
+                   devicePixelRatio * m_waveformRenderer->getHeight());
         glBindTexture(GL_TEXTURE_2D, m_framebuffer->texture());
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

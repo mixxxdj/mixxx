@@ -19,6 +19,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
       m_orientation(Qt::Horizontal),
       m_height(-1),
       m_width(-1),
+      m_devicePixelRatio(1.0f),
 
       m_firstDisplayedPosition(0.0),
       m_lastDisplayedPosition(0.0),
@@ -260,9 +261,10 @@ void WaveformWidgetRenderer::draw(QPainter* painter, QPaintEvent* event) {
     //qDebug() << "draw() ende" << timer.restart().formatNanosWithUnit();
 }
 
-void WaveformWidgetRenderer::resize(int width, int height) {
+void WaveformWidgetRenderer::resize(int width, int height, float devicePixelRatio) {
     m_width = width;
     m_height = height;
+    m_devicePixelRatio = devicePixelRatio;
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         m_rendererStack[i]->setDirty(true);
         m_rendererStack[i]->onResize();

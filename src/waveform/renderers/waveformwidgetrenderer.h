@@ -77,9 +77,10 @@ class WaveformWidgetRenderer {
 
     int beatGridAlpha() const { return m_alphaBeatGrid; }
 
-    void resize(int width, int height);
+    virtual void resize(int width, int height, float devicePixelRatio);
     int getHeight() const { return m_height;}
     int getWidth() const { return m_width;}
+    float getDevicePixelRatio() const { return m_devicePixelRatio; }
     int getLength() const { return m_orientation == Qt::Horizontal ? m_width : m_height;}
     int getBreadth() const { return m_orientation == Qt::Horizontal ? m_height : m_width;}
     Qt::Orientation getOrientation() const { return m_orientation;}
@@ -112,6 +113,7 @@ class WaveformWidgetRenderer {
     Qt::Orientation m_orientation;
     int m_height;
     int m_width;
+    float m_devicePixelRatio;
     WaveformSignalColors m_colors;
 
     double m_firstDisplayedPosition;
