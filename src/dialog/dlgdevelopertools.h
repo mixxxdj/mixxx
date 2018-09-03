@@ -27,6 +27,7 @@ class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
     void slotControlDump();
 
   private:
+    UserSettingsPointer m_pConfig;
     ControlModel m_controlModel;
     QSortFilterProxyModel m_controlProxyModel;
 
