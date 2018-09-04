@@ -5,11 +5,6 @@
 #include "control/controlobject.h"
 #include "controllers/keyboard/layouts.h"
 
-struct KbdKeyChar {
-    char16_t character;
-    bool isDead;
-};
-
 // Representation of one <keyseq> element, parented to <control> elements
 struct KbdControllerPresetKeyseq {
     // String representation of the key sequence (for example: Ctrl+a),

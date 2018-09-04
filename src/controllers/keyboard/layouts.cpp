@@ -20,10 +20,6 @@
 #include <yvals.h>
 #endif
 
-struct KbdKeyChar {
-    char16_t character;
-    bool isDead;
-};
 /* @/SKIP */
 
 namespace layouts {

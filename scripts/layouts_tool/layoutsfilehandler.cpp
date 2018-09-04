@@ -46,7 +46,6 @@ namespace {
     const QString kIncludeGuardTail = "#endif // LAYOUTS_H";
 
     // KbdKeyChar struct forward declaration and declaration
-    const QString kKbdCharPrototype = "struct KbdKeyChar;";
     const QStringList kKbdCharImplementation = QStringList()
             << "struct KbdKeyChar {"
             << kIndent + "char16_t character;"
@@ -243,9 +242,6 @@ void LayoutsFileHandler::save(QFile& f, QList<Layout>& layouts) {
             // Include yvals for char16_t support on Visual Studio 2013
             << kIncludeYVals
             << ""
-
-            // KbdKeyChar struct implementation
-            << kKbdCharImplementation
             << kSkipCommentTail
             << "";
 
@@ -282,7 +278,8 @@ void LayoutsFileHandler::createHeaderFile(const QString& path) {
          << ""
          << kIncludeString
          << ""
-         << kKbdCharPrototype
+         << kKbdCharImplementation
+         << ""
          << kKbdLayoutPointerTypedef
          << kGetLayoutFunctionPrototype
          << ""

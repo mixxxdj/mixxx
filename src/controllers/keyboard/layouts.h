@@ -18,7 +18,11 @@
 
 #include <string>
 
-struct KbdKeyChar;
+struct KbdKeyChar {
+    char16_t character;
+    bool isDead;
+};
+
 typedef const KbdKeyChar (*KeyboardLayoutPointer)[2];
 KeyboardLayoutPointer getLayout(std::string layoutName);
 
