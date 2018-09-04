@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.3)
 project(layoutstool)
 
 # Setup CMake
@@ -21,3 +21,6 @@ target_link_libraries(layoutstool Qt4::QtGui)
 
 # Add DL libs
 target_link_libraries(layoutstool ${CMAKE_DL_LIBS})
+
+# Install to sibiling bin folder 
+install(TARGETS layoutstool DESTINATION ${CMAKE_CURRENT_LIST_DIR}/bin)
