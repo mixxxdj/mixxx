@@ -69,9 +69,7 @@ void LayoutsFileHandler::open(QString& cppPath, QList<Layout>& layouts) {
 
     QFileInfo check_file(cppPath);
     if (!check_file.exists() || !check_file.isFile()) {
-        cppPath = "";
         qDebug() << "Not loading layouts. Path doesn't exist: " << cppPath;
-        return;
     }
 
     QFile f(cppPath);
