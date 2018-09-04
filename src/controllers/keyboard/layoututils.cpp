@@ -66,7 +66,7 @@ namespace layoutUtils {
         }
 
         // Get modifier offset (0 for no modifier, 1 for shift modifier)
-        int modIndex = modifier & Qt::ShiftModifier ? 1 : 0;
+        int modIndex = (modifier & Qt::ShiftModifier) ? 1 : 0;
 
         // Find scancodes that match the given character and modifier in pLayout
         QList<Scancode> scancodes;
