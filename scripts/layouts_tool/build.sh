@@ -22,13 +22,13 @@ function build {
     eval "make -C ${TEMP_DIR}"
 
     echo "Copying executable to bin folder..."
-    eval "mkdir ${BIN_DIR}"
-    eval "mv ${EXECUTABLE} ${BIN_DIR}"
+    eval "mkdir -p ${BIN_DIR}"
+    eval "mv -f ${EXECUTABLE} ${BIN_DIR}"
 
     echo "Cleaning up the mess I made... :)"
     eval "rm -rf ${TEMP_DIR}"
 
-    echo "Done! Run the tool from ${EXECUTABLE}"
+    echo "Done! Run the tool from ${BIN_DIR}/layoutstool"
 }
 
 build
