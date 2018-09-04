@@ -206,11 +206,11 @@ QTableView::indicator:unchecked {
 
 /* BPM lock icon in the library "BPM" column. */
 #LibraryBPMButton::indicator:checked {
-  image: url(:/images/library/ic_library_checked.png);
+  image: url(skin:/icon/ic_library_locked.svg);
 }
 
 #LibraryBPMButton::indicator:unchecked {
-  image: url(:/images/library/ic_library_unchecked.png);
+  image: url(skin:/icon/ic_library_unlocked.svg);
 }
 
 #LibraryBPMSpinBox {

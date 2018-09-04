@@ -169,10 +169,10 @@ QTreeView::item:!selected {
 
   /* BPM lock icon in the library "BPM" column. */
   #LibraryBPMButton::indicator:checked {
-    image: url(:/images/library/ic_library_checked.png);
+    image: url(skin:/style/style_library_locked.svg);
     }
     #LibraryBPMButton::indicator:unchecked {
-      image: url(:/images/library/ic_library_unchecked.png);
+      image: url(skin:/style/style_library_unlocked.svg);
       }
   #LibraryBPMButton::item {
     color: #cfcfcf;
@@ -214,13 +214,13 @@ QTreeView::item:!selected {
 		border: 1px solid transparent;
 	}
 	#LibraryPreviewButton:!checked{
-		image: url(:/images/library/ic_library_preview_play.png);
+		image: url(:/images/library/ic_library_preview_play.svg);
 	}
 	#LibraryPreviewButton:!checked:hover {
     background: #454545;
 	}
 	#LibraryPreviewButton:checked{
-		image: url(:/images/library/ic_library_preview_pause.png);
+		image: url(:/images/library/ic_library_preview_pause.svg);
 		background-color: #0f0f0f;
 		border: 1px solid #333;
 	}
