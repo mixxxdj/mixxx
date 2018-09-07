@@ -60,6 +60,52 @@ MIDI.CC = 0xB0 + (channelNumber - 1);
 MIDI.ControllerDump = [0xF0,0x00,0x20,0x7F,0x03,0x01,0xF7];
 
 CMDMM.currentLayer=1;
+// Abstract:
+// The Mapping consist of the following Objects:
+// CMDMM:
+// - EQAndGain (generic Template)
+// - EQAndQuickEffect (generic Template)
+// - FXKnobs (generic Template)
+// - deckChannel (generic Template)
+//  - knobUnit = EQAndGain || EQAndQuickEffect
+//  - button1 (specific functionality for the deckchannel)
+//  - button2 (see button1)
+//  - buttonCue (see button1)
+//  - fader (volume || pitch)
+// - FXChannel (generic Template)
+//  - knobUnit = FXKnobs
+//  - button1 (specific functionality for the fxChannel)
+//  - button2 (see button1)
+//  - buttonCue (see button1)
+//  - fader (FxUnitMix)
+// - Decks[4]
+//  - four instances of the decktype indicated by CMMDMM.channelMode (can be set at the top)
+// - middleButton
+// - shiftButton
+// - ctrlButton
+// - VUMeters
+// - CFader
+// - library encoder knob
+// - HeadGain
+// - HeadMix
+// - out1 (masterBalance)
+// - out2 (MasterGain)
+
+// The Component name usually match with the corresponding label on the Controller.
+// ButtonCue, Button1 and Button2 are derived from their label on a channel.
+// Layout on the Controller:
+// +-------------------+
+// |                   |
+// |   +---+   +---+   |
+// |   | 1 |   | 2 |   |
+// |   +---+   +---+   |
+// |                   |
+// |   +-----------+   |
+// |   |    Cue    |   |
+// |   +-----------+   |
+// |                   |
+// +-------------------+
+
 
 CMDMM.EQAndGain = function (channel, baseAddress) {
   this.knobs = [];
