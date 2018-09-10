@@ -444,14 +444,14 @@ WWidgetGroup {
 #WaveformContainer4 {
   qproperty-layoutAlignment: 'AlignVCenter';
 /* waveform play position should stay centered, so we shift the waveform
-  containers right to compensate for (inactive) beatgrid button toggle */
-  margin-right: -17px;
+  containers right to compensate for (inactive) beatgrid button toggle
+  margin-right: -17px; */
 }
 
 #BeatgridButtons {
 /* Those buttons are pushed outside the screen by 17px (see above),
-  so bring them back in */
-  padding-right: 17px;
+  so bring them back in
+  padding-right: 17px; */
 }
 #WaveformContainer1,
 #WaveformContainer2,
@@ -2380,8 +2380,8 @@ WLibrary QPushButton {
       }
   #LibraryBPMSpinBox {
     color: #fff;
-    selection-color: #0f0f0f;
     background-color: #0f0f0f;
+    selection-color: #0f0f0f;
     selection-background-color: #888;
     /* This combination of negative top/bottom padding & margin
       creates a 1px border around the spinbox' text area.
