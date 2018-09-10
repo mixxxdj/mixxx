@@ -179,7 +179,6 @@ WWidgetGroup {
   font-size: 12px/12px;
   }
   #SkinSettingsButtonMulti {
-    qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
     text-align: center;
   }
   #SkinSettingsButton:hover,
