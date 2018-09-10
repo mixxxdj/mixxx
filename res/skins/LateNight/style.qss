@@ -1591,8 +1591,8 @@ QHeaderView::down-arrow {
 
 /* QScrollBar styling is even harder */
 QScrollBar {
-  border: 1px solid #585858;
-  background: #1a1a1a;
+  border: 0px solid #585858;
+  background: #000;
   border-radius: 3px;
   padding: 1px;
   color: #999999;
@@ -1603,24 +1603,25 @@ QScrollBar {
     height: 15px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
-    border-top: 0px;
-    background-color: #0f0f0f;
+    background-color: #000;
   }
   QScrollBar:vertical {
     min-height: 12px;
     width: 15px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
-    border-left: 0px;
     color: #b3b3b3;
-    background-color: #0f0f0f;
+    background-color: #000;
   }
+  /* catch scroll bar of focused treeview like this:
+  QTreeView:focus QScrollBar:vertical {
+  }*/
 
   /* "add-page" and "sub-page" are the gutter of the scrollbar */
   QScrollBar::add-page, QScrollBar::sub-page {
     min-width: 15px;
     min-height: 15px;
-    background-color: #0f0f0f;
+    background-color: #000;
     border-radius: 3px;
   }
   QScrollBar::handle:horizontal {
