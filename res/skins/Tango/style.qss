@@ -231,7 +231,7 @@ WWidgetGroup {
     background-color: #333;
   }
 #CoverSpinnyHint {
-  font-size: 13px/15px;
+  font-size: 13px/13px;
   font-weight: bold;
   color: #f56200;
 }

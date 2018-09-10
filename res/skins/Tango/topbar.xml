@@ -102,25 +102,35 @@ Description:
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <WidgetGroup>
-            <ObjectName>CrossfaderContainer</ObjectName>
-            <SizePolicy>min,f</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children>
-              <SliderComposed>
-                <TooltipId>crossfader</TooltipId>
-                <Handle>knobs_sliders/crossfader_handle.svg</Handle>
-                <Slider>knobs_sliders/crossfader_scale.svg</Slider>
-                <Horizontal>true</Horizontal>
-                <Connection>
-                  <ConfigKey>[Master],crossfader</ConfigKey>
-                </Connection>
-              </SliderComposed>
-            </Children>
-          </WidgetGroup>
+		      <WidgetGroup>
+		        <SizePolicy>min,min</SizePolicy>
+		        <Layout>horizontal</Layout>
+		        <Children>
+		          <WidgetGroup>
+		            <ObjectName>CrossfaderContainer</ObjectName>
+		            <SizePolicy>min,f</SizePolicy>
+		            <Layout>vertical</Layout>
+		            <Children>
+		              <SliderComposed>
+		                <TooltipId>crossfader</TooltipId>
+		                <Handle>knobs_sliders/crossfader_handle.svg</Handle>
+		                <Slider>knobs_sliders/crossfader_scale.svg</Slider>
+		                <Horizontal>true</Horizontal>
+		                <Connection>
+		                  <ConfigKey>[Master],crossfader</ConfigKey>
+		                </Connection>
+		              </SliderComposed>
+		            </Children>
+		          </WidgetGroup>
+		        </Children>
+		        <Connection>
+		          <ConfigKey persist="true">[Master],show_xfader</ConfigKey>
+		          <BindProperty>visible</BindProperty>
+		        </Connection>
+		      </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_xfader</ConfigKey>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Crossfader -->
