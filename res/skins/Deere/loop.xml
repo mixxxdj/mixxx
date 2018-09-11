@@ -56,9 +56,7 @@
         <Children>
 
           <!-- Workaround for layout spacing -->
-          <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">6f,</SetVariable>
-          </Template>
+          <Template src="skin:spacer_h.xml"/>
 
           <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="TooltipId">loop_in</SetVariable>
@@ -92,8 +90,10 @@
           </Template>
 
           <!-- Workaround for layout spacing -->
+          <Template src="skin:spacer_h.xml"/>
+
           <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">8f,</SetVariable>
+            <SetVariable name="width">1f,</SetVariable>
           </Template>
 
           <Template src="skin:left_right_display_2state_button.xml">
