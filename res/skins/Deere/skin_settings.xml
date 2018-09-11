@@ -192,12 +192,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9675; More Hotcues</Text>
+              <Text>&#9675; 8 Hotcues</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9679; More Hotcues</Text>
+              <Text>&#9679; 8 Hotcues</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
