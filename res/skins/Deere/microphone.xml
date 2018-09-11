@@ -93,12 +93,16 @@
               </Template>
 
               <WidgetGroup>
-                <ObjectName>ButtonGrid</ObjectName>
                 <Layout>horizontal</Layout>
                 <Children>
                   <Template src="skin:fx_unit_group_assignment_button.xml">
                     <SetVariable name="EffectUnit">3</SetVariable>
                     <SetVariable name="SourceType">microphone</SetVariable>
+                  </Template>
+
+                  <!-- Workaround for layout spacing -->
+                  <Template src="skin:spacer_hx.xml">
+                    <SetVariable name="width">2f,</SetVariable>
                   </Template>
 
                   <Template src="skin:fx_unit_group_assignment_button.xml">
