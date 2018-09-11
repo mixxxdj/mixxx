@@ -162,7 +162,7 @@ void Track::setTrackMetadata(
         setBpm(actualBpm.getValue());
     }
 
-    if (!newKey.isEmpty()) {
+    if (!newKey.isEmpty() && newKey != mixxx::track::io::key::INVALID) {
         setKeyText(newKey, mixxx::track::io::key::FILE_METADATA);
     }
 }
