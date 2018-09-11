@@ -1335,7 +1335,7 @@ WStarRating {
 }
 
 #EffectUnitEffectsNoParameters {
-  qproperty-layoutSpacing: 30;
+  qproperty-layoutSpacing: 28;
 }
 
 #EffectUnitEffects {
