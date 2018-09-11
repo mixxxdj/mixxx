@@ -1737,7 +1737,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     }
 
     // Save the selection
-    const QList<TrackId> slectedTrackIds = getSelectedTrackIds();
+    const QList<TrackId> selectedTrackIds = getSelectedTrackIds();
     int savedHScrollBarPos = horizontalScrollBar()->value();
 
     sortByColumn(headerSection);
@@ -1746,7 +1746,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     currentSelection->reset(); // remove current selection
 
     QMap<int,int> selectedRows;
-    for (const auto& trackId : slectedTrackIds) {
+    for (const auto& trackId : selectedTrackIds) {
 
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
         // code is broken for playlists because it assumes each trackid is in
