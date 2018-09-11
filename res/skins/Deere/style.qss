@@ -436,6 +436,10 @@ WLibrary QSpinBox {
   max-width: 40px;
 }
 
+#DlgAutoDJ QLabel {
+  font: 10px;
+}
+
 WLibrary QSpinBox:editable {
   background: transparent;
   color:#d2d2d2;
