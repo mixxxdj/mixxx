@@ -8,10 +8,42 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    width="24"
    height="24"
-   id="svg2">
+   id="svg2"
+   sodipodi:docname="btn_fx_focus_on.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="740"
+     id="namedview59"
+     showgrid="true"
+     inkscape:snap-page="true"
+     inkscape:snap-bbox="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-global="true"
+     inkscape:zoom="19.666667"
+     inkscape:cx="4.6688128"
+     inkscape:cy="15.351642"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4570" />
+  </sodipodi:namedview>
   <defs
      id="defs4">
     <linearGradient
@@ -337,7 +369,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -354,8 +386,4 @@
        id="path4669"
        style="fill:#878787;fill-opacity:1;fill-rule:nonzero;stroke:#585858;stroke-width:1.38587463;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
   </g>
-  <path
-     d="M 9.6805691,20.53469 C 7.5185124,19.651574 6.3483312,18.491359 5.5438707,16.104443 4.0746028,11.744973 6.421301,7.0122689 10.780571,5.5429352 15.002128,4.1200182 18.92145,5.6569177 20.540003,9.7535519 20.490373,9.5667869 20.450123,9.3874718 20.38753,9.2017558 18.830868,4.5827419 13.815881,2.083984 9.1973207,3.6407949 4.5787591,5.1976056 2.079698,10.211992 3.63636,14.831005 c 0.9729133,2.886883 3.3090616,4.948472 6.0442091,5.703685 z"
-     id="path4669-2"
-     style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;baseline-shift:baseline;opacity:0.94000005;color:#000000;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:13.13139534;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Sans;-inkscape-font-specification:Sans" />
 </svg>
