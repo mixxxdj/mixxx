@@ -34,6 +34,7 @@
 #DeckTextRow {
   border-top: 0px solid #222;
   border-bottom: 0px solid #222;
+  padding-left: 3px;
 }
 
 #UpperTextRow {
@@ -66,7 +67,7 @@
   border-top: 1px solid #222;
   background-color: transparent;
   margin: 0;
-  padding: 0 3px 0 0;
+  padding: 0 3px 0 3px;
 }
 
 #ControlsRow {
@@ -82,17 +83,13 @@
 /* Rounded corners to split things up */
 
 #Deck1, #Deck3 {
-  border-bottom-right-radius:5px;
-  border-top-right-radius:5px;
-  border-width: 0px 1.5px 3px 3px;
+  border-width: 0px 2.5px 5px 0px;
   border-style: solid;
   border-color: #222;
 }
 
 #Deck2, #Deck4 {
-  border-bottom-left-radius:5px;
-  border-top-left-radius:5px;
-  border-width: 0px 3px 3px 1.5px;
+  border-width: 0px 0px 5px 2.5px;
   border-style: solid;
   border-color: #222;
 }
@@ -1141,7 +1138,7 @@ WNumberRate {
 #Mixer {
   qproperty-layoutAlignment: 'AlignTop';
   background-color: #333;
-  margin: 0px 1.5px 3px 1.5px;
+  margin: 0px 2.5px 5px 2.5px;
   padding: 0px 0px 3px 0px;
 }
 
@@ -1269,7 +1266,7 @@ WStarRating {
   background-color: #333333;
   qproperty-layoutSpacing: 3;
   padding-left: 2px;
-  border-bottom: 2px solid #222222;
+  border-bottom: 4px solid #222222;
 }
 
 #MicLabelContainer,
@@ -1330,7 +1327,7 @@ WStarRating {
 
 #EffectUnitsRow {
   border: 1px solid #222222;
-  border-width: 0px 0px 3px 0px;
+  border-width: 0px 0px 5px 0px;
 }
 
 #EffectUnitNoParameters {

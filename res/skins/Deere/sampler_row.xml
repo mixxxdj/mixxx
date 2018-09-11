@@ -38,8 +38,8 @@
       </Template>
 
       <WidgetGroup>
-        <ObjectName>SamplerMiddleSpacer</ObjectName>
-        <SizePolicy>me,min</SizePolicy>
+        <ObjectName>Spacer22</ObjectName>
+        <Size>3f,1min</Size>
       </WidgetGroup>
 
       <Template src="skin:sampler.xml">
