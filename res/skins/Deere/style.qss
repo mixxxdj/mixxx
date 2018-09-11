@@ -1047,15 +1047,6 @@ WEffectSelector {
   border: none;
   qproperty-alignment: 'AlignHCenter';
   font: 10px;
-  margin-top: -2px;
-}
-
-#SmallKnobLabel {
-  background-color: none;
-  border: none;
-  qproperty-alignment: 'AlignHCenter';
-  font: 9px;
-  margin-top: -2px;
 }
 
 #EffectUnitNameRow {

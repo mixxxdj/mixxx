@@ -38,7 +38,7 @@
             </Connection>
           </PushButton>
           <Label>
-            <Size>30f,10f</Size>
+            <Size>30f,11f</Size>
             <ObjectName>KnobLabel</ObjectName>
             <Text><Variable name="label"/></Text>
           </Label>
