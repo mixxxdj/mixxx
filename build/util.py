@@ -196,4 +196,11 @@ def get_osx_min_version():
     # Mixxx 2.0 supported OS X 10.6 and up.
     # Mixxx >2.0 requires C++11 which is only available with libc++ and OS X
     # 10.7 onwards. std::promise/std::future requires OS X 10.8.
-    return os.popen("/usr/libexec/PlistBuddy -c 'Print os:0' build/osx/product_definition.plist").readline().strip()
+    # Mixxx >2.2 switched to Qt 5, which requires macOS 10.11.
+    # Use SCons to get the path relative to the repository root.
+    product_definition = str(Script.File('#build/osx/product_definition.plist'))
+    p = os.popen("/usr/libexec/PlistBuddy -c 'Print os:0' %s" % product_definition)
+    min_version = p.readline().strip()
+    result_code = p.close()
+    assert result_code is None, "Can't read macOS min version: %s" % min_version
+    return min_version

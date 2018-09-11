@@ -284,7 +284,7 @@ dotappstream_files = Glob('#res/linux/mixxx.appdata.xml')
 hidudev_files = Glob('#res/linux/mixxx.usb.rules')
 
 #Icon file for menu entry
-icon_files = Glob('#res/images/mixxx-icon.png')
+icon_files = Glob('#res/images/mixxx_icon.svg')
 
 #Images for preferences dialog
 image_files = Glob('#res/images/preferences/*')  # These are compiled in to the "mixxx" binary through mixxx.qrc
