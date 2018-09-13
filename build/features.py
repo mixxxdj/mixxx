@@ -1138,6 +1138,9 @@ class Optimize(Feature):
                         # but are not supported on arm builds
                         build.env.Append(CCFLAGS='-msse2')
                         build.env.Append(CCFLAGS='-mfpmath=sse')
+                    # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
+                    # we require macOS 10.12.
+                    # https://stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
                 elif build.architecture_is_arm:
                     self.status = self.build_status(optimize_level)
                     build.env.Append(CCFLAGS='-mfloat-abi=hard')
