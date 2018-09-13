@@ -314,9 +314,15 @@ class Qt(Dependence):
             else:
                 build.env.EnableQt4Modules(qt_modules, debug=False)
 
-            if qt5:
+            if qt5 and build.architecture_is_x86:
                 # Note that -reduce-relocations is enabled by default in Qt5.
-                # So we must build the code with position independent code
+                # So we must build the Mixxx *executable* with position
+                # independent code. -pie / -fPIE must not be used, and Clang
+                # -flto must not be used when producing ELFs (i.e. on Linux).
+                # http://lists.qt-project.org/pipermail/development/2012-January/001418.html
+                # https://github.com/qt/qtbase/blob/c5307203f5c0b0e588cc93e70764c090dd4c2ce0/dist/changes-5.4.2#L37-L45
+                # https://codereview.qt-project.org/#/c/111787/
+                # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65886#c30
                 build.env.Append(CCFLAGS='-fPIC')
 
         elif build.platform_is_bsd:
