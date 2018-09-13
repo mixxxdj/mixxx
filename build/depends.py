@@ -15,9 +15,6 @@ class PortAudio(Dependence):
         elif build.platform_is_linux:
             build.env.ParseConfig('pkg-config portaudio-2.0 --silence-errors --cflags --libs')
 
-        # Turn on PortAudio support in Mixxx
-        build.env.Append(CPPDEFINES='__PORTAUDIO__')
-
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('advapi32')
 
