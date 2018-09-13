@@ -1,6 +1,8 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
+# Documentation: https://www.debian.org/doc/debian-policy/ch-source.html#main-building-script-debian-rules
+
 # no thanks dpkg-buildpackage, we will handle our own C++ optimizations
 DEB_BUILD_OPTIONS= noopt
 
@@ -11,16 +13,16 @@ MIXXX_SCONS_FLAGS = ""
 # will be set to create an environment to build packages for the architecture
 # specified in ARCH.
 ifneq (,$(findstring i386,$(ARCH)))
-       MIXXX_SCONS_FLAGS += machine=x86
+  MIXXX_SCONS_FLAGS += machine=x86
 endif
 ifneq (,$(findstring amd64,$(ARCH)))
-       MIXXX_SCONS_FLAGS += machine=x86_64
+  MIXXX_SCONS_FLAGS += machine=x86_64
 endif
 
 # parallel builds for scons
 ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
-NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
-MIXXX_SCONS_FLAGS += -j$(NUMJOBS)
+  NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+  MIXXX_SCONS_FLAGS += -j$(NUMJOBS)
 endif
 
 MIXXX_SCONS_FLAGS += prefix=/usr
