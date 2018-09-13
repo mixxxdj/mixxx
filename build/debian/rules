@@ -30,7 +30,7 @@ MIXXX_SCONS_FLAGS += install_root=$(CURDIR)/debian/tmp/usr
 	dh $@ --parallel
 
 override_dh_auto_build:
-	scons $(MIXXX_SCONS_FLAGS) w=1
+	scons $(MIXXX_SCONS_FLAGS)
 	docbook-to-man debian/mixxx.sgml > mixxx.1
 
 override_dh_auto_clean:
