@@ -566,12 +566,15 @@ void WaveformWidgetFactory::swap() {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
                 if (pWaveformWidget->getWidth() > 0) {
                     QGLWidget* glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
-                    // Don't swap invalid or invisible widgets. Prevents
-                    // continuous log spew of "QOpenGLContext::swapBuffers()
-                    // called with non-exposed window, behavior is undefined" on
-                    // Qt5.
+                    // Don't swap invalid / invisible widgets or widgets with an
+                    // unexposed window. Prevents continuous log spew of
+                    // "QOpenGLContext::swapBuffers() called with non-exposed
+                    // window, behavior is undefined" on Qt5. See Bug #1779487.
                     if (glw && glw->isValid() && glw->isVisible()) {
-                        VSyncThread::swapGl(glw, i);
+                        auto window = glw->windowHandle();
+                        if (window && window->isExposed()) {
+                            VSyncThread::swapGl(glw, i);
+                        }
                     }
                 }
 
