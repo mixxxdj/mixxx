@@ -1457,16 +1457,6 @@ class MixxxCore(Feature):
                 build.env.Append(LIBPATH=['/usr/local/lib'])
                 build.env.Append(CPPPATH=['/usr/local/include'])
 
-            # Non-standard libpaths for fink and certain (most?) darwin ports
-            if os.path.isdir('/sw/include'):
-                build.env.Append(LIBPATH=['/sw/lib'])
-                build.env.Append(CPPPATH=['/sw/include'])
-
-            # Non-standard libpaths for darwin ports
-            if os.path.isdir('/opt/local/include'):
-                build.env.Append(LIBPATH=['/opt/local/lib'])
-                build.env.Append(CPPPATH=['/opt/local/include'])
-
         elif build.platform_is_bsd:
             build.env.Append(CPPDEFINES='__BSD__')
             build.env.Append(CPPPATH=['/usr/include',
