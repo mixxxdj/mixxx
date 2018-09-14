@@ -597,7 +597,7 @@ class SoundTouch(Dependence):
             env.Append(CPPPATH=[self.SOUNDTOUCH_INTERNAL_PATH])
 
             # Prevents circular import.
-            from features import Optimize
+            from .features import Optimize
 
             # If we do not want optimizations then disable them.
             optimize = (build.flags['optimize'] if 'optimize' in build.flags
