@@ -655,6 +655,10 @@ class ProtoBuf(Dependence):
         if build.platform_is_windows:
             if not build.static_dependencies:
                 build.env.Append(CPPDEFINES='PROTOBUF_USE_DLLS')
+        # SCons is supposed to check this for us by calling 'exists' in build/protoc.py.
+        protoc_binary = build.env['PROTOC']
+        if not conf.CheckProg(protoc_binary):
+            raise Exception("Can't locate '%s' the protobuf compiler." % protoc_binary)
         if not conf.CheckLib(libs):
             raise Exception(
                 "Could not find libprotobuf or its development headers.")
