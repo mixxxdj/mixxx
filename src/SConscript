@@ -571,38 +571,6 @@ if build.platform_is_windows:
                 sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
                 env.Alias('mixxx', sql_dlls)
 
-def win32_find_program_via_registry(program_name):
-    # Windows registry access to find where program is installed
-    import _winreg
-    hklm = _winreg.ConnectRegistry(None, _winreg.HKEY_LOCAL_MACHINE)
-    program_location_handle = None
-    try:
-        program_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\"+program_name, 0, _winreg.KEY_READ)
-    except WindowsError:
-        program_location_handle = None
-
-    if not program_location_handle:
-        try:
-            program_location_handle = _winreg.OpenKey(hklm, "SOFTWARE\\Wow6432Node\\"+program_name, 0, _winreg.KEY_READ)
-        except WindowsError:
-            program_location_handle = None
-
-    program_location = _winreg.QueryValue(program_location_handle, None)
-    if not program_location:
-        try:
-            program_location_tuple = _winreg.QueryValueEx(program_location_handle, "Path")
-            program_location = program_location_tuple[0]
-        except WindowsError:
-            program_location = None
-    if not program_location:
-        try:
-            program_location_tuple = _winreg.QueryValueEx(program_location_handle, "CurrentInstallFolder")
-            program_location = program_location_tuple[0]
-        except WindowsError:
-            program_location = None
-
-    _winreg.CloseKey(hklm)
-    return program_location
 
 def BuildRelease(target, source, env):
     print("==== Mixxx Post-Build Checks ====")
