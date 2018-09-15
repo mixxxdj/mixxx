@@ -139,7 +139,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     restoreHeaderState();
 
     // Here we can override values to prevent restoring corrupt values from database
-    setMovable(true);
+    setSectionsMovable(true);
 
     // Setting true in the next line causes Bug #925619 at least with Qt 4.6.1
     setCascadingSectionResizes(false);

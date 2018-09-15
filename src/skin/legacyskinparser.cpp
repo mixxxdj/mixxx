@@ -1587,7 +1587,7 @@ const char* LegacySkinParser::safeChannelString(const QString& channelStr) {
             return s;
         }
     }
-    QByteArray qba(channelStr.toAscii());
+    QByteArray qba(channelStr.toLatin1());
     char *safe = new char[qba.size() + 1]; // +1 for \0
     int i = 0;
     // Copy string
@@ -1997,7 +1997,7 @@ void LegacySkinParser::setupWidget(const QDomNode& node,
     if (m_pContext->selectBool(node, "LegacyTableViewStyle", false)) {
         style = getLibraryStyle(node);
     }
-    // check if we have a style from color schema: 
+    // check if we have a style from color schema:
     if (!m_style.isEmpty()) {
         style.append(m_style);
         m_style.clear(); // only apply color scheme to the first widget

@@ -1,4 +1,5 @@
 #include <QDesktopServices>
+#include <QStandardPaths>
 #include <QDir>
 #include <QFileDialog>
 #include <QStringList>
@@ -197,7 +198,7 @@ void DlgPrefLibrary::slotCancel() {
 void DlgPrefLibrary::slotAddDir() {
     QString fd = QFileDialog::getExistingDirectory(
         this, tr("Choose a music directory"),
-        QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+        QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
     if (!fd.isEmpty()) {
         emit(requestAddDir(fd));
         slotUpdate();
@@ -273,8 +274,7 @@ void DlgPrefLibrary::slotRelocateDir() {
     if (!dir.exists() && dir.cdUp()) {
         startDir = dir.absolutePath();
     } else if (!dir.exists()) {
-        startDir = QDesktopServices::storageLocation(
-            QDesktopServices::MusicLocation);
+        startDir = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
     }
 
     QString fd = QFileDialog::getExistingDirectory(

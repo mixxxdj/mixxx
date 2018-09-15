@@ -275,10 +275,6 @@ class Qt(Dependence):
         else:
             build.env.Append(CPPDEFINES='QT_SHARED')
 
-        if qt5:
-            # Enable qt4 support.
-            build.env.Append(CPPDEFINES='QT_DISABLE_DEPRECATED_BEFORE')
-
         # Set qt_sqlite_plugin flag if we should package the Qt SQLite plugin.
         build.flags['qt_sqlite_plugin'] = util.get_flags(
             build.env, 'qt_sqlite_plugin', 0)

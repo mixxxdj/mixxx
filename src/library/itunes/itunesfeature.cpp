@@ -1,7 +1,7 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <QXmlStreamReader>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QFileDialog>
 #include <QMenu>
 #include <QAction>
@@ -232,10 +232,10 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
 QString ITunesFeature::getiTunesMusicPath() {
     QString musicFolder;
 #if defined(__APPLE__)
-    musicFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+    musicFolder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation)
                   + "/iTunes/iTunes Music Library.xml";
 #elif defined(__WINDOWS__)
-    musicFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+    musicFolder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation)
                   + "\\iTunes\\iTunes Music Library.xml";
 #else
     musicFolder = "";
@@ -332,7 +332,7 @@ void ITunesFeature::guessMusicLibraryMountpoint(QXmlStreamReader &xml) {
 TreeItem* ITunesFeature::importLibrary() {
     bool isTracksParsed=false;
     bool isMusicFolderLocatedAfterTracks=false;
-  
+
     //Give thread a low priority
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
@@ -387,10 +387,10 @@ TreeItem* ITunesFeature::importLibrary() {
     }
 
     itunes_file.close();
-    
+
     if (isMusicFolderLocatedAfterTracks) {
         qDebug() << "Updating iTunes real path from " << m_dbItunesRoot << " to " << m_mixxxItunesRoot;
-        // In some iTunes files "Music Folder" XML node is located at the end of file. So, we need to 
+        // In some iTunes files "Music Folder" XML node is located at the end of file. So, we need to
         QSqlQuery query(m_database);
         query.prepare("UPDATE itunes_library SET location = replace( location, :itunes_path, :mixxx_path )");
         query.bindValue(":itunes_path", m_dbItunesRoot.replace(localhost_token(), ""));
@@ -699,7 +699,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
 
                 if (key == "Playlist Items") {
                     isPlaylistItemsStarted = true;
-                    
+
                     //if the playlist is prebuild don't hit the database
                     if (isSystemPlaylist) continue;
                     query_insert_to_playlists.bindValue(":id", playlist_id);

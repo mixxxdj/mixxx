@@ -59,7 +59,7 @@ bool SongDownloader::downloadFromQueue() {
     //Set up user agent for great justice
     QString mixxxUA = QString("%1 %2").arg(QApplication::applicationName(),
                                            Version::version());
-    QByteArray mixxxUABA = mixxxUA.toAscii();
+    QByteArray mixxxUABA = mixxxUA.toLatin1();
     m_pRequest->setRawHeader("User-Agent", mixxxUABA);
     m_pReply = m_pNetwork->get(*m_pRequest);
 

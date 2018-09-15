@@ -233,7 +233,7 @@ bool ControllerOutputMappingTableModel::setData(const QModelIndex& index,
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_ACTION:
-                mapping.controlKey = qVariantValue<ConfigKey>(value);
+                mapping.controlKey = value.value<ConfigKey>();
                 emit(dataChanged(index, index));
                 return true;
             case MIDI_COLUMN_COMMENT:

@@ -35,15 +35,15 @@ void AcoustidClient::setTimeout(int msec) {
 }
 
 void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
-    QUrl url;
-    url.addQueryItem("format", "xml");
-    url.addQueryItem("client", CLIENT_APIKEY);
-    url.addQueryItem("duration", QString::number(duration));
-    url.addQueryItem("meta", "recordingids");
-    url.addQueryItem("fingerprint", fingerprint);
-    QByteArray body = url.encodedQuery();
+    QUrlQuery urlQuery;
+    urlQuery.addQueryItem("format", "xml");
+    urlQuery.addQueryItem("client", CLIENT_APIKEY);
+    urlQuery.addQueryItem("duration", QString::number(duration));
+    urlQuery.addQueryItem("meta", "recordingids");
+    urlQuery.addQueryItem("fingerprint", fingerprint);
+    QByteArray body = urlQuery.query().toUtf8();
 
-    QNetworkRequest req(QUrl::fromEncoded(ACOUSTID_URL.toAscii()));
+    QNetworkRequest req(QUrl::fromEncoded(ACOUSTID_URL.toLatin1()));
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
 

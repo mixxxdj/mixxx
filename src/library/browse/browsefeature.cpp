@@ -6,7 +6,7 @@
 #include <QDirModel>
 #include <QStringList>
 #include <QFileInfo>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QAction>
 #include <QMenu>
 #include <QPushButton>
@@ -411,14 +411,14 @@ QString BrowseFeature::extractNameFromPath(QString spath) {
 QStringList BrowseFeature::getDefaultQuickLinks() const {
     // Default configuration
     QStringList mixxxMusicDirs = m_pTrackCollection->getDirectoryDAO().getDirs();
-    QDir osMusicDir(QDesktopServices::storageLocation(
-            QDesktopServices::MusicLocation));
-    QDir osDocumentsDir(QDesktopServices::storageLocation(
-            QDesktopServices::DocumentsLocation));
-    QDir osHomeDir(QDesktopServices::storageLocation(
-            QDesktopServices::HomeLocation));
-    QDir osDesktopDir(QDesktopServices::storageLocation(
-            QDesktopServices::DesktopLocation));
+    QDir osMusicDir(QStandardPaths::writableLocation(
+            QStandardPaths::MusicLocation));
+    QDir osDocumentsDir(QStandardPaths::writableLocation(
+            QStandardPaths::DocumentsLocation));
+    QDir osHomeDir(QStandardPaths::writableLocation(
+            QStandardPaths::HomeLocation));
+    QDir osDesktopDir(QStandardPaths::writableLocation(
+            QStandardPaths::DesktopLocation));
     QDir osDownloadsDir(osHomeDir);
     // TODO(XXX) i18n -- no good way to get the download path. We could tr() it
     // but the translator may not realize we want the usual name of the

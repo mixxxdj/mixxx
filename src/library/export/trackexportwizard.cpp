@@ -2,7 +2,7 @@
 
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QMessageBox>
 
 #include "util/assert.h"
@@ -18,7 +18,7 @@ void TrackExportWizard::exportTracks() {
 bool TrackExportWizard::selectDestinationDirectory() {
     QString lastExportDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastTrackCopyDirectory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
     QString destDir = QFileDialog::getExistingDirectory(
             NULL, tr("Export Track Files To"), lastExportDirectory);
@@ -32,4 +32,3 @@ bool TrackExportWizard::selectDestinationDirectory() {
     m_dialog.reset(new TrackExportDlg(m_parent, m_pConfig, m_worker.data()));
     return true;
 }
-

@@ -35,13 +35,15 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
     QList<Param> parameters;
     parameters << Param("inc", "artists+releases+media");
 
+    QUrlQuery query;
+    query.setQueryItems(parameters);
     QUrl url(m_TrackUrl + mbid);
-    url.setQueryItems(parameters);
+    url.setQuery(query);
     qDebug() << "MusicBrainzClient GET request:" << url.toString();
     QNetworkRequest req(url);
     // http://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings
     QString mixxxMusicBrainzId(Version::applicationName() + "/" + Version::version() + " ( " + MIXXX_WEBSITE_URL + " )");
-    req.setRawHeader("User-Agent", mixxxMusicBrainzId.toAscii());
+    req.setRawHeader("User-Agent", mixxxMusicBrainzId.toLatin1());
     QNetworkReply* reply = m_network.get(req);
     connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
     m_requests[reply] = id;
@@ -113,7 +115,7 @@ void MusicBrainzClient::requestFinished() {
         case QXmlStreamReader::StartDocument:
         {
             // The character encoding is always an ASCII string
-            codecName = reader.documentEncoding().toAscii();
+            codecName = reader.documentEncoding().toLatin1();
             qDebug() << "MusicBrainzClient GET reply codec:"
                     << codecName.constData();
             qDebug() << "MusicBrainzClient GET reply body:"

@@ -1,5 +1,5 @@
 #include <QApplication>
-#include <QDesktopServices>
+#include <QStandardPaths>
 
 #include "sources/soundsourceproxy.h"
 
@@ -59,8 +59,8 @@ QList<QDir> getSoundSourcePluginDirectories() {
         pluginDirs << QDir(pluginPath);
     }
 
-    const QString dataLocation = QDesktopServices::storageLocation(
-            QDesktopServices::DataLocation);
+    const QString dataLocation = QStandardPaths::writableLocation(
+        QStandardPaths::DataLocation);
     const QString applicationPath = QCoreApplication::applicationDirPath();
 
 #ifdef __LINUX__

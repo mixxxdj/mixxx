@@ -659,7 +659,7 @@ void CrateFeature::slotExportPlaylist() {
 
     QString lastCrateDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastImportExportCrateDirectory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
     QString file_location = QFileDialog::getSaveFileName(
         NULL,

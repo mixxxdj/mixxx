@@ -66,7 +66,7 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
         libusb_get_string_descriptor_ascii(handle, id, buf, sizeof(buf));
     }
 
-    return QString::fromAscii((char*)buf);
+    return QString::fromLatin1((char*)buf);
 }
 
 

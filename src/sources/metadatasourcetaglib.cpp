@@ -75,7 +75,7 @@ class AiffFile: public TagLib::RIFF::AIFF::File {
     // From the specs: 13. TEXT CHUNKS - NAME, AUTHOR, COPYRIGHT, ANNOTATION
     // "text: contains pure ASCII characters"
     // NOTE(uklotzde): In order to be independent of the currently defined
-    // codec we use QString::fromLatin1() instead of QString::fromAscii()
+    // codec we use QString::fromLatin1() instead of QString::fromLatin1()
     static QString decodeChunkText(const TagLib::ByteVector& chunkData) {
         return QString::fromLatin1(chunkData.data(), chunkData.size());
     }
