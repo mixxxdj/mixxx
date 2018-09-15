@@ -282,6 +282,9 @@ class MediaFoundation(Feature):
             raise Exception('Did not find Mfreadwrite.lib - exiting!')
         build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
 
+    def sources(self, build):
+        return ['sources/soundsourcemediafoundation.cpp']
+
 
 class IPod(Feature):
     def description(self):

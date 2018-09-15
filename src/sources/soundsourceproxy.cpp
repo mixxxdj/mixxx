@@ -25,6 +25,9 @@
 #include "sources/soundsourcemodplug.h"
 #endif
 #include "sources/soundsourceflac.h"
+#ifdef __MEDIAFOUNDATION__
+#include "sources/soundsourcemediafoundation.h"
+#endif
 
 #include "library/coverartutils.h"
 #include "library/coverartcache.h"
@@ -179,6 +182,10 @@ void SoundSourceProxy::loadPlugins() {
 #ifdef __COREAUDIO__
     s_soundSourceProviders.registerProvider(
             std::make_shared<mixxx::SoundSourceProviderCoreAudio>());
+#endif
+#ifdef  __MEDIAFOUNDATION__
+    s_soundSourceProviders.registerProvider(
+            std::make_shared<mixxx::SoundSourceProviderMediaFoundation>());
 #endif
 
     // Scan for and initialize all plugins.

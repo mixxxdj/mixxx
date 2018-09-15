@@ -1,4 +1,4 @@
-#include "soundsourceproviderregistry.h"
+#include "sources/soundsourceproviderregistry.h"
 
 #include "util/logger.h"
 
@@ -35,6 +35,16 @@ void SoundSourceProviderRegistry::registerPluginLibrary(
     SoundSourceProviderPointer pProvider(
             pPluginLibrary->getSoundSourceProvider());
     DEBUG_ASSERT(pProvider);
+
+#ifdef __MEDIAFOUNDATION__
+    // SoundSourceMediaFoundation is built-in now. This is the name of the
+    // plugin in Mixxx 2.2 and below.
+    if (pProvider->getName() == "Microsoft Media Foundation") {
+        kLogger.warning() << "Skipping MediaFoundation SoundSource plugin.";
+        return;  // abort registration
+    }
+#endif
+
     const QStringList supportedFileExtensions(
             pProvider->getSupportedFileExtensions());
     if (supportedFileExtensions.isEmpty()) {

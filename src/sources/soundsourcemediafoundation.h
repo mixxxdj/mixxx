@@ -5,7 +5,7 @@
 #include <mfidl.h>
 #include <mfreadwrite.h>
 
-#include "sources/soundsourceplugin.h"
+#include "sources/soundsourceprovider.h"
 #include "util/readaheadsamplebuffer.h"
 
 
@@ -55,7 +55,7 @@ class StreamUnitConverter final {
     double m_fromStreamUnitsToSampleFrames;
 };
 
-class SoundSourceMediaFoundation: public mixxx::SoundSourcePlugin {
+class SoundSourceMediaFoundation: public SoundSource {
   public:
     explicit SoundSourceMediaFoundation(const QUrl& url);
     ~SoundSourceMediaFoundation() override;
@@ -69,9 +69,9 @@ class SoundSourceMediaFoundation: public mixxx::SoundSourcePlugin {
   private:
     OpenResult tryOpen(
             OpenMode mode,
-            const mixxx::AudioSource::OpenParams& params) override;
+            const AudioSource::OpenParams& params) override;
 
-    bool configureAudioStream(const mixxx::AudioSource::OpenParams& params);
+    bool configureAudioStream(const AudioSource::OpenParams& params);
     bool readProperties();
 
     void seekSampleFrame(SINT frameIndex);
@@ -98,13 +98,6 @@ class SoundSourceProviderMediaFoundation: public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider(int logLevel, int logFlushLevel);
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*);
 
 
 #endif // MIXXX_SOUNDSOURCEMEDIAFOUNDATION_H
