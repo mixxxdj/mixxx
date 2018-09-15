@@ -610,10 +610,11 @@ class PerfTools(Feature):
         if not self.enabled(build):
             return
 
-        build.env.Append(LIBS="tcmalloc")
+        if not conf.CheckLib('tcmalloc'):
+            raise Exception('Could not find tcmalloc. Please install it or compile Mixxx with perftools=0.')
 
-        if int(build.flags['perftools_profiler']):
-            build.env.Append(LIBS="profiler")
+        if int(build.flags['perftools_profiler']) and not conf.CheckLib('profiler'):
+            raise Exception('Could not find the google-perftools profiler. Please install it or compile Mixxx with perftools_profiler=0.')
 
 
 class AsmLib(Feature):
