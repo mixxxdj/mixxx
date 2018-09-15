@@ -111,13 +111,6 @@ class UPower(Dependence):
 class OggVorbis(Dependence):
 
     def configure(self, build, conf):
-#        if build.platform_is_windows and build.machine_is_64bit:
-            # For some reason this has to be checked this way on win64,
-            # otherwise it looks for the dll lib which will cause a conflict
-            # later
-#            if not conf.CheckLib('vorbisfile_static'):
-#                raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
-#        else:
         libs = ['libvorbisfile', 'vorbisfile']
         if not conf.CheckLib(libs):
             Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
@@ -148,8 +141,6 @@ class OggVorbis(Dependence):
 class SndFile(Dependence):
 
     def configure(self, build, conf):
-        # if not conf.CheckLibWithHeader(['sndfile', 'libsndfile', 'libsndfile-1'], 'sndfile.h', 'C'):
-        # TODO: check for debug version on Windows when one is available
         if not conf.CheckLib(['sndfile', 'libsndfile', 'libsndfile-1']):
             raise Exception(
                 "Did not find libsndfile or it\'s development headers")
