@@ -88,10 +88,13 @@ Depends(mixxx_bin, soundsource_plugins)
 # root. Don't do it on windows because the binary can't run on its own and needs
 # the DLLs present with it.
 if not build.platform_is_windows:
-    Command("../mixxx", mixxx_bin, Copy("$TARGET", "$SOURCE"))
+    copy_mixxx_bin = Command("../mixxx", mixxx_bin, Copy("$TARGET", "$SOURCE"))
+    Default(copy_mixxx_bin)
+else:
+    Default(mixxx_bin)
 
 test_bin = None
-def build_tests():
+def define_test_targets(default=False):
         global test_bin
         test_files = Glob('test/*.cpp', strings=True)
         test_env = env.Clone()
@@ -132,21 +135,23 @@ def build_tests():
         env.Alias('mixxx-test', test_bin)
 
         if not build.platform_is_windows:
-                Command("../", test_bin, Copy("$TARGET", "$SOURCE"))
+                copy_test_bin = Command("../mixxx-test", test_bin, Copy("$TARGET", "$SOURCE"))
+                # Running mixxx-test via a Command is hacky because it expects a
+                # target. Using the source '../mixxx-test' makes the Command
+                # depend on the Copy.
+                run_test = Command('mixxx-test-results', '../mixxx-test', './mixxx-test')
+                env.Alias('test', run_test)
 
-def run_tests():
-        ret = Execute("./mixxx-test")
-        if ret != 0:
-                print("WARNING: Not all tests pass. See mixxx-test output.")
-                Exit(ret)
+                if default:
+                        Default(copy_test_bin)
+        else:
+                if default:
+                        Default(test_bin)
 
-if int(build.flags['test']):
-        print("Building tests.")
-        build_tests()
 
-if 'test' in BUILD_TARGETS:
-        print("Running tests.")
-        run_tests()
+# Always define test targets. If the 'test' flag is 1, then build the mixxx-test
+# target by default. If 'test' is in the target list then run mixxx-test.
+define_test_targets(default=int(build.flags['test']))
 
 def construct_version(build, mixxx_version, branch_name, vcs_revision):
         if branch_name.startswith('release-'):
