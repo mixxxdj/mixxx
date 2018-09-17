@@ -551,10 +551,7 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Mix talkover into master mix
             if (m_pNumMicsConfigured->get() > 0) {
-                SampleUtil::copy2WithGain(m_pMaster,
-                    m_pMaster, 1.0,
-                    m_pTalkover, 1.0,
-                    m_iBufferSize);
+                SampleUtil::add(m_pMaster, m_pTalkover, m_iBufferSize);
             }
 
             // Apply master gain
@@ -582,10 +579,7 @@ void EngineMaster::process(const int iBufferSize) {
 
             // Mix talkover with master
             if (m_pNumMicsConfigured->get() > 0) {
-                SampleUtil::copy2WithGain(m_pMaster,
-                    m_pMaster, 1.0,
-                    m_pTalkover, 1.0,
-                    m_iBufferSize);
+                SampleUtil::add(m_pMaster, m_pTalkover, m_iBufferSize);
             }
 
             // Copy master mix (with talkover mixed in) to booth output with booth gain
@@ -661,10 +655,7 @@ void EngineMaster::process(const int iBufferSize) {
                 // Copy the master mix to a separate buffer before delaying it
                 // to avoid delaying the master output.
                 m_pLatencyCompensationDelay->process(m_pSidechainMix, m_iBufferSize);
-                SampleUtil::copy2WithGain(m_pSidechainMix,
-                                          m_pSidechainMix, 1.0,
-                                          m_pTalkover, 1.0,
-                                          m_iBufferSize);
+                SampleUtil::add(m_pSidechainMix, m_pTalkover, m_iBufferSize);
             }
         }
 
@@ -772,7 +763,7 @@ void EngineMaster::processHeadphones(const double masterMixGainInHeadphones) {
     // Apply headphone gain
     CSAMPLE headphoneGain = m_pHeadGain->get();
     SampleUtil::applyRampingGain(m_pHead, m_headphoneGainOld,
-                                headphoneGain, m_iBufferSize);
+                                 headphoneGain, m_iBufferSize);
     m_headphoneGainOld = headphoneGain;
 }
 
