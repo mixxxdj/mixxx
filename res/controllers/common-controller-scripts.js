@@ -161,7 +161,7 @@ script.absoluteLin = function (value, low, high, min, max) {
     if (!max) {
         max = 127;
     }
-    
+
     if (value <= min) {
         return low;
     } else if (value >= max) {
@@ -241,7 +241,7 @@ script.absoluteNonLinInverse = function (value, low, mid, high, min, max) {
     }
     var center = (max-min)/2;
     var result;
-    
+
     if (value==mid) {
         return center;
     } else if (value<mid) {
@@ -249,7 +249,7 @@ script.absoluteNonLinInverse = function (value, low, mid, high, min, max) {
     } else {
         result = center + (center/(high-mid)) * (value-mid);
     }
-    
+
     if (result < min) {
         return min;
     } else if (result > max) {
@@ -404,8 +404,12 @@ bpm.tapButton = function(deck) {
     }
     var average = sum/bpm.tap.length;
 
-    var fRateScale = average/engine.getValue("[Channel"+deck+"]","bpm");
-
+    var fRateScale = average/engine.getValue("[Channel"+deck+"]","file_bpm");
+    // "bpm" was changed in 1.10 to reflect the *adjusted* bpm, but I presume it
+    // was supposed to return the tracks bpm (which it did before the change).
+    // "file_bpm" is supposed to return the set BPM of the loaded track of the
+    // channel.
+    
     // Adjust the rate:
     fRateScale = (fRateScale-1.)/engine.getValue("[Channel"+deck+"]","rateRange");
 
