@@ -189,7 +189,8 @@ bool CrateFilterNode::match(const TrackPointer& pTrack) const {
 }
 
 QString CrateFilterNode::toSql() const {
-    return QString("id IN (%1)").arg(CrateStorage::formatQueryForTrackIdsByCrateNameLike(m_crateNameLike));
+    return QString("id IN (%1)").arg(
+            m_pCrateStorage->formatQueryForTrackIdsByCrateNameLike(m_crateNameLike));
 }
 
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
