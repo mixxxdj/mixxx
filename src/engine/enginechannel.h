@@ -41,7 +41,7 @@ class EngineChannel : public EngineObject {
 
     EngineChannel(const ChannelHandleAndGroup& handle_group,
                   ChannelOrientation defaultOrientation = CENTER,
-                  EffectsManager* pEffectsManager = nullptr,
+                  std::shared_ptr<EffectsManager> pEffectsManager = std::shared_ptr<EffectsManager>(),
                   bool isTalkoverChannel = false);
     virtual ~EngineChannel();
 
@@ -75,7 +75,7 @@ class EngineChannel : public EngineObject {
 
   protected:
     const ChannelHandleAndGroup m_group;
-    EffectsManager* m_pEffectsManager;
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
 
     EngineVuMeter m_vuMeter;
     ControlProxy* m_pSampleRate;
@@ -98,4 +98,3 @@ class EngineChannel : public EngineObject {
 };
 
 #endif
-

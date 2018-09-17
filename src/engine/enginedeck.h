@@ -41,7 +41,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
     EngineDeck(const ChannelHandleAndGroup& handle_group, UserSettingsPointer pConfig,
-               EngineMaster* pMixingEngine, EffectsManager* pEffectsManager,
+               EngineMaster* pMixingEngine, std::shared_ptr<EffectsManager> pEffectsManager,
                EngineChannel::ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineDeck();
 

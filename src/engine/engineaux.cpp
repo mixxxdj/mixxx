@@ -13,7 +13,8 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "util/sample.h"
 
-EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager)
+EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group,
+                     std::shared_ptr<EffectsManager> pEffectsManager)
         : EngineChannel(handle_group, EngineChannel::CENTER, pEffectsManager),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
@@ -75,7 +76,7 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
     double pregain = m_pPregain->get();
     if (sampleBuffer) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
-        EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
+        EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager ? m_pEffectsManager->getEngineEffectsManager() : nullptr;
         if (pEngineEffectsManager != nullptr) {
             pEngineEffectsManager->processPreFaderInPlace(
                 m_group.handle(), m_pEffectsManager->getMasterHandle(),

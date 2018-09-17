@@ -40,7 +40,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     ChannelHandleAndGroup channelGroup =
             pMixingEngine->registerChannelGroup(group);
     m_pChannel = std::make_shared<EngineDeck>(channelGroup, pConfig, pMixingEngine.get(),
-                                              pEffectsManager.get(), defaultOrientation);
+                                              pEffectsManager, defaultOrientation);
 
     m_pInputConfigured = std::make_unique<ControlProxy>(group, "input_configured", this);
     m_pPassthroughEnabled = std::make_unique<ControlProxy>(group, "passthrough", this);

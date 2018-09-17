@@ -29,7 +29,7 @@
 EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        UserSettingsPointer pConfig,
                        EngineMaster* pMixingEngine,
-                       EffectsManager* pEffectsManager,
+                       std::shared_ptr<EffectsManager> pEffectsManager,
                        EngineChannel::ChannelOrientation defaultOrientation)
         : EngineChannel(handle_group, defaultOrientation, pEffectsManager),
           m_pConfig(pConfig),
@@ -84,7 +84,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     // Apply pregain
     m_pPregain->process(pOut, iBufferSize);
 
-    EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
+    EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager ? m_pEffectsManager->getEngineEffectsManager() : nullptr;
     if (pEngineEffectsManager != nullptr) {
         pEngineEffectsManager->processPreFaderInPlace(
             m_group.handle(), m_pEffectsManager->getMasterHandle(),

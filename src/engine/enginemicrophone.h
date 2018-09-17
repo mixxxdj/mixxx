@@ -23,7 +23,7 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
     EngineMicrophone(const ChannelHandleAndGroup& handle_group,
-                     EffectsManager* pEffectsManager);
+                     std::shared_ptr<EffectsManager> pEffectsManager);
     virtual ~EngineMicrophone();
 
     bool isActive();

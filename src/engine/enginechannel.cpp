@@ -22,7 +22,8 @@
 
 EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
                              EngineChannel::ChannelOrientation defaultOrientation,
-                             EffectsManager* pEffectsManager, bool isTalkoverChannel)
+                             std::shared_ptr<EffectsManager> pEffectsManager,
+                             bool isTalkoverChannel)
         : m_group(handle_group),
           m_pEffectsManager(pEffectsManager),
           m_vuMeter(getGroup()),
@@ -49,7 +50,7 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
     m_pTalkover = new ControlPushButton(ConfigKey(getGroup(), "talkover"));
     m_pTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
 
-    if (m_pEffectsManager != nullptr) {
+    if (m_pEffectsManager) {
         m_pEffectsManager->registerInputChannel(handle_group);
     }
 }

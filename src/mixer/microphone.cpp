@@ -13,7 +13,7 @@ Microphone::Microphone(QObject* pParent, const QString& group, int index,
         : BasePlayer(pParent, group) {
     ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
     auto pMicrophone = std::make_shared<EngineMicrophone>(
-            channelGroup, pEffectsManager.get());
+            channelGroup, pEffectsManager);
     pEngine->addChannel(pMicrophone);
     AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 2, index);
     pSoundManager->registerInput(micInput, pMicrophone);

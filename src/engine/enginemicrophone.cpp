@@ -13,7 +13,7 @@
 #include "util/sample.h"
 
 EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
-                                   EffectsManager* pEffectsManager)
+                                   std::shared_ptr<EffectsManager> pEffectsManager)
         : EngineChannel(handle_group, EngineChannel::CENTER, pEffectsManager, true),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
@@ -75,7 +75,7 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
     double pregain =  m_pPregain->get();
     if (sampleBuffer) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
-        EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
+        EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager ? m_pEffectsManager->getEngineEffectsManager() : nullptr;
         if (pEngineEffectsManager != nullptr) {
             pEngineEffectsManager->processPreFaderInPlace(
                 m_group.handle(), m_pEffectsManager->getMasterHandle(),

@@ -11,7 +11,7 @@ Auxiliary::Auxiliary(QObject* pParent, const QString& group, int index,
                      std::shared_ptr<EffectsManager> pEffectsManager)
         : BasePlayer(pParent, group) {
     ChannelHandleAndGroup channelGroup = pEngine->registerChannelGroup(group);
-    auto pAuxiliary = std::make_shared<EngineAux>(channelGroup, pEffectsManager.get());
+    auto pAuxiliary = std::make_shared<EngineAux>(channelGroup, pEffectsManager);
     pEngine->addChannel(pAuxiliary);
     AudioInput auxInput = AudioInput(AudioPath::AUXILIARY, 0, 2, index);
     pSoundManager->registerInput(auxInput, pAuxiliary);
