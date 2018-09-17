@@ -28,6 +28,7 @@
 #include "preferences/usersettings.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "soundio/soundmanagerconfig.h"
+#include "soundio/soundmanagerutil.h"
 #include "soundio/sounddevice.h"
 #include "util/types.h"
 #include "util/cmdlineargs.h"
@@ -36,8 +37,6 @@
 class EngineMaster;
 class AudioOutput;
 class AudioInput;
-class AudioSource;
-class AudioDestination;
 class ControlObject;
 class ControlProxy;
 class SoundDeviceNotFound;
@@ -107,8 +106,8 @@ class SoundManager : public QObject {
     void writeProcess() const;
     void readProcess() const;
 
-    void registerOutput(AudioOutput output, AudioSource *src);
-    void registerInput(AudioInput input, AudioDestination *dest);
+    void registerOutput(AudioOutput output, std::shared_ptr<AudioSource> src);
+    void registerInput(AudioInput input, std::shared_ptr<AudioDestination> dest);
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
 
@@ -130,8 +129,8 @@ class SoundManager : public QObject {
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
     void devicesSetup(); // emitted when the sound devices have been set up
-    void outputRegistered(AudioOutput output, AudioSource *src);
-    void inputRegistered(AudioInput input, AudioDestination *dest);
+    void outputRegistered(AudioOutput output, std::shared_ptr<AudioSource> src);
+    void inputRegistered(AudioInput input, std::shared_ptr<AudioDestination> dest);
 
   private:
     // Closes all the devices and empties the list of devices we have.
@@ -155,8 +154,8 @@ class SoundManager : public QObject {
 
     SoundManagerConfig m_config;
     SoundDevicePointer m_pErrorDevice;
-    QHash<AudioOutput, AudioSource*> m_registeredSources;
-    QHash<AudioInput, AudioDestination*> m_registeredDestinations;
+    QHash<AudioOutput, std::shared_ptr<AudioSource>> m_registeredSources;
+    QHash<AudioInput, std::shared_ptr<AudioDestination>> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
     ControlObject* m_pControlObjectVinylControlGainCO;
 

@@ -39,8 +39,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
           m_replaygainPending(false) {
     ChannelHandleAndGroup channelGroup =
             pMixingEngine->registerChannelGroup(group);
-    m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine.get(),
-                                pEffectsManager.get(), defaultOrientation);
+    m_pChannel = std::make_shared<EngineDeck>(channelGroup, pConfig, pMixingEngine.get(),
+                                              pEffectsManager.get(), defaultOrientation);
 
     m_pInputConfigured = std::make_unique<ControlProxy>(group, "input_configured", this);
     m_pPassthroughEnabled = std::make_unique<ControlProxy>(group, "passthrough", this);
@@ -392,7 +392,7 @@ void BaseTrackPlayerImpl::slotPlayToggled(double v) {
     }
 }
 
-EngineDeck* BaseTrackPlayerImpl::getEngineDeck() const {
+std::shared_ptr<EngineDeck> BaseTrackPlayerImpl::getEngineDeck() const {
     return m_pChannel;
 }
 

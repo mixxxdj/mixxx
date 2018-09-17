@@ -183,7 +183,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
         for (const auto& in: pDevice->inputs()) {
             // Need to tell all registered AudioDestinations for this AudioInput
             // that the input was disconnected.
-            for (QHash<AudioInput, AudioDestination*>::const_iterator it =
+            for (QHash<AudioInput, std::shared_ptr<AudioDestination>>::const_iterator it =
                          m_registeredDestinations.find(in);
                  it != m_registeredDestinations.end() && it.key() == in; ++it) {
                 it.value()->onInputUnconfigured(in);
@@ -193,7 +193,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
         for (const auto& out: pDevice->outputs()) {
             // Need to tell all registered AudioSources for this AudioOutput
             // that the output was disconnected.
-            for (QHash<AudioOutput, AudioSource*>::const_iterator it =
+            for (QHash<AudioOutput, std::shared_ptr<AudioSource>>::const_iterator it =
                     m_registeredSources.find(out);
                     it != m_registeredSources.end() && it.key() == out; ++it) {
                 it.value()->onOutputDisconnected(out);
@@ -591,7 +591,7 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
                  e = inputs.end(); i != e; ++i) {
         const AudioInputBuffer& in = *i;
         CSAMPLE* pInputBuffer = in.getBuffer();
-        for (QHash<AudioInput, AudioDestination*>::const_iterator it =
+        for (QHash<AudioInput, std::shared_ptr<AudioDestination>>::const_iterator it =
                 m_registeredDestinations.find(in);
                 it != m_registeredDestinations.end() && it.key() == in; ++it) {
             it.value()->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
@@ -615,7 +615,7 @@ void SoundManager::readProcess() const {
     }
 }
 
-void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
+void SoundManager::registerOutput(AudioOutput output, std::shared_ptr<AudioSource> src) {
     if (m_registeredSources.contains(output)) {
         qDebug() << "WARNING: AudioOutput already registered!";
     }
@@ -623,7 +623,7 @@ void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
     emit(outputRegistered(output, src));
 }
 
-void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
+void SoundManager::registerInput(AudioInput input, std::shared_ptr<AudioDestination> dest) {
     if (m_registeredDestinations.contains(input)) {
         // note that this can be totally ok if we just want a certain
         // AudioInput to be going to a different AudioDest -bkgood
@@ -631,7 +631,6 @@ void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
     }
 
     m_registeredDestinations.insertMulti(input, dest);
-
     emit(inputRegistered(input, dest));
 }
 

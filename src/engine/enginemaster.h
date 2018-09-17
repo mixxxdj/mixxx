@@ -27,7 +27,7 @@
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 #include "engine/channelhandle.h"
-#include "soundio/soundmanager.h"
+#include "engine/sidechain/enginesidechain.h"
 #include "soundio/soundmanagerutil.h"
 #include "recording/recordingmanager.h"
 
@@ -39,7 +39,6 @@ class EngineFlanger;
 class EngineVuMeter;
 class ControlPotmeter;
 class ControlPushButton;
-class EngineSideChain;
 class EffectsManager;
 class SyncWorker;
 class GuiTick;
@@ -70,9 +69,6 @@ class EngineMaster : public QObject, public AudioSource {
                    m_pChannelHandleFactory->getOrCreateHandle(group), group);
     }
 
-    // Register the sound I/O that does not correspond to any EngineChannel object
-    void registerNonEngineChannelSoundIO(SoundManager* pSoundManager);
-
     // WARNING: These methods are called by the main thread. They should only
     // touch the volatile bool connected indicators (see below). However, when
     // these methods are called the callback is guaranteed to be inactive
@@ -87,8 +83,8 @@ class EngineMaster : public QObject, public AudioSource {
 
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.
-    void addChannel(EngineChannel* pChannel);
-    EngineChannel* getChannel(const QString& group);
+    void addChannel(std::shared_ptr<EngineChannel> pChannel);
+    std::shared_ptr<EngineChannel> getChannel(const QString& group);
     static inline double gainForOrientation(EngineChannel::ChannelOrientation orientation,
                                             double leftGain,
                                             double centerGain,
@@ -118,20 +114,19 @@ class EngineMaster : public QObject, public AudioSource {
     const CSAMPLE* getChannelBuffer(QString name) const;
     const CSAMPLE* getSidechainBuffer() const;
 
-    EngineSideChain* getSideChain() const {
+    std::shared_ptr<EngineSideChain> getSideChain() const {
         return m_pEngineSideChain;
     }
 
     struct ChannelInfo {
         ChannelInfo(int index)
-                : m_pChannel(NULL),
-                  m_pBuffer(NULL),
+                : m_pBuffer(NULL),
                   m_pVolumeControl(NULL),
                   m_pMuteControl(NULL),
                   m_index(index) {
         }
         ChannelHandle m_handle;
-        EngineChannel* m_pChannel;
+        std::shared_ptr<EngineChannel> m_pChannel;
         CSAMPLE* m_pBuffer;
         ControlObject* m_pVolumeControl;
         ControlPushButton* m_pMuteControl;
@@ -325,7 +320,7 @@ class EngineMaster : public QObject, public AudioSource {
     EngineDelay* m_pLatencyCompensationDelay;
 
     EngineVuMeter* m_pVumeter;
-    EngineSideChain* m_pEngineSideChain;
+    std::shared_ptr<EngineSideChain> m_pEngineSideChain;
 
     ControlPotmeter* m_pCrossfader;
     ControlPotmeter* m_pHeadMix;

@@ -15,12 +15,12 @@
 #include "soundio/soundmanagerutil.h"
 #include "preferences/usersettings.h"
 #include "vinylcontrol/vinylsignalquality.h"
+#include "vinylcontrol/vinylcontrolprocessor.h"
 
 class ControlProxy;
 class ControlPushButton;
 class SoundManager;
 class VinylControl;
-class VinylControlProcessor;
 
 
 const int kMaxNumberOfDecks = 4; // set to 4 because it will ideally not be more
@@ -68,7 +68,7 @@ class VinylControlManager : public QObject {
   private:
     UserSettingsPointer m_pConfig;
     QSet<VinylSignalQualityListener*> m_listeners;
-    VinylControlProcessor* m_pProcessor;
+    std::shared_ptr<VinylControlProcessor> m_pProcessor;
     int m_iTimerId;
     QList<ControlProxy*> m_pVcEnabled;
     ControlProxy* m_pNumDecks;

@@ -139,14 +139,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     connect(queryButton, SIGNAL(clicked()),
             this, SLOT(queryClicked()));
 
-    connect(m_pSoundManager.get(), SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
+    connect(m_pSoundManager.get(), SIGNAL(outputRegistered(AudioOutput, std::shared_ptr<AudioSource>)),
             this, SLOT(addPath(AudioOutput)));
-    connect(m_pSoundManager.get(), SIGNAL(outputRegistered(AudioOutput, AudioSource*)),
+    connect(m_pSoundManager.get(), SIGNAL(outputRegistered(AudioOutput, std::shared_ptr<AudioSource>)),
             this, SLOT(loadSettings()));
 
-    connect(m_pSoundManager.get(), SIGNAL(inputRegistered(AudioInput, AudioDestination*)),
+    connect(m_pSoundManager.get(), SIGNAL(inputRegistered(AudioInput, std::shared_ptr<AudioDestination>)),
             this, SLOT(addPath(AudioInput)));
-    connect(m_pSoundManager.get(), SIGNAL(inputRegistered(AudioInput, AudioDestination*)),
+    connect(m_pSoundManager.get(), SIGNAL(inputRegistered(AudioInput, std::shared_ptr<AudioDestination>)),
             this, SLOT(loadSettings()));
 
     m_pMasterAudioLatencyOverloadCount =

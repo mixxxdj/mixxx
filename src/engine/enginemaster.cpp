@@ -154,7 +154,9 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     }
 
     // Starts a thread for recording and broadcast
-    m_pEngineSideChain = bEnableSidechain ? new EngineSideChain(pConfig) : NULL;
+    if (bEnableSidechain) {
+        m_pEngineSideChain = std::make_shared<EngineSideChain>(pConfig);
+    }
 
     // X-Fader Setup
     m_pXFaderMode = new ControlPushButton(
@@ -204,7 +206,6 @@ EngineMaster::~EngineMaster() {
     delete m_pHeadGain;
     delete m_pTalkoverDucking;
     delete m_pVumeter;
-    delete m_pEngineSideChain;
     delete m_pMasterDelay;
     delete m_pHeadDelay;
     delete m_pBoothDelay;
@@ -244,9 +245,9 @@ EngineMaster::~EngineMaster() {
     for (int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
         SampleUtil::free(pChannelInfo->m_pBuffer);
-        delete pChannelInfo->m_pChannel;
         delete pChannelInfo->m_pVolumeControl;
         delete pChannelInfo->m_pMuteControl;
+        // Drops a reference to ChannelInfo::m_pChannel, which may delete it.
         delete pChannelInfo;
     }
 }
@@ -283,7 +284,7 @@ void EngineMaster::processChannels(int iBufferSize) {
     int activeChannelsStartIndex = 1; // Nothing at 0 yet
     for (int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
-        EngineChannel* pChannel = pChannelInfo->m_pChannel;
+        auto& pChannel = pChannelInfo->m_pChannel;  // Don't increase the reference count.
 
         // Skip inactive channels.
         if (!pChannel || !pChannel->isActive()) {
@@ -337,7 +338,7 @@ void EngineMaster::processChannels(int iBufferSize) {
         }
 
         // If necessary, add the channel to the list of buffers to process.
-        if (pChannel == pMasterChannel) {
+        if (pChannel.get() == pMasterChannel) {
             // If this is the sync master, it should be processed first.
             m_activeChannels.replace(0, pChannelInfo);
             activeChannelsStartIndex = 0;
@@ -350,7 +351,7 @@ void EngineMaster::processChannels(int iBufferSize) {
     for (int i = activeChannelsStartIndex;
              i < m_activeChannels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_activeChannels[i];
-        EngineChannel* pChannel = pChannelInfo->m_pChannel;
+        auto& pChannel = pChannelInfo->m_pChannel;  // Don't increase the reference count.
         pChannel->process(pChannelInfo->m_pBuffer, iBufferSize);
 
         // Collect metadata for effects
@@ -768,7 +769,7 @@ void EngineMaster::processHeadphones(const double masterMixGainInHeadphones) {
     m_headphoneGainOld = headphoneGain;
 }
 
-void EngineMaster::addChannel(EngineChannel* pChannel) {
+void EngineMaster::addChannel(std::shared_ptr<EngineChannel> pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo(m_channels.size());
     pChannelInfo->m_pChannel = pChannel;
     const QString& group = pChannel->getGroup();
@@ -804,14 +805,14 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     }
 }
 
-EngineChannel* EngineMaster::getChannel(const QString& group) {
+std::shared_ptr<EngineChannel> EngineMaster::getChannel(const QString& group) {
     for (int i = 0; i < m_channels.size(); ++i) {
         ChannelInfo* pChannelInfo = m_channels[i];
         if (pChannelInfo->m_pChannel->getGroup() == group) {
             return pChannelInfo->m_pChannel;
         }
     }
-    return NULL;
+    return std::shared_ptr<EngineChannel>();
 }
 
 const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
@@ -949,17 +950,4 @@ void EngineMaster::onInputDisconnected(AudioInput input) {
       default:
           break;
     }
-}
-
-void EngineMaster::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) {
-    pSoundManager->registerInput(AudioInput(AudioPath::RECORD_BROADCAST, 0, 2),
-                                 m_pEngineSideChain);
-
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER, 0, 2), this);
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES, 0, 2), this);
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::BOOTH, 0, 2), this);
-    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o), this);
-    }
-    pSoundManager->registerOutput(AudioOutput(AudioOutput::RECORD_BROADCAST, 0, 2), this);
 }

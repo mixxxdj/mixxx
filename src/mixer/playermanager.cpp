@@ -84,6 +84,21 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
             this, SLOT(slotNumAuxiliariesControlChanged(double)),
             Qt::DirectConnection);
 
+    auto pSidechain = pEngine->getSideChain();
+    if (pSidechain) {
+        pSoundManager->registerInput(AudioInput(AudioPath::RECORD_BROADCAST, 0, 2),
+                                     std::static_pointer_cast<AudioDestination>(pSidechain));
+    }
+
+    auto pEngineAudioSource = std::static_pointer_cast<AudioSource>(pEngine);
+    pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER, 0, 2), pEngineAudioSource);
+    pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES, 0, 2), pEngineAudioSource);
+    pSoundManager->registerOutput(AudioOutput(AudioOutput::BOOTH, 0, 2), pEngineAudioSource);
+    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
+        pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o), pEngineAudioSource);
+    }
+    pSoundManager->registerOutput(AudioOutput(AudioOutput::RECORD_BROADCAST, 0, 2), pEngineAudioSource);
+
     // This is parented to the PlayerManager so does not need to be deleted
     m_pSamplerBank = new SamplerBank(this);
 }
@@ -380,11 +395,10 @@ void PlayerManager::addDeckInner() {
 
     // Register the deck output with SoundManager (deck is 0-indexed to SoundManager)
     m_pSoundManager->registerOutput(
-            AudioOutput(AudioOutput::DECK, 0, 2, number - 1),
-            m_pEngine.get());
+            AudioOutput(AudioOutput::DECK, 0, 2, number - 1), m_pEngine);
 
     // Register vinyl input signal with deck for passthrough support.
-    EngineDeck* pEngineDeck = pDeck->getEngineDeck();
+    auto pEngineDeck = pDeck->getEngineDeck();
     m_pSoundManager->registerInput(
             AudioInput(AudioInput::VINYLCONTROL, 0, 2, number - 1), pEngineDeck);
 

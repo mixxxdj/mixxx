@@ -61,7 +61,6 @@ class BaseSignalPathTest : public MixxxTest {
         m_pEngineMaster = std::make_shared<TestEngineMaster>(m_pConfig, "[Master]",
                                                              m_pEffectsManager, m_pChannelHandleFactory,
                                                              false);
-
         auto pEngineMaster = std::static_pointer_cast<EngineMaster>(m_pEngineMaster);
 
         m_pMixerDeck1 = new Deck(NULL, m_pConfig, pEngineMaster, m_pEffectsManager,
@@ -99,15 +98,12 @@ class BaseSignalPathTest : public MixxxTest {
         delete m_pMixerDeck1;
         delete m_pMixerDeck2;
         delete m_pMixerDeck3;
-        m_pChannel1 = NULL;
-        m_pChannel2 = NULL;
-        m_pChannel3 = NULL;
         m_pEngineSync = NULL;
         delete m_pPreview1;
         delete m_pNumDecks;
     }
 
-    void addDeck(EngineDeck* pDeck) {
+    void addDeck(std::shared_ptr<EngineDeck> pDeck) {
         ControlObject::getControl(ConfigKey(pDeck->getGroup(), "master"))
                 ->set(1.0);
         ControlObject::getControl(ConfigKey(pDeck->getGroup(), "rate_dir"))
@@ -122,7 +118,7 @@ class BaseSignalPathTest : public MixxxTest {
 
         // Wait for the track to load.
         ProcessBuffer();
-        EngineDeck* pEngineDeck = pDeck->getEngineDeck();
+        auto pEngineDeck = pDeck->getEngineDeck();
         while (!pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
             QTest::qSleep(1); // millis
         }
@@ -202,7 +198,7 @@ class BaseSignalPathTest : public MixxxTest {
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     EngineSync* m_pEngineSync;
     std::shared_ptr<TestEngineMaster> m_pEngineMaster;
-    EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
+    std::shared_ptr<EngineDeck> m_pChannel1, m_pChannel2, m_pChannel3;
     Deck *m_pMixerDeck1, *m_pMixerDeck2, *m_pMixerDeck3;
     TrackPointer m_pTrack1, m_pTrack2, m_pTrack3;
     PreviewDeck *m_pPreview1;

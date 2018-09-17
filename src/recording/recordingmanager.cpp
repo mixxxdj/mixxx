@@ -52,7 +52,7 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig,
 
 
     // Register EngineRecord with the engine sidechain.
-    EngineSideChain* pSidechain = pEngine->getSideChain();
+    auto pSidechain = pEngine->getSideChain();
     if (pSidechain) {
         EngineRecord* pEngineRecord = new EngineRecord(m_pConfig);
         connect(pEngineRecord, SIGNAL(isRecording(bool, bool)),

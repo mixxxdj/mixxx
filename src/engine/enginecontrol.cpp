@@ -117,7 +117,8 @@ EngineBuffer* EngineControl::pickSyncTarget() {
 
     // TODO(rryan): Remove. This is a linear search over groups in
     // EngineMaster. We should pass the EngineChannel into EngineControl.
-    EngineChannel* pThisChannel = pMaster->getChannel(getGroup());
-    EngineChannel* pChannel = pEngineSync->pickNonSyncSyncTarget(pThisChannel);
+    auto pThisChannel = pMaster->getChannel(getGroup());
+    // pThisChannel is solely used for pointer comparison and not stored.
+    EngineChannel* pChannel = pEngineSync->pickNonSyncSyncTarget(pThisChannel.get());
     return pChannel ? pChannel->getEngineBuffer() : NULL;
 }

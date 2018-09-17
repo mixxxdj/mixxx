@@ -64,7 +64,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // TODO(XXX): Only exposed to let the passthrough AudioInput get
     // connected. Delete me when EngineMaster supports AudioInput assigning.
-    EngineDeck* getEngineDeck() const;
+    std::shared_ptr<EngineDeck> getEngineDeck() const;
 
     void setupEqControls();
 
@@ -98,7 +98,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     UserSettingsPointer m_pConfig;
     std::shared_ptr<EngineMaster> m_pEngineMaster;
     TrackPointer m_pLoadedTrack;
-    EngineDeck* m_pChannel;
+    std::shared_ptr<EngineDeck> m_pChannel;
     bool m_replaygainPending;
 
     // Waveform display related controls

@@ -21,16 +21,16 @@ VinylControlManager::VinylControlManager(QObject* pParent,
                                          std::shared_ptr<SoundManager> pSoundManager)
         : QObject(pParent),
           m_pConfig(pConfig),
-          m_pProcessor(new VinylControlProcessor(this, pConfig)),
+          m_pProcessor(std::make_shared<VinylControlProcessor>(pConfig)),
           m_iTimerId(-1),
           m_pNumDecks(NULL),
           m_iNumConfiguredDecks(0) {
     // Register every possible VC input with SoundManager to route to the
     // VinylControlProcessor.
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        // TODO(rryan): m_pProcessor shared_ptr.
         pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, 2, i), m_pProcessor);
+            AudioInput(AudioInput::VINYLCONTROL, 0, 2, i),
+            std::static_pointer_cast<AudioDestination>(m_pProcessor));
     }
 
     connect(&m_vinylControlEnabledMapper, SIGNAL(mapped(int)),
@@ -38,8 +38,6 @@ VinylControlManager::VinylControlManager(QObject* pParent,
 }
 
 VinylControlManager::~VinylControlManager() {
-    delete m_pProcessor;
-
     // save a bunch of stuff to config
     // turn off vinyl control so it won't be enabled on load (this is redundant to mixxx.cpp)
     for (int i = 0; i < m_iNumConfiguredDecks; ++i) {

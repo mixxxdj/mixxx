@@ -39,9 +39,9 @@ class EngineSyncTest : public MockedEngineBackendTest {
             ASSERT_EQ(m_sInternalClockGroup, getMasterGroup());
         } else {
             if (group == m_sGroup1) {
-                ASSERT_EQ(m_pChannel1, m_pEngineSync->getMaster());
+                ASSERT_EQ(m_pChannel1.get(), m_pEngineSync->getMaster());
             } else if (group == m_sGroup2) {
-                ASSERT_EQ(m_pChannel2, m_pEngineSync->getMaster());
+                ASSERT_EQ(m_pChannel2.get(), m_pEngineSync->getMaster());
             }
             ASSERT_EQ(group.toStdString(), getMasterGroup());
             ASSERT_EQ(SYNC_MASTER, ControlObject::getControl(ConfigKey(group, "sync_mode"))->get());
@@ -1538,11 +1538,9 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
     pHotCueActivate->set(1.0);
     ProcessBuffer();
 
-    // the value was determined experimentally 
+    // the value was determined experimentally
     ASSERT_DOUBLE_EQ(0.11997394884298185, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
 
     pHotCueActivate->set(0.0);
     ProcessBuffer();
 }
-
-

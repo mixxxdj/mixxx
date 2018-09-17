@@ -22,7 +22,7 @@ class ControlPushButton;
 class VinylControlProcessor : public QThread, public AudioDestination {
     Q_OBJECT
   public:
-    VinylControlProcessor(QObject* pParent, UserSettingsPointer pConfig);
+    VinylControlProcessor(UserSettingsPointer pConfig);
     virtual ~VinylControlProcessor();
 
     // Called from main thread. Must only touch m_bReportSignalQuality.

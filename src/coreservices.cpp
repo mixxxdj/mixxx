@@ -100,8 +100,6 @@ CoreServices::CoreServices(QObject* pParent, QCoreApplication* pApplication,
 
     // Create the SoundManager for managing sound I/O with the operating system.
     m_pSoundManager = std::make_shared<SoundManager>(pConfig, m_pEngine);
-    // TODO(rryan): Consider moving to initialize.
-    m_pEngine->registerNonEngineChannelSoundIO(m_pSoundManager.get());
 
     m_pRecordingManager = std::make_shared<RecordingManager>(pConfig, m_pEngine);
 
@@ -204,7 +202,7 @@ CoreServices::~CoreServices() {
     CLEAR_AND_CHECK_DELETED(m_pBroadcastManager);
 #endif
 
-    // SoundManager depends on engine.
+    // SoundManager depends on engine and VinylControlProcessor.
     CLEAR_AND_CHECK_DELETED(m_pSoundManager);
 
     // EngineMaster depends on Config and m_pEffectsManager.
