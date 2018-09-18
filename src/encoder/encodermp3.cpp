@@ -32,7 +32,7 @@ const int EncoderMp3::MONO_BITRATE_THRESHOLD = 100;
 // The threshold of quality (VBR) at which the encoder
 // with switch to mono encoding. Values from 0 to 6 encode at 44Khz
 const int EncoderMp3::MONO_VBR_THRESHOLD = 8;
-// Quality offset to substract to the quality value when
+// Quality offset to subtract to the quality value when
 // switching to mono encoding.
 const int EncoderMp3::MONO_VBR_OFFSET = 4;
 
