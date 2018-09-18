@@ -104,11 +104,11 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>loop_out</key>
+                <key>MixtrackPlatinum.decks[2].loop_out.input</key>
                 <status>0x95</status>
                 <midino>0x39</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -122,47 +122,47 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>loop_out</key>
+                <key>MixtrackPlatinum.decks[3].loop_out.input</key>
                 <status>0x96</status>
                 <midino>0x39</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>loop_in</key>
+                <key>MixtrackPlatinum.decks[2].loop_in.input</key>
                 <status>0x95</status>
                 <midino>0x38</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>loop_out</key>
+                <key>MixtrackPlatinum.decks[4].loop_out.input</key>
                 <status>0x97</status>
                 <midino>0x39</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>loop_in</key>
+                <key>MixtrackPlatinum.decks[3].loop_in.input</key>
                 <status>0x96</status>
                 <midino>0x38</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>loop_in</key>
+                <key>MixtrackPlatinum.decks[4].loop_in.input</key>
                 <status>0x97</status>
                 <midino>0x38</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2280,22 +2280,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel4]</group>
-                <key>loop_enabled</key>
-                <status>0x87</status>
-                <midino>0x32</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>loop_enabled</key>
-                <status>0x97</status>
-                <midino>0x32</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel1]</group>
                 <key>beatloop_8_enabled</key>
                 <status>0x94</status>
@@ -2341,22 +2325,6 @@
                 <status>0x86</status>
                 <midino>0x1C</midino>
                 <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>loop_enabled</key>
-                <status>0x86</status>
-                <midino>0x32</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>loop_enabled</key>
-                <status>0x96</status>
-                <midino>0x32</midino>
-                <on>0x01</on>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2637,22 +2605,6 @@
                 <status>0x86</status>
                 <midino>0x1F</midino>
                 <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_enabled</key>
-                <status>0x85</status>
-                <midino>0x32</midino>
-                <on>0x01</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_enabled</key>
-                <status>0x95</status>
-                <midino>0x32</midino>
-                <on>0x01</on>
                 <minimum>0.5</minimum>
             </output>
             <output>
