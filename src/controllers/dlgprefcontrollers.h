@@ -7,6 +7,7 @@
 #include "preferences/usersettings.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"
 #include "preferences/dlgpreferencepage.h"
+#include "util/memory.h"
 
 class DlgPreferences;
 class DlgPrefController;

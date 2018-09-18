@@ -26,6 +26,7 @@
 #endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
 
+#include "util/memory.h"
 #include "util/performancetimer.h"
 #include "waveform/guitick.h"
 

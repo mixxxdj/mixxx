@@ -19,6 +19,7 @@
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "util/memory.h"
 
 // Forward declarations
 class Controller;

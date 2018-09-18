@@ -10,6 +10,7 @@
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/waveform.h"
 #include "skin/skincontext.h"
+#include "util/memory.h"
 #include "util/performancetimer.h"
 #include "waveform/guitick.h"
 

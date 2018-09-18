@@ -16,6 +16,7 @@
 #include "preferences/usersettings.h"
 #include "vinylcontrol/vinylsignalquality.h"
 #include "vinylcontrol/vinylcontrolprocessor.h"
+#include "util/memory.h"
 
 class ControlProxy;
 class ControlPushButton;

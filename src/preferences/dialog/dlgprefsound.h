@@ -22,6 +22,7 @@
 #include "soundio/sounddeviceerror.h"
 #include "preferences/dlgpreferencepage.h"
 #include "soundio/sounddevice.h"
+#include "util/memory.h"
 
 class SoundManager;
 class ControlObject;

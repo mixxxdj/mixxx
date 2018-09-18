@@ -6,6 +6,7 @@
 #include <QDir>
 
 #include "preferences/usersettings.h"
+#include "util/memory.h"
 
 class KeyboardEventFilter;
 class PlayerManager;
