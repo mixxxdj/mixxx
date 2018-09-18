@@ -697,6 +697,11 @@ class QtKeychain(Dependence):
         if not conf.CheckLib(lib):
             raise Exception("Could not find %s." % lib)
 
+class LAME(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib(['libmp3lame', 'libmp3lame-static']):
+            raise Exception("Could not find libmp3lame.")
+
 class MixxxCore(Feature):
 
     def description(self):
@@ -1509,7 +1514,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
-                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer]
+                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
