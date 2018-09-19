@@ -683,6 +683,7 @@ void LoopingControl::slotReloopToggle(double val) {
         if (m_bLoopRollActive) {
             m_pSlipEnabled->set(0);
             m_bLoopRollActive = false;
+            m_activeLoopRolls.clear();
         }
         setLoopingEnabled(false);
         //qDebug() << "reloop_toggle looping off";
@@ -846,10 +847,11 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
          return;
      }
 
-    // Disregard existing loops.
+    // Disregard existing loops (except beatlooprolls).
     m_pSlipEnabled->set(1);
-    slotBeatLoop(pBeatLoopControl->getSize(), false, true);
+    slotBeatLoop(pBeatLoopControl->getSize(), m_bLoopRollActive, true);
     m_bLoopRollActive = true;
+    m_activeLoopRolls.push(pBeatLoopControl);
 }
 
 void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
@@ -858,13 +860,20 @@ void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl
 }
 
 void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
-    Q_UNUSED(pBeatLoopControl);
-    setLoopingEnabled(false);
+    pBeatLoopControl->deactivate();
+    m_activeLoopRolls.removeAll(pBeatLoopControl);
+
     // Make sure slip mode is not turned off if it was turned on
     // by something that was not a rolling beatloop.
-    if (m_bLoopRollActive) {
+    if (m_bLoopRollActive && m_activeLoopRolls.empty()) {
+        setLoopingEnabled(false);
         m_pSlipEnabled->set(0);
         m_bLoopRollActive = false;
+    }
+
+    // Return to the previous beatlooproll if necessary.
+    if (!m_activeLoopRolls.empty()) {
+        slotBeatLoop(m_activeLoopRolls.top()->getSize(), m_bLoopRollActive, true);
     }
 }
 
@@ -1055,6 +1064,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
             if (m_bLoopRollActive) {
                 m_pSlipEnabled->set(0.0);
                 m_bLoopRollActive = false;
+                m_activeLoopRolls.clear();
             }
         } else {
             m_pSlipEnabled->set(1.0);
@@ -1068,6 +1078,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
         if (m_bLoopRollActive) {
             m_pSlipEnabled->set(0.0);
             m_bLoopRollActive = false;
+            m_activeLoopRolls.clear();
         }
     }
 }
