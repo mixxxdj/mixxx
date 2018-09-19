@@ -101,7 +101,7 @@ protected:
  * @brief A source of audio in Mixxx that is to be output to a group of
  *        channels on an audio interface.
  */
-class AudioOutput : public AudioPath {
+class AudioOutput final : public AudioPath {
   public:
     AudioOutput(AudioPathType type, unsigned char channelBase,
                 unsigned char channels,
@@ -134,7 +134,7 @@ class AudioOutputBuffer : public AudioOutput {
  * @brief A source of audio at a group of channels on an audio interface
  *        that is be processed in Mixxx.
  */
-class AudioInput : public AudioPath {
+class AudioInput final : public AudioPath {
   public:
     AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
                unsigned char channels = 0, unsigned char index = 0);
