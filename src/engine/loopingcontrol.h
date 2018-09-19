@@ -132,7 +132,7 @@ class LoopingControl : public EngineControl {
     bool m_bAdjustingLoopInOld;
     bool m_bAdjustingLoopOutOld;
     bool m_bLoopOutPressedWhileLoopDisabled;
-    QStack<BeatLoopingControl*> m_activeLoopRolls;
+    QStack<double> m_activeLoopRolls;
     ControlValueAtomic<LoopSamples> m_loopSamples;
     LoopSamples m_oldLoopSamples;
     ControlValueAtomic<double> m_currentSample;
