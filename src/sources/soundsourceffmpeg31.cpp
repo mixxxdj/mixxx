@@ -32,12 +32,17 @@ const Logger kLogger("SoundSourceFFmpeg31");
 
 std::once_flag initFFmpegLibFlag;
 
+// FFmpeg API Changes:
+// https://github.com/FFmpeg/FFmpeg/blob/master/doc/APIchanges
+
 // This function must be called once during startup.
 void initFFmpegLib() {
 #if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100)
     av_register_all();
 #endif
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 10, 100)
     avcodec_register_all();
+#endif
 }
 
 uint64_t fixChannelLayout(uint64_t channel_layout, int channels) {
@@ -214,6 +219,7 @@ void avTrace(const char* preamble, const AVStream& avStream) {
     }
 }
 
+/*
 inline
 void avTrace(const char* preamble, const AVPacket& avPacket) {
     if (kLogger.traceEnabled()) {
@@ -243,6 +249,7 @@ void avTrace(const char* preamble, const AVFrame& avFrame) {
             << '}';
     }
 }
+*/
 
 AVFormatContext* openInputFile(
         const QString& fileName) {
@@ -349,10 +356,16 @@ SoundSourceProviderFFmpeg31::SoundSourceProviderFFmpeg31() {
 
 QStringList SoundSourceProviderFFmpeg31::getSupportedFileExtensions() const {
     QStringList list;
-    AVInputFormat *pavInputFormat  = nullptr;
 
     // Collect all supported formats (whitelist)
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 9, 100)
+    AVInputFormat* pavInputFormat = nullptr;
     while ((pavInputFormat = av_iformat_next(pavInputFormat))) {
+#else
+    const AVInputFormat* pavInputFormat = nullptr;
+    void* iInputFormat = 0;
+    while ((pavInputFormat = av_demuxer_iterate(&iInputFormat))) {
+#endif
         if (pavInputFormat->flags | AVFMT_SEEK_TO_PTS) {
             ///////////////////////////////////////////////////////////
             // Whitelist of tested codecs (including variants)
@@ -536,8 +549,10 @@ SoundSource::OpenResult SoundSourceFFmpeg31::tryOpen(
         return SoundSource::OpenResult::Aborted;
     }
 
+#if LIBAVCODEC_VERSION_INT < AV_VERSION_INT(58, 18, 100)
     // Align the time base of the context with that of the selected stream
     av_codec_set_pkt_timebase(pavCodecContext, pavStream->time_base);
+#endif
 
     // Request output format
     pavCodecContext->request_sample_fmt = kavSampleFormat;
