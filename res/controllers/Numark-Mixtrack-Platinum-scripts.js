@@ -18,6 +18,9 @@ var EnableWheel = true;
 // should we show time elapsed by default? (otherwise time remaining will be shown)
 var ShowTimeElapsed = true;
 
+// should we use the manual loop buttons as cue buttons?
+var UseManualLoopAsCue = false;
+
 
 var MixtrackPlatinum = {};
 
@@ -536,67 +539,65 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         this.pitch.firstValueReceived = true;
     }
 
-    this.loop_in = new components.Button({
-        midi: [0x94 + midi_chan, 0x38],
-        inKey: 'loop_in',
-        outKey: 'loop_start_position',
-        on: 0x01,
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: -0x10,
-        outValueScale: function (value) {
-            return (value != -1) ? this.on : this.off;
-        },
-    });
+    loop_base = function(midino, obj) {
+        return _.assign({
+            midi: [0x94 + midi_chan, midino],
+            on: 0x01,
+            sendShifted: true,
+            shiftChannel: true,
+            shiftOffset: -0x10,
+        }, obj);
+    };
 
-    this.loop_out = new components.Button({
-        midi: [0x94 + midi_chan, 0x39],
-        inKey: 'loop_out',
-        outKey: 'loop_end_position',
-        on: 0x01,
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: -0x10,
-        outValueScale: function (value) {
-            return (value != -1) ? this.on : this.off;
-        },
-    });
-
-    this.loop_toggle = new components.LoopToggleButton({
-        midi: [0x94 + midi_chan, 0x32],
-        on: 0x01,
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: -0x10,
-    });
-
-    this.loop_halve = new components.Button({
-        midi: [0x94 + midi_chan, 0x34],
-        key: 'loop_halve',
-        on: 0x01,
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: -0x10,
-        input: function(channel, control, value, status) {
-            if (this.isPress(channel, control, value, status)) {
-                engine.setValue(deck.currentDeck, "loop_scale", 0.5);
-            }
-        },
-    });
-
-    this.loop_double = new components.Button({
-        midi: [0x94 + midi_chan, 0x35],
-        key: 'loop_double',
-        on: 0x01,
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: -0x10,
-        input: function(channel, control, value, status) {
-            if (this.isPress(channel, control, value, status)) {
-                engine.setValue(deck.currentDeck, "loop_scale", 2.0);
-            }
-        },
-    });
+    if (UseManualLoopAsCue) {
+        this.loop_in = new components.HotcueButton(loop_base(0x38, {
+            number: 5,
+        }));
+        this.loop_out = new components.HotcueButton(loop_base(0x39, {
+            number: 6,
+        }));
+        this.loop_toggle = new components.HotcueButton(loop_base(0x32, {
+            number: 7,
+        }));
+        this.loop_halve = new components.HotcueButton(loop_base(0x34, {
+            number: 8,
+        }));
+        this.loop_double = new components.HotcueButton(loop_base(0x35, {
+            number: 8,
+        }));
+    } else {
+        this.loop_in = new components.Button(loop_base(0x38, {
+            inKey: 'loop_in',
+            outKey: 'loop_start_position',
+            outValueScale: function (value) {
+                return (value != -1) ? this.on : this.off;
+            },
+        }));
+        this.loop_out = new components.Button(loop_base(0x39, {
+            inKey: 'loop_out',
+            outKey: 'loop_end_position',
+            outValueScale: function (value) {
+                return (value != -1) ? this.on : this.off;
+            },
+        }));
+        this.loop_toggle = new components.LoopToggleButton(loop_base(0x32, {}));
+        this.loop_halve = new components.Button(loop_base(0x34, {
+            key: 'loop_halve',
+            input: function(channel, control, value, status) {
+                if (this.isPress(channel, control, value, status)) {
+                    engine.setValue(deck.currentDeck, "loop_scale", 0.5);
+                }
+            },
+        }));
+        this.loop_double = new components.Button(loop_base(0x35, {
+            key: 'loop_double',
+            input: function(channel, control, value, status) {
+                if (this.isPress(channel, control, value, status)) {
+                    engine.setValue(deck.currentDeck, "loop_scale", 2.0);
+                }
+            },
+        }));
+    }
 
     this.EqEffectKnob = function (group, in_key, fx_key) {
         this.unshift_group = group;
