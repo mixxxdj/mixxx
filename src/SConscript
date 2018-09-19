@@ -1031,27 +1031,28 @@ def BuildUbuntuPackage(target, source, env):
                 print("* Starting pbuilder ...  (cwd: %s)" % os.getcwd())
                 print()
 
+                num_jobs = GetOption('num_jobs')
                 command = ['MIXXX_SCONS_FLAGS="%s"' % scons_flags,
                            'ARCH=%s' % arch,
-                           'DIST=%s' % ubuntu_distro]
+                           'DIST=%s' % ubuntu_distro,
+                           # Pass the scons -jX option in in
+                           # DEB_BUILD_OPTIONS. The Debian package rules file
+                           # reads this option to set the -jX flag on the scons
+                           # commands it runs. We disable Debian package
+                           # optimizations via noopt because we handle our own
+                           # optimization flags.
+                           'DEB_BUILD_OPTIONS="noopt parallel=%s"' % num_jobs]
+
 
                 if package_target == 'source':
-                        # TODO(rryan) we have to figure out the key-signing situation
-                        # here.
-                        num_jobs = GetOption('num_jobs')
                         command.extend(['debuild',
-                                        # Preserve the MIXXX_SCONS_FLAGS
+                                        # Preserve the MIXXX_SCONS_FLAGS and DEB_BUILD_OPTIONS
                                         # environment variable.
                                         '-eMIXXX_SCONS_FLAGS',
-                                        # Pass the scons -jX option in in
-                                        # DEB_BUILD_OPTIONS. The Debian package
-                                        # rules file reads this option to set
-                                        # the -jX flag on the scons commands it
-                                        # runs.
-                                        '-eDEB_BUILD_OPTIONS="parallel=%s"' % num_jobs,
+                                        '-eDEB_BUILD_OPTIONS',
                                         '-S', '-sa',])
                 else:
-                        command.extend(['pdebuild'])
+                        command.extend(['pdebuild', '--', '--buildresult ./'])
                 result = os.system(' '.join(command))
 
                 source_changes_file = os.path.join(
@@ -1065,9 +1066,7 @@ def BuildUbuntuPackage(target, source, env):
                             print()
                             raise Exception('Ubuntu source package build/signing failed.')
                 else:
-                        result_path = "/var/cache/pbuilder/%s-%s/result/" % (ubuntu_distro, arch)
-                        result_filename = "%s_%s_%s.deb" % (package_name, package_version, arch)
-                        result_file = os.path.join(result_path, result_filename)
+                        result_file = "%s_%s_%s.deb" % (package_name, package_version, arch)
 
                         # Since we might build for multiple distros we need to
                         # insert the distro name into the filename.
@@ -1093,10 +1092,9 @@ def BuildUbuntuPackage(target, source, env):
                             shutil.move(source_tar_file, dest_tar_file)
 
                         if result == 0 and os.path.exists(result_file):
-                            print("Done! Package and tarballs are in %s" % result_path)
-                            print("* Found package at '%s'. Copying to ubuntu/" % result_file)
+                            print("* Found package '%s'. Copying to ubuntu/" % result_file)
                             print()
-                            shutil.copyfile(result_file, dest_deb_file)
+                            shutil.move(result_file, dest_deb_file)
                         else:
                             print("* Build failed.")
                             print()
