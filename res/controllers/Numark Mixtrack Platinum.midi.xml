@@ -420,11 +420,11 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatlooproll_0.5_activate</key>
+                <key>MixtrackPlatinum.decks[1].loop_roll_4.input</key>
                 <status>0x94</status>
                 <midino>0x1F</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -465,20 +465,20 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatlooproll_0.5_activate</key>
+                <key>MixtrackPlatinum.decks[2].loop_roll_4.input</key>
                 <status>0x95</status>
                 <midino>0x1F</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatlooproll_0.25_activate</key>
+                <key>MixtrackPlatinum.decks[1].loop_roll_3.input</key>
                 <status>0x94</status>
                 <midino>0x1E</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -510,29 +510,29 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>beatlooproll_0.5_activate</key>
+                <key>MixtrackPlatinum.decks[3].loop_roll_4.input</key>
                 <status>0x96</status>
                 <midino>0x1F</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatlooproll_0.25_activate</key>
+                <key>MixtrackPlatinum.decks[2].loop_roll_3.input</key>
                 <status>0x95</status>
                 <midino>0x1E</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatlooproll_0.125_activate</key>
+                <key>MixtrackPlatinum.decks[1].loop_roll_2.input</key>
                 <status>0x94</status>
                 <midino>0x1D</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -556,38 +556,38 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>beatlooproll_0.5_activate</key>
+                <key>MixtrackPlatinum.decks[4].loop_roll_4.input</key>
                 <status>0x97</status>
                 <midino>0x1F</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>beatlooproll_0.25_activate</key>
+                <key>MixtrackPlatinum.decks[3].loop_roll_3.input</key>
                 <status>0x96</status>
                 <midino>0x1E</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatlooproll_0.125_activate</key>
+                <key>MixtrackPlatinum.decks[2].loop_roll_2.input</key>
                 <status>0x95</status>
                 <midino>0x1D</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatlooproll_0.0625_activate</key>
+                <key>MixtrackPlatinum.decks[1].loop_roll_1.input</key>
                 <status>0x94</status>
                 <midino>0x1C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -611,29 +611,29 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>beatlooproll_0.25_activate</key>
+                <key>MixtrackPlatinum.decks[4].loop_roll_3.input</key>
                 <status>0x97</status>
                 <midino>0x1E</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>beatlooproll_0.125_activate</key>
+                <key>MixtrackPlatinum.decks[3].loop_roll_2.input</key>
                 <status>0x96</status>
                 <midino>0x1D</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatlooproll_0.0625_activate</key>
+                <key>MixtrackPlatinum.decks[2].loop_roll_1.input</key>
                 <status>0x95</status>
                 <midino>0x1C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -657,20 +657,20 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>beatlooproll_0.125_activate</key>
+                <key>MixtrackPlatinum.decks[4].loop_roll_2.input</key>
                 <status>0x97</status>
                 <midino>0x1D</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>beatlooproll_0.0625_activate</key>
+                <key>MixtrackPlatinum.decks[3].loop_roll_1.input</key>
                 <status>0x96</status>
                 <midino>0x1C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -712,11 +712,11 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>beatlooproll_0.0625_activate</key>
+                <key>MixtrackPlatinum.decks[4].loop_roll_1.input</key>
                 <status>0x97</status>
                 <midino>0x1C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -811,11 +811,11 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_8_toggle</key>
+                <key>MixtrackPlatinum.decks[1].auto_loop_4.input</key>
                 <status>0x94</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -856,20 +856,20 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_8_toggle</key>
+                <key>MixtrackPlatinum.decks[2].auto_loop_4.input</key>
                 <status>0x95</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_4_toggle</key>
+                <key>MixtrackPlatinum.decks[1].auto_loop_3.input</key>
                 <status>0x94</status>
                 <midino>0x16</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -892,65 +892,65 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>beatloop_8_toggle</key>
+                <key>MixtrackPlatinum.decks[3].auto_loop_4.input</key>
                 <status>0x96</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_4_toggle</key>
+                <key>MixtrackPlatinum.decks[2].auto_loop_3.input</key>
                 <status>0x95</status>
                 <midino>0x16</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_2_toggle</key>
+                <key>MixtrackPlatinum.decks[1].auto_loop_2.input</key>
                 <status>0x94</status>
                 <midino>0x15</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>beatloop_8_toggle</key>
+                <key>MixtrackPlatinum.decks[4].auto_loop_4.input</key>
                 <status>0x97</status>
                 <midino>0x17</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>beatloop_4_toggle</key>
+                <key>MixtrackPlatinum.decks[3].auto_loop_3.input</key>
                 <status>0x96</status>
                 <midino>0x16</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_2_toggle</key>
+                <key>MixtrackPlatinum.decks[2].auto_loop_2.input</key>
                 <status>0x95</status>
                 <midino>0x15</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_1_toggle</key>
+                <key>MixtrackPlatinum.decks[1].auto_loop_1.input</key>
                 <status>0x94</status>
                 <midino>0x14</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -964,29 +964,29 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>beatloop_4_toggle</key>
+                <key>MixtrackPlatinum.decks[4].auto_loop_3.input</key>
                 <status>0x97</status>
                 <midino>0x16</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>beatloop_2_toggle</key>
+                <key>MixtrackPlatinum.decks[3].auto_loop_2.input</key>
                 <status>0x96</status>
                 <midino>0x15</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_1_toggle</key>
+                <key>MixtrackPlatinum.decks[2].auto_loop_1.input</key>
                 <status>0x95</status>
                 <midino>0x14</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1000,20 +1000,20 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>beatloop_2_toggle</key>
+                <key>MixtrackPlatinum.decks[4].auto_loop_2.input</key>
                 <status>0x97</status>
                 <midino>0x15</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>beatloop_1_toggle</key>
+                <key>MixtrackPlatinum.decks[3].auto_loop_1.input</key>
                 <status>0x96</status>
                 <midino>0x14</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -1027,11 +1027,11 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>beatloop_1_toggle</key>
+                <key>MixtrackPlatinum.decks[4].auto_loop_1.input</key>
                 <status>0x97</status>
                 <midino>0x14</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -2000,38 +2000,6 @@
         </controls>
         <outputs>
             <output>
-                <group>[Channel4]</group>
-                <key>beatloop_0.25_enabled</key>
-                <status>0x97</status>
-                <midino>0x1E</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_0.25_enabled</key>
-                <status>0x87</status>
-                <midino>0x1E</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_0.25_enabled</key>
-                <status>0x96</status>
-                <midino>0x1E</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_0.25_enabled</key>
-                <status>0x86</status>
-                <midino>0x1E</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel2]</group>
                 <key>slip_enabled</key>
                 <status>0x81</status>
@@ -2057,22 +2025,6 @@
                 <key>keylock</key>
                 <status>0x93</status>
                 <midino>0x0D</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_4_enabled</key>
-                <status>0x97</status>
-                <midino>0x16</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_4_enabled</key>
-                <status>0x87</status>
-                <midino>0x16</midino>
-                <on>0x40</on>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2104,246 +2056,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel3]</group>
-                <key>beatloop_4_enabled</key>
-                <status>0x96</status>
-                <midino>0x16</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_4_enabled</key>
-                <status>0x86</status>
-                <midino>0x16</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_1_enabled</key>
-                <status>0x95</status>
-                <midino>0x14</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_1_enabled</key>
-                <status>0x85</status>
-                <midino>0x14</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_0.0625_enabled</key>
-                <status>0x95</status>
-                <midino>0x1C</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_0.0625_enabled</key>
-                <status>0x85</status>
-                <midino>0x1C</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_2_enabled</key>
-                <status>0x95</status>
-                <midino>0x15</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_2_enabled</key>
-                <status>0x85</status>
-                <midino>0x15</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_0.125_enabled</key>
-                <status>0x95</status>
-                <midino>0x1D</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_0.125_enabled</key>
-                <status>0x85</status>
-                <midino>0x1D</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_1_enabled</key>
-                <status>0x94</status>
-                <midino>0x14</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_1_enabled</key>
-                <status>0x84</status>
-                <midino>0x14</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_0.0625_enabled</key>
-                <status>0x94</status>
-                <midino>0x1C</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_0.0625_enabled</key>
-                <status>0x84</status>
-                <midino>0x1C</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_2_enabled</key>
-                <status>0x94</status>
-                <midino>0x15</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_2_enabled</key>
-                <status>0x84</status>
-                <midino>0x15</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_8_enabled</key>
-                <status>0x95</status>
-                <midino>0x17</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_8_enabled</key>
-                <status>0x85</status>
-                <midino>0x17</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_0.125_enabled</key>
-                <status>0x94</status>
-                <midino>0x1D</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_0.125_enabled</key>
-                <status>0x84</status>
-                <midino>0x1D</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_0.0625_enabled</key>
-                <status>0x97</status>
-                <midino>0x1C</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_0.0625_enabled</key>
-                <status>0x87</status>
-                <midino>0x1C</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_8_enabled</key>
-                <status>0x94</status>
-                <midino>0x17</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_8_enabled</key>
-                <status>0x84</status>
-                <midino>0x17</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_0.125_enabled</key>
-                <status>0x97</status>
-                <midino>0x1D</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_0.125_enabled</key>
-                <status>0x87</status>
-                <midino>0x1D</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_0.0625_enabled</key>
-                <status>0x96</status>
-                <midino>0x1C</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_0.0625_enabled</key>
-                <status>0x86</status>
-                <midino>0x1C</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_0.125_enabled</key>
-                <status>0x96</status>
-                <midino>0x1D</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_0.125_enabled</key>
-                <status>0x86</status>
-                <midino>0x1D</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel4]</group>
                 <key>slip_enabled</key>
                 <status>0x83</status>
@@ -2355,22 +2067,6 @@
                 <key>slip_enabled</key>
                 <status>0x93</status>
                 <midino>0x0F</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_0.5_enabled</key>
-                <status>0x95</status>
-                <midino>0x1F</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_0.5_enabled</key>
-                <status>0x85</status>
-                <midino>0x1F</midino>
-                <on>0x40</on>
                 <minimum>0.5</minimum>
             </output>
             <output>
@@ -2388,22 +2084,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel2]</group>
-                <key>beatloop_4_enabled</key>
-                <status>0x95</status>
-                <midino>0x16</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_4_enabled</key>
-                <status>0x85</status>
-                <midino>0x16</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel3]</group>
                 <key>slip_enabled</key>
                 <status>0x82</status>
@@ -2418,70 +2098,6 @@
                 <minimum>0.5</minimum>
             </output>
             <output>
-                <group>[Channel4]</group>
-                <key>beatloop_1_enabled</key>
-                <status>0x97</status>
-                <midino>0x14</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_1_enabled</key>
-                <status>0x87</status>
-                <midino>0x14</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_2_enabled</key>
-                <status>0x97</status>
-                <midino>0x15</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_2_enabled</key>
-                <status>0x87</status>
-                <midino>0x15</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_0.5_enabled</key>
-                <status>0x94</status>
-                <midino>0x1F</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_0.5_enabled</key>
-                <status>0x84</status>
-                <midino>0x1F</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_0.25_enabled</key>
-                <status>0x95</status>
-                <midino>0x1E</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>beatloop_0.25_enabled</key>
-                <status>0x85</status>
-                <midino>0x1E</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
                 <group>[Channel1]</group>
                 <key>keylock</key>
                 <status>0x80</status>
@@ -2493,134 +2109,6 @@
                 <key>keylock</key>
                 <status>0x90</status>
                 <midino>0x0D</midino>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_4_enabled</key>
-                <status>0x94</status>
-                <midino>0x16</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_4_enabled</key>
-                <status>0x84</status>
-                <midino>0x16</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_1_enabled</key>
-                <status>0x96</status>
-                <midino>0x14</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_1_enabled</key>
-                <status>0x86</status>
-                <midino>0x14</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_2_enabled</key>
-                <status>0x96</status>
-                <midino>0x15</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_2_enabled</key>
-                <status>0x86</status>
-                <midino>0x15</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_0.5_enabled</key>
-                <status>0x97</status>
-                <midino>0x1F</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_0.5_enabled</key>
-                <status>0x87</status>
-                <midino>0x1F</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_8_enabled</key>
-                <status>0x97</status>
-                <midino>0x17</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel4]</group>
-                <key>beatloop_8_enabled</key>
-                <status>0x87</status>
-                <midino>0x17</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_0.25_enabled</key>
-                <status>0x94</status>
-                <midino>0x1E</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>beatloop_0.25_enabled</key>
-                <status>0x84</status>
-                <midino>0x1E</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_0.5_enabled</key>
-                <status>0x96</status>
-                <midino>0x1F</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_0.5_enabled</key>
-                <status>0x86</status>
-                <midino>0x1F</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_8_enabled</key>
-                <status>0x96</status>
-                <midino>0x17</midino>
-                <on>0x40</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel3]</group>
-                <key>beatloop_8_enabled</key>
-                <status>0x86</status>
-                <midino>0x17</midino>
-                <on>0x40</on>
                 <minimum>0.5</minimum>
             </output>
         </outputs>

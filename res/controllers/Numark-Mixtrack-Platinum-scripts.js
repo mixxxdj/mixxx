@@ -21,6 +21,9 @@ var ShowTimeElapsed = true;
 // should we use the manual loop buttons as cue buttons?
 var UseManualLoopAsCue = false;
 
+// should we use the auto loop buttons as cue buttons?
+var UseAutolLoopAsCue = false;
+
 
 var MixtrackPlatinum = {};
 
@@ -596,6 +599,80 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
                     engine.setValue(deck.currentDeck, "loop_scale", 2.0);
                 }
             },
+        }));
+    }
+
+    auto_loop_hotcue = function(midino, obj) {
+        return _.assign({
+            midi: [0x94 + midi_chan, midino],
+            on: 0x40,
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 0x08,
+        }, obj);
+    };
+
+    auto_loop_base = function(midino, obj) {
+        return _.assign({
+            midi: [0x94 + midi_chan, midino],
+            on: 0x40,
+            sendShifted: true,
+            shiftChannel: true,
+            shiftOffset: -0x10,
+        }, obj);
+    };
+
+    if (UseAutolLoopAsCue) {
+        this.auto_loop_1 = new components.HotcueButton(auto_loop_hotcue(0x14, {
+            number: 5,
+        }));
+        this.auto_loop_2 = new components.HotcueButton(auto_loop_hotcue(0x15, {
+            number: 6,
+        }));
+        this.auto_loop_3 = new components.HotcueButton(auto_loop_hotcue(0x16, {
+            number: 7,
+        }));
+        this.auto_loop_4 = new components.HotcueButton(auto_loop_hotcue(0x17, {
+            number: 8,
+        }));
+
+        this.loop_roll_1 = this.auto_loop_1;
+        this.loop_roll_2 = this.auto_loop_2;
+        this.loop_roll_3 = this.auto_loop_3;
+        this.loop_roll_4 = this.auto_loop_4;
+    } else {
+        this.auto_loop_1 = new components.Button(auto_loop_base(0x14, {
+            inKey: 'beatloop_1_toggle',
+            outKey: 'beatloop_1_enabled',
+        }));
+        this.auto_loop_2 = new components.Button(auto_loop_base(0x15, {
+            inKey: 'beatloop_2_toggle',
+            outKey: 'beatloop_2_enabled',
+        }));
+        this.auto_loop_3 = new components.Button(auto_loop_base(0x16, {
+            inKey: 'beatloop_4_toggle',
+            outKey: 'beatloop_4_enabled',
+        }));
+        this.auto_loop_4 = new components.Button(auto_loop_base(0x17, {
+            inKey: 'beatloop_8_toggle',
+            outKey: 'beatloop_8_enabled',
+        }));
+        
+        this.loop_roll_1 = new components.Button(auto_loop_base(0x1C, {
+            inKey: 'beatlooproll_0.0625_activate',
+            outKey: 'beatloop_0.0625_enabled',
+        }));
+        this.loop_roll_2 = new components.Button(auto_loop_base(0x1D, {
+            inKey: 'beatlooproll_0.125_activate',
+            outKey: 'beatloop_0.125_enabled',
+        }));
+        this.loop_roll_3 = new components.Button(auto_loop_base(0x1E, {
+            inKey: 'beatlooproll_0.25_activate',
+            outKey: 'beatloop_0.25_enabled',
+        }));
+        this.loop_roll_4 = new components.Button(auto_loop_base(0x1F, {
+            inKey: 'beatlooproll_0.5_activate',
+            outKey: 'beatloop_0.5_enabled',
         }));
     }
 
