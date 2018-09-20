@@ -1,7 +1,8 @@
 #ifndef MIXXX_SOUNDSOURCEM4A_H
 #define MIXXX_SOUNDSOURCEM4A_H
 
-#include "sources/soundsourceplugin.h"
+#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 
 #include "util/readaheadsamplebuffer.h"
 
@@ -17,7 +18,7 @@
 
 namespace mixxx {
 
-class SoundSourceM4A: public SoundSourcePlugin {
+class SoundSourceM4A: public SoundSource {
   public:
     explicit SoundSourceM4A(const QUrl& url);
     ~SoundSourceM4A() override;
@@ -72,11 +73,5 @@ public:
 };
 
 } // namespace mixxx
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider(int logLevel, int logFlushLevel);
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*);
 
 #endif // MIXXX_SOUNDSOURCEM4A_H

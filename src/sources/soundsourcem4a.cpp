@@ -1,4 +1,4 @@
-#include "soundsourcem4a.h"
+#include "sources/soundsourcem4a.h"
 
 #include "util/sample.h"
 #include "util/logger.h"
@@ -13,19 +13,9 @@
 #define strcasecmp stricmp
 #endif
 
-// TODO(XXX): Do we still need this "hack" on the supported platforms?
-#ifdef __M4AHACK__
-typedef uint32_t SAMPLERATE_TYPE;
-#else
 typedef unsigned long SAMPLERATE_TYPE;
-#endif
 
 namespace mixxx {
-
-// TODO(XXX): Remove this ugly "extern" hack after getting rid of
-// the broken plugin architecture.
-LogLevel g_logLevel;
-LogLevel g_logFlushLevel;
 
 namespace {
 
@@ -162,7 +152,7 @@ MP4TrackId findFirstAudioTrackId(MP4FileHandle hFile, const QString& fileName) {
 } // anonymous namespace
 
 SoundSourceM4A::SoundSourceM4A(const QUrl& url)
-        : SoundSourcePlugin(url, "m4a"),
+        : SoundSource(url, "m4a"),
           m_hFile(MP4_INVALID_FILE_HANDLE),
           m_trackId(MP4_INVALID_TRACK_ID),
           m_framesPerSampleBlock(MP4_INVALID_DURATION),
@@ -616,22 +606,7 @@ QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
 }
 
 SoundSourcePointer SoundSourceProviderM4A::newSoundSource(const QUrl& url) {
-    return newSoundSourcePluginFromUrl<SoundSourceM4A>(url);
+    return newSoundSourceFromUrl<SoundSourceM4A>(url);
 }
 
 } // namespace mixxx
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider(int logLevel, int logFlushLevel) {
-    // SoundSourceProviderM4A is stateless and a single instance
-    // can safely be shared
-    mixxx::g_logLevel = static_cast<mixxx::LogLevel>(logLevel);
-    mixxx::g_logFlushLevel = static_cast<mixxx::LogLevel>(logFlushLevel);
-    static mixxx::SoundSourceProviderM4A singleton;
-    return &singleton;
-}
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*) {
-    // The statically allocated instance must not be deleted!
-}

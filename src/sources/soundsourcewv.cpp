@@ -1,15 +1,10 @@
 #include <QFile>
 
-#include "soundsourcewv.h"
+#include "sources/soundsourcewv.h"
 
 #include "util/logger.h"
 
 namespace mixxx {
-
-// TODO(XXX): Remove this ugly "extern" hack after getting rid of
-// the broken plugin architecture.
-LogLevel g_logLevel;
-LogLevel g_logFlushLevel;
 
 namespace {
 
@@ -30,9 +25,9 @@ WavpackStreamReader SoundSourceWV::s_streamReader = {
 };
 
 SoundSourceWV::SoundSourceWV(const QUrl& url)
-        : SoundSourcePlugin(url, "wv"),
+        : SoundSource(url, "wv"),
           m_wpc(nullptr),
-          m_sampleScaleFactor(CSAMPLE_ZERO), 
+          m_sampleScaleFactor(CSAMPLE_ZERO),
           m_pWVFile(nullptr),
           m_pWVCFile(nullptr),
           m_curFrameIndex(0) {
@@ -174,7 +169,7 @@ QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
 }
 
 SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
-    return newSoundSourcePluginFromUrl<SoundSourceWV>(url);
+    return newSoundSourceFromUrl<SoundSourceWV>(url);
 }
 
 //static
@@ -270,18 +265,3 @@ int32_t SoundSourceWV::WriteBytesCallback(void* id, void* data, int32_t bcount)
 }
 
 } // namespace mixxx
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider(int logLevel, int logFlushLevel) {
-    // SoundSourceProviderWV is stateless and a single instance
-    // can safely be shared
-    mixxx::g_logLevel = static_cast<mixxx::LogLevel>(logLevel);
-    mixxx::g_logFlushLevel = static_cast<mixxx::LogLevel>(logFlushLevel);
-    static mixxx::SoundSourceProviderWV singleton;
-    return &singleton;
-}
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*) {
-    // The statically allocated instance must not be deleted!
-}
