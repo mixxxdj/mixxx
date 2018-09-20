@@ -337,7 +337,7 @@ NumarkN4.MixerTemplate.prototype = new components.ComponentContainer();
 NumarkN4.Deck = function (channel) {
   components.Deck.call(this, channel);
   this.group = '[Channel' + channel + ']';
-  this.rateRangeEntry=0;
+  this.rateRangeEntry=1;
   this.lastOrientation=(channel%2?0:2);
   this.isSearching=false;
   var theDeck = this;
@@ -561,10 +561,11 @@ NumarkN4.Deck = function (channel) {
   this.keylockButton = new components.Button({
     midi: [0x90+channel,0x1B,0xB0+channel,0x10],
     type: components.Button.prototype.types.toggle,
-    // shift: function () { NOTE: may implement sync_key
-    //   this.inKey="quantize";
-    //   this.outKey="quantize";
-    // },
+    shift: function () {
+      // quantize is already handled by the components syncButton
+      this.inKey="sync_key";
+      this.outKey="sync_key";
+    },
     unshift: function () {
       this.inKey="keylock";
       this.outKey="keylock";
