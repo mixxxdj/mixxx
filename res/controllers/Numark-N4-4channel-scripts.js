@@ -72,7 +72,7 @@ NumarkN4.init = function (id) {
   NumarkN4.rateRanges[0]=engine.getValue("[Channel1]","rateRange");
   //PFL-Master-Mix & headGain are not being controlled by the controller,
   //this sets them in engine to something reasonable so the user doesn't get confused if there is not sound.
-  engine.setParameter("[Master]","headGain",Math.max(engine.getParameter("[Master]","headGain"),0.8));
+  engine.setParameter("[Master]","headGain",Math.max(engine.getParameter("[Master]","headGain"),0.5));
   engine.setParameter("[Master]","headMix",0); //Headphone out = 100% pfl signal.
   NumarkN4.Decks=[];
   for (var iterator=1;iterator<=4;iterator++){
@@ -279,10 +279,12 @@ NumarkN4.MixerTemplate = function () {
   }
   this.channelInputSwitcherL = new components.Button({
     midi: [0x90,0x49],
+    group: "[Channel3]",
     inKey: "mute",
   });
   this.channelInputSwitcherR = new components.Button({
     midi: [0x90,0x4A],
+    group: "[Channel4]",
     inKey: "mute",
   });
 
