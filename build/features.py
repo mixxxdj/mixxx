@@ -492,23 +492,24 @@ class FAAD(Feature):
         if not self.enabled(build):
             return
 
+        build.env.Append(CPPDEFINES='__FAAD__')
         have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
-        have_mp4v2 = conf.CheckLib(['mp4v2', 'libmp4v2'], autoadd=False)
-        have_mp4_h = conf.CheckHeader('mp4.h')
-        have_mp4 = conf.CheckLib('mp4', autoadd=False)
-
-        # Either mp4 or mp4v2 works
-        have_mp4 = (have_mp4v2_h or have_mp4_h) and (have_mp4v2 or have_mp4)
+        if have_mp4v2_h:
+            build.env.Append(CPPDEFINES = '__MP4V2__')
+        have_mp4 = conf.CheckLib(['mp4v2', 'libmp4v2', 'mp4'])
 
         if not have_mp4:
             raise Exception(
                 'Could not find libmp4, libmp4v2 or the libmp4v2 development headers.')
 
-        have_faad = conf.CheckLib(['faad', 'libfaad'], autoadd=False)
+        have_faad = conf.CheckLib(['faad', 'libfaad'])
 
         if not have_faad:
             raise Exception(
                 'Could not find libfaad or the libfaad development headers.')
+
+    def sources(self, build):
+        return ['sources/soundsourcem4a.cpp']
 
 
 class WavPack(Feature):
@@ -528,10 +529,14 @@ class WavPack(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        have_wv = conf.CheckLib(['wavpack', 'wv'], autoadd=True)
-        if not have_wv:
+
+        build.env.Append(CPPDEFINES='__WV__')
+        if not conf.CheckLib(['wavpack', 'wv']):
             raise Exception(
                 'Could not find libwavpack, libwv or its development headers.')
+
+    def sources(self, build):
+        return ['sources/soundsourcewv.cpp']
 
 
 class ColorDiagnostics(Feature):

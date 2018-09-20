@@ -27,7 +27,6 @@ plugins = []
 # Grab these from the SConstruct above us
 Import('build')
 Import('sources')
-Import('soundsource_plugins')
 Import('mixxxminimal_plugins')
 
 env = build.env
@@ -78,11 +77,10 @@ elif build.platform_is_osx:
 else:
         mixxx_bin = env.Program('mixxx', sources)
 
-# Make sure soundsource and mixxxminimal plugins are built before
+# Make sure mixxxminimal plugins are built before
 # mixxx_bin. This fixes a race where when building with multiple threads the
 # packaging step starts before the plugins are built.
 Depends(mixxx_bin, mixxxminimal_plugins)
-Depends(mixxx_bin, soundsource_plugins)
 
 # For convenience, copy the Mixxx binary out of the build directory to the
 # root. Don't do it on windows because the binary can't run on its own and needs
@@ -245,9 +243,6 @@ if test_bin is not None:
 if build.bundle_pdbs:
         binary_files.append(env.SideEffect('mixxx.pdb', mixxx_bin))
 
-#Soundsource plugins
-soundsource_plugin_files = soundsource_plugins
-
 #VAMP beat tracking and key detection plugin
 libmixxxminimal_vamp_plugin = mixxxminimal_plugins
 
@@ -373,9 +368,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                         os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vamp'),
                         libmixxxminimal_vamp_plugin)
 
-                soundsource_plugins = env.Install(
-                        os.path.join(unix_lib_path, 'mixxx', 'plugins', 'soundsource'),
-                        soundsource_plugin_files)
                 controllermappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'controllers'), controllermappings_files)
                 translations = env.Install(os.path.join(unix_share_path, 'mixxx', 'translations'), translation_files)
                 keyboardmappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'keyboard'), keyboardmappings_files)
@@ -393,7 +385,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', binary)
                 env.Alias('install', skins)
                 env.Alias('install', fonts)
-                env.Alias('install', soundsource_plugins)
                 env.Alias('install', controllermappings)
                 env.Alias('install', translations)
                 env.Alias('install', keyboardmappings)
@@ -442,11 +433,6 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 qt_plugins.append(("styles", "libqmacstyle.dylib"))
 
         #Left out libqmng and libqtiff to save space.
-
-        # Concatenate the SoundSource plugins to our list of plugins (converting
-        # from SCons File nodes to strings)
-        for x in soundsource_plugins:
-                plugins.append(x.get_abspath())
 
         for x in mixxxminimal_plugins:
                 plugins.append(x.get_abspath())
@@ -547,8 +533,6 @@ if build.platform_is_windows:
         docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
         #icon = env.Install(base_dist_dir+"", icon_files)
         dlls = env.Install(base_dist_dir+"/", dll_files)
-        soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"),
-                                          soundsource_plugin_files)
         vamp_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "vamp/"),
                                    libmixxxminimal_vamp_plugin)
         binary = env.Install(base_dist_dir+"/", binary_files)
@@ -561,7 +545,6 @@ if build.platform_is_windows:
         env.Alias('mixxx', keyboardmappings)
         env.Alias('mixxx', docs)
         env.Alias('mixxx', dlls)
-        env.Alias('mixxx', soundsource_plugins)
         env.Alias('mixxx', vamp_plugins)
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)

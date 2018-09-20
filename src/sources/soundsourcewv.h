@@ -1,7 +1,8 @@
 #ifndef MIXXX_SOUNDSOURCEWV_H
 #define MIXXX_SOUNDSOURCEWV_H
 
-#include "sources/soundsourceplugin.h"
+#include "sources/soundsource.h"
+#include "sources/soundsourceprovider.h"
 
 #include "wavpack/wavpack.h"
 
@@ -9,7 +10,7 @@ class QFile;
 
 namespace mixxx {
 
-class SoundSourceWV: public SoundSourcePlugin {
+class SoundSourceWV: public SoundSource {
   public:
     explicit SoundSourceWV(const QUrl& url);
     ~SoundSourceWV() override;
@@ -53,11 +54,5 @@ public:
 };
 
 }  // namespace mixxx
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider(int logLevel, int logFlushLevel);
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*);
 
 #endif // MIXXX_SOUNDSOURCEWV_H
