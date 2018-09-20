@@ -1,4 +1,4 @@
-#include "soundsourcemediafoundation.h"
+#include "sources/soundsourcemediafoundation.h"
 
 #include <mfapi.h>
 #include <mferror.h>
@@ -43,13 +43,8 @@ template<class T> static void safeRelease(T **ppT) {
 
 namespace mixxx {
 
-// TODO(XXX): Remove this ugly "extern" hack after getting rid of
-// the broken plugin architecture.
-LogLevel g_logLevel;
-LogLevel g_logFlushLevel;
-
 SoundSourceMediaFoundation::SoundSourceMediaFoundation(const QUrl& url)
-        : SoundSourcePlugin(url, "m4a"),
+        : SoundSource(url, "m4a"),
           m_hrCoInitialize(E_FAIL),
           m_hrMFStartup(E_FAIL),
           m_pSourceReader(nullptr),
@@ -764,7 +759,7 @@ bool SoundSourceMediaFoundation::configureAudioStream(const OpenParams& openPara
     kLogger.debug()
             << "Sample buffer capacity"
             << m_sampleBuffer.capacity();
-            
+
     safeRelease(&pAudioType);
     return true;
 }
@@ -786,7 +781,7 @@ bool SoundSourceMediaFoundation::readProperties() {
                     m_streamUnitConverter.toFrameIndex(prop.hVal.QuadPart)));
     kLogger.debug() << "Frame index range" << frameIndexRange();
     PropVariantClear(&prop);
-   
+
     return true;
 }
 
@@ -802,22 +797,7 @@ QStringList SoundSourceProviderMediaFoundation::getSupportedFileExtensions() con
 }
 
 SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
-    return newSoundSourcePluginFromUrl<SoundSourceMediaFoundation>(url);
+    return newSoundSourceFromUrl<SoundSourceMediaFoundation>(url);
 }
 
 } // namespace mixxx
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-mixxx::SoundSourceProvider* Mixxx_SoundSourcePluginAPI_createSoundSourceProvider(int logLevel, int logFlushLevel) {
-    // SoundSourceProviderMediaFoundation is stateless and a single instance
-    // can safely be shared
-    mixxx::g_logLevel = static_cast<mixxx::LogLevel>(logLevel);
-    mixxx::g_logFlushLevel = static_cast<mixxx::LogLevel>(logFlushLevel);
-    static mixxx::SoundSourceProviderMediaFoundation singleton;
-    return &singleton;
-}
-
-extern "C" MIXXX_SOUNDSOURCEPLUGINAPI_EXPORT
-void Mixxx_SoundSourcePluginAPI_destroySoundSourceProvider(mixxx::SoundSourceProvider*) {
-    // The statically allocated instance must not be deleted!
-}
