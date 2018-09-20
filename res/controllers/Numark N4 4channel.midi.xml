@@ -623,6 +623,151 @@
 
       <control>
         <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].topContainer.hotcueButtons[0].input</key>
+        <status>0x81</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].topContainer.hotcueButtons[0].input</key>
+        <status>0x82</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].topContainer.hotcueButtons[0].input</key>
+        <status>0x83</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].topContainer.hotcueButtons[0].input</key>
+        <status>0x84</status>
+        <midino>0x27</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].topContainer.hotcueButtons[1].input</key>
+        <status>0x81</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].topContainer.hotcueButtons[1].input</key>
+        <status>0x82</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].topContainer.hotcueButtons[1].input</key>
+        <status>0x83</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].topContainer.hotcueButtons[1].input</key>
+        <status>0x84</status>
+        <midino>0x28</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].topContainer.hotcueButtons[2].input</key>
+        <status>0x81</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].topContainer.hotcueButtons[2].input</key>
+        <status>0x82</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].topContainer.hotcueButtons[2].input</key>
+        <status>0x83</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].topContainer.hotcueButtons[2].input</key>
+        <status>0x84</status>
+        <midino>0x29</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].topContainer.hotcueButtons[3].input</key>
+        <status>0x81</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].topContainer.hotcueButtons[3].input</key>
+        <status>0x82</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].topContainer.hotcueButtons[3].input</key>
+        <status>0x83</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].topContainer.hotcueButtons[3].input</key>
+        <status>0x84</status>
+        <midino>0x2A</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+
+      <control>
+        <group>[Channel1]</group>
         <key>NumarkN4.Decks[1].topContainer.encFxParam1.input</key>
         <status>0xB1</status>
         <midino>0x57</midino>
@@ -1679,9 +1824,9 @@
         <description>pitchBendPlus left off</description>
       </control>
       <control>
-        <group>[Channel4]</group>
-        <key>NumarkN4.Decks[4].pitchBendPlus.input</key>
-        <status>0x84</status>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].pitchBendPlus.input</key>
+        <status>0x82</status>
         <midino>0x19</midino>
         <options>
           <script-binding />
