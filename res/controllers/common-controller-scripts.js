@@ -393,7 +393,7 @@ bpm.tapButton = function(deck) {
     var now = new Date()/1000;   // Current time in seconds
     var tapDelta = now - bpm.tapTime;
     bpm.tapTime=now;
-    if (bpm.tap.lenght<1.0) {
+    if (bpm.tap.length<1.0) {
       bpm.previousTapDelta=tapDelta;
     }
     // assign tapDelta in cases where the button has not been pressed previously
@@ -420,7 +420,7 @@ bpm.tapButton = function(deck) {
     // was supposed to return the tracks bpm (which it did before the change).
     // "file_bpm" is supposed to return the set BPM of the loaded track of the
     // channel.
-    
+
     // Adjust the rate:
     fRateScale = (fRateScale-1.)/engine.getValue("[Channel"+deck+"]","rateRange");
 
