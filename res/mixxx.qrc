@@ -11,7 +11,7 @@
         <file>images/library/ic_library_unlocked.svg</file>
       <!-- lock icon for crates, playlists & history -->
         <file>images/library/ic_library_locked_tracklist.svg</file>
-        <file>images/library/cover_default.png</file>
+        <file>images/library/cover_default.svg</file>
         <file>images/library/ic_library_cross.svg</file>
         <file>images/library/ic_library_autodj.svg</file>
         <file>images/library/ic_library_banshee.svg</file>

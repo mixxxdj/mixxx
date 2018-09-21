@@ -15,7 +15,7 @@ QString CoverArtUtils::defaultCoverLocation() {
 //static
 QStringList CoverArtUtils::supportedCoverArtExtensions() {
     QStringList extensions;
-    extensions << "jpg" << "jpeg" << "svg" << "gif" << "bmp";
+    extensions << "jpg" << "jpeg" << "png" << "gif" << "bmp";
     return extensions;
 }
 
