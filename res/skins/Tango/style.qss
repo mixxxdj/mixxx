@@ -2027,7 +2027,11 @@ QToolTip {
 
 #Spacer0f {
   background-color: #0f0f0f;
-}
+  }
+  #RoundSpacer0f {
+    background-color: #0f0f0f;
+    border-radius: 2px;
+  }
 #Spacer1e {
   background-color: #1e1e1e;
 }

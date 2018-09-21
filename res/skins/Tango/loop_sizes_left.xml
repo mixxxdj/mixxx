@@ -12,7 +12,7 @@ Variables:
       <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>Spacer0f</ObjectName>
+        <ObjectName>RoundSpacer0f</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
