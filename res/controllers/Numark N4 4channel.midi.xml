@@ -1102,6 +1102,42 @@
       </control>
       <control>
         <group>[Channel1]</group>
+        <key>NumarkN4.Decks[1].cueButton.input</key>
+        <status>0x81</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>NumarkN4.Decks[2].cueButton.input</key>
+        <status>0x82</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel3]</group>
+        <key>NumarkN4.Decks[3].cueButton.input</key>
+        <status>0x83</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel4]</group>
+        <key>NumarkN4.Decks[4].cueButton.input</key>
+        <status>0x84</status>
+        <midino>0x10</midino>
+        <options>
+          <script-binding />
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
         <key>NumarkN4.Decks[1].searchButton.input</key>
         <status>0x91</status>
         <midino>0x21</midino>
