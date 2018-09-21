@@ -4,14 +4,23 @@
 #include "sources/soundsource.h"
 #include "sources/soundsourceprovider.h"
 
-#include "wavpack/wavpack.h"
-
 class QFile;
+
+typedef void WavpackContext;
 
 namespace mixxx {
 
 class SoundSourceWV: public SoundSource {
   public:
+    static int32_t ReadBytesCallback(void* id, void* data, int bcount);
+    static uint32_t GetPosCallback(void* id);
+    static int SetPosAbsCallback(void* id, unsigned int pos);
+    static int SetPosRelCallback(void* id, int delta, int mode);
+    static int PushBackByteCallback(void* id, int c);
+    static uint32_t GetlengthCallback(void* id);
+    static int CanSeekCallback(void* id);
+    static int32_t WriteBytesCallback(void* id, void* data, int32_t bcount);
+
     explicit SoundSourceWV(const QUrl& url);
     ~SoundSourceWV() override;
 
@@ -25,16 +34,6 @@ class SoundSourceWV: public SoundSource {
     OpenResult tryOpen(
             OpenMode mode,
             const OpenParams& params) override;
-
-    static int32_t ReadBytesCallback(void* id, void* data, int bcount);
-    static uint32_t GetPosCallback(void* id);
-    static int SetPosAbsCallback(void* id, unsigned int pos);
-    static int SetPosRelCallback(void* id, int delta, int mode);
-    static int PushBackByteCallback(void* id, int c);
-    static uint32_t GetlengthCallback(void* id);
-    static int CanSeekCallback(void* id);
-    static int32_t WriteBytesCallback(void* id, void* data, int32_t bcount);
-    static WavpackStreamReader s_streamReader;
 
     WavpackContext* m_wpc;
     CSAMPLE m_sampleScaleFactor;

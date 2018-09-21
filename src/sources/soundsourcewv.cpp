@@ -1,4 +1,5 @@
 #include <QFile>
+#include <wavpack/wavpack.h>
 
 #include "sources/soundsourcewv.h"
 
@@ -10,10 +11,7 @@ namespace {
 
 const Logger kLogger("SoundSourceWV");
 
-} // anonymous namespace
-
-//static
-WavpackStreamReader SoundSourceWV::s_streamReader = {
+static WavpackStreamReader s_streamReader = {
     SoundSourceWV::ReadBytesCallback,
     SoundSourceWV::GetPosCallback,
     SoundSourceWV::SetPosAbsCallback,
@@ -23,6 +21,8 @@ WavpackStreamReader SoundSourceWV::s_streamReader = {
     SoundSourceWV::CanSeekCallback,
     SoundSourceWV::WriteBytesCallback
 };
+
+} // anonymous namespace
 
 SoundSourceWV::SoundSourceWV(const QUrl& url)
         : SoundSource(url, "wv"),
