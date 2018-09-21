@@ -2,7 +2,7 @@ function BehringerBCD3000 () {}
 
 //sensitivity setting
 BehringerBCD3000.UseAcceleration = true;
-BehringerBCD3000.JogSensivity = 0.5;
+BehringerBCD3000.JogSensitivity = 0.5;
 
 BehringerBCD3000.init = function (id) { // called when the device is opened & set up
 	
@@ -93,7 +93,7 @@ BehringerBCD3000.jogWheel = function (channel, control, value, status, group) {
 
 	} else {
 
-		jogValue = (value - 0x40) * BehringerBCD3000.JogSensivity;
+		jogValue = (value - 0x40) * BehringerBCD3000.JogSensitivity;
 		engine.setValue(group, "jog", jogValue);
 
 	}

@@ -93,7 +93,7 @@ class SyncableListener {
     // Notify Syncable that the Syncable's scratching state changed.
     virtual void notifyScratching(Syncable* pSyncable, bool scratching) = 0;
 
-    // A Syncable must never call notifyBeatDistanceChanged in respnse to a
+    // A Syncable must never call notifyBeatDistanceChanged in response to a
     // setBeatDistance() call.
     virtual void notifyBeatDistanceChanged(
         Syncable* pSyncable, double beatDistance) = 0;
