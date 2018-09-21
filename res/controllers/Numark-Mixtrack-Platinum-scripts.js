@@ -63,15 +63,6 @@ MixtrackPlatinum.init = function(id, debug) {
     MixtrackPlatinum.browse = new MixtrackPlatinum.BrowseKnob();
 
     // helper functions
-    var auto_loop_led = function(group, key, midi_channel, midino) {
-        if (engine.getValue(group, key)) {
-            midi.sendShortMsg(0x90 | midi_channel, midino, 0x40);
-        }
-        else {
-            midi.sendShortMsg(0x80 | midi_channel, midino, 0x00);
-        }
-    };
-
     var led = function(group, key, midi_channel, midino) {
         if (engine.getValue(group, key)) {
             midi.sendShortMsg(0x90 | midi_channel, midino, 0x7F);
@@ -84,16 +75,6 @@ MixtrackPlatinum.init = function(id, debug) {
     // init a bunch of channel specific leds
     for (var i = 0; i < 4; ++i) {
         var group = "[Channel"+(i+1)+"]";
-
-        // auto-loop leds
-        auto_loop_led(group, 'beatloop_1_enabled',  i + 5, 0x14);
-        auto_loop_led(group, 'beatloop_2_enabled',  i + 5, 0x15);
-        auto_loop_led(group, 'beatloop_4_enabled',  i + 5, 0x16);
-        auto_loop_led(group, 'beatloop_8_enabled',  i + 5, 0x17);
-        auto_loop_led(group, 'beatloop_0.0625_enabled',  i + 5, 0x1C);
-        auto_loop_led(group, 'beatloop_0.125_enabled',  i + 5, 0x1D);
-        auto_loop_led(group, 'beatloop_0.25_enabled',  i + 5, 0x1E);
-        auto_loop_led(group, 'beatloop_0.5_enabled',  i + 5, 0x1F);
 
         // update duration, time elapsed, and the spinner
         var duration = engine.getValue(group, 'duration');
