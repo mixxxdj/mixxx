@@ -533,55 +533,63 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         }, obj);
     };
 
-    if (UseManualLoopAsCue) {
-        this.loop_in = new components.HotcueButton(loop_base(0x38, {
+    this.alternate_manloop = new components.ComponentContainer({
+        loop_in: new components.HotcueButton(loop_base(0x38, {
             number: 5,
-        }));
-        this.loop_out = new components.HotcueButton(loop_base(0x39, {
+        })),
+        loop_out: new components.HotcueButton(loop_base(0x39, {
             number: 6,
-        }));
-        this.loop_toggle = new components.HotcueButton(loop_base(0x32, {
+        })),
+        loop_toggle: new components.HotcueButton(loop_base(0x32, {
             number: 7,
-        }));
-        this.loop_halve = new components.HotcueButton(loop_base(0x34, {
+        })),
+        loop_halve: new components.HotcueButton(loop_base(0x34, {
             number: 8,
-        }));
-        this.loop_double = new components.HotcueButton(loop_base(0x35, {
+        })),
+        loop_double: new components.HotcueButton(loop_base(0x35, {
             number: 8,
-        }));
-    } else {
-        this.loop_in = new components.Button(loop_base(0x38, {
+        })),
+    });
+    this.normal_manloop = new components.ComponentContainer({
+        loop_in: new components.Button(loop_base(0x38, {
             inKey: 'loop_in',
             outKey: 'loop_start_position',
             outValueScale: function (value) {
                 return (value != -1) ? this.on : this.off;
             },
-        }));
-        this.loop_out = new components.Button(loop_base(0x39, {
+        })),
+        loop_out: new components.Button(loop_base(0x39, {
             inKey: 'loop_out',
             outKey: 'loop_end_position',
             outValueScale: function (value) {
                 return (value != -1) ? this.on : this.off;
             },
-        }));
-        this.loop_toggle = new components.LoopToggleButton(loop_base(0x32, {}));
-        this.loop_halve = new components.Button(loop_base(0x34, {
+        })),
+        loop_toggle: new components.LoopToggleButton(loop_base(0x32, {})),
+        loop_halve: new components.Button(loop_base(0x34, {
             key: 'loop_halve',
             input: function(channel, control, value, status) {
                 if (this.isPress(channel, control, value, status)) {
                     engine.setValue(deck.currentDeck, "loop_scale", 0.5);
                 }
             },
-        }));
-        this.loop_double = new components.Button(loop_base(0x35, {
+        })),
+        loop_double: new components.Button(loop_base(0x35, {
             key: 'loop_double',
             input: function(channel, control, value, status) {
                 if (this.isPress(channel, control, value, status)) {
                     engine.setValue(deck.currentDeck, "loop_scale", 2.0);
                 }
             },
-        }));
+        })),
+    });
+    // swap normal and alternate manual loop controls
+    if (UseManualLoopAsCue) {
+        var manloop = this.normal_manloop;
+        this.normal_manloop = this.alternate_manloop;
+        this.alternate_manloop = manloop;
     }
+    this.manloop = this.normal_manloop;
 
     auto_loop_hotcue = function(midino, obj) {
         return _.assign({
@@ -603,59 +611,108 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         }, obj);
     };
 
-    if (UseAutolLoopAsCue) {
-        this.auto_loop_1 = new components.HotcueButton(auto_loop_hotcue(0x14, {
+    this.alternate_autoloop = new components.ComponentContainer({
+        auto1: new components.HotcueButton(auto_loop_hotcue(0x14, {
             number: 5,
-        }));
-        this.auto_loop_2 = new components.HotcueButton(auto_loop_hotcue(0x15, {
+        })),
+        auto2: new components.HotcueButton(auto_loop_hotcue(0x15, {
             number: 6,
-        }));
-        this.auto_loop_3 = new components.HotcueButton(auto_loop_hotcue(0x16, {
+        })),
+        auto3: new components.HotcueButton(auto_loop_hotcue(0x16, {
             number: 7,
-        }));
-        this.auto_loop_4 = new components.HotcueButton(auto_loop_hotcue(0x17, {
+        })),
+        auto4: new components.HotcueButton(auto_loop_hotcue(0x17, {
             number: 8,
-        }));
+        })),
+    });
+    this.alternate_autoloop.roll1 = this.alternate_autoloop.auto1;
+    this.alternate_autoloop.roll2 = this.alternate_autoloop.auto2;
+    this.alternate_autoloop.roll3 = this.alternate_autoloop.auto3;
+    this.alternate_autoloop.roll4 = this.alternate_autoloop.auto4;
 
-        this.loop_roll_1 = this.auto_loop_1;
-        this.loop_roll_2 = this.auto_loop_2;
-        this.loop_roll_3 = this.auto_loop_3;
-        this.loop_roll_4 = this.auto_loop_4;
-    } else {
-        this.auto_loop_1 = new components.Button(auto_loop_base(0x14, {
+    this.normal_autoloop = new components.ComponentContainer({
+        auto1: new components.Button(auto_loop_base(0x14, {
             inKey: 'beatloop_1_toggle',
             outKey: 'beatloop_1_enabled',
-        }));
-        this.auto_loop_2 = new components.Button(auto_loop_base(0x15, {
+        })),
+        auto2: new components.Button(auto_loop_base(0x15, {
             inKey: 'beatloop_2_toggle',
             outKey: 'beatloop_2_enabled',
-        }));
-        this.auto_loop_3 = new components.Button(auto_loop_base(0x16, {
+        })),
+        auto3: new components.Button(auto_loop_base(0x16, {
             inKey: 'beatloop_4_toggle',
             outKey: 'beatloop_4_enabled',
-        }));
-        this.auto_loop_4 = new components.Button(auto_loop_base(0x17, {
+        })),
+        auto4: new components.Button(auto_loop_base(0x17, {
             inKey: 'beatloop_8_toggle',
             outKey: 'beatloop_8_enabled',
-        }));
+        })),
         
-        this.loop_roll_1 = new components.Button(auto_loop_base(0x1C, {
+        roll1: new components.Button(auto_loop_base(0x1C, {
             inKey: 'beatlooproll_0.0625_activate',
             outKey: 'beatloop_0.0625_enabled',
-        }));
-        this.loop_roll_2 = new components.Button(auto_loop_base(0x1D, {
+        })),
+        roll2: new components.Button(auto_loop_base(0x1D, {
             inKey: 'beatlooproll_0.125_activate',
             outKey: 'beatloop_0.125_enabled',
-        }));
-        this.loop_roll_3 = new components.Button(auto_loop_base(0x1E, {
+        })),
+        roll3: new components.Button(auto_loop_base(0x1E, {
             inKey: 'beatlooproll_0.25_activate',
             outKey: 'beatloop_0.25_enabled',
-        }));
-        this.loop_roll_4 = new components.Button(auto_loop_base(0x1F, {
+        })),
+        roll4: new components.Button(auto_loop_base(0x1F, {
             inKey: 'beatlooproll_0.5_activate',
             outKey: 'beatloop_0.5_enabled',
-        }));
+        })),
+    });
+
+    // swap normal and alternate auto loop controls
+    if (UseAutolLoopAsCue) {
+        var autoloop = this.normal_autoloop;
+        this.normal_autoloop = this.alternate_autoloop;
+        this.alternate_autoloop = autoloop;
     }
+    this.autoloop = this.normal_autoloop;
+
+    this.pad_mode = new components.Component({
+        input: function (channel, control, value, status, group) {
+            // only handle button down events
+            if (value != 0x7F) return;
+
+            // if shifted, set a hotcue mode
+            if (this.isShifted) {
+                // manual loop
+                if (control == 0x0E) {
+                    deck.manloop = deck.alternate_manloop;
+                    deck.manloop.reconnectComponents();
+                }
+                // auto loop
+                else if (control == 0x06) {
+                    deck.autoloop = deck.alternate_autoloop;
+                    deck.autoloop.reconnectComponents();
+                }
+            }
+            // otherwise set a loop mode
+            else {
+                // manual loop
+                if (control == 0x0E) {
+                    deck.manloop = deck.normal_manloop;
+                    deck.manloop.reconnectComponents();
+                }
+                // auto loop
+                else if (control == 0x06) {
+                    deck.autoloop = deck.normal_autoloop;
+                    deck.autoloop.reconnectComponents();
+                }
+            }
+        },
+        shift: function() {
+            this.isShifted = true;
+        },
+        unshift: function() {
+            this.isShifted = false;
+        },
+    });
 
     this.EqEffectKnob = function (group, in_key, fx_key) {
         this.unshift_group = group;
@@ -701,7 +758,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
 
     this.reconnectComponents(function (c) {
         if (c.group === undefined) {
-            c.group = this.currentDeck;
+            c.group = deck.currentDeck;
         }
     });
 
