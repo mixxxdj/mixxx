@@ -1340,9 +1340,9 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(140.0,
+    EXPECT_FLOAT_EQ(100.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
-    EXPECT_FLOAT_EQ(140.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_FLOAT_EQ(100.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     // The exact beat distance will be one buffer past .6, but this is good
     // enough to confirm that it worked.
     EXPECT_GT(0.7, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
