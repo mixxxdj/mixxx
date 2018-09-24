@@ -1,7 +1,7 @@
 <!--
 Description:
   Scrolling waveform on top edge of skin with beat grid buttons at the right-hand side.
-  Minimum size is 50px, in netbook mode it's 22px.
+  Minimum size is 22px.
   Expanded beat grid buttons make the waveform grow to 50px.
 Variables:
   group   : [ChannelN]

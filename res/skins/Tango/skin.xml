@@ -396,10 +396,6 @@
           </Children>
         </WidgetGroup><!-- /All skin elements + Skin menu -->
 
-        <!-- Detect if screen (window) size is netbook-like.
-            Center spacer in top bar will adapt to size. -->
-        <Template src="skin:size_detector_screen.xml"/>
-
         <!-- Detect if Star rating fits into deck buttons row.
             Do this here, so it doesn't interfere with expanded skin menu -->
         <Template src="skin:size_detector_stars.xml"/>

@@ -1,6 +1,6 @@
 <!--
 Description:
-  Top bar only displayed in netbook mode (auto or enforced) with
+  Top bar containing
   * Logo
   * Mixer for Master, Booth & Headphone
   * Crossfader (if enabled)
