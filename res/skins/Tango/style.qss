@@ -396,31 +396,6 @@ WWidgetGroup {
       background-color: #0f0f0f;
     }
 
-#BroadcastButtonNetbook {
-  background-color: transparent;
-  }
-  #BroadcastButtonNetbook[displayValue="0"] {
-    image: url(skin:/buttons/btn_broadcast_off_netbook.svg) no-repeat center center;
-    }
-    #BroadcastButtonNetbook[displayValue="0"]:hover {
-      image: url(skin:/buttons/btn_broadcast_off_hover_netbook.svg) no-repeat center center;
-      }
-  #BroadcastButtonNetbook[displayValue="1"] {
-    image: url(skin:/buttons/btn_broadcast_connecting_netbook.svg) no-repeat center center;
-    }
-  #BroadcastButtonNetbook[displayValue="2"] {
-    image: url(skin:/buttons/btn_broadcast_connected_netbook.svg) no-repeat center center;
-    }
-  #BroadcastButtonNetbook[displayValue="3"] {
-    image: url(skin:/buttons/btn_broadcast_failure_netbook.svg) no-repeat center center;
-    }
-  #BroadcastButtonNetbook[displayValue="4"] {
-    image: url(skin:/buttons/btn_broadcast_warning_netbook.svg) no-repeat center center;
-    }
-    #BroadcastButtonNetbook:hover {
-      background-color: #0f0f0f;
-    }
-
 #SkinSettingsToggler[displayValue="0"] {
   background-color: transparent;
   image: url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center;
@@ -763,6 +738,7 @@ WWidgetGroup {
     qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
     padding: 1px 1px 1px 0px;
     background-color: #333;
+    border-radius: 0px;
   }
 
 #DeckControlsExpandedLeft,
@@ -1447,6 +1423,7 @@ decks, samplers, mic, aux, fx */
 }
 #FxFlow_maxi_separator {
   background-color: transparent;
+  border-radius: 0px;
   image: url(skin:/graphics/fxFlow_maxi_noFocus_Fx1-2-3.svg) no-repeat right center;
 }
 
@@ -1454,9 +1431,11 @@ decks, samplers, mic, aux, fx */
 /* with focus */
 #FxFlow_focus_background[highlight="0"] {
   background-color: #333;
+  border-radius: 0px;
   }
   #FxFlow_focus_background[highlight="1"] {
     background-color: transparent;
+  border-radius: 0px;
   }
 /* collapsed effect slots, horizontal layout */
 #FxFlow_mini_focus_separator1-2[highlight="0"],
@@ -2040,6 +2019,7 @@ QToolTip {
 }
 #Spacer33 {
   background-color: #333;
+  border-radius: 0px;
 }
 #Spacer58 {
   background-color: #585858;
