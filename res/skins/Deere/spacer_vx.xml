@@ -3,9 +3,8 @@
 Description: Spacer.
 -->
 <Template>
-  <WidgetGroup>
-    <ObjectName>Spacer</ObjectName>
-    <Layout>horizontal</Layout>
+    <WidgetGroup>
+    <ObjectName>Spacer<Variable name="color"/></ObjectName>
     <Size><Variable name="height"/></Size>
     <Children>
     </Children>
