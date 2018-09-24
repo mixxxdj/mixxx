@@ -147,9 +147,13 @@ def define_test_targets(default=False):
                         Default(test_bin)
 
 
-# Always define test targets. If the 'test' flag is 1, then build the mixxx-test
-# target by default. If 'test' is in the target list then run mixxx-test.
-define_test_targets(default=int(build.flags['test']))
+# If the 'test' flag is 1, then build the mixxx-test target by default. If
+# 'test' is in the target list then run mixxx-test.
+build_tests_by_default = int(build.flags['test']) != 0
+build_tests = 'mixxx-test' in COMMAND_LINE_TARGETS
+run_tests = 'test' in COMMAND_LINE_TARGETS
+if build_tests or run_tests or build_tests_by_default:
+        define_test_targets(default=build_tests_by_default)
 
 def construct_version(build, mixxx_version, branch_name, vcs_revision):
         if branch_name.startswith('release-'):
