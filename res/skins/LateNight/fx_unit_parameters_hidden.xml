@@ -4,13 +4,12 @@
     An effect unit widget.
   Variables:
     group: The group for the controls.
+    FxRack
+    FxUnit
 -->
 <Template>
   <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
-      
-<!-- Singletons -->
 
-<!-- Structure -->
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="FxUnit"/></ObjectName>
     <Layout>horizontal</Layout>
