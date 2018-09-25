@@ -1,4 +1,4 @@
-q<!--
+<!--
 Description:
   A button that displays focus state of an effect slot.
   Left-click sets focus, right-click removes focus from all effects.
