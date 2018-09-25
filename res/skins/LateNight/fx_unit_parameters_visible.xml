@@ -11,7 +11,7 @@
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="FxUnit"/></ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,max</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
 
       <WidgetGroup><!-- Show parameters -->
