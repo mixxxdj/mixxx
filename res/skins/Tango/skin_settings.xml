@@ -640,7 +640,7 @@ Description:
             <ObjectName>SkinSettingsCategory</ObjectName>
             <MinimumSize>200,26</MinimumSize>
             <MaximumSize>200,54</MaximumSize>
-            <SizePolicy>me,</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 
