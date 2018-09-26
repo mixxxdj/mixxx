@@ -117,9 +117,7 @@
               </Template>
 
               <!-- Workaround for layout spacing -->
-              <Template src="skin:spacer_hx.xml">
-                <SetVariable name="width">2f,</SetVariable>
-              </Template>
+              <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
               <Template src="skin:fx_unit_group_assignment_button.xml">
                 <SetVariable name="EffectUnit">4</SetVariable>

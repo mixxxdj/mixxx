@@ -84,10 +84,6 @@
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
 
-                  <Template src="skin:spacer_vx.xml">
-                    <SetVariable name="height">,0f</SetVariable>
-                  </Template>
-
                   <WidgetGroup>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
@@ -99,9 +95,7 @@
                     </Children>
                   </WidgetGroup>
 
-                  <Template src="skin:spacer_vx.xml">
-                    <SetVariable name="height">,2f</SetVariable>
-                  </Template>
+                  <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
 
                   <PushButton>
                     <TooltipId>talkover_duck_mode</TooltipId>
@@ -125,9 +119,7 @@
                     </Connection>
                   </PushButton>
 
-                  <Template src="skin:spacer_vx.xml">
-                    <SetVariable name="height">,2me</SetVariable>
-                  </Template>
+                  <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
                 </Children>
               </WidgetGroup>
 

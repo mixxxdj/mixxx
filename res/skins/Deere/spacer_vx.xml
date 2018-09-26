@@ -5,8 +5,6 @@ Description: Spacer.
 <Template>
     <WidgetGroup>
     <ObjectName>Spacer<Variable name="color"/></ObjectName>
-    <Size><Variable name="height"/></Size>
-    <Children>
-    </Children>
+    <Size>0min,<Variable name="height"/>f</Size>
   </WidgetGroup>
 </Template>

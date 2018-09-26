@@ -7,6 +7,7 @@
     row: the Sampler row
 -->
 <Template>
+  <SetVariable name="group">[PreviewDeck1]</SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>i,min</SizePolicy>
@@ -31,7 +32,7 @@
                   <Text>
                     <TooltipId>text</TooltipId>
                     <SizePolicy>me,min</SizePolicy>
-                    <Group>[PreviewDeck1]</Group>
+                    <Group><Variable name="group"/></Group>
                     <Elide>right</Elide>
                   </Text>
 
@@ -44,7 +45,7 @@
                     <SetVariable name="state_0_text"></SetVariable>
                     <SetVariable name="state_0_pressed">icon/ic_eject_48px.svg</SetVariable>
                     <SetVariable name="state_0_unpressed">icon/ic_eject_48px.svg</SetVariable>
-                    <SetVariable name="left_connection_control">[PreviewDeck1],eject</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,eject</SetVariable>
                   </Template>
 
                   <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
@@ -57,7 +58,7 @@
                     <MinAngle>-230</MinAngle>
                     <MaxAngle>50</MaxAngle>
                     <Connection>
-                      <ConfigKey>[PreviewDeck1],pregain</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,pregain</ConfigKey>
                     </Connection>
                   </KnobComposed>
 
@@ -81,14 +82,14 @@
                     <SetVariable name="state_1_text"></SetVariable>
                     <SetVariable name="state_1_pressed">icon/ic_pause_48px.svg</SetVariable>
                     <SetVariable name="state_1_unpressed">icon/ic_pause_48px.svg</SetVariable>
-                    <SetVariable name="left_connection_control">[PreviewDeck1],play</SetVariable>
-                    <SetVariable name="right_connection_control">[PreviewDeck1],start</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
+                    <SetVariable name="right_connection_control"><Variable name="group"/>,start</SetVariable>
                   </Template>
 
                   <Overview>
                     <TooltipId>waveform_overview</TooltipId>
                     <Style></Style>
-                    <Group>[PreviewDeck1]</Group>
+                    <Group><Variable name="group"/></Group>
                     <Size>me,30f</Size>
                     <BgColor></BgColor>
                     <PlayedOverlayColor>#88000000</PlayedOverlayColor>
@@ -114,7 +115,7 @@
                       <TextColor>#00FF00</TextColor>
                     </Mark>
                     <Connection>
-                      <ConfigKey>[PreviewDeck1],playposition</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                       <EmitOnDownPress>false</EmitOnDownPress>
                     </Connection>
                   </Overview>
@@ -128,8 +129,7 @@
             <Layout>vertical</Layout>
             <Children>
               <Template src="skin:vumeter.xml">
-                <SetVariable name="TooltipId">channel_VuMeter</SetVariable>>
-                <SetVariable name="group">[PreviewDeck1]</SetVariable>
+                <SetVariable name="TooltipId">channel_VuMeter</SetVariable>
                 <SetVariable name="control">VuMeter</SetVariable>
               </Template>
             </Children>
