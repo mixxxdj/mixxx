@@ -6820,7 +6820,7 @@ Habitualment dóna graelles de ritme més precises, però anirà pitjor en les p
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Import Metadata from File</source>
+        <source>Import Metadata From Audio File</source>
         <translation>Importa les metadades des del fitxer</translation>
     </message>
     <message>

@@ -6815,7 +6815,7 @@ Muitas vezes resulta em grades de batida de maior qualidade, mas não vai funcio
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Import Metadata from File</source>
+        <source>Import Metadata From Audio File</source>
         <translation type="unfinished"/>
     </message>
     <message>

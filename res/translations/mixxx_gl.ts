@@ -6798,7 +6798,7 @@ Normalmente ofrece unhas grellas de ritmo de maior calidade, mais non funcionar√
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Import Metadata from File</source>
+        <source>Import Metadata From Audio File</source>
         <translation type="unfinished"/>
     </message>
     <message>

@@ -6819,7 +6819,7 @@ Das führt oft zu Beatgrids mit höherer Qualität, wird aber nicht so gut bei T
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Import Metadata from File</source>
+        <source>Import Metadata From Audio File</source>
         <translation>Metadaten aus Datei importieren</translation>
     </message>
     <message>

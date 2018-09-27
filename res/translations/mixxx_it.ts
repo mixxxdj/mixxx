@@ -6796,7 +6796,7 @@ Risultati di alta qualità si hanno spesso con tracce a ritmo costante, non funz
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Import Metadata from File</source>
+        <source>Import Metadata From Audio File</source>
         <translation type="unfinished"/>
     </message>
     <message>
