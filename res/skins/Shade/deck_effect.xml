@@ -15,13 +15,13 @@
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_fx_plus.png</Pressed>
-				    <Unpressed>btn_fx_plus.png</Unpressed>
+					<Pressed>skin:/btn/btn_fx_plus.png</Pressed>
+				    <Unpressed>skin:/btn/btn_fx_plus.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_fx_minus.png</Pressed>
-			        <Unpressed>btn_fx_minus.png</Unpressed>
+					<Pressed>skin:/btn/btn_fx_minus.png</Pressed>
+			        <Unpressed>skin:/btn/btn_fx_minus.png</Unpressed>
 				</State>
 				<Pos>2,0</Pos>
 				<Connection>
@@ -35,13 +35,13 @@
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_hotcue1_<Variable name="effectunitnum"/>_down.png</Pressed>
-					<Unpressed>btn_hotcue1_<Variable name="effectunitnum"/>.png</Unpressed>
+					<Pressed>skin:/btn/btn_hotcue_<Variable name="effectunitnum"/>_down.png</Pressed>
+					<Unpressed>skin:/btn/btn_hotcue_<Variable name="effectunitnum"/>.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_hotcue1_<Variable name="effectunitnum"/>_overdown.png</Pressed>
-					<Unpressed>btn_hotcue1_<Variable name="effectunitnum"/>_over.png</Unpressed>
+					<Pressed>skin:/btn/btn_hotcue_<Variable name="effectunitnum"/>_overdown.png</Pressed>
+					<Unpressed>skin:/btn/btn_hotcue_<Variable name="effectunitnum"/>_over.png</Unpressed>
 				</State>
 				<Pos>4,14</Pos>
 				<Connection>
@@ -56,13 +56,13 @@
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_pfl_fx_down.png</Pressed>
-					<Unpressed>btn_pfl_fx.png</Unpressed>
+					<Pressed>skin:/btn/btn_pfl_fx_down.png</Pressed>
+					<Unpressed>skin:/btn/btn_pfl_fx.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_pfl_fx_overdown.png</Pressed>
-					<Unpressed>btn_pfl_fx_over.png</Unpressed>
+					<Pressed>skin:/btn/btn_pfl_fx_overdown.png</Pressed>
+					<Unpressed>skin:/btn/btn_pfl_fx_over.png</Unpressed>
 				</State>
 			    <Pos>25,14</Pos>
 				<Connection>
@@ -77,13 +77,13 @@
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_fx<Variable name="effectunitnum"/>_down.png</Pressed>
-					<Unpressed>btn_fx<Variable name="effectunitnum"/>.png</Unpressed>
+					<Pressed>skin:/btn/btn_fx<Variable name="effectunitnum"/>_down.png</Pressed>
+					<Unpressed>skin:/btn/btn_fx<Variable name="effectunitnum"/>.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_fx<Variable name="effectunitnum"/>_overdown.png</Pressed>
-					<Unpressed>btn_fx<Variable name="effectunitnum"/>_over.png</Unpressed>
+					<Pressed>skin:/btn/btn_fx<Variable name="effectunitnum"/>_overdown.png</Pressed>
+					<Unpressed>skin:/btn/btn_fx<Variable name="effectunitnum"/>_over.png</Unpressed>
 				</State>
 			    <Pos>4,35</Pos>
 				<Connection>
@@ -94,7 +94,7 @@
 
 	        <WidgetGroup>
 		        <Size>17f,5f</Size>
-		        <BackPath>btn_mix.png</BackPath>
+		        <BackPath>skin:/btn/btn_mix.png</BackPath>
 		        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 				<Pos>53,16</Pos>
 	        </WidgetGroup>
@@ -116,13 +116,13 @@
 			    <NumberStates>2</NumberStates>
 			    <State>
 				    <Number>0</Number>
-				    <Pressed>btn_fxmix_d-w.svg</Pressed>
-				    <Unpressed>btn_fxmix_d-w.svg</Unpressed>
+				    <Pressed>skin:/btn/btn_fxmix_d-w.svg</Pressed>
+				    <Unpressed>skin:/btn/btn_fxmix_d-w.svg</Unpressed>
 			    </State>
 			    <State>
 				    <Number>1</Number>
-				    <Pressed>btn_fxmix_d+w.svg</Pressed>
-				    <Unpressed>btn_fxmix_d+w.svg</Unpressed>
+				    <Pressed>skin:/btn/btn_fxmix_d+w.svg</Pressed>
+				    <Unpressed>skin:/btn/btn_fxmix_d+w.svg</Unpressed>
 			    </State>
 			    <Pos>54,49</Pos>
 			    <Connection>
@@ -132,7 +132,7 @@
 
 	        <WidgetGroup>
 		        <Size>29f,5f</Size>
-		        <BackPath>btn_super.png</BackPath>
+		        <BackPath>skin:/btn/btn_super.png</BackPath>
 		        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
 				<Pos>76,16</Pos>
 	        </WidgetGroup>

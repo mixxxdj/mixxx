@@ -21,8 +21,8 @@
 						<SliderComposed>
 							<TooltipId>channel_volume</TooltipId>
 							<Style></Style>
-							<Handle>knob_volume1.png</Handle>
-							<Slider>slider_volume1.png</Slider>
+							<Handle>knob_volume.png</Handle>
+							<Slider>slider_volume.png</Slider>
 							<Pos>72,55</Pos>
 							<Horizontal>false</Horizontal>
 							<Connection>
@@ -33,8 +33,8 @@
 						<SliderComposed>
 							<TooltipId>channel_volume</TooltipId>
 							<Style></Style>
-							<Handle>knob_volume2.png</Handle>
-							<Slider>slider_volume2.png</Slider>
+							<Handle>knob_volume.png</Handle>
+							<Slider>slider_volume.png</Slider>
 							<Pos>168,55</Pos>
 							<Horizontal>false</Horizontal>
 							<Connection>
@@ -72,13 +72,13 @@
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_play1_down.png</Pressed>
-								<Unpressed>btn_play1.png</Unpressed>
+								<Pressed>skin:/btn/btn_play_deck_down.png</Pressed>
+								<Unpressed>skin:/btn/btn_play_deck.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_play1_overdown.png</Pressed>
-								<Unpressed>btn_play1_over.png</Unpressed>
+								<Pressed>skin:/btn/btn_play_deck_overdown.png</Pressed>
+								<Unpressed>skin:/btn/btn_play_deck_over.png</Unpressed>
 							</State>
 							<Pos>11,200</Pos>
 							<Connection>
@@ -99,13 +99,13 @@
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_play2_down.png</Pressed>
-								<Unpressed>btn_play2.png</Unpressed>
+								<Pressed>skin:/btn/btn_play_deck_down.png</Pressed>
+								<Unpressed>skin:/btn/btn_play_deck.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_play2_overdown.png</Pressed>
-								<Unpressed>btn_play2_over.png</Unpressed>
+								<Pressed>skin:/btn/btn_play_deck_overdown.png</Pressed>
+								<Unpressed>skin:/btn/btn_play_deck_over.png</Unpressed>
 							</State>
 							<Pos>203,200</Pos>
 							<Connection>
@@ -132,13 +132,13 @@
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_cue1_down.png</Pressed>
-								<Unpressed>btn_cue1.png</Unpressed>
+								<Pressed>skin:/btn/btn_cue_down.png</Pressed>
+								<Unpressed>skin:/btn/btn_cue.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_cue1_overdown.png</Pressed>
-								<Unpressed>btn_cue1_over.png</Unpressed>
+								<Pressed>skin:/btn/btn_cue_overdown.png</Pressed>
+								<Unpressed>skin:/btn/btn_cue_over.png</Unpressed>
 							</State>
 							<Pos>11,179</Pos>
 							<Connection>
@@ -161,13 +161,13 @@
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_cue2_down.png</Pressed>
-								<Unpressed>btn_cue2.png</Unpressed>
+								<Pressed>skin:/btn/btn_cue_down.png</Pressed>
+								<Unpressed>skin:/btn/btn_cue.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_cue2_overdown.png</Pressed>
-								<Unpressed>btn_cue2_over.png</Unpressed>
+								<Pressed>skin:/btn/btn_cue_overdown.png</Pressed>
+								<Unpressed>skin:/btn/btn_cue_over.png</Unpressed>
 							</State>
 							<Pos>203,179</Pos>
 							<Connection>
@@ -196,13 +196,13 @@
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_pfl1_down.png</Pressed>
-								<Unpressed>btn_pfl1.png</Unpressed>
+								<Pressed>skin:/btn/btn_pfl_down.png</Pressed>
+								<Unpressed>skin:/btn/btn_pfl.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_pfl1_overdown.png</Pressed>
-								<Unpressed>btn_pfl1_over.png</Unpressed>
+								<Pressed>skin:/btn/btn_pfl_overdown.png</Pressed>
+								<Unpressed>skin:/btn/btn_pfl_over.png</Unpressed>
 							</State>
 							<Pos>64,161</Pos>
 							<Connection>
@@ -215,13 +215,13 @@
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_pfl2_down.png</Pressed>
-								<Unpressed>btn_pfl2.png</Unpressed>
+								<Pressed>skin:/btn/btn_pfl_down.png</Pressed>
+								<Unpressed>skin:/btn/btn_pfl.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_pfl2_overdown.png</Pressed>
-								<Unpressed>btn_pfl2_over.png</Unpressed>
+								<Pressed>skin:/btn/btn_pfl_overdown.png</Pressed>
+								<Unpressed>skin:/btn/btn_pfl_over.png</Unpressed>
 							</State>
 							<Pos>160,161</Pos>
 							<Connection>
@@ -238,13 +238,13 @@
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_kill_down.png</Pressed>
-								<Unpressed>btn_kill.png</Unpressed>
+								<Pressed>skin:/btn/btn_kill_down.png</Pressed>
+								<Unpressed>skin:/btn/btn_kill.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_kill_overdown.png</Pressed>
-								<Unpressed>btn_kill_over.png</Unpressed>
+								<Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+								<Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
 							</State>
 							<Pos>11,84</Pos>
 							<Connection>
@@ -261,13 +261,13 @@
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_kill_down.png</Pressed>
-								<Unpressed>btn_kill.png</Unpressed>
+								<Pressed>skin:/btn/btn_kill_down.png</Pressed>
+								<Unpressed>skin:/btn/btn_kill.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_kill_overdown.png</Pressed>
-								<Unpressed>btn_kill_over.png</Unpressed>
+								<Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+								<Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
 							</State>
 							<Pos>11,113</Pos>
 							<Connection>
@@ -284,13 +284,13 @@
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_kill_down.png</Pressed>
-								<Unpressed>btn_kill.png</Unpressed>
+								<Pressed>skin:/btn/btn_kill_down.png</Pressed>
+								<Unpressed>skin:/btn/btn_kill.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_kill_overdown.png</Pressed>
-								<Unpressed>btn_kill_over.png</Unpressed>
+								<Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+								<Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
 							</State>
 							<Pos>11,142</Pos>
 							<Connection>
@@ -308,13 +308,13 @@
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_kill_down.png</Pressed>
-								<Unpressed>btn_kill.png</Unpressed>
+								<Pressed>skin:/btn/btn_kill_down.png</Pressed>
+								<Unpressed>skin:/btn/btn_kill.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_kill_overdown.png</Pressed>
-								<Unpressed>btn_kill_over.png</Unpressed>
+								<Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+								<Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
 							</State>
 							<Pos>229,84</Pos>
 							<Connection>
@@ -331,13 +331,13 @@
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_kill_down.png</Pressed>
-								<Unpressed>btn_kill.png</Unpressed>
+								<Pressed>skin:/btn/btn_kill_down.png</Pressed>
+								<Unpressed>skin:/btn/btn_kill.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_kill_overdown.png</Pressed>
-								<Unpressed>btn_kill_over.png</Unpressed>
+								<Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+								<Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
 							</State>
 							<Pos>229,113</Pos>
 							<Connection>
@@ -354,13 +354,13 @@
 							<NumberStates>2</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_kill_down.png</Pressed>
-								<Unpressed>btn_kill.png</Unpressed>
+								<Pressed>skin:/btn/btn_kill_down.png</Pressed>
+								<Unpressed>skin:/btn/btn_kill.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_kill_overdown.png</Pressed>
-								<Unpressed>btn_kill_over.png</Unpressed>
+								<Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+								<Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
 							</State>
 							<Pos>229,142</Pos>
 							<Connection>
@@ -433,28 +433,28 @@
 							<NumberStates>5</NumberStates>
 							<State>
 								<Number>0</Number>
-								<Pressed>btn_broadcast_unconnected.png</Pressed>
-								<Unpressed>btn_broadcast_unconnected.png</Unpressed>
+								<Pressed>skin:/btn/btn_broadcast_unconnected.png</Pressed>
+								<Unpressed>skin:/btn/btn_broadcast_unconnected.png</Unpressed>
 							</State>
 							<State>
 								<Number>1</Number>
-								<Pressed>btn_broadcast_connecting.png</Pressed>
-								<Unpressed>btn_broadcast_connecting.png</Unpressed>
+								<Pressed>skin:/btn/btn_broadcast_connecting.png</Pressed>
+								<Unpressed>skin:/btn/btn_broadcast_connecting.png</Unpressed>
 							</State>
 							<State>
 								<Number>2</Number>
-								<Pressed>btn_broadcast_connected.png</Pressed>
-								<Unpressed>btn_broadcast_connected.png</Unpressed>
+								<Pressed>skin:/btn/btn_broadcast_connected.png</Pressed>
+								<Unpressed>skin:/btn/btn_broadcast_connected.png</Unpressed>
 							</State>
 							<State>
 								<Number>3</Number>
-								<Pressed>btn_broadcast_failure.png</Pressed>
-								<Unpressed>btn_broadcast_failure.png</Unpressed>
+								<Pressed>skin:/btn/btn_broadcast_failure.png</Pressed>
+								<Unpressed>skin:/btn/btn_broadcast_failure.png</Unpressed>
 							</State>
 							<State>
 								<Number>4</Number>
-								<Pressed>btn_broadcast_warning.png</Pressed>
-								<Unpressed>btn_broadcast_warning.png</Unpressed>
+								<Pressed>skin:/btn/btn_broadcast_warning.png</Pressed>
+								<Unpressed>skin:/btn/btn_broadcast_warning.png</Unpressed>
 							</State>
 							<Pos>113,30</Pos>
 							<Connection>
@@ -629,8 +629,8 @@
 						<VuMeter>
 							<TooltipId>channel_VuMeter</TooltipId>
 							<Style></Style>
-							<PathVu>btn_volume_display1_over.png</PathVu>
-							<PathBack>btn_volume_display1.png</PathBack>
+							<PathVu>skin:/style/volume_display_over.png</PathVu>
+							<PathBack>skin:/style/volume_display.png</PathBack>
 							<Pos>107,76</Pos>
 							<Horizontal>false</Horizontal>
 							<PeakHoldSize>5</PeakHoldSize>
@@ -644,8 +644,8 @@
 						<VuMeter>
 							<TooltipId>channel_VuMeter</TooltipId>
 							<Style></Style>
-							<PathVu>btn_volume_display2_over.png</PathVu>
-							<PathBack>btn_volume_display2.png</PathBack>
+							<PathVu>skin:/style/volume_display_over.png</PathVu>
+							<PathBack>skin:/style/volume_display.png</PathBack>
 							<Pos>143,76</Pos>
 							<Horizontal>false</Horizontal>
 							<PeakHoldSize>5</PeakHoldSize>
@@ -660,8 +660,8 @@
 						<VuMeter>
 							<TooltipId>master_VuMeterL</TooltipId>
 							<Style></Style>
-							<PathVu>btn_volume_display_master1_over.png</PathVu>
-							<PathBack>btn_volume_display_master1.png</PathBack>
+							<PathVu>skin:/style/volume_display_master_over.png</PathVu>
+							<PathBack>skin:/style/volume_display_master.png</PathBack>
 							<Pos>122,76</Pos>
 							<PeakHoldSize>5</PeakHoldSize>
 							<PeakHoldTime>500</PeakHoldTime>
@@ -674,8 +674,8 @@
 						<VuMeter>
 							<TooltipId>master_VuMeterR</TooltipId>
 							<Style></Style>
-							<PathVu>btn_volume_display_master2_over.png</PathVu>
-							<PathBack>btn_volume_display_master2.png</PathBack>
+							<PathVu>skin:/style/volume_display_master_over.png</PathVu>
+							<PathBack>skin:/style/volume_display_master.png</PathBack>
 							<Pos>128,76</Pos>
 							<PeakHoldSize>5</PeakHoldSize>
 							<PeakHoldTime>500</PeakHoldTime>
@@ -694,8 +694,8 @@
 						<StatusLight>
 							<TooltipId>channel_PeakIndicator</TooltipId>
 							<Style></Style>
-							<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
-							<PathBack>btn_clipping1.png</PathBack>
+							<PathStatusLight>skin:/style/volume_clipping_over.png</PathStatusLight>
+							<PathBack>skin:/style/volume_clipping.png</PathBack>
 							<Pos>107,57</Pos>
 							<Connection>
 								<ConfigKey>[Channel1],PeakIndicator</ConfigKey>
@@ -704,8 +704,8 @@
 						<StatusLight>
 							<TooltipId>channel_PeakIndicator</TooltipId>
 							<Style></Style>
-							<PathStatusLight>btn_clipping2_over.png</PathStatusLight>
-							<PathBack>btn_clipping2.png</PathBack>
+							<PathStatusLight>skin:/style/volume_clipping_over.png</PathStatusLight>
+							<PathBack>skin:/style/volume_clipping.png</PathBack>
 							<Pos>143,57</Pos>
 							<Connection>
 								<ConfigKey>[Channel2],PeakIndicator</ConfigKey>
@@ -714,8 +714,8 @@
 						<StatusLight>
 							<TooltipId>master_PeakIndicatorL</TooltipId>
 							<Style></Style>
-							<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
-							<PathBack>btn_clipping_master.png</PathBack>
+							<PathStatusLight>skin:/style/volume_clipping_master_over.png</PathStatusLight>
+							<PathBack>skin:/style/volume_clipping_master.png</PathBack>
 							<Pos>122,57</Pos>
 							<Connection>
 								<ConfigKey>[Master],PeakIndicatorL</ConfigKey>
@@ -724,8 +724,8 @@
                         <StatusLight>
 							<TooltipId>master_PeakIndicatorR</TooltipId>
 							<Style></Style>
-							<PathStatusLight>btn_clipping_master_over.png</PathStatusLight>
-							<PathBack>btn_clipping_master.png</PathBack>
+							<PathStatusLight>skin:/style/volume_clipping_master_over.png</PathStatusLight>
+							<PathBack>skin:/style/volume_clipping_master.png</PathBack>
 							<Pos>128,57</Pos>
 							<Connection>
 								<ConfigKey>[Master],PeakIndicatorR</ConfigKey>

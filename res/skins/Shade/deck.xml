@@ -215,9 +215,9 @@
 															<Spinny>
 																<TooltipId>spinny</TooltipId>
 																<Channel><Variable name="channum"/></Channel>
-																<PathBackground>vinyl_spinny1_background.png</PathBackground>
-																<PathForeground>vinyl_spinny1_foreground.png</PathForeground>
-																<PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+																<PathBackground>vinyl_spinny_background.png</PathBackground>
+																<PathForeground>vinyl_spinny_foreground.png</PathForeground>
+																<PathGhost>vinyl_spinny_foreground_ghost.png</PathGhost>
 															</Spinny>
 														</Children>
 														<Connection>
@@ -304,13 +304,13 @@
 										<NumberStates>2</NumberStates>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_spinny1.png</Pressed>
-											<Unpressed>btn_spinny1.png</Unpressed>
+											<Pressed>skin:/btn/btn_spinny.png</Pressed>
+											<Unpressed>skin:/btn/btn_spinny.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_spinny1_over.png</Pressed>
-											<Unpressed>btn_spinny1_over.png</Unpressed>
+											<Pressed>skin:/btn/btn_spinny_over.png</Pressed>
+											<Unpressed>skin:/btn/btn_spinny_over.png</Unpressed>
 										</State>
 										<Pos>1,1</Pos>
 										<Connection>
@@ -325,13 +325,13 @@
 										<NumberStates>2</NumberStates>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_repeat1.png</Pressed>
-											<Unpressed>btn_repeat1.png</Unpressed>
+											<Pressed>skin:/btn/btn_repeat.png</Pressed>
+											<Unpressed>skin:/btn/btn_repeat.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_repeat1_over.png</Pressed>
-											<Unpressed>btn_repeat1_over.png</Unpressed>
+											<Pressed>skin:/btn/btn_repeat_over.png</Pressed>
+											<Unpressed>skin:/btn/btn_repeat_over.png</Unpressed>
 										</State>
 										<Pos>22,1</Pos>
 										<Connection>
@@ -344,8 +344,8 @@
 										<NumberStates>1</NumberStates>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_eject1_over.png</Pressed>
-											<Unpressed>btn_eject1.png</Unpressed>
+											<Pressed>skin:/btn/btn_eject_over.png</Pressed>
+											<Unpressed>skin:/btn/btn_eject.png</Unpressed>
 										</State>
 										<Pos>43,1</Pos>
 										<Connection>
@@ -361,8 +361,8 @@
 										<NumberStates>1</NumberStates>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_beatgrid1_over.png</Pressed>
-											<Unpressed>btn_beatgrid1.png</Unpressed>
+											<Pressed>skin:/btn/btn_beatgrid_over.png</Pressed>
+											<Unpressed>skin:/btn/btn_beatgrid.png</Unpressed>
 										</State>
 										<Pos>1,20</Pos>
 										<Connection>
@@ -383,13 +383,13 @@
 										<NumberStates>2</NumberStates>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_quantize1.png</Pressed>
-											<Unpressed>btn_quantize1.png</Unpressed>
+											<Pressed>skin:/btn/btn_quantize.png</Pressed>
+											<Unpressed>skin:/btn/btn_quantize.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_quantize1_over.png</Pressed>
-											<Unpressed>btn_quantize1_over.png</Unpressed>
+											<Pressed>skin:/btn/btn_quantize_over.png</Pressed>
+											<Unpressed>skin:/btn/btn_quantize_over.png</Unpressed>
 										</State>
 										<Pos>22,20</Pos>
 										<Connection>
@@ -404,13 +404,13 @@
 										<NumberStates>2</NumberStates>
 										<State>
 											<Number>0</Number>
-											<Pressed>btn_keylock1.png</Pressed>
-											<Unpressed>btn_keylock1.png</Unpressed>
+											<Pressed>skin:/btn/btn_keylock.png</Pressed>
+											<Unpressed>skin:/btn/btn_keylock.png</Unpressed>
 										</State>
 										<State>
 											<Number>1</Number>
-											<Pressed>btn_keylock1_over.png</Pressed>
-											<Unpressed>btn_keylock1_over.png</Unpressed>
+											<Pressed>skin:/btn/btn_keylock_over.png</Pressed>
+											<Unpressed>skin:/btn/btn_keylock_over.png</Unpressed>
 										</State>
 										<Pos>43,20</Pos>
 										<Connection>
@@ -436,13 +436,13 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_kill_down.png</Pressed>
-							<Unpressed>btn_kill.png</Unpressed>
+							<Pressed>skin:/btn/btn_kill_down.png</Pressed>
+							<Unpressed>skin:/btn/btn_kill.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill_overdown.png</Pressed>
-							<Unpressed>btn_kill_over.png</Unpressed>
+							<Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+							<Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>6,21</Pos>
 						<Connection>
@@ -461,13 +461,13 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_kill_down.png</Pressed>
-							<Unpressed>btn_kill.png</Unpressed>
+							<Pressed>skin:/btn/btn_kill_down.png</Pressed>
+							<Unpressed>skin:/btn/btn_kill.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_kill_overdown.png</Pressed>
-							<Unpressed>btn_kill_over.png</Unpressed>
+							<Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+							<Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
 						</State>
 						<Pos>32,21</Pos>
 						<Connection>
@@ -584,8 +584,8 @@
 					<SliderComposed>
 						<TooltipId>rate</TooltipId>
 						<Style></Style>
-						<Handle>knob_pitch1.png</Handle>
-						<Slider>slider_pitch1.png</Slider>
+						<Handle>knob_pitch.png</Handle>
+						<Slider>slider_pitch.png</Slider>
 						<Pos>20,67</Pos>
 						<Horizontal>false</Horizontal>
 						<Connection>

@@ -19,7 +19,7 @@ WBeatSpinBox::up-button{
 	border-style: solid;
 	border-color: #060613;
 	border-width: 0px 0px 0px 1px;
-	image: url(skin:/btn_spin_up.png) no-repeat;
+	image: url(skin:/btn/btn_spin_up.png) no-repeat;
 }
 
 WBeatSpinBox::down-button {
@@ -27,7 +27,7 @@ WBeatSpinBox::down-button {
 	border-style: solid;
 	border-color: #060613;
 	border-width: 0px 0px 0px 1px;
-	image: url(skin:/btn_spin_down.png) no-repeat;
+	image: url(skin:/btn/btn_spin_down.png) no-repeat;
 }
 
 WEffectSelector {
@@ -51,7 +51,7 @@ WEffectSelector::down-arrow {
 	border-style: solid;
 	border-color: #060613;
 	border-width: 0px 0px 0px 1px;
-	image: url(skin:/btn_spin_down.png) no-repeat;
+	image: url(skin:/btn/btn_spin_down.png) no-repeat;
 }
 
 WEffectSelector QAbstractItemView {
@@ -214,13 +214,13 @@ QTreeView::item:!selected {
 		border: 1px solid transparent;
 	}
 	#LibraryPreviewButton:!checked{
-		image: url(:/images/library/ic_library_preview_play.svg);
+		image: url(skin:/style/style_library_preview_play.png);
 	}
 	#LibraryPreviewButton:!checked:hover {
     background: #454545;
 	}
 	#LibraryPreviewButton:checked{
-		image: url(:/images/library/ic_library_preview_pause.svg);
+		image: url(skin:/style/style_library_preview_pause.png);
 		background-color: #0f0f0f;
 		border: 1px solid #333;
 	}
@@ -296,10 +296,10 @@ QHeaderView::down-arrow {
   background-color: rgba(141,152,163,160);
 }
 QHeaderView::up-arrow {
-  image: url(skin:/btn_lib_sort_up.png)
+  image: url(skin:/btn/btn_lib_sort_up.png)
 }
 QHeaderView::down-arrow {
-  image: url(skin:/btn_lib_sort_down.png)
+  image: url(skin:/btn/btn_lib_sort_down.png)
 }
 
 /* Scroll bars */
@@ -390,11 +390,11 @@ WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
 WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
 
 WLibrary QRadioButton::indicator:checked {
-  background: url(skin:btn_lib_radio_button_on.svg);
+  background: url(skin:/btn/btn_lib_radio_button_on.svg);
 }
 
 WLibrary QRadioButton::indicator:unchecked {
-  background: url(skin:btn_lib_radio_button_off.svg);
+  background: url(skin:/btn/btn_lib_radio_button_off.svg);
 }
 
 WLibrary QPushButton {
