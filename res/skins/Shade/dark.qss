@@ -75,7 +75,7 @@ WLibrary QPushButton {
   }
 
 WLibrary QRadioButton::indicator:checked {
- background: url(skin:/btn/btn_lib_radio_button_on_dark.svg);
+ background: url(skin:/btn/btn_lib_radio_button_on_dark.svg) center center;
 }
 
 
