@@ -1,5 +1,6 @@
 
 import os
+import subprocess
 
 #This page is REALLY USEFUL: http://www.cocoadev.com/index.pl?ApplicationLinking
 #question: why do dylibs embed their install name in themselves? that would seem to imply the system keeps a cache of all the "install names", but that's not what the docs seem to say.
@@ -195,3 +196,21 @@ def change_ref(binary, orig, new):
 #
 
 #keywords: @executable_path, @loader_path, @rpath. TODO: document these.
+
+def rpaths(binary):
+        """Returns a list of the LC_RPATH load commands in the provided binary."""
+        print("otool(%s)" % binary)
+        p = subprocess.Popen(['otool', '-l', binary],
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        stdout, stderr = p.communicate()
+
+        lines = stdout.split('\n')
+        rpaths = []
+        for i, line in enumerate(lines):
+                if line.strip() == 'cmd LC_RPATH':
+                        path_line = lines[i + 2].strip().replace('path ', '')
+                        path_line = path_line[:path_line.rindex('(') - 1]
+                        rpaths.append(path_line)
+        return rpaths
