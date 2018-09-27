@@ -306,13 +306,13 @@ QHeaderView::down-arrow {
 QScrollBar:horizontal {
   min-width: 40px;
   height: 18px;
-  padding: 0px 1px 1px 1px;
+  padding: 1px 0px 0px 0px;
   background-color: #5C5B5D;
 }
 QScrollBar:vertical {
   min-height: 40px;
   width: 18px;
-  padding: 1px 1px 1px 0px;
+  padding: 0px 0px 0px 1px;
   background-color: #5C5B5D;
 }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
@@ -344,6 +344,15 @@ QScrollBar::sub-line:horizontal,
 QScrollBar::sub-line:vertical {
   width: 0px;
   height: 0px;
+}
+
+/* Corner in between two scrollbars */
+QAbstractScrollArea::corner {
+  background-color: #0f0f0f;
+  border-top: 1px solid #585858;
+  border-left: 1px solid #585858;
+  border-bottom: none;
+  border-right: none;
 }
 
 /* Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
