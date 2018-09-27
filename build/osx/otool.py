@@ -146,19 +146,19 @@ def embed_dependencies(binary,
 		#todo: this would make sense as a separate function, but the @ case would be awkward to handle and it's iffy about what it should
 		if e.startswith('/'):
 			p = e
-		elif e.startswith('@'): #it's a relative load path
+		elif e.startswith('@') and not e.startswith('@rpath'): #it's a relative load path
 			raise Exception("Unable to make heads nor tails, sah, of install name '%s'. Relative paths are for already-bundled binaries, this function does not support them." % e)
 		else:
 			#experiments show that giving an unspecified path is asking dyld(1) to find the library for us. This covers that case.
 			#i will not do further experiments to figure out what dyld(1)'s specific search algorithm is (whether it looks at frameworks separate from dylibs) because that's not the public interface
-
+                        e_stripped = e.replace('@rpath/', '') if e.startswith('@rpath/') else e
 			for P in ['']+LOCAL+SYSTEM: #XXX should local have priority over system or vice versa? (also, '' is the handle the relative case)
-				p = os.path.abspath(os.path.join(P, e))
+				p = os.path.abspath(os.path.join(P, e_stripped))
 				#print("SEARCHING IN LIBPATH; TRYING", p)
 				if os.path.exists(p):
 					break
 			else:
-				p = e #fallthrough to the exception below #XXX icky bad logic, there must be a way to avoid saying exists() twice
+				p = e_stripped #fallthrough to the exception below #XXX icky bad logic, there must be a way to avoid saying exists() twice
 
 		if not os.path.exists(p):
 			raise Exception("Dependent library '%s' not found. Make sure it is installed." % e)
