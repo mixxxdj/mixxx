@@ -26,7 +26,7 @@
   <manifest>
     <title>Tango</title>
     <author>ronso0</author>
-    <version>2.1.2.01</version>
+    <version>2.2.0</version>
     <description>A controller-focused nighttime skin. Almost all controls can be hidden with skin menu.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -118,7 +118,7 @@
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:../Tango/style.qss"/>
+  <Style src="skin:../Tango/style.qss" src-mac="skin:../Tango/style-mac.qss"/>
   <MinimumSize>1008,500</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
@@ -162,8 +162,6 @@
       have all variables available for SingletonDefinitions -->
 
 <!--  Knob range in degrees, 0-360
-      Initially I was trying to match the responsive area on Reloop TerminalMix 2,
-      but tweak to your liking.
       Values beyond -150/150 might interfere with some knob labels -->
     <SetVariable name="PotiMinAngle">-130</SetVariable>
     <SetVariable name="PotiMaxAngle">130</SetVariable>
@@ -237,7 +235,6 @@
               ]
               [ skin settings menu ]
             ]
-            [ screen width detector ]
             [ star rating space detector ]
           ]
          -->
@@ -252,7 +249,7 @@
               <SizePolicy>me,me</SizePolicy>
               <Children>
 
-                <Template src="skin:topbar.xml"/>
+                <Template src="skin:../Tango/topbar.xml"/>
 
                 <!-- stacked  waveforms, decks, FX, samplers, Mic/Aux, Lib normal-->
                 <WidgetGroup>
@@ -351,9 +348,9 @@
                               </Connection>
                             </WidgetGroup>
 
-                            <Template src="skin:/sample_decks.xml"/>
+                            <Template src="skin:/sampler_rack.xml"/>
 
-                            <Template src="skin:../Tango/mic_aux.xml"/>
+                            <Template src="skin:../Tango/mic_aux_rack.xml"/>
 
                             <SingletonContainer>
                               <ObjectName>Library_Singleton</ObjectName>
@@ -395,10 +392,6 @@
 
           </Children>
         </WidgetGroup><!-- /All skin elements + Skin menu -->
-
-        <!-- Detect if screen (window) size is netbook-like.
-            Center spacer in top bar will adapt to size. -->
-        <Template src="skin:../Tango/size_detector_screen.xml"/>
 
         <!-- Detect if Star rating fits into deck buttons row.
             Do this here, so it doesn't interfere with expanded skin menu -->
