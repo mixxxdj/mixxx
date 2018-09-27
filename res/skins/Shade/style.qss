@@ -399,11 +399,11 @@ WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
 WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
 
 WLibrary QRadioButton::indicator:checked {
-  background: url(skin:/btn/btn_lib_radio_button_on.svg);
+  background: transparent url(skin:/btn/btn_lib_radio_button_on.svg) center center;
 }
 
 WLibrary QRadioButton::indicator:unchecked {
-  background: url(skin:/btn/btn_lib_radio_button_off.svg);
+  background: transparent url(skin:/btn/btn_lib_radio_button_off.svg) center center;
 }
 
 WLibrary QPushButton {
