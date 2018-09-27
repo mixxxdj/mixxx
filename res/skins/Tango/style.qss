@@ -2488,11 +2488,11 @@ WLibrary QRadioButton#radioButtonRecentlyAdded {
 }
 
 WLibrary QRadioButton::indicator:checked {
-  background: url(skin:/buttons/btn_lib_radio_button_on.svg);
+  background: transparent url(skin:/buttons/btn_lib_radio_button_on.svg) center center;
 }
 
 WLibrary QRadioButton::indicator:unchecked {
-  background: url(skin:/buttons/btn_lib_radio_button_off.svg);
+  background: transparent url(skin:/buttons/btn_lib_radio_button_off.svg) center center;
 }
 /* Test :: increase font size of WOverview "Ready to play, analyzing..." etc.
 WOverview {
