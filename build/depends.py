@@ -470,20 +470,12 @@ class Qt(Dependence):
                         os.path.join(build.env['QTDIR'],'plugins/sqldrivers')])
                     build.env.Append(LIBS = 'qsqlite')
 
-
-
-        # Set the rpath for linux/bsd/osx.
-        # This is not supported on OS X before the 10.5 SDK.
-        using_104_sdk = (str(build.env["CCFLAGS"]).find("10.4") >= 0)
-        compiling_on_104 = False
-        if build.platform_is_osx:
-            compiling_on_104 = (
-                os.popen('sw_vers').readlines()[1].find('10.4') >= 0)
-        if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
+        # Set the rpath for linux/bsd/macOS.
+        if not build.platform_is_windows:
             qtdir = build.env['QTDIR']
-            framework_path = Qt.find_framework_libdir(qtdir, qt5)
-            if os.path.isdir(framework_path):
-                build.env.Append(LINKFLAGS="-L" + framework_path)
+            libdir_path = Qt.find_framework_libdir(qtdir, qt5)
+            if os.path.isdir(libdir_path):
+                build.env.Append(LINKFLAGS=['-Wl,-rpath,%s' % libdir_path])
 
         # Mixxx requires C++11 support. Windows enables C++11 features by
         # default but Clang/GCC require a flag.
