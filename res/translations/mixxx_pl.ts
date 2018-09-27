@@ -6790,7 +6790,7 @@ Często owocuje to wyższymi jakościowo siatkami uderzeń, ale nie zadziała dl
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Import Metadata from File</source>
+        <source>Import Metadata From Audio File</source>
         <translation>Importuj metadane z pliku</translation>
     </message>
     <message>

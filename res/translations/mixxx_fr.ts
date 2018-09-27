@@ -6821,7 +6821,7 @@ Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien 
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Import Metadata from File</source>
+        <source>Import Metadata From Audio File</source>
         <translation>Importer les métadonnées à partir du fichier</translation>
     </message>
     <message>

@@ -355,7 +355,7 @@
               <item>
                <widget class="QPushButton" name="btnImportMetadataFromFile">
                 <property name="text">
-                 <string>Import Metadata from File</string>
+                 <string>Import Metadata From Audio File</string>
                 </property>
                </widget>
               </item>

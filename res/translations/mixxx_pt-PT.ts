@@ -6818,7 +6818,7 @@ Frequentemente resulta em grelhas de alta qualidade, mas não resultará bem em 
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Import Metadata from File</source>
+        <source>Import Metadata From Audio File</source>
         <translation>Importar Metadados de Ficheiro</translation>
     </message>
     <message>

@@ -6794,7 +6794,7 @@ Leder oftast till taktmönster med högre kvalitet, men fungerar inte så bra f�
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Import Metadata from File</source>
+        <source>Import Metadata From Audio File</source>
         <translation type="unfinished"/>
     </message>
     <message>

@@ -6815,7 +6815,7 @@ Meestal is de kwaliteit van de beat-roosters beter, maar dit werkt niet goed bij
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Import Metadata from File</source>
+        <source>Import Metadata From Audio File</source>
         <translation type="unfinished"/>
     </message>
     <message>

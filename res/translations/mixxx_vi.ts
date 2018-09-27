@@ -6794,7 +6794,7 @@ Thường kết quả trong cao chất lượng beatgrids, nhưng sẽ không t�
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Import Metadata from File</source>
+        <source>Import Metadata From Audio File</source>
         <translation type="unfinished"/>
     </message>
     <message>

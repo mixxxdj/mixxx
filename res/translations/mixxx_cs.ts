@@ -6820,7 +6820,7 @@ Použijte toto nastavení, pokud mají vaše skladby stálé tempo (např. vět�
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
-        <source>Import Metadata from File</source>
+        <source>Import Metadata From Audio File</source>
         <translation>Nahrát popisná data znovu ze souboru</translation>
     </message>
     <message>
