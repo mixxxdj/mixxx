@@ -130,10 +130,9 @@ def define_test_targets(default=False):
         else:
                 test_bin = env.Program(target='mixxx-test', source=test_sources)
 
-        env.Alias('mixxx-test', test_bin)
-
         if not build.platform_is_windows:
                 copy_test_bin = Command("../mixxx-test", test_bin, Copy("$TARGET", "$SOURCE"))
+                env.Alias('mixxx-test', copy_test_bin)
                 # Running mixxx-test via a Command is hacky because it expects a
                 # target. Using the source '../mixxx-test' makes the Command
                 # depend on the Copy.
@@ -143,6 +142,7 @@ def define_test_targets(default=False):
                 if default:
                         Default(copy_test_bin)
         else:
+                env.Alias('mixxx-test', test_bin)
                 if default:
                         Default(test_bin)
 
