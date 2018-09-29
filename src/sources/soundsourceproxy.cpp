@@ -51,27 +51,6 @@ namespace {
 
 const mixxx::Logger kLogger("SoundSourceProxy");
 
-QUrl getCanonicalUrlForTrack(const Track* pTrack) {
-    if (pTrack == nullptr) {
-        // Missing track
-        return QUrl();
-    }
-    const QString canonicalLocation(pTrack->getCanonicalLocation());
-    if (canonicalLocation.isEmpty()) {
-        // Corresponding file is missing or inaccessible
-        //
-        // NOTE(uklotzde): Special case handling is required for Qt 4.8!
-        // Creating an URL from an empty local file in Qt 4.8 will result
-        // in an URL with the string "file:" instead of an empty URL.
-        //
-        // TODO(XXX): This is no longer required for Qt 5.x
-        // http://doc.qt.io/qt-5/qurl.html#fromLocalFile
-        // "An empty localFile leads to an empty URL (since Qt 5.4)."
-        return QUrl();
-    }
-    return QUrl::fromLocalFile(canonicalLocation);
-}
-
 } // anonymous namespace
 
 // static
