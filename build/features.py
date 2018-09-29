@@ -755,8 +755,9 @@ class TestSuite(Feature):
         return "Mixxx Test Suite"
 
     def enabled(self, build):
-        build.flags['test'] = util.get_flags(build.env, 'test', 0) or \
-            'test' in SCons.BUILD_TARGETS
+        build.flags['test'] = (util.get_flags(build.env, 'test', 0) or
+                               'test' in SCons.COMMAND_LINE_TARGETS or
+                               'mixxx-test' in SCons.COMMAND_LINE_TARGETS)
         if int(build.flags['test']):
             return True
         return False
