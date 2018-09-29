@@ -9,13 +9,13 @@
 
 //static
 QString CoverArtUtils::defaultCoverLocation() {
-    return QString(":/images/library/cover_default.png");
+    return QString(":/images/library/cover_default.svg");
 }
 
 //static
 QStringList CoverArtUtils::supportedCoverArtExtensions() {
     QStringList extensions;
-    extensions << "jpg" << "jpeg" << "png" << "gif" << "bmp";
+    extensions << "jpg" << "jpeg" << "svg" << "gif" << "bmp";
     return extensions;
 }
 

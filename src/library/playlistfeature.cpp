@@ -41,7 +41,7 @@ QVariant PlaylistFeature::title() {
 }
 
 QIcon PlaylistFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_playlist.png");
+    return QIcon(":/images/library/ic_library_playlist.svg");
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
@@ -178,7 +178,7 @@ void PlaylistFeature::buildPlaylistList() {
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
     if (m_playlistDao.isPlaylistLocked(playlist_id)) {
-        item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
+        item->setIcon(QIcon(":/images/library/ic_library_locked_tracklist.svg"));
     } else {
         item->setIcon(QIcon());
     }

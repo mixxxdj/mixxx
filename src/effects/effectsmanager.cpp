@@ -139,7 +139,8 @@ const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFi
 }
 
 bool EffectsManager::isEQ(const QString& effectId) const {
-    return getEffectManifest(effectId)->isMixingEQ();
+    EffectManifestPointer pManifest = getEffectManifest(effectId);
+    return pManifest ? pManifest->isMixingEQ() : false;
 }
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {

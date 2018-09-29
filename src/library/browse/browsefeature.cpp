@@ -199,7 +199,7 @@ void BrowseFeature::slotRemoveQuickLink() {
 }
 
 QIcon BrowseFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_computer.png");
+    return QIcon(":/images/library/ic_library_computer.svg");
 }
 
 TreeItemModel* BrowseFeature::getChildModel() {

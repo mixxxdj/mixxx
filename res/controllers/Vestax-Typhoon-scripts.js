@@ -554,7 +554,7 @@ VestaxTyphoon.relPitch = function(channel, control, value, status, group) {
 				engine.setValue(group,"beats_adjust_slower",true);
 			}else{			
 				VestaxTyphoon.pitchParams[group+"Offset"]=engine.getValue(group,"rate")+0.1-1/135; //offset failure correction
-				VestaxTyphoon.pitchParams[group+"Factor"]=-0.2; //Relative Sensivity
+				VestaxTyphoon.pitchParams[group+"Factor"]=-0.2; //Relative Sensitivity
 			}
 		}
 	}else if(control == "0x23") {

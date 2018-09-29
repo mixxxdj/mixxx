@@ -60,7 +60,7 @@ QVariant AnalysisFeature::title() {
 }
 
 QIcon AnalysisFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_prepare.png");
+    return QIcon(":/images/library/ic_library_prepare.svg");
 }
 
 void AnalysisFeature::bindWidget(WLibrary* libraryWidget,

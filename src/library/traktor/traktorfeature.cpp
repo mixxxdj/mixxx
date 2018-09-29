@@ -120,7 +120,7 @@ QVariant TraktorFeature::title() {
 }
 
 QIcon TraktorFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_traktor.png");
+    return QIcon(":/images/library/ic_library_traktor.svg");
 }
 
 bool TraktorFeature::isSupported() {

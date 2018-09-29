@@ -147,10 +147,8 @@ class SoundManager : public QObject {
 
     EngineMaster *m_pMaster;
     UserSettingsPointer m_pConfig;
-#ifdef __PORTAUDIO__
     bool m_paInitialized;
     unsigned int m_jackSampleRate;
-#endif
     QList<SoundDevicePointer> m_devices;
     QList<unsigned int> m_samplerates;
     QList<CSAMPLE*> m_inputBuffers;

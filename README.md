@@ -1,7 +1,7 @@
 # Mixxx
 
 [Mixxx] is Free DJ software that gives you everything you need to perform live
-DJ mixes. Mixxx works on GNU/Linux, Windows, and Mac OS X.
+DJ mixes. Mixxx works on GNU/Linux, Windows, and macOS.
 
 ## Quick Start
 
@@ -29,8 +29,9 @@ bug list][easybugs] and get started!
 
 ## Compiling
 
-* Linux / MacOS [![Build Status](https://travis-ci.org/mixxxdj/mixxx.svg)](https://travis-ci.org/mixxxdj/mixxx)
+* Linux / macOS [![Build Status](https://travis-ci.org/mixxxdj/mixxx.svg)](https://travis-ci.org/mixxxdj/mixxx)
 * Windows [![Build status](https://ci.appveyor.com/api/projects/status/j460rficblcaopwx?svg=true)](https://ci.appveyor.com/project/mixxxdj/mixxx)
+* Jenkins [![Build status](https://img.shields.io/jenkins/s/https/builds.mixxx.org/job/master-release.svg)](https://builds.mixxx.org/job/master-release)
 
 First, you must install all of Mixxx's dependencies. To compile Mixxx using
 [SCons], run:
@@ -39,7 +40,7 @@ First, you must install all of Mixxx's dependencies. To compile Mixxx using
 
 Please see our helpful guides on the [wiki] for more information:
 - [Compiling on Linux]
-- [Compiling on OS X]
+- [Compiling on macOS]
 - [Compiling on Windows]
 
 ## Documentation
@@ -91,7 +92,7 @@ license.
 [faq]: http://mixxx.org/wiki/doku.php/faq
 [forums]: http://www.mixxx.org/forums/
 [compiling on linux]: http://mixxx.org/wiki/doku.php/compiling_on_linux
-[compiling on os x]: http://mixxx.org/wiki/doku.php/compiling_on_os_x
+[compiling on macOS]: http://mixxx.org/wiki/doku.php/compiling_on_os_x
 [compiling on windows]: http://mixxx.org/wiki/doku.php/compiling_on_windows
 [mailing list]: https://lists.sourceforge.net/lists/listinfo/mixxx-devel
 [irc channel]: http://mixxx.org/irc.php

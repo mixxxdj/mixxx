@@ -432,7 +432,7 @@ class MixxxBuild(object):
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
         vars.Add('virtualize',
                  'Dynamically swap out the build directory when switching Git branches.', 1)
-        vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
+        vars.Add('qtdir', 'Set to your Qt 5 directory', '/usr/share/qt5')
         vars.Add('qt_sqlite_plugin', 'Set to 1 to package the Qt SQLite plugin.'
                  '\n           Set to 0 if SQLite support is compiled into QtSQL.', 0)
         vars.Add('target',

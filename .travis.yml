@@ -24,6 +24,7 @@ addons:
       - libid3tag0-dev
       - libmad0-dev
       - libmodplug-dev
+      - libmp3lame-dev
       - libmp4v2-dev
       - libopusfile-dev
       - libportmidi-dev
@@ -56,7 +57,7 @@ before_install:
   # Homebrew uses Python 3 now, and portmidi depends on Python 2 which triggers this bug:
   # https://github.com/Homebrew/homebrew-core/issues/26358
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband fftw libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband fftw libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv lame; fi
 
 install:
   ####

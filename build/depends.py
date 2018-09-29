@@ -15,9 +15,6 @@ class PortAudio(Dependence):
         elif build.platform_is_linux:
             build.env.ParseConfig('pkg-config portaudio-2.0 --silence-errors --cflags --libs')
 
-        # Turn on PortAudio support in Mixxx
-        build.env.Append(CPPDEFINES='__PORTAUDIO__')
-
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('advapi32')
 
@@ -114,13 +111,6 @@ class UPower(Dependence):
 class OggVorbis(Dependence):
 
     def configure(self, build, conf):
-#        if build.platform_is_windows and build.machine_is_64bit:
-            # For some reason this has to be checked this way on win64,
-            # otherwise it looks for the dll lib which will cause a conflict
-            # later
-#            if not conf.CheckLib('vorbisfile_static'):
-#                raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
-#        else:
         libs = ['libvorbisfile', 'vorbisfile']
         if not conf.CheckLib(libs):
             Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
@@ -151,8 +141,6 @@ class OggVorbis(Dependence):
 class SndFile(Dependence):
 
     def configure(self, build, conf):
-        # if not conf.CheckLibWithHeader(['sndfile', 'libsndfile', 'libsndfile-1'], 'sndfile.h', 'C'):
-        # TODO: check for debug version on Windows when one is available
         if not conf.CheckLib(['sndfile', 'libsndfile', 'libsndfile-1']):
             raise Exception(
                 "Did not find libsndfile or it\'s development headers")
@@ -191,11 +179,11 @@ class Qt(Dependence):
 
     DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
-                         'windows': 'C:\\qt\\5.10.1'}
+                         'windows': 'C:\\qt\\5.11.1'}
 
     DEFAULT_QT5DIRS32 = {'linux': '/usr/lib/i386-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
-                         'windows': 'C:\\qt\\5.10.1'}
+                         'windows': 'C:\\qt\\5.11.1'}
 
     @staticmethod
     def qt5_enabled(build):
@@ -258,6 +246,7 @@ class Qt(Dependence):
                     'QtEventDispatcherSupport',
                     'QtFontDatabaseSupport',
                     'QtThemeSupport',
+                    'QtWindowsUIAutomationSupport',
                 ])
         return qt_modules
 
@@ -313,9 +302,15 @@ class Qt(Dependence):
             else:
                 build.env.EnableQt4Modules(qt_modules, debug=False)
 
-            if qt5:
+            if qt5 and build.architecture_is_x86:
                 # Note that -reduce-relocations is enabled by default in Qt5.
-                # So we must build the code with position independent code
+                # So we must build the Mixxx *executable* with position
+                # independent code. -pie / -fPIE must not be used, and Clang
+                # -flto must not be used when producing ELFs (i.e. on Linux).
+                # http://lists.qt-project.org/pipermail/development/2012-January/001418.html
+                # https://github.com/qt/qtbase/blob/c5307203f5c0b0e588cc93e70764c090dd4c2ce0/dist/changes-5.4.2#L37-L45
+                # https://codereview.qt-project.org/#/c/111787/
+                # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65886#c30
                 build.env.Append(CCFLAGS='-fPIC')
 
         elif build.platform_is_bsd:
@@ -550,7 +545,7 @@ class Ebur128Mit(Dependence):
 
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-2.0.0'
+    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch'
     INTERNAL_LINK = True
 
     def sources(self, build):
@@ -593,7 +588,7 @@ class SoundTouch(Dependence):
             env.Append(CPPPATH=[self.SOUNDTOUCH_INTERNAL_PATH])
 
             # Prevents circular import.
-            from features import Optimize
+            from .features import Optimize
 
             # If we do not want optimizations then disable them.
             optimize = (build.flags['optimize'] if 'optimize' in build.flags
@@ -651,6 +646,10 @@ class ProtoBuf(Dependence):
         if build.platform_is_windows:
             if not build.static_dependencies:
                 build.env.Append(CPPDEFINES='PROTOBUF_USE_DLLS')
+        # SCons is supposed to check this for us by calling 'exists' in build/protoc.py.
+        protoc_binary = build.env['PROTOC']
+        if build.env.WhereIs(protoc_binary) is None:
+            raise Exception("Can't locate '%s' the protobuf compiler." % protoc_binary)
         if not conf.CheckLib(libs):
             raise Exception(
                 "Could not find libprotobuf or its development headers.")
@@ -694,10 +693,14 @@ class Reverb(Dependence):
 
 class QtKeychain(Dependence):
     def configure(self, build, conf):
-        libs = ['qtkeychain']
-        if not conf.CheckLib(libs):
-            raise Exception(
-                "Could not find qtkeychain.")
+        lib = 'qt5keychain' if Qt.qt5_enabled(build) else 'qtkeychain'
+        if not conf.CheckLib(lib):
+            raise Exception("Could not find %s." % lib)
+
+class LAME(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib(['libmp3lame', 'libmp3lame-static']):
+            raise Exception("Could not find libmp3lame.")
 
 class MixxxCore(Feature):
 
@@ -891,8 +894,6 @@ class MixxxCore(Feature):
                    "sources/audiosourcestereoproxy.cpp",
                    "sources/metadatasourcetaglib.cpp",
                    "sources/soundsource.cpp",
-                   "sources/soundsourceplugin.cpp",
-                   "sources/soundsourcepluginlibrary.cpp",
                    "sources/soundsourceproviderregistry.cpp",
                    "sources/soundsourceproxy.cpp",
 
@@ -1453,16 +1454,6 @@ class MixxxCore(Feature):
                 build.env.Append(LIBPATH=['/usr/local/lib'])
                 build.env.Append(CPPPATH=['/usr/local/include'])
 
-            # Non-standard libpaths for fink and certain (most?) darwin ports
-            if os.path.isdir('/sw/include'):
-                build.env.Append(LIBPATH=['/sw/lib'])
-                build.env.Append(CPPPATH=['/sw/include'])
-
-            # Non-standard libpaths for darwin ports
-            if os.path.isdir('/opt/local/include'):
-                build.env.Append(LIBPATH=['/opt/local/lib'])
-                build.env.Append(CPPPATH=['/opt/local/include'])
-
         elif build.platform_is_bsd:
             build.env.Append(CPPDEFINES='__BSD__')
             build.env.Append(CPPPATH=['/usr/include',
@@ -1521,7 +1512,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
-                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer]
+                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

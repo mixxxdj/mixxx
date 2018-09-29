@@ -54,7 +54,7 @@ QVariant SetlogFeature::title() {
 }
 
 QIcon SetlogFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_history.png");
+    return QIcon(":/images/library/ic_library_history.svg");
 }
 
 void SetlogFeature::bindWidget(WLibrary* libraryWidget,
@@ -146,9 +146,9 @@ void SetlogFeature::buildPlaylistList() {
 
 void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
     if (playlist_id == m_playlistId) {
-        item->setIcon(QIcon(":/images/library/ic_library_history_current.png"));
+        item->setIcon(QIcon(":/images/library/ic_library_history_current.svg"));
     } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
-        item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
+        item->setIcon(QIcon(":/images/library/ic_library_locked.svg"));
     } else {
         item->setIcon(QIcon());
     }
@@ -199,7 +199,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                 return;
             }
 
-            // Add every track from right klicked playlist to that with the next smaller ID
+            // Add every track from right-clicked playlist to that with the next smaller ID
             int previousPlaylistId = m_playlistDao.getPreviousPlaylist(currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
             if (previousPlaylistId >= 0) {
 

@@ -40,10 +40,10 @@ import sys,os
 def system(s):
 	"wrap system() to give us feedback on what it's doing"
 	"anything using this call should be fixed to use SCons's declarative style (once you figure that out, right nick?)"
-	print s,
+	print(s),
 	sys.stdout.flush() #ignore line buffering..
 	result = os.system(s)
-	print
+	print()
 	return result
 
 
@@ -52,14 +52,13 @@ SYSTEM_FRAMEWORKS = ["/System/Library/Frameworks"]
 SYSTEM_LIBPATH = ["/usr/lib"] #anything else?
 #paths to libs that we should copy in
 LOCAL_FRAMEWORKS = [
-    os.path.expanduser("~/Library/Frameworks"), 
-    "/Library/Frameworks", 
+    os.path.expanduser("~/Library/Frameworks"),
+    "/Library/Frameworks",
     "/Network/Library/Frameworks"
 ]
-LOCAL_LIBPATH = filter(lambda x: 
-    os.path.isdir(x), 
-    ["/usr/local/lib", "/opt/local/lib", "/sw/local/lib"]
-)
+LOCAL_LIBPATH = list(filter(
+        lambda x: os.path.isdir(x),
+        ["/usr/local/lib", "/opt/local/lib", "/sw/local/lib"]))
 
 #however
 FRAMEWORKS = LOCAL_FRAMEWORKS + SYSTEM_FRAMEWORKS
@@ -71,7 +70,7 @@ def otool(binary):
 	"Do not run this on object code archive (.a) files, it is not designed for that."
 	#if not os.path.exists(binary): raise Exception("'%s' not found." % binary)
 	if not type(binary) == str: raise ValueError("otool() requires a path (as a string)")
-	print "otool(%s)" % binary
+	print("otool(%s)" % binary)
 	stdin, stdout, stderr = os.popen3('otool -L "%s"' % binary)
 	try:
 		header = stdout.readline() #discard the first line since it is just the name of the file or an error message (or if reading .as, the first item on the list)
@@ -101,7 +100,7 @@ def dependencies(binary):
 	#This will work in probably every library that exists in reality, so it's "ok"
 	if os.path.basename(l[0]) == os.path.basename(binary):
 		id = l.pop(0)
-		#print "Removing -id field result %s from %s" % (id, binary)
+		#print("Removing -id field result %s from %s" % (id, binary))
 	return l
 
 
@@ -154,7 +153,7 @@ def embed_dependencies(binary,
 
 			for P in ['']+LOCAL+SYSTEM: #XXX should local have priority over system or vice versa? (also, '' is the handle the relative case)
 				p = os.path.abspath(os.path.join(P, e))
-				#print "SEARCHING IN LIBPATH; TRYING", p
+				#print("SEARCHING IN LIBPATH; TRYING", p)
 				if os.path.exists(p):
 					break
 			else:
