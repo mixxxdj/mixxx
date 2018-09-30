@@ -2346,10 +2346,10 @@ WLibrary QPushButton {
   /* Entire BPM cell */
   /* Lock icon at the left */
   #LibraryBPMButton::indicator:checked {
-    image: url(skin:/graphics/library_locked.png);
+    image: url(skin:/buttons/btn_lib_bpm_locked.svg);
     }
   #LibraryBPMButton::indicator:unchecked {
-    image: url(skin:/graphics/library_unlocked.png);
+    image: url(skin:/buttons/btn_lib_bpm_unlocked.svg);
     }
   /* BPM value */
   #LibraryBPMButton::item {
@@ -2381,21 +2381,20 @@ WLibrary QPushButton {
 
   /* Button in library "Preview" column */
   #LibraryPreviewButton {
-    width: 23px;
-    height: 12px;
     background: transparent;
     margin: 0px;
     padding: 0px;
+    border: 1px solid transparent;
     }
     #LibraryPreviewButton:!checked {
-      image: url(skin:/graphics/library_preview_play.png);
+      image: url(skin:/buttons/btn_lib_preview_play.svg);
       }
       #LibraryPreviewButton:!checked:hover {
         border: 1px solid #888;
         background: #0f0f0f;
       }
     #LibraryPreviewButton:checked {
-      image: url(:/images/library/ic_library_preview_pause.png);
+      image: url(skin:/buttons/btn_lib_preview_pause.svg);
       background-color: #000;
       border: 1px solid #555;
       }
@@ -2422,24 +2421,17 @@ WLibrary QPushButton {
     padding: 0px;
     color: #cfcfcf;
     /* border is added to size defined above */
-    border: 1px solid #444;
+    border: 1px solid rgba(151,151,151,128);
     }
-    QTableView::indicator:hover {
-      color: #cfcfcf;
+  QTableView::indicator:hover {
       border: 1px solid #888;
     }
-    QTableView::indicator:checked {
-      image: url(skin:/graphics/library_checkbox_checked.png);
+  QTableView::indicator:checked {
+    background: transparent url(skin:/buttons/btn_lib_checkmark.svg);
     }
-    QTableView::indicator:unchecked {
-      image: url(skin:/graphics/library_checkbox_unchecked.png);
-      }
-    QTableView::indicator:selected {
-      border: 1px solid #888;
-      }
-      QTableView::indicator:selected:hover {
-        border: 1px solid #aaa;
-      }
+  QTableView::indicator:unchecked {
+    background: none;
+    }
 
 WLibrary QSpinBox {
   min-height: 22px;
