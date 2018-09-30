@@ -1,5 +1,6 @@
 
 import os
+import subprocess
 
 #This page is REALLY USEFUL: http://www.cocoadev.com/index.pl?ApplicationLinking
 #question: why do dylibs embed their install name in themselves? that would seem to imply the system keeps a cache of all the "install names", but that's not what the docs seem to say.
@@ -145,19 +146,19 @@ def embed_dependencies(binary,
 		#todo: this would make sense as a separate function, but the @ case would be awkward to handle and it's iffy about what it should
 		if e.startswith('/'):
 			p = e
-		elif e.startswith('@'): #it's a relative load path
+		elif e.startswith('@') and not e.startswith('@rpath'): #it's a relative load path
 			raise Exception("Unable to make heads nor tails, sah, of install name '%s'. Relative paths are for already-bundled binaries, this function does not support them." % e)
 		else:
 			#experiments show that giving an unspecified path is asking dyld(1) to find the library for us. This covers that case.
 			#i will not do further experiments to figure out what dyld(1)'s specific search algorithm is (whether it looks at frameworks separate from dylibs) because that's not the public interface
-
+                        e_stripped = e.replace('@rpath/', '') if e.startswith('@rpath/') else e
 			for P in ['']+LOCAL+SYSTEM: #XXX should local have priority over system or vice versa? (also, '' is the handle the relative case)
-				p = os.path.abspath(os.path.join(P, e))
+				p = os.path.abspath(os.path.join(P, e_stripped))
 				#print("SEARCHING IN LIBPATH; TRYING", p)
 				if os.path.exists(p):
 					break
 			else:
-				p = e #fallthrough to the exception below #XXX icky bad logic, there must be a way to avoid saying exists() twice
+				p = e_stripped #fallthrough to the exception below #XXX icky bad logic, there must be a way to avoid saying exists() twice
 
 		if not os.path.exists(p):
 			raise Exception("Dependent library '%s' not found. Make sure it is installed." % e)
@@ -195,3 +196,21 @@ def change_ref(binary, orig, new):
 #
 
 #keywords: @executable_path, @loader_path, @rpath. TODO: document these.
+
+def rpaths(binary):
+        """Returns a list of the LC_RPATH load commands in the provided binary."""
+        print("otool(%s)" % binary)
+        p = subprocess.Popen(['otool', '-l', binary],
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        stdout, stderr = p.communicate()
+
+        lines = stdout.split('\n')
+        rpaths = []
+        for i, line in enumerate(lines):
+                if line.strip() == 'cmd LC_RPATH':
+                        path_line = lines[i + 2].strip().replace('path ', '')
+                        path_line = path_line[:path_line.rindex('(') - 1]
+                        rpaths.append(path_line)
+        return rpaths
