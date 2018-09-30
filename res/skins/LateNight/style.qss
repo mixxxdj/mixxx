@@ -1478,7 +1478,7 @@ QTableView::indicator {/*
   }
   QTableView::indicator:checked,
   QTableView::indicator:checked:selected {
-    image: url(skin:/style/library_checkbox_checked.svg);
+    image: url(skin:/buttons/btn_lib_checkmark.svg);
     border: 1px solid #ff6600;
     }
     QTableView::indicator:checked:hover,
@@ -1486,8 +1486,8 @@ QTableView::indicator {/*
       border: 1px solid #aaa;
     }
   QTableView::indicator:unchecked {
-    image: url(skin:/style/library_checkbox_unchecked.png);
-    border: 1px solid #444;
+    image: none;
+    border: 1px solid rgba(151,151,151,128);
     }
     QTableView::indicator:unchecked:hover,
     QTableView::indicator:selected {
