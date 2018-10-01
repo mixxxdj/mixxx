@@ -1033,41 +1033,38 @@ ReadableSampleFrames SoundSourceFFmpeg31::readSampleFramesClamped(
             // (see below).
 
             if (m_pSwrContext && (frameRange.end() > writableRange.start())) {
-                // Resample decoded frame
-                if (m_pSwrContext) {
-                    // Decoded frame must be resampled before reading
-                    m_pavResampledFrame->channel_layout = m_avResampledChannelLayout;
-                    m_pavResampledFrame->sample_rate = sampleRate();
-                    m_pavResampledFrame->format = kavSampleFormat;
-                    if (m_pavDecodedFrame->channel_layout == 0) {
-                        // Sometimes the channel layout is undefined.
-                        // See also: fixChannelLayout()
-                        m_pavDecodedFrame->channel_layout = m_avStreamChannelLayout;
-                    }
-                    //avTrace("Resampling decoded frame", *m_pavDecodedFrame);
-                    const auto swr_convert_frame_result =
-                            swr_convert_frame(
-                                    m_pSwrContext,
-                                    m_pavResampledFrame,
-                                    m_pavDecodedFrame);
-                    if (swr_convert_frame_result != 0) {
-                        kLogger.warning()
-                                << "swr_convert_frame() failed:"
-                                << formatErrorMessage(swr_convert_frame_result).toLocal8Bit().constData();
-                        // Abort reading
-                        av_frame_unref(m_pavDecodedFrame);
-                        m_curFrameIndex = kInvalidFrameIndex;
-                        break;
-                    }
-                    //avTrace("Received resampled frame", *m_pavResampledFrame);
-                    DEBUG_ASSERT(m_pavDecodedFrame->pts = m_pavResampledFrame->pts);
-                    DEBUG_ASSERT(m_pavDecodedFrame->nb_samples = m_pavResampledFrame->nb_samples);
-                    pDecodedSampleData = reinterpret_cast<const CSAMPLE*>(
-                            m_pavResampledFrame->extended_data[0]);
-                } else {
-                    pDecodedSampleData = reinterpret_cast<const CSAMPLE*>(
-                            m_pavDecodedFrame->extended_data[0]);
+                // Decoded frame must be resampled before reading
+                m_pavResampledFrame->channel_layout = m_avResampledChannelLayout;
+                m_pavResampledFrame->sample_rate = sampleRate();
+                m_pavResampledFrame->format = kavSampleFormat;
+                if (m_pavDecodedFrame->channel_layout == 0) {
+                    // Sometimes the channel layout is undefined.
+                    // See also: fixChannelLayout()
+                    m_pavDecodedFrame->channel_layout = m_avStreamChannelLayout;
                 }
+                //avTrace("Resampling decoded frame", *m_pavDecodedFrame);
+                const auto swr_convert_frame_result =
+                        swr_convert_frame(
+                                m_pSwrContext,
+                                m_pavResampledFrame,
+                                m_pavDecodedFrame);
+                if (swr_convert_frame_result != 0) {
+                    kLogger.warning()
+                            << "swr_convert_frame() failed:"
+                            << formatErrorMessage(swr_convert_frame_result).toLocal8Bit().constData();
+                    // Abort reading
+                    av_frame_unref(m_pavDecodedFrame);
+                    m_curFrameIndex = kInvalidFrameIndex;
+                    break;
+                }
+                //avTrace("Received resampled frame", *m_pavResampledFrame);
+                DEBUG_ASSERT(m_pavDecodedFrame->pts = m_pavResampledFrame->pts);
+                DEBUG_ASSERT(m_pavDecodedFrame->nb_samples = m_pavResampledFrame->nb_samples);
+                pDecodedSampleData = reinterpret_cast<const CSAMPLE*>(
+                        m_pavResampledFrame->extended_data[0]);
+            } else {
+                pDecodedSampleData = reinterpret_cast<const CSAMPLE*>(
+                        m_pavDecodedFrame->extended_data[0]);
             }
 
             // readFrameIndex
@@ -1083,6 +1080,7 @@ ReadableSampleFrames SoundSourceFFmpeg31::readSampleFramesClamped(
                 m_curFrameIndex = kInvalidFrameIndex;
                 break;
             }
+            DEBUG_ASSERT(pDecodedSampleData);
             const auto preskipMissingFrameCount =
                     math_min(missingFrameCount, writableRange.start() - readFrameIndex);
             missingFrameCount -= preskipMissingFrameCount;
