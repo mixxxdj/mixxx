@@ -116,32 +116,31 @@ int64_t getStreamDuration(const AVStream& avStream) {
 }
 
 inline
-SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t ts) {
+SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts) {
+    // NOTE(uklotzde): A value getStreamStartTime(avStream) > 0 must not
+    // be substracted from pts! Decoding will always start at pts = 0 and
+    // samples until the start_time are silently ignored.
     return kMinFrameIndex +
             av_rescale_q(
-                    ts - getStreamStartTime(avStream),
+                    pts,
                     avStream.time_base,
                     (AVRational) {1, avStream.codecpar->sample_rate});
 }
 
 inline
 int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT frameIndex) {
-    return getStreamStartTime(avStream) +
-            av_rescale_q(
-                    frameIndex - kMinFrameIndex,
-                    (AVRational) {1, avStream.codecpar->sample_rate},
-                    avStream.time_base);
+    // See also: convertStreamTimeToFrameIndex(), e.g. pts = 0 at
+    // frameIndex = kMinFrameIndex!
+    return av_rescale_q(
+                frameIndex - kMinFrameIndex,
+                (AVRational) {1, avStream.codecpar->sample_rate},
+                avStream.time_base);
 }
 
 IndexRange getStreamFrameIndexRange(const AVStream& avStream) {
-    const auto start_time =
-            getStreamStartTime(avStream);
-    const auto end_time =
-            start_time + getStreamDuration(avStream);
-    DEBUG_ASSERT(start_time <= end_time);
-    return IndexRange::between(
-            convertStreamTimeToFrameIndex(avStream, start_time),
-            convertStreamTimeToFrameIndex(avStream, end_time));
+    return IndexRange::forward(
+            kMinFrameIndex,
+            convertStreamTimeToFrameIndex(avStream, getStreamDuration(avStream)));
 }
 
 SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
