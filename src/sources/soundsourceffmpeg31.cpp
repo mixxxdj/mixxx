@@ -1253,10 +1253,10 @@ QString SoundSourceProviderFFmpeg31::getName() const {
 
 SoundSourceProviderPriority SoundSourceProviderFFmpeg31::getPriorityHint(
         const QString& /*supportedFileExtension*/) const {
-    // Decoding through FFmpeg should be available on many platforms and
-    // will be(-come) the best tested variant. Prefer it even over custom
-    // decoders that are registered with default priority.
-    return SoundSourceProviderPriority::HIGHER;
+    // TODO: Increase priority to HIGHER if FFmpeg should be used as the
+    // default decoder instead of other SoundSources. Currently it is
+    // only used as a fallback.
+    return SoundSourceProviderPriority::LOWER;
 }
 
 } // namespace mixxx
