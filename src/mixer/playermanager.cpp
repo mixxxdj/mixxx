@@ -125,9 +125,7 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumPreviewDecks;
     delete m_pCONumMicrophones;
     delete m_pCONumAuxiliaries;
-    if (m_pAnalyzerQueue) {
-        delete m_pAnalyzerQueue;
-    }
+    delete m_pAnalyzerQueue;
 }
 
 void PlayerManager::bindToLibrary(std::shared_ptr<Library> pLibrary) {

@@ -183,9 +183,9 @@ void AnalysisFeature::cleanupAnalyzer() {
     setTitleDefault();
     emit(analysisActive(false));
     if (m_pAnalyzerQueue != NULL) {
-        m_pAnalyzerQueue->stop();
-        m_pAnalyzerQueue->deleteLater();
+        AnalyzerQueue* pAnalyzerQueue = m_pAnalyzerQueue;
         m_pAnalyzerQueue = NULL;
+        delete pAnalyzerQueue;
         // Restore old BPM detection setting for preferences...
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
     }
