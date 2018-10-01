@@ -185,14 +185,17 @@ CoreServices::~CoreServices() {
     // the data models.
     // Depends on RecordingManager and PlayerManager
     CLEAR_AND_CHECK_DELETED(m_pLibrary);
-    m_pDbConnectionPool->destroyThreadLocalConnection();
-    CLEAR_AND_CHECK_DELETED(m_pDbConnectionPool);
 
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     // TODO(rryan): Fix this bug:
     // The player manager has to be deleted before the library to ensure
     // that all modified track metadata of loaded tracks is saved.
     CLEAR_AND_CHECK_DELETED(m_pPlayerManager);
+
+    // PlayerManager holds a reference to the DB connection pool (because it
+    // creates an AnalyzerQueue).
+    m_pDbConnectionPool->destroyThreadLocalConnection();
+    CLEAR_AND_CHECK_DELETED(m_pDbConnectionPool);
 
     // RecordingManager depends on config, engine
     CLEAR_AND_CHECK_DELETED(m_pRecordingManager);
