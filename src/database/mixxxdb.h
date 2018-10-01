@@ -9,9 +9,7 @@
 #include "util/db/dbconnectionpool.h"
 
 
-class MixxxDb : public QObject {
-    Q_OBJECT
-
+class MixxxDb {
   public:
     static const QString kDefaultSchemaFile;
 

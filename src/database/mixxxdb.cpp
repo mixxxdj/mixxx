@@ -42,12 +42,12 @@ bool MixxxDb::initDatabaseSchema(
         const QSqlDatabase& database,
         const QString& schemaFile,
         int schemaVersion) {
-    QString okToExit = tr("Click OK to exit.");
-    QString upgradeFailed = tr("Cannot upgrade database schema");
+    QString okToExit = QObject::tr("Click OK to exit.");
+    QString upgradeFailed = QObject::tr("Cannot upgrade database schema");
     QString upgradeToVersionFailed =
-            tr("Unable to upgrade your database schema to version %1")
+            QObject::tr("Unable to upgrade your database schema to version %1")
             .arg(QString::number(schemaVersion));
-    QString helpEmail = tr("For help with database issues contact:") + "\n" +
+    QString helpEmail = QObject::tr("For help with database issues contact:") + "\n" +
                            "mixxx-devel@lists.sourceforge.net";
 
     switch (SchemaManager(database).upgradeToSchemaVersion(schemaFile, schemaVersion)) {
@@ -59,8 +59,8 @@ bool MixxxDb::initDatabaseSchema(
             QMessageBox::warning(
                     0, upgradeFailed,
                     upgradeToVersionFailed + "\n" +
-                    tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
-                    tr("Try renaming it and restarting Mixxx.") + "\n" +
+                    QObject::tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
+                    QObject::tr("Try renaming it and restarting Mixxx.") + "\n" +
                     helpEmail + "\n\n" + okToExit,
                     QMessageBox::Ok);
             return false; // abort
@@ -68,7 +68,7 @@ bool MixxxDb::initDatabaseSchema(
             QMessageBox::warning(
                     0, upgradeFailed,
                     upgradeToVersionFailed + "\n" +
-                    tr("Your mixxxdb.sqlite file was created by a newer "
+                    QObject::tr("Your mixxxdb.sqlite file was created by a newer "
                        "version of Mixxx and is incompatible.") +
                     "\n\n" + okToExit,
                     QMessageBox::Ok);
@@ -77,7 +77,7 @@ bool MixxxDb::initDatabaseSchema(
             QMessageBox::warning(
                     0, upgradeFailed,
                     upgradeToVersionFailed + "\n" +
-                    tr("The database schema file is invalid.") + "\n" +
+                    QObject::tr("The database schema file is invalid.") + "\n" +
                     helpEmail + "\n\n" + okToExit,
                     QMessageBox::Ok);
             return false; // abort
