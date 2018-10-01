@@ -189,25 +189,31 @@ QTreeView::branch:selected,
 
 /* checkbox in library "Played" column */
 QTableView::indicator {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
+  margin: 0px;
+  padding: 0px;
+  border: 1px solid transparent;
 }
 
-QTableView::indicator:checked {
-  background: url(skin:/image/style_checkbox_checked.png);
+QTableView::indicator:checked,
+QTableView::indicator:checked:selected {
+  background: url(skin:/icon/ic_library_checkmark.svg);
+  border: 1px solid #ff6600;
 }
 
 QTableView::indicator:unchecked {
-  background: url(skin:/image/style_checkbox_unchecked.png);
+  background: none;
+  border: 1px solid rgba(151,151,151,128);
 }
 
 /* BPM lock icon in the library "BPM" column. */
 #LibraryBPMButton::indicator:checked {
-  image: url(skin:/icon/ic_library_locked.svg);
+  image: url(skin:/icon/ic_library_bpm_locked.svg);
 }
 
 #LibraryBPMButton::indicator:unchecked {
-  image: url(skin:/icon/ic_library_unlocked.svg);
+  image: url(skin:/icon/ic_library_bpm_unlocked.svg);
 }
 
 #LibraryBPMSpinBox {
@@ -230,17 +236,15 @@ QTableView::indicator:unchecked {
 
 /* button in library "Preview" column */
 QPushButton#LibraryPreviewButton {
-  width: 23px;
-  height: 12px;
-  border: none;
-  border-radius: 2px;
   background: transparent;
   margin: 0px;
   padding: 0px;
+  border: 1px solid transparent;
+  border-radius: 2px;
 }
 
 QPushButton#LibraryPreviewButton:!checked {
-  image: url(skin:/image/style_library_preview_play.png);
+  image: url(skin:/icon/ic_library_preview_play.svg);
 }
 
 QPushButton#LibraryPreviewButton:!checked:hover {
@@ -249,7 +253,7 @@ QPushButton#LibraryPreviewButton:!checked:hover {
 }
 
 QPushButton#LibraryPreviewButton:checked {
-  image: url(skin:/image/style_library_preview_pause.png);
+  image: url(skin:/icon/ic_library_preview_pause.svg);
   background-color: #0f0f0f;
   border: 1px solid #006596;
 }
