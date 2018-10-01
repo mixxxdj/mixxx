@@ -2,94 +2,94 @@
 #Mixxx {
     background-color: #191919;
     background-repeat:no-repeat;
-	background-attachment:fixed;
-	background-position:center top;  
+  background-attachment:fixed;
+  background-position:center top;
 }
 
 WBeatSpinBox {
-	color: #060613;
-	background-color: #aab2b7;
-	border: 1px solid #060613;
-	padding: 0px;
-	font: 13px;
+  color: #060613;
+  background-color: #aab2b7;
+  border: 1px solid #060613;
+  padding: 0px;
+  font: 13px;
 }
 
 WBeatSpinBox::up-button{
-	height: 9px;
-	border-style: solid;
-	border-color: #060613;
-	border-width: 0px 0px 0px 1px;
-	image: url(skin:/btn/btn_spin_up.png) no-repeat;
+  height: 9px;
+  border-style: solid;
+  border-color: #060613;
+  border-width: 0px 0px 0px 1px;
+  image: url(skin:/btn/btn_spin_up.png) no-repeat;
 }
 
 WBeatSpinBox::down-button {
-	height: 9px;										
-	border-style: solid;
-	border-color: #060613;
-	border-width: 0px 0px 0px 1px;
-	image: url(skin:/btn/btn_spin_down.png) no-repeat;
+  height: 9px;
+  border-style: solid;
+  border-color: #060613;
+  border-width: 0px 0px 0px 1px;
+  image: url(skin:/btn/btn_spin_down.png) no-repeat;
 }
 
 WEffectSelector {
-	color: #060613;
-	background-color: #aab2b7;
-	/* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-	margin-top: 0px;
-	margin-bottom: 0px;
-	border: 1px solid #060613;
-	padding-left: 3px;
-	font: 13px;
+  color: #060613;
+  background-color: #aab2b7;
+  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+  margin-top: 0px;
+  margin-bottom: 0px;
+  border: 1px solid #060613;
+  padding-left: 3px;
+  font: 13px;
 }
 
 WEffectSelector::drop-down {
-	/* This causes the Qt theme's widget style to magically not apply. Go figure. */
-	border: 0;
+  /* This causes the Qt theme's widget style to magically not apply. Go figure. */
+  border: 0;
 }
 
 WEffectSelector::down-arrow {
-	height: 20px;
-	border-style: solid;
-	border-color: #060613;
-	border-width: 0px 0px 0px 1px;
-	image: url(skin:/btn/btn_spin_down.png) no-repeat;
+  height: 20px;
+  border-style: solid;
+  border-color: #060613;
+  border-width: 0px 0px 0px 1px;
+  image: url(skin:/btn/btn_spin_down.png) no-repeat;
 }
 
 WEffectSelector QAbstractItemView {
-	color: #060613;
-	background-color: #aab2b7;
-	border: 2px solid #060613;
-	selection-background-color: lightgray;
+  color: #060613;
+  background-color: #aab2b7;
+  border: 2px solid #060613;
+  selection-background-color: lightgray;
 }
 
 WEffectSelector::item:selected
 {
-	background-color: lightgray;
+  background-color: lightgray;
 }
 
 WEffectSelector::checked
 {
-	color: #EC4522;
+  color: #EC4522;
 }
 
-#EffectSelectorGroup[highlight="1"]{ 
-	border: 1px solid #52f864;  
-	margin: 0px 0px 0px 0px;
-} 
-#EffectSelectorGroup[highlight="0"]{ 
-	border: 0px solid #52f864;  
-	margin: 0px 0px 0px 0px;
+#EffectSelectorGroup[highlight="1"]{
+  border: 1px solid #52f864;
+  margin: 0px 0px 0px 0px;
+}
+#EffectSelectorGroup[highlight="0"]{
+  border: 0px solid #52f864;
+  margin: 0px 0px 0px 0px;
 }
 
-#EffectUnit { 
-	qproperty-layoutAlignment:AlignTop;
+#EffectUnit {
+  qproperty-layoutAlignment:AlignTop;
 }
 
 
 
 /*################################################################
- ######  Library styling is hard  ###############################
- ################### most of it was LateNight & Deere & Tango ##########
-############ added styling for AutoDJ & Recording etc ##### */
+######  Library styling is hard  ################################
+################### most of it was LateNight & Deere & Tango ###
+############ added styling for AutoDJ & Recording etc ###### */
 
 QTableView,
 QTextBrowser,
@@ -182,50 +182,50 @@ QTreeView::item:!selected {
       background-color: #666;
       }
 
-	#LibraryBPMSpinBox {
-	  color: #fff;
-	  selection-color: #0f0f0f;
-	  background-color: #0f0f0f;
-	  selection-background-color: #888;
-	  /* This combination of negative top/bottom padding & margin
-		creates a 1px border around the spinbox' text area.
-		Increased left/right padding/margin removes the overlap of
-		text of activated spinbox and left-over text from regular
-		BPM value display. */
-	  padding: -1px -8px -1px -4px;
-	  margin: -2px 0px -2px -2px;
-	  /* As soon as any border property is set, the up/down buttons
-		lose their style & icons
-	  border: 0px;
-	  border-radius: 2px; */
-	}
+  #LibraryBPMSpinBox {
+    color: #fff;
+    selection-color: #0f0f0f;
+    background-color: #0f0f0f;
+    selection-background-color: #888;
+    /* This combination of negative top/bottom padding & margin
+    creates a 1px border around the spinbox' text area.
+    Increased left/right padding/margin removes the overlap of
+    text of activated spinbox and left-over text from regular
+    BPM value display. */
+    padding: -1px -8px -1px -4px;
+    margin: -2px 0px -2px -2px;
+    /* As soon as any border property is set, the up/down buttons
+    lose their style & icons
+    border: 0px;
+    border-radius: 2px; */
+  }
 
   #LibraryTimesPlayed::item {
     color: #cfcfcf;
     }
 
-	/* Button in library "Preview" column */
- 	#LibraryPreviewButton {
-		background: transparent;
-		margin: 0px;
-		padding: 0px;
-		border: 1px solid transparent;
-	}
-	#LibraryPreviewButton:!checked{
-		image: url(skin:/btn/btn_lib_preview_play.svg);
-	}
-	#LibraryPreviewButton:!checked:hover {
-		border: 1px solid #666;
-		background: #0f0f0f;
-	}
-	#LibraryPreviewButton:checked {
-		image: url(skin:/btn/btn_lib_preview_pause.svg);
-		background-color: #0f0f0f;
-		border: 1px solid #444;
-	}
-	#LibraryPreviewButton:checked:hover {
-	  border: 1px solid #666;
-	}
+  /* Button in library "Preview" column */
+  #LibraryPreviewButton {
+    background: transparent;
+    margin: 0px;
+    padding: 0px;
+    border: 1px solid transparent;
+  }
+  #LibraryPreviewButton:!checked{
+    image: url(skin:/btn/btn_lib_preview_play.svg);
+  }
+  #LibraryPreviewButton:!checked:hover {
+    border: 1px solid #666;
+    background: #0f0f0f;
+  }
+  #LibraryPreviewButton:checked {
+    image: url(skin:/btn/btn_lib_preview_pause.svg);
+    background-color: #0f0f0f;
+    border: 1px solid #444;
+  }
+  #LibraryPreviewButton:checked:hover {
+    border: 1px solid #666;
+  }
 
 
   /* checkbox in library "Played" column */
