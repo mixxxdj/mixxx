@@ -64,7 +64,7 @@ void EncoderVorbis::setEncoderSettings(const EncoderSettings& settings)
         case EncoderSettings::ChannelMode::MONO:  m_channels = 1; break;
         case EncoderSettings::ChannelMode::STEREO: m_channels = 2; break;
         case EncoderSettings::ChannelMode::AUTOMATIC: // fallthrough
-        default: 
+        default:
             if (m_bitrate > MONO_BITRATE_THRESHOLD ) {
                 m_channels = 2;
             }
@@ -211,7 +211,7 @@ void EncoderVorbis::initStream() {
     ogg_stream_packetin(&m_oggs, &headerComment);
     ogg_stream_packetin(&m_oggs, &headerCode);
 
-    // The encoder is now inialized. The encode method will start streaming by
+    // The encoder is now initialized. The encode method will start streaming by
     // sending the header first.
     m_header_write = true;
     m_bStreamInitialized = true;

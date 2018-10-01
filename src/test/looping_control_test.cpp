@@ -957,7 +957,7 @@ TEST_F(LoopingControlTest, BeatLoopRoll_OverlapStackUnwind) {
 TEST_F(LoopingControlTest, BeatLoopRoll_StartPoint) {
     m_pTrack1->setBpm(120.0);
 
-    // start a 4 beat loop roll, start point should be overriden to play position
+    // start a 4 beat loop roll, start point should be overridden to play position
     m_pLoopStartPoint->slotSet(8);
     m_pButtonBeatLoopRoll4Activate->set(1.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
