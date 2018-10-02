@@ -332,12 +332,15 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Make the duration read only
         durationItem->setFlags(Qt::NoItemFlags);
 
+        QColor cueColor = pCue->getColor();
+
         m_cueMap[row] = pCue;
         cueTable->insertRow(row);
         cueTable->setItem(row, 0, new QTableWidgetItem(rowStr));
         cueTable->setItem(row, 1, durationItem);
         cueTable->setItem(row, 2, new QTableWidgetItem(hotcue));
-        cueTable->setItem(row, 3, new QTableWidgetItem(pCue->getLabel()));
+        cueTable->setItem(row, 3, new QTableWidgetItem(cueColor.name().toUpper()));
+        cueTable->setItem(row, 4, new QTableWidgetItem(pCue->getLabel()));
         row += 1;
     }
     cueTable->setSortingEnabled(true);
@@ -381,9 +384,10 @@ void DlgTrackInfo::saveTrack() {
     for (int row = 0; row < cueTable->rowCount(); ++row) {
         QTableWidgetItem* rowItem = cueTable->item(row, 0);
         QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
-        QTableWidgetItem* labelItem = cueTable->item(row, 3);
+        QTableWidgetItem* colorItem = cueTable->item(row, 3);
+        QTableWidgetItem* labelItem = cueTable->item(row, 4);
 
-        if (!rowItem || !hotcueItem || !labelItem)
+        if (!rowItem || !hotcueItem || !colorItem|| !labelItem)
             continue;
 
         int oldRow = rowItem->data(Qt::DisplayRole).toInt();
@@ -402,6 +406,16 @@ void DlgTrackInfo::saveTrack() {
             pCue->setHotCue(iTableHotcue - 1);
         } else {
             pCue->setHotCue(-1);
+        }
+
+        QVariant vHotCueColor = colorItem->data(Qt::DisplayRole);
+        if (vHotcue.canConvert<QString>()) {
+            QString colorString = vHotcue.toString();
+            auto color = QColor(colorString);
+            if (color.isValid()) {
+                pCue->setColor(color);
+            }
+            // do nothing for now.
         }
 
         QString label = labelItem->data(Qt::DisplayRole).toString();
