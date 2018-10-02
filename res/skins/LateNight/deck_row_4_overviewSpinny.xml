@@ -4,8 +4,20 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
-
-      <Template src="skin:spinny.xml"/>
+      <WidgetGroup>
+        <SizePolicy>max,min</SizePolicy>
+        <MaximumSize>54,-1</MaximumSize>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:spinny_small.xml"/>
+          <Template src="skin:deck_coverArt_small.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],big_spinny</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
 
       <Overview>
         <TooltipId>waveform_overview</TooltipId>
@@ -66,7 +78,7 @@
         <ObjectName>DeckControls</ObjectName>
         <Layout>vertical</Layout>
         <Children>
-          
+
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
           <WidgetGroup>
@@ -77,13 +89,12 @@
               <StarRating>
                 <Size>-1min,15f</Size>
                 <Alignment>center</Alignment>
-                <ObjectName>DeckStars</ObjectName>
                 <TooltipId>starrating</TooltipId>
                 <Channel><Variable name="channum"/></Channel>
               </StarRating>
             </Children>
           </WidgetGroup>
-          
+
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
 
           <!-- Deck controls row 1 -->
@@ -131,7 +142,6 @@
               <PushButton>
                 <TooltipId>beats_translate_curpos</TooltipId>
                 <NumberStates>1</NumberStates>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
                   <Pressed>buttons/btn_beat_curpos_over.svg</Pressed>
@@ -208,9 +218,9 @@
 
             </Children>
           </WidgetGroup><!-- /Deck controls row 2 -->
-          
+
           <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
-          
+
         </Children>
       </WidgetGroup>
     </Children>

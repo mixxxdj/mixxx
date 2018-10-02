@@ -20,16 +20,7 @@ Variables:
       <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
       <!-- Greyed out if no headphone device is configured -->
-      <WidgetGroup>
-        <ObjectName>GuiCover</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Connection>
-          <ConfigKey>[Master],headEnabled</ConfigKey>
-          <BindProperty>visible</BindProperty>
-          <Transform><Not/></Transform>
-        </Connection>
-      </WidgetGroup>
+      <Template src="skin:preview_headmixer_cover.xml"/>
 
       <WidgetGroup>
         <ObjectName>PreviewDeck</ObjectName>
@@ -128,12 +119,23 @@ Variables:
                 <SetVariable name="Size">5f,1me</SetVariable>
               </Template>
 
-              <Template src="skin:knob_textless.xml">
-                <SetVariable name="ObjectName">PreviewGainKnob</SetVariable>
-                <SetVariable name="Size">22f,22f</SetVariable>
-                <SetVariable name="ConfigKey">pregain</SetVariable>
-                <SetVariable name="Color">tiny_red</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <ObjectName>PreviewGainKnob</ObjectName>
+                <Layout>vertical</Layout>
+                <Children>
+                  <KnobComposed>
+                    <TooltipId>pregain</TooltipId>
+                    <Size>24f,20f</Size>
+                    <Knob>knobs_sliders/knob_tiny_red.svg</Knob>
+                    <BackPath>knobs_sliders/knob_bg.svg</BackPath>
+                    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,pregain</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+                </Children>
+              </WidgetGroup>
 
             </Children>
           </WidgetGroup><!-- /Play-Overview-Gain -->

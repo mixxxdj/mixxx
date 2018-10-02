@@ -26,7 +26,6 @@
 						<TooltipId>play_start</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
-						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_play_sampler_down.png</Pressed>

@@ -106,7 +106,6 @@
         <TooltipId>play_start</TooltipId>
         <Style></Style>
         <NumberStates>2</NumberStates>
-        <RightClickIsPushButton>true</RightClickIsPushButton>
         <State>
           <Number>0</Number>
           <Pressed>btn_play_sampler_down.png</Pressed>
@@ -135,7 +134,6 @@
         <TooltipId>play_start</TooltipId>
         <Style></Style>
         <NumberStates>2</NumberStates>
-        <RightClickIsPushButton>true</RightClickIsPushButton>
         <State>
           <Number>0</Number>
           <Pressed>btn_play_sampler_down.png</Pressed>
@@ -164,7 +162,6 @@
         <TooltipId>play_start</TooltipId>
         <Style></Style>
         <NumberStates>2</NumberStates>
-        <RightClickIsPushButton>true</RightClickIsPushButton>
         <State>
           <Number>0</Number>
           <Pressed>btn_play_sampler_down.png</Pressed>
@@ -193,7 +190,6 @@
         <TooltipId>play_start</TooltipId>
         <Style></Style>
         <NumberStates>2</NumberStates>
-        <RightClickIsPushButton>true</RightClickIsPushButton>
         <State>
           <Number>0</Number>
           <Pressed>btn_play_sampler_down.png</Pressed>
@@ -283,7 +279,6 @@
         <Style></Style>
         <NumberStates>2</NumberStates>
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
-        <RightClickIsPushButton>true</RightClickIsPushButton>
         <State>
           <Number>0</Number>
           <Pressed>btn_reverse1_overdown.png</Pressed>

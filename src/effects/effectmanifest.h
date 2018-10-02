@@ -28,6 +28,7 @@ class EffectManifest final {
           m_isMixingEQ(false),
           m_isMasterEQ(false),
           m_effectRampsFromDry(false),
+          m_bAddDryToWet(false),
           m_metaknobDefault(0.5) {
     }
 
@@ -127,6 +128,13 @@ class EffectManifest final {
         m_effectRampsFromDry = effectFadesFromDry;
     }
 
+    bool addDryToWet() const {
+        return m_bAddDryToWet;
+    }
+    void setAddDryToWet(bool addDryToWet) {
+        m_bAddDryToWet = addDryToWet;
+    }
+
     double metaknobDefault() const {
         return m_metaknobDefault;
     }
@@ -184,6 +192,7 @@ class EffectManifest final {
     bool m_isMasterEQ;
     QList<EffectManifestParameterPointer> m_parameters;
     bool m_effectRampsFromDry;
+    bool m_bAddDryToWet;
     double m_metaknobDefault;
 };
 

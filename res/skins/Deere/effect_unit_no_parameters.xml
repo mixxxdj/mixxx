@@ -48,11 +48,11 @@ Variables:
             <ObjectName>EffectUnitControls</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>max,min</SizePolicy>
-            <MaximumSize>100,50</MaximumSize>
+            <MaximumSize>100,70</MaximumSize>
             <Children>
 
               <WidgetGroup>
-                <Layout>horizontal</Layout>
+                <Layout>vertical</Layout>
                 <Connection>
                   <ConfigKey>[Master],show_superknobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
@@ -63,14 +63,36 @@ Variables:
                     <SetVariable name="control">super1</SetVariable>
                     <SetVariable name="color">blue_gapless</SetVariable>
                   </Template>
+
+                  <!-- Spacer to vertically align with mix knob because of the mix mode button.-->
+                  <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <Size>-1,20f</Size>
+                  </WidgetGroup>
                 </Children>
               </WidgetGroup>
 
-              <Template src="skin:knob.xml">
-                <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
-                <SetVariable name="control">mix</SetVariable>
-                <SetVariable name="color">purple_gapless</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+                    <SetVariable name="control">mix</SetVariable>
+                    <SetVariable name="color">purple_gapless</SetVariable>
+                  </Template>
+
+                  <Template src="skin:left_2state_button.xml">
+                    <SetVariable name="ObjectName">EffectUnitMixModeButton</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
+                    <SetVariable name="MinimumSize">35,20</SetVariable>
+                    <SetVariable name="MaximumSize">35,20</SetVariable>
+                    <SetVariable name="state_0_text">D/W</SetVariable>
+                    <SetVariable name="state_1_text">D+W</SetVariable>
+                    <SetVariable name="left_connection_control"><Variable name="group"/>,mix_mode</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
             </Children>
           </WidgetGroup>
 

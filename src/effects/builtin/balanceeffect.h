@@ -40,8 +40,7 @@ class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
                         const CSAMPLE* pInput, CSAMPLE* pOutput,
                         const mixxx::EngineParameters& bufferParameters,
                         const EffectEnableState enableState,
-                        const GroupFeatureState& groupFeatures,
-                        const EffectChainMixMode mixMode);
+                        const GroupFeatureState& groupFeatures);
 
   private:
 

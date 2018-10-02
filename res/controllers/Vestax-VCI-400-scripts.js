@@ -143,7 +143,7 @@ VestaxVCI400.Button.prototype.handleEvent = function(value) {
    this.handler(value);
 };
 
-//Calling this method will illuminate the button depening on if value is true or false
+//Calling this method will illuminate the button depending on if value is true or false
 VestaxVCI400.Button.prototype.illuminate = function(value) {
    if(value ==true){
         midi.sendShortMsg(this.statusByte, this.midiNo, VestaxVCI400.ButtonLedState.on);

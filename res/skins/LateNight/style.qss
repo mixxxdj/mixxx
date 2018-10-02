@@ -56,9 +56,6 @@ WTime {
   qproperty-layoutAlignment: 'AlignCenter';
   border-radius: 2px;
   }
-  #Stars:hover {
-    background-color: #0f0f0f;
-  }
   WStarRating {
     color: #f0bb2b;
     font-weight: bold;
@@ -68,7 +65,7 @@ WTime {
 #ToolBar {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   background-color: #1e1e1e;
-  padding-top: 1px;
+  padding: 2px 0px 2px 2px;
 }
 
 #UIButtonMargin {
@@ -105,8 +102,6 @@ WTime {
   background-color: #1e1e1e;
 }
 
-#DecksLeftContainer,
-#DecksRightContainer,
 #SkinContainer {
   background-color: #0f0f0f;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -119,13 +114,21 @@ WTime {
   padding: 1px;
 }
 
+#DeckRows234 {/*
+  This alone wouldn't work:
+  border-bottom: 1px solid #585858;
+  this does: */
+  border: 1px solid #585858;
+  border-width: 0px 0px 1px 0px;
+}
+
 #DeckRow_2_3_ArtistTitleTime {
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
 }
 
-#DeckRow_4_OverviewSpinny {
-  border-bottom: 1px solid #585858;
+#DeckRow_4_OverviewSpinny {/*
+  border-bottom: 1px solid #585858;*/
   background-color: #1e1e1e;
   padding: 0px;
 }
@@ -139,6 +142,20 @@ WTime {
   background-color: #1e1e1e;
 }
 
+#SpinnyContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';/*
+  background: transparent;*/
+  background-color: #1e1e1e;
+  border-right: 1px solid #585858;
+}
+
+WSpinny {/*
+  This produces artifacts in spinny bg
+  background-color: rgba(1, 1, 1, 10);
+  This makes no difference, the spinny loads some default grey bg
+  background: none;*/
+}
+
 #VisualizationContainer {
   border: 1px solid #585858;
   border-top: 0px;
@@ -150,35 +167,17 @@ WTime {
 #Deck3 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
-  border-right: 0px;
+  margin-right: 5px;
 
 }
-
 #Deck2,
 #Deck4 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
-  border-left: 0px;
+  margin-left: 5px;
 }
 
 #DeckContainer {
-  background-color: #0f0f0f;
-}
-
-#DeckLeftMargin {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  border: 1px solid #585858;
-  border-left: 0px;
-  border-bottom: 0px;
-  border-top: 0px;
-  background-color: #0f0f0f;
-}
-
-#DeckRightMargin {
-  border: 0px solid #585858;
-  border-top:0px;
-  border-right: 0px;
-  border-bottom: 0px;
   background-color: #0f0f0f;
 }
 
@@ -475,13 +474,18 @@ WEffectButtonParameter*/
 
 #VinylButton,
 #FxAssignButton,
-#GuiToggleButton {
+#GuiToggleButton,
+#BroadcastButton,
+#SettingsButton {
   border: 1px solid #585858;
   border-radius: 2px;
   }
 
-  #GuiToggleButton {
-    margin: 2px;
+  #GuiToggleButton,
+  #BroadcastButton,
+  #SettingsButton,
+  #RecBox {
+    margin: 2px 3px 2px 2px;
   }
 
   #VinylButton,
@@ -490,6 +494,8 @@ WEffectButtonParameter*/
   }
 
 #VinylButton[displayValue="0"],
+#BroadcastButton[displayValue="0"],
+#SettingsButton[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #FxAssignButton[displayValue="0"] {
   color: #ddd;
@@ -502,6 +508,8 @@ WEffectButtonParameter*/
 #VinylButton[displayValue="2"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
+#BroadcastButton[displayValue="1"], /* connecting: yellow */
+#SettingsButton[displayValue="1"],
 #FxAssignButton[displayValue="1"] {
   border: 1px solid #585858;
   border-radius: 2px;
@@ -509,6 +517,26 @@ WEffectButtonParameter*/
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #B69700,
     stop:1 #eece33);
+}
+
+#SettingsButton[displayValue="0"] {
+  image: url(skin:/buttons/btn_settings_off.svg) no-repeat left center;
+}
+
+#SettingsButton[displayValue="1"] {
+  image: url(skin:/buttons/btn_settings_on.svg) no-repeat left center;
+}
+
+#BroadcastButton[displayValue="2"] { /* good: green */
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #3F8A2B,
+    stop:1 #26A803);
+}
+
+#BroadcastButton[displayValue="3"] {  /* failure: pink */
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #962D8B,
+    stop:1 #E602CD);
 }
 
 #TristateButton {
@@ -568,6 +596,62 @@ WEffectButtonParameter*/
 }
 
 /*################################################################
+ #######  Skin Settings  ########################################
+##############################################################*/
+
+#SkinSettingsContainer {
+}
+
+#SkinSettings {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  text-align: left;
+  padding: 2px 0px 2px 0px;
+  border: 1px solid #585858;
+  border-width: 0px 0px 1px 1px;
+
+}
+#SkinSettingsHeader {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding-right: 2px;
+  }
+  #SkinSettingsClose {
+    margin-bottom: 1px;
+    background-color: transparent;
+    image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center top;
+  }
+
+#SkinSettingsCategory {
+  padding: 3px 8px 10px 9px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  border: 1px solid #1e1e1e;
+  border-width: 0px 0px 3px 0px;
+  margin-bottom: 3px;
+  }
+  #CategoryLabel {
+    font-size: 17px/17px;
+    text-align: left;
+    padding: 3px 0px 2px 3px;
+    color: #eece33;
+  }
+
+#SkinSettingsButton {
+  padding-top: 1px;
+  font-size: 12px/14px;
+  color: #d2d2d2;
+}
+
+#SkinSettingsLabelButton {
+  font-size: 17px/21px;
+  text-align: left;
+  padding: 0px 0px 0px 3px;
+  color: #eece33;
+}
+
+#SubmenuCover {
+  background-color: rgba(15, 15, 15, 180);
+}
+
+/*################################################################
 #######  Loop Controls  ########################################
 ##############################################################*/
 
@@ -609,9 +693,9 @@ WEffectButtonParameter*/
 WBeatSpinBox,
 #DlgAutoDJ QSpinBox {
   /* make it 2px smaller in each dimension,
-    border is added for final size */
+    border is added for final size
   width: 55px;
-  height: 22px;
+  height: 22px; */
   border: 1px solid #666;
   border-radius: 2px;
   color: #cfb32c;
@@ -621,14 +705,14 @@ WBeatSpinBox,
   font-size: 13px/13px;
   }
   WBeatSpinBox {
-    padding: 1px 2px 1px 1px;
+    padding: 0px 2px 0px 1px;
     margin: 0px -1px 2px 0px;
   }
   /* Eliminate overlapping right border for transition time in Auto DJ tab */
   #DlgAutoDJ QSpinBox {
     border-right: 0px;
     margin: 0px 0px 0px 2px;
-    padding: 1px 2px 1px 1px;
+    padding: 0px 2px 0px 1px;
   }
   WBeatSpinBox:hover,
   #DlgAutoDJ QSpinBox:hover {
@@ -714,8 +798,7 @@ WBeatSpinBox,
   text-transform: uppercase;
   border-right: 1px solid #585858;
   text-align: center;
-  padding-top: 2px;
-  padding-bottom: 2px;
+  padding: 2px 3px;
 }
 
 #PreviewTitle {
@@ -816,13 +899,6 @@ border: 0px;
 
 #VUMeterBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
-#Toolbar {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border: 1px solid #585858;
-  padding: 0px;
-  background-color: #0f0f0f;
 }
 
 #ToolbarLogo {
@@ -994,15 +1070,11 @@ border: 0px;
   border-top: 1px solid #585858;
   /*border-bottom: 1px solid #585858;*/
   padding-bottom: 0px;
-  padding-left: 5px;
-  padding-right: 5px;
   padding-top: 5px;
 }
 
 #SamplerDeck {
   margin-top: 5px;
-  margin-left: 5px;
-  margin-right: 5px;
   border: 1px solid #585858;
   background-color: #1e1e1e;
 }
@@ -1097,11 +1169,11 @@ border: 0px;
 }
 
 #EffectUnit1, #EffectUnit3 {
-  margin: 5px 5px 2px 2px;
+  margin: 5px 5px 2px 0px;
 }
 
 #EffectUnit2, #EffectUnit4 {
-  margin: 5px 2px 2px 5px;
+  margin: 5px 0px 2px 5px;
 }
 
 #EffectRows {
@@ -1509,13 +1581,10 @@ QHeaderView::down-arrow {
   border-right: 1px solid #585858;
   }
   QHeaderView::up-arrow {
-    image: url(skin:/style/library_sort_up.svg);
+    image: url(skin:/style/btn_lib_sort_up.png);
     }
-    QHeaderView::up-arrow:hover {
-      image: url(skin:/style/library_sort_down.svg);
-    }
-  QHeaderView::down-arrow:hover {
-    image: url(skin:/style/library_sort_up.svg);
+  QHeaderView::down-arrow {
+    image: url(skin:/style/btn_lib_sort_down.png);
   }
 
 
