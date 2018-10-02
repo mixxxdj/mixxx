@@ -334,7 +334,7 @@ CMDMM.fxChannel = function (physicalChannel,virtualChannel) {
       this.group="[EffectRack1_EffectUnit"+theDeck.virtualChannel+"]";
     },
     layer3: function () {
-      this.inKey="group_[Master]_enable";
+      this.inKey="mix_mode";
       this.group="[EffectRack1_EffectUnit"+theDeck.virtualChannel+"]";
     },
     layer4: function () {
