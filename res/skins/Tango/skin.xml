@@ -286,10 +286,12 @@
 
                         <Template src="skin:decks_12.xml"/>
 
-                    <!-- Load scrolling waveforms Singleton here if the waveforms
+                    <!-- Previous attempt to avoid the log being spammed with
+                        QPainter warnings:
+                        Load scrolling waveforms Singleton here if the waveforms
                         in the waveforms/decks Splitter are collapsed.
                         Otherwise the end-of-track warning would not show up
-                        in overview waveforms. -->
+                        in overview waveforms.
                         <WidgetGroup>
                           <Layout>vertical</Layout>
                           <Size>0me,0f</Size>
@@ -303,7 +305,7 @@
                             <Transform><Not/></Transform>
                             <BindProperty>visible</BindProperty>
                           </Connection>
-                        </WidgetGroup>
+                        </WidgetGroup> -->
 
                         <WidgetGroup>
                           <Layout>vertical</Layout>

@@ -802,7 +802,7 @@ WBeatSpinBox {
   padding: 0px 4px 0px 4px;
   qproperty-layoutSpacing: 5;
   background-color: #111111;
-  border-width: 0px 0px 3px 0px;
+  border-width: 0px 0px 2px 0px;
   border-style: solid;
   border-color: #222;
 }
