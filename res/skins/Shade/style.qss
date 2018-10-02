@@ -1,9 +1,14 @@
 /* Shade */
 #Mixxx {
-    background-color: #191919;
-    background-repeat:no-repeat;
+  background-color: #191919;
+  background-repeat:no-repeat;
   background-attachment:fixed;
   background-position:center top;
+}
+
+#Deck WPushButton {
+  font-family: "Open Sans";
+  font-size: 14px;
 }
 
 WBeatSpinBox {
@@ -61,21 +66,19 @@ WEffectSelector QAbstractItemView {
   selection-background-color: lightgray;
 }
 
-WEffectSelector::item:selected
-{
+WEffectSelector::item:selected {
   background-color: lightgray;
 }
 
-WEffectSelector::checked
-{
+WEffectSelector::checked {
   color: #EC4522;
 }
 
-#EffectSelectorGroup[highlight="1"]{
+#EffectSelectorGroup[highlight="1"] {
   border: 1px solid #52f864;
   margin: 0px 0px 0px 0px;
 }
-#EffectSelectorGroup[highlight="0"]{
+#EffectSelectorGroup[highlight="0"] {
   border: 0px solid #52f864;
   margin: 0px 0px 0px 0px;
 }
