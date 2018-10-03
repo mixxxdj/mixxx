@@ -11,4 +11,5 @@ const char* BaseSignalPathTest::m_sSamplerGroup = "[Sampler1]";
 const double BaseSignalPathTest::kDefaultRateRange = 0.08;
 const double BaseSignalPathTest::kDefaultRateDir = 1.0;
 const double BaseSignalPathTest::kRateRangeDivisor = kDefaultRateDir * kDefaultRateRange;
+const double BaseSignalPathTest::kRateUltraRange = 0.5;
 const int BaseSignalPathTest::kProcessBufferSize = 1024;

@@ -196,6 +196,10 @@ class BaseSignalPathTest : public MixxxTest {
         return (rate - 1.0) / kRateRangeDivisor;
     }
 
+    double getRateUltraValue(double rate) const {
+        return (rate - 1.0) / kRateUltraRange;
+    }
+
     void ProcessBuffer() {
         m_pEngineMaster->process(kProcessBufferSize);
     }
@@ -221,6 +225,7 @@ class BaseSignalPathTest : public MixxxTest {
     static const double kDefaultRateRange;
     static const double kDefaultRateDir;
     static const double kRateRangeDivisor;
+    static const double kRateUltraRange;
     static const int kProcessBufferSize;
 };
 
