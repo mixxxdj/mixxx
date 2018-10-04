@@ -5,7 +5,9 @@
 #include "library/queryutil.h"
 #include "track/keyutils.h"
 #include "library/dao/trackschema.h"
+#include "library/crate/crateschema.h"
 #include "util/db/sqllikewildcards.h"
+
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
@@ -235,7 +237,9 @@ bool NoCrateFilterNode::match(const TrackPointer& pTrack) const {
 }
 
 QString NoCrateFilterNode::toSql() const {
-    return QString("id NOT IN (%1)").arg(CrateStorage::formatQueryForTrackIdsWithCrate());
+    return QString("%1 NOT IN (%2)").arg(
+            CRATETABLE_ID,
+            CrateStorage::formatQueryForTrackIdsWithCrate());
 }
 
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
