@@ -102,7 +102,7 @@ QString SearchQueryParser::getTextArgument(QString argument,
         if (quote_index == 0) {
             // We have found an explicit empty string ""
             // return it as "" to distingish it from anunfinished empty string
-            argument = "\"\"";
+            argument = kExpliciteEmpty;
         } else {
             // Slice off the quote and everything after.
             argument = argument.left(quote_index);
@@ -131,7 +131,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             QString argument = getTextArgument(
                 m_textFilterMatcher.cap(2), &tokens).trimmed();
 
-            if (argument == "\"\"") {
+            if (argument == kExpliciteEmpty) {
                 qDebug() << "argument explicit empty";
                 if (field == "crate") {
                     pNode = std::make_unique<NoCrateFilterNode>(
@@ -170,7 +170,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                     mixxx::track::io::key::ChromaticKey key =
                             KeyUtils::guessKeyFromText(argument);
                     if (key == mixxx::track::io::key::INVALID) {
-                        if (argument == "\"\"") {
+                        if (argument == kExpliciteEmpty) {
                             pNode = std::make_unique<NullTextFilterNode>(
                                     m_pTrackCollection->database(), m_fieldToSqlColumns[field]);
                         } else {

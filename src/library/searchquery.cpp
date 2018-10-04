@@ -260,7 +260,7 @@ NumericFilterNode::NumericFilterNode(
 }
 
 void NumericFilterNode::init(QString argument) {
-    if (argument == "\"\"") {
+    if (argument == kExpliciteEmpty) {
         m_bNullQuery = true;
         return;
     }
