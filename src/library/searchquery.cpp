@@ -167,9 +167,9 @@ QString TextFilterNode::toSql() const {
 }
 
 bool NullTextFilterNode::match(const TrackPointer& pTrack) const {
-    for (const auto& sqlColumn: m_sqlColumns) {
+    if (!m_sqlColumns.isEmpty()) {
         // only use the major column
-        QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
+        QVariant value = getTrackValueForColumn(pTrack, m_sqlColumns.first());
         if (!value.isValid() || !qVariantCanConvert<QString>(value)) {
             return true;
         }
@@ -179,9 +179,9 @@ bool NullTextFilterNode::match(const TrackPointer& pTrack) const {
 }
 
 QString NullTextFilterNode::toSql() const {
-    for (const auto& sqlColumn: m_sqlColumns) {
+    if (!m_sqlColumns.isEmpty()) {
         // only use the major column
-        return QString("%1 IS NULL").arg(sqlColumn);
+        return QString("%1 IS NULL").arg(m_sqlColumns.first());
     }
     return QString();
 }
