@@ -223,11 +223,11 @@ NoCrateFilterNode::NoCrateFilterNode(const CrateStorage* pCrateStorage)
 
 bool NoCrateFilterNode::match(const TrackPointer& pTrack) const {
     if (!m_matchInitialized) {
-        CrateTrackSelectResult crateTracks(
-             m_pCrateStorage->selectAllTracksSorted());
+        TrackSelectResult tracks(
+                m_pCrateStorage->selectAllTracksSorted());
 
-        while (crateTracks.next()) {
-            m_matchingTrackIds.push_back(crateTracks.trackId());
+        while (tracks.next()) {
+            m_matchingTrackIds.push_back(tracks.trackId());
         }
 
         m_matchInitialized = true;

@@ -129,6 +129,9 @@ CrateTrackQueryFields::CrateTrackQueryFields(const FwdSqlQuery& query)
       m_iTrackId(query.fieldIndex(CRATETRACKSTABLE_TRACKID)) {
 }
 
+TrackQueryFields::TrackQueryFields(const FwdSqlQuery& query)
+    : m_iTrackId(query.fieldIndex(CRATETRACKSTABLE_TRACKID)) {
+}
 
 CrateSummaryQueryFields::CrateSummaryQueryFields(const FwdSqlQuery& query)
     : CrateQueryFields(query),
@@ -544,20 +547,15 @@ CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QSt
     }
 }
 
-CrateTrackSelectResult CrateStorage::selectAllTracksSorted() const {
+TrackSelectResult CrateStorage::selectAllTracksSorted() const {
     FwdSqlQuery query(m_database, QString(
-            "SELECT %1,%2 FROM %3 JOIN %4 ON %5 = %6 ORDER BY %1").arg(
-                    CRATETRACKSTABLE_TRACKID,
-                    CRATETRACKSTABLE_CRATEID,
-                    CRATE_TRACKS_TABLE,
-                    CRATE_TABLE,
-                    CRATETABLE_ID,
-                    CRATETRACKSTABLE_CRATEID,
-                    CRATETABLE_NAME));
+            "SELECT %1 FROM %2 GROUP BY %1 ORDER BY %1").arg(
+                    CRATETRACKSTABLE_TRACKID, // %1
+                    CRATE_TRACKS_TABLE)); // %2
     if (query.execPrepared()) {
-        return CrateTrackSelectResult(std::move(query));
+        return TrackSelectResult(std::move(query));
     } else {
-        return CrateTrackSelectResult();
+        return TrackSelectResult();
     }
 }
 
