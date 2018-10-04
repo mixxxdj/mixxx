@@ -168,11 +168,11 @@ QString TextFilterNode::toSql() const {
 
 bool NullTextFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn: m_sqlColumns) {
+        // only use the major coloumn
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
         if (!value.isValid() || !qVariantCanConvert<QString>(value)) {
-            continue;
+            return true;
         }
-        // only use the major coloumn
         return value.toString().isEmpty();
     }
     return false;
