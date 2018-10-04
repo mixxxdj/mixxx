@@ -410,7 +410,7 @@ void DlgTrackInfo::saveTrack() {
 
         QVariant vHotCueColor = colorItem->data(Qt::DisplayRole);
         if (vHotcue.canConvert<QString>()) {
-            QString colorString = vHotcue.toString();
+            QString colorString = vHotCueColor.toString();
             auto color = QColor(colorString);
             if (color.isValid()) {
                 pCue->setColor(color);
