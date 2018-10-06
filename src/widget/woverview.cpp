@@ -260,20 +260,18 @@ void WOverview::onMarkRangeChange(double /*v*/) {
 
 // currently only updates the mark color but it could be easily extended.
 void WOverview::onTrackCueChange(void) {
-
     const QList<CuePointer> loadedCues = m_pCurrentTrack->getCuePoints();
 
     for (CuePointer currentCue: loadedCues) {
-
         const WaveformMarkPointer currentMark = m_marks.getHotCueMark(currentCue->getHotCue());
 
         if (currentMark && currentMark->isValid()) {
-
             WaveformMarkProperties markProperties = currentMark->getProperties();
             const QColor newColor = currentCue->getColor();
 
-            if (newColor != markProperties.m_color) {
+            if (newColor != markProperties.m_color || newColor != markProperties.m_textColor) {
                 markProperties.m_color = newColor;
+                markProperties.m_textColor = newColor;
                 currentMark->setProperties(markProperties);
             }
         }
