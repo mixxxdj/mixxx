@@ -84,6 +84,7 @@ class WOverview : public WWidget {
 
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
+    void onTrackCueChange(void);
 
     void slotWaveformSummaryUpdated();
     void slotAnalyzerProgress(int progress);

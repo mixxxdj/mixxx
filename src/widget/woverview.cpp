@@ -230,6 +230,8 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 this, SLOT(slotWaveformSummaryUpdated()));
         connect(pNewTrack.get(), SIGNAL(analyzerProgress(int)),
                 this, SLOT(slotAnalyzerProgress(int)));
+        connect(pNewTrack.get(), SIGNAL(cuesUpdated(void)),
+                this, SLOT(onTrackCueChange(void)));
 
         slotAnalyzerProgress(pNewTrack->getAnalyzerProgress());
     } else {
@@ -247,11 +249,35 @@ void WOverview::onEndOfTrackChange(double v) {
 
 void WOverview::onMarkChanged(double /*v*/) {
     //qDebug() << "WOverview::onMarkChanged()" << v;
-    update();
+    onTrackCueChange();
+    //update();
 }
 
 void WOverview::onMarkRangeChange(double /*v*/) {
     //qDebug() << "WOverview::onMarkRangeChange()" << v;
+    update();
+}
+
+// currently only updates the mark color but it could be easily extended.
+void WOverview::onTrackCueChange(void) {
+
+    const QList<CuePointer> loadedCues = m_pCurrentTrack->getCuePoints();
+
+    for (CuePointer currentCue: loadedCues) {
+
+        const WaveformMarkPointer currentMark = m_marks.getHotCueMark(currentCue->getHotCue());
+
+        if (currentMark && currentMark->isValid()) {
+
+            WaveformMarkProperties markProperties = currentMark->getProperties();
+            const QColor newColor = currentCue->getColor();
+
+            if (newColor != markProperties.m_color) {
+                markProperties.m_color = newColor;
+                currentMark->setProperties(markProperties);
+            }
+        }
+    }
     update();
 }
 
