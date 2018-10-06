@@ -254,7 +254,7 @@ TreeItemModel* CrateFeature::getChildModel() {
 
 void CrateFeature::activate() {
     emit(switchToView("CRATEHOME"));
-    emit(restoreSearch(QString())); //disable search on crate home
+    emit disableSearch();
     emit(enableCoverArtDisplay(true));
 }
 

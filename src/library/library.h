@@ -91,6 +91,7 @@ class Library: public QObject,
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
     void slotLoadLocationToPlayer(QString location, QString group);
     void slotRestoreSearch(const QString& text);
+    void slotDisableSearch();
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
@@ -110,6 +111,7 @@ class Library: public QObject,
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void restoreSearch(const QString&);
     void search(const QString& text);
+    void disableSearch();
     void searchCleared();
     void searchStarting();
     // emit this signal to enable/disable the cover art widget

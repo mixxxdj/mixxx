@@ -287,6 +287,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
+    connect(feature, SIGNAL(disableSearch()),
+            this, SLOT(slotDisableSearch()));
     connect(feature, SIGNAL(enableCoverArtDisplay(bool)),
             this, SIGNAL(enableCoverArtDisplay(bool)));
     connect(feature, SIGNAL(trackSelected(TrackPointer)),
@@ -326,7 +328,11 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
 }
 
 void Library::slotRestoreSearch(const QString& text) {
-    emit(restoreSearch(text));
+    emit restoreSearch(text);
+}
+
+void Library::slotDisableSearch() {
+    emit disableSearch();
 }
 
 void Library::slotRefreshLibraryModels() {

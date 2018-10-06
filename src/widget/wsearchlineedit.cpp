@@ -15,6 +15,8 @@ namespace {
 // Delay for triggering a search while typing.
 const int kDebouncingTimeoutMillis = 300;
 
+const QString kEmptySearch = "";
+
 const QString kDisabledText = "- - -";
 
 } // namespace
@@ -33,18 +35,18 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     m_clearButton->setToolTip(tr("Clear input", "Clear the search bar input field"));
     m_clearButton->setStyleSheet("QToolButton { border: none; padding: 0px; }");
     m_clearButton->hide();
-    connect(m_clearButton, SIGNAL(clicked()), this, SLOT(clearText()));
+    connect(m_clearButton, SIGNAL(clicked()), this, SLOT(clearSearch()));
 
     setFocusPolicy(Qt::ClickFocus);
     QShortcut* setFocusShortcut = new QShortcut(QKeySequence(tr("Ctrl+F", "Search|Focus")), this);
-    connect(setFocusShortcut, SIGNAL(activated()), this, SLOT(setFocus()));
+    connect(setFocusShortcut, SIGNAL(activated()), this, SLOT(setShortcutFocus()));
 
     // Set up a timer to search after a few hundred milliseconds timeout.  This
     // stops us from thrashing the database if you type really fast.
     m_debouncingTimer.setSingleShot(true);
     connect(&m_debouncingTimer, SIGNAL(timeout()), this, SLOT(triggerSearch()));
 
-    connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(textChanged(const QString&)));
+    connect(this, SIGNAL(textChanged(const QString&)), this, SLOT(updateText(const QString&)));
 
     // When you hit enter, it will trigger the search.
     connect(this, SIGNAL(returnPressed()), this, SLOT(triggerSearch()));
@@ -112,6 +114,11 @@ void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
 }
 
 // slot
+void WSearchLineEdit::disableSearch() {
+    restoreSearch(QString());
+}
+
+// slot
 void WSearchLineEdit::restoreSearch(const QString& text) {
     if (text.isNull()) {
         // disable
@@ -129,6 +136,7 @@ void WSearchLineEdit::restoreSearch(const QString& text) {
     }
 }
 
+// slot
 void WSearchLineEdit::triggerSearch() {
     m_debouncingTimer.stop();
     emit search(getSearchText());
@@ -163,8 +171,8 @@ void WSearchLineEdit::hidePlaceholder(const QString& text) {
     // Must block signals here so that we don't emit a search() signal via
     // textChanged().
     blockSignals(true);
-    if (text.isEmpty()) {
-        setText("");
+    if (text.isNull()) {
+        setText(kEmptySearch);
     } else {
         setText(text);
     }
@@ -198,14 +206,16 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
     return QLineEdit::event(pEvent);
 }
 
-void WSearchLineEdit::clearText() {
+// slot
+void WSearchLineEdit::clearSearch() {
     DEBUG_ASSERT(!m_showingPlaceholder);
-    setText("");
+    setText(kEmptySearch);
     // Enforce immediate update of track table
     triggerSearch();
 }
 
-void WSearchLineEdit::textChanged(const QString& text) {
+// slot
+void WSearchLineEdit::updateText(const QString& text) {
     if (m_showingPlaceholder) {
         DEBUG_ASSERT(!m_debouncingTimer.isActive());
         return; // do nothing while showing placeholder
@@ -220,4 +230,9 @@ void WSearchLineEdit::textChanged(const QString& text) {
     }
 
     updateClearButton(text);
+}
+
+// slot
+void WSearchLineEdit::setShortcutFocus() {
+    setFocus(Qt::ShortcutFocusReason);
 }
