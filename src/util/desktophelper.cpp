@@ -101,12 +101,12 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
     QSet<QString> openedDirs;
     QString dirPath;
     for (const auto& path: paths) {
-        dirPath = removeChildDir(path);
-        // First try to select the file in file browser
+        QFileInfo fileInfo(path);
+        dirPath = fileInfo.absolutePath();
 
 #ifdef Q_OS_LINUX
         if (sSelectInFileBrowserCommand == kSelectInFreedesktop &&
-                QFile::exists(path)) {
+                fileInfo.exists()) {
             if (!openedDirs.contains(dirPath)) {
                 if (selectInFreedesktop(path)) {
                     openedDirs.insert(dirPath);
@@ -117,7 +117,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
             }
         }
         if (sSelectInFileBrowserCommand == kSelectInXfce &&
-                QFile::exists(path)) {
+                fileInfo.exists()) {
             if (!openedDirs.contains(dirPath)) {
                 if (selectInXfce(path)) {
                     openedDirs.insert(dirPath);
@@ -129,7 +129,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
         }
 #endif
         if (sSelectInFileBrowserCommand.length() > 2 &&
-                QFile::exists(path)) {
+                fileInfo.exists()) {
             if (!openedDirs.contains(dirPath)) {
                 openedDirs.insert(dirPath);
                 // special command, that supports also select the requested file
@@ -143,6 +143,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
             // We cannot select, just open the parent folder
             QDir dir = dirPath;
             while (!dir.exists() && dirPath.size()) {
+                // Note: dir.cdUp() does not work for not existing dirs
                 dirPath = removeChildDir(dirPath);
                 dir = dirPath;
             }
