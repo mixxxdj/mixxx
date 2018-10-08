@@ -31,10 +31,10 @@ QHeaderView::down-arrow {
   background-color: rgba(153,138,60,160);
 }
 QHeaderView::up-arrow {
-  image: url(skin:/btn_lib_sort_up.png)
+  image: url(skin:/btn/btn_lib_sort_up.png)
 }
 QHeaderView::down-arrow {
-  image: url(skin:/btn_lib_sort_down.png)
+  image: url(skin:/btn/btn_lib_sort_down.png)
 }
 
 /* Scroll bars */

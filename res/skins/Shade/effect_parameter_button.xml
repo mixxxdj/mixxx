@@ -41,13 +41,13 @@
 					<NumberStates>2</NumberStates>
 					<State>
 						<Number>0</Number>
-						<Pressed>btn_kill_down.png</Pressed>
-						<Unpressed>btn_kill.png</Unpressed>
+						<Pressed>skin:/btn/btn_kill_down.png</Pressed>
+						<Unpressed>skin:/btn/btn_kill.png</Unpressed>
 					</State>
 					<State>
 						<Number>1</Number>
-						<Pressed>btn_kill_overdown.png</Pressed>
-						<Unpressed>btn_kill_over.png</Unpressed>
+						<Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+						<Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
 					</State>
 					<Pos>11,57</Pos>
 					<Connection>
