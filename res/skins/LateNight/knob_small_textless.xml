@@ -12,12 +12,12 @@
     <Children>
       <KnobComposed>
         <TooltipId><Variable name="TooltipId"/></TooltipId>
-        <Size><Variable name="width"/>f,<Variable name="height"/>f</Size>
-        <Knob>knob_indicator.svg</Knob>
-        <BackPath scalemode="STRETCH">knob_bg.svg</BackPath>
+        <Size><Variable name="Size"/></Size>
+        <Knob>knob_small_indicator.svg</Knob>
+        <BackPath>knob_small_bg.svg</BackPath>
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-        <KnobCenterYOffset>1.598</KnobCenterYOffset>
+        <KnobCenterYOffset>1.602</KnobCenterYOffset>
         <Connection>
           <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>
         </Connection>
