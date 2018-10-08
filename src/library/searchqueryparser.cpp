@@ -138,7 +138,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                           &m_pTrackCollection->crates());
                     qDebug() << pNode->toSql();
                 } else {
-                    pNode = std::make_unique<NullTextFilterNode>(
+                    pNode = std::make_unique<NullOrEmptyTextFilterNode>(
                           m_pTrackCollection->database(), m_fieldToSqlColumns[field]);
                     qDebug() << pNode->toSql();
                 }
@@ -171,7 +171,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                             KeyUtils::guessKeyFromText(argument);
                     if (key == mixxx::track::io::key::INVALID) {
                         if (argument == kExpliciteEmpty) {
-                            pNode = std::make_unique<NullTextFilterNode>(
+                            pNode = std::make_unique<NullOrEmptyTextFilterNode>(
                                     m_pTrackCollection->database(), m_fieldToSqlColumns[field]);
                         } else {
                             pNode = std::make_unique<TextFilterNode>(

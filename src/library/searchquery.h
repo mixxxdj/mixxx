@@ -93,9 +93,9 @@ class TextFilterNode : public QueryNode {
     QString m_argument;
 };
 
-class NullTextFilterNode : public QueryNode {
+class NullOrEmptyTextFilterNode : public QueryNode {
   public:
-    NullTextFilterNode(const QSqlDatabase& database,
+    NullOrEmptyTextFilterNode(const QSqlDatabase& database,
                    const QStringList& sqlColumns)
             : m_database(database),
               m_sqlColumns(sqlColumns) {

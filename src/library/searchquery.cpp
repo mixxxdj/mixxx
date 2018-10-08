@@ -168,7 +168,7 @@ QString TextFilterNode::toSql() const {
     return concatSqlClauses(searchClauses, "OR");
 }
 
-bool NullTextFilterNode::match(const TrackPointer& pTrack) const {
+bool NullOrEmptyTextFilterNode::match(const TrackPointer& pTrack) const {
     if (!m_sqlColumns.isEmpty()) {
         // only use the major column
         QVariant value = getTrackValueForColumn(pTrack, m_sqlColumns.first());
@@ -180,10 +180,10 @@ bool NullTextFilterNode::match(const TrackPointer& pTrack) const {
     return false;
 }
 
-QString NullTextFilterNode::toSql() const {
+QString NullOrEmptyTextFilterNode::toSql() const {
     if (!m_sqlColumns.isEmpty()) {
         // only use the major column
-        return QString("%1 IS NULL").arg(m_sqlColumns.first());
+        return QString("%1 IS NULL OR %1 IS ''").arg(m_sqlColumns.first());
     }
     return QString();
 }
