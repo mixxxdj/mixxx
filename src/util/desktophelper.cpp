@@ -14,78 +14,79 @@
 #endif
 
 namespace {
-    const QString kSelectInFreedesktop = "fd";
-    const QString kSelectInXfce = "xf";
-    QString sSelectInFileBrowserCommand;
 
-    QString getSelectInFileBrowserCommand() {
+const QString kSelectInFreedesktop = "fd";
+const QString kSelectInXfce = "xf";
+QString sSelectInFileBrowserCommand;
+
+QString getSelectInFileBrowserCommand() {
 #if defined(Q_OS_MAC)
-        return "open -R \"%1\"";
+    return "open -R \"%1\"";
 #elif defined(Q_OS_WIN)
-        return "explorer.exe /select,\"%1\"";
+    return "explorer.exe /select,\"%1\"";
 #elif defined(Q_OS_LINUX)
-        QProcess proc;
-        QString output;
-        proc.start("xdg-mime",
-                QStringList() << "query" << "default" << "inode/directory");
-        proc.waitForFinished();
-        output = proc.readLine().simplified();
-        if (output == "kfmclient_dir.desktop") {
-            return "konqueror --select \"%1\"";
-        } else if (output == "Thunar.desktop" ||
-                output == "Thunar-folder-handler.desktop") {
-            return kSelectInXfce; // Thunar has no --select option
-        } else {
-            // Known file manager with org.freedesktop.FileManager1 interface
-            // * Nautilus
-            // * Nemo
-            // * Deepin File Manager
-            // * Swordfish
-            // * Caja
-            // No solution for
-            // * pcmanfm
-            return kSelectInFreedesktop; // no special command, try Freedesktop and fallback to QDesktopServices";
-        }
+    QProcess proc;
+    QString output;
+    proc.start("xdg-mime",
+            QStringList() << "query" << "default" << "inode/directory");
+    proc.waitForFinished();
+    output = proc.readLine().simplified();
+    if (output == "kfmclient_dir.desktop") {
+        return "konqueror --select \"%1\"";
+    } else if (output == "Thunar.desktop" ||
+            output == "Thunar-folder-handler.desktop") {
+        return kSelectInXfce; // Thunar has no --select option
+    } else {
+        // Known file manager with org.freedesktop.FileManager1 interface
+        // * Nautilus
+        // * Nemo
+        // * Deepin File Manager
+        // * Swordfish
+        // * Caja
+        // No solution for
+        // * pcmanfm
+        return kSelectInFreedesktop; // no special command, try Freedesktop and fallback to QDesktopServices";
+    }
 #else
-        return ""; // no special command use QDesktopServices";
+    return ""; // no special command use QDesktopServices";
 #endif
-    }
+}
 
-    QString removeChildDir(const QString& path) {
-        int index = path.lastIndexOf(QChar('/'));
-        return path.left(index);
-    }
+QString removeChildDir(const QString& path) {
+    int index = path.lastIndexOf(QChar('/'));
+    return path.left(index);
+}
 
 #ifdef Q_OS_LINUX
-    bool selectInFreedesktop(const QString& path) {
-        const QUrl fileurl = QUrl::fromLocalFile(path);
-        const QStringList args(fileurl.toString());
-        QDBusMessage msg = QDBusMessage::createMethodCall(
-                "org.freedesktop.FileManager1",
-                "/org/freedesktop/FileManager1",
-                "org.freedesktop.FileManager1",
-                "ShowItems");
-        msg << args << "";
-        const QDBusMessage response = QDBusConnection::sessionBus().call(msg);
-        const bool success = (response.type() != QDBusMessage::MessageType::ErrorMessage);
-        return success;
-    }
+bool selectInFreedesktop(const QString& path) {
+    const QUrl fileurl = QUrl::fromLocalFile(path);
+    const QStringList args(fileurl.toString());
+    QDBusMessage msg = QDBusMessage::createMethodCall(
+            "org.freedesktop.FileManager1",
+            "/org/freedesktop/FileManager1",
+            "org.freedesktop.FileManager1",
+            "ShowItems");
+    msg << args << "";
+    const QDBusMessage response = QDBusConnection::sessionBus().call(msg);
+    const bool success = (response.type() != QDBusMessage::MessageType::ErrorMessage);
+    return success;
+}
 
-    bool selectInXfce(const QString& path) {
-        const QString folder = QFileInfo(path).dir().absolutePath();
-        const QString filename = QFileInfo(path).fileName();
+bool selectInXfce(const QString& path) {
+    const QString folder = QFileInfo(path).dir().absolutePath();
+    const QString filename = QFileInfo(path).fileName();
 
-        QDBusMessage msg = QDBusMessage::createMethodCall(
-                "org.xfce.FileManager",
-                "/org/xfce/FileManager",
-                "org.xfce.FileManager",
-                "DisplayFolderAndSelect");
-        msg << folder << filename << "" << "";
-        qDebug() << "Calling:" << msg;
-        const QDBusMessage response = QDBusConnection::sessionBus().call(msg);
-        const bool success = (response.type() != QDBusMessage::MessageType::ErrorMessage);
-        return success;
-    }
+    QDBusMessage msg = QDBusMessage::createMethodCall(
+            "org.xfce.FileManager",
+            "/org/xfce/FileManager",
+            "org.xfce.FileManager",
+            "DisplayFolderAndSelect");
+    msg << folder << filename << "" << "";
+    qDebug() << "Calling:" << msg;
+    const QDBusMessage response = QDBusConnection::sessionBus().call(msg);
+    const bool success = (response.type() != QDBusMessage::MessageType::ErrorMessage);
+    return success;
+}
 #endif
 
 } // anonymous namespace
