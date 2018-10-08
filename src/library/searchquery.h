@@ -16,7 +16,7 @@
 #include "util/memory.h"
 #include "library/crate/cratestorage.h"
 
-const QString kExpliciteEmpty = "\"\""; // "" searches for an empty string
+const QString kMissingFieldSearchTerm = "\"\""; // "" searches for an empty string
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column);
 
