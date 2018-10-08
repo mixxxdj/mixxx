@@ -10,10 +10,11 @@
 <Template>
   <VuMeter>
     <TooltipId><Variable name="TooltipId"/></TooltipId>
-    <MinimumSize>50,5</MinimumSize>
-    <MaximumSize>200,5</MaximumSize>
-    <PathVu>vumeter.png</PathVu>
-    <Horizontal>true</Horizontal>
+    <MinimumSize>5,30</MinimumSize>
+    <MaximumSize>5,-1</MaximumSize>
+    <SizePolicy>f,me</SizePolicy>
+    <PathVu>vumeter_v.png</PathVu>
+    <Horizontal>false</Horizontal>
     <PeakHoldSize>5</PeakHoldSize>
     <PeakHoldTime>300</PeakHoldTime>
     <PeakFallTime>20</PeakFallTime>
