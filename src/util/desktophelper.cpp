@@ -1,5 +1,5 @@
 
-#include "desktophelper.h"
+#include "util/desktophelper.h"
 
 #include <QtDebug>
 #include <QString>

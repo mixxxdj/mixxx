@@ -1,8 +1,8 @@
-#include <util/desktophelper.h>
 #include <QDesktopServices>
 #include <QtDebug>
 #include <QStringBuilder>
 
+#include "util/desktophelper.h"
 #include "library/dlgtrackinfo.h"
 #include "sources/soundsourceproxy.h"
 #include "library/coverartcache.h"
