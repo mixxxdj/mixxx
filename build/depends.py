@@ -476,6 +476,7 @@ class Qt(Dependence):
             libdir_path = Qt.find_framework_libdir(qtdir, qt5)
             if os.path.isdir(libdir_path):
                 build.env.Append(LINKFLAGS=['-Wl,-rpath,%s' % libdir_path])
+                build.env.Append(LINKFLAGS="-L" + libdir_path)
 
         # Mixxx requires C++11 support. Windows enables C++11 features by
         # default but Clang/GCC require a flag.
