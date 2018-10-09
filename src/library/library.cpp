@@ -475,7 +475,7 @@ void Library::cues_save_to_file(Track* pTrack)
     if (file.open(QIODevice::WriteOnly)) {
         QTextStream stream(&file);
         for (int i = 0; i < cueList.size(); i++)
-            stream << cueList[i].get()->getPosition() / ( pTrack->getSampleRate() * 2 ) << endl;
+            stream << cueList[i].get()->getPosition() / ( pTrack->getSampleRate() * pTrack->getChannels() ) << endl;
     }
 }
 
