@@ -132,6 +132,8 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
             if (!openedDirs.contains(dirPath)) {
                 openedDirs.insert(dirPath);
                 // special command, that supports also select the requested file
+                // The template string contains the sorrounding ""
+                // TODO() Escape embedded quotes and slashed for each destination application
                 QString command = sSelectInFileBrowserCommand.arg(
                         QDir::toNativeSeparators(path));
                 qDebug() << "starting:" << command;
