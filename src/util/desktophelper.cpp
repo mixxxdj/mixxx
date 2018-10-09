@@ -98,7 +98,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
     if (sSelectInFileBrowserCommand.isNull()) {
         sSelectInFileBrowserCommand = getSelectInFileBrowserCommand();
     }
-    QSet<QString> openedDirs;
+    QSet<QString> openedDirs; // We only select the first selected file in a folder
     QString dirPath;
     for (const auto& path: paths) {
         QFileInfo fileInfo(path);
@@ -110,25 +110,24 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
             if (!openedDirs.contains(dirPath)) {
                 if (selectInFreedesktop(path)) {
                     openedDirs.insert(dirPath);
-                    break;
+                    continue;
                 } else {
                     qDebug() << "Select File via Freedesktop DBus interface failed";
                 }
             }
-        }
-        if (sSelectInFileBrowserCommand == kSelectInXfce &&
+        } else if (sSelectInFileBrowserCommand == kSelectInXfce &&
                 fileInfo.exists()) {
             if (!openedDirs.contains(dirPath)) {
                 if (selectInXfce(path)) {
                     openedDirs.insert(dirPath);
-                    break;
+                    continue;
                 } else {
                     qDebug() << "Select file via Xfce DBus interface failed";
                 }
             }
-        }
+        } else
 #endif
-        if (sSelectInFileBrowserCommand.length() > 2 &&
+        if (!sSelectInFileBrowserCommand.isEmpty() &&
                 fileInfo.exists()) {
             if (!openedDirs.contains(dirPath)) {
                 openedDirs.insert(dirPath);
@@ -138,31 +137,32 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
                 qDebug() << "starting:" << command;
                 qDebug() << "parent:" << dirPath;
                 QProcess::startDetached(command);
+                continue;
             }
-        } else {
-            // We cannot select, just open the parent folder
-            QDir dir = dirPath;
-            while (!dir.exists() && dirPath.size()) {
-                // Note: dir.cdUp() does not work for not existing dirs
-                dirPath = removeChildDir(dirPath);
-                dir = dirPath;
-            }
+        } 
 
-            // This function does not work for a non-existent directory!
-            // so it is essential that in the worst case it try opening
-            // a valid directory, in this case, 'QDir::home()'.
-            // Otherwise nothing would happen...
-            if (!dir.exists()) {
-                // it ensures a valid dir for any OS (Windows)
-                dir = QDir::home();
-            }
-            // not open the same dir twice
-            dirPath = dir.absolutePath();
-            qDebug() << "opening:" << dirPath;
-            if (!openedDirs.contains(dirPath)) {
-                openedDirs.insert(dirPath);
-                QDesktopServices::openUrl(QUrl::fromLocalFile(dirPath));
-            }
+        // We cannot select, just open the parent folder
+        QDir dir = dirPath;
+        while (!dir.exists() && dirPath.size()) {
+            // Note: dir.cdUp() does not work for not existing dirs
+            dirPath = removeChildDir(dirPath);
+            dir = dirPath;
+        }
+
+        // This function does not work for a non-existent directory!
+        // so it is essential that in the worst case it try opening
+        // a valid directory, in this case, 'QDir::home()'.
+        // Otherwise nothing would happen...
+        if (!dir.exists()) {
+            // it ensures a valid dir for any OS (Windows)
+            dir = QDir::home();
+        }
+        // not open the same dir twice
+        dirPath = dir.absolutePath();
+        qDebug() << "opening:" << dirPath;
+        if (!openedDirs.contains(dirPath)) {
+            openedDirs.insert(dirPath);
+            QDesktopServices::openUrl(QUrl::fromLocalFile(dirPath));
         }
     }
 }
