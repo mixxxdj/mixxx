@@ -54,8 +54,8 @@ EffectSlot::EffectSlot(const QString& group,
             this, SLOT(slotClear(double)));
 
     for (unsigned int i = 0; i < kDefaultMaxParameters; ++i) {
-        addEffectParameterSlot(EffectManifestParameter::EffectParameterType::Knob);
-        addEffectParameterSlot(EffectManifestParameter::EffectParameterType::Button);
+        addEffectParameterSlot(EffectManifestParameter::ParameterType::KNOB);
+        addEffectParameterSlot(EffectManifestParameter::ParameterType::BUTTON);
     }
 
     m_pControlMetaParameter = new ControlPotmeter(ConfigKey(m_group, "meta"), 0.0, 1.0);
@@ -157,12 +157,12 @@ EffectManifestPointer EffectSlot::getManifest() const {
     return m_pManifest;
 }
 
-void EffectSlot::addEffectParameterSlot(EffectManifestParameter::EffectParameterType parameterType) {
+void EffectSlot::addEffectParameterSlot(EffectManifestParameter::ParameterType parameterType) {
     EffectParameterSlotBasePointer pParameterSlot = EffectParameterSlotBasePointer();
-    if (parameterType == EffectManifestParameter::EffectParameterType::Knob) {
+    if (parameterType == EffectManifestParameter::ParameterType::KNOB) {
         pParameterSlot = static_cast<EffectParameterSlotBasePointer> (
                 new EffectKnobParameterSlot(m_group, m_iNumParameterSlots[parameterType]));
-    } else if (parameterType == EffectManifestParameter::EffectParameterType::Button) {
+    } else if (parameterType == EffectManifestParameter::ParameterType::BUTTON) {
         pParameterSlot = static_cast<EffectParameterSlotBasePointer> (
                 new EffectButtonParameterSlot(m_group, m_iNumParameterSlots[parameterType]));
     }
@@ -170,7 +170,7 @@ void EffectSlot::addEffectParameterSlot(EffectManifestParameter::EffectParameter
     m_parameterSlots.append(pParameterSlot);
 }
 
-unsigned int EffectSlot::numParameters(EffectManifestParameter::EffectParameterType parameterType) const {
+unsigned int EffectSlot::numParameters(EffectManifestParameter::ParameterType parameterType) const {
     unsigned int num = 0;
     for (auto const& pParameter : m_parameters) {
         if (parameterType == pParameter->manifest()->parameterType()) {
@@ -180,7 +180,7 @@ unsigned int EffectSlot::numParameters(EffectManifestParameter::EffectParameterT
     return num;
 }
 
-EffectParameter* EffectSlot::getParameterForSlot(EffectManifestParameter::EffectParameterType parameterType,
+EffectParameter* EffectSlot::getParameterForSlot(EffectManifestParameter::ParameterType parameterType,
                                                  unsigned int slotNumber) {
     // It's normal to ask for a parameter that doesn't exist. Callers must check
     // for NULL.
@@ -204,7 +204,7 @@ void EffectSlot::setEnabled(bool enabled) {
     m_pControlEnabled->set(enabled);
 }
 
-EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(EffectManifestParameter::EffectParameterType parameterType,
+EffectParameterSlotBasePointer EffectSlot::getEffectParameterSlot(EffectManifestParameter::ParameterType parameterType,
                                                                   unsigned int slotNumber) {
     // qDebug() << debugString() << "getEffectParameterSlot" << static_cast<int>(parameterType) << ' ' << slotNumber;
 
@@ -265,10 +265,10 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
 }
 
 void EffectSlot::loadParameters() {
-    int numTypes = static_cast<int> (EffectManifestParameter::EffectParameterType::NumTypes);
+    int numTypes = static_cast<int> (EffectManifestParameter::ParameterType::NUM_TYPES);
     for (int parameterTypeId=0 ; parameterTypeId<numTypes ; ++parameterTypeId) {
-        const EffectManifestParameter::EffectParameterType parameterType =
-                static_cast<EffectManifestParameter::EffectParameterType> (parameterTypeId);
+        const EffectManifestParameter::ParameterType parameterType =
+                static_cast<EffectManifestParameter::ParameterType> (parameterTypeId);
         unsigned int iParameter = 0;
         unsigned int numParameterSlots = m_iNumParameterSlots[parameterType];
         for (int i=0 ; i<m_parameterSlotPositionToManifestIndex[parameterType].size() ; ++i) {
@@ -371,7 +371,7 @@ void EffectSlot::slotClear(double v) {
 
 void EffectSlot::syncSofttakeover() {
     for (const auto pParameterSlot : m_parameterSlots) {
-        if (pParameterSlot->parameterType() == EffectManifestParameter::EffectParameterType::Knob) {
+        if (pParameterSlot->parameterType() == EffectManifestParameter::ParameterType::KNOB) {
             pParameterSlot->syncSofttakeover();
         }
     }
@@ -403,7 +403,7 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
         force = true;
     }
     for (const auto& pParameterSlot : m_parameterSlots) {
-        if (pParameterSlot->parameterType() == EffectManifestParameter::EffectParameterType::Knob) {
+        if (pParameterSlot->parameterType() == EffectManifestParameter::ParameterType::KNOB) {
             pParameterSlot->onEffectMetaParameterChanged(v, force);
         }
     }

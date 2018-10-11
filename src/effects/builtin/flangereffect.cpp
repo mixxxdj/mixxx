@@ -40,7 +40,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
         "Speed of the LFO (low frequency oscillator)\n"
         "32 - 1/4 beats rounded to 1/2 beat per LFO cycle if tempo is detected\n"
         "1/32 - 4 Hz if no tempo is detected"));
-    speed->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC_INVERSE);
+    speed->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC_INVERSE);
     speed->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     speed->setRange(kMinLfoBeats, 8, kMaxLfoBeats);
 
@@ -50,7 +50,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     width->setShortName(QObject::tr("Width"));
     width->setDescription(QObject::tr(
         "Delay amplitude of the LFO (low frequency oscillator)"));
-    width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    width->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     width->setRange(0.0, kMaxLfoWidthMs / 2, kMaxLfoWidthMs);
@@ -62,7 +62,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     manual->setDescription(QObject::tr(
         "Delay offset of the LFO (low frequency oscillator).\n"
         "With width at zero, this allows for manually sweeping over the entire delay range."));
-    manual->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    manual->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     manual->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     manual->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     manual->setRange(kMinDelayMs, kCenterDelayMs, kMaxDelayMs);
@@ -73,7 +73,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     regen->setShortName(QObject::tr("Regen"));
     regen->setDescription(QObject::tr(
            "How much of the delay output is feed back into the input"));
-    regen->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    regen->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     regen->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     regen->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     regen->setRange(0.0, 0.25, 1.0);
@@ -84,7 +84,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     mix->setShortName(QObject::tr("Mix"));
     mix->setDescription(QObject::tr(
             "Intensity of the effect"));
-    mix->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    mix->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     mix->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     mix->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     mix->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
@@ -96,7 +96,7 @@ EffectManifestPointer FlangerEffect::getManifest() {
     triplet->setShortName(QObject::tr("Triplets"));
     triplet->setDescription(QObject::tr(
             "Divide rounded 1/2 beats of the Period parameter by 3."));
-    triplet->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    triplet->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     triplet->setRange(0, 0, 1);

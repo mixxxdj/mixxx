@@ -15,22 +15,23 @@ typedef QSharedPointer<EffectManifestParameter> EffectManifestParameterPointer;
 
 class EffectManifestParameter {
   public:
-    enum class EffectParameterType {
-        Knob,
-        Button,
-        NumTypes
+    enum class ParameterType {
+        KNOB,
+        BUTTON,
+
+        NUM_TYPES
     };
 
-    enum class ControlHint {
+    enum class ValueScaler {
         UNKNOWN = 0,
-        KNOB_LINEAR,
-        KNOB_LINEAR_INVERSE,
-        KNOB_LOGARITHMIC,
-        KNOB_LOGARITHMIC_INVERSE,
-        KNOB_STEPPING,   // A step rotary, steps given by m_steps
-                         // are arranged with equal distance on scale
-        TOGGLE_STEPPING  // For button and enum controls, not accessible
-                         // from many controllers, no linking to meta knob
+        LINEAR,
+        LINEAR_INVERSE,
+        LOGARITHMIC,
+        LOGARITHMIC_INVERSE,
+        INTEGRAL,   // A step rotary, steps given by m_steps
+                    // are arranged with equal distance on scale
+        TOGGLE      // For button and enum controls, not accessible
+                    // from many controllers, no linking to meta knob
     };
 
     enum class SemanticHint {
@@ -90,7 +91,7 @@ class EffectManifestParameter {
     };
 
     EffectManifestParameter()
-            : m_controlHint(ControlHint::UNKNOWN),
+            : m_valueScaler(ValueScaler::UNKNOWN),
               m_semanticHint(SemanticHint::UNKNOWN),
               m_unitsHint(UnitsHint::UNKNOWN),
               m_defaultLinkType(LinkType::NONE),
@@ -142,23 +143,23 @@ class EffectManifestParameter {
     // Usage hints
     ////////////////////////////////////////////////////////////////////////////////
 
-    virtual const EffectParameterType& parameterType() const {
+    virtual const ParameterType& parameterType() const {
         return m_parameterType;
     }
 
-    virtual void setParameterType(const EffectParameterType parameterType) {
+    virtual void setParameterType(const ParameterType parameterType) {
         m_parameterType = parameterType;
     }
 
-    virtual ControlHint controlHint() const {
-        return m_controlHint;
+    virtual ValueScaler valueScaler() const {
+        return m_valueScaler;
     }
-    virtual void setControlHint(ControlHint controlHint) {
-        m_controlHint = controlHint;
-        if (controlHint == ControlHint::TOGGLE_STEPPING) {
-            setParameterType(EffectParameterType::Button);
+    virtual void setValueScaler(ValueScaler valueScaler) {
+        m_valueScaler = valueScaler;
+        if (valueScaler == ValueScaler::TOGGLE) {
+            setParameterType(ParameterType::BUTTON);
         } else {
-            setParameterType(EffectParameterType::Knob);
+            setParameterType(ParameterType::KNOB);
         }
     }
 
@@ -261,8 +262,8 @@ class EffectManifestParameter {
     QString m_shortName;
     QString m_description;
 
-    EffectParameterType m_parameterType;
-    ControlHint m_controlHint;
+    ParameterType m_parameterType;
+    ValueScaler m_valueScaler;
     SemanticHint m_semanticHint;
     UnitsHint m_unitsHint;
     LinkType m_defaultLinkType;
@@ -274,7 +275,7 @@ class EffectManifestParameter {
     double m_maximum;
 
     // Used to describe steps of
-    // CONTROL_KNOB_STEPPING and CONTROL_TOGGLE_STEPPING
+    // CONTROL_INTEGRAL and CONTROL_TOGGLE
     // effect parameters
     // Each pair has the following form:
     // name - value
@@ -283,7 +284,7 @@ class EffectManifestParameter {
     bool m_showInParametertSlot;
 };
 
-inline uint qHash(const EffectManifestParameter::EffectParameterType& parameterType) {
+inline uint qHash(const EffectManifestParameter::ParameterType& parameterType) {
     return static_cast<uint>(parameterType);
 }
 

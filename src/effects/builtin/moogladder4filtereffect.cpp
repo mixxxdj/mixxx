@@ -27,7 +27,7 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
     lpf->setId("lpf");
     lpf->setName(QObject::tr("LPF"));
     lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
-    lpf->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    lpf->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     lpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lpf->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     lpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_LEFT);
@@ -39,7 +39,7 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
     q->setName(QObject::tr("Resonance"));
     q->setShortName(QObject::tr("Res"));
     q->setDescription(QObject::tr("Resonance of the filters. 4 = self oscillating"));
-    q->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    q->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     q->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
     q->setRange(0.0, 1.0, 4.0);
@@ -48,7 +48,7 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
     hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
-    hpf->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    hpf->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     hpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hpf->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     hpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_RIGHT);

@@ -43,7 +43,7 @@ class MetaLinkTest : public BaseEffectTest {
         low->setId("low");
         low->setName(QObject::tr("Low"));
         low->setDescription(QObject::tr("Gain for Low Filter"));
-        low->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+        low->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
         low->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
         low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         low->setNeutralPointOnScale(0.25);
@@ -206,7 +206,7 @@ TEST_F(MetaLinkTest, HalfLinkTakeover) {
     low->setId("low");
     low->setName(QObject::tr("Low"));
     low->setDescription(QObject::tr("Gain for Low Filter (neutral at 1.0)"));
-    low->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    low->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     low->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     low->setNeutralPointOnScale(1.0);

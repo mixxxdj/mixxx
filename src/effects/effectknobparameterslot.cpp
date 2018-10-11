@@ -13,7 +13,7 @@
 
 EffectKnobParameterSlot::EffectKnobParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(group, iParameterSlotNumber) {
-    m_parameterType = EffectManifestParameter::EffectParameterType::Knob;
+    m_parameterType = EffectManifestParameter::ParameterType::KNOB;
 
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
 
@@ -63,7 +63,7 @@ void EffectKnobParameterSlot::loadParameter(EffectParameter* pEffectParameter) {
     clear();
 
     VERIFY_OR_DEBUG_ASSERT(pEffectParameter->manifest()->parameterType() ==
-            EffectManifestParameter::EffectParameterType::Knob) {
+            EffectManifestParameter::ParameterType::KNOB) {
         return;
     }
 
@@ -89,7 +89,7 @@ void EffectKnobParameterSlot::loadParameter(EffectParameter* pEffectParameter) {
         //          << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
         //          .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);
 
-        EffectManifestParameter::ControlHint type = m_pManifestParameter->controlHint();
+        EffectManifestParameter::ValueScaler type = m_pManifestParameter->valueScaler();
         m_pControlValue->setBehaviour(type, dMinimum, dMaximum);
         m_pControlValue->setDefaultValue(dDefault);
         m_pControlValue->set(dValue);

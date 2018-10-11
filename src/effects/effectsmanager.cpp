@@ -352,7 +352,7 @@ EffectSlotPointer EffectsManager::getEffectSlot(
 }
 
 EffectParameterSlotBasePointer EffectsManager::getEffectParameterSlot(
-        const EffectManifestParameter::EffectParameterType parameterType, const ConfigKey& configKey) {
+        const EffectManifestParameter::ParameterType parameterType, const ConfigKey& configKey) {
     EffectSlotPointer pEffectSlot =
              getEffectSlot(configKey.group);
     VERIFY_OR_DEBUG_ASSERT(pEffectSlot) {

@@ -32,7 +32,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     gain1->setShortName(QObject::tr("Gain 1"));
     gain1->setDescription(QObject::tr(
         "Gain for Filter 1"));
-    gain1->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    gain1->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     gain1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     gain1->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     gain1->setNeutralPointOnScale(0.5);
@@ -46,7 +46,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
         "Controls the bandwidth of Filter 1.\n"
         "A lower Q affects a wider band of frequencies,\n"
         "a higher Q affects a narrower band of frequencies."));
-    q1->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    q1->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     q1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q1->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     q1->setNeutralPointOnScale(0.5);
@@ -58,7 +58,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     center1->setShortName(QObject::tr("Center 1"));
     center1->setDescription(QObject::tr(
         "Center frequency for Filter 1, from 100 Hz to 14 kHz"));
-    center1->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    center1->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     center1->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     center1->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
     center1->setNeutralPointOnScale(0.5);
@@ -70,7 +70,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     gain2->setShortName(QObject::tr("Gain 2"));
     gain2->setDescription(QObject::tr(
         "Gain for Filter 2"));
-    gain2->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    gain2->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     gain2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     gain2->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     gain2->setNeutralPointOnScale(0.5);
@@ -84,7 +84,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
         "Controls the bandwidth of Filter 2.\n"
         "A lower Q affects a wider band of frequencies,\n"
         "a higher Q affects a narrower band of frequencies."));
-    q2->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    q2->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     q2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q2->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     q2->setNeutralPointOnScale(0.5);
@@ -96,7 +96,7 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
     center2->setShortName(QObject::tr("Center 2"));
     center2->setDescription(QObject::tr(
         "Center frequency for Filter 2, from 100 Hz to 14 kHz"));
-    center2->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    center2->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     center2->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     center2->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
     center2->setNeutralPointOnScale(0.5);

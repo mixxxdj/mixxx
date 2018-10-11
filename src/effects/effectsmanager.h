@@ -113,7 +113,7 @@ class EffectsManager : public QObject {
     EffectSlotPointer getEffectSlot(const QString& group);
 
     EffectParameterSlotBasePointer getEffectParameterSlot(
-            const EffectManifestParameter::EffectParameterType parameterType, const ConfigKey& configKey);
+            const EffectManifestParameter::ParameterType parameterType, const ConfigKey& configKey);
 
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);

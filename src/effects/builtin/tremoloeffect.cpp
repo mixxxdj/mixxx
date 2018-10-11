@@ -28,7 +28,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
     depth->setShortName(QObject::tr("Depth"));
     depth->setDescription(QObject::tr(
         "How much the effect changes the volume"));
-    depth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    depth->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
@@ -42,8 +42,8 @@ EffectManifestPointer TremoloEffect::getManifest() {
         "Rate of the volume changes\n"
         "4 beats - 1/8 beat if tempo is detected\n"
         "1/4 Hz - 8 Hz if no tempo is detected"));
-    rate->setControlHint(
-        EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    rate->setValueScaler(
+        EffectManifestParameter::ValueScaler::LOGARITHMIC);
     rate->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     rate->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
     rate->setRange(1.0/4, 1, 8);
@@ -55,7 +55,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
     width->setDescription(QObject::tr(
         "Width of the volume peak\n"
         "10% - 90% of the effect period"));
-    width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    width->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     width->setRange(0.1, 0.5, 0.9);
@@ -68,8 +68,8 @@ EffectManifestPointer TremoloEffect::getManifest() {
         "Shape of the volume modulation wave\n"
         "Fully left: Square wave\n"
         "Fully right: Sine wave"));
-    waveform->setControlHint(
-        EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    waveform->setValueScaler(
+        EffectManifestParameter::ValueScaler::LOGARITHMIC);
     waveform->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     waveform->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     waveform->setRange(0.005, 0.5, 1);
@@ -82,8 +82,8 @@ EffectManifestPointer TremoloEffect::getManifest() {
         "Shifts the position of the volume peak within the period\n"
         "Fully left: beginning of the effect period\n"
         "Fully right: end of the effect period"));
-    phase->setControlHint(
-        EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    phase->setValueScaler(
+        EffectManifestParameter::ValueScaler::LINEAR);
     phase->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     phase->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     phase->setRange(0, 0, 1);
@@ -94,8 +94,8 @@ EffectManifestPointer TremoloEffect::getManifest() {
     quantize->setShortName(QObject::tr("Quantize"));
     quantize->setDescription(QObject::tr(
         "Round the Rate parameter to the nearest whole division of a beat."));
-    quantize->setControlHint(
-        EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    quantize->setValueScaler(
+        EffectManifestParameter::ValueScaler::TOGGLE);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     quantize->setRange(0, 1, 1);
@@ -106,8 +106,8 @@ EffectManifestPointer TremoloEffect::getManifest() {
     triplet->setShortName(QObject::tr("Triplet"));
     triplet->setDescription(QObject::tr(
         "When the Quantize parameter is enabled, divide the effect period by 3."));
-    triplet->setControlHint(
-        EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+    triplet->setValueScaler(
+        EffectManifestParameter::ValueScaler::TOGGLE);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     triplet->setRange(0, 0, 1);

@@ -51,9 +51,9 @@ class EffectSlot : public QObject {
         return m_pEngineEffect != nullptr;
     }
 
-    void addEffectParameterSlot(EffectManifestParameter::EffectParameterType parameterType);
+    void addEffectParameterSlot(EffectManifestParameter::ParameterType parameterType);
     EffectParameterSlotBasePointer getEffectParameterSlot(
-            EffectManifestParameter::EffectParameterType parameterType, unsigned int slotNumber);
+            EffectManifestParameter::ParameterType parameterType, unsigned int slotNumber);
 
     double getMetaParameter() const;
 
@@ -72,9 +72,9 @@ class EffectSlot : public QObject {
 
     EffectManifestPointer getManifest() const;
 
-    unsigned int numParameters(EffectManifestParameter::EffectParameterType parameterType) const;
+    unsigned int numParameters(EffectManifestParameter::ParameterType parameterType) const;
 
-    EffectParameter* getParameterForSlot(EffectManifestParameter::EffectParameterType parameterType,
+    EffectParameter* getParameterForSlot(EffectManifestParameter::ParameterType parameterType,
             unsigned int slotNumber);
 
     void setEnabled(bool enabled);
@@ -118,7 +118,7 @@ class EffectSlot : public QObject {
     void unloadEffect();
 
     const unsigned int m_iEffectNumber;
-    QHash<EffectManifestParameter::EffectParameterType, unsigned int> m_iNumParameterSlots;
+    QHash<EffectManifestParameter::ParameterType, unsigned int> m_iNumParameterSlots;
     const QString m_group;
     UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
@@ -127,7 +127,7 @@ class EffectSlot : public QObject {
     QList<EffectParameter*> m_parameters;
     EngineEffectChain* m_pEngineEffectChain;
     QList<EffectParameterSlotBasePointer> m_parameterSlots;
-    QHash<EffectManifestParameter::EffectParameterType, QList<int>> m_parameterSlotPositionToManifestIndex;
+    QHash<EffectManifestParameter::ParameterType, QList<int>> m_parameterSlotPositionToManifestIndex;
 
     ControlObject* m_pControlLoaded;
     ControlPushButton* m_pControlEnabled;

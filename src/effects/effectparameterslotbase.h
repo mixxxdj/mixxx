@@ -36,7 +36,7 @@ class EffectParameterSlotBase : public QObject {
     QString name() const;
     QString shortName() const;
     QString description() const;
-    EffectManifestParameter::EffectParameterType parameterType() const;
+    EffectManifestParameter::ParameterType parameterType() const;
     EffectManifestParameterPointer getManifest();
 
     virtual QDomElement toXml(QDomDocument* doc) const = 0;
@@ -52,7 +52,7 @@ class EffectParameterSlotBase : public QObject {
     EffectSlot* m_pEffectSlot;
     EffectParameter* m_pEffectParameter;
     EffectManifestParameterPointer m_pManifestParameter;
-    EffectManifestParameter::EffectParameterType m_parameterType;
+    EffectManifestParameter::ParameterType m_parameterType;
 
     // Controls exposed to the rest of Mixxx
     ControlObject* m_pControlLoaded;

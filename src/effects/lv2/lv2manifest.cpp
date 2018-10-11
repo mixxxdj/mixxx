@@ -73,14 +73,14 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 
             // Set the appropriate Hints
             if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
-                param->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+                param->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
                 buildEnumerationOptions(port, param);
-                param->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+                param->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
-                param->setControlHint(EffectManifestParameter::ControlHint::KNOB_STEPPING);
+                param->setValueScaler(EffectManifestParameter::ValueScaler::INTEGRAL);
             } else {
-                 param->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+                 param->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
             }
         }
     }
@@ -108,7 +108,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 
             param->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
             param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-            param->setControlHint(EffectManifestParameter::ControlHint::TOGGLE_STEPPING);
+            param->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
             if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
                 buildEnumerationOptions(port, param);
             } else {

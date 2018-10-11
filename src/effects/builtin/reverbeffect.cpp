@@ -28,7 +28,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     decay->setShortName(QObject::tr("Decay"));
     decay->setDescription(QObject::tr(
         "Lower decay values cause reverberations to fade out more quickly."));
-    decay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    decay->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     decay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     decay->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     decay->setRange(0, 0.5, 1);
@@ -40,7 +40,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     bandwidth->setDescription(QObject::tr(
         "Bandwidth of the low pass filter at the input.\n"
         "Higher values result in less attenuation of high frequencies."));
-    bandwidth->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    bandwidth->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     bandwidth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     bandwidth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     bandwidth->setRange(0, 1, 1);
@@ -51,7 +51,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     damping->setShortName(QObject::tr("Damping"));
     damping->setDescription(QObject::tr(
       "Higher damping values cause high frequencies to decay more quickly than low frequencies."));
-    damping->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    damping->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     damping->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     damping->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     damping->setRange(0, 0, 1);
@@ -62,7 +62,7 @@ EffectManifestPointer ReverbEffect::getManifest() {
     send->setShortName(QObject::tr("Send"));
     send->setDescription(QObject::tr(
         "How much of the signal to send in to the effect"));
-    send->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    send->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     send->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);

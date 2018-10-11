@@ -3,7 +3,7 @@
 
 void WEffectParameterKnob::setupEffectParameterSlot(const ConfigKey& configKey) {
     EffectParameterSlotBasePointer pParameterSlot =
-            m_pEffectsManager->getEffectParameterSlot(EffectManifestParameter::EffectParameterType::Knob, configKey);
+            m_pEffectsManager->getEffectParameterSlot(EffectManifestParameter::ParameterType::KNOB, configKey);
     if (!pParameterSlot) {
         qWarning() << "EffectParameterKnob" << configKey <<
                 "is not an effect parameter.";

@@ -31,7 +31,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
     balance->setShortName(QObject::tr("Balance"));
     balance->setDescription(QObject::tr(
         "Adjust balance between left and right channels"));
-    balance->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    balance->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     balance->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     balance->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     balance->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
@@ -46,7 +46,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
         "Fully left: mono\n"
         "Fully right: only side ambiance\n"
         "Center: does not change the original signal."));
-    midSide->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    midSide->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     midSide->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     midSide->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     midSide->setDefaultLinkType(EffectManifestParameter::LinkType::NONE);
@@ -58,7 +58,7 @@ EffectManifestPointer BalanceEffect::getManifest() {
     midLowPass->setShortName(QObject::tr("Bypass Fr."));
     midLowPass->setDescription(QObject::tr(
         "Frequencies below this cutoff are not adjusted in the stereo field"));
-    midLowPass->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    midLowPass->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     midLowPass->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     midLowPass->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     midLowPass->setDefaultLinkType(EffectManifestParameter::LinkType::NONE);

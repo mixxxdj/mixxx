@@ -7,19 +7,19 @@ ControlEffectKnob::ControlEffectKnob(ConfigKey key, double dMinValue, double dMa
         : ControlPotmeter(key, dMinValue, dMaxValue) {
 }
 
-void ControlEffectKnob::setBehaviour(EffectManifestParameter::ControlHint type,
+void ControlEffectKnob::setBehaviour(EffectManifestParameter::ValueScaler type,
                                      double dMinValue, double dMaxValue) {
     if (m_pControl == NULL) {
         return;
     }
 
-    if (type == EffectManifestParameter::ControlHint::KNOB_LINEAR) {
+    if (type == EffectManifestParameter::ValueScaler::LINEAR) {
             m_pControl->setBehavior(new ControlLinPotmeterBehavior(
                     dMinValue, dMaxValue, false));
-    } else if (type == EffectManifestParameter::ControlHint::KNOB_LINEAR_INVERSE) {
+    } else if (type == EffectManifestParameter::ValueScaler::LINEAR_INVERSE) {
             m_pControl->setBehavior(new ControlLinInvPotmeterBehavior(
                     dMinValue, dMaxValue, false));
-    } else if (type == EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC) {
+    } else if (type == EffectManifestParameter::ValueScaler::LOGARITHMIC) {
         if (dMinValue == 0) {
             if (dMaxValue == 1.0) {
                 // Volume like control
@@ -37,7 +37,7 @@ void ControlEffectKnob::setBehaviour(EffectManifestParameter::ControlHint type,
             m_pControl->setBehavior(
                     new ControlLogPotmeterBehavior(dMinValue, dMaxValue, -40));
         }
-    } else if (type == EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC_INVERSE) {
+    } else if (type == EffectManifestParameter::ValueScaler::LOGARITHMIC_INVERSE) {
         m_pControl->setBehavior(
                 new ControlLogInvPotmeterBehavior(dMinValue, dMaxValue, -40));
     }

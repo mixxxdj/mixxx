@@ -34,7 +34,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
         "How fast the sound goes from one side to another\n"
         "1/4 - 4 beats rounded to 1/2 beat if tempo is detected\n"
         "1/4 - 4 seconds if no tempo is detected"));
-    period->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    period->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     period->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
@@ -47,7 +47,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     smoothing->setShortName(QObject::tr("Smooth"));
     smoothing->setDescription(QObject::tr(
         "How smoothly the signal goes from one side to the other"));
-    smoothing->setControlHint(EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC);
+    smoothing->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
     smoothing->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     smoothing->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     smoothing->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
@@ -63,7 +63,7 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     width->setShortName(QObject::tr("Width"));
     width->setDescription(QObject::tr(
         "How far the signal goes to each side"));
-    width->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
+    width->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
     width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     width->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);

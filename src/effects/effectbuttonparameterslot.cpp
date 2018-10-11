@@ -12,7 +12,7 @@
 EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
                                                      const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(group, iParameterSlotNumber) {
-    m_parameterType = EffectManifestParameter::EffectParameterType::Button;
+    m_parameterType = EffectManifestParameter::ParameterType::BUTTON;
 
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
@@ -46,7 +46,7 @@ void EffectButtonParameterSlot::loadParameter(EffectParameter* pEffectParameter)
     }
 
     VERIFY_OR_DEBUG_ASSERT(pEffectParameter->manifest()->parameterType() ==
-            EffectManifestParameter::EffectParameterType::Button) {
+            EffectManifestParameter::ParameterType::BUTTON) {
         return;
     }
 
@@ -77,7 +77,7 @@ void EffectButtonParameterSlot::loadParameter(EffectParameter* pEffectParameter)
 
         m_pControlValue->set(dValue);
         m_pControlValue->setDefaultValue(dDefault);
-        EffectManifestParameter::ControlHint type = m_pManifestParameter->controlHint();
+        EffectManifestParameter::ValueScaler type = m_pManifestParameter->valueScaler();
         // TODO(rryan) expose this from EffectParameter
         m_pControlType->forceSet(static_cast<double>(type));
         // Default loaded parameters to loaded and unlinked
