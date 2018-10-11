@@ -39,10 +39,10 @@ QHeaderView::down-arrow {
   background-color: rgba(92,91,93,160);
 }
 QHeaderView::up-arrow {
-  image: url(skin:/btn_lib_sort_up_dark.png)
+  image: url(skin:/btn/btn_lib_sort_up_dark.png)
 }
 QHeaderView::down-arrow {
-  image: url(skin:/btn_lib_sort_down_dark.png)
+  image: url(skin:/btn/btn_lib_sort_down_dark.png)
 }
 
 /* Scroll bars */
@@ -75,7 +75,7 @@ WLibrary QPushButton {
   }
 
 WLibrary QRadioButton::indicator:checked {
- background: url(skin:btn_lib_radio_button_on_dark.svg);
+ background: url(skin:/btn/btn_lib_radio_button_on_dark.svg) center center;
 }
 
 

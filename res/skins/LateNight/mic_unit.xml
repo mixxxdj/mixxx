@@ -111,10 +111,9 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,me</SizePolicy>
                     <Children>
-                      <Template src="skin:knob_sized_textless.xml">
+                      <Template src="skin:knob_textless.xml">
                         <SetVariable name="TooltipId">pregain</SetVariable>
-                        <SetVariable name="width">36</SetVariable>
-                        <SetVariable name="height">30</SetVariable>
+                        <SetVariable name="Size">36f,30f</SetVariable>
                         <SetVariable name="group"><Variable name="group"/></SetVariable>
                         <SetVariable name="control">pregain</SetVariable>
                       </Template>

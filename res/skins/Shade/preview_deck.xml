@@ -9,7 +9,7 @@
 				<BackPath>style/style_bg_deck_border.png</BackPath>
 				<Style>
 					QGroupBox { border: 0px solid red; } 
-					QWidget { margin: 10px; padding: 0; }
+					QWidget { margin: 0px; padding: 0; }
 				</Style>
 			</WidgetGroup>
 
@@ -114,8 +114,8 @@
 												<NumberStates>1</NumberStates>
 												<State>
 													<Number>0</Number>
-													<Pressed>btn_eject1_over.png</Pressed>
-													<Unpressed>btn_eject1.png</Unpressed>
+													<Pressed>skin:/btn/btn_eject_over.png</Pressed>
+													<Unpressed>skin:/btn/btn_eject.png</Unpressed>
 												</State>
 												<Connection>
 													<ConfigKey>[PreviewDeck1],eject</ConfigKey>
@@ -139,7 +139,7 @@
 								<Size>0e,35f</Size>
 								<Style>
 									QGroupBox { border: 0px solid red; } 
-									QWidget { margin: 10px; padding: 0; }
+									QWidget { margin: 0px; padding: 0; }
 								</Style>
 								<Layout>horizontal</Layout>
 								<Children>
@@ -149,7 +149,7 @@
 										<BackPath>style/style_bg_sampler_mid.png</BackPath>
 										<Style>
 											QGroupBox { border: 0px solid red; } 
-											QWidget { margin: 10px; padding: 0; }
+											QWidget { margin: 0px; padding: 0; }
 										</Style>
 										<Children>
 											<PushButton>
@@ -158,13 +158,13 @@
 												<NumberStates>2</NumberStates>
 												<State>
 													<Number>0</Number>
-													<Pressed>btn_play_sampler_down.png</Pressed>
-													<Unpressed>btn_play_sampler.png</Unpressed>
+													<Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
+													<Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
 												</State>
 												<State>
 													<Number>1</Number>
-													<Pressed>btn_play_previewdeck_overdown.png</Pressed>
-													<Unpressed>btn_play_previewdeck_over.png</Unpressed>
+													<Pressed>skin:/btn/btn_play_previewdeck_overdown.png</Pressed>
+													<Unpressed>skin:/btn/btn_play_previewdeck_over.png</Unpressed>
 												</State>
 												<Pos>3,7</Pos>
 												<Connection>
@@ -187,7 +187,7 @@
 										<BackPath>style/style_bg_sampler_mid.png</BackPath>
 										<Style>
 											QGroupBox { border: 0px solid red; } 
-											QWidget { margin: 10px; padding: 0; }
+											QWidget { margin: 0px; padding: 0; }
 										</Style>
 										<Layout>horizontal</Layout>
 										<Children>
@@ -240,8 +240,8 @@
 							<StatusLight>
 								<TooltipId>sampler_PeakIndicator</TooltipId>
 								<Style></Style>
-								<PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
-								<PathBack>btn_clipping_previewdeck.png</PathBack>
+								<PathStatusLight>skin:/style/volume_clipping_previewdeck_over.png</PathStatusLight>
+								<PathBack>skin:/style/volume_clipping_previewdeck.png</PathBack>
 								<Pos>2,2</Pos>
 								<Size>5f,8f</Size>
 								<Connection>
@@ -251,8 +251,8 @@
 							<VuMeter>
 								<TooltipId>sampler_VuMeter</TooltipId>
 								<Style></Style>
-								<PathVu>btn_volume_display_previewdeck_over.png</PathVu>
-								<PathBack>btn_volume_display_previewdeck.png</PathBack>
+								<PathVu>skin:/style/volume_display_previewdeck_over.png</PathVu>
+								<PathBack>skin:/style/volume_display_previewdeck.png</PathBack>
 								<Pos>2,11</Pos>
 								<Size>5f,41f</Size>
 								<Horizontal>false</Horizontal>
@@ -305,7 +305,7 @@
 				<BackPath>style/style_bg_deck_border.png</BackPath>
 				<Style>
 					QGroupBox { border: 0px solid red; } 
-					QWidget { margin: 10px; padding: 0; }
+					QWidget { margin: 0px; padding: 0; }
 				</Style>
 			</WidgetGroup>
 		</Children>

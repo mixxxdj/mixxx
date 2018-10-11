@@ -32,7 +32,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><!-- Beatjump backw/forw -->
-                    <ObjectName>Spacer0f</ObjectName>
+                    <ObjectName>RoundSpacer0f</ObjectName>
                     <Layout>horizontal</Layout>
                     <Children>
                       <Template src="skin:button_1state_right.xml">
@@ -132,7 +132,7 @@ Variables:
                   <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
                   <WidgetGroup>
-                    <ObjectName>Spacer0f</ObjectName>
+                    <ObjectName>RoundSpacer0f</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>

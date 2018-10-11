@@ -89,10 +89,9 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <Template src="skin:knob_sized_textless.xml">
+                      <Template src="skin:knob_textless.xml">
                         <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
-                        <SetVariable name="width">40</SetVariable>
-                        <SetVariable name="height">34</SetVariable>
+                        <SetVariable name="Size">40f,34f</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">duckStrength</SetVariable>
                       </Template>

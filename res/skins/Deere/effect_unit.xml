@@ -93,6 +93,7 @@
 
       <WidgetGroup>
         <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
         <Children>
           <Template src="skin:effect_unit_with_parameters.xml"/>
         </Children>

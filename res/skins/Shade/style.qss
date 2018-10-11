@@ -1,95 +1,98 @@
 /* Shade */
 #Mixxx {
-    background-color: #191919;
-    background-repeat:no-repeat;
-	background-attachment:fixed;
-	background-position:center top;  
+  background-color: #191919;
+  background-repeat:no-repeat;
+  background-attachment:fixed;
+  background-position:center top;
+}
+
+#Deck WPushButton {
+  font-family: "Open Sans";
+  font-size: 14px;
 }
 
 WBeatSpinBox {
-	color: #060613;
-	background-color: #aab2b7;
-	border: 1px solid #060613;
-	padding: 0px;
-	font: 13px;
+  color: #060613;
+  background-color: #aab2b7;
+  border: 1px solid #060613;
+  padding: 0px;
+  font: 13px;
 }
 
 WBeatSpinBox::up-button{
-	height: 9px;
-	border-style: solid;
-	border-color: #060613;
-	border-width: 0px 0px 0px 1px;
-	image: url(skin:/btn_spin_up.png) no-repeat;
+  height: 9px;
+  border-style: solid;
+  border-color: #060613;
+  border-width: 0px 0px 0px 1px;
+  image: url(skin:/btn/btn_spin_up.png) no-repeat;
 }
 
 WBeatSpinBox::down-button {
-	height: 9px;										
-	border-style: solid;
-	border-color: #060613;
-	border-width: 0px 0px 0px 1px;
-	image: url(skin:/btn_spin_down.png) no-repeat;
+  height: 9px;
+  border-style: solid;
+  border-color: #060613;
+  border-width: 0px 0px 0px 1px;
+  image: url(skin:/btn/btn_spin_down.png) no-repeat;
 }
 
 WEffectSelector {
-	color: #060613;
-	background-color: #aab2b7;
-	/* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-	margin-top: 0px;
-	margin-bottom: 0px;
-	border: 1px solid #060613;
-	padding-left: 3px;
-	font: 13px;
+  color: #060613;
+  background-color: #aab2b7;
+  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+  margin-top: 0px;
+  margin-bottom: 0px;
+  border: 1px solid #060613;
+  padding-left: 3px;
+  font: 13px;
 }
 
 WEffectSelector::drop-down {
-	/* This causes the Qt theme's widget style to magically not apply. Go figure. */
-	border: 0;
+  /* This causes the Qt theme's widget style to magically not apply. Go figure. */
+  border: 0;
 }
 
 WEffectSelector::down-arrow {
-	height: 20px;
-	border-style: solid;
-	border-color: #060613;
-	border-width: 0px 0px 0px 1px;
-	image: url(skin:/btn_spin_down.png) no-repeat;
+  height: 20px;
+  border-style: solid;
+  border-color: #060613;
+  border-width: 0px 0px 0px 1px;
+  image: url(skin:/btn/btn_spin_down.png) no-repeat;
 }
 
 WEffectSelector QAbstractItemView {
-	color: #060613;
-	background-color: #aab2b7;
-	border: 2px solid #060613;
-	selection-background-color: lightgray;
+  color: #060613;
+  background-color: #aab2b7;
+  border: 2px solid #060613;
+  selection-background-color: lightgray;
 }
 
-WEffectSelector::item:selected
-{
-	background-color: lightgray;
+WEffectSelector::item:selected {
+  background-color: lightgray;
 }
 
-WEffectSelector::checked
-{
-	color: #EC4522;
+WEffectSelector::checked {
+  color: #EC4522;
 }
 
-#EffectSelectorGroup[highlight="1"]{ 
-	border: 1px solid #52f864;  
-	margin: 0px 0px 0px 0px;
-} 
-#EffectSelectorGroup[highlight="0"]{ 
-	border: 0px solid #52f864;  
-	margin: 0px 0px 0px 0px;
+#EffectSelectorGroup[highlight="1"] {
+  border: 1px solid #52f864;
+  margin: 0px 0px 0px 0px;
+}
+#EffectSelectorGroup[highlight="0"] {
+  border: 0px solid #52f864;
+  margin: 0px 0px 0px 0px;
 }
 
-#EffectUnit { 
-	qproperty-layoutAlignment:AlignTop;
+#EffectUnit {
+  qproperty-layoutAlignment:AlignTop;
 }
 
 
 
 /*################################################################
- ######  Library styling is hard  ###############################
- ################### most of it was LateNight & Deere & Tango ##########
-############ added styling for AutoDJ & Recording etc ##### */
+######  Library styling is hard  ################################
+################### most of it was LateNight & Deere & Tango ###
+############ added styling for AutoDJ & Recording etc ###### */
 
 QTableView,
 QTextBrowser,
@@ -169,10 +172,10 @@ QTreeView::item:!selected {
 
   /* BPM lock icon in the library "BPM" column. */
   #LibraryBPMButton::indicator:checked {
-    image: url(skin:/style/style_library_locked.svg);
+    image: url(skin:/btn/btn_lib_bpm_locked.svg);
     }
     #LibraryBPMButton::indicator:unchecked {
-      image: url(skin:/style/style_library_unlocked.svg);
+      image: url(skin:/btn/btn_lib_bpm_unlocked.svg);
       }
   #LibraryBPMButton::item {
     color: #cfcfcf;
@@ -182,68 +185,70 @@ QTreeView::item:!selected {
       background-color: #666;
       }
 
-	#LibraryBPMSpinBox {
-	  color: #fff;
-	  selection-color: #0f0f0f;
-	  background-color: #0f0f0f;
-	  selection-background-color: #888;
-	  /* This combination of negative top/bottom padding & margin
-		creates a 1px border around the spinbox' text area.
-		Increased left/right padding/margin removes the overlap of
-		text of activated spinbox and left-over text from regular
-		BPM value display. */
-	  padding: -1px -8px -1px -4px;
-	  margin: -2px 0px -2px -2px;
-	  /* As soon as any border property is set, the up/down buttons
-		lose their style & icons
-	  border: 0px;
-	  border-radius: 2px; */
-	}
+  #LibraryBPMSpinBox {
+    color: #fff;
+    selection-color: #0f0f0f;
+    background-color: #0f0f0f;
+    selection-background-color: #888;
+    /* This combination of negative top/bottom padding & margin
+    creates a 1px border around the spinbox' text area.
+    Increased left/right padding/margin removes the overlap of
+    text of activated spinbox and left-over text from regular
+    BPM value display. */
+    padding: -1px -8px -1px -4px;
+    margin: -2px 0px -2px -2px;
+    /* As soon as any border property is set, the up/down buttons
+    lose their style & icons
+    border: 0px;
+    border-radius: 2px; */
+  }
 
   #LibraryTimesPlayed::item {
     color: #cfcfcf;
     }
 
-	/* Button in library "Preview" column */
- 	#LibraryPreviewButton {
-		width: 23px;
-		height: 12px;
-		background: transparent;
-		margin: 0px;
-		padding: 0px;
-		border: 1px solid transparent;
-	}
-	#LibraryPreviewButton:!checked{
-		image: url(:/images/library/ic_library_preview_play.svg);
-	}
-	#LibraryPreviewButton:!checked:hover {
-    background: #454545;
-	}
-	#LibraryPreviewButton:checked{
-		image: url(:/images/library/ic_library_preview_pause.svg);
-		background-color: #0f0f0f;
-		border: 1px solid #333;
-	}
-	#LibraryPreviewButton:checked:hover {
-	  	border: 1px solid #888;
-	}
+  /* Button in library "Preview" column */
+  #LibraryPreviewButton {
+    background: transparent;
+    margin: 0px;
+    padding: 0px;
+    border: 1px solid transparent;
+  }
+  #LibraryPreviewButton:!checked{
+    image: url(skin:/btn/btn_lib_preview_play.svg);
+  }
+  #LibraryPreviewButton:!checked:hover {
+    border: 1px solid #666;
+    background: #0f0f0f;
+  }
+  #LibraryPreviewButton:checked {
+    image: url(skin:/btn/btn_lib_preview_pause.svg);
+    background-color: #0f0f0f;
+    border: 1px solid #444;
+  }
+  #LibraryPreviewButton:checked:hover {
+    border: 1px solid #666;
+  }
 
 
   /* checkbox in library "Played" column */
   QTableView::indicator {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     margin: 0px;
     padding: 0px;
     color: #cfcfcf;
+    border: 1px solid transparent;
     }
     QTableView::indicator:checked {
-      background: transparent url(skin:/style/style_checkbox_checked.png) no-repeat center center;
+      background: transparent url(skin:/btn/btn_lib_checkmark.svg) no-repeat center center;
       color: #cfcfcf;
+      border: 1px solid #ff6600;
       }
     QTableView::indicator:unchecked {
-      background: transparent url(skin:/style/style_checkbox_unchecked.png) no-repeat center center;
+      background: none;
       color: #cfcfcf;
+      border: 1px solid rgba(151,151,151,128);
       }
 
 /* library search text box */
@@ -296,23 +301,23 @@ QHeaderView::down-arrow {
   background-color: rgba(141,152,163,160);
 }
 QHeaderView::up-arrow {
-  image: url(skin:/btn_lib_sort_up.png)
+  image: url(skin:/btn/btn_lib_sort_up.png)
 }
 QHeaderView::down-arrow {
-  image: url(skin:/btn_lib_sort_down.png)
+  image: url(skin:/btn/btn_lib_sort_down.png)
 }
 
 /* Scroll bars */
 QScrollBar:horizontal {
   min-width: 40px;
   height: 18px;
-  padding: 0px 1px 1px 1px;
+  padding: 1px 0px 0px 0px;
   background-color: #5C5B5D;
 }
 QScrollBar:vertical {
   min-height: 40px;
   width: 18px;
-  padding: 1px 1px 1px 0px;
+  padding: 0px 0px 0px 1px;
   background-color: #5C5B5D;
 }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
@@ -344,6 +349,15 @@ QScrollBar::sub-line:horizontal,
 QScrollBar::sub-line:vertical {
   width: 0px;
   height: 0px;
+}
+
+/* Corner in between two scrollbars */
+QAbstractScrollArea::corner {
+  background-color: #0f0f0f;
+  border-top: 1px solid #585858;
+  border-left: 1px solid #585858;
+  border-bottom: none;
+  border-right: none;
 }
 
 /* Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
@@ -390,11 +404,11 @@ WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
 WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
 
 WLibrary QRadioButton::indicator:checked {
-  background: url(skin:btn_lib_radio_button_on.svg);
+  background: transparent url(skin:/btn/btn_lib_radio_button_on.svg) center center;
 }
 
 WLibrary QRadioButton::indicator:unchecked {
-  background: url(skin:btn_lib_radio_button_off.svg);
+  background: transparent url(skin:/btn/btn_lib_radio_button_off.svg) center center;
 }
 
 WLibrary QPushButton {

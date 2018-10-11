@@ -54,28 +54,28 @@
 						<NumberStates>5</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_link_type/btn_link_type_none.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_none.png</Unpressed>
+							<Pressed>skin:/btn/btn_link_type/btn_link_type_none.png</Pressed>
+							<Unpressed>skin:/btn/btn_link_type/btn_link_type_none.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_link_type/btn_link_type_linked.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_linked.png</Unpressed>
+							<Pressed>skin:/btn/btn_link_type/btn_link_type_linked.png</Pressed>
+							<Unpressed>skin:/btn/btn_link_type/btn_link_type_linked.png</Unpressed>
 						</State>
 				   		<State>
 							<Number>2</Number>
-							<Pressed>btn_link_type/btn_link_type_left.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_left.png</Unpressed>
+							<Pressed>skin:/btn/btn_link_type/btn_link_type_left.png</Pressed>
+							<Unpressed>skin:/btn/btn_link_type/btn_link_type_left.png</Unpressed>
 						</State>
 						<State>
 				  			<Number>3</Number>
-				  			<Pressed>btn_link_type/btn_link_type_right.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_right.png</Unpressed>
+				  			<Pressed>skin:/btn/btn_link_type/btn_link_type_right.png</Pressed>
+							<Unpressed>skin:/btn/btn_link_type/btn_link_type_right.png</Unpressed>
 						</State>
 				   		<State>
 				  			<Number>4</Number>
-				  			<Pressed>btn_link_type/btn_link_type_left_right.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_left_right.png</Unpressed>
+				  			<Pressed>skin:/btn/btn_link_type/btn_link_type_left_right.png</Pressed>
+							<Unpressed>skin:/btn/btn_link_type/btn_link_type_left_right.png</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/>_link_type</ConfigKey>
@@ -88,13 +88,13 @@
 						<NumberStates>2</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_link_type/btn_link_type_none.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_none.png</Unpressed>
+							<Pressed>skin:/btn/btn_link_type/btn_link_type_none.png</Pressed>
+							<Unpressed>skin:/btn/btn_link_type/btn_link_type_none.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_link_type/btn_link_type_inverted.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_inverted.png</Unpressed>
+							<Pressed>skin:/btn/btn_link_type/btn_link_type_inverted.png</Pressed>
+							<Unpressed>skin:/btn/btn_link_type/btn_link_type_inverted.png</Unpressed>
 						</State>
 						<Connection>
 							<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/>_link_inverse</ConfigKey>

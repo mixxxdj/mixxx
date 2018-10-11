@@ -13,8 +13,8 @@
 			<StatusLight>
 				<TooltipId>channel_PeakIndicator</TooltipId>
 				<Style></Style>
-				<PathStatusLight>btn_clipping_microphone_over.png</PathStatusLight>
-				<PathBack>btn_clipping_microphone.png</PathBack>
+				<PathStatusLight>skin:/style/volume_clipping_microphone_over.png</PathStatusLight>
+				<PathBack>skin:/style/volume_clipping_microphone.png</PathBack>
 				<Pos>99,6</Pos>
 				<Connection>
 					<ConfigKey>[Auxiliary<Variable name="auxnum"/>],PeakIndicator</ConfigKey>
@@ -29,8 +29,8 @@
 			<VuMeter>
 				<TooltipId>channel_VuMeter</TooltipId>
 				<Style></Style>
-				<PathVu>btn_volume_display_microphone_over.png</PathVu>
-				<PathBack>btn_volume_display_microphone.png</PathBack>
+				<PathVu>skin:/style/volume_display_microphone_over.png</PathVu>
+				<PathBack>skin:/style/volume_display_microphone.png</PathBack>
 				<Pos>99,14</Pos>
 				<PeakHoldSize>5</PeakHoldSize>
 				<PeakHoldTime>500</PeakHoldTime>
@@ -58,18 +58,18 @@
 				<NumberStates>3</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_orientation_sampler_left_over.png</Pressed>
-					<Unpressed>btn_orientation_sampler_left_over.png</Unpressed>
+					<Pressed>skin:/btn/btn_orientation_sampler_left_over.png</Pressed>
+					<Unpressed>skin:/btn/btn_orientation_sampler_left_over.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_orientation_sampler_master.png</Pressed>
-					<Unpressed>btn_orientation_sampler_master.png</Unpressed>
+					<Pressed>skin:/btn/btn_orientation_sampler_master.png</Pressed>
+					<Unpressed>skin:/btn/btn_orientation_sampler_master.png</Unpressed>
 				</State>
 				<State>
 					<Number>2</Number>
-					<Pressed>btn_orientation_sampler_right_over.png</Pressed>
-					<Unpressed>btn_orientation_sampler_right_over.png</Unpressed>
+					<Pressed>skin:/btn/btn_orientation_sampler_right_over.png</Pressed>
+					<Unpressed>skin:/btn/btn_orientation_sampler_right_over.png</Unpressed>
 				</State>
 				<Pos>0,28</Pos>
 				<Connection>
@@ -85,13 +85,13 @@
 			    <NumberStates>2</NumberStates>
 			    <State>
 				    <Number>0</Number>
-				    <Pressed>btn_pfl_fx_down.png</Pressed>
-				    <Unpressed>btn_pfl_fx.png</Unpressed>
+				    <Pressed>skin:/btn/btn_pfl_fx_down.png</Pressed>
+				    <Unpressed>skin:/btn/btn_pfl_fx.png</Unpressed>
 			    </State>
 			    <State>
 				    <Number>1</Number>
-				    <Pressed>btn_pfl_fx_overdown.png</Pressed>
-				    <Unpressed>btn_pfl_fx_over.png</Unpressed>
+				    <Pressed>skin:/btn/btn_pfl_fx_overdown.png</Pressed>
+				    <Unpressed>skin:/btn/btn_pfl_fx_over.png</Unpressed>
 			    </State>
 			    <Pos>21,30</Pos>
 			    <Connection>
