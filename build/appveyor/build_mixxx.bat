@@ -15,7 +15,7 @@ SET "PROGRAMFILES_PATH=%ProgramFiles(x86)%"
 rem ====== Edit to suit your environment =========
 SET VCVERSION=141
 SET "MSVC_PATH=%PROGRAMFILES_PATH%\Microsoft Visual Studio\2017\Community\VC"
-SET "BUILDTOOLS_PATH=%PROGRAMFILES_PATH%\Microsoft Visual Studio\2017\Build Tools\VC"
+SET "BUILDTOOLS_PATH=%PROGRAMFILES_PATH%\Microsoft Visual Studio\2017\BuildTools\VC"
 SET BUILDTOOLS_SCRIPT=Auxiliary\Build\vcvarsall.bat
 
 IF EXIST "%MSVC_PATH%" (
