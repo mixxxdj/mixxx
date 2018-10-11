@@ -1517,15 +1517,10 @@ class MixxxCore(Feature):
                                                 '/nodefaultlib:LIBCMTd.lib'])
 
                 build.env.Append(LINKFLAGS='/entry:mainCRTStartup')
-                # Declare that we are using the v120_xp toolset.
-                # http://blogs.msdn.com/b/vcblog/archive/2012/10/08/windows-xp-targeting-with-c-in-visual-studio-2012.aspx
-                build.env.Append(CPPDEFINES='_USING_V110_SDK71_')
-                # Makes the program not launch a shell first.
-                # Minimum platform version 5.01 for XP x86 and 5.02 for XP x64.
-                if build.machine_is_64bit:
-                    build.env.Append(LINKFLAGS='/subsystem:windows,5.02')
-                else:
-                    build.env.Append(LINKFLAGS='/subsystem:windows,5.01')
+                # Makes the program not launch a shell first. 6.01 declares the
+                # minimum version to be Windows 7.
+                # https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/subsystemversion-compiler-option
+                build.env.Append(LINKFLAGS='/subsystem:windows,6.01')
                 # Force MSVS to generate a manifest (MSVC2010)
                 build.env.Append(LINKFLAGS='/manifest')
             elif build.toolchain_is_gnu:
