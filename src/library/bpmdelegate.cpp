@@ -21,7 +21,7 @@ class BpmEditorCreator : public QItemEditorCreatorBase {
         pBpmSpinbox->setFrame(false);
         pBpmSpinbox->setMinimum(0);
         pBpmSpinbox->setMaximum(1000);
-        pBpmSpinbox->setSingleStep(1e-8);
+        pBpmSpinbox->setSingleStep(1e-3);
         pBpmSpinbox->setDecimals(8);
         pBpmSpinbox->setObjectName("LibraryBPMSpinBox");
         return pBpmSpinbox;
