@@ -100,7 +100,7 @@ QVariant RhythmboxFeature::title() {
 }
 
 QIcon RhythmboxFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_rhythmbox.png");
+    return QIcon(":/images/library/ic_library_rhythmbox.svg");
 }
 
 TreeItemModel* RhythmboxFeature::getChildModel() {
@@ -125,7 +125,7 @@ void RhythmboxFeature::activate() {
         m_track_watcher.setFuture(m_track_future);
         m_title = "(loading) Rhythmbox";
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
-        emit (featureIsLoading(this, true));
+        emit(featureIsLoading(this, true));
     }
 
     emit(showTrackModel(m_pRhythmboxTrackModel));

@@ -95,6 +95,10 @@
 
           <WidgetGroup><Size>3f,</Size></WidgetGroup>
 
+          <SingletonContainer>
+            <ObjectName>FxUnit<Variable name="FxUnit"/>_PflButton</ObjectName>
+          </SingletonContainer>
+
           <WidgetGroup><!-- No parameters -->
             <SizePolicy>me,max</SizePolicy>
             <Layout>vertical</Layout>
@@ -104,12 +108,10 @@
               </SingletonContainer>
 
               <SingletonContainer>
-                <ObjectName>FxUnit<Variable name="FxUnit"/>_PflButton</ObjectName>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_MixModeButton</ObjectName>
               </SingletonContainer>
             </Children>
           </WidgetGroup>
-
-          <WidgetGroup><Size>1f,</Size></WidgetGroup>
         </Children>
       </WidgetGroup><!-- /Mix / Super -->
 

@@ -14244,6 +14244,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
         }
     } else {
         ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_Over32active");
+        SampleUtil::clear(pOutput, iBufferSize);
         for (int i = 0; i < activeChannels->size(); ++i) {
             EngineMaster::ChannelInfo* pChannelInfo = activeChannels->at(i);
             const int channelIndex = pChannelInfo->m_index;
@@ -14259,9 +14260,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             gainCache.m_gain = newGain;
             CSAMPLE* pBuffer = pChannelInfo->m_pBuffer;
             pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features, oldGain, newGain);
-            for (unsigned int i = 0; i < iBufferSize; ++i) {
-                pOutput[i] += pBuffer[i];
-            }
+            SampleUtil::add(pOutput, pBuffer, iBufferSize);
         }
     }
 }

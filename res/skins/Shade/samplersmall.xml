@@ -23,10 +23,9 @@
 						<Size>4f,28f</Size>
 					</WidgetGroup>
 					<PushButton>
-						<TooltipId>play_start</TooltipId>
+						<TooltipId>cue_gotoandplay_cue_default</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
-						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_play_sampler_down.png</Pressed>

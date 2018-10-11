@@ -9,16 +9,24 @@ Variables:
 -->
 <Template>
   <SetVariable name="FxRack_FxUnit_FxNum">[<Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
-  <KnobComposed>
-    <TooltipId>EffectSlot_metaknob</TooltipId>
+  <WidgetGroup>
     <ObjectName>FxMetaknob</ObjectName>
-    <Size>30f,30f</Size>
-    <Knob>knobs_sliders/knob_blue.svg</Knob>
-    <BackPath>knobs_sliders/knob_bg.svg</BackPath>
-    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
-    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
-    <Connection>
-      <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,meta</ConfigKey>
-    </Connection>
-  </KnobComposed>
+    <Size><Variable name="Size"/></Size>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <KnobComposed>
+        <TooltipId>EffectSlot_metaknob</TooltipId>
+        <Size>30f,26f</Size>
+        <Knob>knobs_sliders/knob_blue.svg</Knob>
+        <BackPath>knobs_sliders/knob_bg.svg</BackPath>
+        <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+        <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+        <KnobCenterYOffset>2.000</KnobCenterYOffset>
+        <Connection>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,meta</ConfigKey>
+        </Connection>
+      </KnobComposed>
+    </Children>
+  </WidgetGroup>
 </Template>

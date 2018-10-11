@@ -28,7 +28,7 @@
 // of values for the slider.
 // The threshold of bitrate (CBR/ABR) at which the encoder
 // with switch to mono encoding
-const int EncoderMp3::MONO_BITRATE_TRESHOLD = 100;
+const int EncoderMp3::MONO_BITRATE_THRESHOLD = 100;
 // The threshold of quality (VBR) at which the encoder
 // with switch to mono encoding. Values from 0 to 6 encode at 44Khz
 const int EncoderMp3::MONO_VBR_THRESHOLD = 8;
@@ -180,27 +180,27 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
      *
      * Should not happen on Linux, but many lame binaries for Windows are modified.
      */
-    if(!lame_init ||
-       !lame_set_num_channels ||
-       !lame_set_in_samplerate ||
-       !lame_set_out_samplerate ||
-       !lame_close ||
-       !lame_set_brate ||
-       !lame_set_mode ||
-       !lame_set_quality ||
-       !lame_set_bWriteVbrTag ||
-       !lame_encode_buffer_float ||
-       !lame_init_params ||
-       !lame_encode_flush ||
-       !lame_set_VBR ||
-       !lame_set_VBR_q ||
-       !lame_set_VBR_mean_bitrate_kbps ||
-       !lame_get_lametag_frame ||
-       !get_lame_version ||
-       !id3tag_init ||
-       !id3tag_set_title ||
-       !id3tag_set_artist ||
-       !id3tag_set_album)
+    if (!lame_init ||
+        !lame_set_num_channels ||
+        !lame_set_in_samplerate ||
+        !lame_set_out_samplerate ||
+        !lame_close ||
+        !lame_set_brate ||
+        !lame_set_mode ||
+        !lame_set_quality ||
+        !lame_set_bWriteVbrTag ||
+        !lame_encode_buffer_float ||
+        !lame_init_params ||
+        !lame_encode_flush ||
+        !lame_set_VBR ||
+        !lame_set_VBR_q ||
+        !lame_set_VBR_mean_bitrate_kbps ||
+        !lame_get_lametag_frame ||
+        !get_lame_version ||
+        !id3tag_init ||
+        !id3tag_set_title ||
+        !id3tag_set_artist ||
+        !id3tag_set_album)
     {
         m_library->unload();
         delete m_library;
@@ -269,7 +269,7 @@ void EncoderMp3::setEncoderSettings(const EncoderSettings& settings)
     m_encoding_mode = (modeoption==0) ? vbr_off : (modeoption==1) ? vbr_abr : vbr_default;
 
     if (m_encoding_mode == vbr_off) {
-        if (m_bitrate > MONO_BITRATE_TRESHOLD ) {
+        if (m_bitrate > MONO_BITRATE_THRESHOLD ) {
             m_stereo_mode = JOINT_STEREO;
         } else {
             m_stereo_mode = MONO;

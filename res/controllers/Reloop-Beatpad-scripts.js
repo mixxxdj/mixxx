@@ -74,11 +74,11 @@ var bendConst = 1/4; // Adjust to suit.
  *            - More comment in code
  *            - Moved scratching constants with the global constants
  *            - Fixed Jog Bending and fast search
- *            - Sysex identification of the conttroller (nice print out in midiDebug). 
- *              
+ *            - Sysex identification of the controller (nice print out in midiDebug).
+ *
  * 2016-01-12 - Fixed FX effect selection on deck 2 (was selecting the entire chain instead (SHIFT+FX Select)
  *            - Fixed SHIFT+PFL on the right deck
- * 2016-01-13 - removed a few unused variables,a useless retun statement, correced typos,
+ * 2016-01-13 - removed a few unused variables, a useless return statement, corrected typos,
  *            - modified "Jogger" object
  *                  --> Autocut feature (made it more "reusable")
  *                  --> model "A" and model "B" controller parameter
@@ -497,7 +497,7 @@ LED.prototype.flashOnceOff = function(relight) {
 //                      press the button a second time (Value will be
 //                      equal to DOWN), or the Long press is asserted
 //                      (value = DOWN because you are still holding down
-//                      the button or value=UP because you have realeased
+//                      the button or value=UP because you have released
 //                      the button only once before it becomes a long press).
 // DoublePressTimeOut : delay in ms above which a second press on the
 //                      button will not be considered as a potential double
@@ -629,7 +629,7 @@ LongShortBtn.prototype.ButtonUp = function() {
 //                      press the button a second time (Value will be
 //                      equal to DOWN), or the Long press is asserted
 //                      (value = DOWN because you are still holding down
-//                      the button or value=UP because you have realeased
+//                      the button or value=UP because you have released
 //                      the button only once before it becomes a long press).
 // LongPressThreshold : delay in ms above which a first press on the
 //                      button will be considered as a Long press (default = 500ms).
@@ -2582,7 +2582,7 @@ ReloopBeatpad.OnPlaypositionChange = function(value, group, control) {
                         ledindex = Math.floor(needle) + 1;
                         deck.leds.RimRed.onOff(ledindex);
                     } else if (deck.JogSeekStatus) { // Track position
-                        // Track position/ellapsed time
+                        // Track position/elapsed time
                         ledindex = Math.round(24.0 * value);
                         if (ledindex !== 0) {
                             ledindex += 24;

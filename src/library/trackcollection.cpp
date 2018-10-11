@@ -23,7 +23,9 @@ TrackCollection::TrackCollection(
 }
 
 TrackCollection::~TrackCollection() {
-    kLogger.debug() << "~TrackCollection()";
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "~TrackCollection()";
+    }
     // The database should have been detached earlier
     DEBUG_ASSERT(!m_database.isOpen());
 }

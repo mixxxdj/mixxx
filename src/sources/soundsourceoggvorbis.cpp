@@ -42,7 +42,7 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& /*config*/) {
     m_pFile = std::make_unique<QFile>(getLocalFileName());
-    if(!m_pFile->open(QFile::ReadOnly)) {
+    if (!m_pFile->open(QFile::ReadOnly)) {
         kLogger.warning()
                 << "Failed to open file for"
                 << getUrlString();

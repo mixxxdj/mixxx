@@ -9,8 +9,8 @@
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                      UserSettingsPointer pConfig)
-        : QDialog(pParent) {
-    Q_UNUSED(pConfig);
+        : QDialog(pParent),
+          m_pConfig(pConfig) {
     setupUi(this);
 
     QList<QSharedPointer<ControlDoublePrivate> > controlsList;
@@ -51,7 +51,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     m_statProxyModel.setSourceModel(&m_statModel);
     statsTable->setModel(&m_statProxyModel);
 
-    QString logFileName = QDir(CmdlineArgs::Instance().getSettingsPath()).filePath("mixxx.log");
+    QString logFileName = QDir(pConfig->getSettingsPath()).filePath("mixxx.log");
     m_logFile.setFileName(logFileName);
     if (!m_logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qWarning() << "ERROR: Could not open log file:" << logFileName;
@@ -130,7 +130,7 @@ void DlgDeveloperTools::slotControlDump() {
 
     QString timestamp = QDateTime::currentDateTime()
             .toString("yyyy-MM-dd_hh'h'mm'm'ss's'");
-    QString dumpFileName = CmdlineArgs::Instance().getSettingsPath() +
+    QString dumpFileName = m_pConfig->getSettingsPath() +
             "/co_dump_" + timestamp + ".csv";
     QFile dumpFile;
     // Note: QFile is closed if it falls out of scope

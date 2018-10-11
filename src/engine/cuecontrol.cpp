@@ -465,7 +465,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     // since it's not necessarily where we currently are. TODO(XXX) is this
     // potentially invalid for vinyl control?
     bool playing = m_pPlay->toBool();
-    if (!playing && m_pQuantizeEnabled->get() > 0.0) {
+    if (!playing && m_pQuantizeEnabled->toBool()) {
         lock.unlock();  // prevent deadlock.
         // Enginebuffer will quantize more exactly than we can.
         seekAbs(cuePosition);
@@ -600,23 +600,23 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
     if (v) {
         if (pCue && pCue->getPosition() != -1) {
             m_iCurrentlyPreviewingHotcues++;
-            int iPosition = pCue->getPosition();
+            double position = pCue->getPosition();
             m_bypassCueSetByPlay = true;
             m_pPlay->set(1.0);
             pControl->setPreviewing(true);
-            pControl->setPreviewingPosition(iPosition);
+            pControl->setPreviewingPosition(position);
 
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
 
-            seekAbs(iPosition);
+            seekAbs(position);
         }
     } else if (m_iCurrentlyPreviewingHotcues) {
         // This is a activate release and we are previewing at least one
         // hotcue. If this hotcue is previewing:
         if (pControl->isPreviewing()) {
             // Mark this hotcue as not previewing.
-            int iPosition = pControl->getPreviewingPosition();
+            double position = pControl->getPreviewingPosition();
             pControl->setPreviewing(false);
             pControl->setPreviewingPosition(-1);
 
@@ -625,7 +625,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
                 m_pPlay->set(0.0);
                 // Need to unlock before emitting any signals to prevent deadlock.
                 lock.unlock();
-                seekExact(iPosition);
+                seekExact(position);
             }
         }
     }
@@ -694,7 +694,7 @@ void CueControl::cueSet(double v) {
 
     QMutexLocker lock(&m_mutex);
     double closestBeat = m_pClosestBeat->get();
-    double cue = (m_pQuantizeEnabled->get() > 0.0 && closestBeat != -1) ?
+    double cue = (m_pQuantizeEnabled->toBool() && closestBeat != -1) ?
             closestBeat : getCurrentSample();
     m_pCuePoint->set(cue);
     m_pCueSource->set(Cue::MANUAL);
@@ -835,7 +835,7 @@ void CueControl::cueCDJ(double v) {
 
             // If quantize is enabled, jump to the cue point since it's not
             // necessarily where we currently are
-            if (m_pQuantizeEnabled->get() > 0.0) {
+            if (m_pQuantizeEnabled->toBool()) {
                 lock.unlock();  // prevent deadlock.
                 // Enginebuffer will quantize more exactly than we can.
                 seekAbs(m_pCuePoint->get());
@@ -932,7 +932,7 @@ void CueControl::cuePlay(double v) {
             m_pPlay->set(0.0);
             // If quantize is enabled, jump to the cue point since it's not
             // necessarily where we currently are
-            if (m_pQuantizeEnabled->get() > 0.0) {
+            if (m_pQuantizeEnabled->toBool()) {
                 lock.unlock();  // prevent deadlock.
                 // Enginebuffer will quantize more exactly than we can.
                 seekAbs(m_pCuePoint->get());
@@ -1266,7 +1266,7 @@ HotcueControl::HotcueControl(QString group, int i)
           m_iHotcueNumber(i),
           m_pCue(NULL),
           m_bPreviewing(false),
-          m_iPreviewingPosition(-1) {
+          m_previewingPosition(-1) {
     m_hotcuePosition = new ControlObject(keyForControl(i, "position"));
     connect(m_hotcuePosition, SIGNAL(valueChanged(double)),
             this, SLOT(slotHotcuePositionChanged(double)),

@@ -658,7 +658,7 @@ void EngineBuffer::slotControlPlayRequest(double v) {
     bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
 
     if (!oldPlay && verifiedPlay) {
-        if (m_pQuantize->get() > 0.0
+        if (m_pQuantize->toBool()
 #ifdef __VINYLCONTROL__
                 && m_pVinylControlControl && !m_pVinylControlControl->isEnabled()
 #endif
@@ -900,7 +900,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         // we need to sync phase or we'll be totally out of whack and the sync
         // adjuster will kick in and push the track back in to sync with the
         // master.
-        if (m_scratching_old && !is_scratching && m_pQuantize->get() > 0.0
+        if (m_scratching_old && !is_scratching && m_pQuantize->toBool()
                 && m_pSyncControl->getSyncMode() == SYNC_FOLLOWER && !paused) {
             // TODO() The resulting seek is processed in the following callback
             // That is to late
@@ -983,6 +983,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             // Perform scaling of Reader buffer into buffer.
             double framesRead =
                     m_pScale->scaleBuffer(pOutput, iBufferSize);
+
             // TODO(XXX): The result framesRead might not be an integer value.
             // Converting to samples here does not make sense. All positional
             // calculations should be done in frames instead of samples! Otherwise
@@ -1170,8 +1171,15 @@ void EngineBuffer::processSeek(bool paused) {
             position = m_filepos_play;
             adjustingPhase = true;
             break;
+        case SEEK_STANDARD:
+            if (m_pQuantize->toBool()) {
+                seekType |= SEEK_PHASE;
+            }
+            // new position was already set above
+            break;
         case SEEK_EXACT:
-        case SEEK_STANDARD: // = SEEK_EXACT | SEEK_PHASE
+        case SEEK_EXACT_PHASE: // artificial state = SEEK_EXACT | SEEK_PHASE
+        case SEEK_STANDARD_PHASE: // artificial state = SEEK_STANDARD | SEEK_PHASE
             // new position was already set above
             break;
         default:
@@ -1179,7 +1187,7 @@ void EngineBuffer::processSeek(bool paused) {
             return;
     }
 
-    if ((seekType & SEEK_PHASE) && !paused && m_pQuantize->toBool()) {
+    if (!paused && (seekType & SEEK_PHASE)) {
         position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
     }
     if (position != m_filepos_play) {

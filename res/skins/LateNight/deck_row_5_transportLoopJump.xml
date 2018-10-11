@@ -60,6 +60,7 @@
 
               <BeatSpinBox>
                 <TooltipId>beatloop_size</TooltipId>
+                <Size>58f,26f</Size>
                 <Value><Variable name="group"/>,beatloop_size</Value>
               </BeatSpinBox>
             </Children>
@@ -123,6 +124,7 @@
               <WidgetGroup><Size>0f,26f</Size></WidgetGroup>
               <BeatSpinBox>
                 <TooltipId>beatjump_size</TooltipId>
+                <Size>58f,26f</Size>
                 <Value><Variable name="group"/>,beatjump_size</Value>
               </BeatSpinBox>
             </Children>
@@ -465,7 +467,6 @@
               <PushButton><!-- Play -->
                 <TooltipId>play_cue_set</TooltipId>
                 <NumberStates>2</NumberStates>
-                <RightClickIsPushButton>true</RightClickIsPushButton>
                 <State>
                   <Number>0</Number>
                   <Pressed>buttons/btn_play_down.svg</Pressed>
@@ -482,7 +483,7 @@
                 </Connection>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
-                  <ButtonState>RigtButton</ButtonState>
+                  <ButtonState>RightButton</ButtonState>
                 </Connection>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>

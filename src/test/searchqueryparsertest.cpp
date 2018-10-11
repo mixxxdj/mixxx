@@ -709,6 +709,53 @@ TEST_F(SearchQueryParserTest, CrateFilter) {
                  qPrintable(pQuery->toSql()));
 }
 
+TEST_F(SearchQueryParserTest, ShortCrateFilter) {
+    // User's search term
+    QString crateName = "somecrate";
+    QString searchTerm = "ecrat";
+    QStringList searchColumns;
+    searchColumns << "crate"
+                  << "artist"
+                  << "comment";
+
+    // Parse the user query
+    auto pQuery(m_parser.parseQuery(QString("%1").arg(searchTerm),
+                                    searchColumns, ""));
+
+    // locations for test tracks
+    const QString kTrackALocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/cover-test-jpg.mp3");
+    const QString kTrackBLocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/cover-test-png.mp3");
+    const QString kTrackCLocationTest(QDir::currentPath() %
+                  "/src/test/id3-test-data/artist.mp3");
+
+    // Create new crate and add it to the collection
+    Crate testCrate;
+    testCrate.setName(crateName);
+    CrateId testCrateId;
+    collection()->insertCrate(testCrate, &testCrateId);
+
+    // Add the track in the collection
+    TrackId trackAId = addTrackToCollection(kTrackALocationTest);
+    TrackPointer pTrackA(Track::newDummy(kTrackALocationTest, trackAId));
+    TrackId trackBId = addTrackToCollection(kTrackBLocationTest);
+    TrackPointer pTrackB(Track::newDummy(kTrackBLocationTest, trackBId));
+    TrackId trackCId = addTrackToCollection(kTrackCLocationTest);
+    TrackPointer pTrackC(Track::newDummy(kTrackCLocationTest, trackCId));
+    pTrackC->setComment("garbage somecrate garbage");
+
+    // Add track A to the newly created crate
+    QList<TrackId> trackIds;
+    trackIds << trackAId;
+    collection()->addCrateTracks(testCrateId, trackIds);
+
+    EXPECT_TRUE(pQuery->match(pTrackA));
+    EXPECT_FALSE(pQuery->match(pTrackB));
+    EXPECT_TRUE(pQuery->match(pTrackC));
+}
+
+
 TEST_F(SearchQueryParserTest, CrateFilterEmpty) {
     // Empty should match everything
     auto pQuery(m_parser.parseQuery(QString("crate: "), QStringList(), ""));
@@ -812,7 +859,8 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
 
 TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     // User's search term
-    QString searchTermA = "testA";
+    QString searchTermA = "testA'1"; // Also a test if "'" is escaped lp1789728
+    QString searchTermAEsc = "testA''1";
     QString searchTermB = "testB";
 
     // Parse the user query
@@ -855,7 +903,7 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     EXPECT_FALSE(pQueryA->match(pTrackB));
 
     EXPECT_STREQ(
-                 qPrintable("(" + m_crateFilterQuery.arg(searchTermA) +
+                 qPrintable("(" + m_crateFilterQuery.arg(searchTermAEsc) +
                             ") AND (" + m_crateFilterQuery.arg(searchTermB) + ")"),
                  qPrintable(pQueryA->toSql()));
 
@@ -867,7 +915,7 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     EXPECT_TRUE(pQueryB->match(pTrackB));
 
     EXPECT_STREQ(
-                 qPrintable("(" + m_crateFilterQuery.arg(searchTermA) +
+                 qPrintable("(" + m_crateFilterQuery.arg(searchTermAEsc) +
                             ") AND (NOT (" + m_crateFilterQuery.arg(searchTermB) + "))"),
                  qPrintable(pQueryB->toSql()));
 }

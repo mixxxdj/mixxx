@@ -4,6 +4,9 @@
 #include <QDomNode>
 
 #include "effects/effectsmanager.h"
+#include "effects/defs.h"
+#include "effects/effectrack.h"
+#include "effects/effectslot.h"
 #include "skin/skincontext.h"
 
 class EffectWidgetUtils {

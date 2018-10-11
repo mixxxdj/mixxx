@@ -284,7 +284,7 @@ dotappstream_files = Glob('#res/linux/mixxx.appdata.xml')
 hidudev_files = Glob('#res/linux/mixxx.usb.rules')
 
 #Icon file for menu entry
-icon_files = Glob('#res/images/mixxx-icon.png')
+icon_files = Glob('#res/images/mixxx_icon.svg')
 
 #Images for preferences dialog
 image_files = Glob('#res/images/preferences/*')  # These are compiled in to the "mixxx" binary through mixxx.qrc
@@ -310,16 +310,29 @@ elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu
 qt_modules = depends.Qt.enabled_modules(build)
 qt5 = depends.Qt.qt5_enabled(build)
 
-if build.platform_is_windows and not build.static_qt:
-    if qt5:
-        suffix = 'd.dll' if build.build_is_debug else '.dll'
-        qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
+if build.platform_is_windows:
+    suffix = 'd.dll' if build.build_is_debug else '.dll'
+    if not build.static_qt:
+        if qt5:
+            qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
                       for module in qt_modules]
-        dll_files.extend(qt_modules)
-    else:
-        suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-        qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
-        dll_files.extend(qt_modules)
+            dll_files.extend(qt_modules)
+        else:
+            qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
+            dll_files.extend(qt_modules)
+    if qt5:
+        # https://doc.qt.io/qt-5/windows-deployment.html
+        # "If dynamic OpenGL is used, you additionally need to include the
+        # libraries required for ANGLE and software rendering. For ANGLE, both
+        # libEGL.dll and libGLESv2.dll from Qt's lib directory are required as
+        # well as the HLSL compiler from DirectX. The HLSL compiler library,
+        # d3dcompiler_XX.dll, where XX is the version number that ANGLE
+        # (libGLESv2) was linked against."
+        dll_files.extend(['$QTDIR/bin/libEGL' + suffix,
+                          '$QTDIR/bin/libGLESv2' + suffix])
+        d3dcompiler_path = util.find_d3dcompiler_dll(build.env)
+        if d3dcompiler_path:
+            dll_files.append(d3dcompiler_path)
 
 # Qt imageformats plugin
 imgfmtdll_files = []
@@ -437,16 +450,26 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         # play nice with)
 
         # NOTE(rryan): Only include the SQLite plugin if we are building Qt in
-        # sqlite_plugin mode.
+        # sqlite_plugin mode or Qt 5 is enabled. In Qt 5, the SQLite driver was
+        # moved out of QtSql and into a plugin.
         sql_dylibs = []
-        if int(flags.get('qt_sqlite_plugin', 0)):
+        if int(flags.get('qt_sqlite_plugin', 0)) or qt5:
                 sql_dylibs = ["libqsqlite.dylib"]
 
         qt_plugins = (
                 [("iconengines", e) for e in ["libqsvgicon.dylib"]] +
                 [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
-                [("sqldrivers", e) for e in sql_dylibs] +
-                [("accessible", e) for e in ["libqtaccessiblewidgets.dylib"]])
+                [("sqldrivers", e) for e in sql_dylibs])
+
+        # In Qt 5, accessibility features are more tightly integrated.
+        if not qt5:
+                qt_plugins.append(("accessible", "libqtaccessiblewidgets.dylib"))
+
+        if qt5:
+                # Cocoa support moved to a plugin in Qt 5.
+                qt_plugins.append(("platforms", "libqcocoa.dylib"))
+                qt_plugins.append(("styles", "libqmacstyle.dylib"))
+
         #Left out libqmng and libqtiff to save space.
 
         # Concatenate the SoundSource plugins to our list of plugins (converting
