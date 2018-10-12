@@ -29,6 +29,22 @@ EffectSlot::EffectSlot(const QString& group,
     m_pControlLoaded = new ControlObject(ConfigKey(m_group, "loaded"));
     m_pControlLoaded->setReadOnly();
 
+    m_pControlNumParameters.insert(EffectManifestParameter::ParameterType::KNOB,
+            new ControlObject(ConfigKey(m_group, "num_parameters")));
+    m_pControlNumParameters.insert(EffectManifestParameter::ParameterType::BUTTON,
+            new ControlObject(ConfigKey(m_group, "num_button_parameters")));
+    for (const auto& pControlNumParameters : m_pControlNumParameters) {
+        pControlNumParameters->setReadOnly();
+    }
+
+    m_pControlNumParameterSlots.insert(EffectManifestParameter::ParameterType::KNOB,
+            new ControlObject(ConfigKey(m_group, "num_parameterslots")));
+    m_pControlNumParameterSlots.insert(EffectManifestParameter::ParameterType::BUTTON,
+            new ControlObject(ConfigKey(m_group, "num_button_parameterslots")));
+    for (const auto& pControlNumParameterSlots : m_pControlNumParameterSlots) {
+        pControlNumParameterSlots->setReadOnly();
+    }
+
     // Default to disabled to prevent accidental activation of effects
     // at the beginning of a set.
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
@@ -74,6 +90,12 @@ EffectSlot::~EffectSlot() {
     unloadEffect();
 
     delete m_pControlLoaded;
+    for (const auto& pControlNumParameters : m_pControlNumParameters) {
+        delete pControlNumParameters;
+    }
+    for (const auto& pControlNumParameterSlots : m_pControlNumParameterSlots) {
+        delete pControlNumParameterSlots;
+    }
     delete m_pControlNextEffect;
     delete m_pControlPrevEffect;
     delete m_pControlEffectSelector;
@@ -167,6 +189,12 @@ void EffectSlot::addEffectParameterSlot(EffectManifestParameter::ParameterType p
                 new EffectButtonParameterSlot(m_group, m_iNumParameterSlots[parameterType]));
     }
     ++m_iNumParameterSlots[parameterType];
+    m_pControlNumParameterSlots[parameterType]->forceSet(
+            m_pControlNumParameterSlots[parameterType]->get() + 1);
+    VERIFY_OR_DEBUG_ASSERT(m_iNumParameterSlots[parameterType] ==
+            m_pControlNumParameterSlots[parameterType]->get()) {
+        return;
+    }
     m_parameterSlots.append(pParameterSlot);
 }
 
@@ -269,6 +297,9 @@ void EffectSlot::loadParameters() {
     for (int parameterTypeId=0 ; parameterTypeId<numTypes ; ++parameterTypeId) {
         const EffectManifestParameter::ParameterType parameterType =
                 static_cast<EffectManifestParameter::ParameterType> (parameterTypeId);
+
+        m_pControlNumParameters[parameterType]->forceSet(numParameters(parameterType));
+
         unsigned int iParameter = 0;
         unsigned int numParameterSlots = m_iNumParameterSlots[parameterType];
         for (int i=0 ; i<m_parameterSlotPositionToManifestIndex[parameterType].size() ; ++i) {
@@ -306,6 +337,10 @@ void EffectSlot::unloadEffect() {
     }
 
     m_pControlLoaded->forceSet(0.0);
+    for (const auto& pControlNumParameters : m_pControlNumParameters) {
+        pControlNumParameters->forceSet(0.0);
+    }
+
     for (const auto& pParameterSlot : m_parameterSlots) {
         pParameterSlot->clear();
     }

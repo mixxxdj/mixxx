@@ -130,6 +130,8 @@ class EffectSlot : public QObject {
     QHash<EffectManifestParameter::ParameterType, QList<int>> m_parameterSlotPositionToManifestIndex;
 
     ControlObject* m_pControlLoaded;
+    QHash<EffectManifestParameter::ParameterType, ControlObject*> m_pControlNumParameters;
+    QHash<EffectManifestParameter::ParameterType, ControlObject*> m_pControlNumParameterSlots;
     ControlPushButton* m_pControlEnabled;
     ControlObject* m_pControlNextEffect;
     ControlObject* m_pControlPrevEffect;
