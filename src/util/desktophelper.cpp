@@ -21,7 +21,7 @@ QString sSelectInFileBrowserCommand;
 
 QString getSelectInFileBrowserCommand() {
 #if defined(Q_OS_MAC)
-    return "open -R \"%1\"";
+    return "open -R";
 #elif defined(Q_OS_WIN)
     return "explorer.exe /select,\"%1\"";
 #elif defined(Q_OS_LINUX)
@@ -32,7 +32,7 @@ QString getSelectInFileBrowserCommand() {
     proc.waitForFinished();
     output = proc.readLine().simplified();
     if (output == "kfmclient_dir.desktop") {
-        return "konqueror --select \"%1\"";
+        return "konqueror --select %1";
     } else if (output == "Thunar.desktop" ||
             output == "Thunar-folder-handler.desktop") {
         return kSelectInXfce; // Thunar has no --select option
@@ -129,16 +129,25 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
 #endif
         if (!sSelectInFileBrowserCommand.isEmpty() &&
                 fileInfo.exists()) {
+            // special command, that supports selecting the requested file
             if (!openedDirs.contains(dirPath)) {
                 openedDirs.insert(dirPath);
-                // special command, that supports also select the requested file
+
+                QStringList arguments = sSelectInFileBrowserCommand.split(" ");
+
+                #ifdef Q_OS_WIN
                 // The template string contains the sorrounding ""
-                // TODO() Escape embedded quotes and slashed for each destination application
-                QString command = sSelectInFileBrowserCommand.arg(
+                // Embedded quotes and slashed ar not allowed on Windows
+                arguments.last() = arguments.last().arg(
                         QDir::toNativeSeparators(path));
-                qDebug() << "starting:" << command;
-                qDebug() << "parent:" << dirPath;
-                QProcess::startDetached(command);
+                #else
+                // No escaping required because QProcess bypasses the shell
+                arguments.append(path);
+                #endif
+
+                QString program = arguments.takeFirst();
+                qDebug() << "Calling:" << program << arguments;
+                QProcess::startDetached(program, arguments);
                 continue;
             }
         } 
