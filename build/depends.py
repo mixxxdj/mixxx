@@ -1224,8 +1224,6 @@ class MixxxCore(Feature):
                    "util/autohidpi.cpp",
                    "util/screensaver.cpp",
                    "util/indexrange.cpp",
-
-                   '#res/mixxx.qrc'
                    ]
 
         proto_args = {
