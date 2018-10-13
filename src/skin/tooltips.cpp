@@ -425,16 +425,26 @@ void Tooltips::addStandardTooltips() {
 
     QString whilePlaying = tr("(while playing)");
     QString whileStopped = tr("(while stopped)");
+    QString cueWhilePlaying = tr("Stops track at cue point, OR go to cue point and play after release (CUP mode).");
+    QString cueWhileStopped = tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
+            "OR preview from it (Denon mode).");
+    QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Interface.");
     add("cue_default_cue_gotoandstop")
             << tr("Cue")
-            << QString("%1 %2: %3").arg(leftClick, whilePlaying, tr("Stops track at cue point, OR go to cue point and play after release (CUP mode)."))
-            << QString("%1 %2: %3").arg(leftClick, whileStopped, tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
-                                                                    "OR preview from it (Denon mode)."))
-            << tr("Hint: Change the default cue mode in Preferences -> Interface.")
+            << QString("%1 %2: %3").arg(leftClick, whilePlaying, cueWhilePlaying)
+            << QString("%1 %2: %3").arg(leftClick, whileStopped, cueWhileStopped)
+            << cueHint
             << quantizeSnap
             << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."));
+    add("cue_gotoandplay_cue_default")
+            << tr("Play")
+            << QString("%1: %2").arg(leftClick, tr("Plays track from the cue point."))
+            << QString("%1 %2: %3").arg(rightClick, whilePlaying, cueWhilePlaying)
+            << QString("%1 %2: %3").arg(rightClick, whileStopped, cueWhileStopped)
+            << cueHint
+            << quantizeSnap;
 
-    add("pfl")
+      add("pfl")
             << tr("Headphone")
             << tr("Sends the selected channel's audio to the headphone output,")
             << tr("selected in Preferences -> Sound Hardware.");
@@ -744,9 +754,9 @@ void Tooltips::addStandardTooltips() {
     add("EffectUnit_mix_mode")
             << tr("Mix Mode")
             << tr("Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit") + "\n"
-            << tr("D/W mode: Mix knob crossfades between dry and wet\n"
+            << tr("Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet\n"
                   "Use this to change the sound of the track with EQ and filter effects.") + "\n"
-            << tr("D+W mode: Mix knob adds wet to dry\n"
+            << tr("Dry+Wet mode (flat dry line): Mix knob adds wet to dry\n"
                   "Use this to change only the effected (wet) signal with EQ and filter effects.");
 
     add("EffectUnit_super1")

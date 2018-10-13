@@ -7,6 +7,7 @@
 #include <QWidgetAction>
 #include <QCheckBox>
 #include <QLinkedList>
+#include <QScrollBar>
 
 #include "widget/wtracktableview.h"
 
@@ -1731,22 +1732,16 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     }
 
     // Save the selection
-    const QList<TrackId> trackIds = getSelectedTrackIds();
+    const QList<TrackId> selectedTrackIds = getSelectedTrackIds();
+    int savedHScrollBarPos = horizontalScrollBar()->value();
 
     sortByColumn(headerSection);
 
     QItemSelectionModel* currentSelection = selectionModel();
-
-    // Find a visible column
-    int visibleColumn = 0;
-    while (isColumnHidden(visibleColumn) && visibleColumn < itemModel->columnCount()) {
-        visibleColumn++;
-    }
-
     currentSelection->reset(); // remove current selection
 
     QMap<int,int> selectedRows;
-    for (const auto& trackId : trackIds) {
+    for (const auto& trackId : selectedTrackIds) {
 
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
         // code is broken for playlists because it assumes each trackid is in
@@ -1759,7 +1754,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         QLinkedList<int> rows = trackModel->getTrackRows(trackId);
         for (int row : rows) {
             // Restore sort order by rows, so the following commands will act as expected
-            selectedRows.insert(row,0);
+            selectedRows.insert(row, 0);
         }
     }
 
@@ -1767,7 +1762,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     QMapIterator<int,int> i(selectedRows);
     while (i.hasNext()) {
         i.next();
-        QModelIndex tl = itemModel->index(i.key(), visibleColumn);
+        QModelIndex tl = itemModel->index(i.key(), 0);
         currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
 
         if (!first.isValid()) {
@@ -1775,10 +1770,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         }
     }
 
-    if (first.isValid()) {
-        scrollTo(first, QAbstractItemView::EnsureVisible);
-        //scrollTo(first, QAbstractItemView::PositionAtCenter);
-    }
+    scrollTo(first, QAbstractItemView::EnsureVisible);
+    horizontalScrollBar()->setValue(savedHScrollBarPos);
 }
 
 void WTrackTableView::slotLockBpm() {

@@ -742,7 +742,7 @@ void MixxxMainWindow::initializeKeyboard() {
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
-    QString userKeyboard = QDir(m_cmdLineArgs.getSettingsPath()).filePath("Custom.kbd.cfg");
+    QString userKeyboard = QDir(pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
 
     // Empty keyboard configuration
     m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>(QString());
@@ -1315,6 +1315,9 @@ bool MixxxMainWindow::event(QEvent* e) {
 }
 
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
+    // WARNING: We can receive a CloseEvent while only partially
+    // initialized. This is because we call QApplication::processEvents to
+    // render LaunchImage progress in the constructor.
     if (!confirmExit()) {
         event->ignore();
         return;
@@ -1393,7 +1396,7 @@ bool MixxxMainWindow::confirmExit() {
             return false;
         }
     }
-    if (m_pPrefDlg->isVisible()) {
+    if (m_pPrefDlg && m_pPrefDlg->isVisible()) {
         QMessageBox::StandardButton btn = QMessageBox::question(
             this, tr("Confirm Exit"),
             tr("The preferences window is still open.") + "<br>" +

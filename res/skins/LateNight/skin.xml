@@ -50,10 +50,12 @@
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
-      <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Library],show_library">1</attribute>
       <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
       <attribute persist="true" config_key="[Skin],8_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_cover_art">1</attribute>
+      <attribute persist="true" config_key="[Skin],big_spinny">0</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>
       <attribute config_key="[Master],skin_settings">0</attribute>
       <attribute config_key="[Master],show_rate_control">1</attribute>
@@ -86,9 +88,35 @@
 
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen -->
-  <MinimumSize>1270,550</MinimumSize>
+  <MinimumSize>1302,668</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
+  <LaunchImageStyle>
+    LaunchImage {
+      background-color: #0f0f0f;
+    }
+    QLabel {
+      image: url(skin:/style/logo_LateNight_160x40.svg);
+      padding: 0;
+      margin: 0px 2px 0px 2px;
+      border: none;
+      min-width: 160px;
+      min-height: 40px;
+      max-width: 160px;
+      max-height: 40px;
+    }
+    QProgressBar {
+      background: url(skin:/style/progressbar_bg.svg);
+      border: none;
+      min-width: 164px;
+      min-height: 5px;
+      max-width: 164px;
+      max-height: 5px;
+    }
+    QProgressBar::chunk {
+      background: url(skin:/style/progressbar.svg);
+    }
+  </LaunchImageStyle>
 
   <Children>
     <SetVariable name="PotiMinAngle">-135</SetVariable>
@@ -151,8 +179,12 @@
                             <Template src="skin:decks_right.xml"/>
                           </Children>
                         </WidgetGroup>
-                        <Template src="skin:fx.xml"/>
-                        <Template src="skin:lower_half.xml"/>
+                        <Template src="skin:fx_rack.xml"/>
+                        <Template src="skin:samplers_rack.xml"/>
+                        <Template src="skin:mic_aux_rack.xml"/>
+                        <SingletonContainer>
+                          <ObjectName>LibrarySingleton</ObjectName>
+                        </SingletonContainer>
                       </Children>
                     </WidgetGroup>
 

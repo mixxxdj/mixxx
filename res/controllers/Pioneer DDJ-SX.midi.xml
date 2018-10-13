@@ -147,7 +147,7 @@
             <control>
                 <group>[Library]</group>
                 <key>PioneerDDJSX.rotarySelectorShiftedClick</key>
-                <description>Choose item (doube click on selected item) (old: Expand/collapse selected sidebar item), Button: SHIFT &amp; BROWSER PRESS</description>
+                <description>Choose item (double click on selected item) (old: Expand/collapse selected sidebar item), Button: SHIFT &amp; BROWSER PRESS</description>
                 <status>0x96</status>
                 <midino>0x42</midino>
                 <options>
@@ -783,7 +783,7 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control> 
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>PioneerDDJSX.quantizeButton</key>
@@ -5793,7 +5793,7 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control> 
+            </control>
             <control>
                 <group>[Channel4]</group>
                 <key>PioneerDDJSX.samplerButtons</key>

@@ -1388,16 +1388,16 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
     QString styleHack = (
         "#LibraryPreviewButton { background: transparent; border: 0; }"
         "#LibraryPreviewButton:checked {"
-        "  image: url(:/images/library/ic_library_preview_pause.png);"
+        "  image: url(:/images/library/ic_library_preview_pause.svg);"
         "}"
         "#LibraryPreviewButton:!checked {"
-        "  image: url(:/images/library/ic_library_preview_play.png);"
+        "  image: url(:/images/library/ic_library_preview_play.svg);"
         "}");
     // Style the library BPM Button with a default image
     styleHack.append(QString(
         "QPushButton#LibraryBPMButton { background: transparent; border: 0; }"
-        "QPushButton#LibraryBPMButton:checked {image: url(:/images/library/ic_library_checked.png);}"
-        "QPushButton#LibraryBPMButton:!checked {image: url(:/images/library/ic_library_unchecked.png);}"));
+        "QPushButton#LibraryBPMButton:checked {image: url(:/images/library/ic_library_locked.svg);}"
+        "QPushButton#LibraryBPMButton:!checked {image: url(:/images/library/ic_library_unlocked.svg);}"));
 
     QString fgColor;
     if (m_pContext->hasNodeSelectString(node, "FgColor", &fgColor)) {

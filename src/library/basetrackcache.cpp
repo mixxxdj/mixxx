@@ -39,7 +39,8 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
                     << "grouping"
                     << "comment"
                     << "title"
-                    << "genre";
+                    << "genre"
+                    << "crate";
 
     // Convert all the search column names to their field indexes because we use
     // them a bunch.
@@ -234,7 +235,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
         // m_trackInfo[id] will insert a QVector<QVariant> into the
         // m_trackInfo HashTable with the key "id"
         QVector<QVariant>& record = m_trackInfo[trackId];
-        // prealocate memory for all columns at once
+        // preallocate memory for all columns at once
         record.resize(numColumns);
         for (int i = 0; i < numColumns; ++i) {
             getTrackValueForColumn(pTrack, i, record[i]);

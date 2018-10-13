@@ -64,7 +64,7 @@ Variables:
                   <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
                   <WidgetGroup>
-                    <ObjectName>Spacer0f</ObjectName>
+                    <ObjectName>RoundSpacer0f</ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
@@ -154,7 +154,7 @@ Variables:
                   <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
                   <WidgetGroup><!-- Beatjump backw/forw -->
-                    <ObjectName>Spacer0f</ObjectName>
+                    <ObjectName>RoundSpacer0f</ObjectName>
                     <SizePolicy>min,min</SizePolicy>
                     <Layout>horizontal</Layout>
                     <Children>

@@ -17,6 +17,7 @@
       <attribute persist="true" config_key="[Deere],show_parallel_waveforms">1</attribute>
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
 
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
@@ -99,9 +100,9 @@
     <SetVariable name="SquareButtonMaximumSize">22,22</SetVariable>
     <SetVariable name="SquareButtonSizePolicy">f,f</SetVariable>
 
-    <SetVariable name="FXAssignmentButtonMinimumSize">26,22</SetVariable>
+    <SetVariable name="FXAssignmentButtonMinimumSize">26,18</SetVariable>
     <SetVariable name="FXAssignmentButtonMaximumSize">26,22</SetVariable>
-    <SetVariable name="FXAssignmentButtonSizePolicy">f,f</SetVariable>
+    <SetVariable name="FXAssignmentButtonSizePolicy">f,me</SetVariable>
 
     <SetVariable name="WideButtonMinimumSize">40,22</SetVariable>
     <SetVariable name="WideButtonMaximumSize">40,22</SetVariable>

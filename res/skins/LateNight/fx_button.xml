@@ -20,7 +20,6 @@ Variables:
     <ObjectName><Variable name="ObjectName"/></ObjectName>
     <Size><Variable name="Size"/></Size>
     <NumberStates>2</NumberStates>
-    <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
       <Number>0</Number>
       <Pressed scalemode="STRETCH">skin:/buttons/btn_<Variable name="icon"/>_down.svg</Pressed>

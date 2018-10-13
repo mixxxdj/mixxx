@@ -57,7 +57,7 @@ QVariant BansheeFeature::title() {
 }
 
 QIcon BansheeFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_banshee.png");
+    return QIcon(":/images/library/ic_library_banshee.svg");
 }
 
 void BansheeFeature::activate() {

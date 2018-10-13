@@ -11,7 +11,7 @@ Variables:
 -->
 <Template>
   <PushButton>
-    <ObjectName>SkinSettingsButton</ObjectName>
+    <ObjectName>SkinSettingsButtonMulti</ObjectName>
     <MinimumSize><Variable name="width"/>,13</MinimumSize>
     <MaximumSize><Variable name="width"/>,17</MaximumSize>
     <SizePolicy>me,me</SizePolicy>

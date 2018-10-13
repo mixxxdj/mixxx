@@ -32,8 +32,7 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
 
     virtual void preRender(VSyncThread* vsyncThread);
     virtual mixxx::Duration render();
-
-    virtual void resize(int width, int height);
+    virtual void resize(int width, int height, float devicePixelRatio) override;
 
   protected:
     QWidget* m_widget;

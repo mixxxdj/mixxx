@@ -15,9 +15,6 @@ class PortAudio(Dependence):
         elif build.platform_is_linux:
             build.env.ParseConfig('pkg-config portaudio-2.0 --silence-errors --cflags --libs')
 
-        # Turn on PortAudio support in Mixxx
-        build.env.Append(CPPDEFINES='__PORTAUDIO__')
-
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('advapi32')
 
@@ -114,13 +111,6 @@ class UPower(Dependence):
 class OggVorbis(Dependence):
 
     def configure(self, build, conf):
-#        if build.platform_is_windows and build.machine_is_64bit:
-            # For some reason this has to be checked this way on win64,
-            # otherwise it looks for the dll lib which will cause a conflict
-            # later
-#            if not conf.CheckLib('vorbisfile_static'):
-#                raise Exception('Did not find vorbisfile_static.lib or the libvorbisfile development headers.')
-#        else:
         libs = ['libvorbisfile', 'vorbisfile']
         if not conf.CheckLib(libs):
             Exception('Did not find libvorbisfile.a, libvorbisfile.lib, '
@@ -151,8 +141,6 @@ class OggVorbis(Dependence):
 class SndFile(Dependence):
 
     def configure(self, build, conf):
-        # if not conf.CheckLibWithHeader(['sndfile', 'libsndfile', 'libsndfile-1'], 'sndfile.h', 'C'):
-        # TODO: check for debug version on Windows when one is available
         if not conf.CheckLib(['sndfile', 'libsndfile', 'libsndfile-1']):
             raise Exception(
                 "Did not find libsndfile or it\'s development headers")
@@ -191,11 +179,11 @@ class Qt(Dependence):
 
     DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
-                         'windows': 'C:\\qt\\5.10.1'}
+                         'windows': 'C:\\qt\\5.11.1'}
 
     DEFAULT_QT5DIRS32 = {'linux': '/usr/lib/i386-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
-                         'windows': 'C:\\qt\\5.10.1'}
+                         'windows': 'C:\\qt\\5.11.1'}
 
     @staticmethod
     def qt5_enabled(build):
@@ -258,6 +246,7 @@ class Qt(Dependence):
                     'QtEventDispatcherSupport',
                     'QtFontDatabaseSupport',
                     'QtThemeSupport',
+                    'QtWindowsUIAutomationSupport',
                 ])
         return qt_modules
 
@@ -313,9 +302,15 @@ class Qt(Dependence):
             else:
                 build.env.EnableQt4Modules(qt_modules, debug=False)
 
-            if qt5:
+            if qt5 and build.architecture_is_x86:
                 # Note that -reduce-relocations is enabled by default in Qt5.
-                # So we must build the code with position independent code
+                # So we must build the Mixxx *executable* with position
+                # independent code. -pie / -fPIE must not be used, and Clang
+                # -flto must not be used when producing ELFs (i.e. on Linux).
+                # http://lists.qt-project.org/pipermail/development/2012-January/001418.html
+                # https://github.com/qt/qtbase/blob/c5307203f5c0b0e588cc93e70764c090dd4c2ce0/dist/changes-5.4.2#L37-L45
+                # https://codereview.qt-project.org/#/c/111787/
+                # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=65886#c30
                 build.env.Append(CCFLAGS='-fPIC')
 
         elif build.platform_is_bsd:
@@ -446,8 +441,10 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'qico')
                 build.env.Append(LIBS = 'qsvg')
                 build.env.Append(LIBS = 'qtga')
-                build.env.Append(LIBS = 'qgif')
-                build.env.Append(LIBS = 'qjpeg')
+                # not needed with Qt4
+                if qt5:
+                    build.env.Append(LIBS = 'qgif')
+                    build.env.Append(LIBS = 'qjpeg')
 
                 # accessibility plugins (gone in Qt5)
                 if not qt5:
@@ -473,20 +470,13 @@ class Qt(Dependence):
                         os.path.join(build.env['QTDIR'],'plugins/sqldrivers')])
                     build.env.Append(LIBS = 'qsqlite')
 
-
-
-        # Set the rpath for linux/bsd/osx.
-        # This is not supported on OS X before the 10.5 SDK.
-        using_104_sdk = (str(build.env["CCFLAGS"]).find("10.4") >= 0)
-        compiling_on_104 = False
-        if build.platform_is_osx:
-            compiling_on_104 = (
-                os.popen('sw_vers').readlines()[1].find('10.4') >= 0)
-        if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
+        # Set the rpath for linux/bsd/macOS.
+        if not build.platform_is_windows:
             qtdir = build.env['QTDIR']
-            framework_path = Qt.find_framework_libdir(qtdir, qt5)
-            if os.path.isdir(framework_path):
-                build.env.Append(LINKFLAGS="-L" + framework_path)
+            libdir_path = Qt.find_framework_libdir(qtdir, qt5)
+            if os.path.isdir(libdir_path):
+                build.env.Append(LINKFLAGS=['-Wl,-rpath,%s' % libdir_path])
+                build.env.Append(LINKFLAGS="-L" + libdir_path)
 
         # Mixxx requires C++11 support. Windows enables C++11 features by
         # default but Clang/GCC require a flag.
@@ -548,7 +538,7 @@ class Ebur128Mit(Dependence):
 
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-2.0.0'
+    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch'
     INTERNAL_LINK = True
 
     def sources(self, build):
@@ -591,7 +581,7 @@ class SoundTouch(Dependence):
             env.Append(CPPPATH=[self.SOUNDTOUCH_INTERNAL_PATH])
 
             # Prevents circular import.
-            from features import Optimize
+            from .features import Optimize
 
             # If we do not want optimizations then disable them.
             optimize = (build.flags['optimize'] if 'optimize' in build.flags
@@ -649,6 +639,10 @@ class ProtoBuf(Dependence):
         if build.platform_is_windows:
             if not build.static_dependencies:
                 build.env.Append(CPPDEFINES='PROTOBUF_USE_DLLS')
+        # SCons is supposed to check this for us by calling 'exists' in build/protoc.py.
+        protoc_binary = build.env['PROTOC']
+        if build.env.WhereIs(protoc_binary) is None:
+            raise Exception("Can't locate '%s' the protobuf compiler." % protoc_binary)
         if not conf.CheckLib(libs):
             raise Exception(
                 "Could not find libprotobuf or its development headers.")
@@ -692,10 +686,14 @@ class Reverb(Dependence):
 
 class QtKeychain(Dependence):
     def configure(self, build, conf):
-        libs = ['qtkeychain']
-        if not conf.CheckLib(libs):
-            raise Exception(
-                "Could not find qtkeychain.")
+        lib = 'qt5keychain' if Qt.qt5_enabled(build) else 'qtkeychain'
+        if not conf.CheckLib(lib):
+            raise Exception("Could not find %s." % lib)
+
+class LAME(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib(['libmp3lame', 'libmp3lame-static']):
+            raise Exception("Could not find libmp3lame.")
 
 class MixxxCore(Feature):
 
@@ -889,8 +887,6 @@ class MixxxCore(Feature):
                    "sources/audiosourcestereoproxy.cpp",
                    "sources/metadatasourcetaglib.cpp",
                    "sources/soundsource.cpp",
-                   "sources/soundsourceplugin.cpp",
-                   "sources/soundsourcepluginlibrary.cpp",
                    "sources/soundsourceproviderregistry.cpp",
                    "sources/soundsourceproxy.cpp",
 
@@ -1228,9 +1224,7 @@ class MixxxCore(Feature):
                    "util/autohidpi.cpp",
                    "util/screensaver.cpp",
                    "util/indexrange.cpp",
-                   "util/desktophelper.cpp",
-
-                   '#res/mixxx.qrc'
+                   "util/desktophelper.cpp"
                    ]
 
         proto_args = {
@@ -1452,16 +1446,6 @@ class MixxxCore(Feature):
                 build.env.Append(LIBPATH=['/usr/local/lib'])
                 build.env.Append(CPPPATH=['/usr/local/include'])
 
-            # Non-standard libpaths for fink and certain (most?) darwin ports
-            if os.path.isdir('/sw/include'):
-                build.env.Append(LIBPATH=['/sw/lib'])
-                build.env.Append(CPPPATH=['/sw/include'])
-
-            # Non-standard libpaths for darwin ports
-            if os.path.isdir('/opt/local/include'):
-                build.env.Append(LIBPATH=['/opt/local/lib'])
-                build.env.Append(CPPPATH=['/opt/local/include'])
-
         elif build.platform_is_bsd:
             build.env.Append(CPPDEFINES='__BSD__')
             build.env.Append(CPPPATH=['/usr/include',
@@ -1520,7 +1504,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
-                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer]
+                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
@@ -1532,15 +1516,10 @@ class MixxxCore(Feature):
                                                 '/nodefaultlib:LIBCMTd.lib'])
 
                 build.env.Append(LINKFLAGS='/entry:mainCRTStartup')
-                # Declare that we are using the v120_xp toolset.
-                # http://blogs.msdn.com/b/vcblog/archive/2012/10/08/windows-xp-targeting-with-c-in-visual-studio-2012.aspx
-                build.env.Append(CPPDEFINES='_USING_V110_SDK71_')
-                # Makes the program not launch a shell first.
-                # Minimum platform version 5.01 for XP x86 and 5.02 for XP x64.
-                if build.machine_is_64bit:
-                    build.env.Append(LINKFLAGS='/subsystem:windows,5.02')
-                else:
-                    build.env.Append(LINKFLAGS='/subsystem:windows,5.01')
+                # Makes the program not launch a shell first. 6.01 declares the
+                # minimum version to be Windows 7.
+                # https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/subsystemversion-compiler-option
+                build.env.Append(LINKFLAGS='/subsystem:windows,6.01')
                 # Force MSVS to generate a manifest (MSVC2010)
                 build.env.Append(LINKFLAGS='/manifest')
             elif build.toolchain_is_gnu:

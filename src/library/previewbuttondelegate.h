@@ -5,6 +5,7 @@
 
 #include "library/tableitemdelegate.h"
 #include "track/track.h"
+#include "util/parented_ptr.h"
 
 class ControlProxy;
 
@@ -42,7 +43,7 @@ class PreviewButtonDelegate : public TableItemDelegate {
     QTableView* m_pTableView;
     ControlProxy* m_pPreviewDeckPlay;
     ControlProxy* m_pCueGotoAndPlay;
-    QPushButton* m_pButton;
+    parented_ptr<QPushButton> m_pButton;
     bool m_isOneCellInEditMode;
     QPersistentModelIndex m_currentEditedCellIndex;
     int m_column;

@@ -100,7 +100,7 @@ QVariant RhythmboxFeature::title() {
 }
 
 QIcon RhythmboxFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_rhythmbox.png");
+    return QIcon(":/images/library/ic_library_rhythmbox.svg");
 }
 
 TreeItemModel* RhythmboxFeature::getChildModel() {
