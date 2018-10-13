@@ -1092,8 +1092,27 @@ border: 0px;
   border-left: 0px;
 }
 
+#SamplerTextSmall {
+  qproperty-layoutAlignment: 'AlignLeft';
+  padding: 1px 1px 1px 1px;
+  border-top: 0px;
+  border-left: 2px;
+}
+
 #SamplerTitle {
   font-size: 16px/19px;
+  text-align: left;
+  text-transform: none;
+}
+
+#SamplerTitleSmall {
+  font-size: 12px;
+  text-align: left;
+  text-transform: none;
+}
+
+#SamplerTitleTiny {
+  font-size: 10px;
   text-align: left;
   text-transform: none;
 }
@@ -1117,8 +1136,20 @@ border: 0px;
   border-bottom: 0px;
 }
 
+#SamplerPlaySmall {
+  padding: 3px 1px 1px 3px;
+  border-top: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
+}
+
 #SamplerButtonGrid {
   border: 1px solid #585858;
+  border-top: 0px;
+  border-bottom: 0px;
+}
+
+#SmallSamplerButtonGrid {
   border-top: 0px;
   border-bottom: 0px;
 }

@@ -1,30 +1,72 @@
 <Template>
+
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
+    <Connection>
+      <ConfigKey>[Samplers],show_samplers</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
     <Children>
 
-      <Template src="skin:sampler.xml">
-        <SetVariable name="samplernum">1</SetVariable>
-      </Template>
+      <WidgetGroup>
+      <Layout>horizontal</Layout>
+        <Children>
 
-      <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+          <!-- Select between 1-4 big or orthers -->
+          <WidgetStack currentpage="[Skin],8_samplers">
+            <Children>
 
-      <Template src="skin:sampler.xml">
-        <SetVariable name="samplernum">2</SetVariable>
-      </Template>
+              <!--only 4 Sampler but big -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:samplers_unit_1234.xml"/>
+                </Children>
+              </WidgetGroup>
+              <!--/only 4 Sampler but big -->
 
-      <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+              <!--8 Sampler -->
+              <WidgetGroup trigger="[Skin],8_samplers" on_hide_select="0">
+                <Layout>horizontal</Layout>
+                <Children>
 
-      <Template src="skin:sampler.xml">
-        <SetVariable name="samplernum">3</SetVariable>
-      </Template>
+                  <!-- Select between big or small samplers -->
+                  <WidgetStack currentpage="[Skin],expand_samplers">
+                    <Children>
 
-      <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+                      <!--8 big Sampler -->
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Template src="skin:samplers_unit_1-8_big.xml"/>
+                        </Children>
+                      </WidgetGroup>
+                      <!--/8 big Sampler -->
 
-      <Template src="skin:sampler.xml">
-        <SetVariable name="samplernum">4</SetVariable>
-      </Template>
+                      <!--8 small Sampler -->
+                      <WidgetGroup trigger="[Skin],expand_samplers" on_hide_select="0">
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <Template src="skin:samplers_unit_1-8.xml"/>
+                        </Children>
+                      </WidgetGroup>
+                      <!--/8 Sampler -->
+
+                    </Children>
+                  </WidgetStack>
+                  <!-- / Select between big or small samplers -->
+
+                </Children>
+              </WidgetGroup>
+              <!--/8 Sampler -->
+
+            </Children>
+          </WidgetStack>
+          <!-- /Select between 1-4 big or orthers -->
+
+        </Children>
+      </WidgetGroup>
 
       <WidgetGroup>
         <Size>5f,1min</Size>
@@ -35,9 +77,5 @@
       </WidgetGroup>
 
     </Children>
-    <Connection>
-      <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>
