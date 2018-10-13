@@ -89,6 +89,25 @@ bool selectInXfce(const QString& path) {
 }
 #endif
 
+void selectViaCommand(const QString& path) {
+    QStringList arguments = sSelectInFileBrowserCommand.split(" ");
+
+    #ifdef Q_OS_WIN
+    // The template string contains the sorrounding ""
+    // Embedded quotes and slashed ar not allowed on Windows
+    arguments.last() = arguments.last().arg(
+            QDir::toNativeSeparators(path));
+    #else
+    // No escaping required because QProcess bypasses the shell
+    arguments.append(path);
+    #endif
+
+    QString program = arguments.takeFirst();
+    qDebug() << "Calling:" << program << arguments;
+    QProcess::startDetached(program, arguments);
+}
+
+
 } // anonymous namespace
 
 
@@ -130,21 +149,7 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
 #endif
             if (!sSelectInFileBrowserCommand.isEmpty()) {
                 // special command, that supports selecting the requested file
-                QStringList arguments = sSelectInFileBrowserCommand.split(" ");
-
-                #ifdef Q_OS_WIN
-                // The template string contains the sorrounding ""
-                // Embedded quotes and slashed ar not allowed on Windows
-                arguments.last() = arguments.last().arg(
-                        QDir::toNativeSeparators(path));
-                #else
-                // No escaping required because QProcess bypasses the shell
-                arguments.append(path);
-                #endif
-
-                QString program = arguments.takeFirst();
-                qDebug() << "Calling:" << program << arguments;
-                QProcess::startDetached(program, arguments);
+                selectViaCommand(path);
                 openedDirs.insert(dirPath);
                 continue;
             }
@@ -170,8 +175,8 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
         dirPath = dir.absolutePath();
         qDebug() << "opening:" << dirPath;
         if (!openedDirs.contains(dirPath)) {
-            openedDirs.insert(dirPath);
             QDesktopServices::openUrl(QUrl::fromLocalFile(dirPath));
+            openedDirs.insert(dirPath);
         }
     }
 }
