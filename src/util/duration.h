@@ -70,7 +70,17 @@ class DurationBase {
 
     // The standard way of formatting a floating-point duration in seconds.
     // Used for display of track duration, etc.
+    static QString formatTime(
+            double dSeconds,
+            Precision precision = Precision::SECONDS);
+    // Alternative format for duration based on seconds
     static QString formatSeconds(
+            double dSeconds,
+            Precision precision = Precision::SECONDS);
+    static QString formatKiloSeconds(
+            double dSeconds,
+            Precision precision = Precision::SECONDS);
+    static QString formatHectoSeconds(
             double dSeconds,
             Precision precision = Precision::SECONDS);
 
@@ -79,6 +89,8 @@ class DurationBase {
     static constexpr qint64 kNanosPerSecond  = kMicrosPerSecond * 1000;
     static constexpr qint64 kNanosPerMilli   = kNanosPerSecond / 1000;
     static constexpr qint64 kNanosPerMicro   = kNanosPerMilli / 1000;
+    static QChar kCentisecondSeparator;
+    static QChar kHectosecondSeparator;
 
   protected:
     explicit DurationBase(qint64 durationNanos)

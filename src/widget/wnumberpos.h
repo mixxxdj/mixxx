@@ -23,15 +23,18 @@ class WNumberPos : public WNumber {
     void slotSetTimeElapsed(double);
     void slotTimeRemainingUpdated(double);
     void slotSetDisplayMode(double);
+    void slotSetTimeFormat(double);
 
   private:
 
     TrackTime::DisplayMode m_displayMode;
+    TrackTime::DisplayFormat m_displayFormat;
 
     double m_dOldTimeElapsed;
     ControlProxy* m_pTimeElapsed;
     ControlProxy* m_pTimeRemaining;
     ControlProxy* m_pShowTrackTimeRemaining;
+    ControlProxy* m_pTimeFormat;
 };
 
 #endif

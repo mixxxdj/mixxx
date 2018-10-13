@@ -20,7 +20,14 @@ namespace TrackTime {
     enum class DisplayMode {
         Elapsed,
         Remaining,
-        ElapsedAndRemaining,
+        ElapsedAndRemaining
+    };
+
+    enum class DisplayFormat {
+        TRADITIONAL,
+        SECOND,
+        KILO_SECOND,
+        HECTO_SECOND
     };
 }
 
@@ -67,6 +74,8 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotRateRampingModeLinearButton(bool);
     void slotRateRampSensitivitySlider(int);
 
+    void slotTimeFormatChanged(double);
+
     void slotNumDecksChanged(double, bool initializing=false);
     void slotNumSamplersChanged(double, bool initializing=false);
 
@@ -85,6 +94,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
 
     UserSettingsPointer m_pConfig;
     ControlObject* m_pControlTrackTimeDisplay;
+    ControlObject* m_pControlTrackTimeFormat;
     ControlProxy* m_pNumDecks;
     ControlProxy* m_pNumSamplers;
     QList<ControlProxy*> m_cueControls;

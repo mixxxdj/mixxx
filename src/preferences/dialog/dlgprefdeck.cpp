@@ -19,6 +19,7 @@
 #include "control/controlobject.h"
 #include "mixxx.h"
 #include "defs_urls.h"
+#include "util/duration.h"
 
 namespace {
 constexpr int kDefaultRateRangePercent = 8;
@@ -105,6 +106,32 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     }
     connect(buttonGroupTrackTime, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
+
+    // display time format
+
+    m_pControlTrackTimeFormat = new ControlObject(
+            ConfigKey("[Controls]", "TimeFormat"));
+    connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
+            this, SLOT(slotTimeFormatChanged(double)));
+
+    QLocale locale;
+    // Track Display model
+    comboBoxTimeFormat->clear();
+    comboBoxTimeFormat->addItem(tr("hh:mm:ss.zzz - Traditional"),
+                                static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL));
+    comboBoxTimeFormat->addItem(tr("s%1zz - Seconds").arg(mixxx::DurationBase::kCentisecondSeparator),
+                                static_cast<int>(TrackTime::DisplayFormat::SECOND));
+    comboBoxTimeFormat->addItem(tr("k.sss%1zz - Kiloseconds").arg(mixxx::DurationBase::kCentisecondSeparator),
+                                static_cast<int>(TrackTime::DisplayFormat::KILO_SECOND));
+    comboBoxTimeFormat->addItem(tr("hs.ss%1zz - Hectoseconds").arg(mixxx::DurationBase::kCentisecondSeparator),
+                                static_cast<int>(TrackTime::DisplayFormat::HECTO_SECOND));
+    double time_format = static_cast<double>(
+                                       m_pConfig->getValue(
+                                           ConfigKey("[Controls]", "TimeFormat"),
+                                           static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL)));
+    m_pControlTrackTimeFormat->set(time_format);
+    comboBoxTimeFormat->setCurrentIndex(
+                comboBoxTimeFormat->findData(time_format));
 
     // Override Playing Track on Track Load
     // The check box reflects the opposite of the config value
@@ -495,10 +522,22 @@ void DlgPrefDeck::slotRateRampingModeLinearButton(bool checked) {
     }
 }
 
+void DlgPrefDeck::slotTimeFormatChanged(double v) {
+    int i = static_cast<int>(v);
+    m_pConfig->set(ConfigKey("[Controls]","TimeFormat"), ConfigValue(v));
+    comboBoxTimeFormat->setCurrentIndex(
+                comboBoxTimeFormat->findData(i));
+}
+
 void DlgPrefDeck::slotApply() {
     double timeDisplay = static_cast<double>(m_timeDisplayMode);
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(timeDisplay));
     m_pControlTrackTimeDisplay->set(timeDisplay);
+
+    // time format
+    double timeFormat = comboBoxTimeFormat->itemData(comboBoxTimeFormat->currentIndex()).toDouble();
+    m_pControlTrackTimeFormat->set(timeFormat);
+    m_pConfig->setValue(ConfigKey("[Controls]", "TimeFormat"), timeFormat);
 
     // Set cue mode for every deck
     for (ControlProxy* pControl : m_cueControls) {
