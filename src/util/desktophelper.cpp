@@ -104,35 +104,32 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
         QFileInfo fileInfo(path);
         dirPath = fileInfo.absolutePath();
 
+        if (openedDirs.contains(dirPath)) {
+            // Folder already opened and we cannot select two files in the same folder
+            continue;
+        }
+
+        if (fileInfo.exists()) {
+            // Tryto select the file
 #ifdef Q_OS_LINUX
-        if (sSelectInFileBrowserCommand == kSelectInFreedesktop &&
-                fileInfo.exists()) {
-            if (!openedDirs.contains(dirPath)) {
+            if (sSelectInFileBrowserCommand == kSelectInFreedesktop) {
                 if (selectInFreedesktop(path)) {
                     openedDirs.insert(dirPath);
                     continue;
                 } else {
                     qDebug() << "Select File via Freedesktop DBus interface failed";
                 }
-            }
-        } else if (sSelectInFileBrowserCommand == kSelectInXfce &&
-                fileInfo.exists()) {
-            if (!openedDirs.contains(dirPath)) {
+            } else if (sSelectInFileBrowserCommand == kSelectInXfce) {
                 if (selectInXfce(path)) {
                     openedDirs.insert(dirPath);
                     continue;
                 } else {
                     qDebug() << "Select file via Xfce DBus interface failed";
                 }
-            }
-        } else
+            } else
 #endif
-        if (!sSelectInFileBrowserCommand.isEmpty() &&
-                fileInfo.exists()) {
-            // special command, that supports selecting the requested file
-            if (!openedDirs.contains(dirPath)) {
-                openedDirs.insert(dirPath);
-
+            if (!sSelectInFileBrowserCommand.isEmpty()) {
+                // special command, that supports selecting the requested file
                 QStringList arguments = sSelectInFileBrowserCommand.split(" ");
 
                 #ifdef Q_OS_WIN
@@ -148,9 +145,10 @@ void DesktopHelper::openInFileBrowser(const QStringList& paths) {
                 QString program = arguments.takeFirst();
                 qDebug() << "Calling:" << program << arguments;
                 QProcess::startDetached(program, arguments);
+                openedDirs.insert(dirPath);
                 continue;
             }
-        } 
+        }
 
         // We cannot select, just open the parent folder
         QDir dir = dirPath;
