@@ -18,14 +18,38 @@ const mixxx::Logger kLogger("WSearchLineEdit");
 const QColor kDefaultForegroundColor = QColor(0, 0, 0);
 const QColor kDefaultBackgroundColor = QColor(255, 255, 255);
 
-// Delay for triggering a search while typing.
-const int kDebouncingTimeoutMillis = 300;
-
 const QString kEmptySearch = "";
 
 const QString kDisabledText = "- - -";
 
+int verifyDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
+    VERIFY_OR_DEBUG_ASSERT(debouncingTimeoutMillis >= WSearchLineEdit::kMinDebouncingTimeoutMillis) {
+        debouncingTimeoutMillis = WSearchLineEdit::kMinDebouncingTimeoutMillis;
+    }
+    VERIFY_OR_DEBUG_ASSERT(debouncingTimeoutMillis <= WSearchLineEdit::kMaxDebouncingTimeoutMillis) {
+        debouncingTimeoutMillis = WSearchLineEdit::kMaxDebouncingTimeoutMillis;
+    }
+    return debouncingTimeoutMillis;
+}
+
 } // namespace
+
+//static
+constexpr int WSearchLineEdit::kMinDebouncingTimeoutMillis;
+
+//static
+constexpr int WSearchLineEdit::kDefaultDebouncingTimeoutMillis;
+
+//static
+constexpr int WSearchLineEdit::kMaxDebouncingTimeoutMillis;
+
+//static
+int WSearchLineEdit::s_debouncingTimeoutMillis = kDefaultDebouncingTimeoutMillis;
+
+//static
+void WSearchLineEdit::setDebouncingTimeoutMillis(int debouncingTimeoutMillis) {
+    s_debouncingTimeoutMillis = verifyDebouncingTimeoutMillis(debouncingTimeoutMillis);
+}
 
 WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     : QLineEdit(pParent),
@@ -253,7 +277,7 @@ void WSearchLineEdit::updateText(const QString& text) {
     if (isEnabled() && (m_state == State::Active)) {
         updateClearButton(text);
         DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
-        m_debouncingTimer.start(kDebouncingTimeoutMillis);
+        m_debouncingTimer.start(s_debouncingTimeoutMillis);
     } else {
         updateClearButton(QString());
         m_debouncingTimer.stop();
