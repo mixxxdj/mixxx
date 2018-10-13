@@ -1,11 +1,9 @@
 #include <benchmark/benchmark.h>
 
 #include "mixxxtest.h"
-#include "util/console.h"
 #include "errordialoghandler.h"
 
 int main(int argc, char **argv) {
-    Console console;
     // We never want to popup error dialogs when running tests.
     ErrorDialogHandler::setEnabled(false);
 

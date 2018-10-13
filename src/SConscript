@@ -137,6 +137,14 @@ def define_test_targets(default=False):
                 # For SHGetValueA in Google's benchmark library.
                 test_env.Append(LIBS=['Shlwapi'])
 
+                # We want a terminal for tests.
+                if build.toolchain_is_msvs:
+                    test_env['LINKFLAGS'].remove('/subsystem:windows,6.01')
+                    test_env['LINKFLAGS'].append('/subsystem:console,6.01')
+                elif build.toolchain_is_gnu:
+                    test_env['LINKFLAGS'].remove('--subsystem,windows')
+                    test_env['LINKFLAGS'].append('--subsystem,console')
+
                 # Currently both executables are built with /subsystem:windows
                 # and the console is attached manually
                 test_bin = test_env.Program(
