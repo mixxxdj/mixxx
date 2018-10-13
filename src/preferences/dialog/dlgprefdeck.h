@@ -20,13 +20,14 @@ namespace TrackTime {
     enum class DisplayMode {
         Elapsed,
         Remaining,
-        ElapsedAndRemaining,
+        ElapsedAndRemaining
     };
+
     enum class DisplayFormat {
         TRADITIONAL,
         SECOND,
         KILO_SECOND,
-        HECTO_SECOND,
+        HECTO_SECOND
     };
 }
 

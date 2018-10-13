@@ -3,7 +3,7 @@
 #include <QtGlobal>
 #include <QStringBuilder>
 #include <QTime>
-#include <math.h>
+
 #include "util/assert.h"
 #include "util/math.h"
 
@@ -18,8 +18,8 @@ static const qint64 kSecondsPerDay = 24 * kSecondsPerHour;
 } // namespace
 
 // static
-QChar DurationBase::kCentisecondSeperator = QChar(0x2009);
-QChar DurationBase::kHectosecondSeperator = QChar(0x231E);
+QChar DurationBase::kCentisecondSeparator = QChar(0x2009);
+QChar DurationBase::kHectosecondSeparator = QChar(0x231E);
 
 // static
 QString DurationBase::formatTime(double dSeconds, Precision precision) {
@@ -86,7 +86,7 @@ QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
     QString durationString =
             QString("%1.%2").arg(kilos, 0, 10).arg(seconds, 3, 'f', 0, QLatin1Char('0'));
     if (Precision::SECONDS != precision) {
-            durationString += kCentisecondSeperator % QString::number(subs, 'f', 3).right(3);
+            durationString += kCentisecondSeparator % QString::number(subs, 'f', 3).right(3);
     }
 
     // The format string gives us milliseconds but we want
@@ -111,10 +111,11 @@ QString DurationBase::formatHectoSeconds(double dSeconds, Precision precision) {
     double subs = fmod(dSeconds, 1);
 
     QString durationString =
-            QString("%1%2%3").arg(hecto, 0, 10).arg(kHectosecondSeperator).arg(seconds, 2, 'f', 0, QLatin1Char('0'));
+            QString("%1%2%3").arg(hecto, 0, 10).arg(kHectosecondSeparator).arg(seconds, 2, 'f', 0, QLatin1Char('0'));
     if (Precision::SECONDS != precision) {
-            durationString += kCentisecondSeperator % QString::number(subs, 'f', 3).right(3);
+            durationString += kCentisecondSeparator % QString::number(subs, 'f', 3).right(3);
     }
+
 
     // The format string gives us milliseconds but we want
     // centiseconds. Slice one character off.
