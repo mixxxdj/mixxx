@@ -12,6 +12,8 @@
       <attribute config_key="[Master],num_samplers">64</attribute>
       <attribute config_key="[Master],num_preview_decks">1</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
+      <attribute persist="true" config_key="[Library],show_icon_text">1</attribute>
+      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
 
       <!--Skin settings-->
       <attribute persist="true" config_key="[Deere],show_parallel_waveforms">1</attribute>
@@ -65,10 +67,12 @@
     </attributes>
   </manifest>
 
+  <LibraryIconsColor>#006596</LibraryIconsColor>
+
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:../Deere/style.qss"/>
 
-  <Size>1024me,550me</Size>
+  <Size>1008me,550me</Size>
   <Layout>horizontal</Layout>
 
   <Children>

@@ -17,7 +17,6 @@
     <MaximumSize><Variable name="MaximumSize"/></MaximumSize>
     <SizePolicy><Variable name="SizePolicy"/></SizePolicy>
     <NumberStates>2</NumberStates>
-    <RightClickIsPushButton>true</RightClickIsPushButton>
     <State>
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>

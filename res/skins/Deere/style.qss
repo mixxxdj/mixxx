@@ -34,6 +34,7 @@
 #DeckTextRow {
   border-top: 0px solid #222;
   border-bottom: 0px solid #222;
+  padding-left: 3px;
 }
 
 #UpperTextRow {
@@ -66,7 +67,7 @@
   border-top: 1px solid #222;
   background-color: transparent;
   margin: 0;
-  padding: 0 3px 0 0;
+  padding: 0 3px 0 3px;
 }
 
 #ControlsRow {
@@ -82,17 +83,13 @@
 /* Rounded corners to split things up */
 
 #Deck1, #Deck3 {
-  border-bottom-right-radius:5px;
-  border-top-right-radius:5px;
-  border-width: 0px 1.5px 3px 3px;
+  border-width: 0px 2.5px 5px 0px;
   border-style: solid;
   border-color: #222;
 }
 
 #Deck2, #Deck4 {
-  border-bottom-left-radius:5px;
-  border-top-left-radius:5px;
-  border-width: 0px 3px 3px 1.5px;
+  border-width: 0px 0px 5px 2.5px;
   border-style: solid;
   border-color: #222;
 }
@@ -130,10 +127,6 @@ TEST1 {
   qproperty-layoutAlignment: 'AlignRight';
 }
 
-#AlignCenter {
-  qproperty-layoutAlignment: 'AlignCenter';
-}
-
 #SampleDecksContainer {
   border: 0px;
 }
@@ -168,6 +161,39 @@ TEST1 {
  ** LIBRARY *********************************************************************
  *******************************************************************************/
 
+/* Library preview deck */
+#PreviewDeck {
+  background-color: #333333;
+  margin: 0px 0px 4px 0px;
+}
+
+#PreviewDeckTextRow WLabel {
+  padding: 2px;
+  color: #d2d2d2;
+  font-size: 12px/14px;
+  text-transform: none;
+}
+
+#PreviewDeckVisualRow {
+  qproperty-layoutSpacing: 2;
+  border-top: 1px solid #1A1A1A;
+}
+
+#PreviewDeckEjectButton[value="0"]:!hover {
+  background: none;
+  border: none;
+}
+
+#PreviewDeckVUContainer {
+  border: 1px solid #333;
+  border-left: 0px;
+  padding: 0px;
+  margin: 0px;
+  qproperty-layoutSpacing: 0;
+}
+
+/* /Library preview deck */
+
 /* library table */
 QTableView, QTreeView {
   color: #d2d2d2;
@@ -193,10 +219,6 @@ QTableView::item:selected:!active,
 QTreeView::item:selected:!active {
   color: #d2d2d2;
   background-color: #0d4866;
-}
-
-QTableView:focus, QTreeView:focus {
-  border: 1px solid #FF6600;
 }
 
 /* Colors aren't applied to selected items, define them manually */
@@ -275,6 +297,7 @@ WBaseLibrary QLabel {
   max-height: 20px;
   margin-left: 7px;
   text-transform: none;
+  font: 12px;
 }
 
 /* Revert the above hack for the time in Recording feature */
@@ -283,6 +306,7 @@ WBaseLibrary QLabel {
   max-height: 120px;
   margin-left: 7px;
   text-transform: none;
+  font: 12px;
 }
 
 #LibraryCoverArtSplitter QTabWidget {
@@ -492,29 +516,10 @@ WSearchLineEdit:focus {
   selection-background-color: #d2d2d2;
 }
 
-/* library preview deck */
-#PreviewDeckContainer {
-  margin: 4px 0px 0px 0px;
-  background-color: #333333;
-  border: 1px solid #1A1A1A;
-  qproperty-layoutSpacing: 2;
-}
-
-#PreviewDeckTextRow WLabel {
-  padding: 2px;
-  color: #d2d2d2;
-  font-size: 12px/14px;
-  text-transform: none;
-}
-
-#PreviewDeckVisualRow {
-  padding: 2px;
-  border-top: 1px solid #1A1A1A;
-}
-
-#PreviewDeckEjectButton[value="0"]:!hover {
+/* Buttons in searchbox */
+WSearchLineEdit QToolButton {
+  margin-left: 2px;
   background: none;
-  border: none;
 }
 
 /* Top margin of feature pane */
@@ -726,7 +731,6 @@ QScrollArea {
   background-color: #222222;
 }
 
-
 /*******************************************************************************
  ** END LIBRARY *****************************************************************
  *******************************************************************************/
@@ -795,11 +799,8 @@ QScrollArea {
 
 WWidget, QLabel {
   font-family: "Open Sans";
-  text-transform: uppercase;
-}
-
-WWidget {
   font-size: 8px;
+  text-transform: uppercase;
 }
 
 /* Start spacing for Deck overview row (small waveform, option grid) */
@@ -860,9 +861,8 @@ WWidget {
   padding: 0px;
 }
 
-/* Use the same style for beatsize spinboxes and for AutoDJ transition time */ 
 WBeatSpinBox,
-#DlgAutoDJ QSpinBox {
+WBaseLibrary QSpinBox {
   color: #c1cabe;
   background-color: #1f1e1e;
   border: 1px solid #444342;
@@ -872,12 +872,12 @@ WBeatSpinBox,
 }
 
   WBeatSpinBox:hover,
-  #DlgAutoDJ QSpinBox:hover {
+  WBaseLibrary QSpinBox:hover {
     border: 1px ridge #015d8d;
   }
 
   WBeatSpinBox::down-button,
-  #DlgAutoDJ QSpinBox::down-button {
+  WBaseLibrary QSpinBox::down-button {
     subcontrol-origin: border;
     subcontrol-position: bottom right; /* position at the top right corner */
     padding-right: 4px;
@@ -886,19 +886,19 @@ WBeatSpinBox,
   }
 
   WBeatSpinBox::down-arrow,
-  #DlgAutoDJ QSpinBox::down-arrow {
+  WBaseLibrary QSpinBox::down-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_down_selector.svg);
   }
 
   WBeatSpinBox::down-arrow:hover,
-  #DlgAutoDJ QSpinBox::down-arrow:hover {
+  WBaseLibrary QSpinBox::down-arrow:hover {
     image: url(skin:/icon/ic_chevron_down_selector_hover.svg);
   }
 
   WBeatSpinBox::up-button,
-  #DlgAutoDJ QSpinBox::up-button {
+  WBaseLibrary QSpinBox::up-button {
     subcontrol-origin: border;
     subcontrol-position: top right; /* position at the top right corner */
     padding-right: 4px;
@@ -907,14 +907,14 @@ WBeatSpinBox,
   }
 
   WBeatSpinBox::up-arrow,
-  #DlgAutoDJ QSpinBox::up-arrow {
+  WBaseLibrary QSpinBox::up-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_up_selector.svg);
   }
 
   WBeatSpinBox::up-arrow:hover,
-  #DlgAutoDJ QSpinBox::up-arrow:hover {
+  WBaseLibrary QSpinBox::up-arrow:hover {
     image: url(skin:/icon/ic_chevron_up_selector_hover.svg);
   }
 
@@ -979,7 +979,7 @@ WBeatSpinBox,
 #BpmEditRowExpanded:hover, #KeyEditRowExpanded:hover,
 #PositionGutter:hover, #StarratingGutter:hover {
   /* emphasize editable widgets on hover */
-  border: 1px solid #0080BE;
+  border: 1px solid #FF6600;
   background-color: rgba(255, 102, 0, 128);
 }
 #BpmEditRowCollapsed, #KeyEditRowCollapsed {
@@ -990,7 +990,7 @@ WBeatSpinBox,
 
 #BpmEditRowExpanded, #KeyEditRowExpanded {
   /* emphasize active widget */
-  border: 1px solid #006596;
+  border: 1px solid #FF6600;
   background: rgba(255, 102, 0, 64);
   color: #D6D6D6;
 }
@@ -1152,7 +1152,7 @@ WEffectSelector {
   }
 
   WEffectSelector::item:selected {
-    background-color: #08080;
+    background-color: #080808;
   }
 
   /* currently loaded effect */
@@ -1173,15 +1173,6 @@ WEffectSelector {
   border: none;
   qproperty-alignment: 'AlignHCenter';
   font: 10px;
-  margin-top: -2px;
-}
-
-#SmallKnobLabel {
-  background-color: none;
-  border: none;
-  qproperty-alignment: 'AlignHCenter';
-  font: 9px;
-  margin-top: -2px;
 }
 
 #EffectUnitNameRow {
@@ -1264,7 +1255,7 @@ WNumberRate {
 #Mixer {
   qproperty-layoutAlignment: 'AlignTop';
   background-color: #333;
-  margin: 0px 1.5px 3px 1.5px;
+  margin: 0px 2.5px 5px 2.5px;
   padding: 0px 0px 3px 0px;
 }
 
@@ -1392,7 +1383,7 @@ WStarRating {
   background-color: #333333;
   qproperty-layoutSpacing: 3;
   padding-left: 2px;
-  border-bottom: 2px solid #222222;
+  border-bottom: 4px solid #222222;
 }
 
 #MicLabelContainer,
@@ -1453,7 +1444,7 @@ WStarRating {
 
 #EffectUnitsRow {
   border: 1px solid #222222;
-  border-width: 0px 0px 3px 0px;
+  border-width: 0px 0px 5px 0px;
 }
 
 #EffectUnitNoParameters {
@@ -1461,7 +1452,7 @@ WStarRating {
 }
 
 #EffectUnitEffectsNoParameters {
-  qproperty-layoutSpacing: 30;
+  qproperty-layoutSpacing: 28;
 }
 
 #EffectUnitEffects {
@@ -1478,7 +1469,7 @@ WStarRating {
 
 #EffectUnitControls {
   padding: 2px;
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   qproperty-layoutSpacing: 2;
 }
 
@@ -1529,17 +1520,19 @@ WWidgetGroup {
  ** Buttons  *******************************************************************
  *******************************************************************************/
 
-WPushButton, QToolButton {
+WPushButton, /* lib-redesign: style QToolButton as well */
+QToolButton {
     color: #D2D2D2;
     background-color: #4B4B4B;
-    border: 0px solid #4B4B4B;
+    border: 1px solid #4B4B4B;
     border-radius: 2px;
     outline: none;
     font-size: 12px;
     font-weight: bold;
 }
 
-WPushButton:hover, QToolButton:hover {
+WPushButton:hover,
+QToolButton:hover {
     color: #D2D2D2;
     background-color: #5F5F5F;
     border: 0px solid #5F5F5F;
@@ -1603,6 +1596,24 @@ WPushButton[value="2"]:hover {
 WRecordingDuration {
   font-weight: bold;
 }
+
+/* The effect unit mix mode button toggles between
+two different modes that are not "on" or "off", so
+do not highlight either state. */
+#EffectUnitMixModeButton {
+  margin: 1px 4px;
+  border-radius: 2px;
+}
+
+#EffectUnitMixModeButton[value="0"]:hover,
+#EffectUnitMixModeButton[value="1"]:hover {
+    background-color: #5F5F5F;
+}
+
+#EffectUnitMixModeButton[value="1"] {
+    background-color: #4B4B4B;
+}
+
 
 /* Special case "orientation" controls
   0 -- left

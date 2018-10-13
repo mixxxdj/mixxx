@@ -12,6 +12,8 @@
       <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute config_key="[Master],num_preview_decks">1</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
+      <attribute persist="true" config_key="[Library],show_icon_text">1</attribute>
+      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
 
       <!--Skin settings-->
       <attribute persist="true" config_key="[Deere],show_parallel_waveforms">1</attribute>
@@ -39,7 +41,6 @@
 
       <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
       <attribute persist="true" config_key="[Master],show_superknobs">0</attribute>
-      <attribute persist="true" config_key="[Library],show_icon_text">1</attribute>
 
       <!--Disable hidden effect routing Buttons-->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
@@ -102,9 +103,9 @@
     <SetVariable name="SquareButtonMaximumSize">22,22</SetVariable>
     <SetVariable name="SquareButtonSizePolicy">f,f</SetVariable>
 
-    <SetVariable name="FXAssignmentButtonMinimumSize">26,22</SetVariable>
+    <SetVariable name="FXAssignmentButtonMinimumSize">26,18</SetVariable>
     <SetVariable name="FXAssignmentButtonMaximumSize">26,22</SetVariable>
-    <SetVariable name="FXAssignmentButtonSizePolicy">f,f</SetVariable>
+    <SetVariable name="FXAssignmentButtonSizePolicy">f,me</SetVariable>
 
     <SetVariable name="WideButtonMinimumSize">40,22</SetVariable>
     <SetVariable name="WideButtonMaximumSize">40,22</SetVariable>
@@ -211,7 +212,6 @@
             <WidgetGroup><!-- Parallel Waveforms -->
               <ObjectName>Waveforms</ObjectName>
               <Layout>vertical</Layout>
-              <Size>-1me,4min</Size>
               <Connection>
                 <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
                 <BindProperty>visible</BindProperty>
