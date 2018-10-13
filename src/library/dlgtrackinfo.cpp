@@ -387,8 +387,10 @@ void DlgTrackInfo::saveTrack() {
         QTableWidgetItem* colorItem = cueTable->item(row, 3);
         QTableWidgetItem* labelItem = cueTable->item(row, 4);
 
-        if (!rowItem || !hotcueItem || !colorItem|| !labelItem)
+        VERIFY_OR_DEBUG_ASSERT(!rowItem || !hotcueItem || !colorItem || !labelItem) {
+            qWarning() << "unable to retrieve cells from cueTable row";
             continue;
+        }
 
         int oldRow = rowItem->data(Qt::DisplayRole).toInt();
         CuePointer pCue(m_cueMap.value(oldRow, CuePointer()));
