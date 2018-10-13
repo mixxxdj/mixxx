@@ -230,8 +230,8 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
                 this, SLOT(slotWaveformSummaryUpdated()));
         connect(pNewTrack.get(), SIGNAL(analyzerProgress(int)),
                 this, SLOT(slotAnalyzerProgress(int)));
-        connect(pNewTrack.get(), SIGNAL(cuesUpdated(void)),
-                this, SLOT(onTrackCueChange(void)));
+        connect(pNewTrack.get(), SIGNAL(cuesUpdated()),
+                this, SLOT(receiveCuesUpdated()));
 
         slotAnalyzerProgress(pNewTrack->getAnalyzerProgress());
     } else {
@@ -249,8 +249,8 @@ void WOverview::onEndOfTrackChange(double v) {
 
 void WOverview::onMarkChanged(double /*v*/) {
     //qDebug() << "WOverview::onMarkChanged()" << v;
-    onTrackCueChange();
-    //update();
+    updateCues(m_pCurrentTrack->getCuePoints());
+    update();
 }
 
 void WOverview::onMarkRangeChange(double /*v*/) {
@@ -259,8 +259,7 @@ void WOverview::onMarkRangeChange(double /*v*/) {
 }
 
 // currently only updates the mark color but it could be easily extended.
-void WOverview::onTrackCueChange(void) {
-    const QList<CuePointer> loadedCues = m_pCurrentTrack->getCuePoints();
+void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
 
     for (CuePointer currentCue: loadedCues) {
         const WaveformMarkPointer currentMark = m_marks.getHotCueMark(currentCue->getHotCue());
@@ -276,7 +275,12 @@ void WOverview::onTrackCueChange(void) {
             }
         }
     }
-    update();
+}
+
+// connecting the tracks cuesUpdated and onMarkChanged is not possible
+// due to the incompatible signatures. This is a "wrapper" workaround
+void WOverview::receiveCuesUpdated() {
+    onMarkChanged(0);
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {

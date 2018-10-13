@@ -84,7 +84,7 @@ class WOverview : public WWidget {
 
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
-    void onTrackCueChange(void);
+    void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
     void slotAnalyzerProgress(int progress);
@@ -99,6 +99,8 @@ class WOverview : public WWidget {
     inline double positionToValue(int position) const {
         return (static_cast<double>(position) + m_b) / m_a;
     }
+
+    void updateCues(const QList<CuePointer> &loadedCues);
 
     const QString m_group;
     UserSettingsPointer m_pConfig;
