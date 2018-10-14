@@ -299,6 +299,9 @@ void CueControl::trackCuesUpdated() {
             } else {
                 // If the old hotcue is the same, then we only need to update
                 pControl->setPosition(pCue->getPosition());
+                // NOTE(Swiftb0y): I don't know if this is the smartest location to manage
+                // please suggest whether this should rather go somewhere else.
+                pControl->setColor(pCue->getColor());
             }
             // Add the hotcue to the list of active hotcues
             active_hotcues.insert(hotcue);
@@ -1018,6 +1021,14 @@ HotcueControl::HotcueControl(QString group, int i)
     m_hotcueEnabled = new ControlObject(keyForControl(i, "enabled"));
     m_hotcueEnabled->setReadOnly();
 
+    // NOTE(Swiftb0y): since ControlObjects only deal with double values,
+    // the Color is stored as a QRgb (which is just a unsigned int
+    // representation of the color (AARRGGBB)
+    m_hotcueColor = new ControlObject(keyForControl(i, "color"));
+    connect(m_hotcueColor, SIGNAL(valueChanged(double)),
+            this, SLOT(slotHotcueColorChanged(double)),
+            Qt::DirectConnection);
+
     m_hotcueSet = new ControlPushButton(keyForControl(i, "set"));
     connect(m_hotcueSet, SIGNAL(valueChanged(double)),
             this, SLOT(slotHotcueSet(double)),
@@ -1057,6 +1068,7 @@ HotcueControl::HotcueControl(QString group, int i)
 HotcueControl::~HotcueControl() {
     delete m_hotcuePosition;
     delete m_hotcueEnabled;
+    delete m_hotcueColor;
     delete m_hotcueSet;
     delete m_hotcueGoto;
     delete m_hotcueGotoAndPlay;
@@ -1099,6 +1111,11 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
     emit(hotcuePositionChanged(this, newPosition));
 }
 
+void HotcueControl::slotHotcueColorChanged(double newColor) {
+    m_pCue->setColor(QColor(static_cast<QRgb>(newColor)));
+    emit(hotcueColorChanged(this, newColor));
+}
+
 double HotcueControl::getPosition() const {
     return m_hotcuePosition->get();
 }
@@ -1109,7 +1126,16 @@ void HotcueControl::setCue(CuePointer pCue) {
     // because we have a null check for valid data else where in the code
     m_pCue = pCue;
 }
+QColor HotcueControl::getColor() const {
+    // QRgb is just an unsigned int  representation of the
+    // color components (AARRGGBB) so conversion
+    // from double shouldn't be an issue
+    return QColor::fromRgb(static_cast<QRgb>(m_hotcueColor->get()));
+}
 
+void HotcueControl::setColor(QColor newColor) {
+    m_hotcueColor->set(static_cast<double>(newColor.rgb()));
+}
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
     // in the code
