@@ -27,12 +27,13 @@ QString getSelectInFileBrowserCommand() {
 #elif defined(Q_OS_LINUX)
     QProcess proc;
     QString output;
+    // if xdg-mime is not installed, it uses the else branch below.
     proc.start("xdg-mime",
             QStringList() << "query" << "default" << "inode/directory");
     proc.waitForFinished();
     output = proc.readLine().simplified();
     if (output == "kfmclient_dir.desktop") {
-        return "konqueror --select %1";
+        return "konqueror --select";
     } else if (output == "Thunar.desktop" ||
             output == "Thunar-folder-handler.desktop") {
         return kSelectInXfce; // Thunar has no --select option
@@ -94,7 +95,7 @@ void selectViaCommand(const QString& path) {
 
     #ifdef Q_OS_WIN
     // The template string contains the sorrounding ""
-    // Embedded quotes and slashed ar not allowed on Windows
+    // Embedded quotes and slashed are not allowed on Windows
     arguments.last() = arguments.last().arg(
             QDir::toNativeSeparators(path));
     #else
