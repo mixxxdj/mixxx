@@ -81,8 +81,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool setWidgetTypeFromHandle(int handleIndex);
     WaveformWidgetType::Type getType() const { return m_type;}
 
-    void setDefaultZoom(int zoom);
-    int getDefaultZoom() const { return m_defaultZoom;}
+    void setDefaultZoom(double zoom);
+    double getDefaultZoom() const { return m_defaultZoom;}
 
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
@@ -151,7 +151,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_skipRender;
     int m_frameRate;
     int m_endOfTrackWarningTime;
-    int m_defaultZoom;
+    double m_defaultZoom;
     bool m_zoomSync;
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
