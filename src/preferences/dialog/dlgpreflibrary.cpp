@@ -12,8 +12,6 @@
 #include "library/dlgtrackmetadataexport.h"
 #include "sources/soundsourceproxy.h"
 
-#define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
-
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
         UserSettingsPointer pConfig,
