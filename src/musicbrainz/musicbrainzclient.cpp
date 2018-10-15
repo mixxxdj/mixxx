@@ -64,7 +64,7 @@ void MusicBrainzClient::cancelAll() {
 }
 
 namespace {
-QString decodeText(const QByteArray& data, const QString& codecName) {
+QString decodeText(const QByteArray& data, const QStringRef codecName) {
     QTextStream textStream(data);
     if (!codecName.isEmpty()) {
         textStream.setCodec(QTextCodec::codecForName(codecName.toUtf8()));
@@ -101,7 +101,7 @@ void MusicBrainzClient::requestFinished() {
     const QByteArray body(reply->readAll());
 
     QXmlStreamReader reader(body);
-    QString codecName;
+    QStringRef codecName;
     while (!reader.atEnd()) {
         switch (reader.readNext()) {
         case QXmlStreamReader::Invalid:

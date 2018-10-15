@@ -152,27 +152,27 @@ QString AudioPath::getStringFromType(AudioPathType type) {
     case INVALID:
         // this shouldn't happen but g++ complains if I don't
         // handle this -- bkgood
-        return QString::fromLatin1("Invalid");
+        return QStringLiteral("Invalid");
     case MASTER:
-        return QString::fromLatin1("Master");
+        return QStringLiteral("Master");
     case BOOTH:
-        return QString::fromLatin1("Booth");
+        return QStringLiteral("Booth");
     case HEADPHONES:
-        return QString::fromLatin1("Headphones");
+        return QStringLiteral("Headphones");
     case BUS:
-        return QString::fromLatin1("Bus");
+        return QStringLiteral("Bus");
     case DECK:
-        return QString::fromLatin1("Deck");
+        return QStringLiteral("Deck");
     case RECORD_BROADCAST:
-        return QString::fromLatin1("Record/Broadcast");
+        return QStringLiteral("Record/Broadcast");
     case VINYLCONTROL:
-        return QString::fromLatin1("Vinyl Control");
+        return QStringLiteral("Vinyl Control");
     case MICROPHONE:
-        return QString::fromLatin1("Microphone");
+        return QStringLiteral("Microphone");
     case AUXILIARY:
-        return QString::fromLatin1("Auxiliary");
+        return QStringLiteral("Auxiliary");
     }
-    return QString::fromLatin1("Unknown path type %1").arg(type);
+    return QStringLiteral("Unknown path type %1").arg(type);
 }
 
 /**
