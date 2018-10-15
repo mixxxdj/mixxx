@@ -712,13 +712,6 @@ class Verbose(Feature):
             build.env['LDMODULECOMSTR'] = '[LD] $TARGET'
             build.env['LINKCOMSTR'] = '[LD] $TARGET'
 
-            build.env['QT4_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
-            build.env['QT4_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
-            build.env['QT4_QRCCOMSTR'] = '[QRC] $SOURCE'
-            build.env['QT4_UICCOMSTR'] = '[UIC4] $SOURCE'
-            build.env['QT4_MOCFROMHCOMSTR'] = '[MOC] $SOURCE'
-            build.env['QT4_MOCFROMCXXCOMSTR'] = '[MOC] $SOURCE'
-
             build.env['QT5_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
             build.env['QT5_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
             build.env['QT5_QRCCOMSTR'] = '[QRC] $SOURCE'
@@ -1344,10 +1337,6 @@ class QtKeychain(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
+        if not conf.CheckLib('qt5keychain'):
+            raise Exception("Could not find qt5keychain.")
         build.env.Append(CPPDEFINES='__QTKEYCHAIN__')
-
-    def sources(self, build):
-        return []
-
-    def depends(self, build):
-        return [depends.QtKeychain]

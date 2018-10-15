@@ -37,14 +37,10 @@ flags = build.flags
 mixxx_lib = env.StaticLibrary('libmixxx',
                               [source for source in sources
                                if str(source) != 'main.cpp'])
-qt5 = depends.Qt.qt5_enabled(build)
 # mixxx.qrc must not be bundled into libmixxx.a since the linker will not link
 # it into the resulting binary unless it is on the link command-line explicitly
 # (it has no link-time symbols that are needed by anything in Mixxx).
-if qt5:
-        mixxx_qrc = env.StaticObject(env.Qrc5('qrc_mixxx', '#res/mixxx.qrc'))
-else:
-        mixxx_qrc = env.StaticObject(env.Qrc4('qrc_mixxx', '#res/mixxx.qrc'))
+mixxx_qrc = env.StaticObject(env.Qrc5('qrc_mixxx', '#res/mixxx.qrc'))
 # libmixxx.a needs to precede all other libraries so that symbols it requires
 # end up in the linker's list of unresolved symbols before other libraries are
 # searched for symbols.
@@ -329,57 +325,38 @@ qt_modules = depends.Qt.enabled_modules(build)
 if build.platform_is_windows:
     suffix = 'd.dll' if build.build_is_debug else '.dll'
     if not build.static_qt:
-        if qt5:
-            qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
+        qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
                       for module in qt_modules]
-            dll_files.extend(qt_modules)
-        else:
-            qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
-            dll_files.extend(qt_modules)
-    if qt5:
-        # https://doc.qt.io/qt-5/windows-deployment.html
-        # "If dynamic OpenGL is used, you additionally need to include the
-        # libraries required for ANGLE and software rendering. For ANGLE, both
-        # libEGL.dll and libGLESv2.dll from Qt's lib directory are required as
-        # well as the HLSL compiler from DirectX. The HLSL compiler library,
-        # d3dcompiler_XX.dll, where XX is the version number that ANGLE
-        # (libGLESv2) was linked against."
-        dll_files.extend(['$QTDIR/bin/libEGL' + suffix,
-                          '$QTDIR/bin/libGLESv2' + suffix])
-        d3dcompiler_path = util.find_d3dcompiler_dll(build.env)
-        if d3dcompiler_path:
-            dll_files.append(d3dcompiler_path)
+        dll_files.extend(qt_modules)
+    # https://doc.qt.io/qt-5/windows-deployment.html
+    # "If dynamic OpenGL is used, you additionally need to include the
+    # libraries required for ANGLE and software rendering. For ANGLE, both
+    # libEGL.dll and libGLESv2.dll from Qt's lib directory are required as
+    # well as the HLSL compiler from DirectX. The HLSL compiler library,
+    # d3dcompiler_XX.dll, where XX is the version number that ANGLE
+    # (libGLESv2) was linked against."
+    dll_files.extend(['$QTDIR/bin/libEGL' + suffix,
+                      '$QTDIR/bin/libGLESv2' + suffix])
+    d3dcompiler_path = util.find_d3dcompiler_dll(build.env)
+    if d3dcompiler_path:
+        dll_files.append(d3dcompiler_path)
 
 # Qt imageformats plugin
 imgfmtdll_files = []
 qt_imagesformats = depends.Qt.enabled_imageformats(build)
 
-if qt5:
-        suffix = 'd.dll' if build.build_is_debug else '.dll'
-        if not build.static_qt:
-            imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
-        # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
-        pdbSuffix = 'd.pdb' if (build.bundle_pdbs and build.build_is_debug) else ''
-        if pdbSuffix:
-                 imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
-else:
-        suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-        if not build.static_qt:
-            imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
-        # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
-        pdbSuffix = 'd4.pdb' if (build.bundle_pdbs and build.build_is_debug) else ''
-        if pdbSuffix:
-                imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
+suffix = 'd.dll' if build.build_is_debug else '.dll'
+if not build.static_qt:
+    imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
+# We don't have Qt's dll pdb files in our release build environements, so only if build is debug
+pdbSuffix = 'd.pdb' if (build.bundle_pdbs and build.build_is_debug) else ''
+if pdbSuffix:
+    imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
 
 sqldll_files = []
 if int(flags.get('qt_sqlite_plugin', 0)):
-        if qt5:
-                # TODO(rryan): Add the SQLite DLL For Qt5.
-                pass
-        else:
-                suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-                # Qt SQLite plugin
-                sqldll_files = ['$QTDIR/plugins/sqldrivers/qsqlite' + suffix]
+    # TODO(rryan): Add the SQLite DLL For Qt5.
+    pass
 
 if build.platform_is_linux or build.platform_is_bsd:
         flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
@@ -446,32 +423,19 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 
         DMG_ICON="#res/osx/VolumeIcon.icns"
 
-        # this is a BIG HACK to support Qt's plugins (since Qt *requires* that
-        # it's plugins be in specific subdirectories, which OS X doesn't really
-        # play nice with)
-
-        # NOTE(rryan): Only include the SQLite plugin if we are building Qt in
-        # sqlite_plugin mode or Qt 5 is enabled. In Qt 5, the SQLite driver was
-        # moved out of QtSql and into a plugin.
-        sql_dylibs = []
-        if int(flags.get('qt_sqlite_plugin', 0)) or qt5:
-                sql_dylibs = ["libqsqlite.dylib"]
+        # In Qt 5, the SQLite driver was moved out of QtSql and into a plugin.
+        sql_dylibs = ["libqsqlite.dylib"]
 
         qt_plugins = (
                 [("iconengines", e) for e in ["libqsvgicon.dylib"]] +
-                [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
-                [("sqldrivers", e) for e in sql_dylibs])
-
-        # In Qt 5, accessibility features are more tightly integrated.
-        if not qt5:
-                qt_plugins.append(("accessible", "libqtaccessiblewidgets.dylib"))
-
-        if qt5:
+                # Left out libqmng and libqtiff to save space.
+                [("imageformats", e) for e in
+                 ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
                 # Cocoa support moved to a plugin in Qt 5.
-                qt_plugins.append(("platforms", "libqcocoa.dylib"))
-                qt_plugins.append(("styles", "libqmacstyle.dylib"))
-
-        #Left out libqmng and libqtiff to save space.
+                [("platforms", "libqcocoa.dylib")] +
+                [("sqldrivers", e) for e in sql_dylibs] +
+                [("styles", "libqmacstyle.dylib")]
+        )
 
         for x in mixxxminimal_plugins:
                 plugins.append(x.get_abspath())
@@ -481,7 +445,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 resource_map[str(tfile)] = 'translations'
 
         qtdir = build.env['QTDIR']
-        qt_frameworks = depends.Qt.find_framework_libdir(qtdir, qt5)
+        qt_frameworks = depends.Qt.find_framework_libdir(qtdir)
         if not qt_frameworks:
                 raise Exception('Could not find frameworks in Qt directory: %s' % qtdir)
         #qt_menu.nib for Cocoa Qt 4.7+
@@ -1029,7 +993,7 @@ def BuildUbuntuPackage(target, source, env):
                 'localecompare=1',
                 'qt_sqlite_plugin=0',
                 'build=' + build.build,
-                'qt5=%d' % qt5])
+        ])
 
         # Replace environment variables in the rules file.
         # TODO(rryan) something more elegant? I don't know a better way. When
