@@ -420,7 +420,8 @@ WEffectButtonParameter*/
   background-color: #113397;*/
 }
 
-#FxUnit1_PflButton, #FxUnit2_PflButton {
+#FxUnit1_PflButton, #FxUnit2_PflButton,
+#FxUnit3_PflButton, #FxUnit4_PflButton {
   margin: 0px 0px 1px 2px;
 }
 
@@ -1191,7 +1192,6 @@ border: 0px;
 #FxUnit2_ExpandCollapseButton,
 #FxUnit3_ExpandCollapseButton,
 #FxUnit4_ExpandCollapseButton {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin: 1px 0px 1px 0px;
 }
 
@@ -1441,8 +1441,9 @@ QTableView, QTextBrowser, QTreeView {
   color: #cfb32c;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
-  selection-color: #cfb32c;
-  selection-background-color: #725309;
+  selection-color: #cfb32c;/*
+  selection-background-color: #725309;*/
+  selection-background-color: #5e4507;
 }
 
 QTableView:focus, QTreeView:focus {
@@ -1453,62 +1454,72 @@ QTableView:focus, QTreeView:focus {
 QTreeView::item:selected,
 QTableView::item:selected {
   color: #fff;
-  background-color: #725309;
+  background-color: #5e4507;
 }
 
 /* checkbox in library "Played" column */
-QTableView::indicator {
+QTableView::indicator {/*
+  This results in 10x10px + 1px border = 12x12px
+  Omitting this definitions makes the checkbox grow to
+  12x12px + 1px border = 14x14px
+  which also miraculously makes the BPM icon grow to 14x14px
+  Neither checkbox nor BPM icon size have an effect on the size... */
   width: 10px;
   height: 10px;
-  margin: 0px;
-  padding: 0px;
-  color: #cfb32c;
   /* border is added to size defined above */
   border: 1px solid transparent;
+  margin: 0px;
+  padding: 0px;
+  /* Play count next to checkbox
+  color: #cfb32c; */
   }
   QTableView::indicator:hover {
-    color: #cfcfcf;
     border: 1px solid #888;
   }
   QTableView::indicator:checked,
   QTableView::indicator:checked:selected {
-    image: url(skin:/style/library_checkbox_checked.png);
+    image: url(skin:/buttons/btn_lib_checkmark.svg);
     border: 1px solid #ff6600;
     }
-    QTableView::indicator:checked:hover {
+    QTableView::indicator:checked:hover,
+    QTableView::indicator:selected:hover {
       border: 1px solid #aaa;
     }
   QTableView::indicator:unchecked {
-    image: url(skin:/style/library_checkbox_unchecked.png);
-    border: 1px solid #444;
+    image: none;
+    border: 1px solid rgba(151,151,151,128);
     }
-    QTableView::indicator:unchecked:hover {
+    QTableView::indicator:unchecked:hover,
+    QTableView::indicator:selected {
       border: 1px solid #888;
-    }
-  QTableView::indicator:selected {
-    border: 1px solid #888;
-    }
-    QTableView::indicator:selected:hover {
-      border: 1px solid #aaa;
     }
 
 /* Entire BPM cell */
 /* Lock icon at the left */
 #LibraryBPMButton::indicator:checked {
-  image: url(skin:/style/library_locked.png);
+  image: url(skin:/buttons/btn_lib_bpm_locked.svg);
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
   }
 #LibraryBPMButton::indicator:unchecked {
-  image: url(skin:/style/library_unlocked.png);
+  image: url(skin:/buttons/btn_lib_bpm_unlocked.svg);
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
   }
 /* BPM value */
 #LibraryBPMButton::item {
   color: #cfb32c;
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
   }
   /* BPM value in selected row. Should match 'selection-color' &
   'selection-background-color' of QTableView */
   #LibraryBPMButton::item:selected {
     color: #ededed;
-    background-color: #725309;
+    background-color: #5e4507;
     }
 #LibraryBPMSpinBox {
   color: #cfb32c;
@@ -1529,25 +1540,26 @@ QTableView::indicator {
   }
 
 /* Button in library "Preview" column */
-#LibraryPreviewButton {
+#LibraryPreviewButton {/*
   width: 23px;
-  height: 12px;
+  height: 12px;*/
   background: transparent;
   margin: 0px;
   padding: 0px;
   border-radius: 2px;
+  border: 1px solid transparent;
   }
-  #LibraryPreviewButton:!checked{
-    image: url(skin:/style/library_preview_play.png);
+  #LibraryPreviewButton:!checked {
+    image: url(skin:/buttons/btn_lib_preview_play.svg);
     }
     #LibraryPreviewButton:!checked:hover {
-      border: 1px solid #725309;
+      border: 1px solid #5e4507;
       background: #0f0f0f;
     }
-  #LibraryPreviewButton:checked{
-    image: url(:/images/library/ic_library_preview_pause.png);
+  #LibraryPreviewButton:checked {
+    image: url(skin:/buttons/btn_lib_preview_pause.svg);
     background-color: #000;
-    border: 1px solid #725309;
+    border: 1px solid #5e4507;
     }
     #LibraryPreviewButton:checked:hover {
       border: 1px solid #888;
@@ -1591,8 +1603,8 @@ QHeaderView::down-arrow {
 
 /* QScrollBar styling is even harder */
 QScrollBar {
-  border: 1px solid #585858;
-  background: #1a1a1a;
+  border: 0px solid #585858;
+  background: #000;
   border-radius: 3px;
   padding: 1px;
   color: #999999;
@@ -1603,24 +1615,25 @@ QScrollBar {
     height: 15px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
-    border-top: 0px;
-    background-color: #0f0f0f;
+    background-color: #000;
   }
   QScrollBar:vertical {
     min-height: 12px;
     width: 15px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
-    border-left: 0px;
     color: #b3b3b3;
-    background-color: #0f0f0f;
+    background-color: #000;
   }
+  /* catch scroll bar of focused treeview like this:
+  QTreeView:focus QScrollBar:vertical {
+  }*/
 
   /* "add-page" and "sub-page" are the gutter of the scrollbar */
   QScrollBar::add-page, QScrollBar::sub-page {
     min-width: 15px;
     min-height: 15px;
-    background-color: #0f0f0f;
+    background-color: #000;
     border-radius: 3px;
   }
   QScrollBar::handle:horizontal {
@@ -1728,11 +1741,11 @@ WLibrary QRadioButton#radioButtonRecentlyAdded {
 }
 
 WLibrary QRadioButton::indicator:checked {
-  background: url(skin:/buttons/btn_lib_radio_button_on.svg);
+  background: url(skin:/buttons/btn_lib_radio_button_on.svg) center center;
 }
 
 WLibrary QRadioButton::indicator:unchecked {
-  background: url(skin:/buttons/btn_lib_radio_button_off.svg);
+  background: url(skin:/buttons/btn_lib_radio_button_off.svg) center center;
 }
 
 /* Library feature pushbuttons
@@ -1810,14 +1823,14 @@ QTreeView::branch:has-children:!has-siblings:closed:selected,
 QTreeView::branch:closed:has-children:has-siblings:selected {
   border-image: none;
   image: url(skin:/style/library_branch_closed_selected.png);
-  background-color: #725309;
+  background-color: #5e4507;
 }
 /* open branch * selected item */
 QTreeView::branch:open:has-children:!has-siblings:selected,
 QTreeView::branch:open:has-children:has-siblings:selected {
   border-image: none;
   image: url(skin:/style/library_branch_open_selected.png);
-  background-color: #725309;
+  background-color: #5e4507;
   }
   /* space left of selected child item */
   QTreeView::branch:!has-children:!has-siblings:closed:selected,

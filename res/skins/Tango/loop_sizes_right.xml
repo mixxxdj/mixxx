@@ -10,7 +10,7 @@ Variables:
     <SizePolicy>min,min</SizePolicy>
     <Children>
       <WidgetGroup>
-        <ObjectName>Spacer0f</ObjectName>
+        <ObjectName>RoundSpacer0f</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>

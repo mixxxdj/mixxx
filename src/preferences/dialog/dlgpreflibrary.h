@@ -43,7 +43,6 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotAddDir();
     void slotRemoveDir();
     void slotRelocateDir();
-    void slotExtraPlugins();
 
   signals:
     void apply();

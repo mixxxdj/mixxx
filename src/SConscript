@@ -27,11 +27,25 @@ plugins = []
 # Grab these from the SConstruct above us
 Import('build')
 Import('sources')
-Import('soundsource_plugins')
 Import('mixxxminimal_plugins')
 
 env = build.env
 flags = build.flags
+
+# Make a static library of all Mixxx's sources. This library will be linked into
+# both mixxx and mixxx-test.
+mixxx_lib = env.StaticLibrary('libmixxx',
+                              [source for source in sources
+                               if str(source) != 'main.cpp'])
+# mixxx.qrc must not be bundled into libmixxx.a since the linker will not link
+# it into the resulting binary unless it is on the link command-line explicitly
+# (it has no link-time symbols that are needed by anything in Mixxx).
+mixxx_qrc = env.StaticObject(env.Qrc5('qrc_mixxx', '#res/mixxx.qrc'))
+# libmixxx.a needs to precede all other libraries so that symbols it requires
+# end up in the linker's list of unresolved symbols before other libraries are
+# searched for symbols.
+env.Prepend(LIBS=mixxx_lib)
+mixxx_main = env.StaticObject('main.cpp')
 
 #Tell SCons to build Mixxx
 #=========================
@@ -66,32 +80,35 @@ if build.platform_is_windows:
         fo.write(''.join(str_list))
         fo.close()
 
+        mixxx_rc = env.RES('#src/mixxx.rc')
         mixxx_bin = env.Program('mixxx',
-                            [sources, env.RES('#src/mixxx.rc')],
-                            LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+                                [mixxx_main, mixxx_qrc, mixxx_rc],
+                                LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 elif build.platform_is_osx:
         # Bug #1258435: executable name must match CFBundleExecutable in the
         # Info.plist. For codesigned bundles it seems the CFBundleExecutable
         # must match the bundle name or else we SIGILL at startup (not sure
         # why).
-        mixxx_bin = env.Program('Mixxx', sources)
+        mixxx_bin = env.Program('Mixxx', [mixxx_main, mixxx_qrc])
 else:
-        mixxx_bin = env.Program('mixxx', sources)
+        mixxx_bin = env.Program('mixxx', [mixxx_main, mixxx_qrc])
 
-# Make sure soundsource and mixxxminimal plugins are built before
+# Make sure mixxxminimal plugins are built before
 # mixxx_bin. This fixes a race where when building with multiple threads the
 # packaging step starts before the plugins are built.
 Depends(mixxx_bin, mixxxminimal_plugins)
-Depends(mixxx_bin, soundsource_plugins)
 
 # For convenience, copy the Mixxx binary out of the build directory to the
 # root. Don't do it on windows because the binary can't run on its own and needs
 # the DLLs present with it.
 if not build.platform_is_windows:
-    Command("../mixxx", mixxx_bin, Copy("$TARGET", "$SOURCE"))
+    copy_mixxx_bin = Command("../mixxx", mixxx_bin, Copy("$TARGET", "$SOURCE"))
+    Default(copy_mixxx_bin)
+else:
+    Default(mixxx_bin)
 
 test_bin = None
-def build_tests():
+def define_test_targets(default=False):
         global test_bin
         test_files = Glob('test/*.cpp', strings=True)
         test_env = env.Clone()
@@ -101,52 +118,61 @@ def build_tests():
         test_files = [test_env.StaticObject(filename)
                       if filename !='main.cpp' else filename
                       for filename in test_files]
-        mixxx_sources = [filename for filename in sources if filename != 'main.cpp']
-        test_sources = (test_files + mixxx_sources)
+        test_sources = test_files
 
-        env.Append(LIBPATH="#lib/gtest-1.7.0/lib")
-        env.Append(LIBS = 'gtest')
+        test_env.Append(LIBPATH="#lib/gtest-1.7.0/lib")
+        test_env.Append(LIBS=['gtest'])
 
-        env.Append(LIBPATH="#lib/gmock-1.7.0/lib")
-        env.Append(LIBS = 'gmock')
+        test_env.Append(LIBPATH="#lib/gmock-1.7.0/lib")
+        test_env.Append(LIBS=['gmock'])
 
-        env.Append(LIBPATH="#lib/benchmark/lib")
-        env.Append(LIBS = 'benchmark')
+        test_env.Append(LIBPATH="#lib/benchmark/lib")
+        test_env.Append(LIBS=['benchmark'])
 
         if build.platform_is_windows:
                 # For SHGetValueA in Google's benchmark library.
-                env.Append(LIBS = 'Shlwapi')
+                test_env.Append(LIBS=['Shlwapi'])
 
-                # TODO(rryan): Build Mixxx core as a shared object and link it
-                # into mixxx and mixxx-test. We could build both in different
-                # environments right now but then automoc and protoc get run in
-                # both environments which makes SCons unhappy.
+                # We want a terminal for tests.
+                if build.toolchain_is_msvs:
+                    test_env['LINKFLAGS'].remove('/subsystem:windows,6.01')
+                    test_env['LINKFLAGS'].append('/subsystem:console,6.01')
+                elif build.toolchain_is_gnu:
+                    test_env['LINKFLAGS'].remove('--subsystem,windows')
+                    test_env['LINKFLAGS'].append('--subsystem,console')
+
                 # Currently both executables are built with /subsystem:windows
                 # and the console is attached manually
-                test_bin = env.Program(
-                        'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],
+                test_bin = test_env.Program(
+                        'mixxx-test', [test_sources, mixxx_qrc, mixxx_rc],
                         LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
         else:
-                test_bin = env.Program(target='mixxx-test', source=test_sources)
-
-        env.Alias('mixxx-test', test_bin)
+                test_bin = test_env.Program('mixxx-test', [test_sources, mixxx_qrc])
 
         if not build.platform_is_windows:
-                Command("../", test_bin, Copy("$TARGET", "$SOURCE"))
+                copy_test_bin = Command("../mixxx-test", test_bin, Copy("$TARGET", "$SOURCE"))
+                env.Alias('mixxx-test', copy_test_bin)
+                # Running mixxx-test via a Command is hacky because it expects a
+                # target. Using the source '../mixxx-test' makes the Command
+                # depend on the Copy.
+                run_test = Command('mixxx-test-results', '../mixxx-test', './mixxx-test')
+                env.Alias('test', run_test)
 
-def run_tests():
-        ret = Execute("./mixxx-test")
-        if ret != 0:
-                print("WARNING: Not all tests pass. See mixxx-test output.")
-                Exit(ret)
+                if default:
+                        Default(copy_test_bin)
+        else:
+                env.Alias('mixxx-test', test_bin)
+                if default:
+                        Default(test_bin)
 
-if int(build.flags['test']):
-        print("Building tests.")
-        build_tests()
 
-if 'test' in BUILD_TARGETS:
-        print("Running tests.")
-        run_tests()
+# If the 'test' flag is 1, then build the mixxx-test target by default. If
+# 'test' is in the target list then run mixxx-test.
+build_tests_by_default = int(build.flags['test']) != 0
+build_tests = 'mixxx-test' in COMMAND_LINE_TARGETS
+run_tests = 'test' in COMMAND_LINE_TARGETS
+if build_tests or run_tests or build_tests_by_default:
+        define_test_targets(default=build_tests_by_default)
 
 def construct_version(build, mixxx_version, branch_name, vcs_revision):
         if branch_name.startswith('release-'):
@@ -240,9 +266,6 @@ if test_bin is not None:
 if build.bundle_pdbs:
         binary_files.append(env.SideEffect('mixxx.pdb', mixxx_bin))
 
-#Soundsource plugins
-soundsource_plugin_files = soundsource_plugins
-
 #VAMP beat tracking and key detection plugin
 libmixxxminimal_vamp_plugin = mixxxminimal_plugins
 
@@ -298,49 +321,42 @@ elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu
         dll_files = Glob('#/../../mixxx-win%slib-crossmingw' % build.bitwidth)
 
 qt_modules = depends.Qt.enabled_modules(build)
-qt5 = depends.Qt.qt5_enabled(build)
 
-if build.platform_is_windows and not build.static_qt:
-    if qt5:
-        suffix = 'd.dll' if build.build_is_debug else '.dll'
+if build.platform_is_windows:
+    suffix = 'd.dll' if build.build_is_debug else '.dll'
+    if not build.static_qt:
         qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
                       for module in qt_modules]
         dll_files.extend(qt_modules)
-    else:
-        suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-        qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
-        dll_files.extend(qt_modules)
+    # https://doc.qt.io/qt-5/windows-deployment.html
+    # "If dynamic OpenGL is used, you additionally need to include the
+    # libraries required for ANGLE and software rendering. For ANGLE, both
+    # libEGL.dll and libGLESv2.dll from Qt's lib directory are required as
+    # well as the HLSL compiler from DirectX. The HLSL compiler library,
+    # d3dcompiler_XX.dll, where XX is the version number that ANGLE
+    # (libGLESv2) was linked against."
+    dll_files.extend(['$QTDIR/bin/libEGL' + suffix,
+                      '$QTDIR/bin/libGLESv2' + suffix])
+    d3dcompiler_path = util.find_d3dcompiler_dll(build.env)
+    if d3dcompiler_path:
+        dll_files.append(d3dcompiler_path)
 
 # Qt imageformats plugin
 imgfmtdll_files = []
 qt_imagesformats = depends.Qt.enabled_imageformats(build)
 
-if qt5:
-        suffix = 'd.dll' if build.build_is_debug else '.dll'
-        if not build.static_qt:
-            imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
-        # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
-        pdbSuffix = 'd.pdb' if (build.bundle_pdbs and build.build_is_debug) else ''
-        if pdbSuffix:
-                 imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
-else:
-        suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-        if not build.static_qt:
-            imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
-        # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
-        pdbSuffix = 'd4.pdb' if (build.bundle_pdbs and build.build_is_debug) else ''
-        if pdbSuffix:
-                imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
+suffix = 'd.dll' if build.build_is_debug else '.dll'
+if not build.static_qt:
+    imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
+# We don't have Qt's dll pdb files in our release build environements, so only if build is debug
+pdbSuffix = 'd.pdb' if (build.bundle_pdbs and build.build_is_debug) else ''
+if pdbSuffix:
+    imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
 
 sqldll_files = []
 if int(flags.get('qt_sqlite_plugin', 0)):
-        if qt5:
-                # TODO(rryan): Add the SQLite DLL For Qt5.
-                pass
-        else:
-                suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-                # Qt SQLite plugin
-                sqldll_files = ['$QTDIR/plugins/sqldrivers/qsqlite' + suffix]
+    # TODO(rryan): Add the SQLite DLL For Qt5.
+    pass
 
 if build.platform_is_linux or build.platform_is_bsd:
         flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
@@ -368,9 +384,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                         os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vamp'),
                         libmixxxminimal_vamp_plugin)
 
-                soundsource_plugins = env.Install(
-                        os.path.join(unix_lib_path, 'mixxx', 'plugins', 'soundsource'),
-                        soundsource_plugin_files)
                 controllermappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'controllers'), controllermappings_files)
                 translations = env.Install(os.path.join(unix_share_path, 'mixxx', 'translations'), translation_files)
                 keyboardmappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'keyboard'), keyboardmappings_files)
@@ -388,7 +401,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', binary)
                 env.Alias('install', skins)
                 env.Alias('install', fonts)
-                env.Alias('install', soundsource_plugins)
                 env.Alias('install', controllermappings)
                 env.Alias('install', translations)
                 env.Alias('install', keyboardmappings)
@@ -411,37 +423,19 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 
         DMG_ICON="#res/osx/VolumeIcon.icns"
 
-        # this is a BIG HACK to support Qt's plugins (since Qt *requires* that
-        # it's plugins be in specific subdirectories, which OS X doesn't really
-        # play nice with)
-
-        # NOTE(rryan): Only include the SQLite plugin if we are building Qt in
-        # sqlite_plugin mode or Qt 5 is enabled. In Qt 5, the SQLite driver was
-        # moved out of QtSql and into a plugin.
-        sql_dylibs = []
-        if int(flags.get('qt_sqlite_plugin', 0)) or qt5:
-                sql_dylibs = ["libqsqlite.dylib"]
+        # In Qt 5, the SQLite driver was moved out of QtSql and into a plugin.
+        sql_dylibs = ["libqsqlite.dylib"]
 
         qt_plugins = (
                 [("iconengines", e) for e in ["libqsvgicon.dylib"]] +
-                [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
-                [("sqldrivers", e) for e in sql_dylibs])
-
-        # In Qt 5, accessibility features are more tightly integrated.
-        if not qt5:
-                qt_plugins.append(("accessible", "libqtaccessiblewidgets.dylib"))
-
-        if qt5:
+                # Left out libqmng and libqtiff to save space.
+                [("imageformats", e) for e in
+                 ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
                 # Cocoa support moved to a plugin in Qt 5.
-                qt_plugins.append(("platforms", "libqcocoa.dylib"))
-                qt_plugins.append(("styles", "libqmacstyle.dylib"))
-
-        #Left out libqmng and libqtiff to save space.
-
-        # Concatenate the SoundSource plugins to our list of plugins (converting
-        # from SCons File nodes to strings)
-        for x in soundsource_plugins:
-                plugins.append(x.get_abspath())
+                [("platforms", "libqcocoa.dylib")] +
+                [("sqldrivers", e) for e in sql_dylibs] +
+                [("styles", "libqmacstyle.dylib")]
+        )
 
         for x in mixxxminimal_plugins:
                 plugins.append(x.get_abspath())
@@ -451,7 +445,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 resource_map[str(tfile)] = 'translations'
 
         qtdir = build.env['QTDIR']
-        qt_frameworks = depends.Qt.find_framework_libdir(qtdir, qt5)
+        qt_frameworks = depends.Qt.find_framework_libdir(qtdir)
         if not qt_frameworks:
                 raise Exception('Could not find frameworks in Qt directory: %s' % qtdir)
         #qt_menu.nib for Cocoa Qt 4.7+
@@ -542,8 +536,6 @@ if build.platform_is_windows:
         docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
         #icon = env.Install(base_dist_dir+"", icon_files)
         dlls = env.Install(base_dist_dir+"/", dll_files)
-        soundsource_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "soundsource/"),
-                                          soundsource_plugin_files)
         vamp_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "vamp/"),
                                    libmixxxminimal_vamp_plugin)
         binary = env.Install(base_dist_dir+"/", binary_files)
@@ -556,7 +548,6 @@ if build.platform_is_windows:
         env.Alias('mixxx', keyboardmappings)
         env.Alias('mixxx', docs)
         env.Alias('mixxx', dlls)
-        env.Alias('mixxx', soundsource_plugins)
         env.Alias('mixxx', vamp_plugins)
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
@@ -1002,7 +993,7 @@ def BuildUbuntuPackage(target, source, env):
                 'localecompare=1',
                 'qt_sqlite_plugin=0',
                 'build=' + build.build,
-                'qt5=%d' % qt5])
+        ])
 
         # Replace environment variables in the rules file.
         # TODO(rryan) something more elegant? I don't know a better way. When
@@ -1043,27 +1034,28 @@ def BuildUbuntuPackage(target, source, env):
                 print("* Starting pbuilder ...  (cwd: %s)" % os.getcwd())
                 print()
 
+                num_jobs = GetOption('num_jobs')
                 command = ['MIXXX_SCONS_FLAGS="%s"' % scons_flags,
                            'ARCH=%s' % arch,
-                           'DIST=%s' % ubuntu_distro]
+                           'DIST=%s' % ubuntu_distro,
+                           # Pass the scons -jX option in in
+                           # DEB_BUILD_OPTIONS. The Debian package rules file
+                           # reads this option to set the -jX flag on the scons
+                           # commands it runs. We disable Debian package
+                           # optimizations via noopt because we handle our own
+                           # optimization flags.
+                           'DEB_BUILD_OPTIONS="noopt parallel=%s"' % num_jobs]
+
 
                 if package_target == 'source':
-                        # TODO(rryan) we have to figure out the key-signing situation
-                        # here.
-                        num_jobs = GetOption('num_jobs')
                         command.extend(['debuild',
-                                        # Preserve the MIXXX_SCONS_FLAGS
+                                        # Preserve the MIXXX_SCONS_FLAGS and DEB_BUILD_OPTIONS
                                         # environment variable.
                                         '-eMIXXX_SCONS_FLAGS',
-                                        # Pass the scons -jX option in in
-                                        # DEB_BUILD_OPTIONS. The Debian package
-                                        # rules file reads this option to set
-                                        # the -jX flag on the scons commands it
-                                        # runs.
-                                        '-eDEB_BUILD_OPTIONS="parallel=%s"' % num_jobs,
+                                        '-eDEB_BUILD_OPTIONS',
                                         '-S', '-sa',])
                 else:
-                        command.extend(['pdebuild'])
+                        command.extend(['pdebuild', '--', '--buildresult ./'])
                 result = os.system(' '.join(command))
 
                 source_changes_file = os.path.join(
@@ -1077,9 +1069,7 @@ def BuildUbuntuPackage(target, source, env):
                             print()
                             raise Exception('Ubuntu source package build/signing failed.')
                 else:
-                        result_path = "/var/cache/pbuilder/%s-%s/result/" % (ubuntu_distro, arch)
-                        result_filename = "%s_%s_%s.deb" % (package_name, package_version, arch)
-                        result_file = os.path.join(result_path, result_filename)
+                        result_file = "%s_%s_%s.deb" % (package_name, package_version, arch)
 
                         # Since we might build for multiple distros we need to
                         # insert the distro name into the filename.
@@ -1105,10 +1095,9 @@ def BuildUbuntuPackage(target, source, env):
                             shutil.move(source_tar_file, dest_tar_file)
 
                         if result == 0 and os.path.exists(result_file):
-                            print("Done! Package and tarballs are in %s" % result_path)
-                            print("* Found package at '%s'. Copying to ubuntu/" % result_file)
+                            print("* Found package '%s'. Copying to ubuntu/" % result_file)
                             print()
-                            shutil.copyfile(result_file, dest_deb_file)
+                            shutil.move(result_file, dest_deb_file)
                         else:
                             print("* Build failed.")
                             print()

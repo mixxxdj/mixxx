@@ -36,7 +36,7 @@ Variables:
                       <Template src="skin:effect_meta_knob.xml"/>
 
                       <Label>
-                        <Size>40f,10f</Size>
+                        <Size>40f,11f</Size>
                         <ObjectName>KnobLabel</ObjectName>
                         <Text>Meta</Text>
                       </Label>

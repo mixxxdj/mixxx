@@ -172,11 +172,6 @@ class FLAC(Dependence):
 
 
 class Qt(Dependence):
-    DEFAULT_QT4DIRS = {'linux': '/usr/share/qt4',
-                       'bsd': '/usr/local/lib/qt4',
-                       'osx': '/Library/Frameworks',
-                       'windows': 'C:\\qt\\4.6.0'}
-
     DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
                          'osx': '/Library/Frameworks',
                          'windows': 'C:\\qt\\5.11.1'}
@@ -186,27 +181,18 @@ class Qt(Dependence):
                          'windows': 'C:\\qt\\5.11.1'}
 
     @staticmethod
-    def qt5_enabled(build):
-        return int(util.get_flags(build.env, 'qt5', 1))
-
-    @staticmethod
     def uic(build):
-        qt5 = Qt.qt5_enabled(build)
-        return build.env.Uic5 if qt5 else build.env.Uic4
+        return build.env.Uic5
 
     @staticmethod
-    def find_framework_libdir(qtdir, qt5):
+    def find_framework_libdir(qtdir):
         # Try pkg-config on Linux
         import sys
         if sys.platform.startswith('linux'):
             if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
                 import subprocess
                 try:
-                    if qt5:
-                        qtcore = "Qt5Core"
-                    else:
-                        qtcore = "QtCore"
-                    core = subprocess.Popen(["pkg-config", "--variable=libdir", qtcore], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
+                    core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
                 finally:
                     if os.path.isdir(core):
                         return core
@@ -219,9 +205,9 @@ class Qt(Dependence):
 
     @staticmethod
     def enabled_modules(build):
-        qt5 = Qt.qt5_enabled(build)
         qt_modules = [
             # Keep alphabetized.
+            'QtConcurrent',
             'QtCore',
             'QtGui',
             'QtNetwork',
@@ -231,33 +217,37 @@ class Qt(Dependence):
             'QtSql',
             'QtSvg',
             'QtTest',
+            'QtWidgets',
             'QtXml',
         ]
-        if qt5:
+        if build.platform_is_windows:
             qt_modules.extend([
                 # Keep alphabetized.
-                'QtConcurrent',
-                'QtWidgets',
+                'QtAccessibilitySupport',
+                'QtEventDispatcherSupport',
+                'QtFontDatabaseSupport',
+                'QtThemeSupport',
+                'QtWindowsUIAutomationSupport',
             ])
-            if build.platform_is_windows:
-                qt_modules.extend([
-                    # Keep alphabetized.
-                    'QtAccessibilitySupport',
-                    'QtEventDispatcherSupport',
-                    'QtFontDatabaseSupport',
-                    'QtThemeSupport',
-                    'QtWindowsUIAutomationSupport',
-                ])
         return qt_modules
 
     @staticmethod
     def enabled_imageformats(build):
-        qt5 = Qt.qt5_enabled(build)
         qt_imageformats = [
-            'qgif', 'qico', 'qjpeg',  'qmng', 'qtga', 'qtiff', 'qsvg'
+            # Keep alphabetized.
+            'qdds',
+            'qgif',
+            'qicns',
+            'qico',
+            'qjp2',
+            'qjpeg',
+            'qmng',
+            'qsvg',
+            'qtga',
+            'qtiff',
+            'qwbmp',
+            'qwebp',
         ]
-        if qt5:
-            qt_imageformats.extend(['qdds', 'qicns', 'qjp2', 'qwbmp', 'qwebp'])
         return qt_imageformats
 
     def satisfy(self):
@@ -266,7 +256,6 @@ class Qt(Dependence):
     def configure(self, build, conf):
         qt_modules = Qt.enabled_modules(build)
 
-        qt5 = Qt.qt5_enabled(build)
         # Emit various Qt defines
         build.env.Append(CPPDEFINES=['QT_TABLET_SUPPORT'])
 
@@ -286,19 +275,14 @@ class Qt(Dependence):
 
         # Enable Qt include paths
         if build.platform_is_linux:
-            if qt5 and not conf.CheckForPKG('Qt5Core', '5.0'):
+            if not conf.CheckForPKG('Qt5Core', '5.0'):
                 raise Exception('Qt >= 5.0 not found')
-            elif not qt5 and not conf.CheckForPKG('QtCore', '4.6'):
-                raise Exception('QT >= 4.6 not found')
 
             qt_modules.extend(['QtDBus'])
             # This automatically converts QtXXX to Qt5XXX where appropriate.
-            if qt5:
-                build.env.EnableQt5Modules(qt_modules, debug=False)
-            else:
-                build.env.EnableQt4Modules(qt_modules, debug=False)
+            build.env.EnableQt5Modules(qt_modules, debug=False)
 
-            if qt5 and build.architecture_is_x86:
+            if build.architecture_is_x86:
                 # Note that -reduce-relocations is enabled by default in Qt5.
                 # So we must build the Mixxx *executable* with position
                 # independent code. -pie / -fPIE must not be used, and Clang
@@ -319,7 +303,7 @@ class Qt(Dependence):
             build.env.Append(
                 LINKFLAGS=' '.join('-framework %s' % m for m in qt_modules)
             )
-            framework_path = Qt.find_framework_libdir(qtdir, qt5)
+            framework_path = Qt.find_framework_libdir(qtdir)
             if not framework_path:
                 raise Exception(
                     'Could not find frameworks in Qt directory: %s' % qtdir)
@@ -332,21 +316,9 @@ class Qt(Dependence):
             build.env.Append(CCFLAGS=['-F%s' % os.path.join(framework_path)])
             build.env.Append(LINKFLAGS=['-F%s' % os.path.join(framework_path)])
 
-            # Copied verbatim from qt4.py and qt5.py.
-            # TODO(rryan): Get our fixes merged upstream so we can use qt4.py
-            # and qt5.py for OS X.
-            qt4_module_defines = {
-                'QtScript'   : ['QT_SCRIPT_LIB'],
-                'QtSvg'      : ['QT_SVG_LIB'],
-                'Qt3Support' : ['QT_QT3SUPPORT_LIB','QT3_SUPPORT'],
-                'QtSql'      : ['QT_SQL_LIB'],
-                'QtXml'      : ['QT_XML_LIB'],
-                'QtOpenGL'   : ['QT_OPENGL_LIB'],
-                'QtGui'      : ['QT_GUI_LIB'],
-                'QtNetwork'  : ['QT_NETWORK_LIB'],
-                'QtCore'     : ['QT_CORE_LIB'],
-            }
-            qt5_module_defines = {
+            # Copied verbatim from qt5.py.
+            # TODO(rryan): Get our fixes merged upstream so we can use qt5.py for OS X.
+            module_defines = {
                 'QtScript'   : ['QT_SCRIPT_LIB'],
                 'QtSvg'      : ['QT_SVG_LIB'],
                 'QtSql'      : ['QT_SQL_LIB'],
@@ -357,26 +329,15 @@ class Qt(Dependence):
                 'QtCore'     : ['QT_CORE_LIB'],
                 'QtWidgets'  : ['QT_WIDGETS_LIB'],
             }
-
-            module_defines = qt5_module_defines if qt5 else qt4_module_defines
             for module in qt_modules:
                 build.env.AppendUnique(CPPDEFINES=module_defines.get(module, []))
-
-            if qt5:
-                build.env["QT5_MOCCPPPATH"] = build.env["CPPPATH"]
-            else:
-                build.env["QT4_MOCCPPPATH"] = build.env["CPPPATH"]
+            build.env["QT5_MOCCPPPATH"] = build.env["CPPPATH"]
         elif build.platform_is_windows:
             # This automatically converts QtCore to QtCore[45][d] where
             # appropriate.
-            if qt5:
-                build.env.EnableQt5Modules(qt_modules,
-                                           staticdeps=build.static_qt,
-                                           debug=build.build_is_debug)
-            else:
-                build.env.EnableQt4Modules(qt_modules,
-                                           staticdeps=build.static_qt,
-                                           debug=build.build_is_debug)
+            build.env.EnableQt5Modules(qt_modules,
+                                       staticdeps=build.static_qt,
+                                       debug=build.build_is_debug)
 
             if build.static_qt:
                 # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
@@ -403,21 +364,20 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'crypt32')
 
                 # New libraries required by Qt5.
-                if qt5:
-                    build.env.Append(LIBS = 'dwmapi')  # qtwindows
-                    build.env.Append(LIBS = 'iphlpapi')  # qt5network
-                    build.env.Append(LIBS = 'libEGL')  # qt5opengl
-                    build.env.Append(LIBS = 'libGLESv2')  # qt5opengl
-                    build.env.Append(LIBS = 'mpr')  # qt5core
-                    build.env.Append(LIBS = 'netapi32')  # qt5core
-                    build.env.Append(LIBS = 'userenv')  # qt5core
-                    build.env.Append(LIBS = 'uxtheme')  # ?
-                    build.env.Append(LIBS = 'version')  # ?
+                build.env.Append(LIBS = 'dwmapi')  # qtwindows
+                build.env.Append(LIBS = 'iphlpapi')  # qt5network
+                build.env.Append(LIBS = 'libEGL')  # qt5opengl
+                build.env.Append(LIBS = 'libGLESv2')  # qt5opengl
+                build.env.Append(LIBS = 'mpr')  # qt5core
+                build.env.Append(LIBS = 'netapi32')  # qt5core
+                build.env.Append(LIBS = 'userenv')  # qt5core
+                build.env.Append(LIBS = 'uxtheme')  # ?
+                build.env.Append(LIBS = 'version')  # ?
 
-                    build.env.Append(LIBS = 'qtfreetype')
-                    build.env.Append(LIBS = 'qtharfbuzz')
-                    build.env.Append(LIBS = 'qtlibpng')
-                    build.env.Append(LIBS = 'qtpcre2')
+                build.env.Append(LIBS = 'qtfreetype')
+                build.env.Append(LIBS = 'qtharfbuzz')
+                build.env.Append(LIBS = 'qtlibpng')
+                build.env.Append(LIBS = 'qtpcre2')
 
                 # NOTE(rryan): If you are adding a plugin here, you must also
                 # update src/mixxxapplication.cpp to define a Q_IMPORT_PLUGIN
@@ -437,49 +397,31 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'qico')
                 build.env.Append(LIBS = 'qsvg')
                 build.env.Append(LIBS = 'qtga')
-                # not needed with Qt4
-                if qt5:
-                    build.env.Append(LIBS = 'qgif')
-                    build.env.Append(LIBS = 'qjpeg')
-
-                # accessibility plugins (gone in Qt5)
-                if not qt5:
-                    build.env.Append(LIBPATH=[
-                        os.path.join(build.env['QTDIR'],'plugins/accessible')])
-                    build.env.Append(LIBS = 'qtaccessiblewidgets')
+                build.env.Append(LIBS = 'qgif')
+                build.env.Append(LIBS = 'qjpeg')
 
                 # platform plugins (new in Qt5 for Windows)
-                if qt5:
-                    build.env.Append(LIBPATH=[
-                        os.path.join(build.env['QTDIR'],'plugins/platforms')])
-                    build.env.Append(LIBS = 'qwindows')
+                build.env.Append(LIBPATH=[
+                    os.path.join(build.env['QTDIR'],'plugins/platforms')])
+                build.env.Append(LIBS = 'qwindows')
 
                 # styles (new in Qt5 for Windows)
-                if qt5:
-                    build.env.Append(LIBPATH=[
-                        os.path.join(build.env['QTDIR'],'plugins/styles')])
-                    build.env.Append(LIBS = 'qwindowsvistastyle')
+                build.env.Append(LIBPATH=[
+                    os.path.join(build.env['QTDIR'],'plugins/styles')])
+                build.env.Append(LIBS = 'qwindowsvistastyle')
 
                 # sqldrivers (new in Qt5? or did we just start enabling them)
-                if qt5:
-                    build.env.Append(LIBPATH=[
-                        os.path.join(build.env['QTDIR'],'plugins/sqldrivers')])
-                    build.env.Append(LIBS = 'qsqlite')
+                build.env.Append(LIBPATH=[
+                    os.path.join(build.env['QTDIR'],'plugins/sqldrivers')])
+                build.env.Append(LIBS = 'qsqlite')
 
-
-
-        # Set the rpath for linux/bsd/osx.
-        # This is not supported on OS X before the 10.5 SDK.
-        using_104_sdk = (str(build.env["CCFLAGS"]).find("10.4") >= 0)
-        compiling_on_104 = False
-        if build.platform_is_osx:
-            compiling_on_104 = (
-                os.popen('sw_vers').readlines()[1].find('10.4') >= 0)
-        if not build.platform_is_windows and not (using_104_sdk or compiling_on_104):
+        # Set the rpath for linux/bsd/macOS.
+        if not build.platform_is_windows:
             qtdir = build.env['QTDIR']
-            framework_path = Qt.find_framework_libdir(qtdir, qt5)
-            if os.path.isdir(framework_path):
-                build.env.Append(LINKFLAGS="-L" + framework_path)
+            libdir_path = Qt.find_framework_libdir(qtdir)
+            if os.path.isdir(libdir_path):
+                build.env.Append(LINKFLAGS=['-Wl,-rpath,%s' % libdir_path])
+                build.env.Append(LINKFLAGS="-L" + libdir_path)
 
         # Mixxx requires C++11 support. Windows enables C++11 features by
         # default but Clang/GCC require a flag.
@@ -541,7 +483,7 @@ class Ebur128Mit(Dependence):
 
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-2.0.0'
+    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch'
     INTERNAL_LINK = True
 
     def sources(self, build):
@@ -687,12 +629,10 @@ class Reverb(Dependence):
     def sources(self, build):
         return ['#lib/reverb/Reverb.cc']
 
-class QtKeychain(Dependence):
+class LAME(Dependence):
     def configure(self, build, conf):
-        libs = ['qtkeychain']
-        if not conf.CheckLib(libs):
-            raise Exception(
-                "Could not find qtkeychain.")
+        if not conf.CheckLib(['libmp3lame', 'libmp3lame-static']):
+            raise Exception("Could not find libmp3lame.")
 
 class MixxxCore(Feature):
 
@@ -886,8 +826,6 @@ class MixxxCore(Feature):
                    "sources/audiosourcestereoproxy.cpp",
                    "sources/metadatasourcetaglib.cpp",
                    "sources/soundsource.cpp",
-                   "sources/soundsourceplugin.cpp",
-                   "sources/soundsourcepluginlibrary.cpp",
                    "sources/soundsourceproviderregistry.cpp",
                    "sources/soundsourceproxy.cpp",
 
@@ -1225,8 +1163,7 @@ class MixxxCore(Feature):
                    "util/autohidpi.cpp",
                    "util/screensaver.cpp",
                    "util/indexrange.cpp",
-
-                   '#res/mixxx.qrc'
+                   "util/desktophelper.cpp"
                    ]
 
         proto_args = {
@@ -1506,7 +1443,7 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
-                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer]
+                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
@@ -1518,15 +1455,10 @@ class MixxxCore(Feature):
                                                 '/nodefaultlib:LIBCMTd.lib'])
 
                 build.env.Append(LINKFLAGS='/entry:mainCRTStartup')
-                # Declare that we are using the v120_xp toolset.
-                # http://blogs.msdn.com/b/vcblog/archive/2012/10/08/windows-xp-targeting-with-c-in-visual-studio-2012.aspx
-                build.env.Append(CPPDEFINES='_USING_V110_SDK71_')
-                # Makes the program not launch a shell first.
-                # Minimum platform version 5.01 for XP x86 and 5.02 for XP x64.
-                if build.machine_is_64bit:
-                    build.env.Append(LINKFLAGS='/subsystem:windows,5.02')
-                else:
-                    build.env.Append(LINKFLAGS='/subsystem:windows,5.01')
+                # Makes the program not launch a shell first. 6.01 declares the
+                # minimum version to be Windows 7.
+                # https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/subsystemversion-compiler-option
+                build.env.Append(LINKFLAGS='/subsystem:windows,6.01')
                 # Force MSVS to generate a manifest (MSVC2010)
                 build.env.Append(LINKFLAGS='/manifest')
             elif build.toolchain_is_gnu:

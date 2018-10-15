@@ -22,6 +22,7 @@
 #undef WIN32
 #endif
 
+#include <lame/lame.h>
 #include <FLAC/format.h>
 #include <chromaprint.h>
 #include <rubberband/RubberBandStretcher.h>
@@ -126,7 +127,8 @@ QStringList Version::dependencyVersions() {
             // Should be accurate.
             << QString("libsndfile: %1").arg(sndfile_version)
             // The version of the FLAC headers Mixxx was compiled with.
-            << QString("FLAC: %1").arg(FLAC__VERSION_STRING);
+            << QString("FLAC: %1").arg(FLAC__VERSION_STRING)
+            << QString("libmp3lame: %1").arg(get_lame_version());
 
     return result;
 }

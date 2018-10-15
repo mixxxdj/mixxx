@@ -2,7 +2,7 @@
 version: '{branch}-{build}'
 skip_tags: true
 max_jobs: 1
-image: Visual Studio 2015
+image: Visual Studio 2017
 init:
   - git config --global core.autocrlf input
 # Uncomment the following line to show RDP info at beginning of job
@@ -22,7 +22,7 @@ configuration:
 #  - release
 #  - debug
 environment:
-  ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.2.x-windows/
+  ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/
   ENVIRONMENTS_PATH: C:\mixxx-buildserver
   matrix:
     - platform: x64
