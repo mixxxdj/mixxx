@@ -192,8 +192,7 @@ class Qt(Dependence):
             if any(os.access(os.path.join(path, 'pkg-config'), os.X_OK) for path in os.environ["PATH"].split(os.pathsep)):
                 import subprocess
                 try:
-                    qtcore = "Qt5Core"
-                    core = subprocess.Popen(["pkg-config", "--variable=libdir", qtcore], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
+                    core = subprocess.Popen(["pkg-config", "--variable=libdir", "Qt5Core"], stdout = subprocess.PIPE).communicate()[0].rstrip().decode()
                 finally:
                     if os.path.isdir(core):
                         return core
