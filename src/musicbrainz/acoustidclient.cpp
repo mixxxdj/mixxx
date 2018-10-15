@@ -41,9 +41,11 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     urlQuery.addQueryItem("duration", QString::number(duration));
     urlQuery.addQueryItem("meta", "recordingids");
     urlQuery.addQueryItem("fingerprint", fingerprint);
-    QByteArray body = urlQuery.query().toUtf8();
+    // application/x-www-form-urlencoded request bodies must be percent encoded.
+    QByteArray body = QUrl::toPercentEncoding(urlQuery.query());
 
-    QNetworkRequest req(QUrl::fromEncoded(ACOUSTID_URL.toLatin1()));
+    QUrl url(ACOUSTID_URL);
+    QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
 

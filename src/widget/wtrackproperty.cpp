@@ -42,7 +42,7 @@ void WTrackProperty::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
 
 void WTrackProperty::updateLabel(Track* /*unused*/) {
     if (m_pCurrentTrack) {
-        QVariant property = m_pCurrentTrack->property(m_property.toLatin1().constData());
+        QVariant property = m_pCurrentTrack->property(m_property.toUtf8().constData());
         if (property.isValid() && property.canConvert(QMetaType::QString)) {
             setText(property.toString());
         }
