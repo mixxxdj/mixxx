@@ -1,5 +1,5 @@
 #include <QApplication>
-#include <QDesktopServices>
+#include <QStandardPaths>
 
 #include "sources/soundsourceproxy.h"
 
