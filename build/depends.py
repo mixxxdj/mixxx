@@ -1453,7 +1453,10 @@ class MixxxCore(Feature):
             # Stuff you may have compiled by hand
             if os.path.isdir('/usr/local/include'):
                 build.env.Append(LIBPATH=['/usr/local/lib'])
-                build.env.Append(CPPPATH=['/usr/local/include'])
+                # Use -isystem instead of -I to avoid compiler warnings from
+                # system libraries. This cuts down on Mixxx's compilation output
+                # significantly when using Homebrew installed to /usr/local.
+                build.env.Append(CCFLAGS=['-isystem', '/usr/local/include'])
 
             # Non-standard libpaths for fink and certain (most?) darwin ports
             if os.path.isdir('/sw/include'):
