@@ -611,8 +611,8 @@ class MixxxBuild(object):
                                         'move or delete it.' % sconsign_file)
                     print("shutil.copy %s -> %s" % (old_virtual_sconsign_file, sconsign_file))
                     shutil.copy(old_virtual_sconsign_file, sconsign_file)
-                if os.path.isfile(old_virtual_sconf_temp_dir):
-                    if os.path.isfile(sconf_temp_dir):
+                if os.path.isdir(old_virtual_sconf_temp_dir):
+                    if os.path.isdir(sconf_temp_dir):
                         raise Exception('%s exists without a .sconsign.branch file so '
                                         'build virtualization cannot continue. Please '
                                         'move or delete it.' % sconf_temp_dir)
