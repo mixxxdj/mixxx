@@ -22,6 +22,8 @@
 
 #include "analyzer/analyzerkey.h"
 #include "control/controlobject.h"
+#include "analyzer/vamp/vamppluginadapter.h"
+#include "control/controlproxy.h"
 #include "util/xml.h"
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
@@ -63,6 +65,9 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
         plugincombo->addItem(info.name, info.id);
     }
 
+    m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
+
+    populate();
     loadSettings();
 
     // Connections
@@ -90,7 +95,6 @@ DlgPrefKey::~DlgPrefKey() {
 
 void DlgPrefKey::loadSettings() {
     qDebug() << "DlgPrefKey::loadSettings";
-
     m_selectedAnalyzerId = m_keySettings.getKeyPluginId();
     qDebug() << "Key plugin ID:" << m_selectedAnalyzerId;
     m_bAnalyzerEnabled = m_keySettings.getKeyDetectionEnabled();
@@ -244,6 +248,7 @@ void DlgPrefKey::setNotationCustom(bool active) {
          it != m_keyLineEdits.end(); ++it) {
         it.value()->setEnabled(true);
     }
+    m_pKeyNotation->set(KeyUtils::CUSTOM);
     slotUpdate();
 }
 
@@ -253,6 +258,7 @@ void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {
         it.value()->setText(KeyUtils::keyToString(it.key(), notation));
         it.value()->setEnabled(false);
     }
+    m_pKeyNotation->set(notation);
     slotUpdate();
 }
 

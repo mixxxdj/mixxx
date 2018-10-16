@@ -16,7 +16,7 @@
 
 #include "library/libraryfeature.h"
 #include "library/dao/trackdao.h"
-#include "treeitemmodel.h"
+#include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
 
 class DlgHidden;
@@ -41,6 +41,10 @@ class MixxxLibraryFeature : public LibraryFeature {
     TreeItemModel* getChildModel();
     void bindWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard);
+
+    bool hasTrackTable() override {
+        return true;
+    }
 
   public slots:
     void activate();

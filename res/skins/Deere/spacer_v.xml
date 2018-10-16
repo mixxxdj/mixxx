@@ -4,12 +4,11 @@ Description:
 A vertical space filling widget. Grows to fit available space.
 -->
 <Template>
-	<WidgetGroup>
-		<Layout>horizontal</Layout>
-		<SizePolicy>min,me</SizePolicy>
-		<Children>
-		</Children>
-	</WidgetGroup>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,me</SizePolicy>
+    <Children/>
+  </WidgetGroup>
 </Template>
 
 

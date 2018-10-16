@@ -35,7 +35,7 @@ EngineSync::~EngineSync() {
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     //qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
-    DEBUG_ASSERT_AND_HANDLE(pSyncable) {
+    VERIFY_OR_DEBUG_ASSERT(pSyncable) {
         return;
     }
 
@@ -165,9 +165,8 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             foundPlayingDeck = true;
         }
         activateFollower(pSyncable);
-        if (foundPlayingDeck && pSyncable->isPlaying()) {
-            // Users also expect phase to be aligned when they press the sync button.
-            pSyncable->requestSyncPhase();
+        if (foundPlayingDeck) {
+            pSyncable->requestSync();
         }
     } else {
         // Already disabled?  Do nothing.
@@ -381,7 +380,7 @@ EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const
             EngineBuffer* pBuffer = pChannel->getEngineBuffer();
             if (pBuffer && pBuffer->getBpm() > 0) {
                 // If the deck is playing then go with it immediately.
-                if (fabs(pBuffer->getSpeed()) > 0) {
+                if (pBuffer->getSpeed() != 0.0) {
                     return pChannel;
                 }
                 // Otherwise hold out for a deck that might be playing but
@@ -396,4 +395,20 @@ EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const
     // No playing decks have a BPM. Go with the first deck that was stopped but
     // had a BPM.
     return pFirstNonplayingDeck;
+}
+
+bool EngineSync::otherSyncedPlaying(const QString& group) {
+    bool othersInSync = false;
+    for (Syncable* theSyncable : m_syncables) {
+        if (theSyncable->getGroup() == group) {
+            if (theSyncable->getSyncMode() == SYNC_NONE) {
+                return false;
+            }
+            continue;
+        }
+        if (theSyncable->isPlaying() && (theSyncable->getSyncMode() != SYNC_NONE)) {
+            othersInSync = true;
+        }
+    }
+    return othersInSync;
 }

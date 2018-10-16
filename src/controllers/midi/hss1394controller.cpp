@@ -5,6 +5,7 @@
   * @brief HSS1394-based MIDI backend
   */
 
+#include "controllers/midi/midiutils.h"
 #include "controllers/midi/hss1394controller.h"
 #include "controllers/controllerdebug.h"
 #include "util/time.h"
@@ -21,7 +22,7 @@ DeviceChannelListener::~DeviceChannelListener() {
 void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint uBufferSize) {
     unsigned int i = 0;
 
-    mixxx::Duration timestamp = Time::elapsed();
+    mixxx::Duration timestamp = mixxx::Time::elapsed();
 
     // If multiple three-byte messages arrive right next to each other, handle them all
     while (i < uBufferSize) {
@@ -168,18 +169,15 @@ int Hss1394Controller::close() {
     return 0;
 }
 
-void Hss1394Controller::sendWord(unsigned int word) {
-    unsigned char data[3];
-    data[0] = word & 0xFF;
-    data[1] = (word >> 8) & 0xFF;
-    data[2] = (word >> 16) & 0xFF;
-
-    QString message = QString("%1 %2 %3").arg(
-        QString("%1").arg(data[0], 2, 16, QChar('0')),
-        QString("%1").arg(data[1], 2, 16, QChar('0')),
-        QString("%1").arg(data[2], 2, 16, QChar('0')));
+void Hss1394Controller::sendShortMsg(unsigned char status, unsigned char byte1,
+                                     unsigned char byte2) {
+    unsigned char data[3] = { status, byte1, byte2 };
 
     int bytesSent = m_pChannel->SendChannelBytes(data, 3);
+    controllerDebug(MidiUtils::formatMidiMessage(getName(),
+                                                 status, byte1, byte2,
+                                                 MidiUtils::channelFromStatus(status),
+                                                 MidiUtils::opCodeFromStatus(status)));
 
     //if (bytesSent != 3) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of 3 bytes:" << message;
@@ -191,6 +189,7 @@ void Hss1394Controller::send(QByteArray data) {
     int bytesSent = m_pChannel->SendChannelBytes(
         (unsigned char*)data.constData(), data.size());
 
+    controllerDebug(MidiUtils::formatSysexMessage(getName(), data));
     //if (bytesSent != length) {
     //    qDebug()<<"ERROR: Sent" << bytesSent << "of" << length << "bytes (SysEx)";
     //    //m_pChannel->Flush();

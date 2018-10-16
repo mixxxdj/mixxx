@@ -15,12 +15,10 @@ enum ReturnCodes {
 
 class DirectoryDAO : public DAO {
   public:
+    void initialize(const QSqlDatabase& database) override {
+        m_database = database;
+    }
 
-    DirectoryDAO(QSqlDatabase& database);
-    virtual ~DirectoryDAO();
-
-    void initialize();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
     int addDirectory(const QString& dir);
     int removeDirectory(const QString& dir);
     QSet<TrackId> relocateDirectory(const QString& oldFolder, const QString& newFolder);
@@ -28,7 +26,7 @@ class DirectoryDAO : public DAO {
 
   private:
     bool isChildDir(QString testDir, QString dirStr);
-    QSqlDatabase& m_database;
+    QSqlDatabase m_database;
 };
 
 #endif //DIRECTORYDAO_H

@@ -27,11 +27,14 @@ class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
   private:
+    void generateBackRects();
+
     ControlProxy* m_pEndOfTrackControl;
     bool m_endOfTrackEnabled;
     ControlProxy* m_pTrackSampleRate;
     ControlProxy* m_pPlayControl;
     ControlProxy* m_pLoopControl;
+    ControlProxy* m_pTimeRemainingControl;
 
     QColor m_color;
     PerformanceTimer m_timer;

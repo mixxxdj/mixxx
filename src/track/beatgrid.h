@@ -18,11 +18,14 @@ class BeatGrid : public QObject, public virtual Beats {
     Q_OBJECT
   public:
     // Construct a BeatGrid. If a more accurate sample rate is known, provide it
-    // in the iSampleRate parameter -- otherwise pass 0. If pByteArray is
-    // non-NULL, the BeatGrid will be deserialized from the byte array.
-    BeatGrid(Track* pTrack, int iSampleRate,
-             const QByteArray* pByteArray = nullptr);
-    virtual ~BeatGrid();
+    // in the iSampleRate parameter -- otherwise pass 0.
+    BeatGrid(const Track& track, SINT iSampleRate);
+    // Construct a BeatGrid. If a more accurate sample rate is known, provide it
+    // in the iSampleRate parameter -- otherwise pass 0. The BeatGrid will be
+    // deserialized from the byte array.
+    BeatGrid(const Track& track, SINT iSampleRate,
+             const QByteArray& byteArray);
+    ~BeatGrid() override = default;
 
     // Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
     // of dFirstBeatSample. Does not generate an updated() signal, since it is
@@ -86,7 +89,7 @@ class BeatGrid : public QObject, public virtual Beats {
     // The sub-version of this beatgrid.
     QString m_subVersion;
     // The number of samples per second
-    int m_iSampleRate;
+    SINT m_iSampleRate;
     // Data storage for BeatGrid
     mixxx::track::io::BeatGrid m_grid;
     // The length of a beat in samples

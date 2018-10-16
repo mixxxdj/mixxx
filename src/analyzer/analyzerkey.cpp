@@ -14,16 +14,13 @@ QList<AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
     return analyzers;
 }
 
-AnalyzerKey::AnalyzerKey(UserSettingsPointer pConfig)
-        : m_keySettings(pConfig),
+AnalyzerKey::AnalyzerKey(KeyDetectionSettings keySettings)
+        : m_keySettings(keySettings),
           m_iSampleRate(0),
           m_iTotalSamples(0),
           m_bPreferencesKeyDetectionEnabled(true),
           m_bPreferencesFastAnalysisEnabled(false),
           m_bPreferencesReanalyzeEnabled(false) {
-}
-
-AnalyzerKey::~AnalyzerKey() {
 }
 
 bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
@@ -38,7 +35,9 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     }
 
     m_bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
+    m_bPreferencesReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
     m_pluginId = m_keySettings.getKeyPluginId();
+
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
 

@@ -11,7 +11,8 @@ class WaveformWidgetRenderer;
 
 class WaveformRendererAbstract {
   public:
-    explicit WaveformRendererAbstract(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit WaveformRendererAbstract(
+            WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererAbstract();
 
     virtual bool init() {return true; }
@@ -28,8 +29,20 @@ class WaveformRendererAbstract {
     void setDirty(bool dirty = true) {
         m_dirty = dirty;
     }
+
+    double scaleFactor() const {
+        return m_scaleFactor;
+    }
+    void setScaleFactor(double scaleFactor) {
+        m_scaleFactor = scaleFactor;
+    }
+
     WaveformWidgetRenderer* m_waveformRenderer;
+
+  private:
+
     bool m_dirty;
+    double m_scaleFactor;
 
     friend class WaveformWidgetRenderer;
 };

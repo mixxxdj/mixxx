@@ -1,7 +1,7 @@
 //
 // C++ Implementation: parserm3u
 //
-// Description: module to parse m3u(plaintext) formated playlists
+// Description: module to parse m3u(plaintext) formatted playlists
 //
 //
 // Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
@@ -25,14 +25,14 @@
 
 /**
    ToDo:
-    - parse ALL informations from the pls file if available ,
+    - parse ALL information from the pls file if available ,
           not only the filepath;
 
           Userinformation :
           The M3U format is just a headerless plaintext format
           where every line of text either represents
           a file location or a comment. comments are being
-          preceeded by a '#'. This parser will try to parse all
+          preceded by a '#'. This parser will try to parse all
           file information from the given file and add the filepaths
           to the locations ptrlist when the file is existing locally
           or on a mounted harddrive.

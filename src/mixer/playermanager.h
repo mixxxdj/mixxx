@@ -23,12 +23,14 @@ class Library;
 class Microphone;
 class PreviewDeck;
 class Sampler;
+class SamplerBank;
 class SoundManager;
-class TrackCollection;
 
 // For mocking PlayerManager.
 class PlayerManagerInterface {
   public:
+    virtual ~PlayerManagerInterface() {};
+
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
     virtual BaseTrackPlayer* getPlayer(QString group) const = 0;
 
@@ -70,6 +72,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Add a sampler to the PlayerManager
     void addSampler();
 
+    // Load samplers from samplers.xml file in config directory
+    void loadSamplers();
+
     // Add a PreviewDeck to the PlayerManager
     void addPreviewDeck();
 
@@ -89,6 +94,10 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Returns true if the group is a deck group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
     static bool isDeckGroup(const QString& group, int* number=NULL);
+
+    // Returns true if the group is a sampler group. If index is non-NULL,
+    // populates it with the deck number (1-indexed).
+    static bool isSamplerGroup(const QString& group, int* number=nullptr);
 
     // Returns true if the group is a preview deck group. If index is non-NULL,
     // populates it with the deck number (1-indexed).
@@ -162,6 +171,10 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
         return QString("[Auxiliary%1]").arg(i + 1);
     }
 
+    static QAtomicPointer<ControlProxy> m_pCOPNumDecks;
+    static QAtomicPointer<ControlProxy> m_pCOPNumSamplers;
+    static QAtomicPointer<ControlProxy> m_pCOPNumPreviewDecks;
+
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
@@ -228,6 +241,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
     EngineMaster* m_pEngine;
+    SamplerBank* m_pSamplerBank;
     AnalyzerQueue* m_pAnalyzerQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;

@@ -1,3 +1,4 @@
+#include <QButtonGroup>
 #include <QtDebug>
 
 #include "preferences/dialog/dlgprefcrossfader.h"
@@ -52,9 +53,9 @@ DlgPrefCrossfader::~DlgPrefCrossfader() {
 // Loads the config keys and sets the widgets in the dialog to match
 void DlgPrefCrossfader::loadSettings() {
     // Range xFaderCurve EngineXfader::kTransformMin .. EngineXfader::kTransformMax
-    m_transform = m_config->getValueString(
+    m_transform = m_config->getValue(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
-            QString::number(EngineXfader::kTransformDefault)).toDouble();
+            EngineXfader::kTransformDefault);
 
     // Range SliderXFader 0 .. 100
     double sliderVal = RescalerUtils::oneByXToLinear(
@@ -62,7 +63,7 @@ void DlgPrefCrossfader::loadSettings() {
             EngineXfader::kTransformMax - EngineXfader::kTransformMin + 1,
             SliderXFader->minimum(),
             SliderXFader->maximum());
-    SliderXFader->setValue(sliderVal);
+    SliderXFader->setValue(static_cast<int>(sliderVal + 0.5));
 
     m_xFaderMode =
             m_config->getValueString(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode")).toInt();
@@ -197,6 +198,7 @@ void DlgPrefCrossfader::drawXfaderDisplay()
 
     graphicsViewXfader->setScene(m_pxfScene);
     graphicsViewXfader->show();
+    graphicsViewXfader->repaint();
 }
 
 // Update and save the crossfader's parameters from the dialog's widgets.

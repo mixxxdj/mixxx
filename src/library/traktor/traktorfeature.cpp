@@ -89,7 +89,7 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
 
     m_title = tr("Traktor");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->getDatabase(),
+    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->database(),
                                              "TRAKTOR_SCANNER");
 
     //Open the database connection in this thread.
@@ -120,7 +120,7 @@ QVariant TraktorFeature::title() {
 }
 
 QIcon TraktorFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_traktor.png");
+    return QIcon(":/images/library/ic_library_traktor.svg");
 }
 
 bool TraktorFeature::isSupported() {
@@ -139,7 +139,7 @@ void TraktorFeature::activate() {
 
     if (!m_isActivated) {
         m_isActivated =  true;
-        // Ususally the maximum number of threads
+        // Usually the maximum number of threads
         // is > 2 depending on the CPU cores
         // Unfortunately, within VirtualBox
         // the maximum number of allowed threads
@@ -154,7 +154,7 @@ void TraktorFeature::activate() {
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) Traktor");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
-        emit (featureIsLoading(this, true));
+        emit(featureIsLoading(this, true));
     }
 
     emit(showTrackModel(m_pTraktorTableModel));
@@ -168,9 +168,9 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     //access underlying TreeItem object
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
-    if (item->isPlaylist()) {
-        qDebug() << "Activate Traktor Playlist: " << item->dataPath().toString();
-        m_pTraktorPlaylistModel->setPlaylist(item->dataPath().toString());
+    if (!item->hasChildren()) {
+        qDebug() << "Activate Traktor Playlist: " << item->getData().toString();
+        m_pTraktorPlaylistModel->setPlaylist(item->getData().toString());
         emit(showTrackModel(m_pTraktorPlaylistModel));
         emit(enableCoverArtDisplay(false));
     }
@@ -338,7 +338,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 continue;
             }
         }
-        //We leave the infinte loop, if twe have the closing tag "ENTRY"
+        //We leave the infinite loop, if twe have the closing tag "ENTRY"
         if (xml.name() == "ENTRY" && xml.isEndElement()) {
             break;
         }
@@ -382,7 +382,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
     QString delimiter = "-->";
 
-    TreeItem *rootItem = new TreeItem();
+    TreeItem *rootItem = new TreeItem(this);
     TreeItem * parent = rootItem;
 
     QSqlQuery query_insert_to_playlists(m_database);
@@ -408,19 +408,16 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
                if (type == "FOLDER") {
                     current_path += delimiter;
                     current_path += name;
-                    //qDebug() << "Folder: " +current_path << " has parent " << parent->data().toString();
+                    //qDebug() << "Folder: " +current_path << " has parent " << parent->getData().toString();
                     map.insert(current_path, "FOLDER");
-                    TreeItem * item = new TreeItem(name,current_path, this, parent);
-                    parent->appendChild(item);
-                    parent = item;
+                    parent = parent->appendChild(name, current_path);
                } else if (type == "PLAYLIST") {
                     current_path += delimiter;
                     current_path += name;
-                    //qDebug() << "Playlist: " +current_path << " has parent " << parent->data().toString();
+                    //qDebug() << "Playlist: " +current_path << " has parent " << parent->getData().toString();
                     map.insert(current_path, "PLAYLIST");
 
-                    TreeItem * item = new TreeItem(name,current_path, this, parent);
-                    parent->appendChild(item);
+                    parent->appendChild(name, current_path);
                     // process all the entries within the playlist 'name' having path 'current_path'
                     parsePlaylistEntries(xml, current_path,
                                          query_insert_to_playlists,
@@ -441,7 +438,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
                 current_path.remove(lastSlash, path_length - lastSlash);
             }
-            //We leave the infinte loop, if twe have the closing "PLAYLIST" tag
+            //We leave the infinite loop, if twe have the closing "PLAYLIST" tag
             if (xml.name() == "PLAYLISTS") {
                 break;
             }
@@ -529,7 +526,7 @@ void TraktorFeature::parsePlaylistEntries(
             }
         }
         if (xml.isEndElement()) {
-            //We leave the infinte loop, if twe have the closing "PLAYLIST" tag
+            //We leave the infinite loop, if twe have the closing "PLAYLIST" tag
             if (xml.name() == "PLAYLIST") {
                 break;
             }
@@ -601,9 +598,9 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 }
 
 void TraktorFeature::onTrackCollectionLoaded() {
-    TreeItem* root = m_future.result();
+    std::unique_ptr<TreeItem> root(m_future.result());
     if (root) {
-        m_childModel.setRootItem(root);
+        m_childModel.setRootItem(std::move(root));
         // Tell the traktor track source that it should re-build its index.
         m_trackSource->buildIndex();
 

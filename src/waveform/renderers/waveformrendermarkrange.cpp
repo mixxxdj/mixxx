@@ -58,11 +58,11 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         int startSample = markRange.start();
         int endSample = markRange.end();
 
-        double startPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(startSample);
-        double endPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(endSample);
+        double startPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(startSample);
+        double endPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(endSample);
 
         //range not in the current display
-        if (startPosition > m_waveformRenderer->getWidth() || endPosition < 0)
+        if (startPosition > m_waveformRenderer->getLength() || endPosition < 0)
             continue;
 
         QImage* selectedImage = NULL;
@@ -71,7 +71,12 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
 
         // draw the corresponding portion of the selected image
         // this shouldn't involve *any* scaling it should be fast even in software mode
-        QRect rect(startPosition,0,endPosition-startPosition,m_waveformRenderer->getHeight());
+        QRect rect;
+        if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
+            rect.setRect(startPosition, 0, endPosition - startPosition, m_waveformRenderer->getHeight());
+        } else {
+            rect.setRect(0, startPosition, m_waveformRenderer->getWidth(), endPosition - startPosition);
+        }
         painter->drawImage(rect, *selectedImage, rect);
     }
 

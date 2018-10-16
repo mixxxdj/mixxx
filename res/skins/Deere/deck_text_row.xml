@@ -11,6 +11,7 @@
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
+
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
@@ -24,13 +25,8 @@
           </CoverArt>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
+          <ConfigKey persist="true">[Master],show_coverart</ConfigKey>
           <BindProperty>visible</BindProperty>
-          <!-- Needed for the show/hide logic to work when circling through
-               the cover art display options: none/vinyl cover/text row -->
-          <Transform>
-            <Add>-1</Add>
-          </Transform>
         </Connection>
       </WidgetGroup>
 
@@ -61,11 +57,8 @@
                     <Group><Variable name="group"/></Group>
                     <Elide>right</Elide>
                     <Connection>
-                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
                       <BindProperty>visible</BindProperty>
-                      <Transform>
-                        <Not/>
-                      </Transform>
                     </Connection>
                   </TrackProperty>
 
@@ -75,8 +68,11 @@
                     <ObjectName>HiddenTrackTitleInfo</ObjectName>
                     <Text>***</Text>
                     <Connection>
-                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
                       <BindProperty>visible</BindProperty>
+                      <Transform>
+                        <Not/>
+                      </Transform>
                     </Connection>
                   </Label>
 
@@ -100,6 +96,7 @@
                         <PrevControl>[Deere],key_layout_prev</PrevControl>
                         <Children>
                           <WidgetGroup>
+                            <ObjectName>KeyEditRowCollapsed</ObjectName>
                             <Layout>stacked</Layout>
                             <Children>
                               <PushButton>
@@ -134,42 +131,6 @@
                             <ObjectName>KeyEditRowExpanded</ObjectName>
                             <Layout>horizontal</Layout>
                             <Children>
-                              <WidgetGroup>
-                                <!-- The key edit controls are aligned to the right because the key
-                                     widget widths can rapidly change, especially with traditional
-                                     notation selected in the preferences. The controls stay calm
-                                     this way. -->
-                                <Layout>stacked</Layout>
-                                <MinimumSize>60,</MinimumSize>
-                                <Children>
-                                  <PushButton>
-                                    <ObjectName>KeyEditTrigger</ObjectName>
-                                    <TooltipId>visual_key</TooltipId>
-                                    <NumberStates>1</NumberStates>
-                                    <State>
-                                      <Number>0</Number>
-                                      <!-- <Text>&#9998;</Text>
-                                      <Alignment>right</Alignment> -->
-                                      <Pressed scalemode="STRETCH"></Pressed>
-                                      <Unpressed scalemode="STRETCH"></Unpressed>
-                                    </State>
-                                    <Connection>
-                                      <ConfigKey>[Deere],key_layout_next</ConfigKey>
-                                    </Connection>
-                                  </PushButton>
-
-                                  <Key>
-                                    <ObjectName>KeyEditTriggerLabel</ObjectName>
-                                    <Group><Variable name="group"/></Group>
-                                    <SizePolicy>min,</SizePolicy>
-                                    <DisplayCents>true</DisplayCents>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-                                    </Connection>
-                                  </Key>
-                                </Children>
-                              </WidgetGroup>
-
                               <WidgetGroup>
                                 <ObjectName>KeyEditRowControls</ObjectName>
                                 <Layout>horizontal</Layout>
@@ -206,9 +167,9 @@
                                   <Template src="skin:left_right_1state_button.xml">
                                     <SetVariable name="TooltipId">sync_reset_key</SetVariable>
                                     <SetVariable name="ObjectName">SyncKeyButton</SetVariable>
-                                    <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
-                                    <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
-                                    <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="MinimumSize">42,22</SetVariable>
+                                    <SetVariable name="MaximumSize">42,22</SetVariable>
+                                    <SetVariable name="SizePolicy">f,f</SetVariable>
                                     <SetVariable name="state_0_text">Match</SetVariable>
                                     <SetVariable name="state_0_pressed"></SetVariable>
                                     <SetVariable name="state_0_unpressed"></SetVariable>
@@ -216,11 +177,47 @@
                                     <SetVariable name="right_connection_control"><Variable name="group"/>,reset_key</SetVariable>
                                   </Template>
                                 </Children>
-                              </WidgetGroup>
+                              </WidgetGroup><!-- KeyEditRowControls -->
+
+                              <WidgetGroup>
+                                <!-- The key edit controls are aligned to the right because the key
+                                     widget widths can rapidly change, especially with traditional
+                                     notation selected in the preferences. The controls stay calm
+                                     this way. -->
+                                <Layout>stacked</Layout>
+                                <MinimumSize>60,</MinimumSize>
+                                <Children>
+                                  <PushButton>
+                                    <ObjectName>KeyEditTrigger</ObjectName>
+                                    <TooltipId>visual_key</TooltipId>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <!-- <Text>&#9998;</Text>
+                                      <Alignment>right</Alignment> -->
+                                      <Pressed scalemode="STRETCH"></Pressed>
+                                      <Unpressed scalemode="STRETCH"></Unpressed>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey>[Deere],key_layout_next</ConfigKey>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <Key>
+                                    <ObjectName>KeyEditTriggerLabel</ObjectName>
+                                    <Group><Variable name="group"/></Group>
+                                    <SizePolicy>min,</SizePolicy>
+                                    <DisplayCents>true</DisplayCents>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                                    </Connection>
+                                  </Key>
+                                </Children>
+                              </WidgetGroup><!-- KeyEditTrigger -->
                             </Children>
-                          </WidgetGroup>
+                          </WidgetGroup><!-- KeyEditRowExpanded -->
                         </Children>
-                      </WidgetStack>
+                      </WidgetStack><!-- KeyEditRow -->
 
                       <!-- Fake a click-able multi-state widget by stacking a
                            transparent PushButton dummy (the trigger) on top of the
@@ -237,6 +234,7 @@
                         <PrevControl>[Deere],bpm_layout_prev</PrevControl>
                         <Children>
                           <WidgetGroup>
+                            <ObjectName>KeyEditRowCollapsed</ObjectName>
                             <Layout>stacked</Layout>
                             <Children>
                               <PushButton>
@@ -267,11 +265,8 @@
                                   <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
                                 </Connection>
                                 <Connection>
-                                  <ConfigKey>[Deere],show_no_bpm_info</ConfigKey>
+                                  <ConfigKey>[Deere],show_bpm_info</ConfigKey>
                                   <BindProperty>visible</BindProperty>
-                                  <Transform>
-                                    <Not/>
-                                  </Transform>
                                 </Connection>
                               </NumberBpm>
 
@@ -281,48 +276,20 @@
                                 <ObjectName>HiddenBpmInfo</ObjectName>
                                 <Text>***.**</Text>
                                 <Connection>
-                                  <ConfigKey>[Deere],show_no_bpm_info</ConfigKey>
+                                  <ConfigKey>[Deere],show_bpm_info</ConfigKey>
                                   <BindProperty>visible</BindProperty>
+                                  <Transform>
+                                    <Not/>
+                                  </Transform>
                                 </Connection>
                               </Label>
-
                             </Children>
-                          </WidgetGroup>
+                          </WidgetGroup><!-- BpmEditTrigger -->
 
                           <WidgetGroup>
                             <ObjectName>BpmEditRowExpanded</ObjectName>
                             <Layout>horizontal</Layout>
                             <Children>
-                              <WidgetGroup>
-                                <Layout>stacked</Layout>
-                                <Children>
-                                  <PushButton>
-                                    <ObjectName>BpmEditTrigger</ObjectName>
-                                    <TooltipId>visual_bpm</TooltipId>
-                                    <NumberStates>1</NumberStates>
-                                    <State>
-                                      <Number>0</Number>
-                                      <!-- <Text>&#9998;</Text>
-                                      <Alignment>right</Alignment> -->
-                                      <Pressed scalemode="STRETCH"></Pressed>
-                                      <Unpressed scalemode="STRETCH"></Unpressed>
-                                    </State>
-                                    <Connection>
-                                      <ConfigKey>[Deere],bpm_layout_next</ConfigKey>
-                                    </Connection>
-                                  </PushButton>
-
-                                  <NumberBpm>
-                                    <ObjectName>BpmEditTriggerLabel</ObjectName>
-                                    <Group><Variable name="group"/></Group>
-                                    <Alignment>right</Alignment>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-                                    </Connection>
-                                  </NumberBpm>
-                                </Children>
-                              </WidgetGroup>
-
                               <WidgetGroup>
                                 <ObjectName>BpmEditRowControls</ObjectName>
                                 <Layout>horizontal</Layout>
@@ -330,30 +297,6 @@
                                 <MinimumSize>100,20</MinimumSize>
                                 <MaximumSize>180,30</MaximumSize>
                                 <Children>
-                                  <Template src="skin:left_right_1state_button.xml">
-                                    <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                                    <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
-                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                                    <SetVariable name="state_0_text"></SetVariable>
-                                    <SetVariable name="state_0_pressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
-                                    <SetVariable name="state_0_unpressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
-                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_curpos</SetVariable>
-                                  </Template>
-
-                                  <Template src="skin:left_right_1state_button.xml">
-                                    <SetVariable name="TooltipId">beats_translate_match_alignment</SetVariable>
-                                    <SetVariable name="ObjectName">BeatsTranslateAlignmentButton</SetVariable>
-                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                                    <SetVariable name="state_0_text"></SetVariable>
-                                    <SetVariable name="state_0_pressed">icon/ic_beats_translate_alignment_48px.svg</SetVariable>
-                                    <SetVariable name="state_0_unpressed">icon/ic_beats_translate_alignment_48px.svg</SetVariable>
-                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
-                                  </Template>
-
 
                                   <Template src="skin:left_right_1state_button.xml">
                                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
@@ -403,6 +346,19 @@
                                     <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_later</SetVariable>
                                   </Template>
 
+                                  <Template src="skin:left_right_1state_button.xml">
+                                    <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+                                    <SetVariable name="ObjectName">BeatsTranslateCurposButton</SetVariable>
+                                    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                                    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                                    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                                    <SetVariable name="state_0_text"></SetVariable>
+                                    <SetVariable name="state_0_pressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
+                                    <SetVariable name="state_0_unpressed">icon/ic_beats_translate_curpos_48px.svg</SetVariable>
+                                    <SetVariable name="left_connection_control"><Variable name="group"/>,beats_translate_curpos</SetVariable>
+                                    <SetVariable name="right_connection_control"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
+                                  </Template>
+
                                   <PushButton>
                                     <TooltipId>bpm_tap</TooltipId>
                                     <MinimumSize>40,20</MinimumSize>
@@ -421,16 +377,43 @@
                                 </Children>
                               </WidgetGroup>
 
+                              <WidgetGroup>
+                                <Layout>stacked</Layout>
+                                <Children>
+                                  <PushButton>
+                                    <ObjectName>BpmEditTrigger</ObjectName>
+                                    <TooltipId>visual_bpm</TooltipId>
+                                    <NumberStates>1</NumberStates>
+                                    <State>
+                                      <Number>0</Number>
+                                      <Pressed scalemode="STRETCH"></Pressed>
+                                      <Unpressed scalemode="STRETCH"></Unpressed>
+                                    </State>
+                                    <Connection>
+                                      <ConfigKey>[Deere],bpm_layout_next</ConfigKey>
+                                    </Connection>
+                                  </PushButton>
+
+                                  <NumberBpm>
+                                    <ObjectName>BpmEditTriggerLabel</ObjectName>
+                                    <Group><Variable name="group"/></Group>
+                                    <Alignment>right</Alignment>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                                    </Connection>
+                                  </NumberBpm>
+                                </Children>
+                              </WidgetGroup><!-- BpmEditTrigger -->
                             </Children>
-                          </WidgetGroup>
+                          </WidgetGroup><!-- BpmEditRowExpanded -->
                         </Children>
-                      </WidgetStack>
+                      </WidgetStack><!-- BpmEditRow -->
                     </Children>
-                  </WidgetGroup>
+                  </WidgetGroup><!-- BPMGutter -->
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- TitleGutter -->
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- UpperTextRow -->
 
           <WidgetGroup>
             <ObjectName>LowerTextRow</ObjectName>
@@ -454,11 +437,8 @@
                     <Elide>right</Elide>
                     <Group><Variable name="group"/></Group>
                     <Connection>
-                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
                       <BindProperty>visible</BindProperty>
-                      <Transform>
-                        <Not/>
-                      </Transform>
                     </Connection>
                   </TrackProperty>
 
@@ -468,8 +448,11 @@
                     <ObjectName>HiddenTrackArtistInfo</ObjectName>
                     <Text>***</Text>
                     <Connection>
-                      <ConfigKey>[Deere],show_no_track_info</ConfigKey>
+                      <ConfigKey>[Deere],show_track_info</ConfigKey>
                       <BindProperty>visible</BindProperty>
+                      <Transform>
+                        <Not/>
+                      </Transform>
                     </Connection>
                   </Label>
 
@@ -484,7 +467,7 @@
                       </StarRating>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Deere],show_starrating</ConfigKey>
+                      <ConfigKey>[Deere],show_starrating</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
@@ -494,7 +477,7 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,max</SizePolicy>
                     <MinimumSize>70,20</MinimumSize>
-                    <MaximumSize>100,30</MaximumSize>
+                    <MaximumSize>190,30</MaximumSize>
                     <Children>
                       <NumberPos>
                         <TooltipId>track_time</TooltipId>
@@ -503,11 +486,11 @@
                     </Children>
                   </WidgetGroup>
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- ArtistGutter -->
             </Children>
-          </WidgetGroup>
+          </WidgetGroup><!-- LowerTextRow -->
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- DeckTextColumn -->
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- DeckTextRow -->
 </Template>

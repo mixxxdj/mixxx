@@ -1,50 +1,35 @@
 #include "sources/soundsource.h"
 
-#include "track/trackmetadatataglib.h"
+#include "util/logger.h"
 
-namespace Mixxx {
 
-/*static*/ QString SoundSource::getFileExtensionFromUrl(const QUrl& url) {
-    return url.toString().section(".", -1).toLower().trimmed();
+namespace mixxx {
+
+namespace {
+
+const Logger kLogger("AudioSource");
+
+inline
+QUrl validateUrl(QUrl url) {
+    DEBUG_ASSERT(url.isValid());
+    VERIFY_OR_DEBUG_ASSERT(url.isLocalFile()) {
+        kLogger.warning()
+                << "Unsupported URL:"
+                << url.toString();
+    }
+    return url;
 }
 
-SoundSource::SoundSource(const QUrl& url)
-        : AudioSource(url),
-          // simply use the file extension as the type
-          m_type(getFileExtensionFromUrl(url)) {
-    DEBUG_ASSERT(getUrl().isValid());
+} // anonymous namespace
+
+/*static*/ QString SoundSource::getFileExtensionFromUrl(QUrl url) {
+    return validateUrl(url).toString().section(".", -1).toLower().trimmed();
 }
 
-SoundSource::SoundSource(const QUrl& url, const QString& type)
-        : AudioSource(url),
+SoundSource::SoundSource(QUrl url, QString type)
+        : AudioSource(validateUrl(url)),
+          MetadataSourceTagLib(getLocalFileName()),
           m_type(type) {
-    DEBUG_ASSERT(getUrl().isValid());
 }
 
-SoundSource::OpenResult SoundSource::open(const AudioSourceConfig& audioSrcCfg) {
-    close(); // reopening is not supported
-    OpenResult result;
-    try {
-        result = tryOpen(audioSrcCfg);
-    } catch (...) {
-        close();
-        throw;
-    }
-    if (OpenResult::SUCCEEDED != result) {
-        close();
-    }
-    return result;
-}
-
-Result SoundSource::parseTrackMetadataAndCoverArt(
-        TrackMetadata* pTrackMetadata,
-        QImage* pCoverArt) const {
-    return readTrackMetadataAndCoverArtFromFile(pTrackMetadata, pCoverArt, getLocalFileName());
-}
-
-Result SoundSource::writeTrackMetadata(
-        const TrackMetadata& trackMetadata) const {
-    return writeTrackMetadataIntoFile(trackMetadata, getLocalFileName());
-}
-
-} //namespace Mixxx
+} //namespace mixxx

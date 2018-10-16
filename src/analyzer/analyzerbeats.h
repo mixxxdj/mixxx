@@ -19,8 +19,10 @@
 
 class AnalyzerBeats: public Analyzer {
   public:
-    AnalyzerBeats(UserSettingsPointer pConfig);
-    virtual ~AnalyzerBeats();
+    explicit AnalyzerBeats(
+            UserSettingsPointer pConfig,
+            bool enforceBpmDetection = false);
+    ~AnalyzerBeats() override = default;
 
     static QList<AnalyzerPluginInfo> availablePlugins();
 
@@ -36,6 +38,7 @@ class AnalyzerBeats: public Analyzer {
 
     BeatDetectionSettings m_bpmSettings;
     QScopedPointer<AnalyzerBeatsPlugin> m_pPlugin;
+    const bool m_enforceBpmDetection;
     QString m_pluginId;
     bool m_bPreferencesReanalyzeOldBpm;
     bool m_bPreferencesFixedTempo;

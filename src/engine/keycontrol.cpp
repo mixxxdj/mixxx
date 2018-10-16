@@ -9,8 +9,9 @@
 #include "engine/enginebuffer.h"
 #include "track/keyutils.h"
 
-static const double kLockOriginalKey = 0;
+//static const double kLockOriginalKey = 0;
 static const double kLockCurrentKey = 1;
+static const double kKeepUnlockedKey = 1;
 
 KeyControl::KeyControl(QString group,
                        UserSettingsPointer pConfig)
@@ -23,7 +24,7 @@ KeyControl::KeyControl(QString group,
     // pitch is the distance to the original pitch in semitones
     // knob in semitones; 9.4 ct per midi step allowOutOfBounds = true;
     m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -6.0, 6.0, true);
-    // Course adjust by full semitone steps.
+    // Coarse adjust by full semitone steps.
     m_pPitch->setStepCount(12);
     // Fine adjust with semitone / 10 = 10 ct;.
     m_pPitch->setSmallStepCount(120);
@@ -35,7 +36,7 @@ KeyControl::KeyControl(QString group,
     // set by the speed slider or to the locked key.
     // pitch_adjust knob in semitones; 4.7 ct per midi step; allowOutOfBounds = true;
     m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), -3.0, 3.0, true);
-    // Course adjust by full semitone steps.
+    // Coarse adjust by full semitone steps.
     m_pPitchAdjust->setStepCount(6);
     // Fine adjust with semitone / 10 = 10 ct;.
     m_pPitchAdjust->setSmallStepCount(60);
@@ -71,6 +72,9 @@ KeyControl::KeyControl(QString group,
 
     m_keylockMode = new ControlPushButton(ConfigKey(group, "keylockMode"));
     m_keylockMode->setButtonMode(ControlPushButton::TOGGLE);
+
+    m_keyunlockMode = new ControlPushButton(ConfigKey(group, "keyunlockMode"));
+    m_keyunlockMode->setButtonMode(ControlPushButton::TOGGLE);
 
     // In case of vinyl control "rate" is a filtered mean value for display
     m_pRateSlider = ControlObject::getControl(ConfigKey(group, "rate"));
@@ -135,6 +139,7 @@ KeyControl::~KeyControl() {
     delete m_pEngineKey;
     delete m_pEngineKeyDistance;
     delete m_keylockMode;
+    delete m_keyunlockMode;
 }
 
 KeyControl::PitchTempoRatio KeyControl::getPitchTempoRatio() {
@@ -212,12 +217,22 @@ void KeyControl::updateRate() {
         // !bKeylock
         if (m_pitchRateInfo.keylock) {
             // Disabling Keylock
-            if (m_keylockMode->get() == kLockCurrentKey) {
-                // reset to linear pitch
-                m_pitchRateInfo.pitchTweakRatio = 1.0;
-                // For not resetting to linear pitch:
-                // Adopt speedPitchRatio change as pitchTweakRatio
-                //pitchRateInfo.pitchTweakRatio *= (m_speedSliderPitchRatio / pitchRateInfo.tempoRatio);
+            // If "Keep unlocked key" is enabled
+            if (m_keyunlockMode->get() == kKeepUnlockedKey) {
+                // don't reset to linear pitch, instead adopt speedSliderPitchRatio
+                // change as pitchTweakRatio
+                m_pitchRateInfo.pitchTweakRatio *=
+                 (speedSliderPitchRatio / m_pitchRateInfo.tempoRatio);
+                // adopt pitch_adjust now so that it doesn't jump and resets key
+                // when touching pitch_adjust knob after unlock with offset key
+                m_pPitchAdjust->set(
+                    KeyUtils::powerOf2ToSemitoneChange(m_pitchRateInfo.pitchTweakRatio));
+            } else {
+                // If 'current' aka 'not original' key was locked
+                if (m_keylockMode->get() == kLockCurrentKey) {
+                    // reset to linear pitch
+                    m_pitchRateInfo.pitchTweakRatio = 1.0;
+                }
             }
             m_pitchRateInfo.keylock = false;
         }
@@ -250,7 +265,6 @@ void KeyControl::updateKeyCOs(double fileKeyNumeric, double pitchOctaves) {
     m_pPitch->set(pitchOctaves * 12);
     //qDebug() << "updateKeyCOs 2" << diff_to_nearest_full_key;
 }
-
 
 void KeyControl::slotSetEngineKey(double key) {
     // Always set to a full key, reset key_distance
@@ -330,7 +344,7 @@ void KeyControl::updatePitchAdjust() {
     // speedSliderPitchRatio must be unchanged
     double pitchAdjustKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitchAdjust);
 
-    // pitch_adjust is a offset to the pitch set by the speed controls
+    // pitch_adjust is an offset to the pitch set by the speed controls
     // calc absolute pitch
     m_pitchRateInfo.pitchTweakRatio = pitchAdjustKnobRatio;
     m_pitchRateInfo.pitchRatio = pitchAdjustKnobRatio * speedSliderPitchRatio;
@@ -353,7 +367,8 @@ void KeyControl::slotSyncKey(double v) {
 
 void KeyControl::slotResetKey(double v) {
     if (v > 0) {
-        slotSetEngineKey(m_pFileKey->get());
+        m_pPitch->set(0);
+        slotPitchChanged(0);
     }
 }
 
@@ -382,20 +397,4 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     m_pPitch->set(pitchToTakeOctaves * 12);
     slotPitchChanged(pitchToTakeOctaves * 12);
     return true;
-}
-
-void KeyControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
-    mixxx::track::io::key::ChromaticKey fileKey =
-            KeyUtils::keyFromNumericValue(m_pFileKey->get());
-    if (fileKey != mixxx::track::io::key::INVALID) {
-        pGroupFeatures->has_file_key = true;
-        pGroupFeatures->file_key = fileKey;
-    }
-
-    mixxx::track::io::key::ChromaticKey key =
-            KeyUtils::keyFromNumericValue(m_pEngineKey->get());
-    if (key != mixxx::track::io::key::INVALID) {
-        pGroupFeatures->has_key = true;
-        pGroupFeatures->key = key;
-    }
 }

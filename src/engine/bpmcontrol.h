@@ -20,7 +20,7 @@ class BpmControl : public EngineControl {
 
   public:
     BpmControl(QString group, UserSettingsPointer pConfig);
-    virtual ~BpmControl();
+    ~BpmControl() override;
 
     double getBpm() const;
     double getLocalBpm() const { return m_pLocalBpm ? m_pLocalBpm->get() : 0.0; }
@@ -33,15 +33,10 @@ class BpmControl : public EngineControl {
     // out of sync.
     double calcSyncedRate(double userTweak);
     // Get the phase offset from the specified position.
-    double getPhaseOffset(double reference_position);
+    double getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing);
+    double getPhaseOffset(double dThisPosition);
     double getBeatDistance(double dThisPosition) const;
-    double getPreviousSample() const { return m_dPreviousSample; }
 
-    void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
-    double process(const double dRate,
-                   const double dCurrentSample,
-                   const double dTotalSamples,
-                   const int iBufferSize);
     void setTargetBeatDistance(double beatDistance);
     void setInstantaneousBpm(double instantaneousBpm);
     void resetSyncAdjustment();
@@ -80,19 +75,18 @@ class BpmControl : public EngineControl {
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
-    void slotSetEngineBpm(double);
     void slotFileBpmChanged(double);
     void slotAdjustBeatsFaster(double);
     void slotAdjustBeatsSlower(double);
     void slotTranslateBeatsEarlier(double);
     void slotTranslateBeatsLater(double);
-    void slotControlPlay(double);
     void slotControlBeatSync(double);
     void slotControlBeatSyncPhase(double);
     void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
-    void slotAdjustRateSlider();
+    void slotUpdateRateSlider();
+    void slotUpdateEngineBpm();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);
@@ -109,6 +103,7 @@ class BpmControl : public EngineControl {
 
     // ControlObjects that come from EngineBuffer
     ControlProxy* m_pPlayButton;
+    QAtomicInt m_oldPlayButton;
     ControlProxy* m_pReverseButton;
     ControlProxy* m_pRateSlider;
     ControlObject* m_pQuantize;
@@ -124,8 +119,6 @@ class BpmControl : public EngineControl {
     ControlProxy* m_pLoopEnabled;
     ControlProxy* m_pLoopStartPosition;
     ControlProxy* m_pLoopEndPosition;
-
-    ControlProxy* m_pVCEnabled;
 
     // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;
@@ -152,8 +145,6 @@ class BpmControl : public EngineControl {
     ControlPushButton* m_pTranslateBeats;
     // Button that translates beats to match another playing deck
     ControlPushButton* m_pBeatsTranslateMatchAlignment;
-
-    double m_dPreviousSample;
 
     // Master Sync objects and values.
     ControlObject* m_pSyncMode;

@@ -43,6 +43,7 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
     double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
+    const double lineWidth = (1.0 / m_waveformRenderer->getVisualSamplePerPixel()) + 1.5;
 
     const int firstIndex = int(firstVisualIndex + 0.5);
     firstVisualIndex = firstIndex - firstIndex % 2;
@@ -68,6 +69,10 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
+        if (m_orientation == Qt::Vertical) {
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            glScalef(-1.0f, 1.0f, 1.0f);
+        }
         glOrtho(firstVisualIndex, lastVisualIndex, -255.0, 255.0, -10.0, 10.0);
 
         glMatrixMode(GL_MODELVIEW);
@@ -87,21 +92,17 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         }
         glEnd();
 
-        glLineWidth(2.0);
+        glLineWidth(lineWidth);
         glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
-            for (int visualIndex = firstVisualIndex;
-                 visualIndex < lastVisualIndex;
-                 visualIndex += 2) {
 
-                if (visualIndex < 0) {
-                    continue;
-                }
+            int firstIndex = math_max(static_cast<int>(firstVisualIndex), 0);
+            int lastIndex = math_min(static_cast<int>(lastVisualIndex), dataSize);
 
-                if (visualIndex > dataSize - 1) {
-                    break;
-                }
+            for (int visualIndex = firstIndex;
+                    visualIndex < lastIndex;
+                    visualIndex += 2) {
 
                 float left_low    = lowGain  * (float) data[visualIndex].filtered.low;
                 float left_mid    = midGain  * (float) data[visualIndex].filtered.mid;
@@ -139,7 +140,11 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();
-        if (m_alignment == Qt::AlignBottom) {
+        if (m_orientation == Qt::Vertical) {
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            glScalef(-1.0f, 1.0f, 1.0f);
+        }
+        if (m_alignment == Qt::AlignBottom || m_alignment == Qt::AlignRight) {
             glOrtho(firstVisualIndex, lastVisualIndex, 0.0, 255.0, -10.0, 10.0);
         } else {
             glOrtho(firstVisualIndex, lastVisualIndex, 255.0, 0.0, -10.0, 10.0);
@@ -151,21 +156,17 @@ void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
         glScalef(1.0f, allGain, 1.0f);
 
-        glLineWidth(2.0);
+        glLineWidth(lineWidth);
         glEnable(GL_LINE_SMOOTH);
 
         glBegin(GL_LINES); {
-            for (int visualIndex = firstVisualIndex;
-                 visualIndex < lastVisualIndex;
-                 visualIndex += 2) {
 
-                if (visualIndex < 0) {
-                    continue;
-                }
+            int firstIndex = math_max(static_cast<int>(firstVisualIndex), 0);
+            int lastIndex = math_min(static_cast<int>(lastVisualIndex), dataSize);
 
-                if (visualIndex > dataSize - 1) {
-                    break;
-                }
+            for (int visualIndex = firstIndex;
+                    visualIndex < lastIndex;
+                    visualIndex += 2) {
 
                 float low  = lowGain  * (float) math_max(data[visualIndex].filtered.low,  data[visualIndex+1].filtered.low);
                 float mid  = midGain  * (float) math_max(data[visualIndex].filtered.mid,  data[visualIndex+1].filtered.mid);

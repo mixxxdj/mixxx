@@ -101,7 +101,7 @@ HIDModifierList.prototype.get = function(name) {
 // Set modifier callback (update function after modifier state changes)
 HIDModifierList.prototype.setCallback = function(name,callback) {
     if ((!name in this.modifiers)) {
-        HIDDebug("Unknonwn modifier: " + name);
+        HIDDebug("Unknown modifier: " + name);
         return;
     }
     this.callbacks[name] = callback;
@@ -424,7 +424,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
 // Output control bit:
 //    Output with with bitmask, controls Output with a single bit
 //
-// It is recommended to define callbacks after packet creationg with
+// It is recommended to define callbacks after packet creation with
 // setCallback instead of adding it directly here. But you can do it.
 HIDPacket.prototype.addOutput = function(group,name,offset,pack,bitmask,callback) {
     var control_group = this.getGroup(group,true);
@@ -1252,7 +1252,7 @@ HIDController.prototype.togglePlay = function(group,field) {
 
 // Enabling scratching (press 'jog_touch' button)
 // Sets the internal 'isScratchEnabled' attribute to true, and calls scratchEnable
-// with the scratch attributes (see class defination)
+// with the scratch attributes (see class definition)
 //
 // Disabling scratching (release 'jog_touch' button)
 // Sets the internal 'isScratchEnabled attribute to false, and calls scratchDisable
@@ -1281,7 +1281,7 @@ HIDController.prototype.enableScratch = function(group,status) {
 // functions, depending on isScratchEnabled value above (see enableScratch())
 //
 // Since most controllers require value scaling for jog and scratch functions,
-// you  are warned if following scaling function names are not registered:
+// you are warned if following scaling function names are not registered:
 //
 // jog
 //      Scaling function from 'jog_wheel' for rate bend events with mixxx 'jog'

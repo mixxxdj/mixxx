@@ -18,18 +18,22 @@
 
 #include "control/controlproxy.h"
 #include "control/controlpotmeter.h"
+#include "engine/engine.h"
 #include "util/assert.h"
 #include "util/sample.h"
 
-const int kiMaxDelay = 40000; // 208 ms @ 96 kb/s
-const double kdMaxDelayPot = 200; // 200 ms
+namespace {
+constexpr double kdMaxDelayPot = 500;
+const int kiMaxDelay = (kdMaxDelayPot + 8) / 1000 *
+    mixxx::AudioSignal::SampleRate::kValueMax * mixxx::kEngineChannelCount;
+} // anonymous namespace
 
-EngineDelay::EngineDelay(const char* group, ConfigKey delayControl)
+EngineDelay::EngineDelay(const char* group, ConfigKey delayControl, bool bPersist)
         : m_iDelayPos(0),
           m_iDelay(0) {
     m_pDelayBuffer = SampleUtil::alloc(kiMaxDelay);
     SampleUtil::clear(m_pDelayBuffer, kiMaxDelay);
-    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot, false, true, false, true);
+    m_pDelayPot = new ControlPotmeter(delayControl, 0, kdMaxDelayPot, false, true, false, bPersist);
     m_pDelayPot->setDefaultValue(0);
     connect(m_pDelayPot, SIGNAL(valueChanged(double)), this,
             SLOT(slotDelayChanged()), Qt::DirectConnection);
@@ -63,10 +67,10 @@ void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
     if (m_iDelay > 0) {
         int iDelaySourcePos = (m_iDelayPos + kiMaxDelay - m_iDelay) % kiMaxDelay;
 
-        DEBUG_ASSERT_AND_HANDLE(iDelaySourcePos >= 0) {
+        VERIFY_OR_DEBUG_ASSERT(iDelaySourcePos >= 0) {
             return;
         }
-        DEBUG_ASSERT_AND_HANDLE(iDelaySourcePos <= kiMaxDelay) {
+        VERIFY_OR_DEBUG_ASSERT(iDelaySourcePos <= kiMaxDelay) {
             return;
         }
 
@@ -80,4 +84,8 @@ void EngineDelay::process(CSAMPLE* pInOut, const int iBufferSize) {
             iDelaySourcePos = (iDelaySourcePos + 1) % kiMaxDelay;
         }
     }
+}
+
+void EngineDelay::setDelay(double newDelay) {
+    m_pDelayPot->set(newDelay);
 }

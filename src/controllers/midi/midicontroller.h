@@ -19,60 +19,64 @@
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
-#include "util/duration.h"
 
 class MidiController : public Controller {
     Q_OBJECT
   public:
     MidiController();
-    virtual ~MidiController();
+    ~MidiController() override;
 
-    virtual QString presetExtension();
+    QString presetExtension() override;
 
-    virtual ControllerPresetPointer getPreset() const {
+    ControllerPresetPointer getPreset() const override {
         MidiControllerPreset* pClone = new MidiControllerPreset();
         *pClone = m_preset;
         return ControllerPresetPointer(pClone);
     }
 
-    virtual bool savePreset(const QString fileName) const;
+    bool savePreset(const QString fileName) const override;
 
-    virtual void visit(const MidiControllerPreset* preset);
-    virtual void visit(const HidControllerPreset* preset);
+    void visit(const MidiControllerPreset* preset) override;
+    void visit(const HidControllerPreset* preset) override;
 
-    virtual void accept(ControllerVisitor* visitor) {
+    void accept(ControllerVisitor* visitor) override {
         if (visitor) {
             visitor->visit(this);
         }
     }
 
-    virtual bool isMappable() const {
+    bool isMappable() const override {
         return m_preset.isMappable();
     }
 
-    virtual bool matchPreset(const PresetInfo& preset);
+    bool matchPreset(const PresetInfo& preset)  override;
 
   signals:
     void messageReceived(unsigned char status, unsigned char control,
                          unsigned char value);
 
   protected:
-    Q_INVOKABLE void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2);
+    Q_INVOKABLE virtual void sendShortMsg(unsigned char status,
+                                          unsigned char byte1, unsigned char byte2) = 0;
+
     // Alias for send()
-    Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length) {
-        send(data, length);
+    // The length parameter is here for backwards compatibility for when scripts
+    // were required to specify it.
+    Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length = 0) {
+        Q_UNUSED(length);
+        send(data);
     }
 
   protected slots:
     virtual void receive(unsigned char status, unsigned char control,
                          unsigned char value, mixxx::Duration timestamp);
     // For receiving System Exclusive messages
-    virtual void receive(const QByteArray data, mixxx::Duration timestamp);
-    virtual int close();
+    void receive(const QByteArray data, mixxx::Duration timestamp) override;
+    int close() override;
 
   private slots:
     // Initializes the engine and static output mappings.
-    bool applyPreset(QList<QString> scriptPaths, bool initializeScripts);
+    bool applyPreset(QList<QString> scriptPaths, bool initializeScripts) override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
@@ -88,7 +92,6 @@ class MidiController : public Controller {
                              const QByteArray& data,
                              mixxx::Duration timestamp);
 
-    virtual void sendWord(unsigned int word) = 0;
     double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
     void createOutputHandlers();
     void updateAllOutputs();
@@ -96,7 +99,7 @@ class MidiController : public Controller {
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
-    virtual ControllerPreset* preset() {
+    ControllerPreset* preset() override {
         return &m_preset;
     }
 

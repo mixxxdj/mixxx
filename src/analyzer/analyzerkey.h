@@ -11,11 +11,12 @@
 #include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "util/memory.h"
 
 class AnalyzerKey : public Analyzer {
   public:
-    AnalyzerKey(UserSettingsPointer pConfig);
-    virtual ~AnalyzerKey();
+    explicit AnalyzerKey(KeyDetectionSettings keySettings);
+    ~AnalyzerKey() override = default;
 
     static QList<AnalyzerPluginInfo> availablePlugins();
 

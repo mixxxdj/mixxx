@@ -69,15 +69,15 @@ void ControlIndicator::slotBlinkValueChanged() {
 }
 
 void ControlIndicator::toggle(double duration) {
-	double tickTime = m_pCOTGuiTickTime->get();
-	double toggles = floor(tickTime / duration);
-	bool phase = fmod(toggles, 2) >= 1;
-	bool val = toBool();
-	if(val != phase) {
-		// Out of phase, wait until we are in phase
-		m_nextSwitchTime = (toggles + 2) * duration;
-	} else {
-		m_nextSwitchTime = (toggles + 1) * duration;
-	}
-	set(val ? 0.0 : 1.0);
+    double tickTime = m_pCOTGuiTickTime->get();
+    double toggles = floor(tickTime / duration);
+    bool phase = fmod(toggles, 2) >= 1;
+    bool val = toBool();
+    if(val != phase) {
+        // Out of phase, wait until we are in phase
+        m_nextSwitchTime = (toggles + 2) * duration;
+    } else {
+        m_nextSwitchTime = (toggles + 1) * duration;
+    }
+    set(val ? 0.0 : 1.0);
 }

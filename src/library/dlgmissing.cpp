@@ -16,7 +16,7 @@ DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
 
     // Install our own trackTable
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
@@ -36,13 +36,15 @@ DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SIGNAL(trackSelected(TrackPointer)));
+
     connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
             m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
+            m_pTrackTableView, SLOT(setSelectedClick(bool)));
 }
 
 DlgMissing::~DlgMissing() {
@@ -80,10 +82,6 @@ void DlgMissing::selectionChanged(const QItemSelection &selected,
     activateButtons(!selected.indexes().isEmpty());
 }
 
-void DlgMissing::setTrackTableFont(const QFont& font) {
-    m_pTrackTableView->setTrackTableFont(font);
-}
-
-void DlgMissing::setTrackTableRowHeight(int rowHeight) {
-    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
+bool DlgMissing::hasFocus() const {
+    return QWidget::hasFocus();
 }

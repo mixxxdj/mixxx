@@ -20,7 +20,7 @@ SettingsManager::SettingsManager(QObject* pParent,
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
     m_pSettings = upgrader.versionUpgrade(settingsPath);
-    DEBUG_ASSERT_AND_HANDLE(!m_pSettings.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pSettings.isNull()) {
         m_pSettings = UserSettingsPointer(new UserSettings(""));
     }
     m_bShouldRescanLibrary = upgrader.rescanLibrary();
@@ -28,6 +28,9 @@ SettingsManager::SettingsManager(QObject* pParent,
     initializeDefaults();
 
     ControlDoublePrivate::setUserConfig(m_pSettings);
+
+    m_pBroadcastSettings = BroadcastSettingsPointer(
+                               new BroadcastSettings(m_pSettings));
 }
 
 SettingsManager::~SettingsManager() {
@@ -40,11 +43,4 @@ void SettingsManager::initializeDefaults() {
     // Store the last resource path in the config database.
     // TODO(rryan): this looks unused.
     m_pSettings->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
-
-    // Do not write meta data back to ID3 when meta data has changed
-    // Because multiple TrackDao objects can exists for a particular track
-    // writing meta data may ruin your MP3 file if done simultaneously.
-    // see Bug #728197
-    // For safety reasons, we deactivate this feature.
-    m_pSettings->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
 }

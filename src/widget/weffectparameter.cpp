@@ -9,6 +9,7 @@ WEffectParameter::WEffectParameter(QWidget* pParent, EffectsManager* pEffectsMan
 }
 
 void WEffectParameter::setup(const QDomNode& node, const SkinContext& context) {
+    WLabel::setup(node, context);
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(
             node, context, m_pEffectsManager);

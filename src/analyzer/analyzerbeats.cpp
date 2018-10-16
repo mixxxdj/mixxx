@@ -26,8 +26,9 @@ QList<AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     return plugins;
 }
 
-AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig)
+AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetection)
         : m_bpmSettings(pConfig),
+          m_enforceBpmDetection(enforceBpmDetection),
           m_bPreferencesReanalyzeOldBpm(false),
           m_bPreferencesFixedTempo(true),
           m_bPreferencesOffsetCorrection(false),
@@ -38,16 +39,13 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig)
           m_iMaxBpm(9999) {
 }
 
-AnalyzerBeats::~AnalyzerBeats() {
-}
-
 bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
     if (totalSamples == 0) {
         return false;
     }
 
     bool bPreferencesBeatDetectionEnabled =
-            m_bpmSettings.getBpmDetectionEnabled();
+            m_enforceBpmDetection || m_bpmSettings.getBpmDetectionEnabled();
     if (!bPreferencesBeatDetectionEnabled) {
         qDebug() << "Beat calculation is deactivated";
         return false;

@@ -6,19 +6,17 @@
 
 // A class representing an image source for a pixmap
 // A bundle of a file path, raw data or inline svg
-class PixmapSource {
+class PixmapSource final {
   public:
     PixmapSource();
     PixmapSource(const QString& filepath);
-    virtual ~PixmapSource();
 
     bool isEmpty() const;
     bool isSVG() const;
     bool isBitmap() const;
     void setSVG(const QByteArray& content);
-    void setPath(const QString& newPath);
-    QString getPath() const;
-    QByteArray getData() const;
+    const QString& getPath() const;
+    const QByteArray& getSvgSourceData() const;
     QString getId() const;
 
   private:
@@ -28,7 +26,7 @@ class PixmapSource {
     };
 
     QString m_path;
-    QByteArray m_baData;
+    QByteArray m_svgSourceData;
     enum Type m_eType;
 };
 

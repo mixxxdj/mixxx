@@ -58,7 +58,10 @@ void WStatusLight::setup(const QDomNode& node, const SkinContext& context) {
                 (i == 0 && context.hasNodeSelectElement(node, "PathBack", &statusLightNode)) ||
                 (i == 1 && context.hasNodeSelectElement(node, "PathStatusLight", &statusLightNode))) {
             setPixmap(i, context.getPixmapSource(statusLightNode),
-                      context.selectScaleMode(statusLightNode, Paintable::FIXED));
+                      context.selectScaleMode(
+                              statusLightNode,
+                              Paintable::FIXED),
+                              context.getScaleFactor());
         } else {
             m_pixmaps[i].clear();
         }
@@ -66,12 +69,13 @@ void WStatusLight::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WStatusLight::setPixmap(int iState, PixmapSource source,
-                             Paintable::DrawMode mode) {
+                             Paintable::DrawMode mode,
+                             double scaleFactor) {
     if (iState < 0 || iState >= m_pixmaps.size()) {
         return;
     }
 
-    PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode);
+    PaintablePointer pPixmap = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!pPixmap.isNull() && !pPixmap->isNull()) {
         m_pixmaps[iState] = pPixmap;
         if (mode == Paintable::FIXED) {

@@ -3,14 +3,17 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wanalysislibrarytableview.h"
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/dlganalysis.h"
+#include "library/library.h"
 #include "util/assert.h"
 
-DlgAnalysis::DlgAnalysis(QWidget* parent,
+DlgAnalysis::DlgAnalysis(QWidget* pParent,
                        UserSettingsPointer pConfig,
+                       Library* pLibrary,
                        TrackCollection* pTrackCollection)
-        : QWidget(parent),
+        : QWidget(pParent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_bAnalysisActive(false),
@@ -30,7 +33,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             this, SIGNAL(trackSelected(TrackPointer)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
+    VERIFY_OR_DEBUG_ASSERT(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
@@ -61,6 +64,13 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
             SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
             this,
             SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
+
+    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
+            m_pAnalysisLibraryTableView, SLOT(setTrackTableFont(QFont)));
+    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
+            m_pAnalysisLibraryTableView, SLOT(setTrackTableRowHeight(int)));
+    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
+            m_pAnalysisLibraryTableView, SLOT(setSelectedClick(bool)));
 }
 
 DlgAnalysis::~DlgAnalysis() {
@@ -70,6 +80,10 @@ void DlgAnalysis::onShow() {
     // Refresh table
     // There might be new tracks dropped to other views
     m_pAnalysisLibraryTableModel->select();
+}
+
+bool DlgAnalysis::hasFocus() const {
+    return QWidget::hasFocus();
 }
 
 void DlgAnalysis::onSearch(const QString& text) {
@@ -84,13 +98,17 @@ void DlgAnalysis::loadSelectedTrackToGroup(QString group, bool play) {
     m_pAnalysisLibraryTableView->loadSelectedTrackToGroup(group, play);
 }
 
-void DlgAnalysis::slotSendToAutoDJ() {
+void DlgAnalysis::slotSendToAutoDJBottom() {
     // append to auto DJ
-    m_pAnalysisLibraryTableView->slotSendToAutoDJ();
+    m_pAnalysisLibraryTableView->slotSendToAutoDJBottom();
 }
 
 void DlgAnalysis::slotSendToAutoDJTop() {
     m_pAnalysisLibraryTableView->slotSendToAutoDJTop();
+}
+
+void DlgAnalysis::slotSendToAutoDJReplace() {
+    m_pAnalysisLibraryTableView->slotSendToAutoDJReplace();
 }
 
 void DlgAnalysis::moveSelection(int delta) {

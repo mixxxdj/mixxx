@@ -23,7 +23,7 @@ DigitalJockey2Controller.CUP_Button1_IsActive = false;
 DigitalJockey2Controller.CUP_Button2_IsActive = false;
 
 DigitalJockey2Controller.init = function(id){
-    //print ("Initalizing Reloop Digital Jockey 2 Controler Edition.");
+    //print ("Initializing Reloop Digital Jockey 2 Controller Edition.");
 	DigitalJockey2Controller.resetLEDs();
 
 	engine.connectControl("[Channel1]","play","DigitalJockey2Controller.isChannel1_Playing");
@@ -442,7 +442,7 @@ DigitalJockey2Controller.SearchSensitivity = 0.01;
 
 DigitalJockey2Controller.JogWheel = function (channel, control, value){
 	/*
-	 * The JogWheels of the controler work as follows.
+	 * The JogWheels of the controller work as follows.
 	 * Spinning around in reverse order produces decimal values of 63 or lower
 	 * depending on the the speed you drag the wheel.
 	 * 
@@ -627,32 +627,32 @@ DigitalJockey2Controller.isChannel1_Cue_Active = function (value){
 		midi.sendShortMsg(0x90, 0x18, DigitalJockey2Controller.ledOff); //Turn CUE LED1 off
 	}
 	else{
-		//if CUP LED is active leave, we can switch off CUE Botton
+		//if CUP LED is active leave, we can switch off CUE Button
 		if(DigitalJockey2Controller.CUP_Button1_IsActive == true){
 			midi.sendShortMsg(0x90, 0x18, DigitalJockey2Controller.ledOff); //Turn CUE LED1 off
 			midi.sendShortMsg(0x90, 0x17, DigitalJockey2Controller.ledOn); // Turn CUP LED1 on
 		}
 		else
 			midi.sendShortMsg(0x90, 0x18, DigitalJockey2Controller.ledOn); //Turn CUE LED1 on
-		
+
 	}
 }
 DigitalJockey2Controller.isChannel2_Cue_Active = function (value){
-	
+
 	if(value == 0){
 		if(DigitalJockey2Controller.CUP_Button2_IsActive == true)
 			midi.sendShortMsg(0x90, 0x53, DigitalJockey2Controller.ledOn);  //Turn CUP LED2 on
 		midi.sendShortMsg(0x90, 0x54, DigitalJockey2Controller.ledOff); //Turn CUE LED2 off
 	}
 	else{
-		//if CUP LED is active leave, we can switch off CUE Botton
+		//if CUP LED is active leave, we can switch off CUE Button
 		if(DigitalJockey2Controller.CUP_Button2_IsActive == true){
 			midi.sendShortMsg(0x90, 0x54, DigitalJockey2Controller.ledOff); //Turn CUE LED2 off
 			midi.sendShortMsg(0x90, 0x53, DigitalJockey2Controller.ledOn);  //Turn CUP LED2 on
 		}
 		else
 			midi.sendShortMsg(0x90, 0x54, DigitalJockey2Controller.ledOn); //Turn CUE LED2 on
-		
+
 	}
 }
 DigitalJockey2Controller.SelectNextTrack_or_prevTrack = function (channel, control, value, status){

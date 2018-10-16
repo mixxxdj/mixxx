@@ -16,6 +16,7 @@
 #include <QMap>
 #include <QList>
 #include <QDomElement>
+#include <QFileInfo>
 
 #include "preferences/usersettings.h"
 #include "controllers/controllerpreset.h"
@@ -47,7 +48,7 @@ class PresetInfo {
     }
 
     inline const QString getPath() const { return m_path; }
-
+    inline const QString getDirPath() const { return m_dirPath; }
     inline const QString getName() const { return m_name; }
     inline const QString getDescription() const { return m_description; }
     inline const QString getForumLink() const { return m_forumlink; }
@@ -62,6 +63,7 @@ class PresetInfo {
 
     bool m_valid;
     QString m_path;
+    QString m_dirPath;
     QString m_name;
     QString m_author;
     QString m_description;

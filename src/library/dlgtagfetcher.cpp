@@ -5,7 +5,6 @@
 
 DlgTagFetcher::DlgTagFetcher(QWidget *parent)
         : QDialog(parent),
-          m_track(NULL),
           m_TagFetcher(parent),
           m_networkError(NOERROR) {
     init();
@@ -54,7 +53,7 @@ void DlgTagFetcher::loadTrack(const TrackPointer track) {
     m_TagFetcher.startFetch(m_track);
 
     disconnect(this, SLOT(updateTrackMetadata(Track*)));
-    connect(track.data(), SIGNAL(changed(Track*)),
+    connect(track.get(), SIGNAL(changed(Track*)),
             this, SLOT(updateTrackMetadata(Track*)));
 
     updateStack();

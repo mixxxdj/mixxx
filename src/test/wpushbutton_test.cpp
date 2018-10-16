@@ -17,7 +17,7 @@ class WPushButtonTest : public MixxxTest {
     }
 
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_pButton.reset(new WPushButton());
         m_pButton->setStates(2);
     }

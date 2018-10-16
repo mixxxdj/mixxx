@@ -39,8 +39,6 @@ class EngineVuMeter : public EngineObject {
 
     virtual void process(CSAMPLE* pInOut, const int iBufferSize);
 
-    virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const;
-
     void reset();
 
   private:

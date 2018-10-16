@@ -75,7 +75,7 @@ void AnalyzerGain::finalize(TrackPointer tio) {
         return;
     }
 
-    Mixxx::ReplayGain replayGain(tio->getReplayGain());
+    mixxx::ReplayGain replayGain(tio->getReplayGain());
     replayGain.setRatio(db2ratio(fReplayGainOutput));
     tio->setReplayGain(replayGain);
     qDebug() << "ReplayGain 1.0 result is" << fReplayGainOutput << "dB for" << tio->getLocation();

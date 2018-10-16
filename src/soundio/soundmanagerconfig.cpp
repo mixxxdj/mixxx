@@ -38,7 +38,10 @@ SoundManagerConfig::SoundManagerConfig()
       m_sampleRate(kFallbackSampleRate),
       m_deckCount(kDefaultDeckCount),
       m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex),
-      m_syncBuffers(2) {
+      m_syncBuffers(2),
+      m_forceNetworkClock(false),
+      m_iNumMicInputs(0),
+      m_bExternalRecordBroadcastConnected(false) {
     m_configFile = QFileInfo(QDir(CmdlineArgs::Instance().getSettingsPath()).filePath(SOUNDMANAGERCONFIG_FILENAME));
 }
 
@@ -70,8 +73,10 @@ bool SoundManagerConfig::readFromDisk() {
     // audioBufferSizeIndex is refereed as "latency" in the config file
     setAudioBufferSizeIndex(rootElement.attribute("latency", "0").toUInt());
     setSyncBuffers(rootElement.attribute("sync_buffers", "2").toUInt());
+    setForceNetworkClock(rootElement.attribute("force_network_clock",
+            "0").toUInt() != 0);
     setDeckCount(rootElement.attribute("deck_count",
-                                       QString(kDefaultDeckCount)).toUInt());
+            QString(kDefaultDeckCount)).toUInt());
     clearOutputs();
     clearInputs();
     QDomNodeList devElements(rootElement.elementsByTagName("SoundDevice"));
@@ -126,10 +131,11 @@ bool SoundManagerConfig::writeToDisk() const {
     // audioBufferSizeIndex is refereed as "latency" in the config file
     docElement.setAttribute("latency", m_audioBufferSizeIndex);
     docElement.setAttribute("sync_buffers", m_syncBuffers);
+    docElement.setAttribute("force_network_clock", m_forceNetworkClock);
     docElement.setAttribute("deck_count", m_deckCount);
     doc.appendChild(docElement);
 
-    foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
+    for (const auto& device: getDevices()) {
         QDomElement devElement(doc.createElement("SoundDevice"));
         devElement.setAttribute("name", device);
         foreach (AudioInput in, m_inputs.values(device)) {
@@ -196,6 +202,14 @@ void SoundManagerConfig::setSyncBuffers(unsigned int syncBuffers) {
     m_syncBuffers = qMin(syncBuffers, (unsigned int)2);
 }
 
+bool SoundManagerConfig::getForceNetworkClock() const {
+    return m_forceNetworkClock;
+}
+
+void SoundManagerConfig::setForceNetworkClock(bool force) {
+    m_forceNetworkClock = force;
+}
+
 /**
  * Checks that the sample rate in the object is valid according to the list of
  * sample rates given by SoundManager.
@@ -220,7 +234,7 @@ void SoundManagerConfig::setDeckCount(unsigned int deckCount) {
 void SoundManagerConfig::setCorrectDeckCount(int configuredDeckCount) {
     int minimum_deck_count = 0;
 
-    foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
+    for (const auto& device: getDevices()) {
         foreach (AudioInput in, m_inputs.values(device)) {
             if ((in.getType() == AudioInput::DECK ||
                  in.getType() == AudioInput::VINYLCONTROL ||
@@ -250,10 +264,12 @@ unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
     return m_audioBufferSizeIndex;
 }
 
+// FIXME: This is incorrect when using JACK as the sound API!
+// m_audioBufferSizeIndex does not reflect JACK's buffer size.
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
     // endless loop otherwise
     unsigned int audioBufferSizeIndex = m_audioBufferSizeIndex;
-    DEBUG_ASSERT_AND_HANDLE(audioBufferSizeIndex > 0) {
+    VERIFY_OR_DEBUG_ASSERT(audioBufferSizeIndex > 0) {
         audioBufferSizeIndex = kDefaultAudioBufferSizeIndex;
     }
     unsigned int framesPerBuffer = 1;
@@ -266,6 +282,12 @@ unsigned int SoundManagerConfig::getFramesPerBuffer() const {
         framesPerBuffer <<= 1; // *= 2
     }
     return framesPerBuffer;
+}
+
+// FIXME: This is incorrect when using JACK as the sound API!
+// m_audioBufferSizeIndex does not reflect JACK's buffer size.
+double SoundManagerConfig::getProcessingLatency() const {
+    return static_cast<double>(getFramesPerBuffer()) / m_sampleRate * 1000.0;
 }
 
 
@@ -287,6 +309,11 @@ void SoundManagerConfig::addOutput(const QString &device, const AudioOutput &out
 
 void SoundManagerConfig::addInput(const QString &device, const AudioInput &in) {
     m_inputs.insert(device, in);
+    if (in.getType() == AudioPath::MICROPHONE) {
+        m_iNumMicInputs++;
+    } else if (in.getType() == AudioPath::RECORD_BROADCAST) {
+        m_bExternalRecordBroadcastConnected = true;
+    }
 }
 
 QMultiHash<QString, AudioOutput> SoundManagerConfig::getOutputs() const {
@@ -303,46 +330,16 @@ void SoundManagerConfig::clearOutputs() {
 
 void SoundManagerConfig::clearInputs() {
     m_inputs.clear();
+    m_iNumMicInputs = 0;
+    m_bExternalRecordBroadcastConnected = false;
 }
 
-/**
- * Removes any outputs with devices that do not exist in the given
- * SoundManager.
- */
-void SoundManagerConfig::filterOutputs(SoundManager *soundManager) {
-    QSet<QString> deviceNames;
-    QSet<QString> toDelete;
-    foreach (SoundDevice *device, soundManager->getDeviceList(m_api, true, false)) {
-        deviceNames.insert(device->getInternalName());
-    }
-    foreach (QString deviceName, m_outputs.uniqueKeys()) {
-        if (!deviceNames.contains(deviceName)) {
-            toDelete.insert(deviceName);
-        }
-    }
-    foreach (QString del, toDelete) {
-        m_outputs.remove(del);
-    }
+bool SoundManagerConfig::hasMicInputs() {
+    return m_iNumMicInputs;
 }
 
-/**
- * Removes any inputs with devices that do not exist in the given
- * SoundManager.
- */
-void SoundManagerConfig::filterInputs(SoundManager *soundManager) {
-    QSet<QString> deviceNames;
-    QSet<QString> toDelete;
-    foreach (SoundDevice *device, soundManager->getDeviceList(m_api, false, true)) {
-        deviceNames.insert(device->getInternalName());
-    }
-    foreach (QString deviceName, m_inputs.uniqueKeys()) {
-        if (!deviceNames.contains(deviceName)) {
-            toDelete.insert(deviceName);
-        }
-    }
-    foreach (QString del, toDelete) {
-        m_inputs.remove(del);
-    }
+bool SoundManagerConfig::hasExternalRecordBroadcast() {
+    return m_bExternalRecordBroadcastConnected;
 }
 
 /**
@@ -387,15 +384,15 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
     if (flags & SoundManagerConfig::DEVICES) {
         clearOutputs();
         clearInputs();
-        QList<SoundDevice*> outputDevices = soundManager->getDeviceList(m_api, true, false);
+        QList<SoundDevicePointer> outputDevices = soundManager->getDeviceList(m_api, true, false);
         if (!outputDevices.isEmpty()) {
-            foreach (SoundDevice *device, outputDevices) {
-                if (device->getNumOutputChannels() < 2) {
+            for (const auto& pDevice: outputDevices) {
+                if (pDevice->getNumOutputChannels() < 2) {
                     continue;
                 }
                 AudioOutput masterOut(AudioPath::MASTER, 0, 2, 0);
-                addOutput(device->getInternalName(), masterOut);
-                defaultSampleRate = device->getDefaultSampleRate();
+                addOutput(pDevice->getInternalName(), masterOut);
+                defaultSampleRate = pDevice->getDefaultSampleRate();
                 break;
             }
         }
@@ -416,4 +413,18 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
     }
 
     m_syncBuffers = kDefaultSyncBuffers;
+    m_forceNetworkClock = false;
 }
+
+QSet<QString> SoundManagerConfig::getDevices() const {
+    QSet<QString> devices;
+    devices.reserve(m_outputs.size() + m_inputs.size());
+    for (auto it = m_outputs.constBegin(); it != m_outputs.constEnd(); ++it) {
+        devices.insert(it.key());
+    }
+    for (auto it = m_inputs.constBegin(); it != m_inputs.constEnd(); ++it) {
+        devices.insert(it.key());
+    }
+    return devices;
+}
+

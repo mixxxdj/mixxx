@@ -42,7 +42,7 @@ void HidReader::run() {
             Trace process("HidReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData(reinterpret_cast<char*>(data), result);
-            emit(incomingData(outData, Time::elapsed()));
+            emit(incomingData(outData, mixxx::Time::elapsed()));
         }
     }
     delete [] data;
@@ -286,7 +286,7 @@ int HidController::close() {
     }
 
     // Stop controller engine here to ensure it's done before the device is closed
-    //  incase it has any final parting messages
+    //  in case it has any final parting messages
     stopEngine();
 
     // Close device

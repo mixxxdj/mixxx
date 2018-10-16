@@ -14,7 +14,6 @@
 
 #include "soundio/soundmanagerutil.h"
 
-class EffectsManager;
 class EngineEffectsManager;
 class ControlAudioTaperPot;
 
@@ -31,6 +30,7 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
 
     // Called by EngineMaster whenever is requesting a new buffer of audio.
     virtual void process(CSAMPLE* pOutput, const int iBufferSize);
+    virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const;
     virtual void postProcess(const int iBufferSize) { Q_UNUSED(iBufferSize) }
 
     // This is called by SoundManager whenever there are new samples from the
@@ -52,17 +52,9 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     bool isSolo();
     double getSoloDamping();
 
-  private slots:
-    // Reject all change requests for input configured.
-    void slotInputConfiguredChangeRequest(double) {}
-
   private:
-    EngineEffectsManager* m_pEngineEffectsManager;
-    EngineVuMeter m_vuMeter;
     QScopedPointer<ControlObject> m_pInputConfigured;
     ControlAudioTaperPot* m_pPregain;
-    ControlProxy* m_pSampleRate;
-    const CSAMPLE* volatile m_sampleBuffer;
 
     bool m_wasActive;
 };

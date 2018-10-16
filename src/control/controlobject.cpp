@@ -29,8 +29,8 @@ ControlObject::ControlObject() {
 }
 
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                             bool bPersist) {
-    initialize(key, bIgnoreNops, bTrack, bPersist);
+                             bool bPersist, double defaultValue) {
+    initialize(key, bIgnoreNops, bTrack, bPersist, defaultValue);
 }
 
 ControlObject::~ControlObject() {
@@ -40,14 +40,14 @@ ControlObject::~ControlObject() {
 }
 
 void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                               bool bPersist) {
+                               bool bPersist, double defaultValue) {
     m_key = key;
 
     // Don't bother looking up the control if key is NULL. Prevents log spew.
     if (!m_key.isNull()) {
         m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
                                                       bIgnoreNops, bTrack,
-                                                      bPersist);
+                                                      bPersist, defaultValue);
     }
 
     // getControl can fail and return a NULL control even with the create flag.
@@ -80,7 +80,7 @@ ControlObject* ControlObject::getControl(const ConfigKey& key, bool warn) {
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
     if (m_pControl) {
-        m_pControl->setMidiParameter(o, v);
+        m_pControl->setValueFromMidi(o, v);
     }
 }
 
@@ -102,8 +102,8 @@ double ControlObject::getParameterForValue(double value) const {
     return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
 }
 
-double ControlObject::getParameterForMidiValue(double midiValue) const {
-    return m_pControl ? m_pControl->getParameterForMidiValue(midiValue) : 0.0;
+double ControlObject::getParameterForMidi(double midiParameter) const {
+    return m_pControl ? m_pControl->getParameterForMidi(midiParameter) : 0.0;
 }
 
 void ControlObject::setParameter(double v) {
@@ -134,4 +134,13 @@ bool ControlObject::connectValueChangeRequest(const QObject* receiver,
         ret = m_pControl->connectValueChangeRequest(receiver, method, type);
     }
     return ret;
+}
+
+void ControlObject::setReadOnly() {
+    connectValueChangeRequest(this, SLOT(readOnlyHandler(double)),
+                              Qt::DirectConnection);
+}
+
+void ControlObject::readOnlyHandler(double v) {
+    qWarning() << m_key << "is read-only. Ignoring set of value:" << v;
 }

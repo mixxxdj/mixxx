@@ -68,7 +68,6 @@ class TrackExporterTest : public testing::Test {
     TrackExporterTest() :
         m_testDataDir(QDir::current().absoluteFilePath(
                 "src/test/id3-test-data")) { }
-    virtual ~TrackExporterTest() { }
 
     void SetUp() override {
         // QTemporaryDir only in QT5, that would be more convenient.

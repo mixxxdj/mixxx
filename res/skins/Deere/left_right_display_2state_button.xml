@@ -12,7 +12,7 @@
     LeftClickIsPushButton:  true / false
                             Defines the button mode.
                             true = PUSH button
-                            false = TOOGLE or TRIGGER, as automatically set by
+                            false = TOGGLE or TRIGGER, as automatically set by
                             the control connected to the respective button.
     RightClickIsPushButton: See above. true / false
 -->

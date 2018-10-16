@@ -2,6 +2,7 @@
 #include <QtDebug>
 
 #include "track/beatmap.h"
+#include "util/memory.h"
 
 namespace {
 
@@ -13,12 +14,6 @@ class BeatMapTest : public testing::Test {
               m_iSampleRate(100),
               m_iFrameSize(2) {
 
-    }
-
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
     }
 
     double getBeatLengthFrames(double bpm) {
@@ -53,7 +48,7 @@ TEST_F(BeatMapTest, Scale) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    auto pMap = std::make_unique<BeatMap>(*m_pTrack, 0, beats);
 
     EXPECT_DOUBLE_EQ(bpm, pMap->getBpm());
     pMap->scale(Beats::DOUBLE);
@@ -65,8 +60,14 @@ TEST_F(BeatMapTest, Scale) {
     pMap->scale(Beats::TWOTHIRDS);
     EXPECT_DOUBLE_EQ(bpm * 2 / 3, pMap->getBpm());
 
+    pMap->scale(Beats::THREEHALVES);
+    EXPECT_DOUBLE_EQ(bpm, pMap->getBpm());
+
     pMap->scale(Beats::THREEFOURTHS);
-    EXPECT_DOUBLE_EQ(bpm / 2, pMap->getBpm());
+    EXPECT_DOUBLE_EQ(bpm * 3 / 4, pMap->getBpm());
+
+    pMap->scale(Beats::FOURTHIRDS);
+    EXPECT_DOUBLE_EQ(bpm, pMap->getBpm());
 }
 
 TEST_F(BeatMapTest, TestNthBeat) {
@@ -80,7 +81,7 @@ TEST_F(BeatMapTest, TestNthBeat) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    auto pMap = std::make_unique<BeatMap>(*m_pTrack, 0, beats);
 
     // Check edge cases
     double firstBeat = startOffsetSamples + beatLengthSamples * 0;
@@ -113,7 +114,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    auto pMap = std::make_unique<BeatMap>(*m_pTrack, 0, beats);
 
     // Pretend we're on the 20th beat;
     const int curBeat = 20;
@@ -151,7 +152,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    auto pMap = std::make_unique<BeatMap>(*m_pTrack, 0, beats);
 
     // Pretend we're just before the 20th beat;
     const int curBeat = 20;
@@ -191,7 +192,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    auto pMap = std::make_unique<BeatMap>(*m_pTrack, 0, beats);
 
     // Pretend we're just after the 20th beat;
     const int curBeat = 20;
@@ -232,7 +233,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    auto pMap = std::make_unique<BeatMap>(*m_pTrack, 0, beats);
 
     // Pretend we're half way between the 20th and 21st beat
     double previousBeat = startOffsetSamples + beatLengthSamples * 20.0;
@@ -273,7 +274,7 @@ TEST_F(BeatMapTest, TestBpmAround) {
         beat_pos += beat_length;
     }
 
-    BeatMap* pMap = new BeatMap(m_pTrack, 0, beats);
+    auto pMap = std::make_unique<BeatMap>(*m_pTrack, 0, beats);
 
     // The average of the first 8 beats should be different than the average
     // of the last 8 beats.
@@ -286,14 +287,11 @@ TEST_F(BeatMapTest, TestBpmAround) {
                      pMap->getBpmAroundPosition(0, 4));
     EXPECT_DOUBLE_EQ(118.98016997167139,
                      pMap->getBpmAroundPosition(65 * approx_beat_length, 4));
-    delete pMap;
 
     // Try a really, really short track
     beats = createBeatVector(10, 3, getBeatLengthFrames(filebpm));
-    pMap = new BeatMap(m_pTrack, 0, beats);
-
+    pMap = std::make_unique<BeatMap>(*m_pTrack, 0, beats);
     EXPECT_DOUBLE_EQ(filebpm, pMap->getBpmAroundPosition(1 * approx_beat_length, 4));
-    delete pMap;
 }
 
 }  // namespace

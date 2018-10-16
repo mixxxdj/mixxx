@@ -116,7 +116,7 @@ bool SoftTakeover::ignore(ControlObject* control, double newParameter) {
      *      Don't ignore in every other case.
      */
 
-    mixxx::Duration currentTime = Time::elapsed();
+    mixxx::Duration currentTime = mixxx::Time::elapsed();
     // We will get a sudden jump if we don't ignore the first value.
     if (m_time == mixxx::Duration::fromMillis(0)) {
         ignore = true;

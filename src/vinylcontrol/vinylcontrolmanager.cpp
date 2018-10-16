@@ -93,15 +93,14 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
 
         // Default cueing should be off.
         ControlObject::set(ConfigKey(group, "vinylcontrol_cueing"),
-                           m_pConfig->getValueString(ConfigKey(
-                                   VINYL_PREF_KEY,
-                                   QString("cueing_ch%1").arg(i + 1)), "0").toDouble());
+                m_pConfig->getValue(
+                        ConfigKey(VINYL_PREF_KEY, QString("cueing_ch%1").arg(i + 1)),
+                        0.0));
         // Default mode should be relative.
-        const QString kDefaultMode = QString::number(MIXXX_VCMODE_RELATIVE);
         ControlObject::set(ConfigKey(group, "vinylcontrol_mode"),
-                           m_pConfig->getValueString(ConfigKey(
-                                   VINYL_PREF_KEY,
-                                   QString("mode_ch%1").arg(i + 1)), kDefaultMode).toDouble());
+                m_pConfig->getValue(
+                        ConfigKey(VINYL_PREF_KEY, QString("mode_ch%1").arg(i + 1)),
+                        MIXXX_VCMODE_RELATIVE));
     }
     m_iNumConfiguredDecks = num_decks;
 }

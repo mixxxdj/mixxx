@@ -35,11 +35,11 @@ ErrorDialogProperties::ErrorDialogProperties()
           m_escapeButton(QMessageBox::NoButton) {
 }
 
-void ErrorDialogProperties::setTitle(QString title) {
+void ErrorDialogProperties::setTitle(const QString& title) {
     m_title.append(" - ").append(title);
 }
 
-void ErrorDialogProperties::setText(QString text) {
+void ErrorDialogProperties::setText(const QString& text) {
     // If no key is set, use this window text since it is likely to be unique
     if (m_key.isEmpty()) m_key = text;
     m_text = text;
@@ -126,7 +126,7 @@ bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
 
     // Make sure the minimum items are set
     QString text = props->getText();
-    DEBUG_ASSERT_AND_HANDLE(!text.isEmpty()) {
+    VERIFY_OR_DEBUG_ASSERT(!text.isEmpty()) {
         delete props;
         return false;
     }

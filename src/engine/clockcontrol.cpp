@@ -25,17 +25,17 @@ void ClockControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
 
     // Disconnect any previously loaded track/beats
     if (m_pTrack) {
-        disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+        disconnect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotBeatsUpdated()));
     }
     if (pNewTrack) {
         m_pTrack = pNewTrack;
         m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.data(), SIGNAL(beatsUpdated()),
+        connect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotBeatsUpdated()));
     } else {
         m_pBeats.clear();
-        m_pTrack.clear();
+        m_pTrack.reset();
     }
 
 }
@@ -46,7 +46,7 @@ void ClockControl::slotBeatsUpdated() {
     }
 }
 
-double ClockControl::process(const double dRate,
+void ClockControl::process(const double dRate,
                              const double currentSample,
                              const double totalSamples,
                              const int iBuffersize) {
@@ -66,6 +66,4 @@ double ClockControl::process(const double dRate,
         double distanceToClosestBeat = fabs(currentSample - closestBeat);
         m_pCOBeatActive->set(distanceToClosestBeat < blinkIntervalSamples / 2.0);
     }
-
-    return kNoTrigger;
 }

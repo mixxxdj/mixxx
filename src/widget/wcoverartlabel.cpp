@@ -10,7 +10,7 @@ static const QSize s_labelDisplaySize = QSize(100, 100);
 WCoverArtLabel::WCoverArtLabel(QWidget* parent)
         : QLabel(parent),
           m_pCoverMenu(new WCoverArtMenu(this)),
-          m_pDlgFullSize(new DlgCoverArtFullSize()),
+          m_pDlgFullSize(new DlgCoverArtFullSize(this, nullptr)),
           m_defaultCover(CoverArtUtils::defaultCoverLocation()) {
     setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     setFrameShape(QFrame::Box);
@@ -18,8 +18,8 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(slotCoverMenu(QPoint)));
-    connect(m_pCoverMenu, SIGNAL(coverArtSelected(const CoverArt&)),
-            this, SIGNAL(coverArtSelected(const CoverArt&)));
+    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
+            this, SIGNAL(coverInfoSelected(const CoverInfoRelative&)));
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
             this, SIGNAL(reloadCoverArt()));
 
@@ -34,11 +34,13 @@ WCoverArtLabel::~WCoverArtLabel() {
     delete m_pDlgFullSize;
 }
 
-void WCoverArtLabel::setCoverArt(const QString& trackLocation, const CoverInfo& coverInfo, QPixmap px) {
+void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
+                                 QPixmap px) {
     qDebug() << "WCoverArtLabel::setCoverArt" << coverInfo << px.size();
 
-    m_coverInfo = coverInfo;
-    m_pCoverMenu->setCoverArt(trackLocation, coverInfo);
+    m_loadedCover = px;
+    m_pCoverMenu->setCoverArt(coverInfo);
+
 
     if (px.isNull()) {
         setPixmap(m_defaultCover);
@@ -57,6 +59,10 @@ void WCoverArtLabel::slotCoverMenu(const QPoint& pos) {
     m_pCoverMenu->popup(mapToGlobal(pos));
 }
 
+void WCoverArtLabel::loadTrack(TrackPointer pTrack) {
+    m_pLoadedTrack = pTrack;
+}
+
 void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
     if (m_pCoverMenu->isVisible()) {
         return;
@@ -66,11 +72,8 @@ void WCoverArtLabel::mousePressEvent(QMouseEvent* event) {
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else {
-            m_pDlgFullSize->init(m_coverInfo);
+            m_pDlgFullSize->init(m_pLoadedTrack);
         }
     }
 }
 
-void WCoverArtLabel::leaveEvent(QEvent* /*unused*/) {
-    m_pDlgFullSize->close();
-}

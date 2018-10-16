@@ -3,10 +3,11 @@
 #include <QSqlError>
 #include <QtDebug>
 
-#include "waveform/waveform.h"
 #include "library/dao/analysisdao.h"
 #include "library/queryutil.h"
+#include "preferences/waveformsettings.h"
 #include "util/performancetimer.h"
+#include "waveform/waveform.h"
 
 const QString AnalysisDao::s_analysisTableName = "track_analysis";
 
@@ -16,23 +17,12 @@ const QString AnalysisDao::s_analysisTableName = "track_analysis";
 // CPU time so I think we should stick with the default. rryan 4/3/2012
 const int kCompressionLevel = -1;
 
-AnalysisDao::AnalysisDao(QSqlDatabase& database, UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
-          m_db(database) {
+AnalysisDao::AnalysisDao(UserSettingsPointer pConfig)
+        : m_pConfig(pConfig) {
     QDir storagePath = getAnalysisStoragePath();
     if (!QDir().mkpath(storagePath.absolutePath())) {
         qDebug() << "WARNING: Could not create analysis storage path. Mixxx will be unable to store analyses.";
     }
-}
-
-AnalysisDao::~AnalysisDao() {
-}
-
-void AnalysisDao::initialize() {
-}
-
-void AnalysisDao::setDatabase(QSqlDatabase& database) {
-    m_db = database;
 }
 
 QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(TrackId trackId) {
@@ -83,6 +73,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(TrackId trac
     const int versionColumn = queryRecord.indexOf("version");
     const int dataChecksumColumn = queryRecord.indexOf("data_checksum");
 
+    QDir analysisPath(getAnalysisStoragePath());
     while (query->next()) {
         AnalysisDao::AnalysisInfo info;
         info.analysisId = query->value(idColumn).toInt();
@@ -91,7 +82,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(TrackId trac
         info.description = query->value(descriptionColumn).toString();
         info.version = query->value(versionColumn).toString();
         int checksum = query->value(dataChecksumColumn).toInt();
-        QString dataPath = getAnalysisStoragePath().absoluteFilePath(
+        QString dataPath = analysisPath.absoluteFilePath(
             QString::number(info.analysisId));
         QByteArray compressedData = loadDataFromFile(dataPath);
         int file_checksum = qChecksum(compressedData.constData(),
@@ -216,11 +207,10 @@ void AnalysisDao::deleteAnalyses(const QList<TrackId>& trackIds) {
         LOG_FAILED_QUERY(query) << "couldn't delete analysis";
     }
     const int idColumn = query.record().indexOf("id");
+    QDir analysisPath(getAnalysisStoragePath());
     while (query.next()) {
         int id = query.value(idColumn).toInt();
-        QString dataPath = getAnalysisStoragePath().absoluteFilePath(
-                            QString::number(id));
-        qDebug() << dataPath;
+        QString dataPath = analysisPath.absoluteFilePath(QString::number(id));
         deleteFile(dataPath);
     }
     query.prepare(QString("DELETE FROM track_analysis "
@@ -315,21 +305,22 @@ bool AnalysisDao::saveDataToFile(const QString& fileName, const QByteArray& data
     return true;
 }
 
-void AnalysisDao::saveTrackAnalyses(Track* pTrack) {
-    if (!pTrack) {
+void AnalysisDao::saveTrackAnalyses(
+        TrackId trackId,
+        ConstWaveformPointer pWaveform,
+        ConstWaveformPointer pWaveSummary) {
+    // The only analyses we have at the moment are waveform analyses so we have
+    // nothing to do if it is disabled.
+    WaveformSettings waveformSettings(m_pConfig);
+    if (!waveformSettings.waveformCachingEnabled()) {
         return;
     }
-
-    ConstWaveformPointer pWaveform = pTrack->getWaveform();
-    ConstWaveformPointer pWaveSummary = pTrack->getWaveformSummary();
 
     // Don't try to save invalid or non-dirty waveforms.
-    if (!pWaveform || pWaveform->getDataSize() == 0 || !pWaveform->isDirty() ||
-        !pWaveSummary || pWaveSummary->getDataSize() == 0 || !pWaveSummary->isDirty()) {
+    if (!pWaveform || pWaveform->saveState() != Waveform::SaveState::SavePending ||
+        !pWaveSummary || pWaveSummary->saveState() != Waveform::SaveState::SavePending) {
         return;
     }
-
-    TrackId trackId(pTrack->getId());
 
     AnalysisDao::AnalysisInfo analysis;
     analysis.trackId = trackId;
@@ -342,7 +333,7 @@ void AnalysisDao::saveTrackAnalyses(Track* pTrack) {
     analysis.data = pWaveform->toByteArray();
     bool success = saveAnalysis(&analysis);
     if (success) {
-        pWaveform->setDirty(false);
+        pWaveform->setSaveState(Waveform::SaveState::Saved);
     }
 
     qDebug() << (success ? "Saved" : "Failed to save")
@@ -358,9 +349,60 @@ void AnalysisDao::saveTrackAnalyses(Track* pTrack) {
 
     success = saveAnalysis(&analysis);
     if (success) {
-        pWaveSummary->setDirty(false);
+        pWaveSummary->setSaveState(Waveform::SaveState::Saved);
     }
     qDebug() << (success ? "Saved" : "Failed to save")
              << "waveform summary analysis for trackId" << trackId
              << "analysisId" << analysis.analysisId;
+}
+
+size_t AnalysisDao::getDiskUsageInBytes(
+        const QSqlDatabase& database,
+        AnalysisType type) const {
+    QDir analysisPath(getAnalysisStoragePath());
+
+    QSqlQuery query(database);
+    query.prepare(QString("SELECT id FROM %1 WHERE type=:type").arg(s_analysisTableName));
+    query.bindValue(":type", type);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't get analyses of type" << type;
+        return 0;
+    }
+
+    const int idColumn = query.record().indexOf("id");
+    size_t total = 0;
+    while (query.next()) {
+        total += QFileInfo(analysisPath.absoluteFilePath(
+                query.value(idColumn).toString())).size();
+    }
+    return total;
+}
+
+bool AnalysisDao::deleteAnalysesByType(
+        const QSqlDatabase& database,
+        AnalysisType type) const {
+    QDir analysisPath(getAnalysisStoragePath());
+
+    QSqlQuery query(database);
+    query.prepare(QString("SELECT id FROM %1 WHERE type=:type").arg(s_analysisTableName));
+    query.bindValue(":type", type);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't get analyses of type" << type;
+        return false;
+    }
+
+    const int idColumn = query.record().indexOf("id");
+    while (query.next()) {
+        QString dataPath = analysisPath.absoluteFilePath(query.value(idColumn).toString());
+        deleteFile(dataPath);
+    }
+    query.prepare(QString("DELETE FROM %1 WHERE type=:type").arg(s_analysisTableName));
+    query.bindValue(":type", type);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't delete analysis";
+    }
+
+    return true;
 }

@@ -22,7 +22,7 @@ class SyncControl : public EngineControl, public Syncable {
     static const double kBpmDouble;
     SyncControl(const QString& group, UserSettingsPointer pConfig,
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
-    virtual ~SyncControl();
+    ~SyncControl() override;
 
     const QString& getGroup() const { return m_sGroup; }
     EngineChannel* getChannel() const { return m_pChannel; }
@@ -31,7 +31,7 @@ class SyncControl : public EngineControl, public Syncable {
     SyncMode getSyncMode() const;
     void notifySyncModeChanged(SyncMode mode);
     void notifyOnlyPlayingSyncable();
-    void requestSyncPhase();
+    void requestSync();
     bool isPlaying() const;
 
     double getBeatDistance() const;
@@ -136,6 +136,7 @@ class SyncControl : public EngineControl, public Syncable {
     ControlProxy* m_pPassthroughEnabled;
     ControlProxy* m_pEjectButton;
     ControlProxy* m_pSyncPhaseButton;
+    ControlProxy* m_pQuantize;
 };
 
 

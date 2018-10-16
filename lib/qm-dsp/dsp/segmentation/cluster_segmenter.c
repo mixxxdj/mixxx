@@ -227,7 +227,7 @@ void constq_segment(int* q, double** features, int frames_read, int bins, int nc
 		int ncomponents = 20;
 		pca_project(features, frames_read, ncoeff, ncomponents);
 		
-		/* copy the envelope so that it immediatly follows the chosen components */
+		/* copy the envelope so that it immediately follows the chosen components */
 		for (i = 0; i < frames_read; i++)
 			features[i][ncomponents] = features[i][ncoeff];	
 		

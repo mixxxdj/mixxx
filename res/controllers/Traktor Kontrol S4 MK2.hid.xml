@@ -2,7 +2,7 @@
 <MixxxControllerPreset mixxxVersion="2.0.0" schemaVersion="1">
      <info>
         <name>Traktor Kontrol S4 MK2</name>
-        <author>Owen Williams</author>
+        <author>Owen Williams, Fayaaz Ahmed</author>
         <description>HID Mapping for Traktor Kontrol S4 MK2</description>
         <wiki>http://mixxx.org/wiki/doku.php/traktor_s4_mk2</wiki>
         <devices>

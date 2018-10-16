@@ -17,13 +17,10 @@
         <Layout>vertical</Layout>
         <Children>
           <EffectPushButton>
-            <Size>40f,15f</Size>
+            <MinimumSize>34,15</MinimumSize>
+            <MaximumSize>58,15</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
             <ObjectName>EffectButton</ObjectName>
-            <TooltipId>EffectSlot_button_parameter</TooltipId>
-            <EffectRack><Variable name="EffectRack"/></EffectRack>
-            <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
-            <Effect><Variable name="Effect"/></Effect>
-            <EffectButtonParameter><Variable name="EffectButtonParameter"/></EffectButtonParameter>
             <NumberStates>2</NumberStates>
               <State>
                 <Number>0</Number>
@@ -40,7 +37,10 @@
           </EffectPushButton>
 
           <EffectButtonParameterName>
-            <Size>40f,15f</Size>
+            <MinimumSize>34,15</MinimumSize>
+            <MaximumSize>58,15</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Elide>right</Elide>
             <ObjectName>EffectButtonLabel</ObjectName>
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>

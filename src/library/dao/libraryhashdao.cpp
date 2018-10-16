@@ -8,20 +8,6 @@
 #include "libraryhashdao.h"
 #include "library/queryutil.h"
 
-LibraryHashDAO::LibraryHashDAO(QSqlDatabase& database)
-        : m_database(database) {
-
-}
-
-LibraryHashDAO::~LibraryHashDAO()
-{
-}
-
-void LibraryHashDAO::initialize() {
-    qDebug() << "LibraryHashDAO::initialize" << QThread::currentThread()
-             << m_database.connectionName();
-}
-
 QHash<QString, int> LibraryHashDAO::getDirectoryHashes() {
     QSqlQuery query(m_database);
     query.prepare("SELECT hash, directory_path FROM LibraryHashes");

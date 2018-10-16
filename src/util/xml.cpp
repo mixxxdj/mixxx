@@ -4,13 +4,19 @@
 #include "util/xml.h"
 #include "errordialoghandler.h"
 
-int XmlParse::selectNodeInt(const QDomNode& nodeHeader, const QString& sNode) {
-    return selectNode(nodeHeader, sNode).toElement().text().toInt();
+int XmlParse::selectNodeInt(const QDomNode& nodeHeader,
+                            const QString& sNode, bool* ok) {
+    return selectNode(nodeHeader, sNode).toElement().text().toInt(ok);
 }
 
 float XmlParse::selectNodeFloat(const QDomNode& nodeHeader,
-                                const QString& sNode) {
-    return selectNode(nodeHeader, sNode).toElement().text().toFloat();
+                                const QString& sNode, bool* ok) {
+    return selectNode(nodeHeader, sNode).toElement().text().toFloat(ok);
+}
+
+double XmlParse::selectNodeDouble(const QDomNode& nodeHeader,
+                                  const QString& sNode, bool* ok) {
+    return selectNode(nodeHeader, sNode).toElement().text().toDouble(ok);
 }
 
 QDomNode XmlParse::selectNode(const QDomNode& nodeHeader,

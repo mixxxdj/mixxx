@@ -33,8 +33,7 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            UserSettingsPointer  _config)
         : DlgPreferencePage(parent),
           m_pVCManager(pVCMan),
-          config(_config),
-          m_iConfiguredDecks(0) {
+          config(_config) {
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
     m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
 
@@ -129,7 +128,7 @@ void DlgPrefVinyl::slotNumDecksChanged(double dNumDecks) {
         return;
     }
 
-    for (int i = m_iConfiguredDecks; i < num_decks; ++i) {
+    for (int i = m_COSpeeds.length(); i < num_decks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
         m_COSpeeds.push_back(new ControlProxy(group, "vinylcontrol_speed_type"));
         setDeckWidgetsVisible(i, true);
@@ -247,20 +246,20 @@ void DlgPrefVinyl::slotUpdate() {
         ComboBoxVinylSpeed4->setCurrentIndex(combo_index);
 
     // set lead-in time
-    LeadinTime1->setText(config->getValueString(ConfigKey("[Channel1]",
-                                                          "vinylcontrol_lead_in_time"), "0"));
-    LeadinTime2->setText(config->getValueString(ConfigKey("[Channel2]",
-                                                          "vinylcontrol_lead_in_time"), "0"));
-    LeadinTime3->setText(config->getValueString(ConfigKey("[Channel3]",
-                                                          "vinylcontrol_lead_in_time"), "0"));
-    LeadinTime4->setText(config->getValueString(ConfigKey("[Channel4]",
-                                                          "vinylcontrol_lead_in_time"), "0"));
+    LeadinTime1->setText(config->getValue(
+            ConfigKey("[Channel1]", "vinylcontrol_lead_in_time"), "0"));
+    LeadinTime2->setText(config->getValue(
+            ConfigKey("[Channel2]", "vinylcontrol_lead_in_time"), "0"));
+    LeadinTime3->setText(config->getValue(
+            ConfigKey("[Channel3]", "vinylcontrol_lead_in_time"), "0"));
+    LeadinTime4->setText(config->getValue(
+            ConfigKey("[Channel4]", "vinylcontrol_lead_in_time"), "0"));
 
     SignalQualityEnable->setChecked(
-            (bool)config->getValueString(ConfigKey(VINYL_PREF_KEY, "show_signal_quality")).toInt());
+            (bool)config->getValue<bool>(ConfigKey(VINYL_PREF_KEY, "show_signal_quality")));
 
     // set vinyl control gain
-    const double ratioGain = config->getValueString(ConfigKey(VINYL_PREF_KEY, "gain")).toDouble();
+    const double ratioGain = config->getValue<double>(ConfigKey(VINYL_PREF_KEY, "gain"));
     const double dbGain = ratio2db(ratioGain);
     VinylGain->setValue(static_cast<int>(dbGain + 0.5));
     slotUpdateVinylGain();

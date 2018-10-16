@@ -1,6 +1,7 @@
 #include "library/baseexternalplaylistmodel.h"
 
 #include "library/queryutil.h"
+#include "library/dao/trackschema.h"
 #include "mixer/playermanager.h"
 
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
@@ -20,8 +21,9 @@ BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
 }
 
 TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
-    QString location = index.sibling(
+    QString nativeLocation = index.sibling(
             index.row(), fieldIndex("location")).data().toString();
+    QString location = QDir::fromNativeSeparators(nativeLocation);
 
     if (location.isEmpty()) {
         // Track is lost
@@ -149,7 +151,8 @@ void BaseExternalPlaylistModel::trackLoaded(QString group, TrackPointer pTrack) 
             // The external table has foreign Track IDs, so we need to compare
             // by location
             for (int row = 0; row < rowCount(); ++row) {
-                QString location = index(row, fieldIndex("location")).data().toString();
+                QString nativeLocation = index(row, fieldIndex("location")).data().toString();
+                QString location = QDir::fromNativeSeparators(nativeLocation);
                 if (location == pTrack->getLocation()) {
                     m_previewDeckTrackId = TrackId(index(row, 0).data());
                     //Debug() << "foreign track id" << m_previewDeckTrackId;

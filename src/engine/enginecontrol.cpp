@@ -19,25 +19,14 @@ EngineControl::EngineControl(QString group,
 EngineControl::~EngineControl() {
 }
 
-double EngineControl::process(const double,
-                              const double,
-                              const double,
-                              const int) {
-    return kNoTrigger;
-}
-
-double EngineControl::nextTrigger(const double,
-                                  const double,
-                                  const double,
-                                  const int) {
-    return kNoTrigger;
-}
-
-double EngineControl::getTrigger(const double,
-                                 const double,
-                                 const double,
-                                 const int) {
-    return kNoTrigger;
+void EngineControl::process(const double dRate,
+                           const double dCurrentSample,
+                           const double dTotalSamples,
+                           const int iBufferSize) {
+    Q_UNUSED(dRate);
+    Q_UNUSED(dCurrentSample);
+    Q_UNUSED(dTotalSamples);
+    Q_UNUSED(iBufferSize);
 }
 
 void EngineControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -92,9 +81,9 @@ EngineBuffer* EngineControl::getEngineBuffer() {
     return m_pEngineBuffer;
 }
 
-void EngineControl::seekAbs(double playPosition) {
+void EngineControl::seekAbs(double samplePosition) {
     if (m_pEngineBuffer) {
-        m_pEngineBuffer->slotControlSeekAbs(playPosition);
+        m_pEngineBuffer->slotControlSeekAbs(samplePosition);
     }
 }
 
@@ -110,8 +99,9 @@ void EngineControl::seek(double sample) {
     }
 }
 
-void EngineControl::notifySeek(double dNewPlaypos) {
+void EngineControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
     Q_UNUSED(dNewPlaypos);
+    Q_UNUSED(adjustingPhase);
 }
 
 EngineBuffer* EngineControl::pickSyncTarget() {

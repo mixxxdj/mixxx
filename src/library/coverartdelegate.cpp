@@ -1,12 +1,14 @@
 #include <QTableView>
+#include <QPainter>
 
 #include "library/coverartdelegate.h"
 #include "library/coverartcache.h"
-#include "library/dao/trackdao.h"
+#include "library/dao/trackschema.h"
 #include "util/math.h"
 
-CoverArtDelegate::CoverArtDelegate(QObject *parent)
-        : QStyledItemDelegate(parent),
+CoverArtDelegate::CoverArtDelegate(QTableView* parent)
+        : TableItemDelegate(parent),
+          m_pTableView(parent),
           m_bOnlyCachedCover(false),
           m_iCoverColumn(-1),
           m_iCoverSourceColumn(-1),
@@ -21,9 +23,9 @@ CoverArtDelegate::CoverArtDelegate(QObject *parent)
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
-        connect(pCache, SIGNAL(coverFound(const QObject*, int, const CoverInfo&,
+        connect(pCache, SIGNAL(coverFound(const QObject*, const CoverInfoRelative&,
                                           QPixmap, bool)),
-                this, SLOT(slotCoverFound(const QObject*, int, const CoverInfo&,
+                this, SLOT(slotCoverFound(const QObject*, const CoverInfoRelative&,
                                           QPixmap, bool)));
     }
 
@@ -69,27 +71,21 @@ void CoverArtDelegate::slotOnlyCachedCoverArt(bool b) {
 }
 
 void CoverArtDelegate::slotCoverFound(const QObject* pRequestor,
-                                      int requestReference,
-                                      const CoverInfo& info,
+                                      const CoverInfoRelative& info,
                                       QPixmap pixmap, bool fromCache) {
-    Q_UNUSED(info);
     if (pRequestor == this && !pixmap.isNull() && !fromCache) {
         // qDebug() << "CoverArtDelegate::slotCoverFound" << pRequestor << info
         //          << pixmap.size();
-        QLinkedList<int> rows = m_hashToRow.take(requestReference);
+        QLinkedList<int> rows = m_hashToRow.take(info.hash);
         foreach(int row, rows) {
             emit(coverReadyForCell(row, m_iCoverColumn));
         }
     }
 }
 
-void CoverArtDelegate::paint(QPainter *painter,
+void CoverArtDelegate::paintItem(QPainter *painter,
                              const QStyleOptionViewItem &option,
                              const QModelIndex &index) const {
-    if (option.state & QStyle::State_Selected) {
-        painter->fillRect(option.rect, option.palette.highlight());
-    }
-
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache == NULL || m_iIdColumn == -1 || m_iCoverSourceColumn == -1 ||
             m_iCoverTypeColumn == -1 || m_iCoverLocationColumn == -1 ||
@@ -114,7 +110,7 @@ void CoverArtDelegate::paint(QPainter *painter,
 
     // We listen for updates via slotCoverFound above and signal to
     // BaseSqlTableModel when a row's cover is ready.
-    QPixmap pixmap = pCache->requestCover(info, this, info.hash, option.rect.width(),
+    QPixmap pixmap = pCache->requestCover(info, this, option.rect.width(),
                                           m_bOnlyCachedCover, true);
     if (!pixmap.isNull()) {
         int width = math_min(pixmap.width(), option.rect.width());

@@ -1,0 +1,2494 @@
+/* Tango style sheet */
+
+#Mixxx {	/*
+  AlignRight just for testing, to attach SkinSettings to right edge.
+  Not working. See https://bugs.launchpad.net/mixxx/+bug/1623997 */
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  background-color: #1e1e1e;
+  font-family: Ubuntu;
+  font-weight: normal;
+  font-size: 12px/12px;
+}
+
+#SkinContainer {	/*
+  AlignRight just for testing, to attach SkinSettings to right edge.
+  Not working. See https://bugs.launchpad.net/mixxx/+bug/1623997 */
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  background-color: #1e1e1e;
+}
+
+WWidget,
+WLabel,
+WNumber,
+WTrackProperty,
+WBeatSpinBox,
+WEffectSelector, WEffectSelector QAbstractItemView,
+WSearchLineEdit {
+  font-family: Ubuntu;
+  font-weight: normal;
+}
+
+WPushButton {
+  font-family: Ubuntu;
+  font-weight: normal;
+  font-size: 12px/12px;
+  border-radius: 3px;
+}
+
+WWidgetGroup {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  border-radius: 1px;
+}
+
+#Library_Singleton,
+#Library,
+#DeckContainer {
+  background-color: #1e1e1e;
+}
+
+#GuiCover {
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  /* background is #333, so this has to blend in */
+  background-color: rgba(51, 51, 51, 120);
+  }
+  #UnconfiguredHeadphoneHint {
+    font-size: 14px/14px;
+    text-align: center;
+    color: #fff;
+  }
+  #UnconfiguredHeadphoneText,
+  #UnconfiguredHeadphoneTextPrevDeck {
+    background-color: rgba(51, 51, 51, 200);
+    font-size: 12px/12px;
+    color: #aaa;
+    }
+    #UnconfiguredHeadphoneText {
+      margin-left: 5px;
+    }
+    #UnconfiguredHeadphoneTextPrevDeck {
+      margin-left: 25px;
+      padding: 1px 0px;
+    }
+
+
+/* splitters between
+    - waveforms & lower skin part
+    - treeview & library table */
+#LibrarySplitter::handle:horizontal {
+  image: url(skin:/graphics/splitterHori_handle.svg);
+  }
+  #LibrarySplitter::handle:horizontal:hover,
+  #LibrarySplitter::handle:horizontal:pressed {
+    image: url(skin:/graphics/splitterHori_handle_pressed.svg);
+  }
+  /* splitter between coverArt and tree view */
+  #LibrarySplitter::handle:vertical,
+  #WaveformSplitter::handle:vertical {
+    image: url(skin:/graphics/splitterVert_handle.svg);
+    }
+    #LibrarySplitter::handle:vertical:hover,
+    #LibrarySplitter::handle:vertical:pressed,
+    #WaveformSplitter::handle:vertical:hover,
+    #WaveformSplitter::handle:vertical:pressed {
+      image: url(skin:/graphics/splitterVert_handle_pressed.svg);
+    }
+
+
+/* ################################################################
+####### Colors ##################################################
+###############################################################*/
+
+#Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
+#Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
+  color: #33a8ff;
+}
+#Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
+#Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
+  color: #d910f0;
+}
+
+#WaveformContainer1,
+#WaveformContainer2 {
+  background-color: #001D33;
+}
+#WaveformContainer3,
+#WaveformContainer4 {
+  background-color: #3A0440;
+}
+
+/*	Define background-color here to make VinylToggler match
+  the waveforms background-color.
+  spinnyMini_Xmask.svg must match as well. */
+#DeckOverview1,
+#DeckOverview2 {
+  background-color: #001D33;
+}
+#DeckOverview3,
+#DeckOverview4 {
+  background-color: #3A0440;
+}
+
+
+
+/*################################################################
+ #######  Skin Settings  ########################################
+##############################################################*/
+
+#SkinSettingsContainer{
+}
+
+#SkinSettings {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding: 2px 0px 0px 0px;
+  text-align: left;
+  background-color: #333;
+}
+#SkinSettingsHeader {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding-right: 2px;
+  }
+  #SkinSettingsClose {
+    border-radius:2px;
+    margin-bottom: 4px;
+    background-color: transparent;
+    image: url(skin:../Tango/buttons/btn_skinsettings_close.svg) no-repeat center top;
+    }
+    #SkinSettingsClose:hover {
+      border-radius:2px;
+      margin-bottom: 4px;
+      background-color: #0f0f0f;
+      image: url(skin:../Tango/buttons/btn_skinsettings_close_hover.svg) no-repeat center top;
+    }
+
+#SkinSettingsCategory {
+  padding: 2px 8px 1px 8px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+    border: 1px solid #1e1e1e;
+    border-width: 0px 0px 3px 0px;
+  }
+  #CategoryLabel {
+    font-size: 16px/16px;
+    text-align: left;
+    padding: 5px 0px 0px 3px;
+    color: #eeeeee;
+    background-color: none;
+  }
+
+#SkinSettingsButton,
+#SkinSettingsButtonMulti  {
+  font-size: 12px/12px;
+  }
+  #SkinSettingsButtonMulti {
+    text-align: center;
+  }
+  #SkinSettingsButton:hover,
+  #SkinSettingsButtonMulti:hover {
+    background-color: #0f0f0f;
+  }
+  #SkinSettingsButton[displayValue="0"],
+  #SkinSettingsButtonMulti[displayValue="0"] {
+    color: #d2d2d2;
+  }
+  #SkinSettingsButton[displayValue="1"],
+  #SkinSettingsButton[displayValue="2"],
+  #SkinSettingsButtonMulti[displayValue="1"] {
+    color: #eeeeee;
+  }
+  #SkinSettingsButtonMulti[displayValue="1"] {
+    background-color: #0f0f0f;
+  }
+
+#DeckIndicatorSettings {
+  margin-left: 17px;
+}
+#DeckButtonVisibility {
+  margin-right: 1px;
+  font-weight: bold;
+  }
+  #DeckButtonVisibility[displayValue="0"] {
+    color: #888;
+  }
+  #DeckButtonVisibility[displayValue="0"]:hover,
+  #DeckButtonVisibility[displayValue="1"] {
+    background-color: #151515;
+    color: #d2d2d2;
+  }
+  #DeckButtonVisibility[displayValue="1"]:hover {
+    border: 1px solid #d2d2d2;
+  }
+#SubmenuCover {
+  background-color: rgba(51, 51, 51, 127);
+}
+#SkinSettingsLabel,
+#SubmenuHint {
+  font-size: 12px/12px;
+  }
+  #SkinSettingsLabel {
+    padding-bottom: 2px;
+  }
+  #SubmenuHint {
+    color: #666666;
+    background-color: #333;
+  }
+#CoverSpinnyHint {
+  font-size: 13px/13px;
+  font-weight: bold;
+  color: #f56200;
+}
+
+
+
+/*################################################################
+ ######## Mixer Bar #############################################
+##############################################################*/
+#Topbar {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin: 0px 0px 3px 0px;
+}
+
+#MixerBar {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin: 0px;
+  padding: 0px;
+  qproperty-layoutSpacing: 0px;
+  border: 0px;
+}
+
+#MixerbarSection,
+#CrossfaderContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  qproperty-layoutSpacing: 0px;
+  border-radius: 3px;
+  border-top-right-radius: 0px;
+  border-top-left-radius: 0px;
+  background-color: #252525;
+  }
+  #MixerbarSection {
+    margin: 0px;
+  }
+  #CrossfaderContainer {
+    margin: 0px 10px;
+  }
+  #MixerbarSection:hover,
+  #CrossfaderContainer:hover {
+    background-color: #0f0f0f;
+  }
+
+#MasterHeadMixerLabel {
+  image: url(skin:/buttons/btn_master_head_mixer.svg) no-repeat center center;
+  }
+  #MasterMixerLabel {
+    image: url(skin:/buttons/btn_master.svg) no-repeat center center;
+  }
+  #HeadphoneMixerLabel {
+    image: url(skin:/buttons/btn_head.svg) no-repeat center center;
+  }
+#BoothMixerLabel {
+  image: url(skin:/buttons/btn_booth.svg) no-repeat center center;
+}
+#MixerbarKnob {
+  margin: 2px 0px 0px 0px;
+}
+#MixerbarSlider {
+  margin: 0px 0px 0px 0px;
+}
+#MixerbarCover {
+  /* Note(ronso0): background is #333, so this has to blend in */
+  background-color: rgba(30, 30, 30, 200);
+}
+
+/*################################################################
+ ######  Skin Controls / Rec / Broadcast / Clock ################
+##############################################################*/
+#SkinControlsBar {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+
+#GuiToggleButton,
+#GuiToggleButton2,
+#RecordingButton {
+  color: #888;
+  text-align: center;
+  font-weight: bold;
+  border: 1px solid #444;
+  background-color: #333;
+  }
+  #GuiToggleButton:hover,
+  #GuiToggleButton2:hover {
+    border: 1px solid #999;
+  }
+
+#GuiToggleButton[displayValue="1"],
+#GuiToggleButton[displayValue="2"] {
+  color: #eeeeee;
+  border: 1px solid #999;
+  background-color: #252525;
+  }
+  #GuiToggleButton[displayValue="1"]:hover,
+  #GuiToggleButton[displayValue="2"]:hover,
+  #GuiToggleButton2:hover {
+    border: 1px solid #d2d2d2;
+  }
+
+#RecBox {
+/* used as Rec container as well as "Rec" label to cover RecDuration
+  when inactive (--:--) */
+  border-radius: 3px;
+  background-color: #333;
+  }
+  #RecButton[displayValue="0"] {
+    background-color: rgba(51, 51, 51, 120);
+    }
+    #RecButton[displayValue="0"]:hover,
+    #RecButton[displayValue="2"] {
+      border: 1px solid #a90000;
+    }
+    #RecButton[displayValue="1"],
+    #RecButton[displayValue="2"]:hover {
+      border: 1px solid #ff6600;
+    }
+    #RecButton[displayValue="2"] {
+    }
+  #RecDot {
+    background-color: transparent;
+    image: url(skin:/graphics/rec_dot.svg) no-repeat center center;
+    }
+  #RecDuration {
+    font-weight: bold;
+    color: #d2d2d2;
+  }
+
+#ClockBox {
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  }
+  #ClockBox WLabel,
+  #Clock, WTime {
+    font-size: 13px/13px;
+    color: #999999;
+    text-align: center;
+  }
+
+#BroadcastButton,
+#SkinSettingsToggler {
+  background-color: transparent;
+  padding: 0px;
+  margin: 0px;
+  }
+  #BroadcastButton[displayValue="0"] {
+    image: url(skin:/buttons/btn_broadcast_off.svg) no-repeat center center;
+    }
+    #BroadcastButton[displayValue="0"]:hover {
+      image: url(skin:/buttons/btn_broadcast_off_hover.svg) no-repeat center center;
+      }
+  #BroadcastButton[displayValue="1"] {
+    image: url(skin:/buttons/btn_broadcast_connecting.svg) no-repeat center center;
+    }
+  #BroadcastButton[displayValue="2"] {
+    image: url(skin:/buttons/btn_broadcast_connected.svg) no-repeat center center;
+    }
+  #BroadcastButton[displayValue="3"] {
+    image: url(skin:/buttons/btn_broadcast_failure.svg) no-repeat center center;
+    }
+  #BroadcastButton[displayValue="4"] {
+    image: url(skin:/buttons/btn_broadcast_warning.svg) no-repeat center center;
+    }
+    #BroadcastButton:hover {
+      background-color: #0f0f0f;
+    }
+
+#SkinSettingsToggler[displayValue="0"] {
+  background-color: transparent;
+  image: url(skin:/buttons/btn_skinsettings_off.svg) no-repeat center center;
+  }
+  #SkinSettingsToggler[displayValue="0"]:hover {
+    background-color: #0f0f0f;
+    image: url(skin:/buttons/btn_skinsettings_on.svg) no-repeat center center;
+  }
+
+
+
+/*################################################################
+ ####### Waveforms ##############################################
+##############################################################*/
+
+/* Also, see color definitions above. */
+#WaveformContainer1,
+#WaveformContainer2,
+#WaveformContainer3,
+#WaveformContainer4 {
+  qproperty-layoutAlignment: 'AlignVCenter';
+/* waveform play position should stay centered, so we shift the waveform
+  containers right to compensate for (inactive) beatgrid button toggle
+  margin-right: -17px; */
+}
+
+#BeatgridButtons {
+/* Those buttons are pushed outside the screen by 17px (see above),
+  so bring them back in
+  padding-right: 17px; */
+}
+#WaveformContainer1,
+#WaveformContainer2,
+#WaveformContainer3,
+#WaveformContainer4 {
+/* Note(ronso0):
+  this will shift waveforms' center position to the left.
+  Useful to 'look ahead' further (who cares about history, ha?)
+  margin-left: -350px;	*/
+}
+
+#BeatgridButtonToggler {
+  background-color: #333;
+  }
+  #BeatgridButtonToggler[displayValue="0"] {
+    image: url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
+  }
+  #BeatgridButtonToggler[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
+  }
+#BeatgridButtonToggler[displayValue="1"] {
+  image: url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
+}
+  #BeatgridButtonToggler[displayValue="1"]:hover {
+    image: url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
+  }
+
+#BeatgridCurpos,
+#BeatgridSlower,
+#BeatgridFaster,
+#BeatgridEarlier,
+#BeatgridLater {
+  background-color: #333;
+  }
+  #BeatgridCurpos:hover,
+  #BeatgridSlower:hover,
+  #BeatgridFaster:hover,
+  #BeatgridEarlier:hover,
+  #BeatgridLater:hover {
+    background-color: #0f0f0f;
+  }
+  #BeatgridCurpos {
+    image: url(skin:/buttons/btn_beats_curpos.svg) no-repeat center center;
+  }
+  #BeatgridSlower {
+    image: url(skin:/buttons/btn_beats_slower.svg) no-repeat center center;
+  }
+  #BeatgridFaster {
+    image: url(skin:/buttons/btn_beats_faster.svg) no-repeat center center;
+  }
+  #BeatgridEarlier {
+    image: url(skin:/buttons/btn_beats_earlier.svg) no-repeat center center;
+  }
+  #BeatgridLater {
+    image: url(skin:/buttons/btn_beats_later.svg) no-repeat center center;
+  }
+
+
+/*################################################################
+ ######  Mic & Aux  #############################################
+##############################################################*/
+#MicAuxContainer {
+  margin-bottom: 5px;
+}
+
+#MicSection {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+}
+#AuxSection {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  }
+  #MicSectionIcon {
+    image: url(skin:/buttons/btn_mic_section.svg) no-repeat center center;
+  }
+  #AuxSectionLabel {
+    image: url(skin:/buttons/btn_aux_section.svg) no-repeat center center;
+  }
+
+#MicUnit, #AuxUnit {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  background-color: #333;
+  margin-right: 5px;
+  padding-left: 2px;
+  }
+  #MicUnitIcon {
+    image: url(skin:/buttons/btn_mic_unit.svg) no-repeat center left;
+  }
+  #AuxUnitIcon {
+    image: url(skin:/buttons/btn_aux_unit.svg) no-repeat center left;
+  }
+  #MicUnitLabel, #AuxUnitLabel {
+    /* not applied
+    border-left: 1px solid #453117;
+    background-color: #456411;
+    margin-left: -2px;
+    background-color: #911669; */
+    padding-bottom: 10px;
+    color: #b4b4b4;
+    font-size: 16px/22px;
+    font-weight: bold;
+    text-align: right;
+  }
+
+#MicAuxKnob {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin-top: 1px;
+}
+
+#MicDuckingButton {
+  background-color: #777;
+  color: #0f0f0f;
+  font-weight: bold;
+  }
+#MicDuckingButton[displayValue="0"] {
+  border: 1px solid #0f0f0f;
+  }
+  #MicDuckingButton[displayValue="0"]:hover {
+    border: 1px solid #d2d2d2;
+  }
+#MicDuckingButton[displayValue="1"],
+#MicDuckingButton[displayValue="2"] {
+  color: #eeeeee;
+  border: 1px solid #d2d2d2;
+  }
+  #MicDuckingButton[displayValue="1"]:hover,
+  #MicDuckingButton[displayValue="2"]:hover {
+    border: 1px solid #fff;
+  }
+
+#AuxXfaderButton:hover {
+  background-color: #0f0f0f;
+}
+
+/*################################################################
+ ######  Decks  #################################################
+##############################################################*/
+
+#DeckContainer {
+  qproperty-layoutAlignment: 'AlignTop';
+}
+
+#Deck1,
+#Deck3,
+#Deck2,
+#Deck4 {
+  background-color: #0f0f0f;
+}
+
+#DeckContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding-bottom: 5px;
+}
+
+#DeckOverview {
+    background-color: #0f0f0f;
+  }
+  #VinylTogglerLeft[displayValue="0"],
+  #VinylTogglerRightPassthrough[displayValue="1"],
+  #VinylTogglerRight[displayValue="1"] {
+    background-color: transparent;
+    image: url(skin:/buttons/btn_vinyl_left.svg) no-repeat top center;
+    }
+    #VinylTogglerLeft[displayValue="0"]:hover,
+    #VinylTogglerRightPassthrough[displayValue="1"]:hover,
+    #VinylTogglerRight[displayValue="1"]:hover {
+      background-color: transparent;
+      image: url(skin:/buttons/btn_vinyl_left_hover.svg) no-repeat top center;
+    }
+  #VinylTogglerLeft[displayValue="1"],
+  #VinylTogglerLeftPassthrough[displayValue="1"],
+  #VinylTogglerRight[displayValue="0"] {
+    background-color: transparent;
+    image: url(skin:/buttons/btn_vinyl_right.svg) no-repeat top center;
+    }
+    #VinylTogglerLeft[displayValue="1"]:hover,
+    #VinylTogglerLeftPassthrough[displayValue="1"]:hover,
+    #VinylTogglerRight[displayValue="0"]:hover {
+      background-color: transparent;
+      image: url(skin:/buttons/btn_vinyl_right_hover.svg) no-repeat top center;
+    }
+  /* When passthrough is active but Vinyl Controls are hidden,
+    yellow background indicates passthrough, similar to how
+    the FX expand toggle does */
+  #VinylTogglerLeftPassthrough[displayValue="0"] {
+    background: #ff8f00;
+    image: url(skin:/buttons/btn_vinyl_pass_left.svg) no-repeat top center;
+    }
+    #VinylTogglerLeftPassthrough[displayValue="0"]:hover {
+      background: #ff8f00;
+      image: url(skin:/buttons/btn_vinyl_pass_left_hover.svg) no-repeat top center;
+    }
+  #VinylTogglerRightPassthrough[displayValue="0"] {
+    background: #ff8f00;
+    image: url(skin:/buttons/btn_vinyl_pass_right.svg) no-repeat top center;
+    }
+    #VinylTogglerRightPassthrough[displayValue="0"]:hover {
+      background: #ff8f00;
+      image: url(skin:/buttons/btn_vinyl_pass_right_hover.svg) no-repeat top center;
+    }
+
+  #VinylControlButton,
+  #VinylControlStatus,
+  #VinylModeButton,
+  #VinylCueModeButton,
+  #PassthroughButton {
+    }
+  #VinylControlButton[displayValue="0"],
+  #VinylModeButton,
+  #VinylCueModeButton,
+  #PassthroughButton {
+    font-size: 11px/11px;
+    color: #888;
+    background-color: #333;
+    }
+    #VinylControlButton:hover,
+    #VinylModeButton:hover {
+      border: 1px solid #999999;
+    }
+    #PassthroughButton[displayValue="0"]:hover {
+      border: 1px solid #ff8f00;
+    }
+  #VinylModeButton[displayValue="1"],
+  #VinylModeButton[displayValue="2"],
+  #VinylControlButton[displayValue="1"] {
+    color: #eeeeee;
+    font-weight: bold;
+    }
+  #VinylModeButton[displayValue="1"],
+  #VinylModeButton[displayValue="2"],
+  #VinylControlStatus[displayValue="0"] {
+    background-color: #666;
+    }
+  #VinylControlButton[displayValue="1"] {
+    background-color: transparent;
+    }
+  #VinylControlStatus[displayValue="1"] {
+    background-color: #468c00;
+  }
+  #VinylControlStatus[displayValue="2"] {
+    background-color: #ff6600;
+  }
+  #VinylControlStatus[displayValue="3"] {
+    background-color: #ff0000;
+  }
+  #PassthroughButton[displayValue="1"] {
+    color: #0f0f0f;
+    font-weight: bold;
+    background-color: #ff8f00;
+    }
+    #PassthroughButton[displayValue="1"]:hover {
+      border: 1px solid #fff;
+    }
+
+  #TrackCommentContainer {
+    qproperty-layoutAlignment: 'AlignVCenter';
+    background-color: #0f0f0f;
+  }
+  WLabel#TrackComment {
+    /* Note(ronso0):
+    defining font-size here breaks top alignment	*/
+    padding-left: 1px;
+    /* Note(ronso0):
+    Somehow this is necessary to display multi-line comments correctly.
+    Without it, first line would be cropped. */
+    padding-top: 1px;
+    color: #888;
+    text-align: left;
+    background-color: #333;
+    }
+
+#ArtistTitleTime {
+  qproperty-layoutAlignment: 'AlignVCenter';
+  background-color: #333;
+  }
+  WLabel#PlayPosition, WLabel#TrackTitle {
+    font-size: 18px/18px;
+    font-weight: bold;
+    }
+  WLabel#Duration, WLabel#TrackBy, WLabel#TrackArtist {
+    font-size: 16px/16px;
+    font-weight: bold;
+  }
+  #PlayPositionHighlightContainer {
+    /* Draw a border to emphasize that play position display can be changed
+    to show both elapsed and remaining time */
+    padding: 0px 1px 0px 1px;
+    }
+    #PlayPositionHighlightContainer:hover {
+      border: 1px solid #ccc;
+    }
+  WLabel#TrackBy {
+    color: #888;
+  }
+  #LoopIndicator:hover {
+    border: 1px solid #fff;
+    }
+    #LoopIndicator[displayValue="1"] {
+      image: url(skin:/buttons/btn_reloop_on.svg) no-repeat center center;
+    }
+
+#DeckButtonsPlay {
+  background-color: #0f0f0f;
+  }
+  #DeckControlsLeft {
+    qproperty-layoutAlignment: 'Alignleft | AlignVCenter';
+    padding: 1px 0px 1px 1px;
+    background-color: #333;
+  }
+  #DeckControlsRight {
+    qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+    padding: 1px 1px 1px 0px;
+    background-color: #333;
+    border-radius: 0px;
+  }
+
+#DeckControlsExpandedLeft,
+#DeckControlsExpandedRight,
+#DeckButton:hover {
+  background-color: #151515;
+}
+#DeckControlsExpandedLeft {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+#DeckControlsExpandedRight {
+  border-bottom-left-radius: 3px;
+  border-top-left-radius: 3px;
+}
+#DeckButtonExpanded:hover {
+  background-color: #000;
+}
+
+  #DeckControlsToggler_Left[displayValue="0"],
+  #MasterHeadMixerToggle[displayValue="0"] {
+    background-color: transparent;
+    image: url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
+    }
+    #DeckControlsToggler_Left[displayValue="0"]:hover,
+    #MasterHeadMixerToggle[displayValue="0"]:hover {
+      background: #151515;
+      image: url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
+    }
+    #DeckControlsToggler_Left[displayValue="1"],
+    #MasterHeadMixerToggle[displayValue="1"] {
+      background-color: transparent;
+      image: url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
+    }
+    #DeckControlsToggler_Left[displayValue="1"] {
+      border-color: #0f0f0f;
+      border-style: solid;
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+      border-width: 1px 0px 1px 1px;
+    }
+    #DeckControlsToggler_Left[displayValue="1"]:hover,
+    #MasterHeadMixerToggle[displayValue="1"]:hover {
+      background-color: #000;
+      image: url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
+    }
+
+  #DeckControlsToggler_Right[displayValue="0"] {
+    background-color: transparent;
+    image: url(skin:/buttons/btn_arrow_left.svg) no-repeat center center;
+    }
+    #DeckControlsToggler_Right[displayValue="0"]:hover {
+      background-color: #151515;
+      image: url(skin:/buttons/btn_arrow_left_hover.svg) no-repeat center center;
+    }
+    #DeckControlsToggler_Right[displayValue="1"] {
+      background-color: transparent;
+      image: url(skin:/buttons/btn_arrow_right.svg) no-repeat center center;
+      border-color: #0f0f0f;
+      border-style: solid;
+      border-width: 1px 1px 1px 0px;
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+
+    }
+    #DeckControlsToggler_Right[displayValue="1"]:hover {
+      background-color: #000;
+      image: url(skin:/buttons/btn_arrow_right_hover.svg) no-repeat center center;
+    }
+
+  #Keylock[displayValue="1"]:hover {
+    border: 1px solid #d2d2d2;
+  }
+
+  #DeckStars:hover {
+    background-color: #151515;
+    border-radius: 2px;
+    }
+  /* Starrating in deck_buttons.xml for loaded tracks */
+  WStarRating {
+    margin: 0px;
+    padding: 4px;
+    color: #888;
+    background-color: none;
+    }
+
+/*################################################################
+ #######  Play, Cue and HotCue buttons  #########################
+##############################################################*/
+
+/* Actual Play button. Receives click events, turns red
+  when playing regularly, not from Cue or HotCue */
+#PlayCue[displayValue="0"] {
+  background-color: transparent;  /*
+  image: url(skin:/buttons/btn_play.svg) no-repeat center center; */
+  }
+  #PlayCue[displayValue="0"]:hover {
+    background-color: transparent;  /*
+    image: url(skin:/buttons/btn_play_hover.svg) no-repeat center center; */
+  }
+
+#SamplerPlayCue[displayValue="0"] {
+  /* different than decks' Play button, this has some soft shadow to distinguish
+  it better from underlying Cover Art (if available) */
+  background-color: transparent;  /*
+  image: url(skin:/buttons/btn_sampler_play.png) no-repeat center center; */
+  }
+  #SamplerPlayCueUnderlay[displayValue="1"] {
+    background: #a90000;
+  }
+
+#PassthroughPlayCover {
+  background-color: transparent;
+  image: url(skin:/buttons/btn_mic_aux_mute.svg) no-repeat center center;
+}
+
+#MicTalkover,
+#AuxMute {
+  background-color: transparent;
+  image: url(skin:/buttons/btn_mic_aux_mute.svg) no-repeat center center;
+}
+
+#PlayCue[displayValue="0"]:hover,
+#SamplerPlayCue[displayValue="0"]:hover,
+#MicTalkover[displayValue="0"]:hover,
+#AuxMute[displayValue="1"]:hover {
+  border: 1px solid #ff9900;
+  }
+  #PlayCue[displayValue="0"]:hover,
+  #MicTalkover[displayValue="0"]:hover,
+  #AuxMute[displayValue="1"]:hover {
+    background-color: rgba(255, 128, 0, 100);
+  }
+  #SamplerPlayCue[displayValue="0"]:hover {
+    background-color: rgba(255, 128, 0, 210);
+  }
+
+#PlayCue[displayValue="1"],
+#SamplerPlayCue[displayValue="1"] { /*
+  image: url(skin:/buttons/btn_pause.svg) no-repeat center center;  */
+}
+#PlayCue[displayValue="1"],
+#SamplerPlayCue[displayValue="1"],
+#MicTalkover[displayValue="1"],
+#AuxMute[displayValue="0"],
+#PassthroughPlayCover,
+#LoopIndicator {
+  background-color: #ff8000;
+  border: 1px solid #ff9900;
+}
+  #PlayCue[displayValue="1"]:hover,
+  #SamplerPlayCue[displayValue="1"]:hover,
+  #MicTalkover[displayValue="1"]:hover,
+  #AuxMute[displayValue="0"]:hover {
+    border: 1px solid #eeeeee;
+  }
+
+#MicTalkover[displayValue="0"],
+#AuxMute[displayValue="1"] {
+  background-color: #777;
+  border: 1px solid #0f0f0f;
+  }
+/* The button which signals alternate play status when
+  playing from Cue/HotCue */
+#PlayUnderlay[displayValue="0"] {
+  }
+  #PlayUnderlay[displayValue="1"] {
+    border: 1px solid #ff8000;
+  }
+
+#HotCues_Sampler_Preview {
+  qproperty-layoutAlignment: 'AlignBottom';
+  background-color: #0f0f0f;
+}
+
+#HotcueButton,
+#CueButton {
+  font-size: 14px/16px;
+  font-weight: bold;
+  }
+  #HotcueButton[displayValue="0"],
+  #CueUnderlay {
+    color: #888;
+    background-color: #333;
+    }
+  #HotcueButton[displayValue="0"]:hover,
+  #CueButton[displayValue="0"]:hover {
+    border: 1px solid #aaaaaa;
+    }
+  #HotcueButton[displayValue="1"],
+  #CueButton[displayValue="1"],
+  #CueUnderlay[displayValue="1"] {
+    color: #eeeeee;
+    background-color: #666;
+    }
+  #HotcueButton[displayValue="1"]:hover,
+  #CueButton[displayValue="1"]:hover {
+    border: 1px solid #eeeeee;
+    }
+
+#CueButton {
+/* is styled like #HotcueButton, lights up if play position
+  is at main Cue point	*/
+  color: #d2d2d2;
+  background-color: #333;
+}
+
+/*################################################################
+ #######  Loop Controls  ########################################
+##############################################################*/
+
+#LoopBeatJumpButton,
+#LoopSizeButton {
+  font-weight: bold;
+  color: #888;
+  background-color: #333;
+  }
+  #LoopSizeButton {
+    font-size: 14px/12px;
+  }
+  #LoopBeatJumpButton:hover,
+  #LoopSizeButton:hover {
+    border: 1px solid #888;
+  }
+  #LoopSizeButton[displayValue="1"] {
+    border: 1px solid #ff8f00;
+    color: #d2d2d2;
+  }
+  #LoopSizeButton[displayValue="1"]:hover {
+    border: 1px solid #eeeeee;
+  }
+
+#ReloopButton[displayValue="0"] {
+  background-color: #333;
+  }
+  #ReloopButton[displayValue="0"]:hover {
+    border: 1px solid #ff8f00;
+  }
+  #ReloopButton[displayValue="1"] {
+  /* See also #LoopIndicator */
+    background-color: #ff8f00;
+    }
+    #ReloopButton[displayValue="1"]:hover {
+      border: 1px solid #eeeeee;
+    }
+
+#LoopActivateButton[displayValue="0"] {
+  background-color: #333;
+  }
+  #LoopActivateButton[displayValue="0"]:hover {
+    border: 1px solid #ff8f00;
+  }
+  #LoopActivateButton[displayValue="1"] {
+    /* See also #LoopIndicator
+      background-color: #ff8f00; */
+      border: 1px solid #ff8f00;
+      background-color: #0f0f0f;
+    }
+
+WBeatSpinBox,
+#DlgAutoDJ QSpinBox {
+  /* Note(ronso0):
+  make it 2px smaller in each dimension,
+  border is added for final size.
+  Disabled since it prevents correct skin scaling
+  min-width: 52px;
+  max-width: 52px;
+  min-height: 20px;
+  max-height: 20px; */
+  border: 1px solid #666;
+  border-radius: 2px;
+  color: #aaaaaa;
+  background-color: #0f0f0f;
+  selection-color: #0f0f0f;
+  selection-background-color: #d2d2d2;
+  font-size: 13px/13px;
+  }
+  WBeatSpinBox {
+    /* Note(ronso0):
+    Apparently, a top and bottom padding needs to be set to make
+    the spinbox expand vertically to available 22px */
+    padding: 1px 0px 1px 3px;
+    margin: 0px 15px 0px 0px;
+  }
+  #DlgAutoDJ QSpinBox {
+    /* Note(ronso0):
+    Individual padding/margin in AutoDJ feature */
+    padding: -1px 3px -1px 3px;
+    margin: 0px 17px 3px 7px;
+  }
+  #DlgAutoDJ QLabel {
+    margin: 0px 0px 3px 2px;
+  }
+  WBeatSpinBox:hover,
+  #DlgAutoDJ QSpinBox:hover {
+    border-color: #888;
+  }
+  WBeatSpinBox:focus,
+  #DlgAutoDJ QSpinBox:focus {
+    border-color: #d2d2d2;
+    color: #ccc;
+  }
+
+  WBeatSpinBox::up-button,
+  WBeatSpinBox::down-button,
+  #DlgAutoDJ QSpinBox::up-button,
+  #DlgAutoDJ QSpinBox::down-button {
+    subcontrol-origin: padding;
+    position: relative;
+    background-color: #1e1e1e;
+    border: 1px solid #1e1e1e;
+    border-width: 1px 0px 1px 0px;
+    /* Note(ronso0):
+    This would do weird things when the skin is scaled...
+    height: 20%;
+    width: 20%; */
+    }
+    WBeatSpinBox::up-button:hover,
+    WBeatSpinBox::down-button:hover,
+    #DlgAutoDJ QSpinBox::up-button:hover,
+    #DlgAutoDJ QSpinBox::down-button:hover {
+      background-color: #0f0f0f;
+      }
+
+  WBeatSpinBox::up-button,
+  #DlgAutoDJ QSpinBox::up-button {
+    subcontrol-position: center right;
+    /* Note(ronso0):
+    Regularly, up/down buttons would be stacked vertically.
+    Here, they're both aligned 'center right' and have the same size.
+    This would make them overlap so we need to move one of those two
+    buttons out of the way: */
+    right: -16px;
+    image: url(skin:/buttons/btn_beatbox_up.svg) no-repeat;
+    }
+    WBeatSpinBox::up-button:hover,
+    #DlgAutoDJ QSpinBox::up-button:hover {
+      image: url(skin:/buttons/btn_beatbox_up_hover.svg) no-repeat;
+    }
+  WBeatSpinBox::down-button,
+  #DlgAutoDJ QSpinBox::down-button {
+    subcontrol-position: center right;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
+    image: url(skin:/buttons/btn_beatbox_down.svg) no-repeat;
+    }
+    WBeatSpinBox::down-button:hover,
+    #DlgAutoDJ QSpinBox::down-button:hover {
+      image: url(skin:/buttons/btn_beatbox_down_hover.svg) no-repeat;
+    }
+
+/*################################################################
+ #######  Rate Container  #######################################
+##############################################################*/
+
+#RateContainer1,
+#RateContainer2,
+#RateContainer3,
+#RateContainer4,
+#BPM {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+
+#RateControls {
+  background-color: #0f0f0f;
+  border-radius: 3px;
+}
+
+#KeyDisplayMatch, #KeyControls {
+  margin-bottom: 1px;
+}
+#RateButtons {
+  margin-top: 1px;
+}
+
+#BPM, #KeyDisplayMatch,
+#RateUp, #RateDown,
+#KeyUp, #KeyDown,
+#PitchSlider {
+  background-color: #252525;
+  border-radius: 3px;
+}
+
+#BpmLabel {
+  qproperty-alignment: 'AlignHCenter | AlignVCenter';
+  font-size: 16px/16px;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 1px;
+  }
+  #SyncButtonOverlay[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
+    border: 1px solid #ff4800;
+  }
+  #SyncButtonOverlay[displayValue="0"] {
+    border: 1px solid #444;
+  }
+  #SyncButtonOverlay[displayValue="0"]:hover,
+  #KeyMatch:hover {
+    background-color: rgba(70,70,70,180);
+  }
+  #SyncButtonOverlay[displayValue="1"],
+  #SamplerSyncButton[displayValue="1"] {
+    border: 1px solid #ff4800;
+    color: #eeeeee;
+  }
+  #SyncButtonOverlay[displayValue="1"]:hover,
+  #SamplerSyncButton[displayValue="1"]:hover {
+    border: 1px solid #eeeeee;
+  }
+
+  #RateUp, #RateDown,
+  #KeyUp, #KeyDown {
+    border: 1px solid #444;
+    }
+    #RateUp:hover, #RateDown:hover,
+    #KeyUp:hover, #KeyDown:hover {
+      background-color: #333;
+      border: 1px solid #888;
+    }
+  #RateUp {
+    image: url(skin:/buttons/btn_rate_up.svg) no-repeat center center;
+    }
+    #RateUp:hover {
+      image: url(skin:/buttons/btn_rate_up_hover.svg) no-repeat center center;
+    }
+  #RateDown {
+    image: url(skin:/buttons/btn_rate_down.svg) no-repeat center center;
+    }
+    #RateDown:hover {
+      image: url(skin:/buttons/btn_rate_down_hover.svg) no-repeat center center;
+    }
+
+  #KeyDisplay {
+    font-size: 14px/14px;
+    padding: 0px;
+  }
+  #KeyMatch {
+    border: 1px solid #444;
+    }
+    #KeyMatch:hover {
+      image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
+      border: 1px solid #888;
+    }
+    #KeyUp {
+      image: url(skin:/buttons/btn_key_up.svg) no-repeat center center;
+      }
+      #KeyUp:hover {
+        image: url(skin:/buttons/btn_key_up_hover.svg) no-repeat center center;
+      }
+    #KeyDown {
+      image: url(skin:/buttons/btn_key_down.svg) no-repeat center center;
+      }
+      #KeyDown:hover {
+        image: url(skin:/buttons/btn_key_down_hover.svg) no-repeat center center;
+      }
+
+
+/*################################################################
+ #######  Channel Mixer  ########################################
+##############################################################*/
+#MixerChannelLeft {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  background-color: #333;
+  border-bottom-right-radius: 3px;
+}
+#MixerChannelRight {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  background-color: #333;
+  border-bottom-left-radius: 3px;
+}
+
+#VolumeSliderGain {
+  qproperty-layoutAlignment: 'AlignHCenter';
+  margin-top: 2px;
+}
+
+#GainKnob {
+  margin: 0px 2px 4px 2px;
+}
+#SuperWetDryKnob {
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  margin: 0px;
+}
+#FxMetaknob {
+  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  margin: 0px;
+}
+
+#MixModeButton {
+  border: 1px solid #0f0f0f;
+  }
+  #MixModeButton:hover {
+    background-color: #151515;
+  }
+
+#EQKnobContainerLeft {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  margin: 0px 4px 0px 2px;
+}
+#EQKnobContainerRight {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  margin: 0px 2px 0px 4px;
+}
+
+#EQKillButton {
+  }
+  #EQKillButton[displayValue="0"] {
+    background-color: #585858;
+    }
+    #EQKillButton[displayValue="0"]:hover {
+      border: 1px solid #ff0000;
+    }
+  #EQKillButton[displayValue="1"] {
+    background-color: #a90000;
+    }
+    #EQKillButton[displayValue="1"]:hover {
+      border: 1px solid #aaaaaa;
+    }
+
+/* Kill indicators underneath EQ knobs */
+#EQKilledUnderlay[displayValue="1"],
+#QuickFxDisabledUnderlay[displayValue="0"] {
+  background: url(skin:/knobs_sliders/knob_bg_disabled.svg) no-repeat center center;
+}
+
+#QuickFxEnableButton_Side {
+  background-color: #585858;
+  margin: 2px 0px 2px 0px;
+}
+#QuickFxEnableButton_Bottom {
+  background-color: #585858;
+  margin: 2px 4px 2px 4px;
+}
+  #QuickFxEnableButton_Side[displayValue="0"]:hover,
+  #QuickFxEnableButton_Bottom[displayValue="0"]:hover {
+    border: 1px solid #ff8f00;
+    }
+  #QuickFxEnableButton_Side[displayValue="1"],
+  #QuickFxEnableButton_Bottom[displayValue="1"] {
+    border: 1px solid #ff8f00;
+    }
+    #QuickFxEnableButton_Side[displayValue="1"]:hover,
+    #QuickFxEnableButton_Bottom[displayValue="1"]:hover {
+      border: 1px solid #eeeeee;
+    }
+
+/*  This wouldn't scale the image:
+#PflButton[displayValue="0"] {
+  background: transparent url(skin:/buttons/btn_pfl_off.svg) no-repeat center center;
+  background-origin: padding;
+  }
+  This is a workaround to scale and center the image, but image would appear blurred
+  if it is scaled up too much (>120). Source:
+  https://forum.qt.io/topic/40151/solved-scaled-background-image-using-stylesheet/6
+  border-image: url(skin:/buttons/btn_pfl_off.svg) 0 0 0 0 stretch stretch; */
+#PflBoxLeft,
+#PflBoxRight {
+  background-color: #0f0f0f;
+  border-color: #0f0f0f;
+  border-style: solid;
+  border-radius: 3px;
+  }
+  #PflBoxLeft {
+    border-width: 1px 0px 0px 1px;
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+  }
+  #PflBoxRight {
+    border-width: 1px 1px 0px 0px;
+    border-bottom-right-radius: 0px;
+    border-top-left-radius: 0px;
+  }
+
+/* this style is applied to all Pfl buttons in
+decks, samplers, mic, aux, fx */
+#PflButton[displayValue="0"] {
+  background-color: #333;
+}
+#PflButton[displayValue="1"] {
+  background-color: #0f0f0f;
+}
+#PflButton[displayValue="0"]:hover,
+#PflButton[displayValue="1"]:hover {
+  background-color: #151515;
+}
+
+#FxUnitMixerLeft_mini WPushButton[displayValue="0"],
+#FxUnitMixerRight_mini WPushButton[displayValue="0"],
+#FxUnitMixer WPushButton[displayValue="0"],
+#SamplerDeck #PflButton {
+  border: 1px solid #151515;
+  }
+  #SamplerDeck #PflButton {
+    border-width: 0px 1px 0px 1px;
+    border-radius: 0px;
+  }
+  #FxUnitMixerLeft_mini WPushButton[displayValue="1"],
+  #FxUnitMixerRight_mini WPushButton[displayValue="1"],
+  #FxUnitMixerLeft WPushButton[displayValue="1"],
+  #FxUnitMixerRight WPushButton[displayValue="1"],
+  #FxUnitMixerLeft_mini WPushButton[displayValue="0"]:hover,
+  #FxUnitMixerRight_mini WPushButton[displayValue="0"]:hover,
+  #FxUnitMixerLeft WPushButton[displayValue="0"]:hover,
+  #FxUnitMixerRight WPushButton[displayValue="0"]:hover {
+    border: 1px solid #151515;
+  }
+
+#VUMeterMixer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin-top: 4px;
+}
+
+#VUMeterFloating {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  padding: 3px 0px;
+  background-color: #252525;
+  border-radius: 3px;
+}
+
+#VUMeterSampler {
+  padding: 0px 2px 0px 0px;
+}
+
+#VUMeterLabelMaster {
+  image: url(skin:/buttons/btn_master_vu_label.svg) no-repeat center center;
+}
+#VUMeterLabelDeck1 {
+  image: url(skin:/buttons/btn_deck1_vu_label.svg) no-repeat center center;
+}
+#VUMeterLabelDeck2 {
+  image: url(skin:/buttons/btn_deck2_vu_label.svg) no-repeat center center;
+}
+#VUMeterLabelDeck3 {
+  image: url(skin:/buttons/btn_deck3_vu_label.svg) no-repeat center center;
+}
+#VUMeterLabelDeck4 {
+  image: url(skin:/buttons/btn_deck4_vu_label.svg) no-repeat center center;
+}
+
+
+/*################################################################
+######  Effects  ###############################################
+##############################################################*/
+
+#FxUnitLabel {
+  qproperty-alignment: right;
+  font-size: 14px;
+  font-weight: bold;
+  color: #888;
+  padding: -1px 0px 0px 0px;
+  margin: 0px;
+  border: 0px;
+}
+
+#FxUnitControls {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  background-color: #252525;
+}
+
+#FxUnitMixer,
+#FxUnitMixerLeft_mini,
+#FxUnitMixerRight_mini {
+  qproperty-layoutAlignment: 'AlignHCenter';
+  background-color: #333;
+  }
+  #FxUnitMixer {
+    padding: 2px;
+  }
+  #FxUnitMixerLeft_mini {
+    padding-left: 2px;
+  }
+  #FxUnitMixerRight_mini {
+    padding-right: 2px;
+  }
+
+/* effect slots backgrounds & separators indicating the effect flow */
+/* no focus */
+#FxFlow_mini_separator {
+  background-color: transparent;
+  image: url(skin:/graphics/fxFlow_mini_noFocus_Fx1-2-3.svg) no-repeat center center;
+}
+#FxFlow_maxi_separator {
+  background-color: transparent;
+  border-radius: 0px;
+  image: url(skin:/graphics/fxFlow_maxi_noFocus_Fx1-2-3.svg) no-repeat right center;
+}
+
+#FxFlow_focus_background,
+/* with focus */
+#FxFlow_focus_background[highlight="0"] {
+  background-color: #333;
+  border-radius: 0px;
+  }
+  #FxFlow_focus_background[highlight="1"] {
+    background-color: transparent;
+  border-radius: 0px;
+  }
+/* collapsed effect slots, horizontal layout */
+#FxFlow_mini_focus_separator1-2[highlight="0"],
+#FxFlow_mini_focus_separator1-2[highlight="3"],
+#FxFlow_mini_focus_separator2-3[highlight="0"],
+#FxFlow_mini_focus_separator2-3[highlight="1"] {
+  background-color: transparent;
+  image: url(skin:/graphics/fxFlow_mini_noFocus_Fx1-2-3.svg) no-repeat center center;
+  }
+  #FxFlow_mini_focus_separator1-2[highlight="1"],
+  #FxFlow_mini_focus_separator2-3[highlight="2"] {
+    background-color: transparent;
+    image: url(skin:/graphics/fxFlow_mini_focus_left.svg) no-repeat center center;
+  }
+  #FxFlow_mini_focus_separator1-2[highlight="2"],
+  #FxFlow_mini_focus_separator2-3[highlight="3"] {
+    background-color: transparent;
+    image: url(skin:/graphics/fxFlow_mini_focus_right.svg) no-repeat center center;
+  }
+
+/* expanded effect slots, vertical layout */
+#FxFlow_maxi_focus_separator1-2[highlight="0"],
+#FxFlow_maxi_focus_separator1-2[highlight="3"],
+#FxFlow_maxi_focus_separator2-3[highlight="0"],
+#FxFlow_maxi_focus_separator2-3[highlight="1"] {
+  background-color: transparent;
+  image: url(skin:/graphics/fxFlow_maxi_noFocus_Fx1-2-3.svg) no-repeat center center;
+  }
+  #FxFlow_maxi_focus_separator1-2[highlight="1"],
+  #FxFlow_maxi_focus_separator2-3[highlight="2"] {
+    background-color: transparent;
+    image: url(skin:/graphics/fxFlow_maxi_focus_top.svg) no-repeat center center;
+  }
+  #FxFlow_maxi_focus_separator1-2[highlight="2"],
+  #FxFlow_maxi_focus_separator2-3[highlight="3"] {
+    background-color: transparent;
+    image: url(skin:/graphics/fxFlow_maxi_focus_bottom.svg) no-repeat center center;
+  }
+/* /effect slot focus indicators */
+
+#FxFocusButton {
+  background-color: transparent;
+}
+  #FxFocusButton[displayValue="0"] {
+    image: url(skin:/buttons/btn_fx_focus_off.svg) no-repeat center center;
+    }
+    #FxFocusButton[displayValue="0"]:hover {
+      image: url(skin:/buttons/btn_fx_focus_off_hover.svg) no-repeat center center;
+    }
+  #FxFocusButton[displayValue="1"] {
+    image: url(skin:/buttons/btn_fx_focus_on.svg) no-repeat center center;
+    }
+    #FxFocusButton[displayValue="1"]:hover {
+      image: url(skin:/buttons/btn_fx_focus_on_hover.svg) no-repeat center center;
+    }
+
+#FxMetaknob {
+  /* Should shift Meta knob 2px down.
+  Not working, although it works for Gain knob...
+  margin: 0px 0px -2px 0px; */
+}
+
+#FxToggleSelector {
+  /* stacked layout for toggle, effect name, feedback underlay & EffectSelector */
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  border-radius: 3px;
+  }
+  #FxToggleButton[displayValue="0"]:hover {
+    border: 1px solid #ff8f00;
+    }
+    #FxToggleButton[displayValue="1"]:hover {
+      border: 1px solid #fff;
+      }
+  #FxToggleButtonUnderlay[displayValue="0"] {
+    background-color: #888;
+    }
+    #FxToggleButtonUnderlay[displayValue="1"] {
+      background-color: #ff8f00;
+      }
+
+  #FxNameContainer {
+    padding: 1px 2px 1px 1px;
+    qproperty-layoutAlignment: 'AlignLeft';
+    }
+    #FxName {
+      qproperty-alignment: 'AlignLeft | AlignVCenter';
+      color: #000;
+      text-align: left;
+      font-size: 13px/12px;
+    }
+
+  WEffectSelector {
+    font-size: 13px/13px;
+    /* On Linux this is applied to both effect name and effect list. */
+    color: #ccc;
+    /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+    margin: 0px;
+    /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
+        names start getting cut off. Adding explicit padding improves this. */
+    padding: 0px 28px 0px 0px;
+    /* The 3D frame on the combo box becomes flat when you give it a border */
+    border: 0px solid transparent;
+    border-radius: 3px;
+    background-color: #1e1e1e;
+    }
+  WEffectSelector:hover {
+    background-color: #0f0f0f;
+    }
+    WEffectSelector::drop-down {
+      border: 0px;
+      margin: 0px -2px 0px 0px;
+      padding: 0px;
+    }
+    WEffectSelector::down-arrow {
+      /* When the skin is scaled, bg-color would be applied
+      to the (not scaled) button image only:
+      background-color: #101010;
+      width: 11px;
+      height: 20px; */
+      image: url(skin:/buttons/btn_fx_selector_list.svg) no-repeat center center;
+      }
+      WEffectSelector::down-arrow:hover {
+        image: url(skin:/buttons/btn_fx_selector_list_hover.svg) no-repeat center center;
+      }
+
+    WEffectSelector QAbstractItemView {
+      background-color: #202020;
+      selection-background-color: #0f0f0f;
+      /* On Linux, this is not applied but font color from WEffectSelector
+      is inherited. On Windows, it must be defined here explicitly: */
+      color: #ccc;
+      border: 1px solid #333;
+      border-radius: 2px;
+      margin: 0px;
+    }
+    /* items */
+    WEffectSelector::item:!selected {
+      background-color: #202020;
+    }
+    /* hovered items */
+    WEffectSelector::item:selected {
+      background-color: #0f0f0f;
+    /* This moves the tick mark behind item text, text sits at left border now.
+      Drawback: font size is not scaled with skin anymore. magic!
+      border: 0; */
+    }
+    /* selected item */
+    WEffectSelector::checked {
+      /* not applied
+      padding-left: 5px;
+      font-weight: bold;	*/
+      color: #0081B7;
+      background-color: #000;
+    }
+    /* tick mark frame */
+    WEffectSelector::indicator:checked {
+    /* This is sufficient to completely hide the tick mark,
+      but this alone would show an empty, shadowed box instead of tick mark:  */
+      background-color: transparent;
+      /* This should decrease the tick mark's left & right margin but is not respected
+      margin: 0px -4px 0px -4px; */
+      /* This draws a border. And eliminates the tick mark...
+      border: 1px solid #999; */
+      /* This has no effect:
+      height: 10px;
+      width: 10px; */
+      /* Image is rendered correctly but size of the tick mark containers
+      won't change. Also, only with this option the hover bg color defined
+      above will be applied... it's qt magic
+      image: url(skin:/buttons/btn_fx_selector_tick.svg) no-repeat center center; */
+      background: #0081B7;
+    }
+
+#FxParametersLeft {
+  qproperty-layoutAlignment: 'AlignRight';
+}
+
+#FxParametersRight {
+  qproperty-layoutAlignment: 'AlignLeft';
+}
+
+#FxParameterKnob {
+  padding-right: 1px;
+  qproperty-layoutAlignment: 'AlignCenter';
+  margin-right: 1px;
+}
+  #FxParameterKnobName {
+    qproperty-alignment: 'AlignLeft | AlignTop';
+    font-size: 10px/10px;
+    font-weight: bold;
+    color: #999999;
+    padding-top: -2px;
+  }
+
+#FxParameterButton {
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+  margin-right: 1px;
+  }
+  #FxParameterButtonOverlay[displayValue="0"]:hover {
+    border: 1px solid #888;
+  }
+  #FxParameterButtonOverlay[displayValue="1"]:hover {
+    border: 1px solid #eeeeee;
+  }
+
+  #FxParameterButtonUnderlay[displayValue="0"] {
+    background-color: #4b4b4b;
+  }
+  #FxParameterButtonUnderlay[displayValue="1"] {
+    background-color: #006596;
+  }
+  #FxParameterButtonName_inactive,
+  #FxParameterButtonName_active {
+    font-size: 10px/10px;
+    font-weight: bold;
+    qproperty-alignment: 'AlignLeft | AlignVCenter';
+    margin-left: 1px;
+    }
+    #FxParameterButtonName_inactive {
+      color: #aaaaaa;
+    }
+    #FxParameterButtonName_active {
+      color: #eeeeee;
+    }
+
+#FxSuperLinkButton,
+#FxSuperLinkInvertButton {
+  /* those buttons are only 5px tall, that's why they won't accept
+  3px radius which is set for all WPushButtons */
+  border-radius: 2px;
+  margin-right: 1px;
+}
+
+#FxSuperLinkButton[value="0"],
+#FxSuperLinkInvertButton[displayValue="0"] {
+  background-color: #4b4b4b;
+}
+#FxSuperLinkButton[value="0"]:hover {
+  background-color: #888;
+}
+#FxSuperLinkInvertButton[displayValue="1"] {
+  background-color: #a90000;
+  }
+  #FxSuperLinkInvertButton[displayValue="1"]:hover {
+    background-color: #ff0000;
+  }
+
+#FxSuperLinkInvertButton[displayValue="0"]:hover,
+#FxSuperLinkButton[value="1"] {
+  background-color: #006596;
+  }
+  #FxSuperLinkButton[value="1"]:hover {
+    background-color: #078dcd;
+  }
+#FxSuperLinkButton[value="2"] {	/*
+  a simple way to achieve a partitioning in thirds	*/
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #006596,
+    stop: 0.33 #006596,
+    stop: 0.34 #4b4b4b,
+    stop: 1 #4b4b4b);
+  }
+  #FxSuperLinkButton[value="2"]:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+      stop: 0 #078dcd,
+      stop: 0.33 #078dcd,
+      stop: 0.34 #4b4b4b,
+      stop: 1 #4b4b4b);
+    }
+#FxSuperLinkButton[value="3"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #4b4b4b,
+    stop: 0.66 #4b4b4b,
+    stop: 0.67 #006596,
+    stop: 1 #006596);
+  }
+  #FxSuperLinkButton[value="3"]:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+      stop: 0 #4b4b4b,
+      stop: 0.66 #4b4b4b,
+      stop: 0.67 #078dcd,
+      stop: 1 #078dcd);
+    }
+#FxSuperLinkButton[value="4"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #006596,
+    stop: 0.330000 #006596,
+    stop: 0.340000 #4b4b4b,
+    stop: 0.660000 #4b4b4b,
+    stop: 0.670000 #006596,
+    stop: 1 #006596);
+  }
+  #FxSuperLinkButton[value="4"]:hover {
+    background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+      stop: 0 #078dcd,
+      stop: 0.330000 #078dcd,
+      stop: 0.340000 #4b4b4b,
+      stop: 0.660000 #4b4b4b,
+      stop: 0.670000 #078dcd,
+      stop: 1 #078dcd);
+  }
+
+#FxAssignButton {
+  font-size: 13px/13px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 2px;
+  background-color: #333;
+  }
+  #FxAssignButton[displayValue="0"] {
+    color: #888;
+    }
+    #FxAssignButton[displayValue="0"]:hover {
+      border: 1px solid #ff8f00;
+    }
+  #FxAssignButton[displayValue="1"] {
+    color: #eeeeee;
+    border: 1px solid #ff8f00;
+    }
+    #FxAssignButton[displayValue="1"]:hover {
+      border: 1px solid #fff;
+    }
+
+/* Master FX buttons in top bar's mixer section are
+styled differently because of their importance */
+#MasterFxButton {
+  font-size: 13px/13px;
+  font-weight: bold;
+  text-align: center;
+  background-color: #333;
+  }
+  #MasterFxButton[displayValue="0"] {
+    color: #888;
+    }
+    #MasterFxButton[displayValue="0"]:hover {
+      border: 1px solid #ff8f00;
+    }
+  #MasterFxButton[displayValue="1"] {
+    background-color: #ff8f00;
+    color: #0f0f0f;
+    }
+    #MasterFxButton[displayValue="1"]:hover {
+      border: 1px solid #fff;
+    }
+
+/*################################################################
+ ######  Samplers  ##############################################
+##############################################################*/
+
+#SamplerDecks {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin-bottom: 5px;
+}
+
+#SamplerRow5 {
+  margin-top: 2px;
+}
+
+#SamplerDeck {
+  background-color: #333;
+}
+
+#FxSamplersMiniMaxi[displayValue="0"] {
+  image: url(skin:/buttons/btn_arrow_down.svg) no-repeat top center;
+  }
+  #FxSamplersMiniMaxi[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_arrow_down_hover.svg) no-repeat top center;
+  }
+#FxSamplersMiniMaxi[displayValue="1"] {
+  image: url(skin:/buttons/btn_arrow_up.svg) no-repeat top center;
+  }
+  #FxSamplersMiniMaxi[displayValue="1"]:hover {
+    image: url(skin:/buttons/btn_arrow_up_hover.svg) no-repeat top center;
+  }
+
+#FxSamplersMiniMaxi_Focus[displayValue="0"] {
+  image: url(skin:/buttons/btn_arrow_down_black.svg) no-repeat top center;
+  background-color: #ff8f00;
+  }
+  #FxSamplersMiniMaxi_Focus[displayValue="0"]:hover {
+    image: url(skin:/buttons/btn_arrow_down_black_hover.svg) no-repeat top center;
+    background-color: #ff8f00;
+  }
+
+#SamplerPlayBox,
+#SamplerPlayBox_mini {
+  background-color: #0f0f0f;
+  border-radius: 3px;
+  }
+  #SamplerPlayBox {
+    padding: 0px 1px 0px 0px;
+  }
+  #SamplerPlayBox_mini {
+    padding: 0px 1px 0px 0px;
+    }
+  #SamplerCover {
+    background-color: #333;
+    border-radius: 3px;
+  }
+
+WTrackProperty#SamplerTitle {
+  font-size: 14px/18px;
+  font-weight: bold;
+  color: #999999;
+  text-align: left;
+  padding: 0 0 0 1px;
+}
+
+WTrackProperty#SamplerTitle_mini {
+  font-size: 14px/14px;
+  font-weight: bold;
+  color: #888;
+  text-align: left;
+  padding: 0px 2px 0px 0px;
+}
+
+#SamplerSyncGainPfl {
+  padding: 1px;
+}
+
+#SamplerGainKnob {
+  qproperty-layoutAlignment: 'AlignHCenter';
+}
+
+#SamplerButton,
+#SamplerButton_mini {
+  font-size: 14px/14px;
+  font-weight: bold;
+  text-align: center;
+  color: #888;
+}
+#SamplerButton_mini {
+  border-radius: 2px;
+  }
+  #SamplerButton:hover,
+  #SamplerButton_mini:hover,
+  #SamplerSyncButton {
+    background-color: #0f0f0f;
+  }
+#SamplerKeylock {
+  margin-left: 3px;
+}
+
+#SamplerSyncButton:hover {
+  border: 1px solid #888;
+}
+
+/*################################################################
+ ######  Spinnies  ##############################################
+##############################################################*/
+
+#SpinnyCover_Container {
+  margin: 0px;
+  padding: 0px;
+  background-color: #1e1e1e;
+}
+
+#SpinnyCoverLeft {
+  qproperty-layoutAlignment: 'AlignRight';
+  margin-left: 3px;
+}
+
+#SpinnyCoverRight {
+  qproperty-layoutAlignment: 'AlignLeft';
+  margin-right: 3px;
+}
+
+#SpinnyMini {
+  background-color: transparent;
+}
+
+/*################################################################
+ ######  Preview Deck  ##########################################
+##############################################################*/
+
+#PreviewDeck {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  background-color: #0f0f0f;
+}
+#PreviewTitle,
+#PreviewEject,
+#PreviewGainKnob {
+  background-color: #333;
+}
+#PreviewTitleEject {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  margin-bottom: 1px;
+}
+#PreviewPlayOverview {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+  #PreviewTitle {
+    padding-left: 1px;
+  }
+  #PreviewTitle WLabel {
+    font-size: 14px/14px;
+    font-weight: bold;
+    text-align: left;
+    color: #bababa;
+  }
+  #PreviewEject:hover {
+    border: 1px solid #eeeeee;
+  }
+  #PreviewPlay,
+  #PreviewOverview {
+    margin-right: 1px;
+  }
+  #PreviewGainKnob {
+    qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  }
+
+
+/*################################################################
+ ######  Misc  ##################################################
+##############################################################*/
+
+QToolTip {
+  background-color: #1e1e1e;
+  color: #ccc;
+  border: 1px solid #333;
+}
+
+#TEST {
+  background-color: #451278;
+}
+#TEST2 {
+  background-color: #127845;
+}
+#TEST_skin {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  margin-left: 2000px;
+}
+#SizeTest {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #0f0f0f,
+    stop: 1 #006596);
+}
+#SizeTest2 {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #0f0f0f,
+    stop: 1 #991245);
+}
+
+#AlignTop {
+  qproperty-layoutAlignment: 'AlignTop';
+}
+#AlignLeft{
+  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+}
+#AlignTopLeft {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+}
+#AlignBottomLeft {
+  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+}
+#AlignRight {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+#AlignRightCenter {
+  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+#AlignVCenter {
+  qproperty-layoutAlignment: 'AlignVCenter';
+}
+#AlignCenter {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
+}
+
+#Spacer0f {
+  background-color: #0f0f0f;
+  }
+  #RoundSpacer0f {
+    background-color: #0f0f0f;
+    border-radius: 2px;
+  }
+#Spacer1e {
+  background-color: #1e1e1e;
+}
+#Spacer25 {
+  background-color: #252525;
+}
+#Spacer33 {
+  background-color: #333;
+  border-radius: 0px;
+}
+#Spacer58 {
+  background-color: #585858;
+}
+#SpacerFF {
+  background-color: #fff;
+}
+#Text33 {
+  color: #333;
+  font-size: 1px/1px;
+}
+#RoundFiller25 {
+  background-color: #252525;
+  border-radius: 3px;
+}
+
+/*################################################################
+ ######  Library styling is hard  ###############################
+ ################### most of it was LateNight & Deere ##########
+############ added styling for AutoDJ & Recording etc ##### */
+
+#LibMiniMaxiButton {
+  margin-bottom: 12px;
+  }
+  #LibMiniMaxiButton[displayValue="0"] {
+    image: url(skin:/buttons/btn_lib_maxi.svg) no-repeat center top;
+    }
+    #LibMiniMaxiButton[displayValue="0"]:hover {
+      image: url(skin:/buttons/btn_lib_maxi_hover.svg) no-repeat center top;
+    }
+  #LibMiniMaxiButton[displayValue="1"] {
+    image: url(skin:/buttons/btn_lib_mini.svg) no-repeat center top;
+    }
+    #LibMiniMaxiButton[displayValue="1"]:hover {
+      image: url(skin:/buttons/btn_lib_mini_hover.svg) no-repeat center top;
+    }
+
+QTableView,
+QTextBrowser,
+QTreeView {
+  border: 1px solid #585858;
+  font-weight: normal;
+  color: #9e9e9e;
+  background-color: #0f0f0f;
+  alternate-background-color: #1a1a1a;
+  /* unfocused Stars in selected row
+  selection-color: #D32323; */
+  /* empty CoverArt cell in selected row until
+    daschuer:lp1773709 402483053e3ebd224cce83f1cb0bde361ada1aa8
+  selection-background-color: #3B9097; */
+}
+
+/* selected table row */
+QTableView::item:selected {
+  color: #fff;
+  background-color: #555;
+  /* overrides color:
+  selection-color: #ff5411;
+  not applied anywhere:
+  selection-background-color: #125454; */
+  }
+  /* focused cell */
+  QTableView::item:focus {/*
+    background-color: #666; */
+    /* overrides font color:
+    selection-color: #ff5411; */
+    /* not applied anywhere:
+    selection-background-color: #125454; */
+    /* this outer border is drawn in addition to inner (dotted)
+      focus border defined by OS theme
+    border: 1px solid #ccc; */
+  }
+
+QTreeView {
+  min-height: 90px;
+  min-width: 90px;
+  border-width: 1px 1px 1px 0px;
+  border-style: solid;
+  border-color: #585858;
+  show-decoration-selected: 0;
+  /* Don't define top margin here, it won't shift ScrollBar.
+  Shift WSearchLineEdit instead */
+  margin: 0px;
+  }
+  QTreeView:focus,
+  QTableView:focus { /*
+    New Library navigation COs only work if TreeView or TableView have focus.
+    Clicking on buttons, sliders and visuals elsewhere removes focus from Library.
+    In conjunction with [Library],MoveFocusBackward/..Forward, some highlight
+    helps a lot. */
+    border-color: #ff6600;
+  }
+
+/*  Closed branch icon in tree */
+QTreeView::branch:has-children:!has-siblings:closed,
+QTreeView::branch:closed:has-children:has-siblings {
+  image: url(skin:/graphics/branch_closed.png);
+  }
+  QTreeView::branch:has-children:!has-siblings:closed:selected,
+  QTreeView::branch:closed:has-children:has-siblings:selected {
+    background-color: #333;
+  }
+
+/*  Open branch icon in tree */
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings {
+  image: url(skin:/graphics/branch_open.png);
+  }
+  QTreeView::branch:open:has-children:!has-siblings:selected,
+  QTreeView::branch:open:has-children:has-siblings:selected {
+    border-image: none;
+    background-color: #333;
+  }
+/* Text label of branch item */
+QTreeView::item:selected {
+  border-image: none;
+  background-image: none;
+  background-color: #333;
+  color: #d2d2d2;
+  }
+  /* space left of selected child item */
+  QTreeView::branch:!has-children:!has-siblings:closed:selected,
+  QTreeView::branch:closed:!has-children:has-siblings:selected,
+  QTreeView::branch:open:!has-children:!has-siblings:selected,
+  QTreeView::branch:open:!has-children:has-siblings:selected {
+    border-image: none;
+    background-color: #0f0f0f;
+  }
+
+QTreeView::item:!selected {
+  border-image: none;
+  background-image: none;
+  background-color: #0f0f0f;
+  color: #999;
+  }
+
+QHeaderView {
+  font-family: Ubuntu;
+  font-weight: bold;
+  /* Note(ronso0)
+  Interferes with skin scaling
+  font-size: 13px/13px;	*/
+  color: #CFCFCF;
+  background-color: #1e1e1e;
+  }
+  /*	Library header 'buttons'	*/
+  QHeaderView::section {
+    padding-left: 4px;
+    padding-top: 1px;
+    /*	set right border so that first column header
+    on the left doesn't have double border on the left	*/
+    border-right: 1px solid #585858;
+    background-color: #333;
+    border-radius: 0px;
+    }
+  QHeaderView::section:hover {
+    background-color: #585858;
+    border-radius: 0px;
+  }
+
+  QHeaderView::up-arrow,
+  QHeaderView::down-arrow {
+    width: 12px;
+    padding-right: 2px;
+    border-right: 1px solid #585858;
+    background-color: #333;
+    }
+    QHeaderView::up-arrow:hover,
+    QHeaderView::down-arrow:hover {
+      background-color: #585858;
+    }
+    QHeaderView::up-arrow {
+      image: url(skin:/graphics/library_sort_up.svg)
+      }
+      QHeaderView::up-arrow:hover {
+        image: url(skin:/graphics/library_sort_down.svg)
+      }
+    QHeaderView::down-arrow {
+      image: url(skin:/graphics/library_sort_down.svg)
+      }
+      QHeaderView::down-arrow:hover {
+        image: url(skin:/graphics/library_sort_up.svg)
+      }
+
+/* Scroll bars */
+QScrollBar:horizontal {
+  min-width: 12px;
+  height: 8px;
+  background: #000;
+  border-radius: 2px;
+  }
+  QScrollBar:vertical {
+    min-height: 12px;
+    width: 8px;
+    background: #000;
+    border-radius: 2px;
+    }
+  /* "add-page" and "sub-page" are the gutter of the scrollbar */
+  QScrollBar::add-page,
+  QScrollBar::sub-page {
+    min-width: 15px;
+    min-height: 15px;
+    background-color: #0f0f0f;
+    }
+  QScrollBar::handle:horizontal {
+    min-width: 25px;
+    background: #595959;
+    border-radius:2px;
+    }
+    QScrollBar::handle:horizontal:hover {
+      background: #888;
+    }
+  QScrollBar::handle:vertical {
+    min-height: 25px;
+    background: #595959;
+    border-radius:2px;
+    }
+    QScrollBar::handle:vertical:hover {
+      background: #888;
+    }
+  /* Turn off scroll buttons */
+  QScrollBar::add-line:horizontal,
+  QScrollBar::add-line:vertical {
+    width: 0px;
+    height: 0px;
+  }
+  QScrollBar::sub-line:horizontal,
+  QScrollBar::sub-line:vertical {
+    width: 0px;
+    height: 0px;
+  }
+
+/* Pushbuttons, a lot of them...
+Library features and their buttons:
+  Tracks DlgMissing
+    QPushButton#btnSelect
+    QPushButton#btnPurge
+  Tracks DlgHidden
+    QPushButton#btnSelect
+    QPushButton#btnPurge
+    QPushButton#btnUnhide
+    QPushButton#
+  DlgAutoDJ
+    QPushButton#pushButtonShuffle
+    QPushButton#pushButtonAddRandom
+    QPushButton#pushButtonSkipNext
+    QPushButton#pushButtonFadeNow
+    QSpinBox#spinBoxTransition
+    QLabel#labelSelectionInfo
+  DlgAnalysis
+    + some small margin to maximize and cover art button
+    + make radio buttons blue like active keylock button
+    QRadioButton#radioButtonRecentlyAdded
+    QRadioButton#radioButtonAllSongs
+    QLabel#labelProgress
+    QPushButton#pushButtonSelectAll
+    QPushButton#pushButtonAnalyze
+  DlgRecording
+    QLabel#label > "Status: ..."
+    QPushButton#pushButtonRecording > un/checked
+
+  	*/
+WLibrary QPushButton {
+  text-align: center;
+  font-family: Ubuntu;
+  font-weight: normal;
+  /* Note(ronso0)
+  Interferes with skin scaling, system font size respectively
+  font-size: 14px/14px;
+  Setting height/width here will prevent the buttons being scaled properly
+  min-height: 22px;
+  max-height: 22px;
+  height: 22px;	*/
+  color: #ccc;
+  border-radius: 2px;
+  margin: 1px 2px 5px 1px;
+  padding: 3px 6px 3px 6px;
+  background-color: #333;
+  background-position: center;
+  }
+  WLibrary QPushButton:!enabled {
+    color: #888;
+    }
+  WLibrary QPushButton:hover {
+    border: 1px solid #888;
+    }
+  WLibrary QPushButton:unchecked {
+    color: #888;
+    background-color: #444;
+    }
+  WLibrary QPushButton:checked {
+    color: #000;
+    font-weight: bold;
+    background-color: #ff7b00;
+    }
+  WLibrary QPushButton:checked:hover {
+    border: 1px solid #ff3f00;
+    }
+  /* 'Enable AutoDJ' button	*/
+  QPushButton#pushButtonAutoDJ:hover,
+  QPushButton#pushButtonRecording:hover,
+  QPushButton#pushButtonAnalyze:hover {
+    border: 1px solid #ff6600;
+  }
+  /* Push 'Start/Stop Recording' button and
+    'Enable AutoDJ' button away from skin border	*/
+  QPushButton#pushButtonAutoDJ,
+  QPushButton#pushButtonRecording {
+    margin: 1px 9px 5px 1px;
+  }
+  QPushButton#pushButtonRecording:unchecked {
+    color: #888;
+    background-color: #444;
+    border: 1px solid #444;
+  }
+  QPushButton#pushButtonRecording:unchecked:hover,
+  QPushButton#pushButtonRecording:checked {
+    color: #dddddd;
+    font-weight: bold;
+    background-color: #a90000;
+    border: 1px solid #ca0000;
+  }
+
+  /* Entire BPM cell */
+  /* Lock icon at the left */
+  #LibraryBPMButton::indicator:checked {
+    image: url(skin:/buttons/btn_lib_bpm_locked.svg);
+    }
+  #LibraryBPMButton::indicator:unchecked {
+    image: url(skin:/buttons/btn_lib_bpm_unlocked.svg);
+    }
+  /* BPM value */
+  #LibraryBPMButton::item {
+    color: #cfcfcf;
+    }
+    /* BPM value in selected row. Should match 'selection-color' &
+    'selection-background-color' of QTableView */
+    #LibraryBPMButton::item:selected {
+      color: #ededed;
+      background-color: #555;
+      }
+  #LibraryBPMSpinBox {
+    color: #fff;
+    background-color: #0f0f0f;
+    selection-color: #0f0f0f;
+    selection-background-color: #888;
+    /* This combination of negative top/bottom padding & margin
+      creates a 1px border around the spinbox' text area.
+      Increased left/right padding/margin removes the overlap of
+      text of activated spinbox and left-over text from regular
+      BPM value display. */
+    padding: -1px -8px -1px -4px;
+    margin: -2px 0px -2px -2px;
+    /* As soon as any border property is set, the up/down buttons
+      lose their style & icons
+    border: 0px;
+    border-radius: 2px; */
+    }
+
+  /* Button in library "Preview" column */
+  #LibraryPreviewButton {
+    background: transparent;
+    margin: 0px;
+    padding: 0px;
+    border: 1px solid transparent;
+    }
+    #LibraryPreviewButton:!checked {
+      image: url(skin:/buttons/btn_lib_preview_play.svg);
+      }
+      #LibraryPreviewButton:!checked:hover {
+        border: 1px solid #888;
+        background: #0f0f0f;
+      }
+    #LibraryPreviewButton:checked {
+      image: url(skin:/buttons/btn_lib_preview_pause.svg);
+      background-color: #000;
+      border: 1px solid #555;
+      }
+      #LibraryPreviewButton:checked:hover {
+        border: 1px solid #888;
+      }
+    /* None of these would style the Preview button background if
+      the respective table row is selected:
+    #LibraryPreviewButton {
+      show-decoration-selected: 0;
+    }
+    #LibraryPreviewButton:selected,
+    #LibraryPreviewButton::item,
+    #LibraryPreviewButton::item:selected,
+    #LibraryPreviewButton:focus {
+      background: #451212;
+    }*/
+
+  /* checkbox in library "Played" column */
+  QTableView::indicator {
+    width: 10px;
+    height: 10px;
+    margin: 0px;
+    padding: 0px;
+    color: #cfcfcf;
+    /* border is added to size defined above */
+    border: 1px solid rgba(151,151,151,128);
+    }
+  QTableView::indicator:hover {
+      border: 1px solid #888;
+    }
+  QTableView::indicator:checked {
+    background: transparent url(skin:/buttons/btn_lib_checkmark.svg);
+    }
+  QTableView::indicator:unchecked {
+    background: none;
+    }
+
+WLibrary QSpinBox {
+  min-height: 22px;
+  max-height: 22px;
+  min-width: 40px;
+  max-width: 40px;
+}
+
+/* library search text box */
+WSearchLineEdit {
+  padding: 2px;
+  margin-bottom: 5px;
+  border: 1px solid #656565;
+  border-left: 0px;
+  color: #cfcfcf;
+  background: #0f0f0f;
+  selection-color: #0f0f0f;
+  selection-background-color: #d2d2d2;
+  }
+  WSearchLineEdit:focus {
+    border: 2px solid #ff6600;
+    color: #eeeeee;
+    padding: 2px;
+  }
+  /* Clear button next to text field */
+  WSearchLineEdit QToolButton {
+    margin-bottom: 4px;
+  }
+
+QLabel,
+QRadioButton {	/*
+  background: none;
+  Extra declaration for QRadioButton otherwise it shows up with
+  wrong colors in Linux with Gnome 	*/
+  color: #cfcfcf;
+}
+
+WLibrary QRadioButton#radioButtonRecentlyAdded,
+WLibrary QRadioButton#radioButtonAllSongs {
+  padding: 1px 3px 3px 1px;
+  color: #cfcfcf;
+}
+
+WLibrary QRadioButton#radioButtonRecentlyAdded {
+  margin: 0px 3px 0px 5px;
+}
+
+WLibrary QRadioButton::indicator:checked {
+  background: transparent url(skin:/buttons/btn_lib_radio_button_on.svg) center center;
+}
+
+WLibrary QRadioButton::indicator:unchecked {
+  background: transparent url(skin:/buttons/btn_lib_radio_button_off.svg) center center;
+}
+/* Test :: increase font size of WOverview "Ready to play, analyzing..." etc.
+WOverview {
+  font-size: 16px/16px;
+  color: #eeeeee;
+  font-size is considered, color not.
+} */

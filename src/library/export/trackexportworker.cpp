@@ -179,7 +179,7 @@ TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
         m_overwriteMode = OverwriteMode::OVERWRITE_ALL;
         break;
     case OverwriteAnswer::CANCEL:
-        // Handle cancelation as a result of the question.
+        // Handle cancellation as a result of the question.
         m_errorMessage = tr("Export process was canceled");
         stop();
         break;

@@ -8,10 +8,10 @@
 #include "control/controlobject.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
+#include "effects/effectrack.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "library/library.h"
-#include "library/trackcollection.h"
 #include "mixer/auxiliary.h"
 #include "mixer/deck.h"
 #include "mixer/microphone.h"
@@ -24,6 +24,13 @@
 #include "util/stat.h"
 #include "util/sleepableqthread.h"
 
+//static
+QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumDecks;
+//static
+QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumSamplers;
+//static
+QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
+
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                              SoundManager* pSoundManager,
                              EffectsManager* pEffectsManager,
@@ -35,17 +42,17 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         m_pEngine(pEngine),
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
-        m_pAnalyzerQueue(NULL),
+        m_pAnalyzerQueue(nullptr),
         m_pCONumDecks(new ControlObject(
-            ConfigKey("[Master]", "num_decks"), true, true)),
+                ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(
             ConfigKey("[Master]", "num_samplers"), true, true)),
         m_pCONumPreviewDecks(new ControlObject(
             ConfigKey("[Master]", "num_preview_decks"), true, true)),
         m_pCONumMicrophones(new ControlObject(
-            ConfigKey("[Master]", "num_microphones"), true, true)),
+                ConfigKey("[Master]", "num_microphones"), true, true)),
         m_pCONumAuxiliaries(new ControlObject(
-            ConfigKey("[Master]", "num_auxiliaries"), true, true)){
+                ConfigKey("[Master]", "num_auxiliaries"), true, true)) {
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
             Qt::DirectConnection);
@@ -78,24 +85,14 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
             Qt::DirectConnection);
 
     // This is parented to the PlayerManager so does not need to be deleted
-    SamplerBank* pSamplerBank = new SamplerBank(this);
-    Q_UNUSED(pSamplerBank);
-
-    // register the engine's outputs
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER, 0, 2),
-                                    m_pEngine);
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES, 0, 2),
-                                    m_pEngine);
-    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        m_pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o),
-                                        m_pEngine);
-    }
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::SIDECHAIN, 0, 2),
-                                    m_pEngine);
+    m_pSamplerBank = new SamplerBank(this);
 }
 
 PlayerManager::~PlayerManager() {
     QMutexLocker locker(&m_mutex);
+
+    m_pSamplerBank->saveSamplerBankToPath(
+        m_pConfig->getSettingsPath() + "/samplers.xml");
     // No need to delete anything because they are all parented to us and will
     // be destroyed when we are destroyed.
     m_players.clear();
@@ -103,6 +100,10 @@ PlayerManager::~PlayerManager() {
     m_samplers.clear();
     m_microphones.clear();
     m_auxiliaries.clear();
+
+    delete m_pCOPNumDecks.fetchAndStoreAcquire(nullptr);
+    delete m_pCOPNumSamplers.fetchAndStoreAcquire(nullptr);
+    delete m_pCOPNumPreviewDecks.fetchAndStoreAcquire(nullptr);
 
     delete m_pCONumSamplers;
     delete m_pCONumDecks;
@@ -123,8 +124,7 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     connect(this, SIGNAL(loadLocationToPlayer(QString, QString)),
             pLibrary, SLOT(slotLoadLocationToPlayer(QString, QString)));
 
-    m_pAnalyzerQueue = AnalyzerQueue::createDefaultAnalyzerQueue(m_pConfig,
-            pLibrary->getTrackCollection());
+    m_pAnalyzerQueue = new AnalyzerQueue(pLibrary->dbConnectionPool(), m_pConfig);
 
     // Connect the player to the analyzer queue so that loaded tracks are
     // analysed.
@@ -149,21 +149,6 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
 }
 
 // static
-unsigned int PlayerManager::numDecks() {
-    // We do this to cache the control once it is created so callers don't incur
-    // a hashtable lookup every time they call this.
-    static ControlProxy* pNumCO = NULL;
-    if (pNumCO == NULL) {
-        pNumCO = new ControlProxy(ConfigKey("[Master]", "num_decks"));
-        if (!pNumCO->valid()) {
-            delete pNumCO;
-            pNumCO = NULL;
-        }
-    }
-    return pNumCO ? pNumCO->get() : 0;
-}
-
-// static
 bool PlayerManager::isDeckGroup(const QString& group, int* number) {
     if (!group.startsWith("[Channel")) {
         return false;
@@ -175,6 +160,23 @@ bool PlayerManager::isDeckGroup(const QString& group, int* number) {
         return false;
     }
     if (number != NULL) {
+        *number = deckNum;
+    }
+    return true;
+}
+
+// static
+bool PlayerManager::isSamplerGroup(const QString& group, int* number) {
+    if (!group.startsWith("[Sampler")) {
+        return false;
+    }
+
+    bool ok = false;
+    int deckNum = group.mid(8,group.lastIndexOf("]")-8).toInt(&ok);
+    if (!ok || deckNum <= 0) {
+        return false;
+    }
+    if (number != nullptr) {
         *number = deckNum;
     }
     return true;
@@ -198,34 +200,58 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
 }
 
 // static
+unsigned int PlayerManager::numDecks() {
+    // We do this to cache the control once it is created so callers don't incur
+    // a hashtable lookup every time they call this.
+    ControlProxy* pCOPNumDecks = load_atomic_pointer(m_pCOPNumDecks);
+    if (pCOPNumDecks == nullptr) {
+        pCOPNumDecks = new ControlProxy(ConfigKey("[Master]", "num_decks"));
+        if (!pCOPNumDecks->valid()) {
+            delete pCOPNumDecks;
+            pCOPNumDecks = nullptr;
+        } else {
+            m_pCOPNumDecks = pCOPNumDecks;
+        }
+    }
+    // m_pCOPNumDecks->get() fails on MacOs
+    return pCOPNumDecks ? pCOPNumDecks->get() : 0;
+}
+
+// static
 unsigned int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlProxy* pNumCO = NULL;
-    if (pNumCO == NULL) {
-        pNumCO = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
-        if (!pNumCO->valid()) {
-            delete pNumCO;
-            pNumCO = NULL;
+    ControlProxy* pCOPNumSamplers = load_atomic_pointer(m_pCOPNumSamplers);
+    if (pCOPNumSamplers == nullptr) {
+        pCOPNumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
+        if (!pCOPNumSamplers->valid()) {
+            delete pCOPNumSamplers;
+            pCOPNumSamplers = nullptr;
+        } else {
+            m_pCOPNumSamplers = pCOPNumSamplers;
         }
     }
-    return pNumCO ? pNumCO->get() : 0;
+    // m_pCOPNumSamplers->get() fails on MacOs
+    return pCOPNumSamplers ? pCOPNumSamplers->get() : 0;
 }
 
 // static
 unsigned int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    static ControlProxy* pNumCO = NULL;
-    if (pNumCO == NULL) {
-        pNumCO = new ControlProxy(
+    ControlProxy* pCOPNumPreviewDecks = load_atomic_pointer(m_pCOPNumPreviewDecks);
+    if (pCOPNumPreviewDecks == nullptr) {
+        pCOPNumPreviewDecks = new ControlProxy(
                 ConfigKey("[Master]", "num_preview_decks"));
-        if (!pNumCO->valid()) {
-            delete pNumCO;
-            pNumCO = NULL;
+        if (!pCOPNumPreviewDecks->valid()) {
+            delete pCOPNumPreviewDecks;
+            pCOPNumPreviewDecks = nullptr;
+        } else {
+            m_pCOPNumPreviewDecks = pCOPNumPreviewDecks;
         }
     }
-    return pNumCO ? pNumCO->get() : 0;
+    // m_pCOPNumPreviewDecks->get() fails on MacOs
+    return pCOPNumPreviewDecks ? pCOPNumPreviewDecks->get() : 0;
 }
 
 void PlayerManager::slotNumDecksControlChanged(double v) {
@@ -326,7 +352,7 @@ void PlayerManager::addConfiguredDecks() {
 void PlayerManager::addDeckInner() {
     // Do not lock m_mutex here.
     QString group = groupForDeck(m_decks.count());
-    DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(group)) {
         return;
     }
 
@@ -363,9 +389,10 @@ void PlayerManager::addDeckInner() {
 
     // Setup equalizer rack for this deck.
     EqualizerRackPointer pEqRack = m_pEffectsManager->getEqualizerRack(0);
-    if (pEqRack) {
-        pEqRack->addEffectChainSlotForGroup(group);
+    VERIFY_OR_DEBUG_ASSERT(pEqRack) {
+        return;
     }
+    pEqRack->setupForGroup(group);
 
     // BaseTrackPlayer needs to delay until we have setup the equalizer rack for
     // this deck to fetch the legacy EQ controls.
@@ -374,9 +401,15 @@ void PlayerManager::addDeckInner() {
 
     // Setup quick effect rack for this deck.
     QuickEffectRackPointer pQuickEffectRack = m_pEffectsManager->getQuickEffectRack(0);
-    if (pQuickEffectRack) {
-        pQuickEffectRack->addEffectChainSlotForGroup(group);
+    VERIFY_OR_DEBUG_ASSERT(pQuickEffectRack) {
+        return;
     }
+    pQuickEffectRack->setupForGroup(group);
+}
+
+void PlayerManager::loadSamplers() {
+    m_pSamplerBank->loadSamplerBankFromPath(
+        m_pConfig->getSettingsPath() + "/samplers.xml");
 }
 
 void PlayerManager::addSampler() {
@@ -389,7 +422,7 @@ void PlayerManager::addSamplerInner() {
     // Do not lock m_mutex here.
     QString group = groupForSampler(m_samplers.count());
 
-    DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(group)) {
         return;
     }
 
@@ -416,7 +449,7 @@ void PlayerManager::addPreviewDeck() {
 void PlayerManager::addPreviewDeckInner() {
     // Do not lock m_mutex here.
     QString group = groupForPreviewDeck(m_preview_decks.count());
-    DEBUG_ASSERT_AND_HANDLE(!m_players.contains(group)) {
+    VERIFY_OR_DEBUG_ASSERT(!m_players.contains(group)) {
         return;
     }
 

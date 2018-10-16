@@ -197,7 +197,7 @@ function KontrolF1Controller() {
         this.registerOutputPackets();
     }
 
-    // Set brightness for single color buttons with brigthness adjustment
+    // Set brightness for single color buttons with brightness adjustment
     // Valid adjustment range is 0-0x7f
     this.setButtonBrightness = function(name, value) {
         var controller = this.controller;

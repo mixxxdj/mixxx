@@ -36,6 +36,27 @@
 #include <X11/Xlib.h>
 #endif
 
+namespace {
+
+int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
+    int result = -1;
+    MixxxMainWindow mainWindow(app, args);
+    // If startup produced a fatal error, then don't even start the
+    // Qt event loop.
+    if (ErrorDialogHandler::instance()->checkError()) {
+        mainWindow.finalize();
+    } else {
+        qDebug() << "Displaying main window";
+        mainWindow.show();
+
+        qDebug() << "Running Mixxx";
+        result = app->exec();
+    }
+    return result;
+}
+
+} // anonymous namespace
+
 int main(int argc, char * argv[]) {
     Console console;
 
@@ -46,6 +67,11 @@ int main(int argc, char * argv[]) {
     // These need to be set early on (not sure how early) in order to trigger
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
+
+    // This needs to be set before initializing the QApplication.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
 
     // Setting the organization name results in a QDesktopStorage::DataLocation
     // of "$HOME/Library/Application Support/Mixxx/Mixxx" on OS X. Leave the
@@ -66,9 +92,17 @@ int main(int argc, char * argv[]) {
     // ErrorDialogHandler::errorDialog(). TODO(XXX): Remove this hack.
     QThread::currentThread()->setObjectName("Main");
 
-    mixxx::Logging::initialize();
+    // Create the ErrorDialogHandler in the main thread, otherwise it will be
+    // created in the thread of the first caller to instance(), which may not be
+    // the main thread. Bug #1748636.
+    ErrorDialogHandler::instance();
 
-    MixxxApplication a(argc, argv);
+    mixxx::Logging::initialize(args.getSettingsPath(),
+                               args.getLogLevel(),
+                               args.getLogFlushLevel(),
+                               args.getDebugAssertBreak());
+
+    MixxxApplication app(argc, argv);
 
     // Support utf-8 for all translation strings. Not supported in Qt 5.
     // TODO(rryan): Is this needed when we switch to qt5? Some sources claim it
@@ -77,8 +111,7 @@ int main(int argc, char * argv[]) {
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 #endif
 
-    // Enumerate and load SoundSource plugins
-    SoundSourceProxy::loadPlugins();
+    SoundSourceProxy::registerSoundSourceProviders();
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());
@@ -97,26 +130,10 @@ int main(int argc, char * argv[]) {
     }
 #endif
 
-    MixxxMainWindow* mixxx = new MixxxMainWindow(&a, args);
-
     // When the last window is closed, terminate the Qt event loop.
-    QObject::connect(&a, SIGNAL(lastWindowClosed()), &a, SLOT(quit()));
+    QObject::connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
 
-    int result = -1;
-
-    // If startup produced a fatal error, then don't even start the Qt event
-    // loop.
-    if (ErrorDialogHandler::instance()->checkError()) {
-        mixxx->finalize();
-    } else {
-        qDebug() << "Displaying mixxx";
-        mixxx->show();
-
-        qDebug() << "Running Mixxx";
-        result = a.exec();
-    }
-
-    delete mixxx;
+    int result = runMixxx(&app, args);
 
     qDebug() << "Mixxx shutdown complete with code" << result;
 

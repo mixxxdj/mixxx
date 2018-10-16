@@ -4,9 +4,7 @@
 // NOTE(rryan): Do not change this from [Shoutcast] unless you also put upgrade
 // logic in src/preferences/upgrade.h.
 #define BROADCAST_PREF_KEY "[Shoutcast]"
-#define BROADCAST_DEFAULT_PORT "8000"
-
-#define BROADCAST_CHANNELS_STEREO 2
+#define BROADCAST_DEFAULT_PORT 8000
 
 #define BROADCAST_SERVER_SHOUTCAST "Shoutcast"
 #define BROADCAST_SERVER_ICECAST1 "Icecast1"
@@ -27,5 +25,14 @@
 
 #define BROADCAST_FORMAT_MP3 "MP3"
 #define BROADCAST_FORMAT_OV "OggVorbis"
+
+// EngineNetworkStream can't use locking mechanisms to protect its
+// internal worker list against concurrency issues, as it is used by
+// methods called from the audio engine thread.
+// Instead, the internal list has a fixed number of QSharedPointers
+// (which are thread-safe) initialized to null pointers. R/W operations to
+// the workers are then performed on thread-safe QSharedPointers and not
+// onto the thread-unsafe QVector
+#define BROADCAST_MAX_CONNECTIONS 16
 
 #endif /* DEFS_BROADCAST_H */

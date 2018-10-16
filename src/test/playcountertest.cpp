@@ -6,12 +6,6 @@
 
 class PlayCounterTest : public testing::Test {
   protected:
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-
     void updatePlayedAndVerify(PlayCounter* pPlayCounter, bool bPlayed) {
         bool isPlayedBefore = pPlayCounter->isPlayed();
         int timesPlayedBefore = pPlayCounter->getTimesPlayed();

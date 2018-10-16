@@ -1,12 +1,18 @@
 #ifndef COLUMNCACHE_H
 #define COLUMNCACHE_H
 
+#include <QObject>
 #include <QMap>
 #include <QStringList>
 
+#include "track/keyutils.h"
+#include "control/controlproxy.h"
+#include "preferences/usersettings.h"
+
 // Caches the index of frequently used columns and provides a lookup-table of
 // column name to index.
-class ColumnCache {
+class ColumnCache : public QObject {
+  Q_OBJECT
   public:
 
     enum Column {
@@ -22,7 +28,7 @@ class ColumnCache {
         COLUMN_LIBRARYTABLE_GROUPING,
         COLUMN_LIBRARYTABLE_TRACKNUMBER,
         COLUMN_LIBRARYTABLE_FILETYPE,
-        COLUMN_LIBRARYTABLE_LOCATION,
+        COLUMN_LIBRARYTABLE_NATIVELOCATION,
         COLUMN_LIBRARYTABLE_COMMENT,
         COLUMN_LIBRARYTABLE_DURATION,
         COLUMN_LIBRARYTABLE_BITRATE,
@@ -59,17 +65,11 @@ class ColumnCache {
         COLUMN_PLAYLISTTRACKSTABLE_TITLE,
         COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED,
 
-        COLUMN_CRATETRACKSTABLE_TRACKID,
-        COLUMN_CRATETRACKSTABLE_CRATEID,
-
         // NUM_COLUMNS should always be the last item.
         NUM_COLUMNS
     };
 
-    ColumnCache() { }
-    ColumnCache(const QStringList& columns) {
-        setColumns(columns);
-    }
+    explicit ColumnCache(const QStringList& columns = QStringList());
 
     void setColumns(const QStringList& columns);
 
@@ -106,6 +106,17 @@ class ColumnCache {
     QMap<QString, int> m_columnIndexByName;
     // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
+
+    KeyUtils::KeyNotation keyNotation() const {
+        return KeyUtils::keyNotationFromNumericValue(
+                m_pKeyNotationCP->get());
+    }
+
+  private:
+    ControlProxy* m_pKeyNotationCP;
+
+  private slots:
+    void slotSetKeySortOrder(double);
 };
 
 #endif /* COLUMNCACHE_H */

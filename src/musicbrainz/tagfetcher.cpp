@@ -85,7 +85,7 @@ void TagFetcher::fingerprintFound(int index) {
 
     emit(fetchProgress(tr("Identifying track")));
     // qDebug() << "start to look up the MBID";
-    m_AcoustidClient.start(index, fingerprint, ptrack->getDuration());
+    m_AcoustidClient.start(index, fingerprint, ptrack->getDurationInt());
 }
 
 void TagFetcher::mbidFound(int index, const QString& mbid) {

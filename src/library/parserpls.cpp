@@ -1,7 +1,7 @@
 //
 // C++ Implementation: parserpls
 //
-// Description: module to parse pls formated playlists
+// Description: module to parse pls formatted playlists
 //
 //
 // Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
@@ -24,7 +24,7 @@
 
 /**
    ToDo:
-    - parse ALL informations from the pls file if available ,
+    - parse ALL information from the pls file if available ,
           not only the filepath;
  **/
 

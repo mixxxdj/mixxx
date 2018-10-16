@@ -85,11 +85,11 @@ mixxx::Duration GLSLWaveformWidget::render() {
     return t1; // return timer for painter setup
 }
 
-void GLSLWaveformWidget::resize(int width, int height) {
-    //NOTE: (vrince) this is needed since we allocation buffer on resize
-    //ans the Gl Context should be properly setted
+void GLSLWaveformWidget::resize(int width, int height, float devicePixelRatio) {
+    // NOTE: (vrince) this is needed since we allocation buffer on resize
+    // and the Gl Context should be properly set
     makeCurrent();
-    WaveformWidgetAbstract::resize(width,height);
+    WaveformWidgetAbstract::resize(width, height, devicePixelRatio);
 }
 
 void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {

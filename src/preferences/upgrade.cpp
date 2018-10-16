@@ -25,16 +25,18 @@
 
 #include "preferences/usersettings.h"
 #include "preferences/beatdetectionsettings.h"
+#include "database/mixxxdb.h"
 #include "controllers/defs_controllers.h"
 #include "defs_version.h"
 #include "library/library_preferences.h"
 #include "library/trackcollection.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
+#include "util/db/dbconnectionpooler.h"
+#include "util/db/dbconnectionpooled.h"
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
-          m_bUpgraded(false),
           m_bRescanLibrary(false) {
 }
 
@@ -82,7 +84,6 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         if (oldFile->exists()) {
             if (oldFile->copy(newFilePath)) {
                 oldFile->remove();
-                m_bUpgraded = true;
             }
             else {
                 if (oldFile->error()==14) qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "The destination file already exists.";
@@ -157,7 +158,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 *
 *   Add entries to the IF ladder below if anything needs to change from the
 *   previous to the current version. This allows for incremental upgrades
-*   incase a user upgrades from a few versions prior.
+*   in case a user upgrades from a few versions prior.
 ****************************************************************************/
 
     // Read the config file from home directory
@@ -202,8 +203,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         else {
 #endif
             // This must have been the first run... right? :)
-            qDebug() << "No version number in configuration file. Setting to" << VERSION;
-            config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
+            qDebug() << "No version number in configuration file. Setting to" << MIXXX_VERSION;
+            config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
             m_bFirstRun = true;
             return config;
 #ifdef __APPLE__
@@ -214,12 +215,12 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     }
 
     // If it's already current, stop here
-    if (configVersion == VERSION) {
-        qDebug() << "Configuration file is at the current version" << VERSION;
+    if (configVersion == MIXXX_VERSION) {
+        qDebug() << "Configuration file is at the current version" << MIXXX_VERSION;
         return config;
     }
 
-    // Allows for incremental upgrades incase someone upgrades from a few versions prior
+    // Allows for incremental upgrades in case someone upgrades from a few versions prior
     // (I wish we could do a switch on a QString.)
     /*
     // Examples, since we didn't store the version number prior to v1.7.0
@@ -347,7 +348,6 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         if (successful) {
             qDebug() << "Upgrade Successful";
             configVersion = "1.11.0";
-            m_bUpgraded = true;
             config->set(ConfigKey("[Config]","Version"),
                         ConfigValue(configVersion));
         } else {
@@ -357,21 +357,34 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
+        bool successful = false;
+        {
+            MixxxDb mixxxDb(config);
+            const mixxx::DbConnectionPooler dbConnectionPooler(
+                    mixxxDb.connectionPool());
+            if (dbConnectionPooler.isPooling()) {
+                QSqlDatabase dbConnection = mixxx::DbConnectionPooled(mixxxDb.connectionPool());
+                DEBUG_ASSERT(dbConnection.isOpen());
+                if (MixxxDb::initDatabaseSchema(dbConnection)) {
+                    TrackCollection tc(config);
+                    tc.connectDatabase(dbConnection);
 
-        // upgrade to the multi library folder settings
-        QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
-        // to migrate the DB just add the current directory to the new
-        // directories table
-        TrackCollection tc(config);
-        DirectoryDAO directoryDAO = tc.getDirectoryDAO();
+                    // upgrade to the multi library folder settings
+                    QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
+                    // to migrate the DB just add the current directory to the new
+                    // directories table
+                    // NOTE(rryan): We don't have to ask for sandbox permission to this
+                    // directory because the normal startup integrity check in Library will
+                    // notice if we don't have permission and ask for access. Also, the
+                    // Sandbox isn't setup yet at this point in startup because it relies on
+                    // the config settings path and this function is what loads the config
+                    // so it's not ready yet.
+                    successful = tc.getDirectoryDAO().addDirectory(currentFolder);
 
-        // NOTE(rryan): We don't have to ask for sandbox permission to this
-        // directory because the normal startup integrity check in Library will
-        // notice if we don't have permission and ask for access. Also, the
-        // Sandbox isn't setup yet at this point in startup because it relies on
-        // the config settings path and this function is what loads the config
-        // so it's not ready yet.
-        bool successful = directoryDAO.addDirectory(currentFolder);
+                    tc.disconnectDatabase();
+                }
+            }
+        }
 
         // ask for library rescan to activate cover art. We can later ask for
         // this variable when the library scanner is constructed.
@@ -382,8 +395,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // default of 6.  We've now removed all of the hacks, so subtracting
         // 6 from everyone's replay gain should keep things consistent for
         // all users.
-        int oldReplayGain = config->getValueString(
-                ConfigKey("[ReplayGain]", "InitialReplayGainBoost"), "6").toInt();
+        int oldReplayGain = config->getValue(
+                ConfigKey("[ReplayGain]", "InitialReplayGainBoost"), 6);
         int newReplayGain = math_max(-6, oldReplayGain - 6);
         config->set(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),
                     ConfigValue(newReplayGain));
@@ -391,25 +404,26 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // if everything until here worked fine we can mark the configuration as
         // updated
         if (successful) {
-            configVersion = VERSION;
-            m_bUpgraded = true;
-            config->set(ConfigKey("[Config]","Version"), ConfigValue(VERSION));
+            configVersion = MIXXX_VERSION;
+            config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
         }
         else {
             qDebug() << "Upgrade failed!\n";
         }
     }
 
-    if (configVersion == VERSION) qDebug() << "Configuration file is now at the current version" << VERSION;
+    if (configVersion.startsWith("1.12") ||
+        configVersion.startsWith("2.0") ||
+        configVersion.startsWith("2.1.0")) {
+        // No special upgrade required, just update the value.
+        configVersion = MIXXX_VERSION;
+        config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
+    }
+
+    if (configVersion == MIXXX_VERSION) qDebug() << "Configuration file is now at the current version" << MIXXX_VERSION;
     else {
-        /* Way too verbose, this confuses the hell out of Linux users when they see this:
         qWarning() << "Configuration file is at version" << configVersion
-                   << "and I don't know how to upgrade it to the current" << VERSION
-                   << "\n   (That means a function to do this needs to be added to upgrade.cpp.)"
-                   << "\n-> Leaving the configuration file version as-is.";
-        */
-        qWarning() << "Configuration file is at version" << configVersion
-                   << "instead of the current" << VERSION;
+                   << "instead of the current" << MIXXX_VERSION;
     }
 
     return config;
@@ -417,7 +431,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
 bool Upgrade::askReScanLibrary() {
     QMessageBox msgBox;
-    msgBox.setIconPixmap(QPixmap(":/images/mixxx-icon.png"));
+    msgBox.setIconPixmap(QPixmap(":/images/mixxx_icon.svg"));
     msgBox.setWindowTitle(QMessageBox::tr("Upgrading Mixxx"));
     msgBox.setText(QMessageBox::tr("Mixxx now supports displaying cover art.\n"
                       "Do you want to scan your library for cover files now?"));
@@ -449,7 +463,7 @@ bool Upgrade::askReanalyzeBeats() {
     QString generateNew = QMessageBox::tr("Generate New Beatgrids");
 
     QMessageBox msgBox;
-    msgBox.setIconPixmap(QPixmap(":/images/mixxx-icon.png"));
+    msgBox.setIconPixmap(QPixmap(":/images/mixxx_icon.svg"));
     msgBox.setWindowTitle(windowTitle);
     msgBox.setText(QString("<html><h2>%1</h2><p>%2</p><p>%3</p><p>%4</p></html>")
                    .arg(mainHeading, paragraph1, paragraph2, paragraph3));

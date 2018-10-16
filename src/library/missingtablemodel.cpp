@@ -3,8 +3,13 @@
 #include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
+#include "library/dao/trackschema.h"
 
-const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
+namespace {
+
+const QString kMissingFilter = "mixxx_deleted=0 AND fs_deleted=1";
+
+} // anonymous namespace
 
 MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
@@ -29,7 +34,7 @@ void MissingTableModel::setTableModel(int id) {
                   " FROM library "
                   "INNER JOIN track_locations "
                   "ON library.location=track_locations.id "
-                  "WHERE " + MissingTableModel::MISSINGFILTER);
+                  "WHERE " + kMissingFilter);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
@@ -59,7 +64,7 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
         trackIds.append(getTrackId(index));
     }
 
-    m_trackDAO.purgeTracks(trackIds);
+    m_pTrackCollection->purgeTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.

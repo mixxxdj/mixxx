@@ -61,21 +61,25 @@ public:
     unsigned int getDeckCount() const;
     void setDeckCount(unsigned int deckCount);
     void setCorrectDeckCount(int configuredDeckCount);
+    QSet<QString> getDevices() const;
 
     unsigned int getAudioBufferSizeIndex() const;
     unsigned int getFramesPerBuffer() const;
+    // Returns the processing latency in milliseconds
+    double getProcessingLatency() const;
     void setAudioBufferSizeIndex(unsigned int latency);
     unsigned int getSyncBuffers() const;
     void setSyncBuffers(unsigned int sampleRate);
+    bool getForceNetworkClock() const;
+    void setForceNetworkClock(bool force);
     void addOutput(const QString &device, const AudioOutput &out);
     void addInput(const QString &device, const AudioInput &in);
     QMultiHash<QString, AudioOutput> getOutputs() const;
     QMultiHash<QString, AudioInput> getInputs() const;
     void clearOutputs();
     void clearInputs();
-    // I'd prefer for these to be const but SoundManager::getDeviceList isn't
-    void filterOutputs(SoundManager *soundManager);
-    void filterInputs(SoundManager *soundManager);
+    bool hasMicInputs();
+    bool hasExternalRecordBroadcast();
     void loadDefaults(SoundManager *soundManager, unsigned int flags);
 private:
     QFileInfo m_configFile;
@@ -90,7 +94,10 @@ private:
     // values vary with sample rate) -- bkgood
     unsigned int m_audioBufferSizeIndex;
     unsigned int m_syncBuffers;
+    bool m_forceNetworkClock;
     QMultiHash<QString, AudioOutput> m_outputs;
     QMultiHash<QString, AudioInput> m_inputs;
+    int m_iNumMicInputs;
+    bool m_bExternalRecordBroadcastConnected;
 };
 #endif

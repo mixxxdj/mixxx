@@ -12,7 +12,7 @@
 // for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
 const int cRingSize = 8;
-// there are basicly unlimited readers allowed at each ring element
+// there are basically unlimited readers allowed at each ring element
 // but we have to count them so max() is just fine.
 // NOTE(rryan): Wrapping max with parentheses avoids conflict with the max macro
 // defined in windows.h.
@@ -76,9 +76,9 @@ class ControlValueAtomicBase {
             // 2) the formerly current value is locked by a writer
             // Case 1 does not happen because we have enough (0x7fffffff) reader slots.
             // Case 2 happens when the a reader is delayed after reading the
-            // m_currentIndex and in the mean while a reader locks the formaly current value
+            // m_currentIndex and in the mean while a reader locks the formally current value
             // because it has written cRingSize times. Reading the less recent value will fix
-            // it because it is now actualy the current value.
+            // it because it is now actually the current value.
             index = (index - 1) % (cRingSize);
         }
         return value;
@@ -92,7 +92,7 @@ class ControlValueAtomicBase {
             index = (unsigned int)m_writeIndex.fetchAndAddAcquire(1)
                     % (cRingSize);
             // This will be repeated if the value is locked
-            // 1) by an other writer writing at the same time or
+            // 1) by another writer writing at the same time or
             // 2) a delayed reader is still blocking the formerly current value
             // In both cases writing to the next value will fix it.
         } while (!m_ring[index].trySet(value));

@@ -1,20 +1,60 @@
 <!DOCTYPE template>
 <!--
   Description:
-    Looping controls (in, out, reloop, loop move).
+    A grid of beatloop controls with a loop double and halve on the left and right.
   Variables:
     group: The group for the controls.
 -->
 <Template>
   <WidgetGroup>
-    <ObjectName>LoopingContainer</ObjectName>
+    <ObjectName>LoopContainer</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>max,max</SizePolicy>
+    <SizePolicy>f,min</SizePolicy>
     <Children>
-      <WidgetGroup>
+
+      <WidgetGroup><!-- SpinBox + loop_activate -->
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:left_1state_button.xml">
+
+          <BeatSpinBox>
+            <ObjectName>BeatloopSizeSpinBox</ObjectName>
+            <TooltipId>beatloop_size</TooltipId>
+            <Value><Variable name="group"/>,beatloop_size</Value>
+          </BeatSpinBox>
+
+          <!-- Workaround for layout spacing -->
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+          <Template src="skin:left_right_2state_button.xml">
+            <SetVariable name="TooltipId">beatloop_activate</SetVariable>
+            <SetVariable name="ObjectName">BeatloopActivate</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_beatloop_activate_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_beatloop_activate_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_beatloop_activate_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_beatloop_activate_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,beatloop_activate</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,beatlooproll_activate</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup><!-- SpinBox + loop_activate -->
+
+      <!-- Workaround for layout spacing -->
+      <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+
+      <WidgetGroup><!-- loop_in, loop_out, reloop -->
+        <Layout>horizontal</Layout>
+        <Children>
+
+          <!-- Workaround for layout spacing -->
+          <Template src="skin:spacer_h.xml"/>
+
+          <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="TooltipId">loop_in</SetVariable>
             <SetVariable name="ObjectName">LoopIn</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -24,9 +64,13 @@
             <SetVariable name="state_0_pressed">icon/ic_loop_in_48px.svg</SetVariable>
             <SetVariable name="state_0_unpressed">icon/ic_loop_in_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,loop_in</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,loop_in_goto</SetVariable>
           </Template>
 
-          <Template src="skin:left_1state_button.xml">
+          <!-- Workaround for layout spacing -->
+          <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+          <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="TooltipId">loop_out</SetVariable>
             <SetVariable name="ObjectName">LoopOut</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
@@ -36,11 +80,15 @@
             <SetVariable name="state_0_pressed">icon/ic_loop_out_48px.svg</SetVariable>
             <SetVariable name="state_0_unpressed">icon/ic_loop_out_48px.svg</SetVariable>
             <SetVariable name="left_connection_control"><Variable name="group"/>,loop_out</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,loop_out_goto</SetVariable>
           </Template>
 
-          <Template src="skin:left_display_2state_button.xml">
-            <SetVariable name="TooltipId">reloop_exit</SetVariable>
-            <SetVariable name="ObjectName">ReloopExit</SetVariable>
+          <!-- Workaround for layout spacing -->
+          <WidgetGroup><Size>1me,0min</Size></WidgetGroup>
+
+          <Template src="skin:left_right_display_2state_button.xml">
+            <SetVariable name="TooltipId">reloop_toggle</SetVariable>
+            <SetVariable name="ObjectName">Reloop</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
@@ -50,18 +98,14 @@
             <SetVariable name="state_1_text"></SetVariable>
             <SetVariable name="state_1_pressed">icon/ic_loop_48px.svg</SetVariable>
             <SetVariable name="state_1_unpressed">icon/ic_loop_48px.svg</SetVariable>
-            <SetVariable name="left_connection_control"><Variable name="group"/>,reloop_exit</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,reloop_toggle</SetVariable>
+            <SetVariable name="right_connection_control"><Variable name="group"/>,reloop_andstop</SetVariable>
             <SetVariable name="display_connection_control"><Variable name="group"/>,loop_enabled</SetVariable>
           </Template>
-        </Children>
-      </WidgetGroup>
 
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <Children>
-          <Template src="skin:loopmove.xml"/>
         </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- loop_in, loop_out, reloop -->
+
     </Children>
-  </WidgetGroup>
+  </WidgetGroup><!-- LoopContainer -->
 </Template>

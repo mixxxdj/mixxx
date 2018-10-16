@@ -16,7 +16,7 @@
 class EngineMaster;
 class EngineBuffer;
 
-const double kNoTrigger = -1;
+const int kNoTrigger = -1;
 
 /**
  * EngineControl is an abstract base class for objects which implement
@@ -36,28 +36,16 @@ class EngineControl : public QObject {
   public:
     EngineControl(QString group,
                   UserSettingsPointer pConfig);
-    virtual ~EngineControl();
+    ~EngineControl() override;
 
     // Called by EngineBuffer::process every latency period. See the above
     // comments for information about guarantees that hold during this call. An
     // EngineControl can perform any upkeep operations that are necessary during
-    // this call. If the EngineControl would like to request the playback
-    // position to be altered, it should return the sample to seek to from this
-    // method. Otherwise it should return kNoTrigger.
-    virtual double process(const double dRate,
+    // this call.
+    virtual void process(const double dRate,
                            const double dCurrentSample,
                            const double dTotalSamples,
                            const int iBufferSize);
-
-    virtual double nextTrigger(const double dRate,
-                               const double dCurrentSample,
-                               const double dTotalSamples,
-                               const int iBufferSize);
-
-    virtual double getTrigger(const double dRate,
-                              const double dCurrentSample,
-                              const double dTotalSamples,
-                              const int iBufferSize);
 
     // hintReader allows the EngineControl to provide hints to the reader to
     // indicate that the given portion of a song is a potential imminent seek
@@ -78,7 +66,7 @@ class EngineControl : public QObject {
     }
 
     // Called whenever a seek occurs to allow the EngineControl to respond.
-    virtual void notifySeek(double dNewPlaypo);
+    virtual void notifySeek(double dNewPlaypo, bool adjustingPhase);
 
   public slots:
     virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);

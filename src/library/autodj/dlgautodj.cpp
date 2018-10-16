@@ -5,7 +5,7 @@
 #include "library/playlisttablemodel.h"
 #include "widget/wtracktableview.h"
 #include "util/assert.h"
-#include "util/time.h"
+#include "util/duration.h"
 
 DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                      UserSettingsPointer pConfig,
@@ -29,16 +29,18 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
     connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
+            this, SLOT(updateSelectionInfo()));
+
     connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
             m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SLOT(updateSelectionInfo()));
-
+    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
+            m_pTrackTableView, SLOT(setSelectedClick(bool)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
@@ -191,16 +193,8 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
     }
 }
 
-void DlgAutoDJ::setTrackTableFont(const QFont& font) {
-    m_pTrackTableView->setTrackTableFont(font);
-}
-
-void DlgAutoDJ::setTrackTableRowHeight(int rowHeight) {
-    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
-}
-
 void DlgAutoDJ::updateSelectionInfo() {
-    int duration = 0;
+    double duration = 0.0;
 
     QModelIndexList indices = m_pTrackTableView->selectionModel()->selectedRows();
 
@@ -214,12 +208,17 @@ void DlgAutoDJ::updateSelectionInfo() {
     QString label;
 
     if (!indices.isEmpty()) {
-        label.append(Time::formatSeconds(duration));
+        label.append(mixxx::Duration::formatSeconds(duration));
         label.append(QString(" (%1)").arg(indices.size()));
+        labelSelectionInfo->setToolTip(tr("Displays the duration and number of selected tracks."));
         labelSelectionInfo->setText(label);
         labelSelectionInfo->setEnabled(true);
     } else {
         labelSelectionInfo->setText("");
         labelSelectionInfo->setEnabled(false);
     }
+}
+
+bool DlgAutoDJ::hasFocus() const {
+    return QWidget::hasFocus();
 }

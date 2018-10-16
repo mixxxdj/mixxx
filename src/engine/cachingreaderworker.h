@@ -14,12 +14,14 @@
 #include "util/fifo.h"
 
 
+// POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct CachingReaderChunkReadRequest {
     CachingReaderChunk* chunk;
 
-    explicit CachingReaderChunkReadRequest(
-            CachingReaderChunk* chunkArg = nullptr)
-        : chunk(chunkArg) {
+    void giveToWorker(CachingReaderChunkForOwner* chunkForOwner) {
+        DEBUG_ASSERT(chunkForOwner);
+        chunk = chunkForOwner;
+        chunkForOwner->giveToWorker();
     }
 } CachingReaderChunkReadRequest;
 
@@ -32,22 +34,27 @@ enum ReaderStatus {
     CHUNK_READ_INVALID
 };
 
+// POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct ReaderStatusUpdate {
     ReaderStatus status;
     CachingReaderChunk* chunk;
-    SINT maxReadableFrameIndex;
-    ReaderStatusUpdate()
-        : status(INVALID)
-        , chunk(nullptr)
-        , maxReadableFrameIndex(Mixxx::AudioSource::getMinFrameIndex()) {
+    SINT readableFrameIndexRangeStart;
+    SINT readableFrameIndexRangeEnd;
+
+    void init(
+            ReaderStatus statusArg = INVALID,
+            CachingReaderChunk* chunkArg = nullptr,
+            const mixxx::IndexRange& readableFrameIndexRangeArg = mixxx::IndexRange()) {
+        status = statusArg;
+        chunk = chunkArg;
+        readableFrameIndexRangeStart = readableFrameIndexRangeArg.start();
+        readableFrameIndexRangeEnd = readableFrameIndexRangeArg.end();
     }
-    ReaderStatusUpdate(
-            ReaderStatus statusArg,
-            CachingReaderChunk* chunkArg,
-            SINT maxReadableFrameIndexArg)
-        : status(statusArg)
-        , chunk(chunkArg)
-        , maxReadableFrameIndex(maxReadableFrameIndexArg) {
+
+    mixxx::IndexRange readableFrameIndexRange() const {
+        return mixxx::IndexRange::between(
+                readableFrameIndexRangeStart,
+                readableFrameIndexRangeEnd);
     }
 } ReaderStatusUpdate;
 
@@ -88,7 +95,8 @@ class CachingReaderWorker : public EngineWorker {
     // Queue of Tracks to load, and the corresponding lock. Must acquire the
     // lock to touch.
     QMutex m_newTrackMutex;
-    TrackPointer m_newTrack;
+    bool m_newTrackAvailable;
+    TrackPointer m_pNewTrack;
 
     // Internal method to load a track. Emits trackLoaded when finished.
     void loadTrack(const TrackPointer& pTrack);
@@ -97,14 +105,18 @@ class CachingReaderWorker : public EngineWorker {
             const CachingReaderChunkReadRequest& request);
 
     // The current audio source of the track loaded
-    Mixxx::AudioSourcePointer m_pAudioSource;
+    mixxx::AudioSourcePointer m_pAudioSource;
+
+    // Temporary buffer for reading samples from all channels
+    // before conversion to a stereo signal.
+    mixxx::SampleBuffer m_tempReadBuffer;
 
     // The maximum readable frame index of the AudioSource. Might
     // be adjusted when decoding errors occur to prevent reading
     // the same chunk(s) over and over again.
     // This frame index references the frame that follows the
     // last frame with readable sample data.
-    SINT m_maxReadableFrameIndex;
+    mixxx::IndexRange m_readableFrameIndexRange;
 
     QAtomicInt m_stop;
 };

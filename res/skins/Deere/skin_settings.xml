@@ -7,9 +7,7 @@
   <WidgetGroup>
     <ObjectName>SkinSettings</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>min,min</SizePolicy>
-    <MinimumSize>180,-1</MinimumSize>
-    <MaximumSize>300,-1</MaximumSize>
+    <Size>180f,-1min</Size>
     <Children>
       <WidgetGroup>
         <ObjectName>SkinSettingsTop</ObjectName>
@@ -21,27 +19,217 @@
             <Text>Skin Settings</Text>
           </Label>
           <Template src="skin:left_2state_button.xml">
-            <SetVariable name="TooltipId"></SetVariable>
-            <SetVariable name="Tooltip">Show/hide skin settings</SetVariable>
+            <SetVariable name="TooltipId">skin_settings</SetVariable>
             <SetVariable name="ObjectName">SidebarShowHideSkinSettingsButton</SetVariable>
             <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text"></SetVariable>
-            <SetVariable name="state_0_pressed">icon/ic_menu_48px.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">icon/ic_menu_48px.svg</SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_clear_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_clear_48px.svg</SetVariable>
             <SetVariable name="state_1_text"></SetVariable>
-            <SetVariable name="state_1_pressed">icon/ic_menu_48px.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">icon/ic_menu_48px.svg</SetVariable>
-            <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_clear_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_clear_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Master],skin_settings</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
 
-      <!-- Global Skin Settings -->
+      <WidgetGroup>
+        <ObjectName>h3</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <PushButton>
+            <TooltipId></TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; Parallel Waveforms</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; Parallel Waveforms</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId>toggle_4decks</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; 4 Decks</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; 4 Decks</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],show_4decks</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+            </Connection>
+          </PushButton>
+
+        </Children>
+      </WidgetGroup>
+
+      <!-- Deck Settings -->
+      <Label>
+      <ObjectName>h2</ObjectName>
+      <Text>Decks</Text>
+      </Label>
+
+      <WidgetGroup>
+        <ObjectName>h3</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <PushButton>
+            <TooltipId>show_coverart</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; Cover Art</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; Cover Art</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],show_coverart</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId>show_spinny</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; Spinnies</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; Spinnies</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],show_spinnies</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; Artist &amp; Track Title</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; Artist &amp; Track Title</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Deere],show_track_info</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; BPM</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; BPM</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Deere],show_bpm_info</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; Star Rating</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; Star Rating</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Deere],show_starrating</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; 8 Hotcues</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; 8 Hotcues</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Deere],show_more_hotcues</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId>show_vinylcontrol</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; Vinyl Control Options</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; Vinyl Control Options</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
+            </Connection>
+          </PushButton>
+
+        </Children>
+      </WidgetGroup>
+
       <Label>
         <ObjectName>h2</ObjectName>
-        <Text>View</Text>
+        <Text>Mixer</Text>
       </Label>
 
       <WidgetGroup>
@@ -55,19 +243,73 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Show Mixer</Text>
+              <Text>&#9675; Show</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Show Mixer</Text>
+              <Text>&#9679; Show</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[Master],hide_mixer</ConfigKey>
-              <Transform>
-                <Not/>
-              </Transform>
+              <ConfigKey>[Master],show_mixer</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId></TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; Equalizers</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; Equalizers</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],show_eqs</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId></TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; Kill Switches</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; Kill Switches</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],show_killswitches</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId></TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; Faders</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; Faders</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],show_faders</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -76,261 +318,16 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Show Crossfader</Text>
+              <Text>&#9675; Crossfader</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Show Crossfader</Text>
+              <Text>&#9679; Crossfader</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Deere],hide_crossfader</ConfigKey>
-              <Transform>
-                <Not/>
-              </Transform>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <TooltipId>show_microphone</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show Microphone</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show Microphone</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <TooltipId>show_previewdeck</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show Preview Deck</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show Preview Deck</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <TooltipId>toggle_4decks</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show 4 Decks</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show 4 Decks</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <TooltipId>show_coverart</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show Cover Art in Library</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show Cover Art in Library</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Library],show_coverart</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <TooltipId>maximize_library</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Maximize Library</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Maximize Library</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Master],maximize_library</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-            </Connection>
-          </PushButton>
-        </Children>
-      </WidgetGroup>
-
-      <!-- Deck Settings -->
-      <Label>
-      <ObjectName>h2</ObjectName>
-      <Text>Main Decks</Text>
-      </Label>
-
-      <WidgetGroup>
-        <ObjectName>h3</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
-        <Children>
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>3</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show Cover Art</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show Cover Art &#9679; &#9675;</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>2</Number>
-              <Text>&#9745; Show Cover Art &#9675; &#9679;</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Deere],show_coverart</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show Star Rating</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show Star Rating</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Deere],show_starrating</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show More Hotcues</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show More Hotcues</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Deere],show_more_hotcues</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Conceal Artist/Track Info</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Conceal Artist/Track Info</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Deere],show_no_track_info</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Conceal BPM Info</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Conceal BPM Info</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Deere],show_no_bpm_info</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <TooltipId>toggle_waveforms_stacked</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show Stacked Waveforms</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show Stacked Waveforms</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Deere],show_stacked_waveforms</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show Vinyl Control Options</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show Vinyl Control Options</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
+              <ConfigKey>[Deere],show_crossfader</ConfigKey>
             </Connection>
           </PushButton>
 
@@ -346,32 +343,127 @@
       <WidgetGroup>
         <ObjectName>h3</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>me,max</SizePolicy>
         <Children>
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9744; Show Advanced Mode</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9745; Show Advanced Mode</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
-            </Connection>
-          </PushButton>
+
+          <WidgetStack currentpage="[Deere],sampler_row_current" >
+            <NextControl>[Deere],sampler_bank_next</NextControl>
+            <PrevControl>[Deere],sampler_bank_prev</PrevControl>
+            <Children>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:sampler_rows_selection_button.xml">
+                    <SetVariable name="current">1</SetVariable>
+                    <SetVariable name="next">2</SetVariable>
+                    <SetVariable name="prev">2</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <Template src="skin:sampler_rows_selection_button.xml">
+                    <SetVariable name="current">2</SetVariable>
+                    <SetVariable name="next">1</SetVariable>
+                    <SetVariable name="prev">1</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetStack>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:left_1state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId">LoadSamplerBank</SetVariable>
+                <SetVariable name="ObjectName">SamplerBankLoadButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">Load Bank</SetVariable>
+                <SetVariable name="state_0_pressed"></SetVariable>
+                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="left_connection_control">[Sampler],LoadSamplerBank</SetVariable>
+              </Template>
+
+              <Template src="skin:left_1state_button.xml">
+                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
+                <SetVariable name="TooltipId">SaveSamplerBank</SetVariable>
+                <SetVariable name="ObjectName">SamplerBankSaveButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">Save Bank</SetVariable>
+                <SetVariable name="state_0_pressed"></SetVariable>
+                <SetVariable name="state_0_unpressed"></SetVariable>
+                <SetVariable name="left_connection_control">[Sampler],SaveSamplerBank</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
         </Children>
       </WidgetGroup>
 
       <!-- Effects Settings -->
       <Label>
         <ObjectName>h2</ObjectName>
-        <Text>Effect Rack</Text>
+        <Text>Effects</Text>
+      </Label>
+
+      <WidgetGroup>
+        <ObjectName>h3</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; Superknob</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; Superknob</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],show_superknobs</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; 4 Effect Units</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; 4 Effect Units</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],show_4effectunits</ConfigKey>
+            </Connection>
+          </PushButton>
+        </Children>
+      </WidgetGroup>
+
+      <!-- Library Settings -->
+      <Label>
+        <ObjectName>h2</ObjectName>
+        <Text>Library</Text>
       </Label>
 
       <WidgetGroup>
@@ -380,20 +472,60 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <PushButton>
+            <TooltipId>show_library</TooltipId>
             <Size>80me,20f</Size>
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9744; Show Advanced Mode</Text>
+              <Text>&#9675; Show</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9745; Show Advanced Mode</Text>
+              <Text>&#9679; Show</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
+              <ConfigKey>[Library],show_library</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId>show_previewdeck</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; Preview Deck</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; Preview Deck</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <TooltipId>show_coverart</TooltipId>
+            <Size>80me,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#9675; Cover Art</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#9679; Cover Art</Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey>[Library],show_coverart</ConfigKey>
             </Connection>
           </PushButton>
         </Children>
@@ -403,8 +535,9 @@
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Deere],show_skin_settings</ConfigKey>
+      <ConfigKey>[Master],skin_settings</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
 </Template>
+

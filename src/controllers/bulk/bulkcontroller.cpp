@@ -53,7 +53,7 @@ void BulkReader::run() {
             Trace process("BulkReader process packet");
             //qDebug() << "Read" << result << "bytes, pointer:" << data;
             QByteArray outData((char*)data, transferred);
-            emit(incomingData(outData, Time::elapsed()));
+            emit(incomingData(outData, mixxx::Time::elapsed()));
         }
     }
     qDebug() << "Stopped Reader";
@@ -220,7 +220,7 @@ int BulkController::close() {
     }
 
     // Stop controller engine here to ensure it's done before the device is
-    // closed incase it has any final parting messages
+    // closed in case it has any final parting messages
     stopEngine();
 
     // Close device

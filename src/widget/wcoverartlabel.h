@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QPixmap>
 
+#include "track/track.h"
 #include "widget/wcoverartmenu.h"
 
 class DlgCoverArtFullSize;
@@ -16,21 +17,22 @@ class WCoverArtLabel : public QLabel {
     explicit WCoverArtLabel(QWidget* parent = nullptr);
     ~WCoverArtLabel() override;
 
-    void setCoverArt(const QString& trackLocation, const CoverInfo& coverInfo, QPixmap px);
+    void setCoverArt(const CoverInfo& coverInfo, QPixmap px);
+    void loadTrack(TrackPointer pTrack);
 
   signals:
-    void coverArtSelected(const CoverArt& art);
+    void coverInfoSelected(const CoverInfoRelative& coverInfo);
     void reloadCoverArt();
 
   protected:
-    void leaveEvent(QEvent* /*unused*/) override;
     void mousePressEvent(QMouseEvent* event) override;
 
   private slots:
       void slotCoverMenu(const QPoint& pos);
 
   private:
-    CoverInfo m_coverInfo;
+    QPixmap m_loadedCover;
+    TrackPointer m_pLoadedTrack;
     WCoverArtMenu* m_pCoverMenu;
     DlgCoverArtFullSize* m_pDlgFullSize;
     QPixmap m_defaultCover;

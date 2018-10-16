@@ -8,16 +8,6 @@ namespace {
 
 class TrackNumbersTest : public testing::Test {
   protected:
-
-    TrackNumbersTest() {
-    }
-
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-
     void parseFromStringEmpty(const QString& inputValue) {
         TrackNumbers actualTrackNumbers;
         TrackNumbers::ParseResult actualParseResult = TrackNumbers::parseFromString(inputValue, &actualTrackNumbers);

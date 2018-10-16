@@ -51,22 +51,25 @@ WVuMeter::WVuMeter(QWidget* parent)
 void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
     // Set pixmaps
     bool bHorizontal = false;
-    context.hasNodeSelectBool(node, "Horizontal", &bHorizontal);
+    (void)context.hasNodeSelectBool(node, "Horizontal", &bHorizontal);
 
     // Set background pixmap if available
     QDomElement backPathNode = context.selectElement(node, "PathBack");
     if (!backPathNode.isNull()) {
         // The implicit default in <1.12.0 was FIXED so we keep it for backwards
         // compatibility.
-        setPixmapBackground(context.getPixmapSource(backPathNode),
-                            context.selectScaleMode(backPathNode, Paintable::FIXED));
+        setPixmapBackground(
+                context.getPixmapSource(backPathNode),
+                context.selectScaleMode(backPathNode, Paintable::FIXED),
+                context.getScaleFactor());
     }
 
     QDomElement vuNode = context.selectElement(node, "PathVu");
     // The implicit default in <1.12.0 was FIXED so we keep it for backwards
     // compatibility.
     setPixmaps(context.getPixmapSource(vuNode), bHorizontal,
-               context.selectScaleMode(vuNode, Paintable::FIXED));
+               context.selectScaleMode(vuNode, Paintable::FIXED),
+               context.getScaleFactor());
 
     m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
     if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100) {
@@ -89,8 +92,11 @@ void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
     }
 }
 
-void WVuMeter::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
-    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
+void WVuMeter::setPixmapBackground(
+        PixmapSource source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
@@ -99,9 +105,9 @@ void WVuMeter::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode
     }
 }
 
-void WVuMeter::setPixmaps(PixmapSource source,
-                          bool bHorizontal, Paintable::DrawMode mode) {
-    m_pPixmapVu = WPixmapStore::getPaintable(source, mode);
+void WVuMeter::setPixmaps(PixmapSource source, bool bHorizontal,
+                          Paintable::DrawMode mode, double scaleFactor ) {
+    m_pPixmapVu = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
         qDebug() << "WVuMeter: Error loading vu pixmap" << source.getPath();
     } else {

@@ -38,7 +38,6 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void apply();
     void cancel();
     void trackUpdated();
-    void fetchTag();
 
     void cueActivate();
     void cueDelete();
@@ -47,18 +46,24 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void slotBpmHalve();
     void slotBpmTwoThirds();
     void slotBpmThreeFourth();
+    void slotBpmFourThirds();
+    void slotBpmThreeHalves();
     void slotBpmClear();
     void slotBpmConstChanged(int state);
     void slotBpmTap(double averageLength, int numSamples);
     void slotSpinBpmValueChanged(double value);
 
-    void reloadTrackMetadata();
+    void slotKeyTextChanged();
+
+    void slotImportMetadataFromFile();
+    void slotImportMetadataFromMusicBrainz();
+
     void updateTrackMetadata();
     void slotOpenInFileBrowser();
 
-    void slotCoverFound(const QObject* pRequestor, int requestReference,
-                        const CoverInfo& info, QPixmap pixmap, bool fromCache);
-    void slotCoverArtSelected(const CoverArt& art);
+    void slotCoverFound(const QObject* pRequestor,
+                        const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
 
   private:
@@ -72,6 +77,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     QHash<int, CuePointer> m_cueMap;
     TrackPointer m_pLoadedTrack;
     BeatsPointer m_pBeatsClone;
+    Keys m_keysClone;
     bool m_trackHasBeatMap;
 
     QScopedPointer<TapFilter> m_pTapFilter;

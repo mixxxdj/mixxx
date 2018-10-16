@@ -6,7 +6,7 @@ void PlayCounter::setPlayedAndUpdateTimesPlayed(bool bPlayed) {
     // as intended! But since this class provides independent
     // setters for both members we need to check and re-establish
     // the class invariant just in case.
-    DEBUG_ASSERT_AND_HANDLE(!m_bPlayed || (0 < m_iTimesPlayed)) {
+    VERIFY_OR_DEBUG_ASSERT(!m_bPlayed || (0 < m_iTimesPlayed)) {
         // Make sure that the number of times played does
         // not become negative!
         m_iTimesPlayed = 1;

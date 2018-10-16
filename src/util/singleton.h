@@ -6,7 +6,7 @@
 template<class T>
 class Singleton {
   public:
-    static T* create() {
+    static T* createInstance() {
         if (!m_instance) {
             m_instance = new T();
         }
@@ -32,8 +32,8 @@ class Singleton {
 
   private:
     // hide copy constructor and assign operator
-    Singleton(const Singleton&) {}
-    const Singleton& operator= (const Singleton&) {}
+    Singleton(const Singleton&) = delete;
+    const Singleton& operator= (const Singleton&) = delete;
 
     static T* m_instance;
 };

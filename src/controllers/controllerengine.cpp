@@ -46,6 +46,7 @@ ControllerEngine::ControllerEngine(Controller* controller)
     m_scratchFilters.resize(kDecks);
     m_rampFactor.resize(kDecks);
     m_brakeActive.resize(kDecks);
+    m_softStartActive.resize(kDecks);
     // Initialize arrays used for testing and pointers
     for (int i = 0; i < kDecks; ++i) {
         m_dx[i] = 0.0;
@@ -132,6 +133,16 @@ QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
     return wrappedFunction;
 }
 
+QScriptValue ControllerEngine::getThisObjectInFunctionCall() {
+    QScriptContext *ctxt = m_pEngine->currentContext();
+    // Our current context is a function call. We want to grab the 'this'
+    // from the caller's context, so we walk up the stack.
+    if (ctxt) {
+        ctxt = ctxt->parentContext();
+    }
+    return ctxt ? ctxt->thisObject() : QScriptValue();
+}
+
 /* -------- ------------------------------------------------------
 Purpose: Shuts down scripts in an orderly fashion
             (stops timers then executes shutdown functions)
@@ -140,10 +151,6 @@ Output:  -
 -------- ------------------------------------------------------ */
 void ControllerEngine::gracefulShutdown() {
     qDebug() << "ControllerEngine shutting down...";
-
-    // Clear the m_connectedControls hash so we stop responding
-    // to signals.
-    m_connectedControls.clear();
 
     // Stop all timers
     stopAllTimers();
@@ -169,7 +176,7 @@ void ControllerEngine::gracefulShutdown() {
     // Clear the cache of function wrappers
     m_scriptWrappedFunctionCache.clear();
 
-    // Free all the control object threads
+    // Free all the ControlObjectScripts
     QList<ConfigKey> keys = m_controlCache.keys();
     QList<ConfigKey>::iterator it = keys.begin();
     QList<ConfigKey>::iterator end = keys.end();
@@ -607,9 +614,11 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
-    // TODO(XXX): support soft takeover.
     if (coScript != nullptr) {
-        coScript->setParameter(newParameter);
+        ControlObject* pControl = ControlObject::getControl(coScript->getKey());
+        if (pControl && !m_st.ignore(pControl, newParameter)) {
+          coScript->setParameter(newParameter);
+        }
     }
 }
 
@@ -685,11 +694,223 @@ double ControllerEngine::getDefaultParameter(QString group, QString name) {
    Output:  -
    -------- ------------------------------------------------------ */
 void ControllerEngine::log(QString message) {
-    qDebug() << message;
+    controllerDebug(message);
+}
+
+// Purpose: Connect a ControlObject's valueChanged() signal to a script callback function
+// Input:   Control group (e.g. '[Channel1]'), Key name (e.g. 'pfl'), script callback
+// Output:  a ScriptConnectionInvokableWrapper turned into a QtScriptValue.
+//          The script should store this object to call its
+//          'disconnect' and 'trigger' methods as needed.
+//          If unsuccessful, returns undefined.
+QScriptValue ControllerEngine::makeConnection(QString group, QString name,
+                                              const QScriptValue callback) {
+    VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
+        qWarning() << "Tried to connect script callback, but there is no script engine!";
+        return QScriptValue();
+    }
+
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
+    if (coScript == nullptr) {
+        qWarning() << "ControllerEngine: script tried to connect to ControlObject (" +
+                      group + ", " + name +
+                      ") which is non-existent, ignoring.";
+        return QScriptValue();
+    }
+
+    if (!callback.isFunction()) {
+        qWarning() << "Tried to connect (" + group + ", " + name + ")"
+                   << "to an invalid callback, ignoring.";
+        return QScriptValue();
+    }
+
+    ScriptConnection connection;
+    connection.key = ConfigKey(group, name);
+    connection.controllerEngine = this;
+    connection.callback = callback;
+    connection.context = getThisObjectInFunctionCall();
+    connection.id = QUuid::createUuid();
+
+    if (coScript->addScriptConnection(connection)) {
+        return m_pEngine->newQObject(
+            new ScriptConnectionInvokableWrapper(connection),
+            QScriptEngine::ScriptOwnership);
+    }
+
+    return QScriptValue();
 }
 
 /* -------- ------------------------------------------------------
-   Purpose: Emits valueChanged() so device outputs update
+   Purpose: Execute a ScriptConnection's callback
+   Input:   the value of the connected ControlObject to pass to the callback
+   -------- ------------------------------------------------------ */
+void ScriptConnection::executeCallback(double value) const {
+    QScriptValueList args;
+    args << QScriptValue(value);
+    args << QScriptValue(key.group);
+    args << QScriptValue(key.item);
+    QScriptValue func = callback; // copy function because QScriptValue::call is not const
+    QScriptValue result = func.call(context, args);
+    if (result.isError()) {
+        qWarning() << "ControllerEngine: Invocation of connection " << id.toString()
+                   << "connected to (" + key.group + ", " + key.item + ") failed:"
+                   << result.toString();
+    }
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: (Dis)connects a ScriptConnection
+   Input:   the ScriptConnection to disconnect
+   -------- ------------------------------------------------------ */
+void ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
+    ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
+                                                           connection.key.item);
+
+    if (m_pEngine == nullptr || coScript == nullptr) {
+        return;
+    }
+
+    coScript->removeScriptConnection(connection);
+}
+
+void ScriptConnectionInvokableWrapper::disconnect() {
+    m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+}
+
+/* -------- ------------------------------------------------------
+   Purpose: Triggers the callback function of a ScriptConnection
+   Input:   the ScriptConnection to trigger
+   -------- ------------------------------------------------------ */
+void ControllerEngine::triggerScriptConnection(const ScriptConnection connection) {
+    if (m_pEngine == nullptr) {
+        return;
+    }
+
+    ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
+                                                           connection.key.item);
+    if (coScript == nullptr) {
+        return;
+    }
+
+    connection.executeCallback(coScript->get());
+}
+
+void ScriptConnectionInvokableWrapper::trigger() {
+    m_scriptConnection.controllerEngine->triggerScriptConnection(m_scriptConnection);
+}
+
+// This function is a legacy version of makeConnection with several alternate
+// ways of invoking it. The callback function can be passed either as a string of
+// JavaScript code that evaluates to a function or an actual JavaScript function.
+// If "true" is passed as a 4th parameter, all connections to the ControlObject
+// are removed. If a ScriptConnectionInvokableWrapper is passed instead of a callback,
+// it is disconnected.
+// WARNING: These behaviors are quirky and confusing, so if you change this function,
+// be sure to run the ControllerEngineTest suite to make sure you do not break old scripts.
+QScriptValue ControllerEngine::connectControl(
+        QString group, QString name, const QScriptValue passedCallback, bool disconnect) {
+    // The passedCallback may or may not actually be a function, so when
+    // the actual callback function is found, store it in this variable.
+    QScriptValue actualCallbackFunction;
+
+    if (passedCallback.isFunction()) {
+        if (!disconnect) {
+            // skip all the checks below and just make the connection
+            return makeConnection(group, name, passedCallback);
+        }
+        actualCallbackFunction = passedCallback;
+    }
+
+    ControlObjectScript* coScript = getControlObjectScript(group, name);
+    // This check is redundant with makeConnection, but the
+    // ControlObjectScript is also needed here to check for duplicate connections.
+    if (coScript == nullptr) {
+        if (disconnect) {
+            qWarning() << "ControllerEngine: script tried to disconnect from ControlObject (" +
+                          group + ", " + name + ") which is non-existent, ignoring.";
+        } else {
+            qWarning() << "ControllerEngine: script tried to connect to ControlObject (" +
+                           group + ", " + name + ") which is non-existent, ignoring.";
+        }
+        // This is inconsistent with other failures, which return false.
+        // QScriptValue() with no arguments is undefined in JavaScript.
+        return QScriptValue();
+    }
+
+    if (passedCallback.isString()) {
+        // This check is redundant with makeConnection, but it must be done here
+        // before evaluating the code string.
+        VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
+            qWarning() << "Tried to connect script callback, but there is no script engine!";
+            return QScriptValue(false);
+        }
+
+        actualCallbackFunction = m_pEngine->evaluate(passedCallback.toString());
+
+        if (checkException() || !actualCallbackFunction.isFunction()) {
+            qWarning() << "Could not evaluate callback function:"
+                        << passedCallback.toString();
+            return QScriptValue(false);
+        }
+
+        if (coScript->countConnections() > 0 && !disconnect) {
+            // This is inconsistent with the behavior when passing the callback as
+            // a function, but keep the old behavior to make sure old scripts do
+            // not break.
+            ScriptConnection connection = coScript->firstConnection();
+
+            qWarning() << "Tried to make duplicate connection between (" +
+                          group + ", " + name + ") and " + passedCallback.toString() +
+                          " but this is not allowed when passing a callback as a string. " +
+                          "If you actually want to create duplicate connections, " +
+                          "use engine.makeConnection. Returning reference to connection " +
+                          connection.id.toString();
+
+            return m_pEngine->newQObject(
+                new ScriptConnectionInvokableWrapper(connection),
+                QScriptEngine::ScriptOwnership);
+        }
+    } else if (passedCallback.isQObject()) {
+        // Assume a ScriptConnection and assume that the script author
+        // wants to disconnect it, regardless of the disconnect parameter
+        // and regardless of whether it is connected to the same ControlObject
+        // specified by the first two parameters to this function.
+        QObject *qobject = passedCallback.toQObject();
+        const QMetaObject *qmeta = qobject->metaObject();
+
+        qWarning() << "QObject passed to engine.connectControl. Assuming it is"
+                  << "a connection object to disconnect and returning false.";
+        if (!strcmp(qmeta->className(),
+                "ScriptConnectionInvokableWrapper")) {
+            ScriptConnectionInvokableWrapper* proxy =
+                    (ScriptConnectionInvokableWrapper*)qobject;
+            proxy->disconnect();
+        }
+        return QScriptValue(false);
+    }
+
+    // Support removing connections by passing "true" as the last parameter
+    // to this function, regardless of whether the callback is provided
+    // as a function or a string.
+    if (disconnect) {
+        // There is no way to determine which
+        // ScriptConnection to disconnect unless the script calls
+        // ScriptConnectionInvokableWrapper::disconnect(), so
+        // disconnect all ScriptConnections connected to the
+        // callback function, even though there may be multiple connections.
+        coScript->disconnectAllConnectionsToFunction(actualCallbackFunction);
+        return QScriptValue(true);
+    }
+
+    // If execution gets this far without returning, make
+    // a new connection to actualCallbackFunction.
+    return makeConnection(group, name, actualCallbackFunction);
+}
+
+/* -------- ------------------------------------------------------
+   DEPRECATED: Use ScriptConnectionInvokableWrapper::trigger instead
+   Purpose: Emits valueChanged() so all ScriptConnections held by a
+            ControlObjectScript have their callback executed
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
@@ -699,134 +920,6 @@ void ControllerEngine::trigger(QString group, QString name) {
         coScript->emitValueChanged();
     }
 }
-
-// Purpose: (Dis)connects a ControlObject valueChanged() signal to/from a
-//          script function
-// Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh]),
-//          script function name, true if you want to disconnect
-// Output:  true if successful
-QScriptValue ControllerEngine::connectControl(
-        QString group, QString name, QScriptValue callback, bool disconnect) {
-    ConfigKey key(group, name);
-    ControlObjectScript* coScript = getControlObjectScript(group, name);
-    QScriptValue function;
-
-    if (coScript == nullptr) {
-        qWarning() << "ControllerEngine: script connecting [" << group << "," << name
-                   << "], which is non-existent. ignoring.";
-        return QScriptValue();
-    }
-
-    if (m_pEngine == nullptr) {
-        return QScriptValue(false);
-    }
-
-    if (callback.isString()) {
-        ControllerEngineConnection cb;
-        cb.key = key;
-        cb.id = callback.toString();
-        cb.ce = this;
-
-        if (disconnect) {
-            disconnectControl(cb);
-            return QScriptValue(true);
-        }
-
-        function = m_pEngine->evaluate(callback.toString());
-        if (checkException() || !function.isFunction()) {
-            qWarning() << "Could not evaluate callback function:"
-                       << callback.toString();
-            return QScriptValue(false);
-        } else {
-            // Do not allow multiple connections to named functions
-            QHash<ConfigKey, ControllerEngineConnection>::const_iterator i =
-                    m_connectedControls.find(key);
-            if (i != m_connectedControls.end()) {
-                // Return a wrapper to the conn
-                ControllerEngineConnection conn = i.value();
-                return m_pEngine->newQObject(
-                        new ControllerEngineConnectionScriptValue(conn),
-                        QScriptEngine::ScriptOwnership);
-            }
-        }
-    } else if (callback.isFunction()) {
-        function = callback;
-    } else if (callback.isQObject()) {
-        // Assume a ControllerEngineConnection
-        QObject *qobject = callback.toQObject();
-        const QMetaObject *qmeta = qobject->metaObject();
-
-        if (!strcmp(qmeta->className(),
-                "ControllerEngineConnectionScriptValue")) {
-            ControllerEngineConnectionScriptValue* proxy =
-                    (ControllerEngineConnectionScriptValue*)qobject;
-            proxy->disconnect();
-        }
-    } else {
-        qWarning() << "Invalid callback";
-        return QScriptValue(false);
-    }
-
-    if (function.isFunction()) {
-        qDebug() << "Connection:" << group << name;
-
-        ControllerEngineConnection conn;
-        conn.key = key;
-        conn.ce = this;
-        conn.function = function;
-
-        QScriptContext *ctxt = m_pEngine->currentContext();
-        // Our current context is a function call to engine.connectControl. We
-        // want to grab the 'this' from the caller's context, so we walk up the
-        // stack.
-        if (ctxt) {
-            ctxt = ctxt->parentContext();
-            conn.context = ctxt ? ctxt->thisObject() : QScriptValue();
-        }
-
-        if (callback.isString()) {
-            conn.id = callback.toString();
-        } else {
-            QUuid uuid = QUuid::createUuid();
-            conn.id = uuid.toString();
-        }
-
-        coScript->connectScriptFunction(conn);
-
-        m_connectedControls.insert(key, conn);
-        return m_pEngine->newQObject(
-                new ControllerEngineConnectionScriptValue(conn),
-                QScriptEngine::ScriptOwnership);
-    }
-
-    return QScriptValue(false);
-}
-
-/* -------- ------------------------------------------------------
-   Purpose: (Dis)connects a ControlObject valueChanged() signal to/from a script function
-   Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh]),
-                script function name, true if you want to disconnect
-   Output:  true if successful
-   -------- ------------------------------------------------------ */
-void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) {
-    ControlObjectScript* coScript = getControlObjectScript(conn.key.group, conn.key.item);
-
-    if (m_pEngine == nullptr || coScript == nullptr) {
-        return;
-    }
-
-    if (m_connectedControls.remove(conn.key, conn) > 0) {
-        bool ret = coScript->disconnectScriptFunction(conn);
-        DEBUG_ASSERT(ret);
-    } else {
-        qWarning() << "Could not Disconnect connection" << conn.id;
-    }
-}
-
-void ControllerEngineConnectionScriptValue::disconnect() {
-    m_conn.ce->disconnectControl(m_conn);
-}
-
 
 /* -------- ------------------------------------------------------
    Purpose: Evaluate a script file
@@ -966,8 +1059,7 @@ int ControllerEngine::beginTimer(int interval, QScriptValue timerCallback,
     int timerId = startTimer(interval);
     TimerInfo info;
     info.callback = timerCallback;
-    QScriptContext *ctxt = m_pEngine->currentContext();
-    info.context = ctxt ? ctxt->thisObject() : QScriptValue();
+    info.context = getThisObjectInFunctionCall();
     info.oneShot = oneShot;
     m_timers[timerId] = info;
     if (timerId == 0) {
@@ -1160,7 +1252,7 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, double rpm,
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchTick(int deck, int interval) {
-    m_lastMovement[deck] = Time::elapsed();
+    m_lastMovement[deck] = mixxx::Time::elapsed();
     m_intervalAccumulator[deck] += interval;
 }
 
@@ -1185,11 +1277,14 @@ void ControllerEngine::scratchProcess(int timerId) {
 
     // If we're ramping to end scratching and the wheel hasn't been turned very
     // recently (spinback after lift-off,) feed fixed data
-    if (m_ramp[deck] &&
-        ((Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
+    if (m_ramp[deck] && !m_softStartActive[deck] &&
+        ((mixxx::Time::elapsed() - m_lastMovement[deck]) >= mixxx::Duration::fromMillis(1))) {
         filter->observation(m_rampTo[deck] * m_rampFactor[deck]);
         // Once this code path is run, latch so it always runs until reset
         //m_lastMovement[deck] += mixxx::Duration::fromSeconds(1);
+    } else if (m_softStartActive[deck]) {
+        // pretend we have moved by (desired rate*default distance)
+        filter->observation(m_rampTo[deck]*kAlphaBetaDt);
     } else {
         // This will (and should) be 0 if no net ticks have been accumulated
         // (i.e. the wheel is stopped)
@@ -1208,13 +1303,14 @@ void ControllerEngine::scratchProcess(int timerId) {
     // Reset accumulator
     m_intervalAccumulator[deck] = 0;
 
-    // If we're ramping and the current rate is really close to the rampTo value
-    // or we're in brake mode and have crossed over the zero value, end
-    // scratching
+    // End scratching if we're ramping and the current rate is really close to the rampTo value
     if ((m_ramp[deck] && fabs(m_rampTo[deck] - newRate) <= 0.00001) ||
-        (m_brakeActive[deck] && (
-            (oldRate > 0.0 && newRate < 0.0) ||
-            (oldRate < 0.0 && newRate > 0.0)))) {
+        // or if we brake or softStart and have crossed over the desired value,
+        ((m_brakeActive[deck] || m_softStartActive[deck]) && (
+            (oldRate > m_rampTo[deck] && newRate < m_rampTo[deck]) ||
+            (oldRate < m_rampTo[deck] && newRate > m_rampTo[deck]))) ||
+        // or if the deck was stopped manually during brake or softStart
+        ((m_brakeActive[deck] || m_softStartActive[deck]) && (!isDeckPlaying(group)))) {
         // Not ramping no mo'
         m_ramp[deck] = false;
 
@@ -1241,6 +1337,7 @@ void ControllerEngine::scratchProcess(int timerId) {
 
         m_dx[deck] = 0.0;
         m_brakeActive[deck] = false;
+        m_softStartActive[deck] = false;
     }
 }
 
@@ -1269,7 +1366,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
         m_rampTo[deck] = getDeckRate(group);
     }
 
-    m_lastMovement[deck] = Time::elapsed();
+    m_lastMovement[deck] = mixxx::Time::elapsed();
     m_ramp[deck] = true;    // Activate the ramping in scratchProcess()
 }
 
@@ -1282,8 +1379,7 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
 bool ControllerEngine::isScratching(int deck) {
     // PlayerManager::groupForDeck is 0-indexed.
     QString group = PlayerManager::groupForDeck(deck - 1);
-    // Don't report that we are scratching if we're ramping.
-    return getValue(group, "scratch2_enable") > 0 && !m_ramp[deck];
+    return getValue(group, "scratch2_enable") > 0;
 }
 
 /*  -------- ------------------------------------------------------
@@ -1325,7 +1421,7 @@ void ControllerEngine::softTakeoverIgnoreNextValue(QString group, const QString 
 /*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables spinback effect for the channel
     Input:   deck, activate/deactivate, factor (optional),
-             delay (optional), rate (optional)
+             rate (optional)
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::spinback(int deck, bool activate, double factor, double rate) {
@@ -1336,7 +1432,7 @@ void ControllerEngine::spinback(int deck, bool activate, double factor, double r
 /*  -------- ------------------------------------------------------
     Purpose: [En/dis]ables brake/spinback effect for the channel
     Input:   deck, activate/deactivate, factor (optional),
-             delay (optional), rate (optional)
+             rate (optional, necessary for spinback)
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::brake(int deck, bool activate, double factor, double rate) {
@@ -1356,25 +1452,114 @@ void ControllerEngine::brake(int deck, bool activate, double factor, double rate
 
     // used in scratchProcess for the different timer behavior we need
     m_brakeActive[deck] = activate;
+    double initRate = rate;
 
     if (activate) {
         // store the new values for this spinback/brake effect
-        m_rampFactor[deck] = rate * factor / 100000.0; // approx 1 second for a factor of 1
-        m_rampTo[deck] = 0.0;
+        if (initRate == 1.0) {// then rate is really 1.0 or was set to default
+            // in /res/common-controller-scripts.js so check for real value,
+            // taking pitch into account
+            initRate = getDeckRate(group);
+        }
+        // stop ramping at a rate which doesn't produce any audible output anymore
+        m_rampTo[deck] = 0.01;
+        // if we are currently softStart()ing, stop it
+        if (m_softStartActive[deck]) {
+            m_softStartActive[deck] = false;
+            AlphaBetaFilter* filter = m_scratchFilters[deck];
+            if (filter != nullptr) {
+                initRate = filter->predictedVelocity();
+            }
+        }
 
         // setup timer and set scratch2
-        int timerId = startTimer(kScratchTimerMs);
+        timerId = startTimer(kScratchTimerMs);
         m_scratchTimers[timerId] = deck;
 
         ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
         if (pScratch2 != nullptr) {
-            pScratch2->slotSet(rate);
+            pScratch2->slotSet(initRate);
         }
 
-        // setup the filter using the default values of alpha and beta
+        // setup the filter with default alpha and beta*factor
+        double alphaBrake = 1.0/512;
+        // avoid decimals for fine adjusting
+        if (factor>1) {
+            factor = ((factor-1)/10)+1;
+        }
+        double betaBrake = ((1.0/512)/1024)*factor; // default*factor
         AlphaBetaFilter* filter = m_scratchFilters[deck];
         if (filter != nullptr) {
-            filter->init(kAlphaBetaDt, rate);
+            filter->init(kAlphaBetaDt, initRate, alphaBrake, betaBrake);
+        }
+
+        // activate the ramping in scratchProcess()
+        m_ramp[deck] = true;
+    }
+}
+
+/*  -------- ------------------------------------------------------
+    Purpose: [En/dis]ables softStart effect for the channel
+    Input:   deck, activate/deactivate, factor (optional)
+    Output:  -
+    -------- ------------------------------------------------------ */
+void ControllerEngine::softStart(int deck, bool activate, double factor) {
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
+
+    // kill timer when both enabling or disabling
+    int timerId = m_scratchTimers.key(deck);
+    killTimer(timerId);
+    m_scratchTimers.remove(timerId);
+
+    // enable/disable scratch2 mode
+    ControlObjectScript* pScratch2Enable = getControlObjectScript(group, "scratch2_enable");
+    if (pScratch2Enable != nullptr) {
+        pScratch2Enable->slotSet(activate ? 1 : 0);
+    }
+
+    // used in scratchProcess for the different timer behavior we need
+    m_softStartActive[deck] = activate;
+    double initRate = 0.0;
+
+    if (activate) {
+        // acquire deck rate
+        m_rampTo[deck] = getDeckRate(group);
+
+        // if brake()ing, get current rate from filter
+        if (m_brakeActive[deck]) {
+            m_brakeActive[deck] = false;
+
+            AlphaBetaFilter* filter = m_scratchFilters[deck];
+            if (filter != nullptr) {
+                initRate = filter->predictedVelocity();
+            }
+        }
+
+        // setup timer, start playing and set scratch2
+        timerId = startTimer(kScratchTimerMs);
+        m_scratchTimers[timerId] = deck;
+
+        ControlObjectScript* pPlay = getControlObjectScript(group, "play");
+        if (pPlay != nullptr) {
+            pPlay->slotSet(1.0);
+        }
+
+        ControlObjectScript* pScratch2 = getControlObjectScript(group, "scratch2");
+        if (pScratch2 != nullptr) {
+            pScratch2->slotSet(initRate);
+        }
+
+        // setup the filter like in brake(), with default alpha and beta*factor
+        double alphaSoft = 1.0/512;
+        // avoid decimals for fine adjusting
+        if (factor>1) {
+            factor = ((factor-1)/10)+1;
+        }
+        double betaSoft = ((1.0/512)/1024)*factor; // default: (1.0/512)/1024
+        AlphaBetaFilter* filter = m_scratchFilters[deck];
+        if (filter != nullptr) { // kAlphaBetaDt = 1/1000 seconds
+            filter->init(kAlphaBetaDt, initRate, alphaSoft, betaSoft);
         }
 
         // activate the ramping in scratchProcess()

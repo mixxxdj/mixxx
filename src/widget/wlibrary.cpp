@@ -7,6 +7,7 @@
 #include "widget/wlibrary.h"
 #include "library/libraryview.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "wtracktableview.h"
 
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
@@ -33,6 +34,15 @@ bool WLibrary::registerView(QString name, QWidget* view) {
 void WLibrary::switchToView(const QString& name) {
     QMutexLocker lock(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
+
+    WTrackTableView* ttView = dynamic_cast<WTrackTableView*>(
+                currentWidget());
+
+    if (ttView != nullptr){
+        //qDebug("trying to save position");
+        ttView->saveCurrentVScrollBarPos();
+    }
+
     QWidget* widget = m_viewMap.value(name, nullptr);
     if (widget != nullptr) {
         LibraryView * lview = dynamic_cast<LibraryView*>(widget);
@@ -46,6 +56,14 @@ void WLibrary::switchToView(const QString& name) {
             //qDebug() << "WLibrary::setCurrentWidget" << name;
             setCurrentWidget(widget);
             lview->onShow();
+        }
+
+        WTrackTableView* ttWidgetView = dynamic_cast<WTrackTableView*>(
+                    widget);
+
+        if (ttWidgetView != nullptr){
+            qDebug("trying to restore position");
+            ttWidgetView->restoreCurrentVScrollBarPos();
         }
     }
 }

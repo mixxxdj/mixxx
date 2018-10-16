@@ -22,7 +22,7 @@ class MockPortMidiController : public PortMidiController {
                                inputDeviceInfo, outputDeviceInfo,
                                inputDeviceIndex, outputDeviceIndex) {
     }
-    virtual ~MockPortMidiController() {
+    ~MockPortMidiController() override {
     }
 
     void sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
@@ -307,7 +307,7 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysEx) {
 
 TEST_F(PortMidiControllerTest,
        Poll_Read_SysExWithRealtime_CoincidentalRealtimeByte) {
-    // We used to incorrectly treat an 0xF8 occuring in a SysEx message as a
+    // We used to incorrectly treat an 0xF8 occurring in a SysEx message as a
     // realtime message. This test verifies that we do not do this anymore.
     std::vector<PmEvent> messages;
     messages.push_back(MakeEvent(0x332211F0, 0x0));

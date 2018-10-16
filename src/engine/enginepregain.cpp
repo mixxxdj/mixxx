@@ -10,6 +10,13 @@
 #include "util/math.h"
 #include "util/sample.h"
 
+namespace {
+    constexpr double kSpeedGainMultiplyer = 4.0; // Bends the speed to gain curve for a natural vinyl sound
+    constexpr double kMaxTotalGainBySpeed = 0.9; // -1 dB to not risk any clipping even for lossy track that may
+                                                 // have samples above 1.0
+    const double kSpeedOneDiv = log10((1 * kSpeedGainMultiplyer) + 1); // value to normalize gain to 1 at speed one
+} // anonymous namespace
+
 ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
 ControlPotmeter* EnginePregain::s_pDefaultBoost = NULL;
 ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
@@ -17,6 +24,7 @@ ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
 EnginePregain::EnginePregain(QString group)
         : m_dSpeed(1.0),
           m_dOldSpeed(1.0),
+          m_dNonScratchSpeed(1.0),
           m_scratching(false),
           m_fPrevGain(1.0),
           m_bSmoothFade(false) {
@@ -46,12 +54,12 @@ EnginePregain::~EnginePregain() {
     s_pDefaultBoost = NULL;
 }
 
-void EnginePregain::setSpeed(double speed) {
+void EnginePregain::setSpeedAndScratching(double speed, bool scratching) {
     m_dOldSpeed = m_dSpeed;
     m_dSpeed = speed;
-}
-
-void EnginePregain::setScratching(bool scratching) {
+    if (!scratching) {
+        m_dNonScratchSpeed = speed;
+    }
     m_scratching = scratching;
 }
 
@@ -106,19 +114,33 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // Clamp gain to within [0, 10.0] to prevent insane gains. This can happen
     // (some corrupt files get really high replay gain values).
     // 10 allows a maximum replay Gain Boost * calculated replay gain of ~2
-    float totalGain = (float)m_pPotmeterPregain->get() *
+    CSAMPLE_GAIN totalGain = (CSAMPLE_GAIN)m_pPotmeterPregain->get() *
             math_clamp(fReplayGainCorrection, 0.0f, 10.0f);
 
     m_pTotalGain->set(totalGain);
 
     // Vinylsoundemu:
-    // As the speed approaches zero, hearing small bursts of sound at full volume
-    // is distracting and doesn't mimic the way that vinyl sounds when played slowly.
-    // Instead, reduce gain to provide a soft rolloff.
-    const float kThresholdSpeed = 0.070; // Scale volume if playback speed is below 7%.
-    if (fabs(m_dSpeed) < kThresholdSpeed) {
-        totalGain *= fabs(m_dSpeed) / kThresholdSpeed;
+    // Apply Gain change depending on the speed.
+    // We have measured -Inf dB at x0, -6 dB at x0.3, 0 dB at x1 and 3.5 dB
+    // at 2.5 using a real vinyl.
+    // x5 is the maximum physically speed before the needle is starting to
+    // lose contact to the vinyl.
+    // So we apply a curve here that emulates the gain change up to x 2.5 natural
+    // to 3.5 dB and then limits the gain towards 5.5 dB at x5.
+    // Since the additional gain will lead to undesired clipping,
+    // we do not add more gain then we found in the original track.
+    // This compensates a negative ReplayGain or PreGain setting.
+
+    double speedGain = log10((fabs(m_dSpeed) * kSpeedGainMultiplyer) + 1) / kSpeedOneDiv;
+    // Limit speed Gain to 0 dB if totalGain is already > 0.9 or Limit the
+    // resulting totalGain to 0.9 for all other cases. This should avoid clipping even
+    // if the source track has some samples above 1.0 due to lossy codecs.
+    if (totalGain > kMaxTotalGainBySpeed) {
+        speedGain = math_min(1.0, speedGain);
+    } else {
+        speedGain = math_min(kMaxTotalGainBySpeed / totalGain, speedGain);
     }
+    totalGain *= speedGain;
 
     if ((m_dSpeed * m_dOldSpeed < 0) && m_scratching) {
         // direction changed, go though zero if scratching
@@ -133,3 +155,9 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     }
     m_fPrevGain = totalGain;
 }
+
+void EnginePregain::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+    pGroupFeatures->gain = m_pPotmeterPregain->get();
+    pGroupFeatures->has_gain = true;
+}
+

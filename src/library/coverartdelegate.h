@@ -1,23 +1,21 @@
 #ifndef COVERARTDELEGATE_H
 #define COVERARTDELEGATE_H
 
-#include <QObject>
-#include <QPainter>
-#include <QStyledItemDelegate>
 #include <QHash>
 #include <QLinkedList>
 
+#include "library/tableitemdelegate.h"
 #include "library/trackmodel.h"
 
-class CoverArtDelegate : public QStyledItemDelegate {
+class CoverArtDelegate : public TableItemDelegate {
     Q_OBJECT
   public:
-    explicit CoverArtDelegate(QObject* parent = NULL);
+    explicit CoverArtDelegate(QTableView* pTableView);
     virtual ~CoverArtDelegate();
 
-    void paint(QPainter *painter,
-               const QStyleOptionViewItem &option,
-               const QModelIndex &index) const;
+    void paintItem(QPainter* painter,
+               const QStyleOptionViewItem& option,
+               const QModelIndex& index) const;
 
   signals:
     void coverReadyForCell(int row, int column);
@@ -28,7 +26,7 @@ class CoverArtDelegate : public QStyledItemDelegate {
     // It means that in this cases it will just draw
     // covers which are already in the pixmapcache.
     //
-    // It is useful to handle cases when the user scoll down
+    // It is useful to handle cases when the user scroll down
     // very fast or when they hold an arrow key, because
     // in these cases 'paint()' would be called very often
     // and it might make CoverDelegate starts many searches,
@@ -36,11 +34,11 @@ class CoverArtDelegate : public QStyledItemDelegate {
     void slotOnlyCachedCoverArt(bool b);
 
     void slotCoverFound(const QObject* pRequestor,
-                        int requestReference,
-                        const CoverInfo& info,
+                        const CoverInfoRelative& info,
                         QPixmap pixmap, bool fromCache);
 
   private:
+    QTableView* m_pTableView;
     bool m_bOnlyCachedCover;
     int m_iCoverColumn;
     int m_iCoverSourceColumn;

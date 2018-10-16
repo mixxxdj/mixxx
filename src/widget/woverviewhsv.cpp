@@ -29,13 +29,13 @@ bool WOverviewHSV::drawNextPixmapPart() {
         return false;
     }
 
-    if (!m_pWaveformSourceImage) {
+    if (m_waveformSourceImage.isNull()) {
         // Waveform pixmap twice the height of the viewport to be scalable
         // by total_gain
         // We keep full range waveform data to scale it on paint
-        m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255,
+        m_waveformSourceImage = QImage(dataSize / 2, 2 * 255,
                 QImage::Format_ARGB32_Premultiplied);
-        m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
+        m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
     }
 
     // Always multiple of 2
@@ -43,7 +43,7 @@ bool WOverviewHSV::drawNextPixmapPart() {
     // Test if there is some new to draw (at least of pixel width)
     const int completionIncrement = waveformCompletion - m_actualCompletion;
 
-    int visiblePixelIncrement = completionIncrement * width() / dataSize;
+    int visiblePixelIncrement = completionIncrement * length() / dataSize;
     if (completionIncrement < 2 || visiblePixelIncrement == 0) {
         return false;
     }
@@ -57,8 +57,8 @@ bool WOverviewHSV::drawNextPixmapPart() {
     // << "completionIncrement:" << completionIncrement;
 
 
-    QPainter painter(m_pWaveformSourceImage);
-    painter.translate(0.0,static_cast<double>(m_pWaveformSourceImage->height())/2.0);
+    QPainter painter(&m_waveformSourceImage);
+    painter.translate(0.0, static_cast<double>(m_waveformSourceImage.height()) / 2.0);
 
     // Get HSV of low color. NOTE(rryan): On ARM, qreal is float so it's
     // important we use qreal here and not double or float or else we will get

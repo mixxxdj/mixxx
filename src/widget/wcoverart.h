@@ -6,6 +6,7 @@
 #include <QMouseEvent>
 #include <QWidget>
 
+#include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "library/coverartcache.h"
@@ -19,7 +20,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     Q_OBJECT
   public:
     WCoverArt(QWidget* parent, UserSettingsPointer pConfig,
-              const QString& group);
+              const QString& group, BaseTrackPlayer* pPlayer);
     ~WCoverArt() override;
 
     void setup(const QDomNode& node, const SkinContext& context);
@@ -34,9 +35,9 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void trackDropped(QString filename, QString group);
 
   private slots:
-    void slotCoverFound(const QObject* pRequestor, int requestReference,
-                        const CoverInfo& info, QPixmap pixmap, bool fromCache);
-    void slotCoverArtSelected(const CoverArt& art);
+    void slotCoverFound(const QObject* pRequestor,
+                        const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
+    void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
     void slotTrackCoverArtUpdated();
 
@@ -44,7 +45,6 @@ class WCoverArt : public QWidget, public WBaseWidget {
     void paintEvent(QPaintEvent* /*unused*/) override;
     void resizeEvent(QResizeEvent* /*unused*/) override;
     void mousePressEvent(QMouseEvent* /*unused*/) override;
-    void leaveEvent(QEvent* /*unused*/) override;
 
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dropEvent(QDropEvent *event) override;
@@ -63,6 +63,7 @@ class WCoverArt : public QWidget, public WBaseWidget {
     QPixmap m_defaultCover;
     QPixmap m_defaultCoverScaled;
     CoverInfo m_lastRequestedCover;
+    BaseTrackPlayer* m_pPlayer;
     DlgCoverArtFullSize* m_pDlgFullSize;
 };
 

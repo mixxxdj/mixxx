@@ -1,8 +1,8 @@
 #include "track/trackmetadata.h"
 
-namespace Mixxx {
+namespace mixxx {
 
-/*static*/ const int TrackMetadata::kCalendarYearInvalid = 0;
+/*static*/ constexpr int TrackMetadata::kCalendarYearInvalid;
 
 int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
     const QDateTime dateTime(parseDateTime(year));
@@ -66,32 +66,25 @@ QString TrackMetadata::reformatYear(QString year) {
     return year.simplified();
 }
 
-TrackMetadata::TrackMetadata()
-    : m_bitrate(0),
-      m_channels(0),
-      m_duration(0),
-      m_sampleRate(0) {
-}
-
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
-    return (lhs.getArtist() == rhs.getArtist()) &&
-            (lhs.getTitle() == rhs.getTitle()) &&
-            (lhs.getAlbum() == rhs.getAlbum()) &&
-            (lhs.getAlbumArtist() == rhs.getAlbumArtist()) &&
-            (lhs.getGenre() == rhs.getGenre()) &&
-            (lhs.getComment() == rhs.getComment()) &&
-            (lhs.getYear() == rhs.getYear()) &&
-            (lhs.getTrackNumber() == rhs.getTrackNumber()) &&
-            (lhs.getTrackTotal() == rhs.getTrackTotal()) &&
-            (lhs.getComposer() == rhs.getComposer()) &&
-            (lhs.getGrouping() == rhs.getGrouping()) &&
-            (lhs.getKey() == rhs.getKey()) &&
-            (lhs.getChannels() == rhs.getChannels()) &&
-            (lhs.getSampleRate() == rhs.getSampleRate()) &&
+    return (lhs.getAlbumInfo() == rhs.getAlbumInfo()) &&
+            (lhs.getTrackInfo() == rhs.getTrackInfo()) &&
             (lhs.getBitrate() == rhs.getBitrate()) &&
+            (lhs.getChannels() == rhs.getChannels()) &&
             (lhs.getDuration() == rhs.getDuration()) &&
-            (lhs.getBpm() == rhs.getBpm()) &&
-            (lhs.getReplayGain() == rhs.getReplayGain());
+            (lhs.getSampleRate() == rhs.getSampleRate());
 }
 
-} //namespace Mixxx
+QDebug operator<<(QDebug dbg, const TrackMetadata& arg) {
+    dbg << '{';
+    arg.dbgTrackInfo(dbg);
+    arg.dbgAlbumInfo(dbg);
+    arg.dbgBitrate(dbg);
+    arg.dbgChannels(dbg);
+    arg.dbgDuration(dbg);
+    arg.dbgSampleRate(dbg);
+    dbg << '}';
+    return dbg;
+}
+
+} //namespace mixxx

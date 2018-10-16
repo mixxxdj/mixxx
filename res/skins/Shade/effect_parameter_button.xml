@@ -38,24 +38,16 @@
 			<Size>38,26</Size>
 			<Children>
 				<EffectPushButton>
-					<TooltipId></TooltipId>
-					<Style></Style>
-					
-					<EffectRack>1</EffectRack>
-					<EffectUnit><Variable name="effectunitnum"/></EffectUnit>
-					<Effect><Variable name="effectnum"/></Effect>
-					<EffectButtonParameter><Variable name="effectparameternum"/></EffectButtonParameter>
-	
 					<NumberStates>2</NumberStates>
 					<State>
 						<Number>0</Number>
-						<Pressed>btn_kill_down.png</Pressed>
-						<Unpressed>btn_kill.png</Unpressed>
+						<Pressed>skin:/btn/btn_kill_down.png</Pressed>
+						<Unpressed>skin:/btn/btn_kill.png</Unpressed>
 					</State>
 					<State>
 						<Number>1</Number>
-						<Pressed>btn_kill_overdown.png</Pressed>
-						<Unpressed>btn_kill_over.png</Unpressed>
+						<Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+						<Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
 					</State>
 					<Pos>11,57</Pos>
 					<Connection>

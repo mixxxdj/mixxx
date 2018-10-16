@@ -3,7 +3,7 @@ function midi_for_light() {}
 /*
     midi_for_light
 
-    Sending informations on midi for using in a light software.
+    Sending information on midi for using in a light software.
     Extend the light show and make it sync to the current deck.
     - beat
     - bpm

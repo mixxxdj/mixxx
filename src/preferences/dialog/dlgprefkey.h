@@ -6,6 +6,7 @@
 #include <QMap>
 
 #include "analyzer/plugins/analyzerplugin.h"
+#include "control/controlproxy.h"
 #include "preferences/dialog/ui_dlgprefkeydlg.h"
 #include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
@@ -43,6 +44,7 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*> m_keyLineEdits;
     QList<AnalyzerPluginInfo> m_availablePlugins;
     QString m_selectedAnalyzerId;
+    ControlProxy* m_pKeyNotation;
     bool m_bAnalyzerEnabled;
     bool m_bFastAnalysisEnabled;
     bool m_bReanalyzeEnabled;

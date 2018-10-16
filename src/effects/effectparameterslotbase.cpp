@@ -30,6 +30,13 @@ QString EffectParameterSlotBase::name() const {
     return QString();
 }
 
+QString EffectParameterSlotBase::shortName() const {
+    if (m_pEffectParameter) {
+        return m_pEffectParameter->shortName();
+    }
+    return QString();
+}
+
 QString EffectParameterSlotBase::description() const {
     if (m_pEffectParameter) {
         return m_pEffectParameter->description();
@@ -37,21 +44,9 @@ QString EffectParameterSlotBase::description() const {
     return tr("No effect loaded.");
 }
 
-void EffectParameterSlotBase::slotLoaded(double v) {
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotLoaded" << v;
-    qWarning() << "WARNING: loaded is a read-only control.";
-}
-
-void EffectParameterSlotBase::slotValueType(double v) {
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotValueType" << v;
-    qWarning() << "WARNING: value_type is a read-only control.";
-}
-
-const EffectManifestParameter EffectParameterSlotBase::getManifest() {
+EffectManifestParameterPointer EffectParameterSlotBase::getManifest() {
     if (m_pEffectParameter) {
         return m_pEffectParameter->manifest();
     }
-    return EffectManifestParameter();
+    return EffectManifestParameterPointer();
 }

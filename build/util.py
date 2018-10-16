@@ -91,7 +91,12 @@ def get_git_branch_name():
     branch_name = os.popen(
         "git rev-parse --abbrev-ref HEAD").readline().strip()
     if branch_name == 'HEAD':
-        branch_name = '(no branch)'
+        # Use APPVEYOR_REPO_BRANCH variable if building on appveyor or (no branch) if unset
+        branch_name = os.getenv("APPVEYOR_REPO_BRANCH", '(no branch)')
+    # Add PR# to branch name if building a PR in appveyor to avoid package naming collision
+    PRnum = os.getenv("APPVEYOR_PULL_REQUEST_NUMBER")
+    if PRnum != None:
+        branch_name += ("-PR" + PRnum)
     return branch_name
 
 
@@ -112,7 +117,7 @@ def get_mixxx_version():
     version = ""
 
     for line in open(str(defs)).readlines():
-        if line.strip().startswith("#define VERSION "):
+        if line.strip().startswith("#define MIXXX_VERSION "):
             version = line
             break
 
@@ -127,7 +132,7 @@ def get_mixxx_version():
     versionMask = '^\d+\.\d+\.\d+([-~].+)?$'
     if not re.match(versionMask, version):
         raise ValueError("Version format mismatch. See src/defs_version.h comment")
-        
+
     return version
 
 
@@ -157,7 +162,7 @@ def CheckForPKGConfig(context, version='0.0.0'):
     context.Result(ret)
     return ret
 
-    
+
 # Uses pkg-config to check for a minimum version
 def CheckForPKG(context, name, version=""):
     if version == "":
@@ -185,3 +190,40 @@ def write_build_header(path):
     finally:
         f.close()
         os.chmod(path, stat.S_IRWXU | stat.S_IRWXG |stat.S_IRWXO)
+
+def get_osx_min_version():
+    """Gets the minimum required OS X version from product_definition.plist."""
+    # Mixxx 2.0 supported OS X 10.6 and up.
+    # Mixxx >2.0 requires C++11 which is only available with libc++ and OS X
+    # 10.7 onwards. std::promise/std::future requires OS X 10.8.
+    # Mixxx >2.2 switched to Qt 5, which requires macOS 10.11.
+    # Use SCons to get the path relative to the repository root.
+    product_definition = str(Script.File('#build/osx/product_definition.plist'))
+    p = os.popen("/usr/libexec/PlistBuddy -c 'Print os:0' %s" % product_definition)
+    min_version = p.readline().strip()
+    result_code = p.close()
+    assert result_code is None, "Can't read macOS min version: %s" % min_version
+    return min_version
+
+
+def find_d3dcompiler_dll(env):
+    """Returns the path to d3dcompiler_xx.dll for bundling with Mixxx."""
+    # On our Windows 7 build environment, d3dcompiler_xx.dll lives next to our
+    # cl.exe for MSVC 14.0.
+    #
+    # https://code.woboq.org/qt5/qttools/src/shared/winutils/utils.cpp.html#924
+    # windeployqt checks for d3dcompiler_xx.dll in:
+    #
+    # - The %SDK%/redist/D3D folder (Windows 8 SDK and above).
+    # - The Qt SDK bin folder (Not present for our builds of Qt).
+    # - The first folder in the %PATH% containing a file matching the pattern.
+    #
+    # Since we currently use the Windows 7 SDK, and the Qt SDK folder does not
+    # have this DLL, let's search the path.
+    paths = env['ENV']['PATH'].split(';')
+    for path in paths:
+        for version in range(47, 40, -1):
+            dll_path = os.path.join(path, 'd3dcompiler_%d.dll' % version)
+            if os.path.exists(dll_path):
+                return dll_path
+    return None
