@@ -189,7 +189,7 @@ function PioneerCDJController() {
     }
 
     // Pitch on CDJ sends -1000 to 1000, reset at 0, swap direction
-    this.pitchScaler = function(gruop,name,value) { return -(value/1000); }
+    this.pitchScaler = function(group,name,value) { return -(value/1000); }
 
     // Volume slider scaling for 0..1..5 scaling from 0-255
     this.volumeScaler = function(group,name,value) {
@@ -331,7 +331,7 @@ PioneerCDJHID.incomingData = function(data,length) {
 PioneerCDJHID.registerCallbacks = function() {
     var controller = PioneerCDJHID.controller;
 
-    HIDDebug("Registring controls and callbacks");
+    HIDDebug("Registering controls and callbacks");
 
     // Play/cue/reverse buttons
     controller.linkControl("hid","play","deck","play");

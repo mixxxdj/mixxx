@@ -33,6 +33,7 @@
 
               <BeatSpinBox>
                 <TooltipId>beatloop_size</TooltipId>
+                <Size>58f,26f</Size>
                 <Value><Variable name="group"/>,beatloop_size</Value>
               </BeatSpinBox>
             </Children>
@@ -92,10 +93,11 @@
             <Layout>horizontal</Layout>
             <SizePolicy>26f,min</SizePolicy>
             <Children>
-              <!-- put this spacer here so BeatSpinBox expands whith HiDPI scaling -->
+              <!-- put this spacer here so BeatSpinBox expands with HiDPI scaling -->
               <WidgetGroup><Size>0f,26f</Size></WidgetGroup>
               <BeatSpinBox>
                 <TooltipId>beatjump_size</TooltipId>
+                <Size>58f,26f</Size>
                 <Value><Variable name="group"/>,beatjump_size</Value>
               </BeatSpinBox>
             </Children>

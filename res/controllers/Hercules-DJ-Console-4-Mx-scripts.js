@@ -68,7 +68,7 @@ Hercules4Mx.userSettings = {
     'autoHeadMix': false,
     // Enable automatically the headphone cue select (PFL) of the deck when a song is loaded. (Like in virtual-dj)
     'autoHeadcueOnLoad': true,
-    // Flashing at the rythm of the beat on the led. Use the Leds map above.
+    // Flashing at the rhythm of the beat on the led. Use the Leds map above.
     // Note: if using sync button, then the button will not show sync master state.
     'beatFlashLed': Hercules4Mx.Leds.none,
     // Simulate vuMeters using the kill and source buttons. If enabled, shows master vus, or deck vu depending if prefader listen button is enabled or not.

@@ -16,7 +16,7 @@ Variables:
     <Children>
       <WidgetGroup><!-- Left-hand separator -->
         <Layout>vertical</Layout>
-        <Size><Variable name="widthLeft"/>,-1min</Size>
+        <Size><Variable name="widthLeft"/>,17f</Size>
         <Children>
           <WidgetGroup>
             <ObjectName>Spacer33</ObjectName>
@@ -39,7 +39,7 @@ Variables:
 
       <WidgetGroup><!-- Right-hand separator -->
         <Layout>vertical</Layout>
-        <Size><Variable name="widthRight"/>,-1min</Size>
+        <Size><Variable name="widthRight"/>,17f</Size>
         <Children>
           <WidgetGroup>
             <ObjectName>Spacer33</ObjectName>

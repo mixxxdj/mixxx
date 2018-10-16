@@ -15,4 +15,4 @@ it, you need [NPM](https://www.npmjs.org/) and then:
 ```
 
 You can find more information on how to install and use this
-tool [in the offical Mixco website](https://sinusoid.es/mixco/).
+tool [in the official Mixco website](https://sinusoid.es/mixco/).

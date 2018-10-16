@@ -19,6 +19,65 @@
             <Layout>vertical</Layout>
             <Children>
 
+              <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
+
+              <!-- Master knobs
+                  Labels are separate so knobs are spaced equally -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:knob_textless.xml">
+                        <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="TooltipId">master_gain</SetVariable>
+                        <SetVariable name="group">[Master]</SetVariable>
+                        <SetVariable name="control">gain</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:knob_textless.xml">
+                        <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="TooltipId">balance</SetVariable>
+                        <SetVariable name="group">[Master]</SetVariable>
+                        <SetVariable name="control">balance</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <!-- Master knob labels -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>KnobLabel</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Alignment>left</Alignment>
+                    <Text> master</Text>
+                  </Label>
+
+                  <Label>
+                    <ObjectName>KnobLabel</ObjectName>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Alignment>right</Alignment>
+                    <Text>l / r</Text>
+                  </Label>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><Size>0min,4f</Size></WidgetGroup>
+
               <WidgetGroup><!-- FX buttons 1/2 -->
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
@@ -63,7 +122,7 @@
                 </Children>
               </WidgetGroup><!-- /FX buttons 1/2 -->
 
-              <!-- FX buttons 3/4 --><!-- 
+              <!-- FX buttons 3/4 -->
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
@@ -106,67 +165,13 @@
                     </Connection>
                   </PushButton>
                 </Children>
-              </WidgetGroup>/FX buttons 3/4 -->
+                <Connection>
+                  <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- /FX buttons 3/4 -->
 
-              <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
-
-              <!-- Master knobs
-                  Labels are separate so knobs are spaced equally -->
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Children>
-                      <Template src="skin:knob_textless.xml">
-                        <SetVariable name="Size">35f,30f</SetVariable>
-                        <SetVariable name="TooltipId">master_gain</SetVariable>
-                        <SetVariable name="group">[Master]</SetVariable>
-                        <SetVariable name="control">gain</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Children>
-                      <Template src="skin:knob_textless.xml">
-                        <SetVariable name="Size">35f,30f</SetVariable>
-                        <SetVariable name="TooltipId">balance</SetVariable>
-                        <SetVariable name="group">[Master]</SetVariable>
-                        <SetVariable name="control">balance</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup>
-
-
-              <!-- Master knob labels -->
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Alignment>left</Alignment>
-                    <Text> master</Text>
-                  </Label>
-
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Alignment>right</Alignment>
-                    <Text>l / r</Text>
-                  </Label>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup><Size>0min,7f</Size></WidgetGroup>
+              <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
 
               <WidgetGroup>
                 <Layout>vertical</Layout>

@@ -8,22 +8,13 @@
 
 #include "control/controlobject.h"
 #include "engine/channelhandle.h"
-#include "effects/effectchainslot.h"
+#include "effects/defs.h"
 
 class EngineEffectRack;
 class EffectsManager;
 class EffectChainManager;
 
-class EffectRack;
-class StandardEffectRack;
-class EqualizerRack;
-class QuickEffectRack;
-class OutputEffectRack;
-typedef QSharedPointer<EffectRack> EffectRackPointer;
-typedef QSharedPointer<StandardEffectRack> StandardEffectRackPointer;
-typedef QSharedPointer<EqualizerRack> EqualizerRackPointer;
-typedef QSharedPointer<QuickEffectRack> QuickEffectRackPointer;
-typedef QSharedPointer<OutputEffectRack> OutputEffectRackPointer;
+#include "effects/effectchainslot.h"
 
 //TODO(Be): Remove these superfluous classes.
 class EffectRack : public QObject {
@@ -54,6 +45,8 @@ class EffectRack : public QObject {
     const QString& getGroup() const {
         return m_group;
     }
+
+    void refresh();
 
     QDomElement toXml(QDomDocument* doc) const;
 

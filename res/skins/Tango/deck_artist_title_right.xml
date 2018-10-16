@@ -5,7 +5,7 @@ Description:
   * play position (elapsed/remaining/both)
   * track duration
   * indicator for enabled loop (if loop controls are hidden)
-  Time/duration can be set to left-hand side so that left and rigt decks
+  Time/duration can be set to left-hand side so that left and right decks
   both show time/duration at the inner side.
 Variables:
   group   : [ChannelN]

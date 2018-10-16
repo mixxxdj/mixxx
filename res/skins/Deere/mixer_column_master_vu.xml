@@ -12,11 +12,7 @@
         <Children>
 
           <!-- Spacer to align with top of channels VUs -->
-          <WidgetGroup>
-            <Size>-1,34f</Size>
-            <Layout>vertical</Layout>
-            <Children/>
-          </WidgetGroup>
+          <WidgetGroup><Size>0min,34f</Size></WidgetGroup>
 
           <Template src="skin:vumeter_master.xml"/>
 
@@ -36,7 +32,7 @@
         <SizePolicy>min,me</SizePolicy>
         <Children>
 
-          <!-- There's a spacer & VU configuration for every posible combination
+          <!-- There's a spacer & VU configuration for every possible combination
               of split/parallel waveforms, in/visible EQ knob and in/visible
               volume faders -->
 
@@ -65,9 +61,7 @@
                         <Children>
                           <Template src="skin:vumeter_master.xml"/>
 
-                          <Template src="skin:spacer_vx.xml">
-                            <SetVariable name="height">10f,136f</SetVariable>
-                          </Template>
+                          <WidgetGroup><Size>10f,136f</Size></WidgetGroup>
                         </Children>
                       </WidgetGroup>
                     </Children>
@@ -118,9 +112,7 @@
                     <SizePolicy>min,me</SizePolicy>
                     <Layout>vertical</Layout>
                     <Children>
-                      <Template src="skin:spacer_vx.xml">
-                        <SetVariable name="height">10f,34f</SetVariable>
-                      </Template>
+                      <WidgetGroup><Size>10f,34f</Size></WidgetGroup>
 
                       <Template src="skin:vumeter_master.xml"/>
                     </Children>
@@ -172,9 +164,7 @@
                     <Children>
                       <Template src="skin:vumeter_master.xml"/>
 
-                      <Template src="skin:spacer_vx.xml">
-                        <SetVariable name="height">10f,28f</SetVariable>
-                      </Template>
+                      <WidgetGroup><Size>10f,28f</Size></WidgetGroup>
                     </Children>
                   </WidgetGroup>
                 </Children>
@@ -192,9 +182,7 @@
                     <SizePolicy>min,me</SizePolicy>
                     <Layout>vertical</Layout>
                     <Children>
-                      <Template src="skin:spacer_vx.xml">
-                        <SetVariable name="height">10f,34f</SetVariable>
-                      </Template>
+                      <WidgetGroup><Size>10f,34f</Size></WidgetGroup>
 
                       <Template src="skin:vumeter_master.xml"/>
                     </Children>

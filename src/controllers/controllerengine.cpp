@@ -1523,7 +1523,7 @@ void ControllerEngine::softStart(int deck, bool activate, double factor) {
     double initRate = 0.0;
 
     if (activate) {
-        // aquire deck rate
+        // acquire deck rate
         m_rampTo[deck] = getDeckRate(group);
 
         // if brake()ing, get current rate from filter

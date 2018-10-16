@@ -9,7 +9,7 @@
 namespace {
 
 TEST(BroadcastProfileTest, ConstructWithName) {
-    // instanciate BroadcastProfile with a specific name and
+    // instantiate BroadcastProfile with a specific name and
     // assert its case-sensitive equality when getting it from getProfileName
     QString name("unit testing profile");
     BroadcastProfile profile(name);

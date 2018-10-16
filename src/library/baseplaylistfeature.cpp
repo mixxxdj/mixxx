@@ -3,7 +3,7 @@
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QDesktopServices>
+#include <QStandardPaths>
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
@@ -374,7 +374,7 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString &playlist_file) {
     if (playlist_parser) {
       QStringList entries = playlist_parser->parse(playlist_file);
 
-      // Iterate over the List that holds URLs of playlist entires
+      // Iterate over the List that holds URLs of playlist entries
       m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
 
       // delete the parser object
@@ -453,7 +453,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
     QString lastPlaylistDirectory = m_pConfig->getValue(
                 ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
-                QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+                QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
     // Open a dialog to let the user choose the file location for playlist export.
     // The location is set to the last used directory for import/export and the file

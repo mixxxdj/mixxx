@@ -1,78 +1,107 @@
-<!DOCTYPE template>
-<!--
-  Description:
-    An effect rack widget.
-  Variables:
-    group: The group for the controls.
--->
 <Template>
   <SetVariable name="FxRack">1</SetVariable>
 
   <SingletonDefinition>
     <ObjectName>FxUnit3_ExpandCollapseButton</ObjectName>
     <Children>
-      <WidgetGroup>
-        <SizePolicy>me,max</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children>
-        <PushButton>
-          <TooltipId>EffectUnit_show_parameters</TooltipId>
-          <Size>39f,24f</Size>
-          <NumberStates>2</NumberStates>
-          <RightClickIsPushButton>true</RightClickIsPushButton>
-          <State>
-            <Number>0</Number>
-            <Pressed>skin:/buttons/btn_fxExpand.svg</Pressed>
-            <Unpressed>skin:/buttons/btn_fxExpand.svg</Unpressed>
-            <Text>FX&#8202;3</Text>
-          </State>
-          <State>
-            <Number>1</Number>
-            <Pressed>skin:/buttons/btn_fxCollapse.svg</Pressed>
-            <Unpressed>skin:/buttons/btn_fxCollapse.svg</Unpressed>
-            <Text>FX&#8202;3</Text>
-          </State>
-          <Connection>
-            <ConfigKey>[EffectRack1_EffectUnit3],show_parameters</ConfigKey>
-            <ButtonState>LeftButton</ButtonState>
-          </Connection>
-        </PushButton>
-        </Children>
-      </WidgetGroup>
+      <PushButton>
+        <TooltipId>EffectUnit_show_parameters</TooltipId>
+        <Size>39f,24f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/buttons/btn_fxExpand.svg</Pressed>
+          <Unpressed>skin:/buttons/btn_fxExpand.svg</Unpressed>
+          <Text>FX&#8202;3</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/buttons/btn_fxCollapse.svg</Pressed>
+          <Unpressed>skin:/buttons/btn_fxCollapse.svg</Unpressed>
+          <Text>FX&#8202;3</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit3],show_parameters</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
     </Children>
   </SingletonDefinition>
 
   <SingletonDefinition>
     <ObjectName>FxUnit4_ExpandCollapseButton</ObjectName>
     <Children>
-      <WidgetGroup>
-        <SizePolicy>me,min</SizePolicy>
-        <Layout>vertical</Layout>
-        <Children>
-        <PushButton>
-          <TooltipId>EffectUnit_show_parameters</TooltipId>
-          <Size>39f,24f</Size>
-          <NumberStates>2</NumberStates>
-          <RightClickIsPushButton>true</RightClickIsPushButton>
-          <State>
-            <Number>0</Number>
-            <Pressed>skin:/buttons/btn_fxExpand.svg</Pressed>
-            <Unpressed>skin:/buttons/btn_fxExpand.svg</Unpressed>
-            <Text>FX&#8202;4</Text>
-          </State>
-          <State>
-            <Number>1</Number>
-            <Pressed>skin:/buttons/btn_fxCollapse.svg</Pressed>
-            <Unpressed>skin:/buttons/btn_fxCollapse.svg</Unpressed>
-            <Text>FX&#8202;4</Text>
-          </State>
-          <Connection>
-            <ConfigKey>[EffectRack1_EffectUnit4],show_parameters</ConfigKey>
-            <ButtonState>LeftButton</ButtonState>
-          </Connection>
-        </PushButton>
-        </Children>
-      </WidgetGroup>
+      <PushButton>
+        <TooltipId>EffectUnit_show_parameters</TooltipId>
+        <Size>39f,24f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/buttons/btn_fxExpand.svg</Pressed>
+          <Unpressed>skin:/buttons/btn_fxExpand.svg</Unpressed>
+          <Text>FX&#8202;4</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/buttons/btn_fxCollapse.svg</Pressed>
+          <Unpressed>skin:/buttons/btn_fxCollapse.svg</Unpressed>
+          <Text>FX&#8202;4</Text>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit4],show_parameters</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit3_MixModeButton</ObjectName>
+    <Children>
+      <PushButton>
+        <TooltipId>EffectUnit_mix_mode</TooltipId>
+        <Size>39f,28f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/buttons/btn_fx_mixmode_d-w.svg</Pressed>
+          <Unpressed>skin:/buttons/btn_fx_mixmode_d-w.svg</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/buttons/btn_fx_mixmode_d+w.svg</Pressed>
+          <Unpressed>skin:/buttons/btn_fx_mixmode_d+w.svg</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit3],mix_mode</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>FxUnit4_MixModeButton</ObjectName>
+    <Children>
+      <PushButton>
+        <TooltipId>EffectUnit_mix_mode</TooltipId>
+        <Size>39f,28f</Size>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/buttons/btn_fx_mixmode_d-w.svg</Pressed>
+          <Unpressed>skin:/buttons/btn_fx_mixmode_d-w.svg</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/buttons/btn_fx_mixmode_d+w.svg</Pressed>
+          <Unpressed>skin:/buttons/btn_fx_mixmode_d+w.svg</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit4],mix_mode</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
     </Children>
   </SingletonDefinition>
 

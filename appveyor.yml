@@ -2,7 +2,7 @@
 version: '{branch}-{build}'
 skip_tags: true
 max_jobs: 1
-image: Visual Studio 2015
+image: Visual Studio 2017
 init:
   - git config --global core.autocrlf input
 # Uncomment the following line to show RDP info at beginning of job
@@ -22,7 +22,7 @@ configuration:
 #  - release
 #  - debug
 environment:
-  ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.1.x-windows/
+  ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/
   ENVIRONMENTS_PATH: C:\mixxx-buildserver
   matrix:
     - platform: x64
@@ -38,10 +38,6 @@ install:
   - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
   - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
   - cd %TEMP%
-  # Not needed anymore since we switched to wix
-  #- echo *** Patching NSIS
-  #- cd %APPVEYOR_BUILD_FOLDER%
-  #- patch "C:\Program Files (x86)\NSIS\Include\MultiUser.nsh" < build\appveyor\NSIS.patch
   - echo *** Downloading precompiled build environment if not in build-cache
   - cd %APPVEYOR_BUILD_FOLDER%
   - build\windows\install_buildenv.bat %ENVIRONMENTS_URL% %ENVIRONMENT_NAME% %ENVIRONMENTS_PATH%

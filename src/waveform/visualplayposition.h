@@ -18,7 +18,7 @@ class VSyncThread;
 // DAC: ------|--------------|-------|-------------------|-----------------------|-----
 //            ^Audio Callback Entry  |                   |                       ^Last Sample to DAC
 //            |              ^Buffer prepared            ^Waveform sample X
-//            |                      ^First sample transfered to DAC
+//            |                      ^First sample transferred to DAC
 // CPU: ------|-------------------------------------------------------------------------
 //            ^Start m_timeInfoTime                      |
 //                                                       |
@@ -29,7 +29,7 @@ class VSyncThread;
 class VisualPlayPositionData {
   public:
     PerformanceTimer m_referenceTime;
-    int m_callbackEntrytoDac; // Time from Audio Callback Entry to first sample of Buffer is transfered to DAC
+    int m_callbackEntrytoDac; // Time from Audio Callback Entry to first sample of Buffer is transferred to DAC
     double m_enginePlayPos; // Play position of fist Sample in Buffer
     double m_rate;
     double m_positionStep;

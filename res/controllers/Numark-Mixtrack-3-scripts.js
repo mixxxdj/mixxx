@@ -402,9 +402,9 @@ LED.prototype.flashOnceOff = function(relight) {
 //                      press the button a second time (Value will be
 //                      equal to DOWN), or the Long press is asserted
 //                      (value = DOWN because you are still holding down
-//                      the button or value=UP because you have realeased
+//                      the button or value=UP because you have released
 //                      the button only once before it becomes a long press).
-// doublePressTimeOut : delay in ms above wich a second press on the
+// doublePressTimeOut : delay in ms above which a second press on the
 //                      button will not be considered as a potential double
 //                      but as a new press cycle event (default = 400ms).   
 var SingleDoubleBtn = function(callback, doublePressTimeOut) {
@@ -451,7 +451,7 @@ SingleDoubleBtn.prototype.buttonDecide = function() {
 //                      and the kind of press event affecting your button (eventkind)
 //                      This callback will be called once you release the button
 //                      (Value will be equal to UP). You must provide this parameter.
-// longPressThreshold : delay in ms above which a firts press on the
+// longPressThreshold : delay in ms above which a first press on the
 //                      button will be considered as a Long press (default = 500ms).
 //                      This parameter is optional.
 // callBackOKLongPress : This callback will give you the same values than the first one
@@ -518,11 +518,11 @@ LongShortBtn.prototype.buttonUp = function() {
 //                      press the button a second time (Value will be
 //                      equal to DOWN), or the Long press is asserted
 //                      (value = DOWN because you are still holding down
-//                      the button or value=UP because you have realeased
+//                      the button or value=UP because you have released
 //                      the button only once before it becomes a long press).
-// longPressThreshold : delay in ms above which a firts press on the
+// longPressThreshold : delay in ms above which a first press on the
 //                      button will be considered as a Long press (default = 500ms).
-// doublePressTimeOut : delay in ms above wich a second press on the
+// doublePressTimeOut : delay in ms above which a second press on the
 //                      button will not be considered as a potential double
 //                      but as a new press cycle event (default = 400ms).
 
@@ -609,7 +609,7 @@ LongShortDoubleBtn.prototype.buttonDown = function(channel, control, value, stat
         // 2nd press
         this.buttonCount = 2;
 
-        // ...and take action immediatly
+        // ...and take action immediately
         this.buttonDecide();
     } // else :
     // 2nd press after short timer's out, this cannot happen,
@@ -1223,7 +1223,7 @@ NumarkMixtrack3.OnLoadSelectedTrack = function(value, group, control) {
 /******************     Sync button :
  * - Short Press  : Press once to synchronize the tempo (BPM) and phase
  *                  to that of to that of the other track.
- * - Double Press : press twice QUICKLY to play the track immediatly,
+ * - Double Press : press twice QUICKLY to play the track immediately,
  *                  synchronized to the tempo (BPM) and to the phase of
  *                 the other track, if the track was paused.
  * - Long Press (Sync Lock) :
@@ -1299,7 +1299,7 @@ NumarkMixtrack3.CueButton = function(channel, control, value, status, group) {
     var deck = NumarkMixtrack3.deckFromGroup(group);
 
     if (!deck.shiftKey) {
-        // Don't set Cue accidentaly at the end of the song
+        // Don't set Cue accidentally at the end of the song
         if (engine.getValue(deck.group, "playposition") <= 0.97) {
             engine.setValue(deck.group, "cue_default", value ? 1 : 0);
         } else {

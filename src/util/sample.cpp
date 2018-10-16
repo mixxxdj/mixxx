@@ -43,7 +43,7 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
     // true start of the buffer in the slack space as well so that we can free
     // it correctly.
     // TODO(XXX): Replace with C++11 aligned_alloc.
-    // TODO(XXX): consider 32 byte alignement to optimize for AVX builds
+    // TODO(XXX): consider 32 byte alignment to optimize for AVX builds
     if (useAlignedAlloc()) {
 #ifdef _MSC_VER
         return static_cast<CSAMPLE*>(_aligned_malloc(sizeof(CSAMPLE) * size, 16));

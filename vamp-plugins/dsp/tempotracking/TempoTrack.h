@@ -92,7 +92,7 @@ private:
     double* m_ACoeffs;
     double* m_BCoeffs;
 	
-    // Objetcs/operators declaration
+    // Objects/operators declaration
     Framer m_DFFramer;
     DFProcess* m_DFConditioning;
     Correlation m_correlator;

@@ -64,7 +64,7 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
     // Create the "Crates" tree-item under the root item.
     auto pRootItem = std::make_unique<TreeItem>(this);
     m_pCratesTreeItem = pRootItem->appendChild(tr("Crates"));
-    m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
+    m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.svg"));
 
     // Create tree-items under "Crates".
     constructCrateChildModel();
@@ -98,7 +98,7 @@ QVariant AutoDJFeature::title() {
 }
 
 QIcon AutoDJFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_autodj.png");
+    return QIcon(":/images/library/ic_library_autodj.svg");
 }
 
 void AutoDJFeature::bindWidget(WLibrary* libraryWidget,

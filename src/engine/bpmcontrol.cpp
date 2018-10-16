@@ -315,7 +315,7 @@ bool BpmControl::syncTempo() {
         // increase/decrease in playback rate, not the playback rate.
         double desiredRateShift = desiredRate - 1.0;
 
-        // Ensure the rate is within resonable boundaries. Remember, this is the
+        // Ensure the rate is within reasonable boundaries. Remember, this is the
         // percent to scale the rate, not the rate itself. If fDesiredRate was -1,
         // that would mean the deck would be completely stopped. If fDesiredRate
         // is 1, that means it is playing at 2x speed. This limit enforces that

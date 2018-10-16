@@ -388,6 +388,14 @@ void Tooltips::addStandardTooltips() {
             << tr("Prevents the pitch from changing when the rate changes.")
             << tr("Toggling keylock during playback may result in a momentary audio glitch.");
 
+    // Show 4/8 hotcue
+    add("hotcue_toggle")
+        <<tr("Toggle displayed hotcue, 4 or 8");
+
+    // Show Rate Control
+    add("rate_toggle")
+        <<tr("Toggle visibility of Rate Control");
+
     // Used in cue/hotcue/loop tooltips below.
     QString quantizeSnap = tr("If quantize is enabled, snaps to the nearest beat.");
     add("quantize")
@@ -737,18 +745,24 @@ void Tooltips::addStandardTooltips() {
             << tr("Toggle Unit")
             << tr("Enable or disable this whole effect unit.");
     add("EffectUnit_mix")
-            << tr("Dry/Wet")
-            << tr("Adjust the balance between the original (dry) and processed (wet) signal for the whole effect unit.")
+            << tr("Mix")
+            << tr("Adjust the mixing of the dry (input) signal with the wet (output) signal of the effect unit")
+            << tr("D/W mode: Crossfade between dry and wet")
+            << tr("D+W mode: Add wet to dry")
             << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("EffectUnit_mix_mode")
+            << tr("Mix Mode")
+            << tr("Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit") + "\n"
+            << tr("Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet\n"
+                  "Use this to change the sound of the track with EQ and filter effects.") + "\n"
+            << tr("Dry+Wet mode (flat dry line): Mix knob adds wet to dry\n"
+                  "Use this to change only the effected (wet) signal with EQ and filter effects.");
 
     add("EffectUnit_super1")
             << tr("Super Knob")
             << tr("Controls the Meta Knob of all effects in this unit together.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
-
-    add("EffectUnit_insertion_type")
-            << tr("Insert/Send Toggle")
-            << tr("Insert/Send Toggle");
 
     add("EffectUnit_next_chain")
             << tr("Next Chain")

@@ -42,7 +42,6 @@
                   <PushButton>
                     <TooltipId>cue_gotoandplay_cue_default</TooltipId>
                     <NumberStates>2</NumberStates>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
                     <State>
                       <Number>0</Number>
                       <Pressed>buttons/btn_play_sampler_down.svg</Pressed>
@@ -80,11 +79,18 @@
                 <SignalColor>#EECE33</SignalColor>
                 <MarkerColor>#00FF00</MarkerColor>
                 <DefaultMark>
-                  <Align>bottom</Align>
+                  <Align>bottom|right</Align>
                   <Color>#00FF00</Color>
                   <TextColor>#FFFFFF</TextColor>
                   <Text> %1 </Text>
                 </DefaultMark>
+                <Mark>
+                  <Control>cue_point</Control>
+                  <Text> C </Text>
+                  <Align>top|right</Align>
+                  <Color>#FF001C</Color>
+                  <TextColor>#FFFFFF</TextColor>
+                </Mark>
                 <Connection>
                   <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                 </Connection>
@@ -324,133 +330,128 @@
                     </Connection>
                   </PushButton>
 
-                  <PushButton>
-                    <TooltipId>hotcue</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_hotcue_5_down.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_5.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_hotcue_5_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_5_over.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_5_activate</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_5_clear</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_5_enabled</ConfigKey>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </PushButton>
+                  <WidgetGroup><!-- /Hotcues 5-8 -->
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
 
-                  <PushButton>
-                    <TooltipId>hotcue</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_hotcue_6_down.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_6.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_hotcue_6_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_6_over.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_6_activate</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_6_clear</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_6_enabled</ConfigKey>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </PushButton>
+                      <PushButton>
+                        <TooltipId>hotcue</TooltipId>
+                        <NumberStates>2</NumberStates>
+                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_hotcue_5_down.svg</Pressed>
+                          <Unpressed>buttons/btn_hotcue_5.svg</Unpressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Pressed>buttons/btn_hotcue_5_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_hotcue_5_over.svg</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,hotcue_5_activate</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,hotcue_5_clear</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,hotcue_5_enabled</ConfigKey>
+                        </Connection>
+                      </PushButton>
 
-                  <PushButton>
-                    <TooltipId>hotcue</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_hotcue_7_down.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_7.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_hotcue_7_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_7_over.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_7_activate</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_7_clear</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_7_enabled</ConfigKey>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </PushButton>
+                      <PushButton>
+                        <TooltipId>hotcue</TooltipId>
+                        <NumberStates>2</NumberStates>
+                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_hotcue_6_down.svg</Pressed>
+                          <Unpressed>buttons/btn_hotcue_6.svg</Unpressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Pressed>buttons/btn_hotcue_6_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_hotcue_6_over.svg</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,hotcue_6_activate</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,hotcue_6_clear</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,hotcue_6_enabled</ConfigKey>
+                        </Connection>
+                      </PushButton>
 
-                  <PushButton>
-                    <TooltipId>hotcue</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_hotcue_8_down.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_8.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_hotcue_8_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_8_over.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_8_activate</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_8_clear</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_8_enabled</ConfigKey>
-                    </Connection>
+                      <PushButton>
+                        <TooltipId>hotcue</TooltipId>
+                        <NumberStates>2</NumberStates>
+                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_hotcue_7_down.svg</Pressed>
+                          <Unpressed>buttons/btn_hotcue_7.svg</Unpressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Pressed>buttons/btn_hotcue_7_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_hotcue_7_over.svg</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,hotcue_7_activate</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,hotcue_7_clear</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,hotcue_7_enabled</ConfigKey>
+                        </Connection>
+                      </PushButton>
+
+                      <PushButton>
+                        <TooltipId>hotcue</TooltipId>
+                        <NumberStates>2</NumberStates>
+                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+                        <RightClickIsPushButton>true</RightClickIsPushButton>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_hotcue_8_down.svg</Pressed>
+                          <Unpressed>buttons/btn_hotcue_8.svg</Unpressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Pressed>buttons/btn_hotcue_8_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_hotcue_8_over.svg</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,hotcue_8_activate</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,hotcue_8_clear</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,hotcue_8_enabled</ConfigKey>
+                        </Connection>
+                      </PushButton>
+                    </Children>
                     <Connection>
                       <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
-                  </PushButton>
+                  </WidgetGroup><!-- /Hotcues 5-8 -->
                 </Children>
               </WidgetGroup>
 

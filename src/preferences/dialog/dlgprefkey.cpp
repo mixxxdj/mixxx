@@ -95,15 +95,15 @@ void DlgPrefKey::loadSettings() {
     qDebug() << "Key plugin ID:" << m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
 
-    if(m_pConfig->getValueString(
+    if (m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID)) == "") {
         slotResetToDefaults();
         slotApply(); // Write to config file so AnalyzerKey can get the data
         return;
     }
 
-   QString pluginid = m_pConfig->getValueString(
-       ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
+    QString pluginid = m_pConfig->getValueString(
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
     m_selectedAnalyzer = pluginid;
 
     m_bAnalyzerEnabled = static_cast<bool>(m_pConfig->getValueString(

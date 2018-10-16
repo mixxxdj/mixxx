@@ -41,7 +41,7 @@ namespace {
         virtual AVSampleFormat getSampleFormatOfStream(AVStream* pStream) = 0;
   };
 
-  // Implement classes for version befor 3.1 and after that
+  // Implement classes for version before 3.1 and after that
 #if AVSTREAM_FROM_API_VERSION_3_1
   // This is after version 3.1
   class AVStreamWrapperImpl : public AVStreamWrapper {

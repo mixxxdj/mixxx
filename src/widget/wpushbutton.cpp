@@ -360,7 +360,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary button function always a Pushbutton
-        // due the leak of visual feedback we do not allow a toggle function
+        // due the lack of visual feedback we do not allow a toggle function
         if (m_rightButtonMode == ControlPushButton::PUSH ||
                 m_rightButtonMode == ControlPushButton::TRIGGER ||
                 m_iNoStates == 1) {
@@ -379,7 +379,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             // or this is a push button.
             emitValue = 1.0;
         } else {
-            // Toggle thru the states
+            // Toggle through the states
             emitValue = getControlParameterLeft();
             if (!isnan(emitValue) && m_iNoStates > 0) {
                 emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;
@@ -430,12 +430,12 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         // This is the secondary clickButton function,
         // due the leak of visual feedback we do not allow a toggle
         // function
+        m_bPressed = false;
         if (m_rightButtonMode == ControlPushButton::PUSH
                 || m_iNoStates == 1) {
-            m_bPressed = false;
             setControlParameterRightUp(0.0);
-            restyleAndRepaint();
         }
+        restyleAndRepaint();
         return;
     }
 

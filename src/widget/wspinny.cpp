@@ -375,7 +375,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         p.drawImage(-(m_ghostImageScaled.width() / 2),
                     -(m_ghostImageScaled.height() / 2), m_ghostImageScaled);
 
-        //Rotate back to the playback position (not the ghost positon),
+        //Rotate back to the playback position (not the ghost position),
         //and draw the beat marks from there.
         p.restore();
     }

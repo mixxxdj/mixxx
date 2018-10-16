@@ -8,7 +8,7 @@ Description:
 	Mixerbar is alsways at bottom edge of screen.
 	It is centered if Library is hidden.
 	With Library visible, it can either show up below tracks table to save
-	space for treeview on the left, or full-width below Libary if many
+	space for treeview on the left, or full-width below Library if many
 	Mics/AUX are enabled.
 -->
 <Template>
@@ -21,9 +21,21 @@ Description:
 
       <!-- Headphone controls greyed out if no headphone device configured -->
       <WidgetGroup>
-        <ObjectName>MixerbarCover</ObjectName>
+        <ObjectName>GuiCover</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,me</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Label>
+            <ObjectName>UnconfiguredHeadphoneText</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Text>No Headphone</Text>
+          </Label>
+          <Label>
+            <ObjectName>UnconfiguredHeadphoneText</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Text>device configured!</Text>
+          </Label>
+        </Children>
         <Connection>
           <ConfigKey>[Master],headEnabled</ConfigKey>
           <BindProperty>visible</BindProperty>

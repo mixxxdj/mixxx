@@ -95,7 +95,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     QMenu* syncMenu = addSubmenu(tr("Sync"));
     addDeckAndSamplerControl("sync_enabled", tr("Sync Mode"),
-                             tr("Tap to sync, hold to enable sync mode"), syncMenu);
+                             tr("Tap to sync tempo (and phase with quantize enabled), hold to enable permanent sync"), syncMenu);
     addControl("[InternalClock]", "sync_master", tr("Internal Sync Master"),
                tr("Toggle Internal Sync Master"), syncMenu);
     addControl("[InternalClock]", "bpm", tr("Internal Master BPM"),
@@ -114,8 +114,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckAndSamplerControl("sync_mode", tr("Sync Mode"),
                              tr("Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)"), syncMenu);
     addDeckAndSamplerControl("beatsync", tr("Beat Sync One-Shot"),
-                             tr("One-time beat sync (tempo and phase)"), syncMenu);
-    // TODO: phase depends on quantize
+                             tr("One-time beat sync tempo (and phase with quantize enabled)"), syncMenu);
     addDeckAndSamplerControl("beatsync_tempo", tr("Sync Tempo One-Shot"),
                              tr("One-time beat sync (tempo only)"), syncMenu);
     addDeckAndSamplerControl("beatsync_phase", tr("Sync Phase One-Shot"),
@@ -501,9 +500,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Super Knob (control effects' Meta Knobs)"),
                                descriptionPrefix,
                                effectUnitMenu, true);
-            addPrefixedControl(effectUnitGroup, "insertion_type",
-                               tr("Insert/Send Toggle"),
-                               tr("Insert/Send Toggle"),
+            addPrefixedControl(effectUnitGroup, "Mix Mode",
+                               tr("Mix Mode Toggle"),
+                               tr("Toggle effect unit between D/W and D+W modes"),
                                descriptionPrefix,
                                effectUnitMenu);
             addPrefixedControl(effectUnitGroup, "next_chain",

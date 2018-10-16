@@ -205,7 +205,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
     // Reduce sample offset to a frame offset.
     beat.set_frame_position(samplesToFrames(dSamples));
 
-    // it points at the first occurence of beat or the next largest beat
+    // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
             qLowerBound(m_beats.begin(), m_beats.end(), beat, BeatLessThan);
 
@@ -296,7 +296,7 @@ bool BeatMap::findPrevNextBeats(double dSamples,
     // Reduce sample offset to a frame offset.
     beat.set_frame_position(samplesToFrames(dSamples));
 
-    // it points at the first occurence of beat or the next largest beat
+    // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
             qLowerBound(m_beats.begin(), m_beats.end(), beat, BeatLessThan);
 

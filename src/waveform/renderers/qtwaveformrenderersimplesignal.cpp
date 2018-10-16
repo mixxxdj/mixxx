@@ -205,7 +205,7 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         }
     }
 
-    //If channel are not displayed separatly we nne to close the loop properly
+    //If channel are not displayed separately we need to close the loop properly
     if (channelSeparation == 1) {
         m_polygon.append(QPointF(m_waveformRenderer->getLength(), 0.0));
     }

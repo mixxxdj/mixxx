@@ -44,9 +44,9 @@ QString EffectParameterSlotBase::description() const {
     return tr("No effect loaded.");
 }
 
-const EffectManifestParameter EffectParameterSlotBase::getManifest() {
+EffectManifestParameterPointer EffectParameterSlotBase::getManifest() {
     if (m_pEffectParameter) {
         return m_pEffectParameter->manifest();
     }
-    return EffectManifestParameter();
+    return EffectManifestParameterPointer();
 }

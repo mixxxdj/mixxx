@@ -1,7 +1,7 @@
 <!--
 Description:
   2-state button for skin settings menu.
-  Its <IsEqual> CO transformation alllows to toggle i.e. amount of HotCue
+  Its <IsEqual> CO transformation allows to toggle i.e. amount of HotCue
   buttons in a comfortable way ( [ 4 ] or [ 8 ] ) while keeping qss simple.
   Can be squeezed so that all skin settings categories fit on small screens.
 Variables:
@@ -11,7 +11,7 @@ Variables:
 -->
 <Template>
   <PushButton>
-    <ObjectName>SkinSettingsButton</ObjectName>
+    <ObjectName>SkinSettingsButtonMulti</ObjectName>
     <MinimumSize><Variable name="width"/>,13</MinimumSize>
     <MaximumSize><Variable name="width"/>,17</MaximumSize>
     <SizePolicy>me,me</SizePolicy>

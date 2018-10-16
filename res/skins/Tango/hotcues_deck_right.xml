@@ -1,7 +1,7 @@
 <!--
 Description:
   A widget containing hotcue buttons whose number can be set to 4 or 8.
-  They're layed out in a way that they either expand or get squeezed,
+  They're laid out in a way that they either expand or get squeezed,
   depending on how many deck buttons/star rating are visible.
 -->
 <Template>
@@ -39,7 +39,7 @@ Description:
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],8_hotcues</ConfigKey>
+              <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -86,7 +86,7 @@ Description:
                 <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],8_hotcues</ConfigKey>
+              <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- 8 -->

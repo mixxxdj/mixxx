@@ -1,7 +1,7 @@
 # Mixxx
 
 [Mixxx] is Free DJ software that gives you everything you need to perform live
-DJ mixes. Mixxx works on GNU/Linux, Windows, and Mac OS X.
+DJ mixes. Mixxx works on GNU/Linux, Windows, and macOS.
 
 ## Quick Start
 
@@ -13,8 +13,8 @@ To get started with Mixxx:
 
 ## Roadmap
 
-The Mixxx team is hard at work on Mixxx 2.1. The best place to keep track of
-2.1 development is the [2.1.4 milestone page on Launchpad][launchpad 2.1.4].
+The Mixxx team is hard at work on Mixxx 2.2. The best place to keep track of
+2.2 development is the [2.2.0 milestone page on Launchpad][launchpad 2.2.0].
 
 A more general roadmap can be found on [the wiki][wiki roadmap].
 
@@ -29,8 +29,9 @@ bug list][easybugs] and get started!
 
 ## Compiling
 
-* Linux / MacOS [![Build Status](https://travis-ci.org/mixxxdj/mixxx.svg)](https://travis-ci.org/mixxxdj/mixxx)
+* Linux / macOS [![Build Status](https://travis-ci.org/mixxxdj/mixxx.svg)](https://travis-ci.org/mixxxdj/mixxx)
 * Windows [![Build status](https://ci.appveyor.com/api/projects/status/j460rficblcaopwx?svg=true)](https://ci.appveyor.com/project/mixxxdj/mixxx)
+* Jenkins [![Build status](https://img.shields.io/jenkins/s/https/builds.mixxx.org/job/master-release.svg)](https://builds.mixxx.org/job/master-release)
 
 First, you must install all of Mixxx's dependencies. To compile Mixxx using
 [SCons], run:
@@ -39,7 +40,7 @@ First, you must install all of Mixxx's dependencies. To compile Mixxx using
 
 Please see our helpful guides on the [wiki] for more information:
 - [Compiling on Linux]
-- [Compiling on OS X]
+- [Compiling on macOS]
 - [Compiling on Windows]
 
 ## Documentation
@@ -91,12 +92,12 @@ license.
 [faq]: http://mixxx.org/wiki/doku.php/faq
 [forums]: http://www.mixxx.org/forums/
 [compiling on linux]: http://mixxx.org/wiki/doku.php/compiling_on_linux
-[compiling on os x]: http://mixxx.org/wiki/doku.php/compiling_on_os_x
+[compiling on macOS]: http://mixxx.org/wiki/doku.php/compiling_on_os_x
 [compiling on windows]: http://mixxx.org/wiki/doku.php/compiling_on_windows
 [mailing list]: https://lists.sourceforge.net/lists/listinfo/mixxx-devel
 [irc channel]: http://mixxx.org/irc.php
 [SCons]: http://www.scons.org/
-[launchpad 2.1.4]: https://launchpad.net/mixxx/+milestone/2.1.4
+[launchpad 2.2.0]: https://launchpad.net/mixxx/+milestone/2.2.0
 [wiki roadmap]: http://mixxx.org/wiki/doku.php/development_roadmap
 [easybugs]: https://bugs.launchpad.net/mixxx/+bugs?field.searchtext=&orderby=-importance&search=Search&field.status%3Alist=NEW&field.status%3Alist=CONFIRMED&field.status%3Alist=TRIAGED&field.status%3Alist=INPROGRESS&field.status%3Alist=INCOMPLETE_WITH_RESPONSE&field.status%3Alist=INCOMPLETE_WITHOUT_RESPONSE&assignee_option=any&field.assignee=&field.bug_reporter=&field.bug_commenter=&field.subscriber=&field.structural_subscriber=&field.tag=easy&field.tags_combinator=ANY&field.has_cve.used=&field.omit_dupes.used=&field.omit_dupes=on&field.affects_me.used=&field.has_patch.used=&field.has_branches.used=&field.has_branches=on&field.has_no_branches.used=&field.has_no_branches=on&field.has_blueprints.used=&field.has_blueprints=on&field.has_no_blueprints.used=&field.has_no_blueprints=on
 [creating skins]: http://mixxx.org/wiki/doku.php/creating_skins

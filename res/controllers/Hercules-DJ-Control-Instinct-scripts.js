@@ -158,7 +158,7 @@ HCInstinct.pitch = function (midino, control, value, status, group) {
 			engine.setValue(group, "rate_temp_up"+speed, state); 
 			break;
 	};	
-        // when buttons + and - pressed simultanously
+        // when buttons + and - pressed simultaneously
         if (HCInstinct.pitchSwitches["A"][0] && HCInstinct.pitchSwitches["A"][1]) {
 		// reset pitch to 0
 		engine.setValue(group, "rate", 0); 

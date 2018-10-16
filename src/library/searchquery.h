@@ -191,7 +191,7 @@ class KeyFilterNode : public QueryNode {
 class SqlNode : public QueryNode {
   public:
     explicit SqlNode(const QString& sqlExpression)
-            // No need to wrap into parantheses here! This will be done
+            // No need to wrap into parentheses here! This will be done
             // later in toSql() if this node is a component of another
             // composite node.
             : m_sql(sqlExpression) {

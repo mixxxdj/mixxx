@@ -84,14 +84,24 @@ Variables:
 
               <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
-              <Template src="skin:knob_textless.xml">
-                <SetVariable name="TooltipId">pregain</SetVariable>
-                <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
-                <SetVariable name="Size">20f,20f</SetVariable>
-                <SetVariable name="group"><Variable name="group"/></SetVariable>
-                <SetVariable name="ConfigKey">volume</SetVariable>
-                <SetVariable name="Color">tiny_red</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <ObjectName>SamplerGainKnob</ObjectName>
+                <Layout>vertical</Layout>
+                <Children>
+                  <KnobComposed>
+                    <TooltipId>pregain</TooltipId>
+                    <Size>24f,20f</Size>
+                    <Knob>knobs_sliders/knob_tiny_red.svg</Knob>
+                    <BackPath>knobs_sliders/knob_bg.svg</BackPath>
+                    <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                    <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                    <KnobCenterYOffset>1.364</KnobCenterYOffset>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+                </Children>
+              </WidgetGroup>
 
               <!-- Instead of a plain spacer I chose <TrackProperty> here,
                   so that tracks from library can be dropped on 'empty space' -->
@@ -246,20 +256,25 @@ Variables:
         <Size>1me,20f</Size>
         <Children>
 
-          <WidgetGroup><!-- Gain knob, expanding to be centerd below Play/Cover -->
-            <ObjectName>AlignHCenter</ObjectName>
+          <WidgetGroup><!-- Gain knob, expanding to be centered below Play/Cover -->
+            <ObjectName>SamplerGainKnob</ObjectName>
             <Layout>horizontal</Layout>
             <MinimumSize>20,20</MinimumSize>
             <MaximumSize>34,20</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <Children>
-              <Template src="skin:knob_textless.xml">
-                <SetVariable name="TooltipId">channel_volume</SetVariable>
-                <SetVariable name="ObjectName">SamplerGainKnob</SetVariable>
-                <SetVariable name="Size">20f,20f</SetVariable>
-                <SetVariable name="ConfigKey">volume</SetVariable>
-                <SetVariable name="Color">tiny_red</SetVariable>
-              </Template>
+              <KnobComposed>
+                <TooltipId>pregain</TooltipId>
+                <Size>24f,20f</Size>
+                <Knob>knobs_sliders/knob_tiny_red.svg</Knob>
+                <BackPath>knobs_sliders/knob_bg.svg</BackPath>
+                <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
+                <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
+                <KnobCenterYOffset>1.364</KnobCenterYOffset>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,volume</ConfigKey>
+                </Connection>
+              </KnobComposed>
             </Children>
           </WidgetGroup>
 
@@ -271,16 +286,7 @@ Variables:
               <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
               <!-- Greyed out if no headphone device is configured -->
-              <WidgetGroup>
-                <ObjectName>GuiCover</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>me,me</SizePolicy>
-                <Connection>
-                  <ConfigKey>[Master],headEnabled</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                  <Transform><Not/></Transform>
-                </Connection>
-              </WidgetGroup>
+              <Template src="skin:pfl_cover.xml"/>
 
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>

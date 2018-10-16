@@ -141,7 +141,7 @@ class ControlDoublePrivate : public QObject {
     // User-visible, i18n name for what the control is.
     QString m_name;
 
-    // User-visible, i18n descripton for what the control does.
+    // User-visible, i18n description for what the control does.
     QString m_description;
 
     // Whether to ignore sets which would have no effect.

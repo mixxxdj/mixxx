@@ -43,7 +43,7 @@ QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
 }
 
 bool SettingsDAO::setValue(const QString& name, const QVariant& value) {
-    if (!qVariantCanConvert<QString>(value)) {
+    if (!value.canConvert(QMetaType::QString)) {
         return false;
     }
 

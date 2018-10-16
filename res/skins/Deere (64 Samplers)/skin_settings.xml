@@ -25,12 +25,12 @@
             <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
             <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
             <SetVariable name="state_0_text"></SetVariable>
-            <SetVariable name="state_0_pressed">icon/ic_settings_48px.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">icon/ic_settings_48px.svg</SetVariable>
+            <SetVariable name="state_0_pressed">../Deere/icon/ic_clear_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">../Deere/icon/ic_clear_48px.svg</SetVariable>
             <SetVariable name="state_1_text"></SetVariable>
-            <SetVariable name="state_1_pressed">icon/ic_settings_48px.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">icon/ic_settings_48px.svg</SetVariable>
-            <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
+            <SetVariable name="state_1_pressed">../Deere/icon/ic_clear_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">../Deere/icon/ic_clear_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control">[Master],skin_settings</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
@@ -192,12 +192,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Text>&#9675; More Hotcues</Text>
+              <Text>&#9675; 8 Hotcues</Text>
               <Alignment>left</Alignment>
             </State>
             <State>
               <Number>1</Number>
-              <Text>&#9679; More Hotcues</Text>
+              <Text>&#9679; 8 Hotcues</Text>
               <Alignment>left</Alignment>
             </State>
             <Connection>
@@ -601,7 +601,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey>[Deere],show_skin_settings</ConfigKey>
+      <ConfigKey>[Master],skin_settings</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

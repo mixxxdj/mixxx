@@ -45,13 +45,13 @@ public:
 
     enum class RampMode {
         Stepping = 0, // pitch takes a temporary step up/down a certain amount
-        Linear = 1 // pitch moves up/down in a progresively linear fashion
+        Linear = 1 // pitch moves up/down in a progressively linear fashion
     };
 
     // This defines how the rate returns to normal. Currently unused.
     // Rate ramp back mode:
     //  RATERAMP_RAMPBACK_NONE: returns back to normal all at once.
-    //  RATERAMP_RAMPBACK_SPEED: moves back in a linearly progresive manner.
+    //  RATERAMP_RAMPBACK_SPEED: moves back in a linearly progressive manner.
     //  RATERAMP_RAMPBACK_PERIOD: returns to normal within a period of time.
     enum RATERAMP_RAMPBACK_MODE {
         RATERAMP_RAMPBACK_NONE,

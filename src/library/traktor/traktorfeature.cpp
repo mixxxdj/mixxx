@@ -6,7 +6,7 @@
 #include <QXmlStreamReader>
 #include <QMap>
 #include <QSettings>
-#include <QDesktopServices>
+#include <QStandardPaths>
 
 #include "library/traktor/traktorfeature.h"
 
@@ -120,7 +120,7 @@ QVariant TraktorFeature::title() {
 }
 
 QIcon TraktorFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_traktor.png");
+    return QIcon(":/images/library/ic_library_traktor.svg");
 }
 
 bool TraktorFeature::isSupported() {
@@ -139,7 +139,7 @@ void TraktorFeature::activate() {
 
     if (!m_isActivated) {
         m_isActivated =  true;
-        // Ususally the maximum number of threads
+        // Usually the maximum number of threads
         // is > 2 depending on the CPU cores
         // Unfortunately, within VirtualBox
         // the maximum number of allowed threads
@@ -154,7 +154,7 @@ void TraktorFeature::activate() {
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) Traktor");
         //calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
-        emit (featureIsLoading(this, true));
+        emit(featureIsLoading(this, true));
     }
 
     emit(showTrackModel(m_pTraktorTableModel));
@@ -327,9 +327,11 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 //
                 // Our rating values range from 1 to 5. The mapping is defined as follow
                 // ourRatingValue = TraktorRating / 51
-                 if (ranking_str != "" && qVariantCanConvert<int>(ranking_str)) {
-                    rating = ranking_str.toInt()/51;
-                 }
+                bool ok = false;
+                int parsed_rating = ranking_str.toInt(&ok) / 51;
+                if (ok) {
+                    rating = parsed_rating;
+                }
                 continue;
             }
             if (xml.name() == "TEMPO") {
@@ -338,7 +340,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 continue;
             }
         }
-        //We leave the infinte loop, if twe have the closing tag "ENTRY"
+        //We leave the infinite loop, if twe have the closing tag "ENTRY"
         if (xml.name() == "ENTRY" && xml.isEndElement()) {
             break;
         }
@@ -438,7 +440,7 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 
                 current_path.remove(lastSlash, path_length - lastSlash);
             }
-            //We leave the infinte loop, if twe have the closing "PLAYLIST" tag
+            //We leave the infinite loop, if twe have the closing "PLAYLIST" tag
             if (xml.name() == "PLAYLISTS") {
                 break;
             }
@@ -526,7 +528,7 @@ void TraktorFeature::parsePlaylistEntries(
             }
         }
         if (xml.isEndElement()) {
-            //We leave the infinte loop, if twe have the closing "PLAYLIST" tag
+            //We leave the infinite loop, if twe have the closing "PLAYLIST" tag
             if (xml.name() == "PLAYLIST") {
                 break;
             }
@@ -554,7 +556,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
     // following path: <Home>/Documents/Native Instruments/Traktor 2.0.3/collection.nml
 
     //Let's try to detect the latest Traktor version and its collection.nml
-    QString myDocuments = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    QString myDocuments = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     QDir ni_directory(myDocuments +"/Native Instruments/");
     ni_directory.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
 
@@ -580,7 +582,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
         if (folder_name.contains("Traktor")) {
             qDebug() << "Found " << folder_name;
             QVariant sVersion = folder_name.right(5).remove(".");
-            if (sVersion.canConvert<int>()) {
+            if (sVersion.canConvert(QMetaType::Int)) {
                 installed_ts_map.insert(sVersion.toInt(), fileInfo.absoluteFilePath());
             }
         }

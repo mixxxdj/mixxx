@@ -111,7 +111,7 @@ MC4000.Deck = function (channel) {
     };
 
 
-    // The jog wheel periodically sends the number of "ticks" it has been rotated by since the last mesage
+    // The jog wheel periodically sends the number of "ticks" it has been rotated by since the last message
     // For scratching, we just tell this directly to the scratch engine, which rotates the record by specified amount.
     // Jogging works differently: the "jog" engine samples the jog value at a rate of 1/(sound_card_latency),
     // adds this jog value to an internal 25 sample buffer, and then sets the jog value to zero.

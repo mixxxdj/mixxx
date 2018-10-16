@@ -97,7 +97,7 @@ ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(
         WBaseWidget* pBaseWidget, const ConfigKey& key,
         ValueTransformer* pTransformer, const QString& propertyName)
         : ControlWidgetConnection(pBaseWidget, key, pTransformer),
-          m_propertyName(propertyName.toAscii()) {
+          m_propertyName(propertyName.toLatin1()) {
     slotControlValueChanged(m_pControl->get());
 }
 

@@ -139,7 +139,7 @@ RateControl::RateControl(QString group,
     m_pWheel = new ControlTTRotary(ConfigKey(group, "wheel"));
 
     // Scratch controller, this is an accumulator which is useful for
-    // controllers that return individiual +1 or -1s, these get added up and
+    // controllers that return individual +1 or -1s, these get added up and
     // cleared when we read
     m_pScratch2 = new ControlObject(ConfigKey(group, "scratch2"));
 

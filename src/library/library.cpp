@@ -52,7 +52,7 @@ const QString Library::kConfigGroup("[Library]");
 //static
 const ConfigKey Library::kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
 
-// This is is the name which we use to register the WTrackTableView with the
+// This is the name which we use to register the WTrackTableView with the
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 

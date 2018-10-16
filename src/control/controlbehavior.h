@@ -116,7 +116,7 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
     double m_offset;
     // ensures that the neutral position on a integer midi value
     // This value is subtracted from the Midi value at neutral position
-    // and is allways < 1
+    // and is always < 1
     double m_midiCorrection;
 };
 

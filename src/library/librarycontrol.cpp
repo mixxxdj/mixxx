@@ -61,7 +61,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     m_numSamplers.connectValueChanged(SLOT(slotNumSamplersChanged(double)));
     m_numPreviewDecks.connectValueChanged(SLOT(slotNumPreviewDecksChanged(double)));
 
-    // Controls to navigate vertically within currently focussed widget (up/down buttons)
+    // Controls to navigate vertically within currently focused widget (up/down buttons)
     m_pMoveUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveUp"));
     m_pMoveDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveDown"));
     m_pMoveVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "MoveVertical"), false);
@@ -69,7 +69,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pMoveDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveDown(double)));
     connect(m_pMoveVertical.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveVertical(double)));
 
-    // Controls to navigate vertically within currently focussed widget (up/down buttons)
+    // Controls to navigate vertically within currently focused widget (up/down buttons)
     m_pScrollUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollUp"));
     m_pScrollDown = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "ScrollDown"));
     m_pScrollVertical = std::make_unique<ControlEncoder>(ConfigKey("[Library]", "ScrollVertical"), false);
@@ -93,7 +93,7 @@ LibraryControl::LibraryControl(Library* pLibrary)
     connect(m_pMoveFocusBackward.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocusBackward(double)));
     connect(m_pMoveFocus.get(), SIGNAL(valueChanged(double)),this, SLOT(slotMoveFocus(double)));
 
-    // Control to "goto" the currently selected item in focussed widget (context dependent)
+    // Control to "goto" the currently selected item in focused widget (context dependent)
     m_pGoToItem = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "GoToItem"));
     connect(m_pGoToItem.get(), SIGNAL(valueChanged(double)), this, SLOT(slotGoToItem(double)));
 

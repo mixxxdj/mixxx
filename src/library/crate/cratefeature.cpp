@@ -43,8 +43,8 @@ CrateFeature::CrateFeature(Library* pLibrary,
                            TrackCollection* pTrackCollection,
                            UserSettingsPointer pConfig)
         : LibraryFeature(pConfig),
-          m_cratesIcon(":/images/library/ic_library_crates.png"),
-          m_lockedCrateIcon(":/images/library/ic_library_locked.png"),
+          m_cratesIcon(":/images/library/ic_library_crates.svg"),
+          m_lockedCrateIcon(":/images/library/ic_library_locked_tracklist.svg"),
           m_pTrackCollection(pTrackCollection),
           m_crateTableModel(this, pTrackCollection) {
 
@@ -659,7 +659,7 @@ void CrateFeature::slotExportPlaylist() {
 
     QString lastCrateDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastImportExportCrateDirectory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
     QString file_location = QFileDialog::getSaveFileName(
         NULL,

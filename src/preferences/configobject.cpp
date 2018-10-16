@@ -49,7 +49,7 @@ QString computeResourcePath() {
 #endif
 #ifdef __APPLE__
         else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
-            // Release configuraton
+            // Release configuration
             qResourcePath = mixxxDir.absolutePath();
         } else {
             // TODO(rryan): What should we do here?
@@ -111,6 +111,10 @@ ConfigValue::ConfigValue(const QString& stValue)
 
 ConfigValue::ConfigValue(int iValue)
     : value(QString::number(iValue)) {
+}
+
+ConfigValue::ConfigValue(double dValue)
+    : value(QString::number(dValue)) {
 }
 
 void ConfigValue::valCopy(const ConfigValue& configValue) {
@@ -266,7 +270,7 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QDomNode&
         QDomNode ctrl = node.firstChild();
 
         while (!ctrl.isNull()) {
-            if(ctrl.nodeName() == "control") {
+            if (ctrl.nodeName() == "control") {
                 QString group = XmlParse::selectNodeQString(ctrl, "group");
                 QString key = XmlParse::selectNodeQString(ctrl, "key");
                 ConfigKey k(group, key);

@@ -74,8 +74,6 @@ class AiffFile: public TagLib::RIFF::AIFF::File {
   private:
     // From the specs: 13. TEXT CHUNKS - NAME, AUTHOR, COPYRIGHT, ANNOTATION
     // "text: contains pure ASCII characters"
-    // NOTE(uklotzde): In order to be independent of the currently defined
-    // codec we use QString::fromLatin1() instead of QString::fromAscii()
     static QString decodeChunkText(const TagLib::ByteVector& chunkData) {
         return QString::fromLatin1(chunkData.data(), chunkData.size());
     }
@@ -382,7 +380,7 @@ private:
                 // Only write ID3v2 tag if it already exists
                 pID3v2Tag = pFile->ID3v2Tag(false);
             } else {
-                // Get or create  ID3v2 tag
+                // Get or create ID3v2 tag
                 pID3v2Tag = pFile->ID3v2Tag(true);
             }
             if (taglib::exportTrackMetadataIntoID3v2Tag(pID3v2Tag, trackMetadata)) {

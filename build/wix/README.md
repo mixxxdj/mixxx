@@ -22,10 +22,10 @@ Bootstrapper (bundle) command line options
 -q, -quiet, -s, -silent = silent install
 -passive = progress bar only install
 -norestart = suppress any restarts
--forcerestart = restart no matter what (I don't know why this is still  around)
+-forcerestart = restart no matter what (I don't know why this is still around)
 -promptrestart = prompt if a restart is required (default)
--layout = create a local image of the bootstrapper (i.e. download files so  they can be burned to DVD)
--l, -log = log to a specific file (default is controled by bundle developer)
+-layout = create a local image of the bootstrapper (i.e. download files so they can be burned to DVD)
+-l, -log = log to a specific file (default is controlled by bundle developer)
 -uninstall = uninstall
 -repair = repair (or install if not installed)
 -package,-update = install (default if no -uninstall or -repair)

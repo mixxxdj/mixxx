@@ -10,7 +10,7 @@
 
 class EngineEffectChain;
 
-//TODO(Be): Remove this superflous class.
+//TODO(Be): Remove this superfluous class.
 class EngineEffectRack : public EffectsRequestHandler {
   public:
     EngineEffectRack(int iRackNumber);

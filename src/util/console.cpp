@@ -25,7 +25,7 @@ Console::Console()
     // We link Mixxx win with the /subsystem:windows flag, to avoid a new
     // console popping up when the program is started by a double-click.
     // If Mixxx is started from a command line like cmd.exe the output is not
-    // shown by defaut.
+    // shown by default.
     // Here we fixing that by detecting the console case and redirect to output
     // to it if not already redirected.
 
@@ -36,7 +36,7 @@ Console::Console()
     DWORD typeStdErr = GetFileType(GetStdHandle(STD_ERROR_HANDLE));
 
     if (AttachConsole(ATTACH_PARENT_PROCESS)) {
-        // we are started from a console porcess
+        // we are started from a console process
         m_shouldFreeConsole = true;
 
         if (typeStdIn == FILE_TYPE_UNKNOWN) {

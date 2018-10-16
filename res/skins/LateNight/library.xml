@@ -1,7 +1,6 @@
 <Template>
   <WidgetGroup>
     <SizePolicy>me,i</SizePolicy>
-    <MinimumSize>1270,-</MinimumSize>
     <Layout>vertical</Layout>
     <Children>
 
@@ -44,14 +43,7 @@
                     <Collapsible>0,0</Collapsible>
                     <Children>
                       <!--Library Tree View-->
-                      <WidgetGroup>
-                        <ObjectName>SidebarContainer</ObjectName>
-                        <Size>1min,50min</Size>
-                        <Layout>vertical</Layout>
-                        <Children>
-                          <LibrarySidebar></LibrarySidebar>
-                        </Children>
-                      </WidgetGroup>
+                      <LibrarySidebar></LibrarySidebar>
                       <!--Cover Art-->
                       <CoverArt>
                         <SizePolicy>me,me</SizePolicy>
@@ -79,6 +71,14 @@
               </WidgetGroup>
             </Children>
           </Splitter>
+
+          <WidgetGroup>
+            <Size>5f,1min</Size>
+            <Connection>
+              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
         </Children>
       </WidgetGroup>

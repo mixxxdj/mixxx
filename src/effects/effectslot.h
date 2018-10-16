@@ -17,7 +17,7 @@
 
 class EffectSlot;
 class ControlProxy;
-typedef QSharedPointer<EffectSlot> EffectSlotPointer;
+
 
 class EffectSlot : public QObject {
     Q_OBJECT

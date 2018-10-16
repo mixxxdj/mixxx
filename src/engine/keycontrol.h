@@ -14,7 +14,7 @@ class KeyControl : public EngineControl {
 
     struct PitchTempoRatio {
         // this is the calculated value used by engine buffer for pitch
-        // by default is is equal to the tempoRatio set by the speed slider
+        // by default it is equal to the tempoRatio set by the speed slider
         double pitchRatio;
         // this is the value of the speed slider and speed slider
         // effecting controls at the moment of calculation

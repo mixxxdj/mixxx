@@ -7,6 +7,7 @@
 #include <QWidgetAction>
 #include <QCheckBox>
 #include <QLinkedList>
+#include <QScrollBar>
 
 #include "widget/wtracktableview.h"
 
@@ -32,6 +33,7 @@
 #include "util/time.h"
 #include "util/assert.h"
 #include "util/parented_ptr.h"
+#include "util/desktophelper.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
@@ -94,8 +96,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pBPMMenu->setTitle(tr("Change BPM"));
 
     m_pClearMetadataMenu = new QMenu(this);
-    //: Clear metadata in right click track context menu in library
-    m_pClearMetadataMenu->setTitle(tr("Clear"));
+    //: Reset metadata in right click track context menu in library
+    m_pClearMetadataMenu->setTitle(tr("Reset"));
 
     m_pCoverMenu = new WCoverArtMenu(this);
     m_pCoverMenu->setTitle(tr("Cover Art"));
@@ -106,7 +108,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotReloadCoverArt()));
 
     // Create all the context m_pMenu->actions (stuff that shows up when you
-    //right-click)
+    // right-click)
     createActions();
 
     //Connect slots and signals to make the world go 'round.
@@ -146,6 +148,8 @@ WTrackTableView::~WTrackTableView() {
     delete m_pAutoDJTopAct;
     delete m_pAutoDJReplaceAct;
     delete m_pRemoveAct;
+    delete m_pRemovePlaylistAct;
+    delete m_pRemoveCrateAct;
     delete m_pHideAct;
     delete m_pUnhideAct;
     delete m_pPropertiesAct;
@@ -260,7 +264,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         newModel = trackModel;
         saveVScrollBarPos(getTrackModel());
         //saving current vertical bar position
-        //using adress of track model as key
+        //using address of track model as key
     }
 
     // The "coverLocation" and "hash" column numbers are required very often
@@ -316,8 +320,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     setModel(model);
     setHorizontalHeader(header);
-    header->setMovable(true);
-    header->setClickable(true);
+    header->setSectionsMovable(true);
+    header->setSectionsClickable(true);
     header->setHighlightSections(true);
     header->setSortIndicatorShown(m_sorting);
     header->setDefaultAlignment(Qt::AlignLeft);
@@ -341,7 +345,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         /* If Mixxx starts the first time or the header states have been cleared
          * due to database schema evolution we gonna hide all columns that may
          * contain a potential large number of NULL values.  This will hide the
-         * key colum by default unless the user brings it to front
+         * key column by default unless the user brings it to front
          */
         if (trackModel->isColumnHiddenByDefault(i) &&
             !header->hasPersistedHeaderState()) {
@@ -413,7 +417,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     restoreVScrollBarPos(newModel);
     // restoring scrollBar position using model pointer as key
-    // scrollbar positions with respect  to different models are backed by map
+    // scrollbar positions with respect to different models are backed by map
 }
 
 void WTrackTableView::createActions() {
@@ -422,6 +426,12 @@ void WTrackTableView::createActions() {
 
     m_pRemoveAct = new QAction(tr("Remove"), this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
+
+    m_pRemovePlaylistAct = new QAction(tr("Remove from Playlist"), this);
+    connect(m_pRemovePlaylistAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
+
+    m_pRemoveCrateAct = new QAction(tr("Remove from Crate"), this);
+    connect(m_pRemoveCrateAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
     m_pHideAct = new QAction(tr("Hide from Library"), this);
     connect(m_pHideAct, SIGNAL(triggered()), this, SLOT(slotHide()));
@@ -624,35 +634,14 @@ void WTrackTableView::slotOpenInFileBrowser() {
 
     QModelIndexList indices = selectionModel()->selectedRows();
 
-    QSet<QString> sDirs;
+    QStringList locations;
     for (const QModelIndex& index : indices) {
         if (!index.isValid()) {
             continue;
         }
-
-        QDir dir;
-        QStringList splittedPath = trackModel->getTrackLocation(index).split("/");
-        do {
-            dir = QDir(splittedPath.join("/"));
-            splittedPath.removeLast();
-        } while (!dir.exists() && splittedPath.size());
-
-        // This function does not work for a non-existent directory!
-        // so it is essential that in the worst case it try opening
-        // a valid directory, in this case, 'QDir::home()'.
-        // Otherwise nothing would happen...
-        if (!dir.exists()) {
-            // it ensures a valid dir for any OS (Windows)
-            dir = QDir::home();
-        }
-
-        // not open the same dir twice
-        QString dirPath = dir.absolutePath();
-        if (!sDirs.contains(dirPath)) {
-            sDirs.insert(dirPath);
-            QDesktopServices::openUrl(QUrl::fromLocalFile(dirPath));
-        }
+        locations << trackModel->getTrackLocation(index);
     }
+    mixxx::DesktopHelper::openInFileBrowser(locations);
 }
 
 void WTrackTableView::slotHide() {
@@ -891,6 +880,20 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addMenu(m_pCrateMenu);
     }
 
+    // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
+    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        m_pRemoveAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pRemoveAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        m_pRemovePlaylistAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pRemovePlaylistAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        m_pRemoveCrateAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pRemoveCrateAct);
+    }
 
     m_pMenu->addSeparator();
     m_pMetadataMenu->clear();
@@ -1025,13 +1028,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
     m_pMenu->addMenu(m_pBPMMenu);
 
-    // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     m_pMenu->addSeparator();
-    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
-        m_pRemoveAct->setEnabled(!locked);
-        m_pMenu->addAction(m_pRemoveAct);
-    }
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
         m_pHideAct->setEnabled(!locked);
         m_pMenu->addAction(m_pHideAct);
@@ -1045,7 +1042,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addAction(m_pPurgeAct);
     }
     m_pMenu->addAction(m_pFileBrowserAct);
-    m_pMenu->addSeparator();
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
@@ -1175,8 +1171,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     // The user usually drops on the seam between two rows.
     // We take the row below the seam for reference.
     int dropRow = rowAt(event->pos().y());
-    int hight = rowHeight(dropRow);
-    QPoint pointOfRowBelowSeam(event->pos().x(), event->pos().y() + hight / 2);
+    int height = rowHeight(dropRow);
+    QPoint pointOfRowBelowSeam(event->pos().x(), event->pos().y() + height / 2);
     QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
 
     //qDebug() << "destIndex.row() is" << destIndex.row();
@@ -1736,22 +1732,16 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     }
 
     // Save the selection
-    const QList<TrackId> trackIds = getSelectedTrackIds();
+    const QList<TrackId> selectedTrackIds = getSelectedTrackIds();
+    int savedHScrollBarPos = horizontalScrollBar()->value();
 
     sortByColumn(headerSection);
 
     QItemSelectionModel* currentSelection = selectionModel();
-
-    // Find a visible column
-    int visibleColumn = 0;
-    while (isColumnHidden(visibleColumn) && visibleColumn < itemModel->columnCount()) {
-        visibleColumn++;
-    }
-
     currentSelection->reset(); // remove current selection
 
     QMap<int,int> selectedRows;
-    for (const auto& trackId : trackIds) {
+    for (const auto& trackId : selectedTrackIds) {
 
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
         // code is broken for playlists because it assumes each trackid is in
@@ -1764,7 +1754,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         QLinkedList<int> rows = trackModel->getTrackRows(trackId);
         for (int row : rows) {
             // Restore sort order by rows, so the following commands will act as expected
-            selectedRows.insert(row,0);
+            selectedRows.insert(row, 0);
         }
     }
 
@@ -1772,7 +1762,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     QMapIterator<int,int> i(selectedRows);
     while (i.hasNext()) {
         i.next();
-        QModelIndex tl = itemModel->index(i.key(), visibleColumn);
+        QModelIndex tl = itemModel->index(i.key(), 0);
         currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
 
         if (!first.isValid()) {
@@ -1780,10 +1770,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         }
     }
 
-    if (first.isValid()) {
-        scrollTo(first, QAbstractItemView::EnsureVisible);
-        //scrollTo(first, QAbstractItemView::PositionAtCenter);
-    }
+    scrollTo(first, QAbstractItemView::EnsureVisible);
+    horizontalScrollBar()->setValue(savedHScrollBarPos);
 }
 
 void WTrackTableView::slotLockBpm() {

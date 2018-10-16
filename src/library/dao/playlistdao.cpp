@@ -791,11 +791,11 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
      // Case 2: destination > source (newPos > oldPos)
      //   1) Set position=-1 where pos=source -- Give track a dummy index again.
      //   2) Decrement position where pos > source AND pos <= dest
-     //   3) Set postion=dest where pos=-1 -- Move that track from dummy pos to final destination
+     //   3) Set position=dest where pos=-1 -- Move that track from dummy pos to final destination
 
     QString queryString;
 
-    // Move moved track to  dummy position -1
+    // Move moved track to dummy position -1
     queryString = QString("UPDATE PlaylistTracks SET position=-1 "
                           "WHERE position=%1 AND "
                           "playlist_id=%2").arg(QString::number(oldPosition),

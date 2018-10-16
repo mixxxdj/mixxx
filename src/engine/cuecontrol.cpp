@@ -998,7 +998,7 @@ bool CueControl::isPlayingByPlayButton() {
 ConfigKey HotcueControl::keyForControl(int hotcue, const char* name) {
     ConfigKey key;
     key.group = m_group;
-    // Add one to hotcue so that we dont have a hotcue_0
+    // Add one to hotcue so that we don't have a hotcue_0
     key.item = QLatin1String("hotcue_") % QString::number(hotcue+1) % "_" % name;
     return key;
 }

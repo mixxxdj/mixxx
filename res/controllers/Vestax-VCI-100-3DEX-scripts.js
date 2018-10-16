@@ -28,13 +28,13 @@ else{midi.sendShortMsg(0x80,0x63,0x7F);/*loop out button led off*/}
 if(looping){
 midi.sendShortMsg(0x90,0x62,0x7F);// loop in button led on
 midi.sendShortMsg(0x90,0x63,0x7F);// loop out button led on
-midi.sendShortMsg(0x90,0x64,0x7F);// reloop/exit  button led on
+midi.sendShortMsg(0x90,0x64,0x7F);// reloop/exit button led on
 }
-else{midi.sendShortMsg(0x80,0x64,0x7F);/* reloop/exit  button led off*/}
+else{midi.sendShortMsg(0x80,0x64,0x7F);/* reloop/exit button led off*/}
 
 if(looping==0 && startposition != -1 && endposition != -1)
 {
-midi.sendShortMsg(0x80,0x64,0x7F);// reloop/exit  button led off
+midi.sendShortMsg(0x80,0x64,0x7F);// reloop/exit button led off
 }
 
 }
@@ -82,7 +82,7 @@ midi.sendShortMsg(0x90,0x68,0x7F);// deck+ button led on
 }
 
 
-// loop otions start
+// loop options start
 VestaxVCI1003DEX.loopin = function (channel, control, value, status, group) {if(value==0x7F)   {engine.setValue(active_deck,"loop_in",1);}}
 
 VestaxVCI1003DEX.loopout = function (channel, control, value, status, group) {if(value==0x7F)   {engine.setValue(active_deck,"loop_out",1);}}
@@ -92,7 +92,7 @@ VestaxVCI1003DEX.reloop_exit = function (channel, control, value, status, group)
 VestaxVCI1003DEX.loopMinus = function (channel, control, value, status, group) {if (value == 0x7F){engine.setValue(active_deck,"loop_halve",1);}}
 VestaxVCI1003DEX.loopPlus = function (channel, control, value, status, group) {if (value == 0x7F){engine.setValue(active_deck,"loop_double",1);}}
 
-// loop otions end
+// loop options end
 
 // deck specific buttons start
 
@@ -419,7 +419,7 @@ VestaxVCI1003DEX.sampler3play = function (channel, control, value, status, group
 
 //sampler play buttons end
 
-//middle position of the knobs ot an extra midi signal.
+//middle position of the knobs to an extra midi signal.
 VestaxVCI1003DEX.pregainreset1 = function (channel, control, value, status, group) {engine.setValue("[Channel1]","pregain",1.0);}
 VestaxVCI1003DEX.filterHighreset1 = function (channel, control, value, status, group) {engine.setValue("[Channel1]","filterHigh",1.0);}
 VestaxVCI1003DEX.filterMidreset1 = function (channel, control, value, status, group) {engine.setValue("[Channel1]","filterMid",1.0);}
@@ -437,7 +437,7 @@ active_deck_number=1
 midi.sendShortMsg(0x90,0x67,0x7F);// deck- button led on
 midi.sendShortMsg(0x80,0x68,0x7F);// deck+ button led off
 
-// TODO SOFTTAKEOVER does not work(mixxbug) , AUTOLOOP LEDs, LOOP BAHAVIOUR with keylock on(mixxxbug) , cue shuffle mode,loopmove mode?
+// TODO SOFTTAKEOVER does not work(mixxbug) , AUTOLOOP LEDs, LOOP BEHAVIOUR with keylock on(mixxxbug) , cue shuffle mode,loopmove mode?
 engine.softTakeover("[Channel1]", "rate", true); // wtf does not work
 
 currentCue1=1;
@@ -473,10 +473,10 @@ midi.sendShortMsg(0x80,0x45,0x7F);// right reverse mode button led off
 
 midi.sendShortMsg(0x80,0x62,0x7F);// loop in button led off
 midi.sendShortMsg(0x80,0x63,0x7F);// loop out button led off
-midi.sendShortMsg(0x80,0x64,0x7F);// reloop/exit  button led off
+midi.sendShortMsg(0x80,0x64,0x7F);// reloop/exit button led off
 
 midi.sendShortMsg(0x80,0x46,0x7F);// left sync button led off
-midi.sendShortMsg(0x80,0x47,0x7F);// rigth sync button led off
+midi.sendShortMsg(0x80,0x47,0x7F);// right sync button led off
 
 /*
 
@@ -599,7 +599,7 @@ midi.sendShortMsg(0x80,0x68,0x7F);// deck+ button led off
 midi.sendShortMsg(0x90,0x68,0x7F);// deck+ button led on
 midi.sendShortMsg(0x80,0x46,0x7F);// left sync button led off
 midi.sendShortMsg(0x90,0x46,0x7F);// left sync button led on
-midi.sendShortMsg(0x80,0x47,0x7F);// rigth sync button led off
+midi.sendShortMsg(0x80,0x47,0x7F);// right sync button led off
 midi.sendShortMsg(0x90,0x47,0x7F);// right sync button led on
 */
 }

@@ -58,24 +58,18 @@ Description:
                     <Layout>vertical</Layout>
                     <SizePolicy>me,min</SizePolicy>
                     <Children>
-                      <WidgetGroup><!-- Search, Cover button, Maxi button -->
+                      <WidgetGroup><!-- Search, Maxi button -->
                         <Layout>horizontal</Layout>
                         <SizePolicy>me,min</SizePolicy>
                         <Children>
                           <SearchBox></SearchBox>
-                          <Template src="skin:button_2state_persist.xml">
-                            <SetVariable name="ObjectName">LibCoverArtButton</SetVariable>
-                            <!-- Icon size is 48x48px (24x24px), margin: left 2px, bottom 4px -->
-                            <SetVariable name="Size">26f,28f</SetVariable>
-                            <SetVariable name="ConfigKey">[Library],show_coverart</SetVariable>
-                          </Template>
                           <Template src="skin:button_2state_persist.xml">
                             <SetVariable name="ObjectName">LibMiniMaxiButton</SetVariable>
                             <SetVariable name="Size">19f,28f</SetVariable>
                             <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
                           </Template>
                         </Children>
-                      </WidgetGroup><!-- /Search, Cover button, Maxi button -->
+                      </WidgetGroup><!-- /Search, Maxi button -->
 
                       <!-- Tree View -->
                       <LibrarySidebar></LibrarySidebar>

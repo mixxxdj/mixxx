@@ -291,7 +291,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         // from s_letterToMajorKey. Upper-case means major, lower-case means
         // minor. Then apply the sharps or flats to the key.
         QChar letter = keyMatcher.cap(1).at(0);
-        int letterIndex = letter.toLower().toAscii() - 'a';
+        int letterIndex = letter.toLower().toLatin1() - 'a';
         bool major = letter.isUpper();
 
         // Now apply sharps and flats to the letter key.
@@ -477,7 +477,7 @@ int KeyUtils::shortestStepsToCompatibleKey(
     bool major = keyIsMajor(key);
     bool targetMajor = keyIsMajor(target_key);
 
-    // If we have a mode missmatch, matching to a the Relative mode
+    // If we have a mode mismatch, matching to a the Relative mode
     // will produce a pitch up to +-6 semitones, which may sounds
     // too much chipmunked than expected.
     // Since the the relative major/minor key shares the same notes

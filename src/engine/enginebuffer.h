@@ -96,7 +96,7 @@ class EngineBuffer : public EngineObject {
                            // if Quantize is enabled.
         SEEK_EXACT_PHASE = SEEK_PHASE | SEEK_EXACT, 
 						   // This is an artificial state that happens if
-                           // an exact seek and a phase seek are sheduled
+                           // an exact seek and a phase seek are scheduled
                            // at the same time.
         SEEK_STANDARD = 0x04, // This seeks to the exact position if Quantize is
                               // disabled or performs an in-phase seek if it is enabled.
@@ -305,7 +305,7 @@ class EngineBuffer : public EngineObject {
     // Copy of file sample rate
     int m_trackSampleRateOld;
 
-    // Mutex controlling weather the process function is in pause mode. This happens
+    // Mutex controlling whether the process function is in pause mode. This happens
     // during seek and loading of a new track
     QMutex m_pause;
     // Used in update of playpos slider

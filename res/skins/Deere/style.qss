@@ -34,6 +34,7 @@
 #DeckTextRow {
   border-top: 0px solid #222;
   border-bottom: 0px solid #222;
+  padding-left: 3px;
 }
 
 #UpperTextRow {
@@ -66,7 +67,7 @@
   border-top: 1px solid #222;
   background-color: transparent;
   margin: 0;
-  padding: 0 3px 0 0;
+  padding: 0 3px 0 3px;
 }
 
 #ControlsRow {
@@ -82,17 +83,13 @@
 /* Rounded corners to split things up */
 
 #Deck1, #Deck3 {
-  border-bottom-right-radius:5px;
-  border-top-right-radius:5px;
-  border-width: 0px 1.5px 3px 3px;
+  border-width: 0px 2.5px 5px 0px;
   border-style: solid;
   border-color: #222;
 }
 
 #Deck2, #Deck4 {
-  border-bottom-left-radius:5px;
-  border-top-left-radius:5px;
-  border-width: 0px 3px 3px 1.5px;
+  border-width: 0px 0px 5px 2.5px;
   border-style: solid;
   border-color: #222;
 }
@@ -192,25 +189,31 @@ QTreeView::branch:selected,
 
 /* checkbox in library "Played" column */
 QTableView::indicator {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
+  margin: 0px;
+  padding: 0px;
+  border: 1px solid transparent;
 }
 
-QTableView::indicator:checked {
-  background: url(skin:/image/style_checkbox_checked.png);
+QTableView::indicator:checked,
+QTableView::indicator:checked:selected {
+  background: url(skin:/icon/ic_library_checkmark.svg);
+  border: 1px solid #ff6600;
 }
 
 QTableView::indicator:unchecked {
-  background: url(skin:/image/style_checkbox_unchecked.png);
+  background: none;
+  border: 1px solid rgba(151,151,151,128);
 }
 
 /* BPM lock icon in the library "BPM" column. */
 #LibraryBPMButton::indicator:checked {
-  image: url(:/images/library/ic_library_checked.png);
+  image: url(skin:/icon/ic_library_bpm_locked.svg);
 }
 
 #LibraryBPMButton::indicator:unchecked {
-  image: url(:/images/library/ic_library_unchecked.png);
+  image: url(skin:/icon/ic_library_bpm_unlocked.svg);
 }
 
 #LibraryBPMSpinBox {
@@ -233,17 +236,15 @@ QTableView::indicator:unchecked {
 
 /* button in library "Preview" column */
 QPushButton#LibraryPreviewButton {
-  width: 23px;
-  height: 12px;
-  border: none;
-  border-radius: 2px;
   background: transparent;
   margin: 0px;
   padding: 0px;
+  border: 1px solid transparent;
+  border-radius: 2px;
 }
 
 QPushButton#LibraryPreviewButton:!checked {
-  image: url(skin:/image/style_library_preview_play.png);
+  image: url(skin:/icon/ic_library_preview_play.svg);
 }
 
 QPushButton#LibraryPreviewButton:!checked:hover {
@@ -252,7 +253,7 @@ QPushButton#LibraryPreviewButton:!checked:hover {
 }
 
 QPushButton#LibraryPreviewButton:checked {
-  image: url(skin:/image/style_library_preview_pause.png);
+  image: url(skin:/icon/ic_library_preview_pause.svg);
   background-color: #0f0f0f;
   border: 1px solid #006596;
 }
@@ -318,11 +319,9 @@ WSearchLineEdit:focus {
 }
 
 /* library preview deck */
-#PreviewDeckContainer {
-  margin: 4px 0px 0px 0px;
+#PreviewDeck {
   background-color: #333333;
-  border: 1px solid #1A1A1A;
-  qproperty-layoutSpacing: 2;
+  margin: 0px 0px 4px 0px;
 }
 
 #PreviewDeckTextRow WLabel {
@@ -333,13 +332,21 @@ WSearchLineEdit:focus {
 }
 
 #PreviewDeckVisualRow {
-  padding: 2px;
+  qproperty-layoutSpacing: 2;
   border-top: 1px solid #1A1A1A;
 }
 
 #PreviewDeckEjectButton[value="0"]:!hover {
   background: none;
   border: none;
+}
+
+#PreviewDeckVUContainer {
+  border: 1px solid #333;
+  border-left: 0px;
+  padding: 0px;
+  margin: 0px;
+  qproperty-layoutSpacing: 0;
 }
 
 /* Spacing between treeview and preview deck/search bar */
@@ -437,6 +444,10 @@ WLibrary QSpinBox {
   max-height: 20px;
   min-width: 40px;
   max-width: 40px;
+}
+
+#DlgAutoDJ QLabel {
+  font: 10px;
 }
 
 WLibrary QSpinBox:editable {
@@ -1050,15 +1061,6 @@ WEffectSelector {
   border: none;
   qproperty-alignment: 'AlignHCenter';
   font: 10px;
-  margin-top: -2px;
-}
-
-#SmallKnobLabel {
-  background-color: none;
-  border: none;
-  qproperty-alignment: 'AlignHCenter';
-  font: 9px;
-  margin-top: -2px;
 }
 
 #EffectUnitNameRow {
@@ -1141,7 +1143,7 @@ WNumberRate {
 #Mixer {
   qproperty-layoutAlignment: 'AlignTop';
   background-color: #333;
-  margin: 0px 1.5px 3px 1.5px;
+  margin: 0px 2.5px 5px 2.5px;
   padding: 0px 0px 3px 0px;
 }
 
@@ -1184,7 +1186,7 @@ WNumberRate {
   /* background-color: #911661; */
 }
 
-/* pad 4 deck mixer colums left/right
+/* pad 4 deck mixer columns left/right
 to avoid EQ kill buttons from shifting center of rest of column */
 #4DecksMixerCol2ContainerRight {
   qproperty-layoutAlignment: 'AlignLeft';
@@ -1269,7 +1271,7 @@ WStarRating {
   background-color: #333333;
   qproperty-layoutSpacing: 3;
   padding-left: 2px;
-  border-bottom: 2px solid #222222;
+  border-bottom: 4px solid #222222;
 }
 
 #MicLabelContainer,
@@ -1330,7 +1332,7 @@ WStarRating {
 
 #EffectUnitsRow {
   border: 1px solid #222222;
-  border-width: 0px 0px 3px 0px;
+  border-width: 0px 0px 5px 0px;
 }
 
 #EffectUnitNoParameters {
@@ -1338,7 +1340,7 @@ WStarRating {
 }
 
 #EffectUnitEffectsNoParameters {
-  qproperty-layoutSpacing: 30;
+  qproperty-layoutSpacing: 28;
 }
 
 #EffectUnitEffects {
@@ -1355,7 +1357,7 @@ WStarRating {
 
 #EffectUnitControls {
   padding: 2px;
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   qproperty-layoutSpacing: 2;
 }
 
@@ -1480,6 +1482,24 @@ WPushButton[value="2"]:hover {
 WRecordingDuration {
   font-weight: bold;
 }
+
+/* The effect unit mix mode button toggles between
+two different modes that are not "on" or "off", so
+do not highlight either state. */
+#EffectUnitMixModeButton {
+  margin: 1px 4px;
+  border-radius: 2px;
+}
+
+#EffectUnitMixModeButton[value="0"]:hover,
+#EffectUnitMixModeButton[value="1"]:hover {
+    background-color: #5F5F5F;
+}
+
+#EffectUnitMixModeButton[value="1"] {
+    background-color: #4B4B4B;
+}
+
 
 /* Special case "orientation" controls
   0 -- left

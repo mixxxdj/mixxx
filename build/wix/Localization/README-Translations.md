@@ -7,7 +7,7 @@ Adding strings and Updating source pot
 ======================================
 
 * Add strings to mixxx_en-us.wxl
-* Update tranlation source .pot file
+* Update translation source .pot file
 `build/wix/Localization$ /path/to/wxl2pot.py -l Language mixxx_en-us.wxl po/mixxx.pot`
 * push new strings to transifex
 ```

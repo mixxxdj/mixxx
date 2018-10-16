@@ -29,6 +29,7 @@ SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
                      << "dateadded"
                      << "datetime_added"
                      << "date_added";
+    m_ignoredColumns << "crate";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
     m_fieldToSqlColumns["album_artist"] << "album_artist";
@@ -115,6 +116,18 @@ QString SearchQueryParser::getTextArgument(QString argument,
 void SearchQueryParser::parseTokens(QStringList tokens,
                                     QStringList searchColumns,
                                     AndNode* pQuery) const {
+    // we need to create a filtered columns list that are handled differently
+    auto queryColumns = QStringList();
+    queryColumns.reserve(searchColumns.count());
+
+    for (const auto& column: qAsConst(searchColumns)) {
+        if (m_ignoredColumns.contains(column)) {
+            continue;
+        }
+        queryColumns << column;
+    }
+
+
     while (tokens.size() > 0) {
         QString token = tokens.takeFirst().trimmed();
         if (token.length() == 0) {
@@ -199,8 +212,22 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             }
             // Don't trigger on a lone minus sign.
             if (!token.isEmpty()) {
-                pNode = std::make_unique<TextFilterNode>(
-                                m_pTrackCollection->database(), searchColumns, token);
+                // For untagged strings we search the track fields as well
+                // as the crate names the track is in. This allows the user
+                // to use crates like tags
+                if (searchColumns.contains("crate")) {
+                    std::unique_ptr<OrNode> gNode = std::make_unique<OrNode>();
+
+                    gNode->addNode(std::make_unique<CrateFilterNode>(
+                                    &m_pTrackCollection->crates(), token));
+                    gNode->addNode(std::make_unique<TextFilterNode>(
+                                    m_pTrackCollection->database(), queryColumns, token));
+
+                    pNode = std::move(gNode);
+                } else {
+                    pNode = std::make_unique<TextFilterNode>(
+                             m_pTrackCollection->database(), queryColumns, token);
+                }
             }
         }
         if (pNode) {

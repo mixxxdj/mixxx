@@ -290,11 +290,11 @@ QDomElement EffectSlot::toXml(QDomDocument* doc) const {
     XmlParse::addElement(*doc, effectElement,
                          EffectXml::EffectMetaParameter,
                          QString::number(m_pControlMetaParameter->get()));
-    EffectManifest manifest = m_pEffect->getManifest();
+    EffectManifestPointer pManifest = m_pEffect->getManifest();
     XmlParse::addElement(*doc, effectElement,
-                         EffectXml::EffectId, manifest.id());
+                         EffectXml::EffectId, pManifest->id());
     XmlParse::addElement(*doc, effectElement,
-                         EffectXml::EffectVersion, manifest.version());
+                         EffectXml::EffectVersion, pManifest->version());
 
     QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
 
@@ -303,9 +303,13 @@ QDomElement EffectSlot::toXml(QDomDocument* doc) const {
         if (!parameterElement.hasChildNodes()) {
             continue;
         }
+        EffectManifestParameterPointer manifest = pParameter->getManifest();
+        if (!manifest) {
+            continue;
+        }
         XmlParse::addElement(*doc, parameterElement,
                              EffectXml::ParameterId,
-                             pParameter->getManifest().id());
+                             manifest->id());
         parametersElement.appendChild(parameterElement);
     }
     for (const auto& pParameter : m_buttonParameters) {
@@ -313,9 +317,13 @@ QDomElement EffectSlot::toXml(QDomDocument* doc) const {
         if (!parameterElement.hasChildNodes()) {
             continue;
         }
+        EffectManifestParameterPointer manifest = pParameter->getManifest();
+        if (!manifest) {
+            continue;
+        }
         XmlParse::addElement(*doc, parameterElement,
                              EffectXml::ParameterId,
-                             pParameter->getManifest().id());
+                             pParameter->getManifest()->id());
         parametersElement.appendChild(parameterElement);
     }
 
@@ -335,27 +343,32 @@ void EffectSlot::loadEffectSlotFromXml(const QDomElement& effectElement) {
 
     QDomElement effectIdElement = XmlParse::selectElement(effectElement,
                                                           EffectXml::EffectId);
-    if (m_pEffect->getManifest().id() != effectIdElement.text()) {
+    if (m_pEffect->getManifest()->id() != effectIdElement.text()) {
         qWarning() << "EffectSlot::loadEffectSlotFromXml"
                    << "effect ID in XML does not match presently loaded effect, ignoring.";
         return;
     }
 
-    m_pControlMetaParameter->set(XmlParse::selectNodeDouble(effectElement,
-                                                            EffectXml::EffectMetaParameter));
-
-    QDomElement parametersElement = XmlParse::selectElement(effectElement,
-                                                            EffectXml::ParametersRoot);
+    m_pControlMetaParameter->set(XmlParse::selectNodeDouble(
+            effectElement, EffectXml::EffectMetaParameter));
+    QDomElement parametersElement = XmlParse::selectElement(
+            effectElement, EffectXml::ParametersRoot);
     if (!parametersElement.hasChildNodes()) {
         return;
     }
 
     QMap<QString, EffectParameterSlotBasePointer> parametersById;
     for (const auto& pParameter : m_parameters) {
-        parametersById.insert(pParameter->getManifest().id(), pParameter);
+        EffectManifestParameterPointer manifest = pParameter->getManifest();
+        if (manifest) {
+            parametersById.insert(manifest->id(), pParameter);
+        }
     }
     for (const auto& pParameter : m_buttonParameters) {
-        parametersById.insert(pParameter->getManifest().id(), pParameter);
+        EffectManifestParameterPointer manifest = pParameter->getManifest();
+        if (manifest) {
+            parametersById.insert(manifest->id(), pParameter);
+        }
     }
 
     QDomNodeList parametersNodeList = parametersElement.childNodes();

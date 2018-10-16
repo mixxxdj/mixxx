@@ -282,6 +282,9 @@ class MediaFoundation(Feature):
             raise Exception('Did not find Mfreadwrite.lib - exiting!')
         build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
 
+    def sources(self, build):
+        return ['sources/soundsourcemediafoundation.cpp']
+
 
 class IPod(Feature):
     def description(self):
@@ -489,23 +492,24 @@ class FAAD(Feature):
         if not self.enabled(build):
             return
 
+        build.env.Append(CPPDEFINES='__FAAD__')
         have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
-        have_mp4v2 = conf.CheckLib(['mp4v2', 'libmp4v2'], autoadd=False)
-        have_mp4_h = conf.CheckHeader('mp4.h')
-        have_mp4 = conf.CheckLib('mp4', autoadd=False)
-
-        # Either mp4 or mp4v2 works
-        have_mp4 = (have_mp4v2_h or have_mp4_h) and (have_mp4v2 or have_mp4)
+        if have_mp4v2_h:
+            build.env.Append(CPPDEFINES = '__MP4V2__')
+        have_mp4 = conf.CheckLib(['mp4v2', 'libmp4v2', 'mp4'])
 
         if not have_mp4:
             raise Exception(
                 'Could not find libmp4, libmp4v2 or the libmp4v2 development headers.')
 
-        have_faad = conf.CheckLib(['faad', 'libfaad'], autoadd=False)
+        have_faad = conf.CheckLib(['faad', 'libfaad'])
 
         if not have_faad:
             raise Exception(
                 'Could not find libfaad or the libfaad development headers.')
+
+    def sources(self, build):
+        return ['sources/soundsourcem4a.cpp']
 
 
 class WavPack(Feature):
@@ -525,10 +529,14 @@ class WavPack(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        have_wv = conf.CheckLib(['wavpack', 'wv'], autoadd=True)
-        if not have_wv:
+
+        build.env.Append(CPPDEFINES='__WV__')
+        if not conf.CheckLib(['wavpack', 'wv']):
             raise Exception(
                 'Could not find libwavpack, libwv or its development headers.')
+
+    def sources(self, build):
+        return ['sources/soundsourcewv.cpp']
 
 
 class ColorDiagnostics(Feature):
@@ -610,10 +618,11 @@ class PerfTools(Feature):
         if not self.enabled(build):
             return
 
-        build.env.Append(LIBS="tcmalloc")
+        if not conf.CheckLib('tcmalloc'):
+            raise Exception('Could not find tcmalloc. Please install it or compile Mixxx with perftools=0.')
 
-        if int(build.flags['perftools_profiler']):
-            build.env.Append(LIBS="profiler")
+        if int(build.flags['perftools_profiler']) and not conf.CheckLib('profiler'):
+            raise Exception('Could not find the google-perftools profiler. Please install it or compile Mixxx with perftools_profiler=0.')
 
 
 class AsmLib(Feature):
@@ -680,29 +689,6 @@ class BuildTime(Feature):
             build.env.Append(CPPDEFINES='DISABLE_BUILDTIME')
 
 
-class QDebug(Feature):
-    def description(self):
-        return "Debugging message output"
-
-    def enabled(self, build):
-        build.flags['qdebug'] = util.get_flags(build.env, 'qdebug', 1)
-        if build.platform_is_windows:
-            if build.build_is_debug:
-                # Turn general debugging flag on too if debug build is specified
-                build.flags['qdebug'] = 1
-        if int(build.flags['qdebug']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add(
-            'qdebug', 'Set to 1 to enable verbose console debug output.', 1)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            build.env.Append(CPPDEFINES='QT_NO_DEBUG_OUTPUT')
-
-
 class Verbose(Feature):
     def description(self):
         return "Verbose compilation output"
@@ -725,13 +711,6 @@ class Verbose(Feature):
             build.env['RANLIBCOMSTR'] = '[RANLIB] $TARGET'
             build.env['LDMODULECOMSTR'] = '[LD] $TARGET'
             build.env['LINKCOMSTR'] = '[LD] $TARGET'
-
-            build.env['QT4_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
-            build.env['QT4_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
-            build.env['QT4_QRCCOMSTR'] = '[QRC] $SOURCE'
-            build.env['QT4_UICCOMSTR'] = '[UIC4] $SOURCE'
-            build.env['QT4_MOCFROMHCOMSTR'] = '[MOC] $SOURCE'
-            build.env['QT4_MOCFROMCXXCOMSTR'] = '[MOC] $SOURCE'
 
             build.env['QT5_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
             build.env['QT5_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
@@ -769,8 +748,9 @@ class TestSuite(Feature):
         return "Mixxx Test Suite"
 
     def enabled(self, build):
-        build.flags['test'] = util.get_flags(build.env, 'test', 0) or \
-            'test' in SCons.BUILD_TARGETS
+        build.flags['test'] = (util.get_flags(build.env, 'test', 0) or
+                               'test' in SCons.COMMAND_LINE_TARGETS or
+                               'mixxx-test' in SCons.COMMAND_LINE_TARGETS)
         if int(build.flags['test']):
             return True
         return False
@@ -1131,7 +1111,7 @@ class Optimize(Feature):
                 optimize_level = Optimize.LEVEL_PORTABLE
 
             # Common flags to all optimizations.
-            # -ffast-math will pevent a performance penalty by denormals
+            # -ffast-math will prevent a performance penalty by denormals
             # (floating point values almost Zero are treated as Zero)
             # unfortunately that work only on 64 bit CPUs or with sse2 enabled
 
@@ -1161,6 +1141,9 @@ class Optimize(Feature):
                         # but are not supported on arm builds
                         build.env.Append(CCFLAGS='-msse2')
                         build.env.Append(CCFLAGS='-mfpmath=sse')
+                    # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
+                    # we require macOS 10.12.
+                    # https://stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
                 elif build.architecture_is_arm:
                     self.status = self.build_status(optimize_level)
                     build.env.Append(CCFLAGS='-mfloat-abi=hard')
@@ -1185,11 +1168,11 @@ class Optimize(Feature):
                 # http://en.chys.info/2010/04/what-exactly-marchnative-means/
                 # Note: requires gcc >= 4.2.0
                 # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
-                # are set automaticaly
+                # are set automatically
                 if build.architecture_is_x86 and not build.machine_is_64bit:
                     # For 32 bit builds using gcc < 5.0, the mfpmath=sse is
                     # not set by default (not supported on arm builds)
-                    # If -msse is not implicite set, it falls back to mfpmath=387
+                    # If -msse is not implicitly set, it falls back to mfpmath=387
                     # and a compiler warning is issued (tested with gcc 4.8.4)
                     build.env.Append(CCFLAGS='-mfpmath=sse')
                 elif build.architecture_is_arm:
@@ -1270,6 +1253,41 @@ class LocaleCompare(Feature):
             raise Exception('Missing libsqlite3 -- exiting!')
         build.env.Append(CPPDEFINES='__SQLITE3__')
 
+class Lilv(Feature):
+    def description(self):
+        return "Lilv library for LV2 support"
+
+    def enabled(self, build):
+        build.flags['lilv'] = util.get_flags(build.env, 'lilv', 0)
+        if int(build.flags['lilv']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        default = 1
+        # We do not have lilv set up in the Windows build server environment (yet)
+        if build.platform_is_windows:
+            default = 0
+        vars.Add('lilv', 'Set to 1 to enable Lilv library for LV2 support', default)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        if build.platform_is_linux or build.platform_is_osx \
+                or build.platform_is_bsd:
+            # Check for liblilv-0
+            if not conf.CheckLib('lilv-0'):
+                raise Exception('Missing liblilv-0 (needs at least 0.5)')
+
+            build.env.Append(CPPDEFINES='__LILV__')
+
+    def sources(self, build):
+        return ['effects/lv2/lv2backend.cpp',
+                'effects/lv2/lv2effectprocessor.cpp',
+                'effects/lv2/lv2manifest.cpp',
+                'preferences/dialog/dlgpreflv2.cpp']
+
 class Battery(Feature):
     def description(self):
         return "Battery meter support."
@@ -1319,10 +1337,6 @@ class QtKeychain(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
+        if not conf.CheckLib('qt5keychain'):
+            raise Exception("Could not find qt5keychain.")
         build.env.Append(CPPDEFINES='__QTKEYCHAIN__')
-
-    def sources(self, build):
-        return []
-
-    def depends(self, build):
-        return [depends.QtKeychain]

@@ -100,7 +100,7 @@ QVariant RhythmboxFeature::title() {
 }
 
 QIcon RhythmboxFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_rhythmbox.png");
+    return QIcon(":/images/library/ic_library_rhythmbox.svg");
 }
 
 TreeItemModel* RhythmboxFeature::getChildModel() {
@@ -112,7 +112,7 @@ void RhythmboxFeature::activate() {
 
     if (!m_isActivated) {
         m_isActivated =  true;
-        // Ususally the maximum number of threads
+        // Usually the maximum number of threads
         // is > 2 depending on the CPU cores
         // Unfortunately, within VirtualBox
         // the maximum number of allowed threads
@@ -125,7 +125,7 @@ void RhythmboxFeature::activate() {
         m_track_watcher.setFuture(m_track_future);
         m_title = "(loading) Rhythmbox";
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
-        emit (featureIsLoading(this, true));
+        emit(featureIsLoading(this, true));
     }
 
     emit(showTrackModel(m_pRhythmboxTrackModel));

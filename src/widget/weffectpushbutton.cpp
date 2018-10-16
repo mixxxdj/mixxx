@@ -101,7 +101,12 @@ void WEffectPushButton::parameterUpdated() {
     }
 
     m_pButtonMenu->clear();
-    const QList<QPair<QString, double> >& options = m_pEffectParameterSlot->getManifest().getSteps();
+    EffectManifestParameterPointer pManifest = m_pEffectParameterSlot->getManifest();
+    QList<QPair<QString, double> > options;
+    if (pManifest) {
+        options = pManifest->getSteps();
+    }
+
     // qDebug() << " HERE IS THE OPTIONS SIZE: " << options.size() << m_pEffectParameterSlot->getManifest().name();
     m_iNoStates = options.size();
     if (m_iNoStates == 0) {

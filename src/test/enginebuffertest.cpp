@@ -12,7 +12,7 @@
 #include "test/mixxxtest.h"
 #include "test/signalpathtest.h"
 
-// Incase any of the test in this file fail. You can use the audioplot.py tool
+// In case any of the test in this file fail. You can use the audioplot.py tool
 // in the scripts folder to visually compare the results of the enginebuffer
 // with the golden test data.
 
@@ -125,7 +125,7 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
 }
 
 TEST_F(EngineBufferTest, ScalerNoTransport) {
-    // normaly use the Vinyl scaler
+    // normally use the Vinyl scaler
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
