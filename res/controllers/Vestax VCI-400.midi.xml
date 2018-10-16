@@ -59,22 +59,22 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>reverseroll</key>
+                <key>VestaxVCI400.censorButton</key>
                 <description>MIDI Learned from 36 messages.</description>
                 <status>0x94</status>
                 <midino>0x26</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>reverseroll</key>
+                <key>VestaxVCI400.censorButton</key>
                 <description>MIDI Learned from 54 messages.</description>
                 <status>0x95</status>
                 <midino>0x26</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -146,12 +146,12 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>reverseroll</key>
+                <key>VestaxVCI400.censorButton</key>
                 <description>MIDI Learned from 42 messages.</description>
                 <status>0x94</status>
                 <midino>0x23</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -165,32 +165,32 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reverseroll</key>
+                <key>VestaxVCI400.censorButton</key>
                 <description>MIDI Learned from 48 messages.</description>
                 <status>0x95</status>
                 <midino>0x23</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>reverseroll</key>
+                <key>VestaxVCI400.censorButton</key>
                 <description>MIDI Learned from 6 messages.</description>
                 <status>0x94</status>
                 <midino>0x22</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>reverseroll</key>
+                <key>VestaxVCI400.censorButton</key>
                 <description>MIDI Learned from 30 messages.</description>
                 <status>0x95</status>
                 <midino>0x22</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -245,12 +245,12 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>reverseroll</key>
+                <key>VestaxVCI400.censorButton</key>
                 <description>MIDI Learned from 24 messages.</description>
                 <status>0x94</status>
                 <midino>0x1F</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -275,22 +275,22 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reverseroll</key>
+                <key>VestaxVCI400.censorButton</key>
                 <description>MIDI Learned from 24 messages.</description>
                 <status>0x95</status>
                 <midino>0x1F</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>reverseroll</key>
+                <key>VestaxVCI400.censorButton</key>
                 <description>MIDI Learned from 6 messages.</description>
                 <status>0x94</status>
                 <midino>0x1E</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -315,12 +315,12 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>reverseroll</key>
+                <key>VestaxVCI400.censorButton</key>
                 <description>MIDI Learned from 82 messages.</description>
                 <status>0x95</status>
                 <midino>0x1E</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -405,12 +405,12 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>reverseroll</key>
+                <key>VestaxVCI400.censorButton</key>
                 <description>MIDI Learned from 12 messages.</description>
                 <status>0x94</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -444,12 +444,12 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reverseroll</key>
+                <key>VestaxVCI400.censorButton</key>
                 <description>MIDI Learned from 18 messages.</description>
                 <status>0x95</status>
                 <midino>0x1B</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
