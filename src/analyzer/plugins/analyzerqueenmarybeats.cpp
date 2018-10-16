@@ -18,8 +18,8 @@ bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
     m_detectionResults.clear();
     m_iSampleRate = samplerate;
 
-    // These are the preferred block/step sizes from the BeatTrack VAMP plugin.
-    size_t blockSize = 1024;
+    // These are the preferred window/step sizes from the BeatTrack VAMP plugin.
+    size_t windowSize = 1024;
     m_stepSize = 512;
 
     // These are the defaults for the VAMP beat tracker plugin we used in Mixxx
@@ -27,7 +27,7 @@ bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
     DFConfig config;
     config.DFType = DF_SPECDIFF;
     config.stepSize = m_stepSize;
-    config.frameLength = blockSize;
+    config.frameLength = windowSize;
     config.dbRise = 3;
     config.adaptiveWhitening = 0;
     config.whiteningRelaxCoeff = -1;
@@ -35,10 +35,10 @@ bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
     m_pDetectionFunction = std::make_unique<DetectionFunction>(config);
 
     m_helper.initialize(
-        blockSize, m_stepSize, [this](double* pBlock, size_t) {
+        windowSize, m_stepSize, [this](double* pWindow, size_t) {
             // TODO(rryan) reserve?
             m_detectionResults.push_back(
-                m_pDetectionFunction->processTimeDomain(pBlock));
+                m_pDetectionFunction->processTimeDomain(pWindow));
             return true;
         });
     return true;

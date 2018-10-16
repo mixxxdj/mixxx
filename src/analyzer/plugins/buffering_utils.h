@@ -9,18 +9,18 @@ namespace mixxx {
 // overlapping windows as is typically necessary when taking a short-time
 // Fourier transform.
 class DownmixAndOverlapHelper {
-    typedef std::function<bool(double* pBuffer, size_t frames)> BlockReadyCallback;
+    typedef std::function<bool(double* pBuffer, size_t frames)> WindowReadyCallback;
   public:
     DownmixAndOverlapHelper() = default;
 
-    bool initialize(size_t blockSize, size_t stepSize, BlockReadyCallback callback) {
-        m_buffer.resize(blockSize);
+    bool initialize(size_t windowSize, size_t stepSize, WindowReadyCallback callback) {
+        m_buffer.resize(windowSize);
         m_callback = callback;
-        m_blockSize = blockSize;
+        m_windowSize = windowSize;
         m_stepSize = stepSize;
         m_bufferWritePosition = 0;
-        return m_blockSize > 0 && m_stepSize > 0 &&
-                m_stepSize <= m_blockSize && callback;
+        return m_windowSize > 0 && m_stepSize > 0 &&
+                m_stepSize <= m_windowSize && callback;
     }
 
     bool processStereoSamples(const CSAMPLE* pInput, size_t inputStereoSamples) {
@@ -30,7 +30,7 @@ class DownmixAndOverlapHelper {
 
         while (inRead < numInputFrames) {
             size_t writeAvailable = math_min(numInputFrames,
-                                             m_blockSize - m_bufferWritePosition);
+                                             m_windowSize - m_bufferWritePosition);
 
             for (size_t i = 0; i < writeAvailable; ++i) {
                 // We analyze a mono downmix of the signal since we don't think
@@ -41,17 +41,17 @@ class DownmixAndOverlapHelper {
             m_bufferWritePosition += writeAvailable;
             inRead += writeAvailable;
 
-            if (m_bufferWritePosition == m_blockSize) {
-                bool result = m_callback(pDownmix, m_blockSize);
+            if (m_bufferWritePosition == m_windowSize) {
+                bool result = m_callback(pDownmix, m_windowSize);
 
                 // If the callback said not to continue then stop.
                 if (!result) {
                     return false;
                 }
 
-                // If the block size equals the step size then this will result
+                // If the window size equals the step size then this will result
                 // in m_bufferWritePosition == 0.
-                for (size_t i = 0; i < (m_blockSize - m_stepSize); ++i) {
+                for (size_t i = 0; i < (m_windowSize - m_stepSize); ++i) {
                     pDownmix[i] = pDownmix[i + m_stepSize];
                 }
                 m_bufferWritePosition -= m_stepSize;
@@ -68,11 +68,11 @@ class DownmixAndOverlapHelper {
   private:
     std::vector<double> m_buffer;
     // The window size in frames.
-    size_t m_blockSize = 0;
+    size_t m_windowSize = 0;
     // The number of frames to step the window forward on each output.
     size_t m_stepSize = 0;
     size_t m_bufferWritePosition = 0;
-    BlockReadyCallback m_callback;
+    WindowReadyCallback m_callback;
 };
 
 }  // namespace mixxx

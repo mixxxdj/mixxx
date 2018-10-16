@@ -33,12 +33,12 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
     m_currentFrame = 0;
     m_pKeyMode = std::make_unique<GetKeyMode>(samplerate, kTuningFrequencyHertz,
                                               kChromaWindowLength, kChromaWindowLength);
-    size_t blockSize = m_pKeyMode->getBlockSize();
+    size_t windowSize = m_pKeyMode->getBlockSize();
     size_t stepSize = m_pKeyMode->getHopSize();
     return m_helper.initialize(
-        blockSize, stepSize,
-        [this](double* pBlock, size_t) {
-            const int iKey = m_pKeyMode->process(pBlock);
+        windowSize, stepSize,
+        [this](double* pWindow, size_t) {
+            const int iKey = m_pKeyMode->process(pWindow);
 
             // Should not happen.
             if (!ChromaticKey_IsValid(iKey)) {
