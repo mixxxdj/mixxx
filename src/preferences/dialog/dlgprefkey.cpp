@@ -21,8 +21,6 @@
 #include <QMessageBox>
 
 #include "analyzer/analyzerkey.h"
-#include "control/controlobject.h"
-#include "analyzer/vamp/vamppluginadapter.h"
 #include "control/controlproxy.h"
 #include "util/xml.h"
 
