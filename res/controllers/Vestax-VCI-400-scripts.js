@@ -678,17 +678,15 @@ VestaxVCI400.Deck.prototype.onWheelMove = function(value) {
     }
 };
 
-VestaxVCI400.brake = function (channel, control, value, status, group) {
-    try{
-        if (value == 0) {
-            return;
-        }
-        var deck = VestaxVCI400.GetDeck(group).deckNumber;
-        engine.brake(deck, true, .1, .9);
+VestaxVCI400.playButton = function (channel, control, value, status, group) {
+    var playing = engine.getValue(group, "play");
+
+    if (!playing && VestaxVCI400.shiftActive) {
+        script.brake(channel, control, value, status, group);
+        return;
     }
-    catch(ex) {
-        VestaxVCI400.printError(ex);
-   }
+
+    script.toggleControl(group, "play");
 };
 
 VestaxVCI400.vinylButton = function (channel, control, value, status, group) {
