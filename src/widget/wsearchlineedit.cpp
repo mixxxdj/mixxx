@@ -126,7 +126,7 @@ void WSearchLineEdit::restoreSearch(const QString& text) {
         setText(kDisabledText);
     } else {
         setEnabled(true);
-        // Updating the placeholder implicitly sets the text and updates the clear button
+        // Updating the placeholder implicitly updates the text and the clear button
         updatePlaceholder(text);
     }
 }
@@ -162,11 +162,14 @@ void WSearchLineEdit::hidePlaceholder(const QString& text) {
     // Reactivate text change listener
     m_showingPlaceholder = false;
 
+    // Update the displayed text without (re-)starting the timer
+    blockSignals(true);
     if (text.isNull()) {
         setText(kEmptySearch);
     } else {
         setText(text);
     }
+    blockSignals(false);
 
     QPalette pal = palette();
     pal.setColor(foregroundRole(), m_foregroundColor);
