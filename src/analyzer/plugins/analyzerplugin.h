@@ -7,6 +7,8 @@
 #include "track/keys.h"
 #include "util/types.h"
 
+namespace mixxx {
+
 struct AnalyzerPluginInfo {
     AnalyzerPluginInfo(const QString& id,
                        const QString& author,
@@ -19,7 +21,7 @@ struct AnalyzerPluginInfo {
 
 class AnalyzerPlugin {
   public:
-    virtual ~AnalyzerPlugin();
+    virtual ~AnalyzerPlugin() = default;
 
     virtual QString id() const {
         return info().id;
@@ -39,7 +41,7 @@ class AnalyzerPlugin {
 
 class AnalyzerBeatsPlugin : public AnalyzerPlugin {
   public:
-    virtual ~AnalyzerBeatsPlugin();
+    virtual ~AnalyzerBeatsPlugin() = default;
 
     virtual bool supportsBeatTracking() const = 0;
     virtual float getBpm() const {
@@ -52,9 +54,11 @@ class AnalyzerBeatsPlugin : public AnalyzerPlugin {
 
 class AnalyzerKeyPlugin : public AnalyzerPlugin {
   public:
-    virtual ~AnalyzerKeyPlugin();
+    virtual ~AnalyzerKeyPlugin() = default;
 
     virtual KeyChangeList getKeyChanges() const = 0;
 };
+
+}  // namespace mixxx
 
 #endif /* ANALYZER_PLUGINS_ANALYZERPLUGIN_H */

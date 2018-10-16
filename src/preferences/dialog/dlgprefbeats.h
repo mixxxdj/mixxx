@@ -41,7 +41,7 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     void loadSettings();
 
     BeatDetectionSettings m_bpmSettings;
-    QList<AnalyzerPluginInfo> m_availablePlugins;
+    QList<mixxx::AnalyzerPluginInfo> m_availablePlugins;
     QString m_selectedAnalyzerId;
     int m_minBpm;
     int m_maxBpm;

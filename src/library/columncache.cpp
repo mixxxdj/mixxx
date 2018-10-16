@@ -2,7 +2,6 @@
 
 #include "library/dao/trackschema.h"
 #include "library/dao/playlistdao.h"
-#include "track/key_preferences.h"
 
 
  ColumnCache::ColumnCache(const QStringList& columns) {

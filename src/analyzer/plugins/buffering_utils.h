@@ -3,6 +3,8 @@
 
 #include "util/math.h"
 
+namespace mixxx {
+
 // This is used for downmixing a stereo buffer into mono and framing it into
 // overlapping windows as is typically necessary when taking a short-time
 // Fourier transform.
@@ -72,5 +74,7 @@ class DownmixAndOverlapHelper {
     size_t m_bufferWritePosition = 0;
     BlockReadyCallback m_callback;
 };
+
+}  // namespace mixxx
 
 #endif /* ANALYZER_PLUGINS_BUFFERING_UTILS_H */

@@ -30,7 +30,7 @@ AnalysisFeature::AnalysisFeature(Library* parent,
         m_pDbConnectionPool(parent->dbConnectionPool()),
         m_pTrackCollection(pTrackCollection),
         m_pAnalyzerQueue(nullptr),
-        m_iOldBpmEnabled(0),
+        m_bOldBpmEnabled(false),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(nullptr) {
     setTitleDefault();

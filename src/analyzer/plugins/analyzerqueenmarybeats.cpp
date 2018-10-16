@@ -5,6 +5,8 @@
 // definitions interfere with qm-dsp's headers.
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
 
+namespace mixxx {
+
 AnalyzerQueenMaryBeats::AnalyzerQueenMaryBeats() {
 }
 
@@ -30,7 +32,7 @@ bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
     config.adaptiveWhitening = 0;
     config.whiteningRelaxCoeff = -1;
     config.whiteningFloor = -1;
-    m_pDetectionFunction.reset(new DetectionFunction(config));
+    m_pDetectionFunction = std::make_unique<DetectionFunction>(config);
 
     m_helper.initialize(
         blockSize, m_stepSize, [this](double* pBlock, size_t) {
@@ -44,7 +46,7 @@ bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
 
 bool AnalyzerQueenMaryBeats::process(const CSAMPLE* pIn, const int iLen) {
     DEBUG_ASSERT(iLen % 2 == 0);
-    if (m_pDetectionFunction.isNull()) {
+    if (!m_pDetectionFunction) {
         return false;
     }
 
@@ -98,5 +100,8 @@ bool AnalyzerQueenMaryBeats::finalize() {
     }
 
     qDebug() << "AnalyzerQueenMaryBeats::finalize resultBeats" << m_resultBeats.size();
+    m_pDetectionFunction.reset();
     return true;
 }
+
+}  // namespace mixxx

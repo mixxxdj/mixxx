@@ -4,6 +4,8 @@
 
 #include "util/sample.h"
 
+namespace mixxx {
+
 AnalyzerSoundTouchBeats::AnalyzerSoundTouchBeats() :
         m_downmixBuffer(4096) { // TODO(rryan) get this from somewhere
 }
@@ -12,12 +14,12 @@ AnalyzerSoundTouchBeats::~AnalyzerSoundTouchBeats() { }
 
 bool AnalyzerSoundTouchBeats::initialize(int samplerate) {
     m_fResultBpm = 0.0f;
-    m_pSoundTouch.reset(new soundtouch::BPMDetect(2, samplerate));
+    m_pSoundTouch = std::make_unique<soundtouch::BPMDetect>(2, samplerate);
     return true;
 }
 
 bool AnalyzerSoundTouchBeats::process(const CSAMPLE* pIn, const int iLen) {
-    if (m_pSoundTouch.isNull()) {
+    if (!m_pSoundTouch) {
         return false;
     }
     DEBUG_ASSERT(iLen == 4096 * 2); // TODO(rryan)
@@ -35,10 +37,12 @@ bool AnalyzerSoundTouchBeats::process(const CSAMPLE* pIn, const int iLen) {
 }
 
 bool AnalyzerSoundTouchBeats::finalize() {
-    if (m_pSoundTouch.isNull()) {
+    if (!m_pSoundTouch) {
         return false;
     }
     m_fResultBpm = m_pSoundTouch->getBpm();
     m_pSoundTouch.reset();
     return true;
 }
+
+}  // namespace mixxx

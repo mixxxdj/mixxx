@@ -2,14 +2,16 @@
 #define ANALYZER_PLUGINS_ANALYZERSOUNDTOUCHBEATS
 
 #include <QObject>
-#include <QScopedPointer>
 
 #include "analyzer/plugins/analyzerplugin.h"
+#include "util/memory.h"
 #include "util/samplebuffer.h"
 
 namespace soundtouch {
 class BPMDetect;
 }  // namespace soundtouch
+
+namespace mixxx {
 
 class AnalyzerSoundTouchBeats : public AnalyzerBeatsPlugin {
   public:
@@ -40,9 +42,11 @@ class AnalyzerSoundTouchBeats : public AnalyzerBeatsPlugin {
     }
 
   private:
-    QScopedPointer<soundtouch::BPMDetect> m_pSoundTouch;
+    std::unique_ptr<soundtouch::BPMDetect> m_pSoundTouch;
     SampleBuffer m_downmixBuffer;
     float m_fResultBpm = 0.0f;
 };
+
+}  // namespace mixxx
 
 #endif /* ANALYZER_PLUGINS_ANALYZERSOUNDTOUCHBEATS */

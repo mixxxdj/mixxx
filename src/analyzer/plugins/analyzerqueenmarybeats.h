@@ -4,13 +4,15 @@
 #include <vector>
 
 #include <QObject>
-#include <QScopedPointer>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
+#include "util/memory.h"
 #include "util/samplebuffer.h"
 
 class DetectionFunction;
+
+namespace mixxx {
 
 class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
   public:
@@ -41,12 +43,14 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     }
 
   private:
-    QScopedPointer<DetectionFunction> m_pDetectionFunction;
+    std::unique_ptr<DetectionFunction> m_pDetectionFunction;
     DownmixAndOverlapHelper m_helper;
     size_t m_stepSize = 0;
     int m_iSampleRate = 0;
     std::vector<double> m_detectionResults;
     QVector<double> m_resultBeats;
 };
+
+}  // namepsace mixxx
 
 #endif /* ANALYZER_PLUGINS_ANALYZERQUEENMARYBEATS_H */

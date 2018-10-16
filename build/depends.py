@@ -848,7 +848,6 @@ class MixxxCore(Feature):
                    "analyzer/analyzerbeats.cpp",
                    "analyzer/analyzerkey.cpp",
                    "analyzer/analyzerebur128.cpp",
-                   "analyzer/plugins/analyzerplugin.cpp",
                    "analyzer/plugins/analyzersoundtouchbeats.cpp",
                    "analyzer/plugins/analyzerqueenmarybeats.cpp",
                    "analyzer/plugins/analyzerqueenmarykey.cpp",
@@ -1228,7 +1227,6 @@ class MixxxCore(Feature):
                    "util/screensaver.cpp",
                    "util/indexrange.cpp",
                    "util/desktophelper.cpp"
-                   "#res/mixxx.qrc"
                    ]
 
         proto_args = {

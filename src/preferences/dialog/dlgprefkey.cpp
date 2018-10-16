@@ -61,13 +61,12 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
     m_keyLineEdits.insert(mixxx::track::io::key::B_MINOR, b_minor_edit);
 
     m_availablePlugins = AnalyzerKey::availablePlugins();
-    for (const AnalyzerPluginInfo& info : m_availablePlugins) {
+    for (const auto& info : m_availablePlugins) {
         plugincombo->addItem(info.name, info.id);
     }
 
     m_pKeyNotation = new ControlProxy(ConfigKey("[Library]", "key_notation"), this);
 
-    populate();
     loadSettings();
 
     // Connections

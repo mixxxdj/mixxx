@@ -42,7 +42,7 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
 
     KeyDetectionSettings m_keySettings;
     QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*> m_keyLineEdits;
-    QList<AnalyzerPluginInfo> m_availablePlugins;
+    QList<mixxx::AnalyzerPluginInfo> m_availablePlugins;
     QString m_selectedAnalyzerId;
     ControlProxy* m_pKeyNotation;
     bool m_bAnalyzerEnabled;

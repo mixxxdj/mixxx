@@ -4,13 +4,15 @@
 #include <vector>
 
 #include <QObject>
-#include <QScopedPointer>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "analyzer/plugins/buffering_utils.h"
+#include "util/memory.h"
 #include "util/types.h"
 
 class GetKeyMode;
+
+namespace mixxx {
 
 class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
   public:
@@ -37,11 +39,13 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
     }
 
   private:
-    QScopedPointer<GetKeyMode> m_pKeyMode;
+    std::unique_ptr<GetKeyMode> m_pKeyMode;
     DownmixAndOverlapHelper m_helper;
     size_t m_currentFrame = 0;
     KeyChangeList m_resultKeys;
     mixxx::track::io::key::ChromaticKey m_prevKey;
 };
+
+}  // namespace mixxx
 
 #endif /* ANALYZER_PLUGINS_ANALYZERQUEENMARYKEY_H */

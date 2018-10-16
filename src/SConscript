@@ -92,11 +92,6 @@ elif build.platform_is_osx:
 else:
         mixxx_bin = env.Program('mixxx', [mixxx_main, mixxx_qrc])
 
-# Make sure mixxxminimal plugins are built before
-# mixxx_bin. This fixes a race where when building with multiple threads the
-# packaging step starts before the plugins are built.
-Depends(mixxx_bin, mixxxminimal_plugins)
-
 # For convenience, copy the Mixxx binary out of the build directory to the
 # root. Don't do it on windows because the binary can't run on its own and needs
 # the DLLs present with it.

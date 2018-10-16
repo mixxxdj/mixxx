@@ -8,9 +8,9 @@
 #include "track/keyfactory.h"
 
 // static
-QList<AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
-    QList<AnalyzerPluginInfo> analyzers;
-    analyzers.push_back(AnalyzerQueenMaryKey::pluginInfo());
+QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
+    QList<mixxx::AnalyzerPluginInfo> analyzers;
+    analyzers.push_back(mixxx::AnalyzerQueenMaryKey::pluginInfo());
     return analyzers;
 }
 
@@ -45,11 +45,11 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
     if (bShouldAnalyze) {
-        if (m_pluginId == AnalyzerQueenMaryKey::pluginInfo().id) {
-            m_pPlugin.reset(new AnalyzerQueenMaryKey());
+        if (m_pluginId == mixxx::AnalyzerQueenMaryKey::pluginInfo().id) {
+            m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();
         } else {
             // Default to our built-in key detector.
-            m_pPlugin.reset(new AnalyzerQueenMaryKey());
+            m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();
         }
         bShouldAnalyze = m_pPlugin->initialize(sampleRate);
     }
@@ -98,7 +98,7 @@ bool AnalyzerKey::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 }
 
 void AnalyzerKey::process(const CSAMPLE *pIn, const int iLen) {
-    if (m_pPlugin.isNull()) {
+    if (!m_pPlugin) {
         return;
     }
     bool success = m_pPlugin->process(pIn, iLen);
@@ -113,7 +113,7 @@ void AnalyzerKey::cleanup(TrackPointer tio) {
 }
 
 void AnalyzerKey::finalize(TrackPointer tio) {
-    if (m_pPlugin.isNull()) {
+    if (!m_pPlugin) {
         return;
     }
 

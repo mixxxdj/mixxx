@@ -9,6 +9,7 @@
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
+namespace mixxx {
 namespace {
 // Window length in chroma frames. Default value from VAMP plugin.
 int kChromaWindowLength = 10;
@@ -30,8 +31,8 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
     m_prevKey = mixxx::track::io::key::INVALID;
     m_resultKeys.clear();
     m_currentFrame = 0;
-    m_pKeyMode.reset(new GetKeyMode(samplerate, kTuningFrequencyHertz,
-                                    kChromaWindowLength, kChromaWindowLength));
+    m_pKeyMode = std::make_unique<GetKeyMode>(samplerate, kTuningFrequencyHertz,
+                                              kChromaWindowLength, kChromaWindowLength);
     size_t blockSize = m_pKeyMode->getBlockSize();
     size_t stepSize = m_pKeyMode->getHopSize();
     return m_helper.initialize(
@@ -56,7 +57,7 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
 
 bool AnalyzerQueenMaryKey::process(const CSAMPLE* pIn, const int iLen) {
     DEBUG_ASSERT(iLen % 2 == 0);
-    if (m_pKeyMode.isNull()) {
+    if (!m_pKeyMode) {
         return false;
     }
 
@@ -73,3 +74,5 @@ bool AnalyzerQueenMaryKey::finalize() {
     m_pKeyMode.reset();
     return true;
 }
+
+}  // namespace mixxx

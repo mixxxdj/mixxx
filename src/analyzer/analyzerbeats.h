@@ -10,12 +10,12 @@
 
 #include <QHash>
 #include <QList>
-#include <QScopedPointer>
 
 #include "analyzer/analyzer.h"
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
+#include "util/memory.h"
 
 class AnalyzerBeats: public Analyzer {
   public:
@@ -24,7 +24,7 @@ class AnalyzerBeats: public Analyzer {
             bool enforceBpmDetection = false);
     ~AnalyzerBeats() override = default;
 
-    static QList<AnalyzerPluginInfo> availablePlugins();
+    static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
@@ -37,7 +37,7 @@ class AnalyzerBeats: public Analyzer {
         QString pluginId, bool bPreferencesFastAnalysis);
 
     BeatDetectionSettings m_bpmSettings;
-    QScopedPointer<AnalyzerBeatsPlugin> m_pPlugin;
+    std::unique_ptr<mixxx::AnalyzerBeatsPlugin> m_pPlugin;
     const bool m_enforceBpmDetection;
     QString m_pluginId;
     bool m_bPreferencesReanalyzeOldBpm;

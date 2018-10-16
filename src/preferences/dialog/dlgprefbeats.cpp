@@ -16,7 +16,7 @@ DlgPrefBeats::DlgPrefBeats(QWidget *parent, UserSettingsPointer pConfig)
     setupUi(this);
 
     m_availablePlugins = AnalyzerBeats::availablePlugins();
-    for (const AnalyzerPluginInfo& info : m_availablePlugins) {
+    for (const auto& info : m_availablePlugins) {
         plugincombo->addItem(info.name, info.id);
     }
 
@@ -65,7 +65,7 @@ void DlgPrefBeats::loadSettings() {
 
 void DlgPrefBeats::slotResetToDefaults() {
     // NOTE(rryan): Do not hard-code defaults here! Put them in
-    // KeyDetectionSettings.
+    // BeatDetectionSettings.
     m_selectedAnalyzerId = m_bpmSettings.getBeatPluginIdDefault();
     m_banalyzerEnabled = m_bpmSettings.getBpmDetectionEnabledDefault();
     m_bfixedtempoEnabled = m_bpmSettings.getFixedTempoAssumptionDefault();
@@ -125,7 +125,7 @@ void DlgPrefBeats::slotUpdate() {
         return;
     }
 
-    if (m_bpmSettings.isFixedTempoSupportedByPlugin(m_selectedAnalyzerId)) {
+    if (!m_bpmSettings.isFixedTempoSupportedByPlugin(m_selectedAnalyzerId)) {
         bfixedtempo->setEnabled(false);
         boffset->setEnabled(false);
     }

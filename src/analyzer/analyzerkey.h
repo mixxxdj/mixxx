@@ -3,7 +3,6 @@
 
 #include <QHash>
 #include <QList>
-#include <QScopedPointer>
 #include <QString>
 
 #include "analyzer/analyzer.h"
@@ -18,7 +17,7 @@ class AnalyzerKey : public Analyzer {
     explicit AnalyzerKey(KeyDetectionSettings keySettings);
     ~AnalyzerKey() override = default;
 
-    static QList<AnalyzerPluginInfo> availablePlugins();
+    static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
@@ -31,7 +30,7 @@ class AnalyzerKey : public Analyzer {
         QString pluginId, bool bPreferencesFastAnalysis);
 
     KeyDetectionSettings m_keySettings;
-    QScopedPointer<AnalyzerKeyPlugin> m_pPlugin;
+    std::unique_ptr<mixxx::AnalyzerKeyPlugin> m_pPlugin;
     QString m_pluginId;
     int m_iSampleRate;
     int m_iTotalSamples;

@@ -19,10 +19,10 @@
 #include "track/track.h"
 
 // static
-QList<AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
-    QList<AnalyzerPluginInfo> plugins;
-    plugins.append(AnalyzerSoundTouchBeats::pluginInfo());
-    plugins.append(AnalyzerQueenMaryBeats::pluginInfo());
+QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
+    QList<mixxx::AnalyzerPluginInfo> plugins;
+    plugins.append(mixxx::AnalyzerSoundTouchBeats::pluginInfo());
+    plugins.append(mixxx::AnalyzerQueenMaryBeats::pluginInfo());
     return plugins;
 }
 
@@ -77,12 +77,12 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
     if (bShouldAnalyze) {
-        if (m_pluginId == AnalyzerSoundTouchBeats::pluginInfo().id) {
-            m_pPlugin.reset(new AnalyzerSoundTouchBeats());
-        } else if (m_pluginId == AnalyzerQueenMaryBeats::pluginInfo().id) {
-            m_pPlugin.reset(new AnalyzerQueenMaryBeats());
+        if (m_pluginId == mixxx::AnalyzerSoundTouchBeats::pluginInfo().id) {
+            m_pPlugin = std::make_unique<mixxx::AnalyzerSoundTouchBeats>();
+        } else if (m_pluginId == mixxx::AnalyzerQueenMaryBeats::pluginInfo().id) {
+            m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryBeats>();
         } else {
-            m_pPlugin.reset(new AnalyzerQueenMaryBeats());
+            m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryBeats>();
         }
         bShouldAnalyze = m_pPlugin->initialize(m_iSampleRate);
     }
@@ -156,7 +156,7 @@ bool AnalyzerBeats::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 }
 
 void AnalyzerBeats::process(const CSAMPLE *pIn, const int iLen) {
-    if (m_pPlugin.isNull()) {
+    if (!m_pPlugin) {
         return;
     }
     bool success = m_pPlugin->process(pIn, iLen);
@@ -171,7 +171,7 @@ void AnalyzerBeats::cleanup(TrackPointer tio) {
 }
 
 void AnalyzerBeats::finalize(TrackPointer tio) {
-    if (m_pPlugin.isNull()) {
+    if (!m_pPlugin) {
         return;
     }
 
@@ -190,14 +190,14 @@ void AnalyzerBeats::finalize(TrackPointer tio) {
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
             m_pluginId, m_bPreferencesFastAnalysis);
         pBeats = BeatFactory::makePreferredBeats(
-            tio, beats, extraVersionInfo,
+            *tio, beats, extraVersionInfo,
             m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
             m_iSampleRate, m_iTotalSamples,
             m_iMinBpm, m_iMaxBpm);
     } else {
         float bpm = m_pPlugin->getBpm();
         qDebug() << "AnalyzerBeats plugin detected bpm" << bpm;
-        pBeats = BeatFactory::makeBeatGrid(tio.data(), bpm, 0.0f);
+        pBeats = BeatFactory::makeBeatGrid(*tio, bpm, 0.0f);
     }
     m_pPlugin.reset();
 
