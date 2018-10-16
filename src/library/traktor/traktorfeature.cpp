@@ -6,7 +6,7 @@
 #include <QXmlStreamReader>
 #include <QMap>
 #include <QSettings>
-#include <QDesktopServices>
+#include <QStandardPaths>
 
 #include "library/traktor/traktorfeature.h"
 
@@ -327,9 +327,11 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 //
                 // Our rating values range from 1 to 5. The mapping is defined as follow
                 // ourRatingValue = TraktorRating / 51
-                 if (ranking_str != "" && qVariantCanConvert<int>(ranking_str)) {
-                    rating = ranking_str.toInt()/51;
-                 }
+                bool ok = false;
+                int parsed_rating = ranking_str.toInt(&ok) / 51;
+                if (ok) {
+                    rating = parsed_rating;
+                }
                 continue;
             }
             if (xml.name() == "TEMPO") {
@@ -554,7 +556,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
     // following path: <Home>/Documents/Native Instruments/Traktor 2.0.3/collection.nml
 
     //Let's try to detect the latest Traktor version and its collection.nml
-    QString myDocuments = QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation);
+    QString myDocuments = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     QDir ni_directory(myDocuments +"/Native Instruments/");
     ni_directory.setFilter(QDir::Dirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
 
@@ -580,7 +582,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
         if (folder_name.contains("Traktor")) {
             qDebug() << "Found " << folder_name;
             QVariant sVersion = folder_name.right(5).remove(".");
-            if (sVersion.canConvert<int>()) {
+            if (sVersion.canConvert(QMetaType::Int)) {
                 installed_ts_map.insert(sVersion.toInt(), fileInfo.absoluteFilePath());
             }
         }

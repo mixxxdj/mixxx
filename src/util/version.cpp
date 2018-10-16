@@ -1,7 +1,7 @@
 #include "util/version.h"
 
 #include <QCoreApplication>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QStringList>
 #include <QtDebug>
 #include <QtGlobal>
@@ -164,10 +164,10 @@ void Version::logBuildDetails() {
         qDebug() << qPrintable(depVersion);
     }
 
-    qDebug() << "QDesktopServices::storageLocation(HomeLocation):"
-             << QDesktopServices::storageLocation(QDesktopServices::HomeLocation);
-    qDebug() << "QDesktopServices::storageLocation(DataLocation):"
-             << QDesktopServices::storageLocation(QDesktopServices::DataLocation);
+    qDebug() << "QStandardPaths::writableLocation(HomeLocation):"
+             << QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
+    qDebug() << "QStandardPaths::writableLocation(DataLocation):"
+             << QStandardPaths::writableLocation(QStandardPaths::DataLocation);
     qDebug() << "QCoreApplication::applicationDirPath()"
              << QCoreApplication::applicationDirPath();
 }

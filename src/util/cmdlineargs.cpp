@@ -1,5 +1,7 @@
 #include <stdio.h>
 
+#include <QStandardPaths>
+
 #include "util/cmdlineargs.h"
 #include "util/version.h"
 
@@ -21,7 +23,7 @@ CmdlineArgs::CmdlineArgs()
 #else
     // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
     // to QDir::filePath elsewhere in the code. This is candidate for removal.
-    m_settingsPath(QDesktopServices::storageLocation(QDesktopServices::DataLocation).append("/")) {
+    m_settingsPath(QStandardPaths::writableLocation(QStandardPaths::DataLocation).append("/")) {
 #endif
 }
 

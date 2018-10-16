@@ -381,7 +381,7 @@ void DlgTrackInfo::saveTrack() {
         updatedRows.insert(oldRow);
 
         QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
-        if (vHotcue.canConvert<int>()) {
+        if (vHotcue.canConvert(QMetaType::Int)) {
             int iTableHotcue = vHotcue.toInt();
             // The GUI shows hotcues as 1-indexed, but they are actually
             // 0-indexed, so subtract 1

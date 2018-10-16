@@ -35,13 +35,16 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
     QList<Param> parameters;
     parameters << Param("inc", "artists+releases+media");
 
+    QUrlQuery query;
+    query.setQueryItems(parameters);
     QUrl url(m_TrackUrl + mbid);
-    url.setQueryItems(parameters);
+    url.setQuery(query);
     qDebug() << "MusicBrainzClient GET request:" << url.toString();
     QNetworkRequest req(url);
     // http://musicbrainz.org/doc/XML_Web_Service/Rate_Limiting#Provide_meaningful_User-Agent_strings
     QString mixxxMusicBrainzId(Version::applicationName() + "/" + Version::version() + " ( " + MIXXX_WEBSITE_URL + " )");
-    req.setRawHeader("User-Agent", mixxxMusicBrainzId.toAscii());
+    // HTTP request headers must be latin1.
+    req.setRawHeader("User-Agent", mixxxMusicBrainzId.toLatin1());
     QNetworkReply* reply = m_network.get(req);
     connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
     m_requests[reply] = id;
@@ -61,13 +64,13 @@ void MusicBrainzClient::cancelAll() {
 }
 
 namespace {
-    QString decodeText(const QByteArray& data, const char* codecName) {
-        QTextStream textStream(data);
-        if ((nullptr != codecName) && (0 < strlen(codecName))) {
-            textStream.setCodec(codecName);
-        }
-        return textStream.readAll();
+QString decodeText(const QByteArray& data, const QStringRef codecName) {
+    QTextStream textStream(data);
+    if (!codecName.isEmpty()) {
+        textStream.setCodec(QTextCodec::codecForName(codecName.toUtf8()));
     }
+    return textStream.readAll();
+}
 } // anonymous namespace
 
 void MusicBrainzClient::requestFinished() {
@@ -98,13 +101,13 @@ void MusicBrainzClient::requestFinished() {
     const QByteArray body(reply->readAll());
 
     QXmlStreamReader reader(body);
-    QByteArray codecName;
+    QStringRef codecName;
     while (!reader.atEnd()) {
         switch (reader.readNext()) {
         case QXmlStreamReader::Invalid:
         {
             qWarning() << "MusicBrainzClient GET reply body:"
-                    << decodeText(body, codecName.constData());
+                    << decodeText(body, codecName);
             qWarning()
                 << "MusicBrainzClient GET decoding error:"
                 << reader.errorString();
@@ -113,11 +116,11 @@ void MusicBrainzClient::requestFinished() {
         case QXmlStreamReader::StartDocument:
         {
             // The character encoding is always an ASCII string
-            codecName = reader.documentEncoding().toAscii();
+            codecName = reader.documentEncoding();
             qDebug() << "MusicBrainzClient GET reply codec:"
-                    << codecName.constData();
+                     << codecName;
             qDebug() << "MusicBrainzClient GET reply body:"
-                    << decodeText(body, codecName.constData());
+                     << decodeText(body, codecName);
             break;
         }
         case QXmlStreamReader::StartElement:
