@@ -122,17 +122,12 @@ void WSearchLineEdit::disableSearch() {
 void WSearchLineEdit::restoreSearch(const QString& text) {
     if (text.isNull()) {
         // disable
-        blockSignals(true);
-        setText(kDisabledText);
-        blockSignals(false);
         setEnabled(false);
+        setText(kDisabledText);
     } else {
-        blockSignals(true);
-        setText(text);
-        blockSignals(false);
-        updatePlaceholder(text);
-        updateClearButton(text);
         setEnabled(true);
+        // Updating the placeholder implicitly sets the text and updates the clear button
+        updatePlaceholder(text);
     }
 }
 
@@ -143,11 +138,11 @@ void WSearchLineEdit::triggerSearch() {
 }
 
 void WSearchLineEdit::showPlaceholder() {
-    m_debouncingTimer.stop();
+    DEBUG_ASSERT(isEnabled());
 
-    // Must block signals here so that we don't emit a search() signal via
-    // textChanged().
-    blockSignals(true);
+    // Deactivate text change listener
+    m_showingPlaceholder = true;
+
     setText(tr("Search...", "noun"));
     setToolTip(
             tr("Search", "noun") + "\n" + tr("Enter a string to search for") + "\n\n" +
@@ -155,8 +150,6 @@ void WSearchLineEdit::showPlaceholder() {
             tr("Focus", "Give search bar input focus") + "\n" + tr("Ctrl+Backspace") + "  " +
             tr("Clear input", "Clear the search bar input field") + "\n" + tr("Esc") + "  " +
             tr("Exit search", "Exit search bar and leave focus"));
-    m_showingPlaceholder = true;
-    blockSignals(false);
 
     QPalette pal = palette();
     pal.setColor(foregroundRole(), Qt::lightGray);
@@ -164,20 +157,16 @@ void WSearchLineEdit::showPlaceholder() {
 }
 
 void WSearchLineEdit::hidePlaceholder(const QString& text) {
-    if (!m_showingPlaceholder) {
-        return; // nothing to do
-    }
+    DEBUG_ASSERT(isEnabled());
 
-    // Must block signals here so that we don't emit a search() signal via
-    // textChanged().
-    blockSignals(true);
+    // Reactivate text change listener
+    m_showingPlaceholder = false;
+
     if (text.isNull()) {
         setText(kEmptySearch);
     } else {
         setText(text);
     }
-    m_showingPlaceholder = false;
-    blockSignals(false);
 
     QPalette pal = palette();
     pal.setColor(foregroundRole(), m_foregroundColor);
@@ -210,26 +199,21 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
 void WSearchLineEdit::clearSearch() {
     DEBUG_ASSERT(!m_showingPlaceholder);
     setText(kEmptySearch);
+    emit searchCleared();
     // Enforce immediate update of track table
     triggerSearch();
 }
 
 // slot
 void WSearchLineEdit::updateText(const QString& text) {
-    if (m_showingPlaceholder) {
-        DEBUG_ASSERT(!m_debouncingTimer.isActive());
-        return; // do nothing while showing placeholder
-    }
-
-    if (text.isEmpty()) {
+    if (m_showingPlaceholder || !isEnabled()) {
+        updateClearButton(kEmptySearch);
         m_debouncingTimer.stop();
-        emit searchCleared();
     } else {
+        updateClearButton(text);
         DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
         m_debouncingTimer.start(kDebouncingTimeoutMillis);
     }
-
-    updateClearButton(text);
 }
 
 // slot

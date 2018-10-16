@@ -1067,10 +1067,6 @@ void WTrackTableView::onSearchStarting() {
 
 void WTrackTableView::onSearchCleared() {
     restoreVScrollBarPos();
-    TrackModel* trackModel = getTrackModel();
-    if (trackModel) {
-        trackModel->search("");
-    }
 }
 
 void WTrackTableView::onShow() {

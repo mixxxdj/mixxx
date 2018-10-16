@@ -123,7 +123,6 @@ void DlgDeveloperTools::slotControlSearch(const QString& search) {
 }
 
 void DlgDeveloperTools::slotControlSearchClear() {
-    m_controlProxyModel.setFilterFixedString(QString());
 }
 
 void DlgDeveloperTools::slotControlDump() {
