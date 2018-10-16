@@ -1,5 +1,6 @@
 
 import os
+import subprocess
 
 #This page is REALLY USEFUL: http://www.cocoadev.com/index.pl?ApplicationLinking
 #question: why do dylibs embed their install name in themselves? that would seem to imply the system keeps a cache of all the "install names", but that's not what the docs seem to say.
@@ -40,10 +41,10 @@ import sys,os
 def system(s):
 	"wrap system() to give us feedback on what it's doing"
 	"anything using this call should be fixed to use SCons's declarative style (once you figure that out, right nick?)"
-	print s,
+	print(s),
 	sys.stdout.flush() #ignore line buffering..
 	result = os.system(s)
-	print
+	print()
 	return result
 
 
@@ -52,14 +53,13 @@ SYSTEM_FRAMEWORKS = ["/System/Library/Frameworks"]
 SYSTEM_LIBPATH = ["/usr/lib"] #anything else?
 #paths to libs that we should copy in
 LOCAL_FRAMEWORKS = [
-    os.path.expanduser("~/Library/Frameworks"), 
-    "/Library/Frameworks", 
+    os.path.expanduser("~/Library/Frameworks"),
+    "/Library/Frameworks",
     "/Network/Library/Frameworks"
 ]
-LOCAL_LIBPATH = filter(lambda x: 
-    os.path.isdir(x), 
-    ["/usr/local/lib", "/opt/local/lib", "/sw/local/lib"]
-)
+LOCAL_LIBPATH = list(filter(
+        lambda x: os.path.isdir(x),
+        ["/usr/local/lib", "/opt/local/lib", "/sw/local/lib"]))
 
 #however
 FRAMEWORKS = LOCAL_FRAMEWORKS + SYSTEM_FRAMEWORKS
@@ -71,7 +71,7 @@ def otool(binary):
 	"Do not run this on object code archive (.a) files, it is not designed for that."
 	#if not os.path.exists(binary): raise Exception("'%s' not found." % binary)
 	if not type(binary) == str: raise ValueError("otool() requires a path (as a string)")
-	print "otool(%s)" % binary
+	print("otool(%s)" % binary)
 	stdin, stdout, stderr = os.popen3('otool -L "%s"' % binary)
 	try:
 		header = stdout.readline() #discard the first line since it is just the name of the file or an error message (or if reading .as, the first item on the list)
@@ -101,7 +101,7 @@ def dependencies(binary):
 	#This will work in probably every library that exists in reality, so it's "ok"
 	if os.path.basename(l[0]) == os.path.basename(binary):
 		id = l.pop(0)
-		#print "Removing -id field result %s from %s" % (id, binary)
+		#print("Removing -id field result %s from %s" % (id, binary))
 	return l
 
 
@@ -146,19 +146,19 @@ def embed_dependencies(binary,
 		#todo: this would make sense as a separate function, but the @ case would be awkward to handle and it's iffy about what it should
 		if e.startswith('/'):
 			p = e
-		elif e.startswith('@'): #it's a relative load path
+		elif e.startswith('@') and not e.startswith('@rpath'): #it's a relative load path
 			raise Exception("Unable to make heads nor tails, sah, of install name '%s'. Relative paths are for already-bundled binaries, this function does not support them." % e)
 		else:
 			#experiments show that giving an unspecified path is asking dyld(1) to find the library for us. This covers that case.
 			#i will not do further experiments to figure out what dyld(1)'s specific search algorithm is (whether it looks at frameworks separate from dylibs) because that's not the public interface
-
+                        e_stripped = e.replace('@rpath/', '') if e.startswith('@rpath/') else e
 			for P in ['']+LOCAL+SYSTEM: #XXX should local have priority over system or vice versa? (also, '' is the handle the relative case)
-				p = os.path.abspath(os.path.join(P, e))
-				#print "SEARCHING IN LIBPATH; TRYING", p
+				p = os.path.abspath(os.path.join(P, e_stripped))
+				#print("SEARCHING IN LIBPATH; TRYING", p)
 				if os.path.exists(p):
 					break
 			else:
-				p = e #fallthrough to the exception below #XXX icky bad logic, there must be a way to avoid saying exists() twice
+				p = e_stripped #fallthrough to the exception below #XXX icky bad logic, there must be a way to avoid saying exists() twice
 
 		if not os.path.exists(p):
 			raise Exception("Dependent library '%s' not found. Make sure it is installed." % e)
@@ -196,3 +196,21 @@ def change_ref(binary, orig, new):
 #
 
 #keywords: @executable_path, @loader_path, @rpath. TODO: document these.
+
+def rpaths(binary):
+        """Returns a list of the LC_RPATH load commands in the provided binary."""
+        print("otool(%s)" % binary)
+        p = subprocess.Popen(['otool', '-l', binary],
+                             stdin=subprocess.PIPE,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+        stdout, stderr = p.communicate()
+
+        lines = stdout.split('\n')
+        rpaths = []
+        for i, line in enumerate(lines):
+                if line.strip() == 'cmd LC_RPATH':
+                        path_line = lines[i + 2].strip().replace('path ', '')
+                        path_line = path_line[:path_line.rindex('(') - 1]
+                        rpaths.append(path_line)
+        return rpaths

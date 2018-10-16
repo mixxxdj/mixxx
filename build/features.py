@@ -282,6 +282,9 @@ class MediaFoundation(Feature):
             raise Exception('Did not find Mfreadwrite.lib - exiting!')
         build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
 
+    def sources(self, build):
+        return ['sources/soundsourcemediafoundation.cpp']
+
 
 class IPod(Feature):
     def description(self):
@@ -489,23 +492,24 @@ class FAAD(Feature):
         if not self.enabled(build):
             return
 
+        build.env.Append(CPPDEFINES='__FAAD__')
         have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
-        have_mp4v2 = conf.CheckLib(['mp4v2', 'libmp4v2'], autoadd=False)
-        have_mp4_h = conf.CheckHeader('mp4.h')
-        have_mp4 = conf.CheckLib('mp4', autoadd=False)
-
-        # Either mp4 or mp4v2 works
-        have_mp4 = (have_mp4v2_h or have_mp4_h) and (have_mp4v2 or have_mp4)
+        if have_mp4v2_h:
+            build.env.Append(CPPDEFINES = '__MP4V2__')
+        have_mp4 = conf.CheckLib(['mp4v2', 'libmp4v2', 'mp4'])
 
         if not have_mp4:
             raise Exception(
                 'Could not find libmp4, libmp4v2 or the libmp4v2 development headers.')
 
-        have_faad = conf.CheckLib(['faad', 'libfaad'], autoadd=False)
+        have_faad = conf.CheckLib(['faad', 'libfaad'])
 
         if not have_faad:
             raise Exception(
                 'Could not find libfaad or the libfaad development headers.')
+
+    def sources(self, build):
+        return ['sources/soundsourcem4a.cpp']
 
 
 class WavPack(Feature):
@@ -525,10 +529,14 @@ class WavPack(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        have_wv = conf.CheckLib(['wavpack', 'wv'], autoadd=True)
-        if not have_wv:
+
+        build.env.Append(CPPDEFINES='__WV__')
+        if not conf.CheckLib(['wavpack', 'wv']):
             raise Exception(
                 'Could not find libwavpack, libwv or its development headers.')
+
+    def sources(self, build):
+        return ['sources/soundsourcewv.cpp']
 
 
 class ColorDiagnostics(Feature):
@@ -610,10 +618,11 @@ class PerfTools(Feature):
         if not self.enabled(build):
             return
 
-        build.env.Append(LIBS="tcmalloc")
+        if not conf.CheckLib('tcmalloc'):
+            raise Exception('Could not find tcmalloc. Please install it or compile Mixxx with perftools=0.')
 
-        if int(build.flags['perftools_profiler']):
-            build.env.Append(LIBS="profiler")
+        if int(build.flags['perftools_profiler']) and not conf.CheckLib('profiler'):
+            raise Exception('Could not find the google-perftools profiler. Please install it or compile Mixxx with perftools_profiler=0.')
 
 
 class AsmLib(Feature):
@@ -746,8 +755,9 @@ class TestSuite(Feature):
         return "Mixxx Test Suite"
 
     def enabled(self, build):
-        build.flags['test'] = util.get_flags(build.env, 'test', 0) or \
-            'test' in SCons.BUILD_TARGETS
+        build.flags['test'] = (util.get_flags(build.env, 'test', 0) or
+                               'test' in SCons.COMMAND_LINE_TARGETS or
+                               'mixxx-test' in SCons.COMMAND_LINE_TARGETS)
         if int(build.flags['test']):
             return True
         return False
@@ -1138,6 +1148,9 @@ class Optimize(Feature):
                         # but are not supported on arm builds
                         build.env.Append(CCFLAGS='-msse2')
                         build.env.Append(CCFLAGS='-mfpmath=sse')
+                    # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
+                    # we require macOS 10.12.
+                    # https://stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
                 elif build.architecture_is_arm:
                     self.status = self.build_status(optimize_level)
                     build.env.Append(CCFLAGS='-mfloat-abi=hard')

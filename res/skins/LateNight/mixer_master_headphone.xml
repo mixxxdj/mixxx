@@ -76,7 +76,7 @@
                 </Children>
               </WidgetGroup>
 
-              <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
+              <WidgetGroup><Size>0min,4f</Size></WidgetGroup>
 
               <WidgetGroup><!-- FX buttons 1/2 -->
                 <Layout>horizontal</Layout>

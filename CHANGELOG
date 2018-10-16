@@ -33,19 +33,19 @@ Here is a quick summary of what is new in Mixxx 2.1.2:
 * Fix artifacts using more than 32 samplers lp1779559
 * store No EQ and Filter persistently lp1780479
 * Pad unreadable samples with silence on cache miss lp1777480
-* Fixing painting of preview coloumn for Qt5 builds lp1776555
+* Fixing painting of preview column for Qt5 builds lp1776555
 * LateNight: Fix play button right click lp1781829
-* LateNight: Added missing sort up/down buttons 
+* LateNight: Added missing sort up/down buttons
 * Fix sampler play button tooltips lp1779468
 * Shade: remove superfluid margins and padding in sampler.xml lp1773588
-* Deere: Fix background-color code 
+* Deere: Fix background-color code
 * ITunes: Don't stop import in case of duplicated Playlists lp1783493
 
 ==== 2.1.1 2018-06-13 ====
 After two month it is time to do a bugfix release of Mixxx 2.1.
 Here is a quick summary of what is new in Mixxx 2.1.1:
 
-* Require Soundtouch 2.0 to avoid segfault lp1577042 
+* Require Soundtouch 2.0 to avoid segfault lp1577042
 * Imrpoved Skins including library view fix lp1773709 lp1772202 lp1763953
 * Fix crash when importing ID3v2 APIC frames lp1774790
 * Synchronize execution of Vamp analyzers lp1743256
@@ -57,7 +57,7 @@ Here is a quick summary of what is new in Mixxx 2.1.1:
 * Fix memory leak when loading cover art lp1767068
 * Fix clearing of ReplayGain gain/ratio in file tags lp1766094
 * Fix crash when removing a quick link lp1510068
-* Fidlib: Thread-safe and reentrant generation of filters lp1765210 
+* Fidlib: Thread-safe and reentrant generation of filters lp1765210
 * Fix unresponsive scrolling through crates & playlists using encoder lp1719474
 * Swap default values for temp/perm rate changes lp1764254
 

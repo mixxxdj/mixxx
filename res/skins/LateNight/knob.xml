@@ -3,7 +3,13 @@
   Description:
     A standard knob.
   Variables:
-    control: The control to connect to.
+    group
+    control: The control to connect to
+    label
+    Size
+    TooltipId
+    PotiMinAngle
+    PotiMaxAngle
 -->
 <Template>
   <WidgetGroup>
