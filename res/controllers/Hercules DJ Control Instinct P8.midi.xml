@@ -15,7 +15,7 @@ Based on:
     </info>
     <controller id="DJControlInstinctP8">
         <scriptfiles>
-            <file functionprefix="DJControlInstinctP8" filename="Hercules-DJ-Control-Instinct-IP8-scripts.js"/>
+            <file functionprefix="DJControlInstinctP8" filename="Hercules-DJ-Control-Instinct-P8-scripts.js"/>
         </scriptfiles>
         <controls>
             <!-- Note:
