@@ -133,7 +133,6 @@
           <!-- Traditional Blue -->
           <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
           <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-          <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -147,7 +146,6 @@
           <!-- Traditional Orange -->
           <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
           <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
-          <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -161,7 +159,6 @@
           <!-- Violet -->
           <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
           <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
-          <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -175,7 +172,6 @@
           <!-- Lime -->
           <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
           <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
-          <SetVariable name="control_show_spinny">[Spinny<Variable name="i"/>],show_spinny</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
