@@ -83,6 +83,8 @@ Import('sources')
 # Produce compile_commands.json, which is used by clang-tidy and related tools.
 build.env.Tool("compile_commands")
 build.env.Alias("compiledb", build.env.CompilationDatabase('compile_commands.json'))
+# Build compile_commands.json by default.
+build.env.Default("compile_commands.json")
 
 #Build Vamp minimal plugins
 #VariantDir("vamp-plugins", "src", duplicate=0)
