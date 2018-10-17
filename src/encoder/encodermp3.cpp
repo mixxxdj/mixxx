@@ -37,11 +37,11 @@ EncoderMp3::~EncoderMp3() {
     }
     // free requested buffers
     if (m_bufferIn[0] != nullptr)
-        delete m_bufferIn[0];
+        free(m_bufferIn[0]);
     if (m_bufferIn[1] != nullptr)
-        delete m_bufferIn[1];
+        free(m_bufferIn[1]);
     if (m_bufferOut != nullptr)
-        delete m_bufferOut;
+        free(m_bufferOut);
 }
 
 void EncoderMp3::setEncoderSettings(const EncoderSettings& settings) {

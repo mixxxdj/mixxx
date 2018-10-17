@@ -11,7 +11,7 @@ class QFile;
 
 namespace mixxx {
 
-class SoundSourceOggVorbis: public SoundSource {
+class SoundSourceOggVorbis final : public SoundSource {
   public:
     explicit SoundSourceOggVorbis(const QUrl& url);
     ~SoundSourceOggVorbis() override;
