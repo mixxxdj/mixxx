@@ -172,7 +172,7 @@ bool NullOrEmptyTextFilterNode::match(const TrackPointer& pTrack) const {
     if (!m_sqlColumns.isEmpty()) {
         // only use the major column
         QVariant value = getTrackValueForColumn(pTrack, m_sqlColumns.first());
-        if (!value.isValid() || !qVariantCanConvert<QString>(value)) {
+        if (!value.isValid() || !value.canConvert(QMetaType::QString)) {
             return true;
         }
         return value.toString().isEmpty();
