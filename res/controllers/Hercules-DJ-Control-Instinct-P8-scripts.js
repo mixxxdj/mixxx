@@ -1,4 +1,4 @@
-// DJControl_Instinct_P8.midi.js
+// Hercules-DJ-Control-Instinct-P8-scripts.js
 //
 // 2017.01.23, piff, first draft
 // 2018-06-19, STi, added soft-takeover to more controls, without success though
