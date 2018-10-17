@@ -14,9 +14,9 @@ struct AnalyzerPluginInfo {
                        const QString& author,
                        const QString& name)
             : id(id), author(author), name(name) { }
-    const QString id;
-    const QString author;
-    const QString name;
+    QString id;
+    QString author;
+    QString name;
 };
 
 class AnalyzerPlugin {
