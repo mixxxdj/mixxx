@@ -10,7 +10,7 @@ Based on:
 - User Manual http://ts.hercules.com/download/sound/manuals/DJC_Instinct_P8/DJControl_InstinctP8_User_Manual_EN.pdf
 - MIDI Mapping Version 1.1 http://ts.hercules.com/download/sound/MIDI_Mapping/DJ_InstinctP8/DJControl_Instinct_P8_MIDI_Command_List.pdf
         </description>
-        <wiki>Encoded URL to Mixxx wiki page documenting this controller mapping</wiki>
+        <wiki>https://mixxx.org/wiki/doku.php/hercules_dj_control_instinct_p8</wiki>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=9155</forums>
     </info>
     <controller id="DJControlInstinctP8">
