@@ -224,7 +224,9 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
         // Prepare colors for drawing of marker lines
         QColor lineColor = markProperties.m_color;
         lineColor.setAlpha(200);
-        QColor contrastLineColor(0,0,0,120);
+        QColor contrastLineColor =  (brightness(lineColor) < 130) ?
+                QColor(255,255,255,120) :
+                QColor(0,0,0,120);
 
         // Draw marker lines
         if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {

@@ -5,6 +5,7 @@
 
 #include "skin/skincontext.h"
 #include "util/class.h"
+#include "util/math.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "library/dao/cue.h"
@@ -31,7 +32,15 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
 
   private:
     void generateMarkImage(WaveformMark* pMark);
-
+    // algorithm by http://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
+    // NOTE(Swiftb0y): please suggest if I should you use other methods
+    // (like the W3C algorithm) or if this approach is to to performance hungry
+    int brightness(QColor& c) {
+       return static_cast<int>(sqrtf(
+          c.red() * c.red() * .241 +
+          c.green() * c.green() * .691 +
+          c.blue() * c.blue() * .068));
+    };
     WaveformMarkSet m_marks;
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
