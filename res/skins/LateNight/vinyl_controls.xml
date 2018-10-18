@@ -2,27 +2,31 @@
   <WidgetGroup>
     <ObjectName>VinylControls</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>max,min</SizePolicy>
+    <SizePolicy>max,f</SizePolicy>
     <Children>
 
       <WidgetGroup>
         <ObjectName>AlignVCenter</ObjectName>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>f,f</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
           <StatusLight>
             <ObjectName>VinylStatus</ObjectName>
-            <Size>10f,10f</Size>
-            <TooltipId>vinylcontrol_status</TooltipId>vinylcontrol_enabled
+            <Size>20f,20f</Size>
+            <TooltipId>vinylcontrol_status</TooltipId>
             <NumberPos>3</NumberPos>
-            <PathStatusLight scalemode="STRETCH">buttons/btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
-            <PathStatusLight2 scalemode="STRETCH">buttons/btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
-            <PathStatusLight3 scalemode="STRETCH">buttons/btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
+            <PathStatusLight scalemode="STRETCH">style/vinyl_control_1.svg</PathStatusLight>
+            <PathStatusLight2 scalemode="STRETCH">style/vinyl_control_2.svg</PathStatusLight2>
+            <PathStatusLight3 scalemode="STRETCH">style/vinyl_control_3.svg</PathStatusLight3>
             <Connection>
               <ConfigKey><Variable name="group"/>,vinylcontrol_status</ConfigKey>
             </Connection>
           </StatusLight>
         </Children>
+        <Connection>
+          <ConfigKey persist="true">[Channel<Variable name="channum"/>],vinylcontrol_enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
       </WidgetGroup>
 
       <PushButton>

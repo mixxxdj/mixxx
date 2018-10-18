@@ -4,6 +4,8 @@
     An effect unit widget.
   Variables:
     group: The group for the controls.
+    FxRack
+    FxUnit
 -->
 <Template>
   <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
@@ -11,10 +13,10 @@
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="FxUnit"/></ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,max</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <WidgetGroup><!-- Show parameters -->
+      <WidgetGroup><!-- Fx Parameters -->
         <SizePolicy>me,me</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
@@ -42,7 +44,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><!-- Enable + Mix/Super + Pfl -->
+          <WidgetGroup><!-- Expand/Collapse + Mix/Super + Pfl -->
             <ObjectName>EffectUnitControls</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>max,min</SizePolicy>
@@ -50,6 +52,10 @@
 
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_ExpandCollapseButton</ObjectName>
+              </SingletonContainer>
+
+              <SingletonContainer>
+                <ObjectName>FxUnit<Variable name="FxUnit"/>_MixModeButton</ObjectName>
               </SingletonContainer>
 
               <WidgetGroup><Size>,5f</Size></WidgetGroup>
@@ -81,7 +87,7 @@
 
               <WidgetGroup><Size>,5me</Size></WidgetGroup>
             </Children>
-          </WidgetGroup><!-- /Enable + Mix/Super + Pfl -->
+          </WidgetGroup><!-- /Expand/Collapse + Mix/Super + Pfl -->
         </Children>
       </WidgetGroup>
 
