@@ -8,11 +8,11 @@ Variables:
 <Template>
   <WidgetGroup>
     <ObjectName>SpinnyCover_Container</ObjectName>
-    <SizePolicy>max,me</SizePolicy>
+    <SizePolicy>max,min</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
 
-      <!-- spinny -->
+      <!-- Spinny with/without Cover Art -->
       <WidgetGroup>
         <ObjectName>SpinnyCover</ObjectName>
         <Size>111f,111f</Size>
@@ -29,7 +29,7 @@ Variables:
             <PathGhost scalemode="STRETCH_ASPECT">graphics/spinny_indicator_ghost.svg</PathGhost>
             <ShowCover>false</ShowCover>
             <Connection>
-              <ConfigKey persist="true">[Tango],spinnyWithCoverArt</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -45,44 +45,58 @@ Variables:
             <PathGhost scalemode="STRETCH_ASPECT">graphics/spinny_indicator_ghost.svg</PathGhost>
             <ShowCover>true</ShowCover>
             <Connection>
-              <ConfigKey persist="true">[Tango],spinnyWithCoverArt</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </Spinny>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Tango],spinny_or_cover</ConfigKey>
+          <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <!-- Cover Art only -->
+      <WidgetGroup>
+        <ObjectName>SpinnyCover</ObjectName>
+        <SizePolicy>max,max</SizePolicy>
+        <MaximumSize>111,111</MaximumSize>
+        <Layout>vertical</Layout>
+        <Children>
+          <CoverArt>
+            <TooltipId>coverart</TooltipId>
+            <Size>111f,111f</Size>
+            <Group><Variable name="group"/></Group>
+            <DefaultCover>skin:/graphics/cover_default.svg</DefaultCover>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </CoverArt>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
 
-      <CoverArt>
-        <TooltipId>coverart</TooltipId>
-        <Size>111f,111f</Size>
-        <Group><Variable name="group"/></Group>
-        <DefaultCover>skin:/graphics/cover_default.svg</DefaultCover>
-        <Connection>
-          <ConfigKey persist="true">[Tango],spinny_or_cover</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </CoverArt>
-
       <WidgetGroup>
-        <Size>0me,1f</Size>
+        <Size>-1i,1f</Size>
       </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>RoundFiller25</ObjectName>
-        <Size>0me,24f</Size>
+        <Size>-1i,24f</Size>
       </WidgetGroup>
 
       <WidgetGroup>
         <Layout>vertical</Layout>
-        <SizePolicy>me,i</SizePolicy>
+        <SizePolicy>i,i</SizePolicy>
         <Children>
           <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,3f</Size></WidgetGroup>
-          <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>0me,22me</Size></WidgetGroup>
+          <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>0me,22f</Size></WidgetGroup>
+          <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
         </Children>
       </WidgetGroup>
 
