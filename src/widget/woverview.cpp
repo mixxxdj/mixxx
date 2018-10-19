@@ -269,7 +269,6 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
 
             if (newColor != markProperties.m_color || newColor != markProperties.m_textColor) {
                 markProperties.m_color = newColor;
-                markProperties.m_textColor = newColor;
                 currentMark->setProperties(markProperties);
             }
         }
