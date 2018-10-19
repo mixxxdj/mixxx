@@ -8,7 +8,7 @@
         <ObjectName>EffectLeftBorder</ObjectName>
         <Size>5f,40f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
       </WidgetGroup>
 
       <WidgetGroup>
@@ -29,13 +29,13 @@
             <LeftClickIsPushButton>true</LeftClickIsPushButton>
             <State>
               <Number>0</Number>
-              <Pressed>btn_reloop1_down.png</Pressed>
-              <Unpressed>btn_reloop1.png</Unpressed>
+              <Pressed>skin:/btn/btn_reloop_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_reloop.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>btn_reloop1_overdown.png</Pressed>
-              <Unpressed>btn_reloop1_over.png</Unpressed>
+              <Pressed>skin:/btn/btn_reloop_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_reloop_over.png</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],reloop_toggle</ConfigKey>
@@ -62,8 +62,8 @@
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed>btn_loop_in1_overdown.png</Pressed>
-              <Unpressed>btn_loop_in1.png</Unpressed>
+              <Pressed>skin:/btn/btn_loop_in_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_loop_in.png</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],loop_in</ConfigKey>
@@ -79,8 +79,8 @@
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed>btn_loop_out1_overdown.png</Pressed>
-              <Unpressed>btn_loop_out1.png</Unpressed>
+              <Pressed>skin:/btn/btn_loop_out_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_loop_out.png</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],loop_out</ConfigKey>
@@ -96,8 +96,8 @@
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed>btn_beatloop_enable_overdown.png</Pressed>
-              <Unpressed>btn_beatloop_enable.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_enable_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_enable.png</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_activate</ConfigKey>
@@ -112,7 +112,7 @@
           <WidgetGroup>
             <Pos>100,10</Pos>
             <Size>50f,20f</Size>
-            <Style>QGroupBox { border: 10px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
+            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
             <Layout>horizontal</Layout>
             <Children>
               <BeatSpinBox>
@@ -140,13 +140,13 @@
             <RightClickIsPushButton>true</RightClickIsPushButton>
             <State>
               <Number>0</Number>
-              <Pressed>btn_beatloop1_0125_down.png</Pressed>
-              <Unpressed>btn_beatloop1_0125.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_0125_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_0125.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>btn_beatloop1_0125_overdown.png</Pressed>
-              <Unpressed>btn_beatloop1_0125_over.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_0125_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_0125_over.png</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_0.125_toggle</ConfigKey>
@@ -173,13 +173,13 @@
             <RightClickIsPushButton>true</RightClickIsPushButton>
             <State>
               <Number>0</Number>
-              <Pressed>btn_beatloop1_0250_down.png</Pressed>
-              <Unpressed>btn_beatloop1_0250.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_0250_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_0250.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>btn_beatloop1_0250_overdown.png</Pressed>
-              <Unpressed>btn_beatloop1_0250_over.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_0250_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_0250_over.png</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_0.25_toggle</ConfigKey>
@@ -206,13 +206,13 @@
             <RightClickIsPushButton>true</RightClickIsPushButton>
             <State>
               <Number>0</Number>
-              <Pressed>btn_beatloop1_0500_down.png</Pressed>
-              <Unpressed>btn_beatloop1_0500.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_0500_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_0500.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>btn_beatloop1_0500_overdown.png</Pressed>
-              <Unpressed>btn_beatloop1_0500_over.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_0500_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_0500_over.png</Unpressed>
             </State>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_0.5_toggle</ConfigKey>
@@ -237,13 +237,13 @@
             <RightClickIsPushButton>true</RightClickIsPushButton>
             <State>
               <Number>0</Number>
-              <Pressed>btn_beatloop1_1_down.png</Pressed>
-              <Unpressed>btn_beatloop1_1.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_1_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_1.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>btn_beatloop1_1_overdown.png</Pressed>
-              <Unpressed>btn_beatloop1_1_over.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_1_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_1_over.png</Unpressed>
             </State>
             <Pos>222,10</Pos>
             <Connection>
@@ -269,13 +269,13 @@
             <RightClickIsPushButton>true</RightClickIsPushButton>
             <State>
               <Number>0</Number>
-              <Pressed>btn_beatloop1_2_down.png</Pressed>
-              <Unpressed>btn_beatloop1_2.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_2_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_2.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>btn_beatloop1_2_overdown.png</Pressed>
-              <Unpressed>btn_beatloop1_2_over.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_2_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_2_over.png</Unpressed>
             </State>
             <Pos>243,10</Pos>
             <Connection>
@@ -301,13 +301,13 @@
             <RightClickIsPushButton>true</RightClickIsPushButton>
             <State>
               <Number>0</Number>
-              <Pressed>btn_beatloop1_4_down.png</Pressed>
-              <Unpressed>btn_beatloop1_4.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_4_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_4.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>btn_beatloop1_4_overdown.png</Pressed>
-              <Unpressed>btn_beatloop1_4_over.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_4_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_4_over.png</Unpressed>
             </State>
             <Pos>264,10</Pos>
             <Connection>
@@ -333,13 +333,13 @@
             <RightClickIsPushButton>true</RightClickIsPushButton>
             <State>
               <Number>0</Number>
-              <Pressed>btn_beatloop1_8_down.png</Pressed>
-              <Unpressed>btn_beatloop1_8.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_8_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_8.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>btn_beatloop1_8_overdown.png</Pressed>
-              <Unpressed>btn_beatloop1_8_over.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_8_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_8_over.png</Unpressed>
             </State>
             <Pos>285,10</Pos>
             <Connection>
@@ -365,13 +365,13 @@
             <RightClickIsPushButton>true</RightClickIsPushButton>
             <State>
               <Number>0</Number>
-              <Pressed>btn_beatloop1_16_down.png</Pressed>
-              <Unpressed>btn_beatloop1_16.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_16_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_16.png</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>btn_beatloop1_16_overdown.png</Pressed>
-              <Unpressed>btn_beatloop1_16_over.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatloop_16_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_16_over.png</Unpressed>
             </State>
             <Pos>306,10</Pos>
             <Connection>
@@ -407,8 +407,8 @@
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed>btn_beatjump_backward_overdown.png</Pressed>
-              <Unpressed>btn_beatjump_backward.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatjump_backward_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatjump_backward.png</Unpressed>
             </State>
             <Pos>0,10</Pos>
             <Connection>
@@ -425,7 +425,7 @@
           <WidgetGroup>
             <Size>50f,20f</Size>
             <Pos>21,10</Pos>
-            <Style>QGroupBox { border: 10px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
+            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
             <Layout>horizontal</Layout>
             <Children>
               <BeatSpinBox>
@@ -443,8 +443,8 @@
             <NumberStates>1</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed>btn_beatjump_forward_overdown.png</Pressed>
-              <Unpressed>btn_beatjump_forward.png</Unpressed>
+              <Pressed>skin:/btn/btn_beatjump_forward_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatjump_forward.png</Unpressed>
             </State>
             <Pos>72,10</Pos>
             <Connection>
@@ -464,13 +464,13 @@
         <ObjectName>EffectRightBorder</ObjectName>
         <Size>5f,40f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
       </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>EffectRightBorder</ObjectName>
         <Size>3f,40f</Size>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
+        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
       </WidgetGroup>
 
     </Children>

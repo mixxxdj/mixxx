@@ -2,103 +2,98 @@
 #Mixxx {
   background-color: #191919;
   background-repeat:no-repeat;
-  background-attachment:fixed;
-  background-position:center top;
-}
-
-#Deck WPushButton {
-  font-family: "Open Sans";
-  font-size: 14px;
+	background-attachment:fixed;
+	background-position:center top;
 }
 
 WBeatSpinBox,
-/* For some mysterious reason #DlgAutoDJ QSpinBox
-wouldn't style the respective spinbox in Shade (anymore),
-that's why we do it in another way here */
-#spinBoxTransition {
-  color: #060613;
-  background-color: #aab2b7;
-  border: 1px solid #060613;
-  padding: 0px;
-  font: 13px;
-}
-
-WBeatSpinBox::up-button, 
-#spinBoxTransition::up-button {
-  height: 9px;
-  border-style: solid;
-  border-color: #060613;
-  border-width: 0px 0px 0px 1px;
-  image: url(skin:/btn/btn_spin_up.png) no-repeat;
-}
-
-WBeatSpinBox::down-button,
-#spinBoxTransition::down-button {
-  height: 9px;
-  border-style: solid;
-  border-color: #060613;
-  border-width: 0px 0px 0px 1px;
-  image: url(skin:/btn/btn_spin_down.png) no-repeat;
-}
+#DlgAutoDJ QSpinBox {
+	color: #060613;
+	background-color: #aab2b7;
+	border: 1px solid #060613;
+	padding: 0px;
+	margin: 0px;
+	font: 13px;
+  }
+  WBeatSpinBox::up-button,
+  #DlgAutoDJ QSpinBox::up-button {
+	  height: 9px;
+	  border-style: solid;
+	  border-color: #060613;
+	  border-width: 0px 0px 0px 1px;
+	  image: url(skin:/btn_spin_up.png) no-repeat;
+  }
+  WBeatSpinBox::down-button,
+  #DlgAutoDJ QSpinBox::down-button {
+	  border-style: solid;
+	  border-color: #060613;
+	  border-width: 0px 0px 0px 1px;
+	  image: url(skin:/btn_spin_down.png) no-repeat;
+    }
+    WBeatSpinBox::down-button {
+	    height: 9px;
+    }
+    #DlgAutoDJ QSpinBox::down-button {
+	    height: 10px;
+    }
 
 WEffectSelector {
-  color: #060613;
-  background-color: #aab2b7;
-  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-  margin-top: 0px;
-  margin-bottom: 0px;
-  border: 1px solid #060613;
-  padding-left: 3px;
-  font: 13px;
+	color: #060613;
+	background-color: #aab2b7;
+	/* Fixes the white bars on the top/bottom of the popup on Mac OS X */
+	margin-top: 0px;
+	margin-bottom: 0px;
+	border: 1px solid #060613;
+	padding-left: 3px;
+	font: 13px;
 }
 
 WEffectSelector::drop-down {
-  /* This causes the Qt theme's widget style to magically not apply. Go figure. */
-  border: 0;
+	/* This causes the Qt theme's widget style to magically not apply. Go figure. */
+	border: 0;
 }
 
 WEffectSelector::down-arrow {
-  height: 20px;
-  border-style: solid;
-  border-color: #060613;
-  border-width: 0px 0px 0px 1px;
-  image: url(skin:/btn/btn_spin_down.png) no-repeat;
+	height: 20px;
+	border-style: solid;
+	border-color: #060613;
+	border-width: 0px 0px 0px 1px;
+	image: url(skin:/btn_spin_down.png) no-repeat;
 }
 
 WEffectSelector QAbstractItemView {
-  color: #060613;
-  background-color: #aab2b7;
-  border: 2px solid #060613;
-  selection-background-color: lightgray;
+	color: #060613;
+	background-color: #aab2b7;
+	border: 2px solid #060613;
+	selection-background-color: lightgray;
 }
 
 WEffectSelector::item:selected {
-  background-color: lightgray;
+	background-color: lightgray;
 }
 
 WEffectSelector::checked {
-  color: #EC4522;
+	color: #EC4522;
 }
 
 #EffectSelectorGroup[highlight="1"] {
-  border: 1px solid #52f864;
-  margin: 0px 0px 0px 0px;
+	border: 1px solid #52f864;
+	margin: 0px 0px 0px 0px;
 }
 #EffectSelectorGroup[highlight="0"] {
-  border: 0px solid #52f864;
-  margin: 0px 0px 0px 0px;
+	border: 0px solid #52f864;
+	margin: 0px 0px 0px 0px;
 }
 
 #EffectUnit {
-  qproperty-layoutAlignment:AlignTop;
+	qproperty-layoutAlignment:AlignTop;
 }
 
 
-
 /*################################################################
-######  Library styling is hard  ################################
-################### most of it was LateNight & Deere & Tango ###
-############ added styling for AutoDJ & Recording etc ###### */
+ ######  Library styling is hard  ###############################
+ ################### most of it was LateNight & Deere & Tango ##########
+############ added styling for AutoDJ & Recording etc ##### */
 
 #Library {
   margin-top: 3px;
@@ -213,7 +208,7 @@ WButtonBar QToolButton {
   border: 1px solid #191919;
   border-radius: 1px;
   color: #222;
-  background-color: #626F87;
+  background-color: #99A1A5;
   }
   WButtonBar QToolButton:hover {
     border: 1px solid #eee;
@@ -237,13 +232,10 @@ WBaseLibrary QTabBar::tab {
     background-color: #fff;
   }
   WBaseLibrary QTabBar::tab:focus {
-    background-color: #B1B9C0;
-    border-top: 1px solid #B1B9C0;
-    border-right: 1px solid #B1B9C0;
-    border-left: 1px solid #B1B9C0;
-  }
-  QPushButton:focus {
-    border: 1px solid #fff;
+    border-top: 1px solid #8E5C00;
+    border-right: 1px solid #8E5C00;
+    border-left: 1px solid #8E5C00;
+    background-color: #232323;
   }
   WBaseLibrary QTabBar::tab:!selected {
     border: 1px solid #191919;
@@ -327,7 +319,6 @@ WBaseLibrary QLabel {
 #DlgRecording QLabel {
   min-height: 20px;
   max-height: 120px;
-  min-width: 40px;
   margin-left: 5px;
   text-transform: none;
   /* Don't know why but this needs to be defined exxplicitely */
@@ -361,18 +352,11 @@ QPushButton#btnPurge:hover {
   border: 1px solid #F90562;
 }
 
-QPushButton#pushButtonAutoDJ:checked,
-QPushButton#pushButtonRecording:checked,
-QPushButton#pushButtonAnalyze:checked {
-  background-color: #F90562;
-  border: 1px solid #000;
+WBaseLibrary QRadioButton::indicator:checked {
+  background: url(skin:btn_lib_radio_button_on.svg);
 }
-
-QPushButton#pushButtonAutoDJ:checked:hover,
-QPushButton#pushButtonRecording:checked:hover,
-QPushButton#pushButtonAnalyze:checked:hover {
-  background-color: #C91559;
-  border: 1px solid #000;
+WBaseLibrary QRadioButton::indicator:unchecked {
+  background: url(skin:btn_lib_radio_button_off.svg);
 }
 
 /* BPM lock icon in the library "BPM" column. */
@@ -502,10 +486,10 @@ QHeaderView {
     background-color: rgba(141,152,163,160);
   }
   QHeaderView::up-arrow {
-    image: url(skin:/btn/btn_lib_sort_up.png)
+    image: url(skin:/btn_lib_sort_up.png)
   }
   QHeaderView::down-arrow {
-    image: url(skin:/btn/btn_lib_sort_down.png)
+    image: url(skin:/btn_lib_sort_down.png)
   }
 
 /* Cover Art*/
@@ -518,34 +502,32 @@ WCoverArt {
 
 /* QScrollBar styling is even harder */
 QScrollBar {
-  background-color: #000;
+  border: 1px solid #5C5B5D;
+  background-color: #191919;
   color: #5C5B5D;
   font-size: 8pt;
   }
   QScrollBar:horizontal {
     min-width: 18px;
     height: 18px;
+    border-top: 0px;
   }
   QScrollBar:vertical {
     min-height: 18px;
     width: 18px;
-  }
-  WBaseLibrary QScrollBar:vertical {
-    border-left: 1px solid #5C5B5D;
-  }
-  WBaseLibrary QScrollBar:horizontal {
-    border-top: 1px solid #5C5B5D;
+    border-left: 0px;
+    color: #b3b3b3;
   }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
 QScrollBar::add-page,
 QScrollBar::sub-page {
   min-width: 14px;
   min-height: 14px;
-  background-color: #000;
+  background-color: #191919;
 }
 QScrollBar::handle:vertical,
 QScrollBar::handle:horizontal {
-  background: rgba(199, 217, 235, 140);
+  background: rgba(199, 217, 235, 170);
   border: 1px solid #191919;
 }
 QScrollBar::handle:horizontal {
@@ -566,13 +548,6 @@ QScrollBar::sub-line:vertical {
   height: 0px;
 }
 
-/* Corner in between two scrollbars */
-QAbstractScrollArea::corner {
-  background-color: #0f0f0f;
-  border-left: 1px solid #5C5B5D;
-  border-top: 1px solid #5C5B5D;
-}
-
 /* splitter between treeview and library*/
 QSplitter::handle {
   image: url(skin:/style/style_handle_unchecked.png);
@@ -585,10 +560,8 @@ QSplitter::handle:pressed {
 QSplitter::handle:horizontal { width: 6px; }
 QSplitter::handle:vertical { height: 6px;}
 
-QRadioButton::indicator:checked {
-  image: url(skin:/btn/btn_lib_radio_button_on.svg) no-repeat center center;
+WLibrary QRadioButton::indicator:unchecked {
+  background: url(skin:btn_lib_radio_button_off.svg);
 }
-QRadioButton::indicator:unchecked {
-  image: url(skin:/btn/btn_lib_radio_button_off.svg) no-repeat center center;
-}
+
 

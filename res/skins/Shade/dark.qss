@@ -1,8 +1,24 @@
 /* Dark */
 WBeatSpinBox,
-#DlgAutoDJ QSpinBox {
+/* For some mysterious reason #DlgAutoDJ QSpinBox
+wouldn't style the respective spinbox in Shade (anymore),
+that's why we do it in another way here */
+#spinBoxTransition {
 	color: #000000;
 	background-color: #717171;
+  border: 1px solid #060613;
+  padding: 0px;
+  font: 13px;
+}
+
+WBeatSpinBox::up-button, 
+#spinBoxTransition::up-button {
+  border-color: #060613;
+}
+
+WBeatSpinBox::down-button,
+#spinBoxTransition::down-button {
+  border-color: #060613;
 }
 
 WEffectSelector {
@@ -49,7 +65,7 @@ WBaseLibrary QRadioButton {
 
 WButtonBar QToolButton {
   color: #000;
-  background-color: #656565;
+  background-color: #5C5B5D;
   }
   WButtonBar QToolButton:hover {
     border: 1px solid #eee;
@@ -92,17 +108,27 @@ WBaseLibrary QPushButton {
     color: #333;
     border: 1px solid #666;
   }
-  
-/* 'Enable AutoDJ' button	*/
+
+/* 'Enable AutoDJ' button etc.	*/
 QPushButton#pushButtonAutoDJ:hover,
 QPushButton#pushButtonRecording:hover,
 QPushButton#pushButtonAnalyze:hover,
 QPushButton#btnPurge:hover {
-    border: 1px solid #B79E00;
-  }
+  border: 1px solid #B79E00;
+}
 
-WBaseLibrary QRadioButton::indicator:checked {
- background: url(skin:btn_lib_radio_button_on_dark.svg);
+QPushButton#pushButtonAutoDJ:checked,
+QPushButton#pushButtonRecording:checked,
+QPushButton#pushButtonAnalyze:checked {
+  background-color: #B79E00;
+  border: 1px solid #000;
+}
+
+QPushButton#pushButtonAutoDJ:checked:hover,
+QPushButton#pushButtonRecording:checked:hover,
+QPushButton#pushButtonAnalyze:checked:hover {
+  background-color: #948000;
+  border: 1px solid #000;
 }
 
 QHeaderView {
@@ -128,20 +154,35 @@ QHeaderView::section {
 
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
 QScrollBar {
-  border: 1px solid #5C5B5D;
-  background-color: #0f0f0f;
+  background-color: #000;
   padding: 1px;
   color: #5C5B5D;
   }
+  WBaseLibrary QScrollBar:vertical {
+    border-left: 1px solid #5C5B5D;
+  }
+  WBaseLibrary QScrollBar:horizontal {
+    border-top: 1px solid #5C5B5D;
+  }
   QScrollBar::add-page,
   QScrollBar::sub-page {
-    background-color: #0f0f0f;
+    background-color: #000;
   }
   QScrollBar::handle:vertical,
   QScrollBar::handle:horizontal {
-    background: rgba(126, 125, 127, 170);
+    background: rgba(126, 125, 127, 140);
     border: 1px solid #0f0f0f;
   }
 
+/* Corner in between two scrollbars */
+QAbstractScrollArea::corner {
+  background-color: #0f0f0f;
+  border-left: 1px solid #5C5B5D;
+  border-top: 1px solid #5C5B5D;
+}
+
+QRadioButton::indicator:checked {
+  image: url(skin:/btn/btn_lib_radio_button_on_dark.svg) no-repeat center center;
+}
 
 

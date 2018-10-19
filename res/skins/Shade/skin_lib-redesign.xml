@@ -1,0 +1,99 @@
+
+      <attribute persist="true" config_key="[Library],show_icon_text">1</attribute>
+
+    <!--
+    **********************************************
+    Library / Preview Deck / Search / Tree view
+    **********************************************
+    -->
+    <WidgetGroup>
+      <ObjectName>Library</ObjectName>
+      <Size>e,e</Size>
+      <SizePolicy>me,me</SizePolicy>
+      <Layout>horizontal</Layout>
+      <Children>
+
+        <Splitter>
+          <Size>me,me</Size>
+          <SplitSizes>1,6</SplitSizes>
+          <Collapsible>1,0</Collapsible>
+          <SplitSizesConfigKey>[Shade],splitSizeLibTree</SplitSizesConfigKey>
+          <Style>QGroupBox { border: 0px solid #565E6B; margin: 0px; padding: 0px;}</Style>
+          <Children>
+            <!-- Button bar / TreeView + CoverArt -->
+            <WidgetGroup>
+              <Style>QGroupBox { border: 0px solid #565E6B; margin: 0px; padding: 0px;}</Style>
+              <Layout>vertical</Layout>
+              <Children>
+
+                <WidgetGroup>
+                  <Layout>horizontal</Layout>
+                  <Children>
+                    <Template src="skin:preview_deck.xml"/>
+                  </Children>
+                  <Connection>
+                    <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+                </WidgetGroup>
+
+                <!--Library Tree View-->
+                <Splitter>
+                  <ObjectName>LibTreeCoverSplitter</ObjectName>
+                  <Size>e,me</Size>
+                  <SplitSizes>1,e</SplitSizes>
+                  <Collapsible>0,0</Collapsible>
+                  <Style>QGroupBox { border: 0px solid #565E6B; margin: 0px; padding: 0px;}</Style>
+                  <Children>
+                    <WidgetGroup>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>min,me</SizePolicy>
+                      <Children>
+                        <LibrarySidebarButtons>
+                          <SizePolicy>min,me</SizePolicy>
+                          <Id>1</Id>
+                        </LibrarySidebarButtons>
+                        <!-- note[ronso0] For some strange reason I fail to create a gap in between WButtonBar and SideBar via qss, so I place a plain spacer here -->
+                        <WidgetGroup><Size>3f,0min</Size></WidgetGroup>
+                        <LibrarySidebarExpanded>
+                          <Id>1</Id>
+                        </LibrarySidebarExpanded>
+                      </Children>
+                    </WidgetGroup>
+                    <!--Cover Art-->
+                    <CoverArt>
+                      <MinimumSize>16,16</MinimumSize>
+                      <SizePolicy>me,me</SizePolicy>
+                      <Connection>
+                        <ConfigKey>[Library],show_coverart</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                    </CoverArt>
+                  </Children>
+                </Splitter>
+
+              </Children>
+            </WidgetGroup>
+
+            <WidgetGroup><!-- Library Table-->
+              <Style>QGroupBox {}</Style>
+              <Layout>vertical</Layout>
+              <SizePolicy>me,me</SizePolicy>
+              <Children>
+                <LibraryBreadCrumb>
+                  <Id>1</Id>
+                </LibraryBreadCrumb>
+                <SearchBox>
+                  <Id>1</Id>
+                </SearchBox>
+                <LibraryPane>
+                  <Id>1</Id>
+                </LibraryPane>
+              </Children>
+            </WidgetGroup>
+
+          </Children>
+        </Splitter>
+
+      </Children>
+    </WidgetGroup><!-- Library -->

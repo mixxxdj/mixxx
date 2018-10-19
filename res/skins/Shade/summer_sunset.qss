@@ -1,8 +1,24 @@
 /* Summer Sunset */
 WBeatSpinBox,
-#DlgAutoDJ QSpinBox {
+/* For some mysterious reason #DlgAutoDJ QSpinBox
+wouldn't style the respective spinbox in Shade (anymore),
+that's why we do it in another way here */
+#spinBoxTransition {
 	color: #101307;
 	background-color: #ad9e4f;
+  border: 1px solid #060613;
+  padding: 0px;
+  font: 13px;
+}
+
+WBeatSpinBox::up-button, 
+#spinBoxTransition::up-button {
+  border-color: #060613;
+}
+
+WBeatSpinBox::down-button,
+#spinBoxTransition::down-button {
+  border-color: #060613;
 }
 
 WEffectSelector {
@@ -36,7 +52,7 @@ WBaseLibrary #DlgMissing {
 
 WButtonBar QToolButton {
   color: #000;
-  background-color: #A09249;
+  background-color: #615726;
   }
   WButtonBar QToolButton:hover {
     border: 1px solid #eee;
@@ -111,29 +127,21 @@ QHeaderView::down-arrow {
 
 /* Scroll bars */
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
-QScrollBar::add-page,
-QScrollBar::sub-page {
-  background-color: #000;
-}
-QScrollBar::handle:vertical,
-QScrollBar::handle:horizontal {
-  background: #998A3C;
-  border: 1px solid #524A20;
-}
+  QScrollBar::add-page,
+  QScrollBar::sub-page {
+    background-color: #000;
+  }
+  QScrollBar::handle:vertical,
+  QScrollBar::handle:horizontal {
+    background: rgba(218, 195, 80, 140);
+    border: 1px solid #524A20;
+  }
 
-/* "add-page" and "sub-page" are the gutter of the scrollbar */
-QScrollBar {
+/* Corner in between two scrollbars */
+QAbstractScrollArea::corner {
   background-color: #0f0f0f;
-}
-QScrollBar::add-page,
-QScrollBar::sub-page {
-  min-width: 14px;
-  min-height: 14px;
-  background-color: #0f0f0f;
-}
-QScrollBar::handle:vertical,
-QScrollBar::handle:horizontal {
-  background: rgba(218, 195, 80, 170);
+  border-left: 1px solid #5C5B5D;
+  border-top: 1px solid #5C5B5D;
 }
 
 WLibrary QPushButton {
