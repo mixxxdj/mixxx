@@ -299,8 +299,6 @@ void CueControl::trackCuesUpdated() {
             } else {
                 // If the old hotcue is the same, then we only need to update
                 pControl->setPosition(pCue->getPosition());
-                // NOTE(Swiftb0y): I don't know if this is the smartest location to manage
-                // please suggest whether this should rather go somewhere else.
                 pControl->setColor(pCue->getColor());
             }
             // Add the hotcue to the list of active hotcues
