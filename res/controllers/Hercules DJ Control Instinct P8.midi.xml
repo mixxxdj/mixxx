@@ -2,7 +2,7 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="">
     <info>
         <name>Hercules DJ Control Instinct P8</name>
-        <author>Piff+Hubert+STi</author>
+        <author>Piff+Hubert+STi+Piega+radusuciu</author>
         <description>Hercules DJ Control Instinct P8 - 20180619
 
 Based on:
@@ -142,11 +142,11 @@ Based on:
                 <status>0x90</status><midino>0x65</midino></control>-->
 
 <!-- Wheel Turn (not pressed) -->
-            <control><group>[Channel1]</group><key>DJControlInstinctP8.jog_wheel</key><description>Pitch Bend Deck A (Jog-Wheel)</description>
+            <control><group>[Channel1]</group><key>DJControlInstinctP8.jogWheel</key><description>Pitch Bend Deck A (Jog-Wheel)</description>
                 <status>0xB0</status><midino>0x30</midino><options><script-binding/></options></control>
             <control><group>[Channel1]</group><key>DJControlInstinctP8.pitch</key><description>Pitch Deck A (Shift+Jog-Wheel)</description>
                 <status>0xB0</status><midino>0x31</midino><options><script-binding/></options></control>
-            <control><group>[Channel2]</group><key>DJControlInstinctP8.jog_wheel</key><description>Pitch Bend Deck B (Jog-Wheel)</description>
+            <control><group>[Channel2]</group><key>DJControlInstinctP8.jogWheel</key><description>Pitch Bend Deck B (Jog-Wheel)</description>
                 <status>0xB0</status><midino>0x32</midino><options><script-binding/></options></control>
             <control><group>[Channel2]</group><key>DJControlInstinctP8.pitch</key><description>Pitch Deck B (Shift+Jog-Wheel)</description>
                 <status>0xB0</status><midino>0x33</midino><options><script-binding/></options></control>

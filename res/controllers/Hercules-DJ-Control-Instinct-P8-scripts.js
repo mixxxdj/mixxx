@@ -2,7 +2,7 @@
 //
 // 2017.01.23, piff, first draft
 // 2018-06-19, STi, added soft-takeover to more controls, without success though
-//
+// 2018-10-19, Piega,radusuciu Clean js
 //
 
 // NOTE: this code is mostly copy / paste from work done by other persons so credits for the code goes to
@@ -132,7 +132,7 @@ DJControlInstinctP8.scratch = function(midino, control, value, status, group) {
       if (scratchMode === 0) {
           // Enable the scratch mode on the corrisponding deck and start the timer
           scratchMode = 1;
-          scratchTimer = engine.beginTimer(scratchResetTime, "DJControlInstinctP8.wheelOnOff()");
+          scratchTimer = engine.beginTimer(scratchResetTime, DJControlInstinctP8.wheelOnOff);
           midi.sendShortMsg(0x90, 45, 0x7F); // Switch-on the Scratch led
           engine.setValue("[Channel1]", "keylock", 0);
           engine.setValue("[Channel2]", "keylock", 0);
@@ -153,38 +153,42 @@ DJControlInstinctP8.wheelOnOff = function() {
     if (wheelMove[0]) {
         engine.scratchEnable(1, 128, standardRpm, alpha, beta);
     }
-    else engine.scratchDisable(1);
-    wheelMove[0] = 0;
+    else { engine.scratchDisable(1);
+    }
+	    wheelMove[0] = 0;
+    
 
     //Wheel Deck B / Channel 2
     if (wheelMove[1]) {
         engine.scratchEnable(2, 128, standardRpm, alpha, beta);
     }
-    else engine.scratchDisable(2);
-    wheelMove[1] = 0;
+    else {engine.scratchDisable(2);
+    }
+	    wheelMove[1] = 0;
+    
 };
 
-DJControlInstinctP8.jog_wheel = function (midino, control, value, status, group) {
+DJControlInstinctP8.jogWheel = function (midino, control, value, status, group) {
 
     var deck = (group == "[Channel1]") ? deckA : deckB;
 
     // This function is called everytime the jog is moved
-    if (value == 0x01) {
-        if (scratchMode) {
-            engine.scratchTick(deck, 1);
-            wheelMove[deck - 1] = 1;
-        } else
-            engine.setValue("[Channel" + deck + "]", "jog", jogSensitivity);
-    } else {
-        if (scratchMode) {
-            engine.scratchTick(deck, -1);
-            wheelMove[deck - 1] = 1;
-        } else
-            engine.setValue("[Channel" + deck + "]", "jog", -jogSensitivity);
-    }
+
+	var direction = 1;
+	if (value !== 0x01) {
+    	direction = -1;
+	}
+
+	if (scratchMode) {
+    	engine.scratchTick(deck, direction);
+    	wheelMove[deck - 1] = 1;
+	} else {
+    	engine.setValue("[Channel" + deck + "]", "jog", jogSensitivity * direction);
+	}
+
 };
 
-DJControlInstinctP8.jog_wheelhelper = function(n) {
+DJControlInstinctP8.jogWheelHelper = function(n) {
     engine.scratchDisable(n);
     scratch_timer_on[n] = false;
 };
@@ -197,17 +201,18 @@ DJControlInstinctP8.pitch = function (group, control, value, status) {
     if (value & 0x40) {
         value = value - 0x80;
     }
-    var delta = Math.pow(Math.abs(value), 2) / 1000.0;
-    if (value < 0) {
-        delta = -delta;
-    }
+    var delta = Math.abs(Math.pow(Math.abs(value), 2) / 1000.0);
+//    if (value < 0) {
+//        delta = -delta;
+//    }
     var pitch = engine.getValue(input.group, "rate") + delta;
-    if (pitch > 1.0) {
-        pitch = 1.0;
-    }
-    if (pitch < -1.0) {
-        pitch = -1.0;
-    }
+	pitch = pitch/Math.abs(pitch); // normalize to 1 or -1
+//	if (pitch > 1.0) {
+//        pitch = 1.0;
+//    }
+//    if (pitch < -1.0) {
+//        pitch = -1.0;
+//    }
     engine.setValue(input.group, "rate", pitch);
 };
 
