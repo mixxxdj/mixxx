@@ -47,7 +47,7 @@ WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
                                                const WaveformSignalColors& signalColors,
                                                int hotCue) {
     m_color = context.selectString(node, "Color");
-    // TODO (Swiftb0y): get CuePointer and color for m_color instead of skin color.
+    // TODO (Swiftb0y): remove context.selectString because the color will be overriden by the cuepoints regardless
     if (!m_color.isValid()) {
         // As a fallback, grab the color from the parent's AxesColor
         m_color = signalColors.getAxesColor();

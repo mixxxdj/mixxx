@@ -224,9 +224,10 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
         // Prepare colors for drawing of marker lines
         QColor lineColor = markProperties.m_color;
         lineColor.setAlpha(200);
-        QColor contrastLineColor =  (brightness(lineColor) < 130) ?
-                QColor(255,255,255,120) :
-                QColor(0,0,0,120);
+        bool markerBrightnessLow= isDimmColor(lineColor.red(),lineColor.green(),lineColor.blue());
+        QColor contrastLineColor =  markerBrightnessLow ?
+                QColor(255,255,255,180) :
+                QColor(0,0,0,180);
 
         // Draw marker lines
         if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
@@ -297,7 +298,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
         // Draw text
         painter.setBrush(QBrush(QColor(0,0,0,0)));
         painter.setFont(font);
-        painter.setPen(markProperties.m_textColor);
+        painter.setPen(markerBrightnessLow ? QColor(255,255,255,255) : QColor(0,0,0,255));
         painter.drawText(labelRect, Qt::AlignCenter, label);
     }
     else //no text draw triangle

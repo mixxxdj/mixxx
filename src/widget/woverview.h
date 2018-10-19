@@ -21,6 +21,8 @@
 #include "track/track.h"
 #include "widget/wwidget.h"
 
+#include "util/color.h"
+
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformmarkrange.h"
