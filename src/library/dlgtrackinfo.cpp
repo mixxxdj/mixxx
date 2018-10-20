@@ -397,15 +397,7 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
             const QModelIndex idx = colorComboBox->model()->index(i, 0);
             colorComboBox->model()->setData(idx, color, Qt::BackgroundColorRole);
             // TODO (Swiftb0y): put color choosing function into util/color.h
-            colorComboBox->setItemData(
-                    i,
-                    isDimmColor(
-                            color.red(),
-                            color.green(),
-                            color.blue()) ?
-                                    QColor(255,255,255,255) :
-                                    QColor(0,0,0,255),
-                    Qt::TextColorRole);
+            colorComboBox->setItemData(i, chooseContrastColor(color), Qt::TextColorRole);
 
         }
         QColor cueColor = pCue->getColor();
