@@ -206,7 +206,7 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
     QDomElement controls = doc->createElement("controls");
 
     // Iterate over all of the command/control pairs in the input mapping
-    QHashIterator<uint16_t, MidiInputMapping> it(preset.inputMappings);
+    QMapIterator<uint16_t, MidiInputMapping> it(preset.inputMappings);
     while (it.hasNext()) {
         it.next();
 
@@ -221,8 +221,8 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
 
     QDomElement outputs = doc->createElement("outputs");
 
-    //Iterate over all of the command/control pairs in the OUTPUT mapping
-    QHashIterator<ConfigKey, MidiOutputMapping> outIt(preset.outputMappings);
+    // Iterate over all of the command/control pairs in the output mapping
+    QMapIterator<ConfigKey, MidiOutputMapping> outIt(preset.outputMappings);
     while (outIt.hasNext()) {
         outIt.next();
 

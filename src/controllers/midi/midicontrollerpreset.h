@@ -40,8 +40,8 @@ class MidiControllerPreset : public ControllerPreset {
     }
 
     // MIDI input and output mappings.
-    QHash<uint16_t, MidiInputMapping> inputMappings;
-    QHash<ConfigKey, MidiOutputMapping> outputMappings;
+    QMap<uint16_t, MidiInputMapping> inputMappings;
+    QMap<ConfigKey, MidiOutputMapping> outputMappings;
 };
 
 #endif
