@@ -7,7 +7,7 @@ var invertColor = true; //false=(off=orange,on=blue);true=(off=blue,on=orange);
 
 var defaultChannelSequence = [3, 1, 2, 4];
 var channelMode = [true, true, true, true]; //true=deck;false=fxChannel
-var faderMode = [true, true, true, true]; // true=super;false=rate (only affects Deckmode Channels)
+var faderMode = [true, true, true, true]; // true=super;false=rate (only affects fxMode Channels)
 
 var standardKnobBehavior = 0; // 0 = [High,Mid,Low,Quickeffect]; 1 = [Gain,High,Mid,Low]; 2 = [Effect1Meta,Effect2Meta,Effect3Meta,mix];
 var navEncoderScale = 5; // The amount of steps mixxx will scroll within the library while pressing the encoder;
@@ -106,6 +106,11 @@ CMDMM.currentLayer=1;
 // |                   |
 // +-------------------+
 
+// the Shiftbuttons will correspond to the layers in the following combination:
+// unpressed/default: layer1
+// shift: layer2
+// ctrl: layer3
+// shift+ctrl: layer4
 
 CMDMM.EQAndGain = function (channel, baseAddress) {
   this.knobs = [];
