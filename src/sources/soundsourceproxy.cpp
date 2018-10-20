@@ -385,6 +385,7 @@ void SoundSourceProxy::updateTrackFromSource(
         return; // abort
     }
 
+     
     // Embedded cover art is imported together with the track's metadata.
     // But only if the user has not selected external cover art for this
     // track!
@@ -492,6 +493,35 @@ void SoundSourceProxy::updateTrackFromSource(
         }
         m_pTrack->setCoverInfo(coverInfoNew);
     }
+    // TODO: add loading of cuepoints from textfile here
+   // QList<CuePointer> textCues;
+
+    QString pathname = m_pTrack->getLocation();
+    QFileInfo info(pathname);
+    QString cuepath = info.path() + "/" + info.completeBaseName() + ".cue";
+    QFile inputFile(cuepath);
+    std::cout << "Loading Loc: " << cuepath.toStdString() << std::endl;
+    if (inputFile.open(QIODevice::ReadOnly))
+    {
+        //int id_no = 0;
+        QTextStream in(&inputFile);
+        while (!in.atEnd())
+        {
+            QString line = in.readLine();
+            //CuePointer _cuePointer = m_pTrack.createAndAddCue();
+            //_cuePointer.setDuration(m_pTrack->getDuration());
+            //_cuePointer.setPosition(line.toDouble() * ( m_pTrack->getSampleRate() * m_pTrack->getChannels() ));
+            // _cuePointer.setId
+           // textCues += CuePointer(new Cue(id_no, m_pTrack->getId(), Cue::CUE, line.toDouble(), m_pTrack->getDuration(), id_no, "", QColor("#FF0000")));
+           // textCues += _cuePointer;
+            double _cuePoint = line.toDouble() * (m_pTrack->getSampleRate() * m_pTrack->getChannels() );
+            std::cout << "Setting Cue: " << _cuePoint << std::endl;
+            m_pTrack->setCuePoint(_cuePoint);
+           // id_no++;
+        }
+    inputFile.close();
+    }
+    //m_pTrack->setCuePoints(textCues);
 }
 
 mixxx::MetadataSource::ImportResult SoundSourceProxy::importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const {
