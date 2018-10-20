@@ -681,9 +681,12 @@ VestaxVCI400.Deck.prototype.onWheelMove = function(value) {
 // The play button usually does play/pause as normal, but if shift is held
 // we do a braking stop.
 VestaxVCI400.playButton = function (channel, control, value, status, group) {
+    if (value === 0) {
+        return;
+    }
     var playing = engine.getValue(group, "play");
     if (playing && VestaxVCI400.shiftActive) {
-        script.brake(channel, control, value, status, group);
+        script.brake(channel, control, value, status, group, 100.0);
         return;
     }
 
@@ -693,9 +696,12 @@ VestaxVCI400.playButton = function (channel, control, value, status, group) {
 // The censor button usually does a reverse roll, but if shift is held
 // we do a backspin stop.
 VestaxVCI400.censorButton = function (channel, control, value, status, group) {
+    if (value === 0) {
+        return;
+    }
     var playing = engine.getValue(group, "play");
     if (playing && VestaxVCI400.shiftActive) {
-        script.spinback(channel, control, value, status, group);
+        script.spinback(channel, control, value, status, group, 30.0, -10.0);
         return;
     }
 
