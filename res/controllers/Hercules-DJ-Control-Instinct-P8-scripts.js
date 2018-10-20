@@ -215,7 +215,7 @@ DJControlInstinctP8.pitch = function (group, control, value) {
     engine.setValue(input.group, "rate", pitch);
 };
 
-DJControlInstinctP8.OnRecordingStatusChange = function(value, group) {
+DJControlInstinctP8.OnRecordingStatusChange = function(value) {
     // Not sure why this doesn't work with a regular midi output in the xml.
     if (value == 2) {
         midi.sendShortMsg(0x90, 0x2B, 0x7F);
