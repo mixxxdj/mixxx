@@ -1,6 +1,7 @@
 #include <QDesktopServices>
 #include <QtDebug>
 #include <QStringBuilder>
+#include <QComboBox>
 
 #include "library/dlgtrackinfo.h"
 #include "sources/soundsourceproxy.h"
@@ -11,9 +12,63 @@
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "util/duration.h"
+#include "util/color.h"
 
 const int kFilterLength = 80;
 const int kMinBpm = 30;
+
+// NOTE(Swiftb0y): Maybe this should be defined somewhere more global/logical?
+
+const static QList<QString> ColorNames = {
+     QObject::tr("Red"),
+     QObject::tr("Green"),
+     QObject::tr("Yellow"),
+     QObject::tr("Blue"),
+     QObject::tr("Orange"),
+     QObject::tr("Purple"),
+     QObject::tr("Cyan"),
+     QObject::tr("Magenta"),
+     QObject::tr("Lime"),
+     QObject::tr("Pink"),
+     QObject::tr("Teal"),
+     QObject::tr("Lavender"),
+     QObject::tr("Brown"),
+     QObject::tr("Beige"),
+     QObject::tr("Maroon"),
+     QObject::tr("Mint"),
+     QObject::tr("Olive"),
+     QObject::tr("Apricot"),
+     QObject::tr("Navy"),
+     QObject::tr("Grey"),
+     QObject::tr("White"),
+     QObject::tr("Black"),
+};
+
+const static QList<QColor> Colors = {
+     QColor("#E6194B"),
+     QColor("#3CB44B"),
+     QColor("#FFE119"),
+     QColor("#4363D8"),
+     QColor("#F58231"),
+     QColor("#911EB4"),
+     QColor("#42D4F4"),
+     QColor("#F032E6"),
+     QColor("#BFEF45"),
+     QColor("#FABEBE"),
+     QColor("#469990"),
+     QColor("#E6BEFF"),
+     QColor("#9A6324"),
+     QColor("#FFFAC8"),
+     QColor("#800000"),
+     QColor("#AAFFC3"),
+     QColor("#808000"),
+     QColor("#FFD8B1"),
+     QColor("#000075"),
+     QColor("#A9A9A9"),
+     QColor("#FFFFFF"),
+     QColor("#000000"),
+};
+
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
@@ -34,6 +89,8 @@ void DlgTrackInfo::init() {
 
     cueTable->hideColumn(0);
     coverBox->insertWidget(1, m_pWCoverArtLabel);
+
+    RELEASE_ASSERT(ColorNames.length() == Colors.length());
 
     connect(btnNext, SIGNAL(clicked()),
             this, SLOT(slotNext()));
@@ -332,14 +389,35 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Make the duration read only
         durationItem->setFlags(Qt::NoItemFlags);
 
+
+        QComboBox* colorComboBox = new QComboBox();
+        for (int i = 0 ; i < ColorNames.length() ;i++) {
+            const QColor color = Colors.at(i);
+            colorComboBox->addItem(ColorNames.at(i),color);
+            const QModelIndex idx = colorComboBox->model()->index(i, 0);
+            colorComboBox->model()->setData(idx, color, Qt::BackgroundColorRole);
+            // TODO (Swiftb0y): put color choosing function into util/color.h
+            colorComboBox->setItemData(
+                    i,
+                    isDimmColor(
+                            color.red(),
+                            color.green(),
+                            color.blue()) ?
+                                    QColor(255,255,255,255) :
+                                    QColor(0,0,0,255),
+                    Qt::TextColorRole);
+
+        }
         QColor cueColor = pCue->getColor();
+        colorComboBox->setCurrentIndex(Colors.contains(cueColor) ? Colors.indexOf(cueColor) : 0);
 
         m_cueMap[row] = pCue;
         cueTable->insertRow(row);
         cueTable->setItem(row, 0, new QTableWidgetItem(rowStr));
         cueTable->setItem(row, 1, durationItem);
         cueTable->setItem(row, 2, new QTableWidgetItem(hotcue));
-        cueTable->setItem(row, 3, new QTableWidgetItem(cueColor.name().toUpper()));
+        // cueTable->setItem(row, 3, new QTableWidgetItem(cueColor.name().toUpper()));
+        cueTable->setCellWidget(row, 3, colorComboBox);
         cueTable->setItem(row, 4, new QTableWidgetItem(pCue->getLabel()));
         row += 1;
     }
@@ -384,10 +462,10 @@ void DlgTrackInfo::saveTrack() {
     for (int row = 0; row < cueTable->rowCount(); ++row) {
         QTableWidgetItem* rowItem = cueTable->item(row, 0);
         QTableWidgetItem* hotcueItem = cueTable->item(row, 2);
-        QTableWidgetItem* colorItem = cueTable->item(row, 3);
+        QWidget* colorWidget = cueTable->cellWidget(row, 3);
         QTableWidgetItem* labelItem = cueTable->item(row, 4);
 
-        VERIFY_OR_DEBUG_ASSERT(rowItem && hotcueItem && colorItem && labelItem) {
+        VERIFY_OR_DEBUG_ASSERT(rowItem && hotcueItem && colorWidget && labelItem) {
             qWarning() << "unable to retrieve cells from cueTable row";
             continue;
         }
@@ -410,15 +488,14 @@ void DlgTrackInfo::saveTrack() {
             pCue->setHotCue(-1);
         }
 
-        QVariant vHotCueColor = colorItem->data(Qt::DisplayRole);
-        if (vHotcue.canConvert<QString>()) {
-            QString colorString = vHotCueColor.toString();
-            auto color = QColor(colorString);
+        auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
+        if (colorComboBox) {
+            const auto color = Colors.at(colorComboBox->currentIndex());
             if (color.isValid()) {
                 pCue->setColor(color);
             }
-            // do nothing for now.
         }
+        // do nothing for now.
 
         QString label = labelItem->data(Qt::DisplayRole).toString();
         pCue->setLabel(label);
