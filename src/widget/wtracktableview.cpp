@@ -1059,14 +1059,19 @@ void WTrackTableView::onSearch(const QString& text) {
     if (trackModel) {
         trackModel->search(text);
     }
+    if (text.isEmpty()) {
+        restoreVScrollBarPos();
+    }
 }
 
-void WTrackTableView::onSearchStarting() {
-    saveVScrollBarPos();
-}
-
-void WTrackTableView::onSearchCleared() {
-    restoreVScrollBarPos();
+void WTrackTableView::onSearchActive(bool active) {
+    if (active) {
+        // Save the current position before a new search starts
+        saveVScrollBarPos();
+    } else {
+        // Restore the saved position
+        restoreVScrollBarPos();
+    }
 }
 
 void WTrackTableView::onShow() {

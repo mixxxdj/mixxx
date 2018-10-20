@@ -1185,10 +1185,8 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     // Connect search box signals to the library
     connect(pLineEditSearch, SIGNAL(search(const QString&)),
             m_pLibrary, SIGNAL(search(const QString&)));
-    connect(pLineEditSearch, SIGNAL(searchCleared()),
-            m_pLibrary, SIGNAL(searchCleared()));
-    connect(pLineEditSearch, SIGNAL(searchStarting()),
-            m_pLibrary, SIGNAL(searchStarting()));
+    connect(pLineEditSearch, SIGNAL(searchActive(bool)),
+            m_pLibrary, SIGNAL(searchActive(bool)));
     connect(m_pLibrary, SIGNAL(disableSearch()),
             pLineEditSearch, SLOT(disableSearch()));
     connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),

@@ -25,7 +25,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     : QLineEdit(pParent),
       WBaseWidget(this),
       m_clearButton(new QToolButton(this)),
-      m_showingPlaceholder(false) {
+      m_state(State::Inactive) {
     setAcceptDrops(false);
 
     QPixmap pixmap(":/images/library/cross.png");
@@ -96,10 +96,10 @@ void WSearchLineEdit::resizeEvent(QResizeEvent* e) {
 }
 
 QString WSearchLineEdit::getSearchText() const {
-    if (m_showingPlaceholder || !isEnabled()) {
-        return QString();
-    } else {
+    if (isEnabled() && (m_state == State::Active)) {
         return text();
+    } else {
+        return QString();
     }
 }
 
@@ -141,7 +141,7 @@ void WSearchLineEdit::showPlaceholder() {
     DEBUG_ASSERT(isEnabled());
 
     // Deactivate text change listener
-    m_showingPlaceholder = true;
+    m_state = State::Inactive;
 
     setText(tr("Search...", "noun"));
     setToolTip(
@@ -154,13 +154,15 @@ void WSearchLineEdit::showPlaceholder() {
     QPalette pal = palette();
     pal.setColor(foregroundRole(), Qt::lightGray);
     setPalette(pal);
+
+    emit searchActive(false);
 }
 
 void WSearchLineEdit::hidePlaceholder(const QString& text) {
     DEBUG_ASSERT(isEnabled());
 
     // Reactivate text change listener
-    m_showingPlaceholder = false;
+    m_state = State::Active;
 
     // Update the displayed text without (re-)starting the timer
     blockSignals(true);
@@ -177,6 +179,8 @@ void WSearchLineEdit::hidePlaceholder(const QString& text) {
 
     // This gets rid of the blue mac highlight.
     setAttribute(Qt::WA_MacShowFocusRect, false);
+
+    emit searchActive(true);
 }
 
 void WSearchLineEdit::updatePlaceholder(const QString& text) {
@@ -188,7 +192,7 @@ void WSearchLineEdit::updatePlaceholder(const QString& text) {
 }
 
 void WSearchLineEdit::updateClearButton(const QString& text) {
-    m_clearButton->setVisible(!text.isEmpty() && !m_showingPlaceholder);
+    m_clearButton->setVisible(!text.isEmpty() && (m_state == State::Active));
 }
 
 bool WSearchLineEdit::event(QEvent* pEvent) {
@@ -200,22 +204,21 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
 
 // slot
 void WSearchLineEdit::clearSearch() {
-    DEBUG_ASSERT(!m_showingPlaceholder);
+    DEBUG_ASSERT(m_state == State::Active);
     setText(kEmptySearch);
-    emit searchCleared();
     // Enforce immediate update of track table
     triggerSearch();
 }
 
 // slot
 void WSearchLineEdit::updateText(const QString& text) {
-    if (m_showingPlaceholder || !isEnabled()) {
-        updateClearButton(kEmptySearch);
-        m_debouncingTimer.stop();
-    } else {
+    if (isEnabled() && (m_state == State::Active)) {
         updateClearButton(text);
         DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
         m_debouncingTimer.start(kDebouncingTimeoutMillis);
+    } else {
+        updateClearButton(kEmptySearch);
+        m_debouncingTimer.stop();
     }
 }
 

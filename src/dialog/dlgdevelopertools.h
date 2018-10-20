@@ -22,7 +22,6 @@ class DlgDeveloperTools : public QDialog, public Ui::DlgDeveloperTools {
 
   private slots:
     void slotControlSearch(const QString& search);
-    void slotControlSearchClear();
     void slotLogSearch();
     void slotControlDump();
 

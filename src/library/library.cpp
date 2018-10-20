@@ -36,6 +36,7 @@
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wsearchlineedit.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 
@@ -250,11 +251,8 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
     connect(this, SIGNAL(setSelectedClick(bool)),
             pTrackTableView, SLOT(setSelectedClick(bool)));
-
-    connect(this, SIGNAL(searchStarting()),
-            pTrackTableView, SLOT(onSearchStarting()));
-    connect(this, SIGNAL(searchCleared()),
-            pTrackTableView, SLOT(onSearchCleared()));
+    connect(this, SIGNAL(searchActive(bool)),
+            pTrackTableView, SLOT(onSearchActive(bool)));
 
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 

@@ -60,8 +60,6 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     // Connect search box signals to the library
     connect(controlSearch, SIGNAL(search(const QString&)),
             this, SLOT(slotControlSearch(const QString&)));
-    connect(controlSearch, SIGNAL(searchCleared()),
-            this, SLOT(slotControlSearchClear()));
     connect(controlDump, SIGNAL(clicked()),
             this, SLOT(slotControlDump()));
 
@@ -120,9 +118,6 @@ void DlgDeveloperTools::timerEvent(QTimerEvent* pEvent) {
 
 void DlgDeveloperTools::slotControlSearch(const QString& search) {
     m_controlProxyModel.setFilterFixedString(search);
-}
-
-void DlgDeveloperTools::slotControlSearchClear() {
 }
 
 void DlgDeveloperTools::slotControlDump() {

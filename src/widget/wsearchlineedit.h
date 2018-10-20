@@ -14,6 +14,11 @@ class SkinContext;
 class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     Q_OBJECT
   public:
+    enum class State {
+        Inactive,
+        Active,
+    };
+
     explicit WSearchLineEdit(QWidget* pParent);
     ~WSearchLineEdit() override = default;
 
@@ -27,8 +32,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
 
   signals:
     void search(const QString& text);
-    void searchCleared();
-    void searchStarting();
+    void searchActive(bool active);
 
   public slots:
     void restoreSearch(const QString& text);
@@ -55,5 +59,5 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     QColor m_foregroundColor;
     QTimer m_debouncingTimer;
 
-    bool m_showingPlaceholder;
+    State m_state;
 };
