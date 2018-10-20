@@ -2,7 +2,7 @@
 //
 // 2017.01.23, piff, first draft
 // 2018-06-19, STi, added soft-takeover to more controls, without success though
-// 2018-10-19, Piega,radusuciu Clean js
+// 2018-10-20, Piega, clean js
 //
 
 // NOTE: this code is mostly copy / paste from work done by other persons so credits for the code goes to
@@ -33,9 +33,9 @@ var deckB = 2;
 //
 // TODO(XXX): add a jogPlaylistCounter reset timer if no jogWheel move is done for some time
 //
-var jogPlaylistSensitivityDivider = 3;
-var jogPlaylistSense = 0;
-var jogPlaylistCounter = 0;
+//var jogPlaylistSensitivityDivider = 3;
+//var jogPlaylistSense = 0;
+//var jogPlaylistCounter = 0;
 
 //var superButtonHold = 0;
 //var automixPressed = false;
@@ -48,20 +48,19 @@ DJControlInstinctP8 = function() {
    this.group = "[Master]";
 };
 
-DJControlInstinctP8.init = function(id) {
+DJControlInstinctP8.init = function() {
     engine.setValue("[Master]", "num_samplers", 8);
 
     scratch = false;
-    scratch_timer = [];
-    scratch_timer_on = [];
+    scratchTimer = [];
+    scratchTimerOn = [];
 
     // Switch off all LEDs
     for (var i = 1; i < 95; i++) {
         midi.sendShortMsg(0x90, i, 0x00);
     }
 
-    engine.connectControl("[Recording]", "status",
-            "DJControlInstinctP8.OnRecordingStatusChange");
+    engine.connectControl("[Recording]", "status", "DJControlInstinctP8.OnRecordingStatusChange");
 
     // Disable Soft-Takeover
     engine.softTakeover("[Channel1]", "volume", false);
@@ -109,7 +108,7 @@ DJControlInstinctP8.init = function(id) {
 
 DJControlInstinctP8.shutdown = function() {
     // toggle all lights off.
-    for (i = 0x01; i < 0x57; i++) {
+    for (var i = 0x01; i < 0x57; i++) {
         midi.sendShortMsg(0x90, i, 0x00);
     }
 };
@@ -125,7 +124,7 @@ DJControlInstinctP8.controls = {
 };
 
 
-DJControlInstinctP8.scratch = function(midino, control, value, status, group) {
+DJControlInstinctP8.scratch = function(midino, control, value) {
 
     // Normal scratch function
     if (value) {
@@ -152,8 +151,8 @@ DJControlInstinctP8.wheelOnOff = function() {
     // Wheel Deck A / Channel 1
     if (wheelMove[0]) {
         engine.scratchEnable(1, 128, standardRpm, alpha, beta);
-    }
-    else { engine.scratchDisable(1);
+    } else {
+	    engine.scratchDisable(1);
     }
 	    wheelMove[0] = 0;
     
@@ -161,8 +160,8 @@ DJControlInstinctP8.wheelOnOff = function() {
     //Wheel Deck B / Channel 2
     if (wheelMove[1]) {
         engine.scratchEnable(2, 128, standardRpm, alpha, beta);
-    }
-    else {engine.scratchDisable(2);
+    } else {
+	    engine.scratchDisable(2);
     }
 	    wheelMove[1] = 0;
     
@@ -174,17 +173,17 @@ DJControlInstinctP8.jogWheel = function (midino, control, value, status, group) 
 
     // This function is called everytime the jog is moved
 
-	var direction = 1;
-	if (value !== 0x01) {
+    var direction = 1;
+    if (value !== 0x01) {
     	direction = -1;
-	}
+    }
 
-	if (scratchMode) {
+    if (scratchMode) {
     	engine.scratchTick(deck, direction);
     	wheelMove[deck - 1] = 1;
-	} else {
+    } else {
     	engine.setValue("[Channel" + deck + "]", "jog", jogSensitivity * direction);
-	}
+    }
 
 };
 
@@ -194,17 +193,17 @@ DJControlInstinctP8.jogWheelHelper = function(n) {
 };
 
 // Pitch is adjusted by holding down shift and turning the jog wheel.
-DJControlInstinctP8.pitch = function (group, control, value, status) {
+DJControlInstinctP8.pitch = function (group, control, value) {
     var input = DJControlInstinctP8.controls.inputs[control];
 
     // If the high bit is 1, convert to a negative number
     if (value & 0x40) {
         value = value - 0x80;
     }
-    var delta = Math.abs(Math.pow(Math.abs(value), 2) / 1000.0);
-//    if (value < 0) {
-//        delta = -delta;
-//    }
+    var delta = Math.pow(Math.abs(value), 2) / 1000.0;
+    if (value < 0) {
+        delta = -delta;
+    }
     var pitch = engine.getValue(input.group, "rate") + delta;
 	pitch = pitch/Math.abs(pitch); // normalize to 1 or -1
 //	if (pitch > 1.0) {
@@ -216,7 +215,7 @@ DJControlInstinctP8.pitch = function (group, control, value, status) {
     engine.setValue(input.group, "rate", pitch);
 };
 
-DJControlInstinctP8.OnRecordingStatusChange = function(value, group, control) {
+DJControlInstinctP8.OnRecordingStatusChange = function(value, group) {
     // Not sure why this doesn't work with a regular midi output in the xml.
     if (value == 2) {
         midi.sendShortMsg(0x90, 0x2B, 0x7F);
