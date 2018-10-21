@@ -573,15 +573,30 @@ if build.platform_is_windows:
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
 
+        binaries_to_codesign = [binary, dlls, vamp_plugins, soundsource_plugins]
+
         # imageformats DLL
         if imgfmtdll_files:
                 imageformats_dll = env.Install(os.path.join(base_dist_dir, "imageformats"), imgfmtdll_files)
+                binaries_to_codesign.append(imageformats_dll)
                 env.Alias('mixxx', imageformats_dll)
 
         # QSQLite DLL
         if sqldll_files:
                 sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
+                binaries_to_codesign.append(sql_dlls)
                 env.Alias('mixxx', sql_dlls)
+
+        
+        if 'sign' in COMMAND_LINE_TARGETS:
+            codesign_subject_name = SCons.ARGUMENTS.get('windows_codesign_subject_name', '')
+            if not codesign_subject_name:
+                raise Exception('Code-signing was requested but windows_codesign_subject_name was not provided.')
+            codesign = env.SignTool(
+                'Mixxx_signtool',
+                binaries_to_codesign,
+                SUBJECT_NAME=codesign_subject_name)
+            env.Alias('sign', codesign)
 
 def win32_find_program_via_registry(program_name):
     # Windows registry access to find where program is installed
@@ -644,6 +659,7 @@ def BuildRelease(target, source, env):
         os.system('for /l %l in (1,1,2) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" LICENSE ^| findstr /r "^%l:"\') do @echo %b')
     else:
         os.system('head -n 2 LICENSE')
+
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
         # TODO(XXX): Installing a runtime isn't specific to MSVS?
