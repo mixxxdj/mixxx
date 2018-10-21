@@ -88,7 +88,7 @@
 
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen -->
-  <MinimumSize>1302,668</MinimumSize>
+  <MinimumSize>1270,550</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
   <LaunchImageStyle>
