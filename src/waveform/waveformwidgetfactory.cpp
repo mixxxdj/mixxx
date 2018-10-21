@@ -5,8 +5,10 @@
 #include <QtDebug>
 #include <QGLFormat>
 #include <QGLShaderProgram>
+#if QT_VERSION >= 0x050000
 #include <QGuiApplication>
 #include <QWindow>
+#endif
 
 #include "waveform/waveformwidgetfactory.h"
 
@@ -172,8 +174,10 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
 
         QGLWidget* glWidget = new QGLWidget(); // create paint device
         // QGLShaderProgram::hasOpenGLShaderPrograms(); valgind error
+#if QT_VERSION >= 0x050000
         // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
         glWidget->context()->makeCurrent();
+#endif
         m_openGLShaderAvailable =
                 QGLShaderProgram::hasOpenGLShaderPrograms(glWidget->context());
         delete glWidget;
@@ -571,10 +575,14 @@ void WaveformWidgetFactory::swap() {
                     // "QOpenGLContext::swapBuffers() called with non-exposed
                     // window, behavior is undefined" on Qt5. See Bug #1779487.
                     if (glw && glw->isValid() && glw->isVisible()) {
+#if QT_VERSION >= 0x050000
                         auto window = glw->windowHandle();
                         if (window && window->isExposed()) {
                             VSyncThread::swapGl(glw, i);
                         }
+#else 
+			VSyncThread::swapGl(glw, i);
+#endif
                     }
                 }
 
@@ -803,9 +811,11 @@ void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString > >*
 // static
 float WaveformWidgetFactory::getDevicePixelRatio() {
     float devicePixelRatio = 1.0;
+#if QT_VERSION >= 0x050000
     QWindow* pWindow = QGuiApplication::focusWindow();
     if (pWindow != nullptr) {
         devicePixelRatio = pWindow->devicePixelRatio();
     }
+#endif
     return devicePixelRatio;
 }
