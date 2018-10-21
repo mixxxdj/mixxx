@@ -549,7 +549,7 @@ CrateTrackSelectResult CrateStorage::selectTracksSortedByCrateNameLike(const QSt
 
 TrackSelectResult CrateStorage::selectAllTracksSorted() const {
     FwdSqlQuery query(m_database, QString(
-            "SELECT %1 FROM %2 GROUP BY %1 ORDER BY %1").arg(
+            "SELECT DISTINCT %1 FROM %2 ORDER BY %1").arg(
                     CRATETRACKSTABLE_TRACKID, // %1
                     CRATE_TRACKS_TABLE)); // %2
     if (query.execPrepared()) {
