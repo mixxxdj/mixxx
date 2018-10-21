@@ -79,7 +79,7 @@ void MidiController::createOutputHandlers() {
         return;
     }
 
-    QMapIterator<ConfigKey, MidiOutputMapping> outIt(m_preset.outputMappings);
+    QHashIterator<ConfigKey, MidiOutputMapping> outIt(m_preset.outputMappings);
     QStringList failures;
     while (outIt.hasNext()) {
         outIt.next();

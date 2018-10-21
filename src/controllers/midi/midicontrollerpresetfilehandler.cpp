@@ -205,12 +205,12 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
     QDomElement controller = doc->documentElement().firstChildElement("controller");
     QDomElement controls = doc->createElement("controls");
 
-    // Iterate over all of the command/control pairs in the input mapping
-    QMapIterator<uint16_t, MidiInputMapping> it(preset.inputMappings);
-    while (it.hasNext()) {
-        it.next();
-
-        const MidiInputMapping& mapping = it.value();
+    // The QHash doesn't guarantee iteration order, so first we sort the keys
+    // so the xml output will be consistent.
+    auto sortedInputKeys = preset.inputMappings.keys();
+    std::sort(sortedInputKeys.begin(), sortedInputKeys.end());
+    for(auto key : sortedInputKeys){
+        const MidiInputMapping& mapping = preset.inputMappings[key];
         QDomElement controlNode = inputMappingToXML(doc, mapping);
 
         // Add the control node we just created to the XML document in the
@@ -221,12 +221,11 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
 
     QDomElement outputs = doc->createElement("outputs");
 
-    // Iterate over all of the command/control pairs in the output mapping
-    QMapIterator<ConfigKey, MidiOutputMapping> outIt(preset.outputMappings);
-    while (outIt.hasNext()) {
-        outIt.next();
-
-        const MidiOutputMapping& mapping = outIt.value();
+    // Repeat the process for the output mappings.
+    auto sortedOutputKeys = preset.outputMappings.keys();
+    std::sort(sortedOutputKeys.begin(), sortedOutputKeys.end());
+    for(auto key : sortedOutputKeys) {
+        const MidiOutputMapping& mapping = preset.outputMappings[key];
         QDomElement outputNode = outputMappingToXML(doc, mapping);
 
         // Add the control node we just created to the XML document in the

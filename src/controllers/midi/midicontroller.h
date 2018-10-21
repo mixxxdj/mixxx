@@ -103,7 +103,7 @@ class MidiController : public Controller {
         return &m_preset;
     }
 
-    QMap<uint16_t, MidiInputMapping> m_temporaryInputMappings;
+    QHash<uint16_t, MidiInputMapping> m_temporaryInputMappings;
     QList<MidiOutputHandler*> m_outputs;
     MidiControllerPreset m_preset;
     SoftTakeoverCtrl m_st;
