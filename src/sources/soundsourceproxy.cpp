@@ -499,12 +499,10 @@ void SoundSourceProxy::updateTrackFromSource(
     QString cuepath = m_pTrack->getCueFilePath();
     QFile inputFile(cuepath);
     qDebug() << "Loading Loc: " << cuepath.toStdString();
-    if (inputFile.open(QIODevice::ReadOnly))
-    {
+    if (inputFile.open(QIODevice::ReadOnly)) {
         //int id_no = 0;
         QTextStream in(&inputFile);
-        while (!in.atEnd())
-        {
+        while (!in.atEnd()) {
             QString line = in.readLine();
             //CuePointer _cuePointer = m_pTrack.createAndAddCue();
             //_cuePointer.setDuration(m_pTrack->getDuration());
@@ -517,7 +515,7 @@ void SoundSourceProxy::updateTrackFromSource(
             m_pTrack->setCuePoint(_cuePoint);
            // id_no++;
         }
-    inputFile.close();
+        inputFile.close();
     }
     //m_pTrack->setCuePoints(textCues);
 }
