@@ -11,11 +11,14 @@
 #include "library/playlisttablemodel.h"
 #include "track/track.h"
 #include "util/class.h"
+#include "library/autodj/trackselector.h"
 
 class ControlPushButton;
 class TrackCollection;
 class PlayerManagerInterface;
 class BaseTrackPlayer;
+class AutoDJProcessor;
+
 
 class DeckAttributes : public QObject {
     Q_OBJECT
@@ -131,10 +134,20 @@ class AutoDJProcessor : public QObject {
         return m_pAutoDJTableModel;
     }
 
+    TrackSelector* getSelector() const {
+        return m_selector;
+    }
+
+    QList<TrackSelector*> getSelectorList() {
+        return m_registeredSelectors;
+    }
+
     bool nextTrackLoaded();
+    bool registerSelector(TrackSelector* selector);
 
   public slots:
     void setTransitionTime(int seconds);
+    void setSelector(QString id);
 
     AutoDJError shufflePlaylist(const QModelIndexList& selectedIndices);
     AutoDJError skipNext();
@@ -177,6 +190,8 @@ class AutoDJProcessor : public QObject {
     double getCrossfader() const;
     void setCrossfader(double value, bool right);
 
+    void registerSelectors();
+
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
     void calculateTransition(DeckAttributes* pFromDeck,
@@ -199,6 +214,9 @@ class AutoDJProcessor : public QObject {
     AutoDJState m_eState;
     double m_transitionTime; // the desired value set by the user
     double m_nextTransitionTime; // the tweaked value actually used
+
+    TrackSelector* m_selector;
+    QList<TrackSelector*> m_registeredSelectors;
 
     QList<DeckAttributes*> m_decks;
 

@@ -85,6 +85,21 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     autoDJStateChanged(m_pAutoDJProcessor->getState());
 
     updateSelectionInfo();
+
+    // populate the mode combobox
+    auto selectors = m_pAutoDJProcessor->getSelectorList();
+    foreach(TrackSelector* selector, selectors)
+    {
+        comboBoxSelector->addItem(selector->getName(), selector->getId());
+        if(m_pAutoDJProcessor->getSelector() &&
+           selector->getId() == m_pAutoDJProcessor->getSelector()->getId()) {
+            comboBoxSelector->setCurrentIndex(comboBoxSelector->count()-1);
+        }
+    }
+
+    connect(comboBoxSelector, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(selectorChanged(int)));
+
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -116,6 +131,13 @@ void DlgAutoDJ::loadSelectedTrackToGroup(QString group, bool play) {
 void DlgAutoDJ::moveSelection(int delta) {
     m_pTrackTableView->moveSelection(delta);
 }
+
+void DlgAutoDJ::selectorChanged(int index) {
+    qDebug() << "seletorChanged: " << index;
+    QString id = comboBoxSelector->itemData(index).toString();
+    m_pAutoDJProcessor->setSelector(id);
+}
+
 
 void DlgAutoDJ::shufflePlaylistButton(bool) {
     QModelIndexList indexList = m_pTrackTableView->selectionModel()->selectedRows();

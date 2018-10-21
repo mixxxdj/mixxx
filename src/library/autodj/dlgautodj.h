@@ -41,6 +41,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void transitionSliderChanged(int value);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void updateSelectionInfo();
+    void selectorChanged(int index);
 
   signals:
     void addRandomButton(bool buttonChecked);

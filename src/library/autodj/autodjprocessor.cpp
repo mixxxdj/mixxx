@@ -6,6 +6,7 @@
 #include "util/math.h"
 #include "mixer/playermanager.h"
 #include "mixer/basetrackplayer.h"
+#include "library/autodj/trackselector.h"
 
 #define kConfigKey "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
@@ -126,6 +127,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
         m_transitionTime = str_autoDjTransition.toDouble();
         m_nextTransitionTime =  m_transitionTime;
     }
+    registerSelectors();
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -140,6 +142,13 @@ AutoDJProcessor::~AutoDJProcessor() {
     delete m_pFadeNow;
 
     delete m_pAutoDJTableModel;
+}
+
+void AutoDJProcessor::registerSelectors() {
+    LinearSelector* ls = new LinearSelector(this);
+    registerSelector(ls);
+    RandomSelector* rs = new RandomSelector(this);
+    registerSelector(rs);
 }
 
 double AutoDJProcessor::getCrossfader() const {
@@ -592,24 +601,16 @@ TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     if (randomQueueEnabled && (tracksToAdd > 0)) {
         emit(randomTrackRequested(tracksToAdd));
     }
-
-    while (true) {
-        TrackPointer nextTrack = m_pAutoDJTableModel->getTrack(
-            m_pAutoDJTableModel->index(0, 0));
-
-        if (nextTrack) {
-            if (nextTrack->exists()) {
-                return nextTrack;
-            } else {
-                // Remove missing song from auto DJ playlist.
-                m_pAutoDJTableModel->removeTrack(
-                        m_pAutoDJTableModel->index(0, 0));
-            }
-        } else {
-            // We're out of tracks. Return the null TrackPointer.
-            return nextTrack;
+    if(m_selector == nullptr) {
+        qWarning() << "selector is null";
+        // in case none is selected, we take the first one (linear)
+        if(m_registeredSelectors.count() == 0) {
+            qWarning() << "no selector registered";
+            assert(false);
         }
+        m_selector = m_registeredSelectors[0];
     }
+    return m_selector->getNextTrackFromQueue();
 }
 
 bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck, bool play) {
@@ -904,4 +905,34 @@ bool AutoDJProcessor::nextTrackLoaded() {
     }
 
     return loadedTrack == getNextTrackFromQueue();
+}
+
+/*!
+ * \brief AutoDJProcessor::registerSelector
+ * \param selector
+ * \return bool
+ */
+bool AutoDJProcessor::registerSelector(TrackSelector* selector) {
+    if(m_registeredSelectors.contains(selector)) {
+        return false;
+    }
+    m_registeredSelectors.append(selector);
+    // restore the selector setting
+    if(m_pConfig->getValueString(ConfigKey(kConfigKey, "Selector")) == selector->getId()) {
+        m_selector = selector;
+    }
+    return true;
+}
+
+void AutoDJProcessor::setSelector(QString id) {
+    foreach(TrackSelector* selector, m_registeredSelectors)
+    {
+        if(selector->getId() == id) {
+            m_selector = selector;
+            m_pConfig->setValue(ConfigKey(kConfigKey, "Selector"), id);
+            qDebug() << "changed AutoDJ selector to: " << id;
+            return;
+        }
+    }
+    qWarning() << "Could not find selector with id:" << id;
 }
