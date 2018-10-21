@@ -1,6 +1,7 @@
 <!--
 Description:
-  A button that has click or display controls.
+  A button that has click or display controls, but no separate graphics for
+  cursor hovering.
 Variables:
   ObjectName        : object name
   ToolTipID         : standard Tooltip from mixxx db
@@ -17,16 +18,25 @@ Variables:
     <TooltipId><Variable name="TooltipId"/></TooltipId>
     <ObjectName><Variable name="ObjectName"/></ObjectName>
     <Size><Variable name="Size"/></Size>
-    <NumberStates>1</NumberStates>
+    <NumberStates>2</NumberStates>
+    <RightClickIsPushButton>false</RightClickIsPushButton>
     <State>
       <Number>0</Number>
       <Text><Variable name="state_0_text"/></Text>
-      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="Icon"/>_down.svg</Pressed>
-      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="Icon"/>.svg</Unpressed>
       <Alignment><Variable name="Align"/></Alignment>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="icon"/>.svg</Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="icon"/>.svg</Unpressed>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="state_1_text"/></Text>
+      <Alignment><Variable name="Align"/></Alignment>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="icon"/>_over.svg</Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="icon"/>_over.svg</Unpressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="ConfigKey"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
     </Connection>
   </PushButton>
 </Template>
