@@ -170,8 +170,13 @@ void SearchQueryParser::parseTokens(QStringList tokens,
                 m_numericFilterMatcher.cap(2), &tokens).trimmed();
 
             if (!argument.isEmpty()) {
-                pNode = std::make_unique<NumericFilterNode>(
-                     m_fieldToSqlColumns[field], argument);
+                if (argument == kMissingFieldSearchTerm) {
+                    pNode = std::make_unique<NullNumericFilterNode>(
+                         m_fieldToSqlColumns[field]);
+                } else {
+                    pNode = std::make_unique<NumericFilterNode>(
+                         m_fieldToSqlColumns[field], argument);
+                }
             }
         } else if (m_specialFilterMatcher.indexIn(token) != -1) {
             bool fuzzy = token.startsWith(kFuzzyPrefix);

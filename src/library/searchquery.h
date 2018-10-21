@@ -169,6 +169,16 @@ class NumericFilterNode : public QueryNode {
     double m_dRangeHigh;
 };
 
+class NullNumericFilterNode : public QueryNode {
+  public:
+    NullNumericFilterNode(const QStringList& sqlColumns);
+
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
+
+    QStringList m_sqlColumns;
+};
+
 class DurationFilterNode : public NumericFilterNode {
   public:
     DurationFilterNode(const QStringList& sqlColumns, const QString& argument);

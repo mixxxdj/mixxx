@@ -356,6 +356,30 @@ QString NumericFilterNode::toSql() const {
     return QString();
 }
 
+NullNumericFilterNode::NullNumericFilterNode(const QStringList& sqlColumns)
+        : m_sqlColumns(sqlColumns) {
+}
+
+bool NullNumericFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_sqlColumns.isEmpty()) {
+        // only use the major column
+        QVariant value = getTrackValueForColumn(pTrack, m_sqlColumns.first());
+        if (!value.isValid() || !value.canConvert(QMetaType::Double)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+QString NullNumericFilterNode::toSql() const {
+    if (!m_sqlColumns.isEmpty()) {
+        // only use the major column
+        return QString("%1 IS NULL").arg(m_sqlColumns.first());
+    }
+    return QString();
+}
+
+
 DurationFilterNode::DurationFilterNode(
         const QStringList& sqlColumns, const QString& argument)
         : NumericFilterNode(sqlColumns) {
