@@ -400,7 +400,7 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
             colorComboBox->setItemData(i, chooseContrastColor(color), Qt::TextColorRole);
 
         }
-        QColor cueColor = pCue->getColor();
+        const QColor cueColor = pCue->getColor();
         colorComboBox->setCurrentIndex(Colors.contains(cueColor) ? Colors.indexOf(cueColor) : 0);
 
         m_cueMap[row] = pCue;
@@ -529,7 +529,6 @@ void DlgTrackInfo::unloadTrack(bool save) {
 }
 
 void DlgTrackInfo::clear() {
-
     disconnect(this, SLOT(updateTrackMetadata()));
     m_pLoadedTrack.reset();
 
