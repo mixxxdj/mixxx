@@ -207,7 +207,9 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
     // The QHash doesn't guarantee iteration order, so first we sort the keys
     // so the xml output will be consistent.
     QDomElement controls = doc->createElement("controls");
-    auto sortedInputKeys = preset.inputMappings.keys();
+    // We will iterate over all of the values that have the same keys, so we need
+    // to remove duplicate keys or else we'll duplicate those values.
+    auto sortedInputKeys = preset.inputMappings.uniqueKeys();
     std::sort(sortedInputKeys.begin(), sortedInputKeys.end());
     for (auto key : sortedInputKeys) {
         for (auto it = preset.inputMappings.constFind(key); 
@@ -221,7 +223,7 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
 
     // Repeat the process for the output mappings.
     QDomElement outputs = doc->createElement("outputs");
-    auto sortedOutputKeys = preset.outputMappings.keys();
+    auto sortedOutputKeys = preset.outputMappings.uniqueKeys();
     std::sort(sortedOutputKeys.begin(), sortedOutputKeys.end());
     for (auto key : sortedOutputKeys) {
         for (auto it = preset.outputMappings.constFind(key); 
