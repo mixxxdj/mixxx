@@ -127,7 +127,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="48"/>
         <source>Rename</source>
-        <translation>Rename Crate</translation>
+        <translation>Rename</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="52"/>
@@ -246,7 +246,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="66"/>
         <source>Artist</source>
-        <translation>Artist:</translation>
+        <translation>Artist</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="68"/>
@@ -256,7 +256,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="70"/>
         <source>Album</source>
-        <translation>Album:</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="72"/>
@@ -526,7 +526,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="29"/>
         <source>Artist</source>
-        <translation>Artist:</translation>
+        <translation>Artist</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="30"/>
@@ -536,7 +536,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="31"/>
         <source>Album</source>
-        <translation>Album:</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="32"/>
@@ -6707,12 +6707,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="268"/>
         <source>Artist</source>
-        <translation>Artist:</translation>
+        <translation>Artist</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="284"/>
         <source>Album</source>
-        <translation>Album:</translation>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="326"/>
