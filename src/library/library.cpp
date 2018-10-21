@@ -455,26 +455,23 @@ void Library::saveCachedTrack(Track* pTrack) noexcept {
     // prevent that a new track is created from the outdated
     // metadata that is is the database before saving is finished.
     m_pTrackCollection->saveTrack(pTrack);
-    cues_save_to_file(pTrack);
+    saveCuesToFile(pTrack);
 }
-/*
-* Write Cuepoints to *.cue file if at least one cuepoint is set
-* xwaxed
-*/
 
-void Library::cues_save_to_file(Track* pTrack)
-{
+
+// Write Cuepoints to *.cue file if at least one cuepoint is set
+void Library::saveCuesToFile(const Track* pTrack){
     QList<CuePointer> cueList = pTrack->getCuePoints();
     if ( cueList.size() == 0 )
         return;
-    QString pathname = pTrack->getLocation();
-    QFileInfo info(pathname);
-    QString cuepath = info.path() + "/" + info.completeBaseName() + ".cue";
-    std::cout << "Saving Loc: " << cuepath.toStdString() << std::endl;
+    QString cuepath = pTrack->getCueFilePath();
+    qDebug() << "Saving Loc: " << cuepath.toStdString();
     QFile file(cuepath);
     if (file.open(QIODevice::WriteOnly)) {
         QTextStream stream(&file);
         for (int i = 0; i < cueList.size(); i++)
+            // currently the actual time in seconds (float) is being used for compatibility with xwax cuepoints
+            // In future both programs should be changed to use the "official" cue file format
             stream << cueList[i].get()->getPosition() / ( pTrack->getSampleRate() * pTrack->getChannels() ) << endl;
     }
 }

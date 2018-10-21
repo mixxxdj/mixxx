@@ -85,7 +85,7 @@ class Library: public QObject,
     void setFont(const QFont& font);
     void setRowHeight(int rowHeight);
     void setEditMedatataSelectedClick(bool enable);
-    void cues_save_to_file(Track* pTrack);
+    void saveCuesToFile(const Track* pTrack);
 
 
   public slots:

@@ -496,11 +496,9 @@ void SoundSourceProxy::updateTrackFromSource(
     // TODO: add loading of cuepoints from textfile here
    // QList<CuePointer> textCues;
 
-    QString pathname = m_pTrack->getLocation();
-    QFileInfo info(pathname);
-    QString cuepath = info.path() + "/" + info.completeBaseName() + ".cue";
+    QString cuepath = m_pTrack->getCueFilePath();
     QFile inputFile(cuepath);
-    std::cout << "Loading Loc: " << cuepath.toStdString() << std::endl;
+    qDebug() << "Loading Loc: " << cuepath.toStdString();
     if (inputFile.open(QIODevice::ReadOnly))
     {
         //int id_no = 0;
@@ -515,7 +513,7 @@ void SoundSourceProxy::updateTrackFromSource(
            // textCues += CuePointer(new Cue(id_no, m_pTrack->getId(), Cue::CUE, line.toDouble(), m_pTrack->getDuration(), id_no, "", QColor("#FF0000")));
            // textCues += _cuePointer;
             double _cuePoint = line.toDouble() * (m_pTrack->getSampleRate() * m_pTrack->getChannels() );
-            std::cout << "Setting Cue: " << _cuePoint << std::endl;
+            qDebug() << "Setting Cue: " << _cuePoint;
             m_pTrack->setCuePoint(_cuePoint);
            // id_no++;
         }

@@ -724,6 +724,11 @@ int Track::getAnalyzerProgress() const {
     return load_atomic(m_analyzerProgress);
 }
 
+
+QString Track::getCueFilePath() const{
+    return m_fileInfo.path() + "/" + m_fileInfo.completeBaseName() + ".cue";
+}
+
 void Track::setCuePoint(double cue) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(&m_record.refCuePoint(), cue)) {

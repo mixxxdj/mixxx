@@ -243,6 +243,9 @@ class Track : public QObject {
 
     void setAnalyzerProgress(int progress);
     int getAnalyzerProgress() const;
+    
+    // Get cue file location
+    QString getCueFilePath() const;
 
     // Save the cue point in samples
     void setCuePoint(double cue);
