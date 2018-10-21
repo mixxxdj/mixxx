@@ -43,10 +43,17 @@ MixtrackPlatinum.init = function(id, debug) {
     MixtrackPlatinum.decks[3] = new MixtrackPlatinum.Deck(3, 0x02, MixtrackPlatinum.effects[1]);
     MixtrackPlatinum.decks[4] = new MixtrackPlatinum.Deck(4, 0x03, MixtrackPlatinum.effects[2]);
 
-    MixtrackPlatinum.sampler = new MixtrackPlatinum.Sampler();
+    // set up two banks of samplers, 4 samplers each
+    MixtrackPlatinum.sampler14 = new MixtrackPlatinum.Sampler(1);
+    MixtrackPlatinum.sampler58 = new MixtrackPlatinum.Sampler(5);
+    MixtrackPlatinum.sampler = MixtrackPlatinum.sampler14;
+
+    MixtrackPlatinum.sampler_all = new components.ComponentContainer();
+    MixtrackPlatinum.sampler_all[1] = MixtrackPlatinum.sampler14;
+    MixtrackPlatinum.sampler_all[2] = MixtrackPlatinum.sampler58;
 
     // headphone gain
-    MixtrackPlatinum.head_gain = new MixtrackPlatinum.HeadGain(MixtrackPlatinum.sampler);
+    MixtrackPlatinum.head_gain = new MixtrackPlatinum.HeadGain(MixtrackPlatinum.sampler_all);
 
     // exit demo mode
     var byteArray = [0xF0, 0x00, 0x01, 0x3F, 0x7F, 0x3A, 0x60, 0x00, 0x04, 0x04, 0x01, 0x00, 0x00, 0xF7];
@@ -679,7 +686,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
             // only handle button down events
             if (value != 0x7F) return;
 
-            // if shifted, set a hotcue mode
+            // if shifted, set a special mode
             if (this.isShifted) {
                 // manual loop
                 if (control == 0x0E) {
@@ -691,8 +698,16 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
                     deck.autoloop = deck.alternate_autoloop;
                     deck.autoloop.reconnectComponents();
                 }
+                // sampler
+                else if (control == 0x0B) {
+                    MixtrackPlatinum.sampler.forEachComponent(function(component) {
+                        component.disconnect();
+                    });
+                    MixtrackPlatinum.sampler = MixtrackPlatinum.sampler58;
+                    MixtrackPlatinum.sampler.reconnectComponents();
+                }
             }
-            // otherwise set a loop mode
+            // otherwise set a normal mode
             else {
                 // manual loop
                 if (control == 0x0E) {
@@ -703,6 +718,14 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
                 else if (control == 0x06) {
                     deck.autoloop = deck.normal_autoloop;
                     deck.autoloop.reconnectComponents();
+                }
+                // sampler
+                else if (control == 0x0B) {
+                    MixtrackPlatinum.sampler.forEachComponent(function(component) {
+                        component.disconnect();
+                    });
+                    MixtrackPlatinum.sampler = MixtrackPlatinum.sampler14;
+                    MixtrackPlatinum.sampler.reconnectComponents();
                 }
             }
         },
@@ -774,11 +797,11 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
 
 MixtrackPlatinum.Deck.prototype = new components.Deck();
 
-MixtrackPlatinum.Sampler = function() {
+MixtrackPlatinum.Sampler = function(base) {
     for (var i = 1; i <= 4; ++i) {
         this[i] = new components.SamplerButton({
             midi: [0x9F, 0x20 + i],
-            number: i,
+            number: base+i-1,
             loaded: 0x00,
             playing: 0x7F,
         });
@@ -1219,7 +1242,7 @@ MixtrackPlatinum.shiftToggle = function (channel, control, value, status, group)
 
     if (MixtrackPlatinum.shift) {
         MixtrackPlatinum.decks.shift();
-        MixtrackPlatinum.sampler.shift();
+        MixtrackPlatinum.sampler_all.shift();
         MixtrackPlatinum.effects.shift();
         MixtrackPlatinum.browse.shift();
         MixtrackPlatinum.head_gain.shift();
@@ -1232,7 +1255,7 @@ MixtrackPlatinum.shiftToggle = function (channel, control, value, status, group)
     }
     else {
         MixtrackPlatinum.decks.unshift();
-        MixtrackPlatinum.sampler.unshift();
+        MixtrackPlatinum.sampler_all.unshift();
         MixtrackPlatinum.effects.unshift();
         MixtrackPlatinum.browse.unshift();
         MixtrackPlatinum.head_gain.unshift();
