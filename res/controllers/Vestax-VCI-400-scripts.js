@@ -696,16 +696,13 @@ VestaxVCI400.playButton = function (channel, control, value, status, group) {
 // The censor button usually does a reverse roll, but if shift is held
 // we do a backspin stop.
 VestaxVCI400.censorButton = function (channel, control, value, status, group) {
-    if (value === 0) {
-        return;
-    }
     var playing = engine.getValue(group, "play");
-    if (playing && VestaxVCI400.shiftActive) {
+    if (playing && VestaxVCI400.shiftActive && value !== 0) {
         script.spinback(channel, control, value, status, group, 30.0, -10.0);
         return;
     }
 
-    script.toggleControl(group, "reverseroll");
+    engine.setValue(group, "reverseroll", value);
 };
 
 VestaxVCI400.vinylButton = function (channel, control, value, status, group) {
