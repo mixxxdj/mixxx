@@ -203,34 +203,32 @@ bool MidiControllerPresetFileHandler::save(const MidiControllerPreset& preset,
 void MidiControllerPresetFileHandler::addControlsToDocument(const MidiControllerPreset& preset,
                                                             QDomDocument* doc) const {
     QDomElement controller = doc->documentElement().firstChildElement("controller");
-    QDomElement controls = doc->createElement("controls");
 
     // The QHash doesn't guarantee iteration order, so first we sort the keys
     // so the xml output will be consistent.
+    QDomElement controls = doc->createElement("controls");
     auto sortedInputKeys = preset.inputMappings.keys();
     std::sort(sortedInputKeys.begin(), sortedInputKeys.end());
-    for(auto key : sortedInputKeys){
-        const MidiInputMapping& mapping = preset.inputMappings[key];
-        QDomElement controlNode = inputMappingToXML(doc, mapping);
-
-        // Add the control node we just created to the XML document in the
-        // proper spot.
-        controls.appendChild(controlNode);
+    for (auto key : sortedInputKeys) {
+        for (auto it = preset.inputMappings.constFind(key); 
+                it != preset.inputMappings.constEnd() && it.key() == key; ++it) {
+            QDomElement controlNode = inputMappingToXML(doc, it.value());
+            controls.appendChild(controlNode);
+        }
     }
     controller.appendChild(controls);
 
-    QDomElement outputs = doc->createElement("outputs");
 
     // Repeat the process for the output mappings.
+    QDomElement outputs = doc->createElement("outputs");
     auto sortedOutputKeys = preset.outputMappings.keys();
     std::sort(sortedOutputKeys.begin(), sortedOutputKeys.end());
-    for(auto key : sortedOutputKeys) {
-        const MidiOutputMapping& mapping = preset.outputMappings[key];
-        QDomElement outputNode = outputMappingToXML(doc, mapping);
-
-        // Add the control node we just created to the XML document in the
-        // proper spot.
-        outputs.appendChild(outputNode);
+    for (auto key : sortedOutputKeys) {
+        for (auto it = preset.outputMappings.constFind(key); 
+                it != preset.outputMappings.constEnd() && it.key() == key; ++it) {
+            QDomElement outputNode = outputMappingToXML(doc, it.value());
+            outputs.appendChild(outputNode);
+        }
     }
     controller.appendChild(outputs);
 }
