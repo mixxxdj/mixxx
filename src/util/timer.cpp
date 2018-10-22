@@ -80,8 +80,8 @@ mixxx::Duration SuspendableTimer::elapsed(bool report) {
 
 GuiTickTimer::GuiTickTimer(QObject* pParent)
         : QObject(pParent),
-          m_pGuiTick50ms(new ControlProxy(
-              "[Master]", "guiTick50ms", this)),
+          m_pGuiTick20ms(std::make_unique<ControlProxy>(
+              "[Master]", "guiTick20ms", this)),
           m_bActive(false) {
 }
 
@@ -89,22 +89,22 @@ GuiTickTimer::~GuiTickTimer() {
 }
 
 void GuiTickTimer::start(mixxx::Duration duration) {
-    m_pGuiTick50ms->connectValueChanged(SLOT(slotGuiTick50ms(double)));
+    m_pGuiTick20ms->connectValueChanged(SLOT(slotGuiTick20ms(double)));
     m_interval = duration;
     m_elapsed = mixxx::Duration::fromSeconds(0);
     m_bActive = true;
 }
 
 void GuiTickTimer::stop() {
-    m_pGuiTick50ms->disconnect();
+    m_pGuiTick20ms->disconnect();
     m_bActive = false;
     m_interval = mixxx::Duration::fromSeconds(0);
     m_elapsed = mixxx::Duration::fromSeconds(0);
 }
 
-void GuiTickTimer::slotGuiTick50ms(double) {
+void GuiTickTimer::slotGuiTick20ms(double) {
     if (m_bActive) {
-        m_elapsed += mixxx::Duration::fromMillis(50);
+        m_elapsed += mixxx::Duration::fromMillis(20);
         if (m_elapsed >= m_interval) {
             m_elapsed = mixxx::Duration::fromSeconds(0);
             emit(timeout());

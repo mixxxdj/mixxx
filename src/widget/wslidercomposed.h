@@ -26,10 +26,11 @@
 #include <QMouseEvent>
 #include <QResizeEvent>
 
+#include "skin/skincontext.h"
+#include "util/timer.h"
 #include "widget/slidereventhandler.h"
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
-#include "skin/skincontext.h"
 
 /**
   * A widget for a slider composed of a background pixmap and a handle.
@@ -54,10 +55,12 @@ class WSliderComposed : public WWidget  {
             Paintable::DrawMode mode,
             double scaleFactor);
     inline bool isHorizontal() const { return m_bHorizontal; };
+    void inputActivity();
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void fillDebugTooltip(QStringList* debug) override;
+    void guiTick();
 
   protected:
     void mouseMoveEvent(QMouseEvent* e) override;
@@ -84,6 +87,8 @@ class WSliderComposed : public WWidget  {
     // Pointer to pixmap of the handle
     PaintablePointer m_pHandle;
     SliderEventHandler<WSliderComposed> m_handler;
+    GuiTickTimer m_guiTickTimer;
+    mixxx::Duration m_lastActivity;
 
     friend class SliderEventHandler<WSliderComposed>;
 };

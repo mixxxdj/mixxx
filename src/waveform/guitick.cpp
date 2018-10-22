@@ -1,18 +1,14 @@
 #include <QTimer>
 
-#include "guitick.h"
+#include "waveform/guitick.h"
 #include "control/controlobject.h"
 
 GuiTick::GuiTick(QObject* pParent)
         : QObject(pParent) {
-     m_pCOGuiTickTime = new ControlObject(ConfigKey("[Master]", "guiTickTime"));
-     m_pCOGuiTick50ms = new ControlObject(ConfigKey("[Master]", "guiTick50ms"));
-     m_cpuTimer.start();
-}
-
-GuiTick::~GuiTick() {
-    delete m_pCOGuiTickTime;
-    delete m_pCOGuiTick50ms;
+    m_pCOGuiTickTime = std::make_unique<ControlObject>(ConfigKey("[Master]", "guiTickTime"));
+    m_pCOGuiTick20ms = std::make_unique<ControlObject>(ConfigKey("[Master]", "guiTick20ms"));
+    m_pCOGuiTick50ms = std::make_unique<ControlObject>(ConfigKey("[Master]", "guiTick50ms"));
+    m_cpuTimer.start();
 }
 
 // this is called from the VSyncThread
@@ -22,8 +18,12 @@ void GuiTick::process() {
     double cpuTimeLastTickSeconds = m_cpuTimeLastTick.toDoubleSeconds();
     m_pCOGuiTickTime->set(cpuTimeLastTickSeconds);
 
-    if (m_cpuTimeLastTick - m_lastUpdateTime >= mixxx::Duration::fromMillis(20)) {
-        m_lastUpdateTime = m_cpuTimeLastTick;
+    if (m_cpuTimeLastTick - m_lastUpdateTime20ms >= mixxx::Duration::fromMillis(20)) {
+        m_lastUpdateTime20ms = m_cpuTimeLastTick;
+        m_pCOGuiTick20ms->set(cpuTimeLastTickSeconds);
+    }
+    if (m_cpuTimeLastTick - m_lastUpdateTime50ms >= mixxx::Duration::fromMillis(50)) {
+        m_lastUpdateTime50ms = m_cpuTimeLastTick;
         m_pCOGuiTick50ms->set(cpuTimeLastTickSeconds);
     }
 }

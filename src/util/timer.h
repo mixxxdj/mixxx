@@ -2,13 +2,13 @@
 #define UTIL_TIMER_H
 
 #include <QObject>
-#include <QScopedPointer>
 
 #include "control/controlproxy.h"
-#include "util/stat.h"
-#include "util/performancetimer.h"
 #include "util/cmdlineargs.h"
 #include "util/duration.h"
+#include "util/memory.h"
+#include "util/performancetimer.h"
+#include "util/stat.h"
 
 const Stat::ComputeFlags kDefaultComputeFlags = Stat::COUNT | Stat::SUM | Stat::AVERAGE |
         Stat::MAX | Stat::MIN | Stat::SAMPLE_VARIANCE;
@@ -110,7 +110,7 @@ class ScopedTimer {
     bool m_cancel;
 };
 
-// A timer that provides a similar API to QTimer but uses the GuiTick 50ms
+// A timer that provides a similar API to QTimer but uses the GuiTick 20ms
 // signal provided by the VsyncThread.
 class GuiTickTimer : public QObject {
     Q_OBJECT
@@ -126,10 +126,10 @@ class GuiTickTimer : public QObject {
     void timeout();
 
   private slots:
-    void slotGuiTick50ms(double v);
+    void slotGuiTick20ms(double v);
 
   private:
-    QScopedPointer<ControlProxy> m_pGuiTick50ms;
+    std::unique_ptr<ControlProxy> m_pGuiTick20ms;
     mixxx::Duration m_interval;
     mixxx::Duration m_elapsed;
     bool m_bActive;

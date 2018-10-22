@@ -25,6 +25,7 @@
 #include "widget/wpixmapstore.h"
 #include "util/debug.h"
 #include "util/math.h"
+#include "util/time.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
@@ -33,7 +34,10 @@ WSliderComposed::WSliderComposed(QWidget * parent)
       m_dSliderLength(0.0),
       m_bHorizontal(false),
       m_pSlider(nullptr),
-      m_pHandle(nullptr) {
+      m_pHandle(nullptr),
+      m_guiTickTimer(this) {
+    connect(&m_guiTickTimer, SIGNAL(timeout()),
+            this, SLOT(guiTick()));
 }
 
 WSliderComposed::~WSliderComposed() {
@@ -225,4 +229,19 @@ double WSliderComposed::calculateHandleLength() {
         }
     }
     return 0;
+}
+
+void WSliderComposed::guiTick() {
+    mixxx::Duration now = mixxx::Time::elapsed();
+    if (now - m_lastActivity > mixxx::Duration::fromSeconds(1)) {
+        m_guiTickTimer.stop();
+    }
+    update();
+}
+
+void WSliderComposed::inputActivity() {
+    m_lastActivity = mixxx::Time::elapsed();
+    if (!m_guiTickTimer.started()) {
+        m_guiTickTimer.start(mixxx::Duration::fromMillis(20));
+    }
 }
