@@ -58,7 +58,11 @@
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_MixModeButton</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>,5f</Size></WidgetGroup>
+              <WidgetGroup>
+                <MinimumSize>,0</MinimumSize>
+                <MaximumSize>,5</MaximumSize>
+                <SizePolicy>min,me</SizePolicy>
+              </WidgetGroup>
 
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
@@ -68,7 +72,7 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <WidgetGroup><Size>,5f</Size></WidgetGroup>
+                  <WidgetGroup><Size>,1f</Size></WidgetGroup>
                   <SingletonContainer>
                     <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
                   </SingletonContainer>
@@ -79,13 +83,17 @@
                 </Connection>
               </WidgetGroup>
 
-              <WidgetGroup><Size>,7f</Size></WidgetGroup>
+              <WidgetGroup>
+                <MinimumSize>,2</MinimumSize>
+                <MaximumSize>,7</MaximumSize>
+                <SizePolicy>min,me</SizePolicy>
+              </WidgetGroup>
 
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_PflButton</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>,5me</Size></WidgetGroup>
+              <WidgetGroup><Size>,0me</Size></WidgetGroup>
             </Children>
           </WidgetGroup><!-- /Expand/Collapse + Mix/Super + Pfl -->
         </Children>
