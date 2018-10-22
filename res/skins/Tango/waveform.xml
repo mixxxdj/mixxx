@@ -95,11 +95,12 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>f,f</SizePolicy>
             <Children>
-              <Template src="skin:button_1state.xml">
+              <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">BeatgridCurpos</SetVariable>
                 <SetVariable name="Size">24f,49f</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
               </Template>
 
               <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
