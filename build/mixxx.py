@@ -185,7 +185,8 @@ class MixxxBuild(object):
             # support x64.
             # In SConscript.env we use the MSVS tool to let you generate a
             # Visual Studio solution. Consider removing this.
-            tools.extend(['msvs'])
+            tools.extend(['msvs', 'signtool'])
+            toolpath.append('#/build/windows/')
             # SCons's built-in Qt tool attempts to link 'qt' into your binary if
             # you don't do this.
             extra_arguments['QT_LIB'] = ''
