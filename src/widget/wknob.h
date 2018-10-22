@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
+#include "util/timer.h"
 #include "widget/wdisplay.h"
 #include "widget/knobeventhandler.h"
 
@@ -25,7 +26,14 @@ class WKnob : public WDisplay {
     void mousePressEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
 
+    void inputActivity();
+  private slots:
+    void guiTick();
+
   private:
+    GuiTickTimer m_guiTickTimer;
+    mixxx::Duration m_lastActivity;
+
     KnobEventHandler<WKnob> m_handler;
     friend class KnobEventHandler<WKnob>;
 };

@@ -2,6 +2,7 @@
 #include <QStyleOption>
 #include <QTransform>
 
+#include "util/time.h"
 #include "widget/wknobcomposed.h"
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
@@ -10,7 +11,10 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dMinAngle(-230.0),
           m_dMaxAngle(50.0),
           m_dKnobCenterXOffset(0),
-          m_dKnobCenterYOffset(0) {
+          m_dKnobCenterYOffset(0),
+          m_guiTickTimer(this) {
+    connect(&m_guiTickTimer, SIGNAL(timeout()),
+            this, SLOT(guiTick()));
 }
 
 void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
@@ -79,7 +83,7 @@ void WKnobComposed::onConnectedControlChanged(double dParameter, double dValue) 
     // angle range? Right now it's just 1/100th of a degree.
     if (fabs(angle - m_dCurrentAngle) > 0.01) {
         // paintEvent updates m_dCurrentAngle
-        update();
+        inputActivity();
     }
 }
 
@@ -129,4 +133,19 @@ void WKnobComposed::mouseReleaseEvent(QMouseEvent* e) {
 
 void WKnobComposed::wheelEvent(QWheelEvent* e) {
     m_handler.wheelEvent(this, e);
+}
+
+void WKnobComposed::guiTick() {
+    mixxx::Duration now = mixxx::Time::elapsed();
+    if (now - m_lastActivity > mixxx::Duration::fromSeconds(1)) {
+        m_guiTickTimer.stop();
+    }
+    update();
+}
+
+void WKnobComposed::inputActivity() {
+    m_lastActivity = mixxx::Time::elapsed();
+    if (!m_guiTickTimer.started()) {
+        m_guiTickTimer.start(mixxx::Duration::fromMillis(20));
+    }
 }

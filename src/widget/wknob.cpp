@@ -19,10 +19,14 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
+#include "util/time.h"
 #include "widget/wknob.h"
 
 WKnob::WKnob(QWidget* pParent)
-        : WDisplay(pParent) {
+        : WDisplay(pParent),
+          m_guiTickTimer(this) {
+    connect(&m_guiTickTimer, SIGNAL(timeout()),
+            this, SLOT(guiTick()));
 }
 
 void WKnob::mouseMoveEvent(QMouseEvent* e) {
@@ -39,4 +43,19 @@ void WKnob::mouseReleaseEvent(QMouseEvent* e) {
 
 void WKnob::wheelEvent(QWheelEvent* e) {
     m_handler.wheelEvent(this, e);
+}
+
+void WKnob::guiTick() {
+    mixxx::Duration now = mixxx::Time::elapsed();
+    if (now - m_lastActivity > mixxx::Duration::fromSeconds(1)) {
+        m_guiTickTimer.stop();
+    }
+    update();
+}
+
+void WKnob::inputActivity() {
+    m_lastActivity = mixxx::Time::elapsed();
+    if (!m_guiTickTimer.started()) {
+        m_guiTickTimer.start(mixxx::Duration::fromMillis(20));
+    }
 }

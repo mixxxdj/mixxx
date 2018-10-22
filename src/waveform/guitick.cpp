@@ -22,7 +22,7 @@ void GuiTick::process() {
     double cpuTimeLastTickSeconds = m_cpuTimeLastTick.toDoubleSeconds();
     m_pCOGuiTickTime->set(cpuTimeLastTickSeconds);
 
-    if (m_cpuTimeLastTick - m_lastUpdateTime >= mixxx::Duration::fromMillis(50)) {
+    if (m_cpuTimeLastTick - m_lastUpdateTime >= mixxx::Duration::fromMillis(20)) {
         m_lastUpdateTime = m_cpuTimeLastTick;
         m_pCOGuiTick50ms->set(cpuTimeLastTickSeconds);
     }

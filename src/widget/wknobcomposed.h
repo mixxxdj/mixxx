@@ -6,11 +6,12 @@
 #include <QMouseEvent>
 #include <QWheelEvent>
 
+#include "skin/skincontext.h"
+#include "util/timer.h"
 #include "widget/wwidget.h"
 #include "widget/knobeventhandler.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wimagestore.h"
-#include "skin/skincontext.h"
 
 // This is used for knobs, if the knob value can be displayed
 // by rotating a single SVG image.
@@ -33,7 +34,11 @@ class WKnobComposed : public WWidget {
     void mouseReleaseEvent(QMouseEvent *e) override;
     void paintEvent(QPaintEvent* /*unused*/) override;
 
+  private slots:
+    void guiTick();
+
   private:
+    void inputActivity();
     void clear();
     void setPixmapBackground(
             PixmapSource source,
@@ -52,6 +57,9 @@ class WKnobComposed : public WWidget {
     double m_dMaxAngle;
     double m_dKnobCenterXOffset;
     double m_dKnobCenterYOffset;
+    GuiTickTimer m_guiTickTimer;
+    mixxx::Duration m_lastActivity;
+
     friend class KnobEventHandler<WKnobComposed>;
 };
 

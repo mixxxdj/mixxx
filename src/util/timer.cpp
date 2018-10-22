@@ -83,19 +83,20 @@ GuiTickTimer::GuiTickTimer(QObject* pParent)
           m_pGuiTick50ms(new ControlProxy(
               "[Master]", "guiTick50ms", this)),
           m_bActive(false) {
-    m_pGuiTick50ms->connectValueChanged(SLOT(slotGuiTick50ms(double)));
 }
 
 GuiTickTimer::~GuiTickTimer() {
 }
 
 void GuiTickTimer::start(mixxx::Duration duration) {
+    m_pGuiTick50ms->connectValueChanged(SLOT(slotGuiTick50ms(double)));
     m_interval = duration;
     m_elapsed = mixxx::Duration::fromSeconds(0);
     m_bActive = true;
 }
 
 void GuiTickTimer::stop() {
+    m_pGuiTick50ms->disconnect();
     m_bActive = false;
     m_interval = mixxx::Duration::fromSeconds(0);
     m_elapsed = mixxx::Duration::fromSeconds(0);
