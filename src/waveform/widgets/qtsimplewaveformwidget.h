@@ -1,11 +1,11 @@
 #ifndef QTSIMPLEWAVEFORMWIDGET_H
 #define QTSIMPLEWAVEFORMWIDGET_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 #include "waveformwidgetabstract.h"
 
-class QtSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class QtSimpleWaveformWidget : public QOpenGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
     QtSimpleWaveformWidget(const char* group, QWidget* parent);

@@ -1,11 +1,11 @@
 #ifndef GLRGBWAVEFORMWIDGET_H
 #define GLRGBWAVEFORMWIDGET_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 #include "waveformwidgetabstract.h"
 
-class GLRGBWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class GLRGBWaveformWidget : public QOpenGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
     GLRGBWaveformWidget(const char* group, QWidget* parent);

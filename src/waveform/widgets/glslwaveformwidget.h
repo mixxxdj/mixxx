@@ -1,13 +1,13 @@
 #ifndef GLWAVEFORMWIDGETSHADER_H
 #define GLWAVEFORMWIDGETSHADER_H
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 
 #include "waveformwidgetabstract.h"
 
 class GLSLWaveformRendererSignal;
 
-class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class GLSLWaveformWidget : public QOpenGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
     GLSLWaveformWidget(const char* group, QWidget* parent,

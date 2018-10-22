@@ -4,9 +4,10 @@
 #include <QWidget>
 #include <QtDebug>
 #include <QGLFormat>
-#include <QGLShaderProgram>
+#include <QOpenGLShaderProgram>
 #include <QGuiApplication>
 #include <QWindow>
+#include <QOpenGLContext>
 
 #include "waveform/waveformwidgetfactory.h"
 
@@ -170,12 +171,12 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
 
         m_openGLAvailable = true;
 
-        QGLWidget* glWidget = new QGLWidget(); // create paint device
+        QOpenGLWidget* glWidget = new QOpenGLWidget(); // create paint device
         // QGLShaderProgram::hasOpenGLShaderPrograms(); valgind error
         // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
-        glWidget->context()->makeCurrent();
+        glWidget->makeCurrent();
         m_openGLShaderAvailable =
-                QGLShaderProgram::hasOpenGLShaderPrograms(glWidget->context());
+                QOpenGLShaderProgram::hasOpenGLShaderPrograms(glWidget->context());
         delete glWidget;
     }
 
@@ -565,7 +566,7 @@ void WaveformWidgetFactory::swap() {
             for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
                 if (pWaveformWidget->getWidth() > 0) {
-                    QGLWidget* glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
+                    QOpenGLWidget* glw = dynamic_cast<QOpenGLWidget*>(pWaveformWidget->getWidget());
                     // Don't swap invalid / invisible widgets or widgets with an
                     // unexposed window. Prevents continuous log spew of
                     // "QOpenGLContext::swapBuffers() called with non-exposed

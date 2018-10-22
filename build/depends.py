@@ -1074,7 +1074,6 @@ class MixxxCore(Feature):
 
                    "widget/wwaveformviewer.cpp",
 
-                   "waveform/sharedglcontext.cpp",
                    "waveform/waveform.cpp",
                    "waveform/waveformfactory.cpp",
                    "waveform/waveformwidgetfactory.cpp",

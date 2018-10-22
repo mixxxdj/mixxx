@@ -8,7 +8,6 @@
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
 #include "util/dnd.h"
-#include "waveform/sharedglcontext.h"
 #include "util/math.h"
 #include "waveform/visualplayposition.h"
 #include "vinylcontrol/vinylcontrol.h"
@@ -21,7 +20,7 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
                  UserSettingsPointer pConfig,
                  VinylControlManager* pVCMan,
                  BaseTrackPlayer* pPlayer)
-        : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, SharedGLContext::getWidget()),
+        : QOpenGLWidget(parent),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
@@ -65,9 +64,6 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
 #endif
     //Drag and drop
     setAcceptDrops(true);
-    qDebug() << "WSpinny(): Created QGLWidget, Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
@@ -657,7 +653,7 @@ bool WSpinny::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QGLWidget::event(pEvent);
+    return QOpenGLWidget::event(pEvent);
 }
 
 void WSpinny::dragEnterEvent(QDragEnterEvent* event) {

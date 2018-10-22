@@ -1,6 +1,7 @@
 #include "hsvwaveformwidget.h"
 
 #include <QPainter>
+#include <QOpenGLContext>
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"

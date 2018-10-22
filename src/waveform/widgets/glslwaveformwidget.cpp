@@ -2,6 +2,7 @@
 
 #include <QPainter>
 #include <QtDebug>
+#include <QOpenGLContext>
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
@@ -11,7 +12,6 @@
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrenderbeat.h"
-#include "waveform/sharedglcontext.h"
 
 #include "util/performancetimer.h"
 
@@ -26,7 +26,7 @@ GLSLRGBWaveformWidget::GLSLRGBWaveformWidget(const char* group, QWidget* parent)
 
 GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent,
                                        bool rgbRenderer)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
+        : QOpenGLWidget(parent),
           WaveformWidgetAbstract(group) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
@@ -43,14 +43,8 @@ GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent,
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    setAutoBufferSwap(false);
-
-    qDebug() << "Created QGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-
     // Initialization requires activating our context.
-    if (QGLContext::currentContext() != context()) {
+    if (QOpenGLContext::currentContext() != context()) {
         makeCurrent();
     }
     m_initSuccess = init();
@@ -61,7 +55,7 @@ GLSLWaveformWidget::~GLSLWaveformWidget() {
 }
 
 void GLSLWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
+    m_widget = static_cast<QWidget*>(static_cast<QOpenGLWidget*>(this));
 }
 
 void GLSLWaveformWidget::paintEvent(QPaintEvent* event) {
@@ -73,7 +67,7 @@ mixxx::Duration GLSLWaveformWidget::render() {
     mixxx::Duration t1;
     //mixxx::Duration t2, t3;
     timer.start();
-    // QPainter makes QGLContext::currentContext() == context()
+    // QPainter makes QOpenGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
     QPainter painter(this);
     t1 = timer.restart();

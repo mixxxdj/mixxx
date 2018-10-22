@@ -1,8 +1,8 @@
 #include "glvsynctestwidget.h"
 
 #include <QPainter>
+#include <QOpenGLContext>
 
-#include "waveform/sharedglcontext.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/glwaveformrenderersimplesignal.h"
@@ -16,7 +16,7 @@
 #include "util/performancetimer.h"
 
 GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
-    : QGLWidget(parent, SharedGLContext::getWidget()),
+    : QOpenGLWidget(parent),
       WaveformWidgetAbstract(group) {
 
 //    addRenderer<WaveformRenderBackground>(); // 172 µs
@@ -30,23 +30,20 @@ GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    setAutoBufferSwap(false);
-
-    if (QGLContext::currentContext() != context()) {
+    if (QOpenGLContext::currentContext() != context()) {
         makeCurrent();
     }
     m_initSuccess = init();
-    qDebug() << "GLVSyncTestWidget.isSharing() =" << isSharing();
 }
 
 GLVSyncTestWidget::~GLVSyncTestWidget() {
-    if (QGLContext::currentContext() != context()) {
+    if (QOpenGLContext::currentContext() != context()) {
         makeCurrent();
     }
 }
 
 void GLVSyncTestWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
+    m_widget = static_cast<QWidget*>(static_cast<QOpenGLWidget*>(this));
 }
 
 void GLVSyncTestWidget::paintEvent(QPaintEvent* event) {
@@ -58,7 +55,7 @@ mixxx::Duration GLVSyncTestWidget::render() {
     mixxx::Duration t1;
     //mixxx::Duration t2, t3;
     timer.start();
-    // QPainter makes QGLContext::currentContext() == context()
+    // QPainter makes QOpenGLContext::currentContext() == context()
     // this may delayed until previous buffer swap finished
     QPainter painter(this);
     t1 = timer.restart();
