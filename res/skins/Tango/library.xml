@@ -102,9 +102,5 @@ Description:
       </Splitter><!-- /Split Tree / Tracks table -->
 
     </Children>
-    <Connection>
-      <ConfigKey persist="true">[Library],show_library</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>
