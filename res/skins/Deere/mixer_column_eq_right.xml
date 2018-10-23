@@ -31,7 +31,7 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_killswitches</ConfigKey>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -52,7 +52,7 @@
               </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_killswitches</ConfigKey>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
             </Connection>

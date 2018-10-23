@@ -302,7 +302,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Master],show_killswitches</ConfigKey>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
             </Connection>
           </PushButton>
 

@@ -581,7 +581,7 @@ Description:
 
 				                  <Template src="skin:../Tango/skin_settings_button_2state.xml">
 				                    <SetVariable name="text">EQ Kill Buttons</SetVariable>
-				                    <SetVariable name="Setting">[Master],show_eq_kill_buttons</SetVariable>
+				                    <SetVariable name="Setting">[Skin],show_eq_kill_buttons</SetVariable>
 				                  </Template>
 
 				                </Children>

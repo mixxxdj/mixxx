@@ -31,7 +31,7 @@
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Deere],show_crossfader">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
-      <attribute persist="true" config_key="[Master],show_killswitches">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">0</attribute>
       <attribute persist="true" config_key="[Master],show_faders">1</attribute>
       <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
 
