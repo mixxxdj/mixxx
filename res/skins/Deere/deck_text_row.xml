@@ -25,7 +25,7 @@
           </CoverArt>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_coverart</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

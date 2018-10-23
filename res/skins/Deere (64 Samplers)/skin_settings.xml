@@ -122,7 +122,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Master],show_coverart</ConfigKey>
+              <ConfigKey>[Skin],show_coverart</ConfigKey>
             </Connection>
           </PushButton>
 
