@@ -98,7 +98,7 @@ Variables:
       <WidgetGroup>
         <Size>3f,1min</Size>
         <Connection>
-          <ConfigKey persist="true">[Master],show_rate_control</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

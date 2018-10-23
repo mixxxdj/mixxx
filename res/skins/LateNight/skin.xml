@@ -58,7 +58,7 @@
       <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>
       <attribute config_key="[Master],skin_settings">0</attribute>
-      <attribute config_key="[Master],show_rate_control">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_rate_controls">1</attribute>
       <!--Disable hidden effect routing Buttons-->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>

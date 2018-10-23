@@ -280,7 +280,7 @@ Description:
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">BPM/Sync &amp; Pitch Fader</SetVariable>
-                <SetVariable name="Setting">[Master],show_rate_control</SetVariable>
+                <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Rate/Key submenu -->
@@ -299,7 +299,7 @@ Description:
                     <MaximumSize>-1,34</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_rate_control</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
