@@ -230,7 +230,7 @@ Description:
                 <SetVariable name="TooltipId">toggle_4decks</SetVariable>
                 <SetVariable name="state_0_icon">2decks.svg</SetVariable>
                 <SetVariable name="state_1_icon">4decks.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Master],show_4decks</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_4decks</SetVariable>
               </Template>
             </Children>
             <Connection>

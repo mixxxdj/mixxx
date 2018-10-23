@@ -78,7 +78,7 @@ Description:
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">4 Decks</SetVariable>
-                <SetVariable name="Setting">[Master],show_4decks</SetVariable>
+                <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
               </Template>
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">

@@ -56,7 +56,7 @@ Description:
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">toggle_4decks</SetVariable>
                 <SetVariable name="text">4 Decks</SetVariable>
-                <SetVariable name="Setting">[Master],show_4decks</SetVariable>
+                <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
               </Template>
 
               <!-- 4/8 Hotcues toogle -->
