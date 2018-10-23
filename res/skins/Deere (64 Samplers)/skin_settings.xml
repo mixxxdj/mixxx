@@ -514,7 +514,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Master],show_superknobs</ConfigKey>
+              <ConfigKey>[Skin],show_superknobs</ConfigKey>
             </Connection>
           </PushButton>
 

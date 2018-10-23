@@ -721,7 +721,7 @@ Description:
 
                   <Template src="skin:../Tango/skin_settings_button_2state.xml">
                     <SetVariable name="text">Super Knobs</SetVariable>
-                    <SetVariable name="Setting">[Master],show_superknobs</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_superknobs</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /Super Knobs -->
