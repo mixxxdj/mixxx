@@ -55,7 +55,7 @@
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Master],show_rate_control">1</attribute>
       <!-- item index in skin_settings_sampler_rows.xml, '1' enables 2 sampler rows -->
-      <attribute persist="true" config_key="[Tango],sampler_rows">1</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_rows">1</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_1_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_2_expanded">0</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_3_expanded">0</attribute>
