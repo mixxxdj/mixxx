@@ -230,7 +230,7 @@ Description:
 
                   <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="text">4 EFFECT UNITS</SetVariable>
-                    <SetVariable name="Setting">[Master],show_4effectunits</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_4effectunits</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /4 Effect Units -->

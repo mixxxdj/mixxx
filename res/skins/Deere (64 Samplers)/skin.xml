@@ -19,7 +19,7 @@
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
 
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
-      <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Master],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Master],show_spinnies">0</attribute>
       <attribute persist="true" config_key="[Deere],show_starrating">0</attribute>

@@ -164,7 +164,7 @@
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -212,7 +212,7 @@
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /FX buttons 1+2+3+4 -->

@@ -42,7 +42,7 @@
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
-      <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
       <attribute config_key="[Library],show_library">1</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
@@ -315,7 +315,7 @@
                                 </SingletonContainer>
                               </Children>
                               <Connection>
-                                <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
+                                <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
                                 <BindProperty>visible</BindProperty>
                               </Connection>
                             </WidgetGroup>
@@ -329,7 +329,7 @@
                                 <Template src="skin:../Tango/fx_units_34.xml"/>
                               </Children>
                               <Connection>
-                                <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
+                                <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
                                 <BindProperty>visible</BindProperty>
                               </Connection>
                             </WidgetGroup>
@@ -342,7 +342,7 @@
                                 </SingletonContainer>
                               </Children>
                               <Connection>
-                                <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
+                                <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
                                 <Transform><Not/></Transform>
                                 <BindProperty>visible</BindProperty>
                               </Connection>

@@ -698,13 +698,13 @@ Description:
                             <SetVariable name="state_x_text"> [ 2 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">0</SetVariable>
-                            <SetVariable name="Setting">[Master],show_4effectunits</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_4effectunits</SetVariable>
                           </Template>
                           <Template src="skin:../Tango/skin_settings_button_multi.xml">
                             <SetVariable name="state_x_text"> [ 4 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">1</SetVariable>
-                            <SetVariable name="Setting">[Master],show_4effectunits</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_4effectunits</SetVariable>
                           </Template>
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
