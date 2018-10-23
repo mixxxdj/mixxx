@@ -219,7 +219,7 @@ Description:
                 <SetVariable name="Size">20f,20f</SetVariable>
                 <SetVariable name="state_0_icon">loop_beatjump_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">loop_beatjump_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],loop_beatjump_controls</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_loop_beatjump_controls</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>

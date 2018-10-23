@@ -151,7 +151,7 @@ Description:
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Loop / Beatjump Buttons</SetVariable>
-                <SetVariable name="Setting">[Tango],loop_beatjump_controls</SetVariable>
+                <SetVariable name="Setting">[Skin],show_loop_beatjump_controls</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Permanent deck controls -->

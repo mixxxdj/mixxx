@@ -70,7 +70,7 @@
 			<attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
 			<attribute persist="true" config_key="[Library],show_coverart">0</attribute>
 			<attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
-			<attribute persist="false" config_key="[Shade],looping">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_loop_beatjump_controls">0</attribute>
 
 			<!--Disable hidden effect routing Buttons-->
 			<attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[Master]_enable">0</attribute>
@@ -404,7 +404,7 @@
 				        </Template>
 				      </Children>
 				      <Connection>
-				        <ConfigKey>[Shade],looping</ConfigKey>
+				        <ConfigKey>[Skin],show_loop_beatjump_controls</ConfigKey>
 				        <BindProperty>visible</BindProperty>
 				      </Connection>
 				    </WidgetGroup>
