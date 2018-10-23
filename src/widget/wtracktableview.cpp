@@ -1068,9 +1068,6 @@ void WTrackTableView::onSearchActive(bool active) {
     if (active) {
         // Save the current position before a new search starts
         saveVScrollBarPos();
-    } else {
-        // Restore the saved position
-        restoreVScrollBarPos();
     }
 }
 
