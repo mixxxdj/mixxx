@@ -4,7 +4,6 @@
     <ObjectName>SamplerDeck</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
-    <MinimumSize>280,100</MinimumSize>
     <Children>
       <!-- SamplerMainControls -->
       <WidgetGroup>

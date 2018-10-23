@@ -1075,10 +1075,17 @@ border: 0px;
   padding-top: 5px;
 }
 
+#SamplerRow {
+  qproperty-layoutAlignment: 'AlignTop';
+  margin: 5px 0px 2px 0px;
+}
+
 #SamplerDeck {
-  margin-top: 5px;
   border: 1px solid #585858;
   background-color: #1e1e1e;
+}
+
+#SamplerExpandbutton {
 }
 
 #SamplerMainControls {
