@@ -569,7 +569,7 @@ Description:
                   	<Children>
 		                  <Template src="skin:../Tango/skin_settings_button_2state.xml">
 		                    <SetVariable name="text">EQ &amp; QuickEffect Knobs</SetVariable>
-		                    <SetVariable name="Setting">[Master],show_eqs</SetVariable>
+		                    <SetVariable name="Setting">[Skin],show_eq_knobs</SetVariable>
 		                  </Template>
 
 				              <WidgetGroup><!-- EQ Kill buttons -->
@@ -588,7 +588,7 @@ Description:
 				                    <MaximumSize>182,17</MaximumSize>
 				                    <SizePolicy>me,me</SizePolicy>
 				                    <Connection>
-				                      <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+				                      <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
 				                      <Transform><Not/></Transform>
 				                      <BindProperty>visible</BindProperty>
 				                    </Connection>

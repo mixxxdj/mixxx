@@ -283,7 +283,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Master],show_eqs</ConfigKey>
+              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
             </Connection>
           </PushButton>
 

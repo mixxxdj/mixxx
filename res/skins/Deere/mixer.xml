@@ -144,7 +144,7 @@
                               </Template>
                             </Children>
                             <Connection>
-                              <ConfigKey>[Master],show_eqs</ConfigKey>
+                              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                               <BindProperty>visible</BindProperty>
                               <Transform>
                                 <Not/>
@@ -173,7 +173,7 @@
                               </Template>
                             </Children>
                             <Connection>
-                              <ConfigKey>[Master],show_eqs</ConfigKey>
+                              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                               <BindProperty>visible</BindProperty>
                             </Connection>
                           </WidgetGroup> <!-- DeckControls_StackedWaveforms_4Decks_WithEQs -->

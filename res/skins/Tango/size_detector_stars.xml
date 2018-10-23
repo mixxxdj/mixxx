@@ -59,7 +59,7 @@ Controls:
                 <Layout>horizontal</Layout>
                 <Size>96f,20f</Size>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>

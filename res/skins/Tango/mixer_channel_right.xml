@@ -114,7 +114,7 @@ Variables:
           <Template src="skin:quick_fx_knob_right.xml"/><!-- Quick Effect -->
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EQ + QuickEffect knobs/buttons -->

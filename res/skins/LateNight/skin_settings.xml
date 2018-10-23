@@ -137,7 +137,7 @@ Description:
 
                   <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="text">EQ Knobs</SetVariable>
-                    <SetVariable name="Setting">[Master],show_eqs</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_eq_knobs</SetVariable>
                   </Template>
 
                 </Children>

@@ -99,7 +99,7 @@
                   </WidgetGroup><!-- show EQ, no faders -->
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- show EQ -->
@@ -130,7 +130,7 @@
                   </WidgetGroup><!-- no EQ, show faders -->
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -169,7 +169,7 @@
                   </WidgetGroup>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- show EQ -->
@@ -200,7 +200,7 @@
                   </WidgetGroup><!-- no EQ, show faders -->
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
