@@ -210,7 +210,7 @@
                       </SliderComposed>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_xfader</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>

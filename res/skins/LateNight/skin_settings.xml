@@ -189,7 +189,7 @@ Description:
 
                   <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="text">Crossfader</SetVariable>
-                    <SetVariable name="Setting">[Master],show_xfader</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_xfader</SetVariable>
                   </Template>
 
                 </Children>
