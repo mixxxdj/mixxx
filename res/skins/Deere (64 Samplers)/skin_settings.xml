@@ -141,7 +141,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Master],show_spinnies</ConfigKey>
+              <ConfigKey>[Skin],show_spinnies</ConfigKey>
             </Connection>
           </PushButton>
 

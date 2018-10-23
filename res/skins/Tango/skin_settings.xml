@@ -337,7 +337,7 @@ Description:
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Spinny</SetVariable>
-                <SetVariable name="Setting">[Spinny],show_spinnies</SetVariable>
+                <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
               </Template>
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
@@ -347,7 +347,7 @@ Description:
 
             <!-- A hack involving a SizeAwareStack and WidgetStacks
               that toggles [Tango],no_spinny_no_cover when both
-              [Spinny],show_spinnies and [Skin],show_coverart are 0 -->
+              [Skin],show_spinnies and [Skin],show_coverart are 0 -->
               <WidgetGroup>
                 <Size>3f,0f</Size>
                 <Layout>horizontal</Layout>
@@ -355,7 +355,7 @@ Description:
                   <WidgetGroup>
                     <Size>1f,0f</Size>
                     <Connection>
-                      <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>

@@ -52,7 +52,7 @@
       <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
       <attribute persist="true" config_key="[Skin],8_hotcues">0</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
-      <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Master],show_rate_control">1</attribute>
       <!-- item index in skin_settings_sampler_rows.xml, '1' enables 2 sampler rows -->
       <attribute persist="true" config_key="[Tango],sampler_rows">1</attribute>

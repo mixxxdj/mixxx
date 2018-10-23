@@ -53,7 +53,7 @@
       <attribute persist="true" config_key="[Library],show_library">1</attribute>
       <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
       <attribute persist="true" config_key="[Skin],8_hotcues">0</attribute>
-      <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_cover_art">1</attribute>
       <attribute persist="true" config_key="[Skin],big_spinny">0</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>

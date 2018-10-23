@@ -53,7 +53,7 @@ Variables:
           </Spinny>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -77,7 +77,7 @@ Variables:
           </CoverArt>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>

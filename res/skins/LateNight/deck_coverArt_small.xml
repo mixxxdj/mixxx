@@ -17,7 +17,7 @@
           </CoverArt>
         </Children>
         <Connection>
-          <ConfigKey>[Spinny],show_spinnies</ConfigKey>
+          <ConfigKey>[Skin],show_spinnies</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>

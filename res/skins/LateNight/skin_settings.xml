@@ -84,7 +84,7 @@ Description:
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_spinny</SetVariable>
                 <SetVariable name="text">Spinny</SetVariable>
-                <SetVariable name="Setting">[Spinny],show_spinnies</SetVariable>
+                <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
               </Template>
 
               <!-- Cover Art -->
