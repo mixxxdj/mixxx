@@ -91,14 +91,14 @@ Description:
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_spinny</SetVariable>
                 <SetVariable name="text">Cover Art</SetVariable>
-                <SetVariable name="Setting">[Skin],show_cover_art</SetVariable>
+                <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
               </Template>
 
               <!-- Big Spinny -->
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_spinny</SetVariable>
                 <SetVariable name="text">Big Spinny/Cover Art</SetVariable>
-                <SetVariable name="Setting">[Skin],big_spinny</SetVariable>
+                <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
               </Template>
 
             </Children>

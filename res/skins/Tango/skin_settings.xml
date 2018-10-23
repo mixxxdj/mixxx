@@ -458,13 +458,13 @@ Description:
                         <SetVariable name="state_x_text"> [  °  ] </SetVariable>
                         <SetVariable name="width">28</SetVariable>
                         <SetVariable name="stateX">0</SetVariable>
-                        <SetVariable name="Setting">[Tango],show_BIG_spinny_cover</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
                       </Template>
                       <Template src="skin:../Tango/skin_settings_button_multi.xml">
                         <SetVariable name="state_x_text"> [ O ] </SetVariable>
                         <SetVariable name="width">28</SetVariable>
                         <SetVariable name="stateX">1</SetVariable>
-                        <SetVariable name="Setting">[Tango],show_BIG_spinny_cover</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
                       </Template>
                       <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                     </Children>
@@ -528,7 +528,7 @@ Description:
                           </Label>
                         </Children>
                         <Connection>
-                          <ConfigKey persist="true">[Tango],show_BIG_spinny_cover</ConfigKey>
+                          <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup>

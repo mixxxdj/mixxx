@@ -115,7 +115,7 @@ Variables:
               <Template src="skin:spinnyCover_mini.xml"/>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],show_BIG_spinny_cover</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
             </Connection>
@@ -136,7 +136,7 @@ Variables:
               </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],show_BIG_spinny_cover</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- / Small Cover/Spinny when it's actually BIG, but Channel Mixer is visible -->
