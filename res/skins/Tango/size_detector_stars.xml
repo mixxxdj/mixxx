@@ -148,7 +148,7 @@ Controls:
               <WidgetGroup><!-- HotCues 5-8 at minimum size -->
                 <Size>64f,20f</Size>
                 <Connection>
-                  <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>

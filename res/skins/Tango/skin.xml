@@ -50,7 +50,7 @@
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
       <attribute persist="true" config_key="[Master],show_xfader">1</attribute>
-      <attribute persist="true" config_key="[Skin],8_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Master],show_rate_control">1</attribute>

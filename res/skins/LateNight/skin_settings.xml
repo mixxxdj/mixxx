@@ -63,7 +63,7 @@ Description:
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">hotcue_toggle</SetVariable>
                 <SetVariable name="text">8 Hotcues</SetVariable>
-                <SetVariable name="Setting">[Skin],8_hotcues</SetVariable>
+                <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
               </Template>
 
               <!-- Rate Control toogle -->

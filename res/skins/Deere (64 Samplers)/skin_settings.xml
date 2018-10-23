@@ -213,7 +213,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Deere],show_more_hotcues</ConfigKey>
+              <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
             </Connection>
           </PushButton>
 

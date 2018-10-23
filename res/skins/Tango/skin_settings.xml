@@ -138,13 +138,13 @@ Description:
                             <SetVariable name="state_x_text"> [ 4 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">0</SetVariable>
-                            <SetVariable name="Setting">[Skin],8_hotcues</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
                           </Template>
                           <Template src="skin:../Tango/skin_settings_button_multi.xml">
                             <SetVariable name="state_x_text"> [ 8 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">1</SetVariable>
-                            <SetVariable name="Setting">[Skin],8_hotcues</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
                           </Template>
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
