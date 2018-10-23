@@ -85,7 +85,7 @@
       <attribute persist="true" config_key="[Tango],symmetric_overviews">0</attribute>
       <attribute persist="true" config_key="[Tango],symmetric_time">0</attribute>
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
-      <attribute persist="true" config_key="[Tango],stars">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_starrating">1</attribute>
       <attribute persist="true" config_key="[Tango],trackComment">1</attribute>
       <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">1</attribute>
       <attribute persist="true" config_key="[Tango],vinylControlsDeck1">0</attribute>

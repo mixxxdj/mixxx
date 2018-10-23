@@ -10,11 +10,7 @@ Description:
   skin settings menu.
 
 Controls:
-  [Tango],stars_fit_stack0
-    Its current page is set to '0' in skin.xml so that 'stars_wont_fit' is triggered
-  [Tango],stars_fit_stack1
-    Its current page is set to '1' in skin.xml so that 'stars_fit' is triggered
-    for size bigger than 83px.
+  [Tango],starrating_fits   controls Star visibility in deck_buttons_left/right.xml
 
 -->
 <Template>
@@ -279,7 +275,7 @@ Controls:
                 <MaximumSize>82,0</MaximumSize>
                 <Children>
                   <WidgetGroup><Size>1f,20f</Size></WidgetGroup>
-                  <WidgetGroup trigger="[Tango],stars_fit"><Size>1f,20f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[Tango],starrating_fits"><Size>1f,20f</Size></WidgetGroup>
                 </Children>
               </WidgetStack>
 
@@ -288,7 +284,7 @@ Controls:
                 <MinimumSize>83,0</MinimumSize>
                 <MaximumSize>-1,0</MaximumSize>
                 <Children>
-                  <WidgetGroup trigger="[Tango],stars_fit"><Size>1f,20f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[Tango],starrating_fits"><Size>1f,20f</Size></WidgetGroup>
                   <WidgetGroup><Size>1f,20f</Size></WidgetGroup>
                 </Children>
               </WidgetStack>

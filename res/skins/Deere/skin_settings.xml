@@ -195,7 +195,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Deere],show_starrating</ConfigKey>
+              <ConfigKey>[Skin],show_starrating</ConfigKey>
             </Connection>
           </PushButton>
 

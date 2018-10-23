@@ -237,7 +237,7 @@ Description:
                             <Layout>vertical</Layout>
                             <Size>16f,15f</Size>
                             <Connection>
-                              <ConfigKey persist="true">[Tango],stars_fit</ConfigKey>
+                              <ConfigKey persist="true">[Tango],starrating_fits</ConfigKey>
                               <Transform><Not/></Transform>
                               <BindProperty>visible</BindProperty>
                             </Connection>
@@ -248,7 +248,7 @@ Description:
                             <SetVariable name="Size">16f,15f</SetVariable>
                             <SetVariable name="state_0_icon">stars_hidden.svg</SetVariable>
                             <SetVariable name="state_1_icon">stars_visible.svg</SetVariable>
-                            <SetVariable name="ConfigKey">[Tango],stars</SetVariable>
+                            <SetVariable name="ConfigKey">[Skin],show_starrating</SetVariable>
                           </Template>
                         </Children>
                       </WidgetGroup><!-- /Star rating -->
