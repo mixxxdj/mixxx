@@ -7,7 +7,7 @@ from SCons.Script import *
 
 def signtool_path(subject_name, path):
     print("Running signtool: ", path)
-    command = "signtool sign /n \"%s\" /v /debug %s" % (subject_name, path)
+    command = "signtool sign /sm /n \"%s\" /v %s" % (subject_name, path)
     if os.system(command) != 0:
         raise Exception('signtool failed: ' + command)
 
