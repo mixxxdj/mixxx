@@ -13,17 +13,18 @@
     <controls>
       <control>
         <group>[Channel1]</group>
-        <key>MidiFighterTwister.updateBpm</key>
+        <key>pregain</key>
+        <description>MIDI Learned from 245 messages.</description>
         <status>0xB0</status>
         <midino>0x00</midino>
         <options>
-          <script-binding/>
+          <normal/>
         </options>
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>rate_set_default</key>
-        <description>MIDI Learned from 2 messages.</description>
+        <key>pregain_set_default</key>
+        <description>MIDI Learned from 6 messages.</description>
         <status>0xB1</status>
         <midino>0x00</midino>
         <options>
@@ -72,16 +73,17 @@
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>MidiFighterTwister.updateBpm</key>
+        <key>pregain</key>
+        <description>MIDI Learned from 2 messages.</description>
         <status>0xB0</status>
         <midino>0x03</midino>
         <options>
-          <script-binding/>
+          <normal/>
         </options>
       </control>
       <control>
         <group>[Channel2]</group>
-        <key>rate_set_default</key>
+        <key>pregain_set_default</key>
         <description>MIDI Learned from 2 messages.</description>
         <status>0xB1</status>
         <midino>0x03</midino>
@@ -91,8 +93,7 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>pregain</key>
-        <description>MIDI Learned from 245 messages.</description>
+        <key>rate</key>
         <status>0xB0</status>
         <midino>0x04</midino>
         <options>
@@ -101,8 +102,8 @@
       </control>
       <control>
         <group>[Channel1]</group>
-        <key>pregain_set_default</key>
-        <description>MIDI Learned from 6 messages.</description>
+        <key>rate_set_default</key>
+        <description>MIDI Learned from 2 messages.</description>
         <status>0xB1</status>
         <midino>0x04</midino>
         <options>
@@ -150,24 +151,23 @@
         </options>
       </control>
       <control>
-          <group>[Channel2]</group>
-          <key>pregain</key>
-          <description>MIDI Learned from 2 messages.</description>
-          <status>0xB0</status>
-          <midino>0x07</midino>
-          <options>
-              <normal/>
-          </options>
+        <group>[Channel2]</group>
+        <key>rate</key>
+        <status>0xB0</status>
+        <midino>0x07</midino>
+        <options>
+          <normal/>
+        </options>
       </control>
       <control>
-          <group>[Channel2]</group>
-          <key>pregain_set_default</key>
-          <description>MIDI Learned from 2 messages.</description>
-          <status>0xB1</status>
-          <midino>0x07</midino>
-          <options>
-              <normal/>
-          </options>
+        <group>[Channel2]</group>
+        <key>rate_set_default</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0xB1</status>
+        <midino>0x07</midino>
+        <options>
+          <normal/>
+        </options>
       </control>
       <control>
         <group>[EqualizerRack1_[Channel1]_Effect1]</group>
