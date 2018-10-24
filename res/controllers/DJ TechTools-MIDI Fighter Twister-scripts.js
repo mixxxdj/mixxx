@@ -1,5 +1,5 @@
 var MidiFighterTwister = {
-    init: function(id) {
+    init: function() {
         var cc = 0xB0;
 
         function linearize(value) {
