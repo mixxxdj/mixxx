@@ -44,13 +44,15 @@ MixtrackPlatinum.init = function(id, debug) {
     MixtrackPlatinum.decks[4] = new MixtrackPlatinum.Deck(4, 0x03, MixtrackPlatinum.effects[2]);
 
     // set up two banks of samplers, 4 samplers each
-    MixtrackPlatinum.sampler14 = new MixtrackPlatinum.Sampler(1);
-    MixtrackPlatinum.sampler58 = new MixtrackPlatinum.Sampler(5);
-    MixtrackPlatinum.sampler = MixtrackPlatinum.sampler14;
-
     MixtrackPlatinum.sampler_all = new components.ComponentContainer();
-    MixtrackPlatinum.sampler_all[1] = MixtrackPlatinum.sampler14;
-    MixtrackPlatinum.sampler_all[2] = MixtrackPlatinum.sampler58;
+    MixtrackPlatinum.sampler_all[1] = new MixtrackPlatinum.Sampler(1);
+    MixtrackPlatinum.sampler_all[2] = new MixtrackPlatinum.Sampler(5);
+
+    MixtrackPlatinum.sampler = MixtrackPlatinum.sampler_all[1];
+    MixtrackPlatinum.sampler_all[2].forEachComponent(function(component) {
+        component.disconnect();
+    });
+
 
     // headphone gain
     MixtrackPlatinum.head_gain = new MixtrackPlatinum.HeadGain(MixtrackPlatinum.sampler_all);
@@ -511,16 +513,29 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         },
     });
 
-    this.hotcues = [];
+    this.hotcue_buttons = new components.ComponentContainer();
+    this.sampler_buttons = new components.ComponentContainer();
     for (var i = 1; i <= 4; ++i) {
-        this.hotcues[i] = new components.HotcueButton({
+        this.hotcue_buttons[i] = new components.HotcueButton({
             midi: [0x94 + midi_chan, 0x18 + i - 1],
             number: i,
             sendShifted: true,
             shiftControl: true,
             shiftOffset: 8,
         });
+
+        // sampler buttons 5-8
+        this.sampler_buttons[i] = new components.SamplerButton({
+            midi: [0x94 + midi_chan, 0x18 + i - 1],
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 8,
+            number: i+4,
+            loaded: 0x00,
+            playing: 0x7F,
+        });
     }
+    this.hotcues = this.hotcue_buttons;
 
     this.pitch = new components.Pot({
         inKey: 'rate',
@@ -698,13 +713,22 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
                     deck.autoloop = deck.alternate_autoloop;
                     deck.autoloop.reconnectComponents();
                 }
-                // sampler
-                else if (control == 0x0B) {
-                    MixtrackPlatinum.sampler.forEachComponent(function(component) {
+
+                // hotcue sampler
+                if (control == 0x0B) {
+                    deck.hotcues.forEachComponent(function(component) {
                         component.disconnect();
                     });
-                    MixtrackPlatinum.sampler = MixtrackPlatinum.sampler58;
-                    MixtrackPlatinum.sampler.reconnectComponents();
+                    deck.hotcues = deck.sampler_buttons;
+                    deck.hotcues.reconnectComponents();
+                }
+                // reset hotcues in all other modes
+                else {
+                    deck.hotcues.forEachComponent(function(component) {
+                        component.disconnect();
+                    });
+                    deck.hotcues = deck.hotcue_buttons;
+                    deck.hotcues.reconnectComponents();
                 }
             }
             // otherwise set a normal mode
@@ -719,14 +743,13 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
                     deck.autoloop = deck.normal_autoloop;
                     deck.autoloop.reconnectComponents();
                 }
-                // sampler
-                else if (control == 0x0B) {
-                    MixtrackPlatinum.sampler.forEachComponent(function(component) {
-                        component.disconnect();
-                    });
-                    MixtrackPlatinum.sampler = MixtrackPlatinum.sampler14;
-                    MixtrackPlatinum.sampler.reconnectComponents();
-                }
+
+                // reset hotcues
+                deck.hotcues.forEachComponent(function(component) {
+                    component.disconnect();
+                });
+                deck.hotcues = deck.hotcue_buttons;
+                deck.hotcues.reconnectComponents();
             }
         },
         shift: function() {
@@ -783,6 +806,11 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         if (c.group === undefined) {
             c.group = deck.currentDeck;
         }
+    });
+
+    // don't light up sampler buttons in hotcue mode
+    this.sampler_buttons.forEachComponent(function(component) {
+        component.disconnect();
     });
 
     this.setActive = function(active) {
