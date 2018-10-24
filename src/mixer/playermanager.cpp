@@ -383,7 +383,7 @@ void PlayerManager::loadSamplers() {
 
 void PlayerManager::addSampler() {
     QMutexLocker locker(&m_mutex);
-    double count = m_pCONumDecks->get() + 1;
+    double count = m_pCONumSamplers->get() + 1;
     slotChangeNumSamplers(count);
 }
 
