@@ -24,6 +24,9 @@ var UseManualLoopAsCue = false;
 // should we use the auto loop buttons as cue buttons?
 var UseAutolLoopAsCue = false;
 
+// should we use the hotcue buttons for samplers 5-8?
+var UseCueAsSampler = false;
+
 
 var MixtrackPlatinum = {};
 
@@ -701,6 +704,13 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
             // only handle button down events
             if (value != 0x7F) return;
 
+            var shifted_hotcues = deck.sampler_buttons;
+            var normal_hotcues = deck.hotcue_buttons;
+            if (UseCueAsSampler) {
+                shifted_hotcues = deck.hotcue_buttons;
+                normal_hotcues = deck.sampler_buttons;
+            }
+
             // if shifted, set a special mode
             if (this.isShifted) {
                 // manual loop
@@ -719,7 +729,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
                     deck.hotcues.forEachComponent(function(component) {
                         component.disconnect();
                     });
-                    deck.hotcues = deck.sampler_buttons;
+                    deck.hotcues = shifted_hotcues;
                     deck.hotcues.reconnectComponents();
                 }
                 // reset hotcues in all other modes
@@ -744,12 +754,22 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
                     deck.autoloop.reconnectComponents();
                 }
 
+                // hotcue sampler
+                if (control == 0x0B) {
+                    deck.hotcues.forEachComponent(function(component) {
+                        component.disconnect();
+                    });
+                    deck.hotcues = normal_hotcues;
+                    deck.hotcues.reconnectComponents();
+                }
                 // reset hotcues
-                deck.hotcues.forEachComponent(function(component) {
-                    component.disconnect();
-                });
-                deck.hotcues = deck.hotcue_buttons;
-                deck.hotcues.reconnectComponents();
+                else {
+                    deck.hotcues.forEachComponent(function(component) {
+                        component.disconnect();
+                    });
+                    deck.hotcues = deck.hotcue_buttons;
+                    deck.hotcues.reconnectComponents();
+                }
             }
         },
         shift: function() {
