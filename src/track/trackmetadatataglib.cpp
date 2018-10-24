@@ -822,7 +822,7 @@ bool readAudioProperties(
         TrackMetadata* pTrackMetadata,
         const TagLib::File& file) {
     if (!file.isValid()) {
-        kLogger.warning() << "Cannot read audio properties from invalid file:" << file.name();
+        kLogger.warning() << "Cannot read audio properties from inaccessible/unreadable/invalid file:" << file.name();
         return false;
     }
     if (!pTrackMetadata) {
