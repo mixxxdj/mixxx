@@ -904,6 +904,7 @@ border: 0px;
 
 #ToolbarLogo {
   background: transparent;
+  margin: 3px 0px;
   image: url(skin:style/mixxx_logo.svg) no-repeat center center;
 }
 
