@@ -314,6 +314,12 @@ void PlayerManager::slotChangeNumAuxiliaries(double v) {
     m_pCONumAuxiliaries->setAndConfirm(m_auxiliaries.size());
 }
 
+void PlayerManager::addDeck() {
+    QMutexLocker locker(&m_mutex);
+    double count = m_pCONumDecks->get() + 1;
+    slotChangeNumDecks(count);
+}
+
 void PlayerManager::addConfiguredDecks() {
     slotChangeNumDecks(m_pSoundManager->getConfiguredDeckCount());
 }
