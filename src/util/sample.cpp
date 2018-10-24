@@ -29,8 +29,7 @@ constexpr size_t kAlignment = 16;
 // instead of size_t, we can remove the sizeof(size_t) check than
 constexpr bool useAlignedAlloc() {
     // This will work on all targets and compilers.
-    // It will return true on MSVC 32 bit builds and false for
-    // Linux 32 and 64 bit builds
+    // It will return true bot 32 bit builds and false for 64 bit builds 
     return alignof(max_align_t) < kAlignment &&
             sizeof(CSAMPLE*) == sizeof(size_t);
 }
