@@ -175,18 +175,18 @@
                             <NumberStates>3</NumberStates>
                             <State>
                               <Number>0</Number>
-                              <Pressed>buttons/btn_orientation_deckLeft_left.svg</Pressed>
-                              <Unpressed>buttons/btn_orientation_deckLeft_left.svg</Unpressed>
+                              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckLeft_left.svg</Pressed>
+                              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckLeft_left.svg</Unpressed>
                             </State>
                             <State>
                               <Number>1</Number>
-                              <Pressed>buttons/btn_orientation_deck_master.svg</Pressed>
-                              <Unpressed>buttons/btn_orientation_deck_master.svg</Unpressed>
+                              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deck_master.svg</Pressed>
+                              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deck_master.svg</Unpressed>
                             </State>
                             <State>
                               <Number>2</Number>
-                              <Pressed>buttons/btn_orientation_deckLeft_right.svg</Pressed>
-                              <Unpressed>buttons/btn_orientation_deckLeft_right.svg</Unpressed>
+                              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckLeft_right.svg</Pressed>
+                              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckLeft_right.svg</Unpressed>
                             </State>
                             <Connection>
                               <ConfigKey>[Channel1],orientation</ConfigKey>
@@ -217,7 +217,7 @@
                     <Children>
                       <SliderComposed>
                         <TooltipId>crossfader</TooltipId>
-                        <Handle>knob_crossfader.svg</Handle>
+                        <Handle scalemode="STRETCH_ASPECT">knob_crossfader.svg</Handle>
                         <Slider>slider_crossfader.svg</Slider>
                         <Horizontal>true</Horizontal>
                         <Connection>
@@ -249,18 +249,18 @@
                             <NumberStates>3</NumberStates>
                             <State>
                               <Number>0</Number>
-                              <Pressed>buttons/btn_orientation_deckRight_left.svg</Pressed>
-                              <Unpressed>buttons/btn_orientation_deckRight_left.svg</Unpressed>
+                              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckRight_left.svg</Pressed>
+                              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckRight_left.svg</Unpressed>
                             </State>
                             <State>
                               <Number>1</Number>
-                              <Pressed>buttons/btn_orientation_deck_master.svg</Pressed>
-                              <Unpressed>buttons/btn_orientation_deck_master.svg</Unpressed>
+                              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deck_master.svg</Pressed>
+                              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deck_master.svg</Unpressed>
                             </State>
                             <State>
                               <Number>2</Number>
-                              <Pressed>buttons/btn_orientation_deckRight_right.svg</Pressed>
-                              <Unpressed>buttons/btn_orientation_deckRight_right.svg</Unpressed>
+                              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckRight_right.svg</Pressed>
+                              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckRight_right.svg</Unpressed>
                             </State>
                             <Connection>
                               <ConfigKey>[Channel2],orientation</ConfigKey>

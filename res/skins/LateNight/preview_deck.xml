@@ -177,7 +177,7 @@
 
               <SliderComposed>
                 <TooltipId>pregain</TooltipId>
-                <Handle>knob_volume_previewdeck.svg</Handle>
+                <Handle scalemode="STRETCH_ASPECT">knob_volume_previewdeck.svg</Handle>
                 <Slider>slider_volume_previewdeck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
