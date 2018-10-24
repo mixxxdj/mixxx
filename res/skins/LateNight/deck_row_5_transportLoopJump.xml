@@ -198,29 +198,11 @@
                   <Template src="skin:button_hotcue.xml">
                     <SetVariable name="number">6</SetVariable>
                   </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Skin],8_hotcues</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
 
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <Children>
                   <Template src="skin:button_hotcue.xml">
                     <SetVariable name="number">7</SetVariable>
                   </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Skin],8_hotcues</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
 
-              <WidgetGroup>
-                <Layout>horizontal</Layout>
-                <Children>
                   <Template src="skin:button_hotcue.xml">
                     <SetVariable name="number">8</SetVariable>
                   </Template>
