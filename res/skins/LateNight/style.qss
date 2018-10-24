@@ -904,7 +904,7 @@ border: 0px;
 
 #ToolbarLogo {
   background: transparent;
-  image: url(skin:style/mixxx_logo_toolbar.png) no-repeat center center;
+  image: url(skin:style/mixxx_logo.svg) no-repeat center center;
 }
 
 #WaveformMixerContainer {
