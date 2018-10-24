@@ -29,6 +29,12 @@ var MidiFighterTwister = {
             engine.makeConnection("[Channel2]", "volume", function(value) {
                 midi.sendShortMsg(cc, 0x0B, linearize(value) * 2);
             }),
+            engine.makeConnection("[Channel1]", "pfl", function(value) {
+                midi.sendShortMsg(cc + 1, 0x08, value * 127);
+            }),
+            engine.makeConnection("[Channel2]", "pfl", function(value) {
+                midi.sendShortMsg(cc + 1, 0x0B, value * 127);
+            }),
             // High EQ
             engine.makeConnection("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", function(value) {
                 midi.sendShortMsg(cc, 0x01, linearize(value));
