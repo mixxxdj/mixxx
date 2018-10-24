@@ -138,8 +138,8 @@
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_eject_over.svg</Pressed>
-                          <Unpressed>buttons/btn_eject.svg</Unpressed>
+                          <Pressed>buttons/btn_eject_sampler_over.svg</Pressed>
+                          <Unpressed>buttons/btn_eject_sampler.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,eject</ConfigKey>
@@ -181,13 +181,13 @@
                         <NumberStates>2</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_keylock.svg</Pressed>
-                          <Unpressed>buttons/btn_keylock.svg</Unpressed>
+                          <Pressed>buttons/btn_keylock_sampler.svg</Pressed>
+                          <Unpressed>buttons/btn_keylock_sampler.svg</Unpressed>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Pressed>buttons/btn_keylock_over.svg</Pressed>
-                          <Unpressed>buttons/btn_keylock_over.svg</Unpressed>
+                          <Pressed>buttons/btn_keylock_sampler_over.svg</Pressed>
+                          <Unpressed>buttons/btn_keylock_sampler_over.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
