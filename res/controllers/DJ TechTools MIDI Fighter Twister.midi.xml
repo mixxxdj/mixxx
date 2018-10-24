@@ -170,6 +170,26 @@
         </options>
       </control>
       <control>
+        <group>[Channel1]</group>
+        <key>volume</key>
+        <description>MIDI Learned from 380 messages.</description>
+        <status>0xB0</status>
+        <midino>0x08</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel1]</group>
+        <key>pfl</key>
+        <description>MIDI Learned from 2 messages.</description>
+        <status>0xB1</status>
+        <midino>0x08</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
         <group>[EqualizerRack1_[Channel1]_Effect1]</group>
         <key>parameter1</key>
         <description>MIDI Learned from 1662 messages.</description>
@@ -205,6 +225,26 @@
         <description>MIDI Learned from 12 messages.</description>
         <status>0xB1</status>
         <midino>0x0A</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>volume</key>
+        <description>MIDI Learned from 498 messages.</description>
+        <status>0xB0</status>
+        <midino>0x0B</midino>
+        <options>
+          <normal/>
+        </options>
+      </control>
+      <control>
+        <group>[Channel2]</group>
+        <key>pfl</key>
+        <description>MIDI Learned from 4 messages.</description>
+        <status>0xB1</status>
+        <midino>0x0B</midino>
         <options>
           <normal/>
         </options>
