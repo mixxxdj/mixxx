@@ -904,7 +904,8 @@ border: 0px;
 
 #ToolbarLogo {
   background: transparent;
-  image: url(skin:style/mixxx_logo_toolbar.png) no-repeat center center;
+  margin: 3px 0px;
+  image: url(skin:style/mixxx_logo.svg) no-repeat center center;
 }
 
 #WaveformMixerContainer {
@@ -1185,7 +1186,7 @@ border: 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
   border-left: 1px solid #585858;
-  padding: 1px 1px 1px 2px;
+  padding: 1px 2px 1px 2px;
 }
 
 #FxUnit1_ExpandCollapseButton,
