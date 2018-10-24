@@ -36,23 +36,23 @@ flags = build.flags
 # both mixxx and mixxx-test.
 mixxx_lib = env.StaticLibrary('libmixxx',
                               [source for source in sources
-                               if str(source) != 'main.cpp'])
+                               if str(source) != 'src/main.cpp'])
 # mixxx.qrc must not be bundled into libmixxx.a since the linker will not link
 # it into the resulting binary unless it is on the link command-line explicitly
 # (it has no link-time symbols that are needed by anything in Mixxx).
-mixxx_qrc = env.StaticObject(env.Qrc5('qrc_mixxx', '#res/mixxx.qrc'))
+mixxx_qrc = env.StaticObject(env.Qrc5('res/mixxx.cc', 'res/mixxx.qrc'))
 # libmixxx.a needs to precede all other libraries so that symbols it requires
 # end up in the linker's list of unresolved symbols before other libraries are
 # searched for symbols.
 env.Prepend(LIBS=mixxx_lib)
-mixxx_main = env.StaticObject('main.cpp')
+mixxx_main = env.StaticObject('src/main.cpp')
 
 #Tell SCons to build Mixxx
 #=========================
 if build.platform_is_windows:
         dist_dir = 'dist%s' % build.bitwidth
         # Populate the stuff that changes in the .rc file
-        fo = open(File('#src/mixxx.rc.include').abspath, "w")
+        fo = open(File('src/mixxx.rc.include').abspath, "w")
 
         str_list = []
         str_list.append('#define VER_FILEVERSION             ')
@@ -80,7 +80,7 @@ if build.platform_is_windows:
         fo.write(''.join(str_list))
         fo.close()
 
-        mixxx_rc = env.RES('#src/mixxx.rc')
+        mixxx_rc = env.RES('src/mixxx.rc')
         mixxx_bin = env.Program('mixxx',
                                 [mixxx_main, mixxx_qrc, mixxx_rc],
                                 LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
@@ -110,24 +110,24 @@ else:
 test_bin = None
 def define_test_targets(default=False):
         global test_bin
-        test_files = Glob('test/*.cpp', strings=True)
+        test_files = Glob('src/test/*.cpp', strings=True)
         test_env = env.Clone()
-        test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
-        test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
-        test_env.Append(CPPPATH="#lib/benchmark/include")
-        test_files = [test_env.StaticObject(filename)
-                      if filename !='main.cpp' else filename
-                      for filename in test_files]
-        test_sources = test_files
 
-        test_env.Append(LIBPATH="#lib/gtest-1.7.0/lib")
+        test_env.Append(CPPPATH="lib/gtest-1.7.0/include")
+        test_env.Append(LIBPATH="lib/gtest-1.7.0")
         test_env.Append(LIBS=['gtest'])
 
-        test_env.Append(LIBPATH="#lib/gmock-1.7.0/lib")
+        test_env.Append(CPPPATH="lib/gmock-1.7.0/include")
+        test_env.Append(LIBPATH="lib/gmock-1.7.0")
         test_env.Append(LIBS=['gmock'])
 
-        test_env.Append(LIBPATH="#lib/benchmark/lib")
+        test_env.Append(CPPPATH="lib/benchmark/include")
+        test_env.Append(LIBPATH="lib/benchmark")
         test_env.Append(LIBS=['benchmark'])
+
+        test_files = [test_env.StaticObject(filename)
+                      if filename !='src/test/main.cpp' else filename
+                      for filename in test_files]
 
         if build.platform_is_windows:
                 # For SHGetValueA in Google's benchmark library.
@@ -144,10 +144,10 @@ def define_test_targets(default=False):
                 # Currently both executables are built with /subsystem:windows
                 # and the console is attached manually
                 test_bin = test_env.Program(
-                        'mixxx-test', [test_sources, mixxx_qrc, mixxx_rc],
+                        'mixxx-test', [test_files, mixxx_qrc, mixxx_rc],
                         LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
         else:
-                test_bin = test_env.Program('mixxx-test', [test_sources, mixxx_qrc])
+                test_bin = test_env.Program('mixxx-test', [test_files, mixxx_qrc])
 
         if not build.platform_is_windows:
                 copy_test_bin = Command("../mixxx-test", test_bin, Copy("$TARGET", "$SOURCE"))
@@ -1173,5 +1173,5 @@ versiondebbld = Builder(action = BuildUbuntuPackage) #, suffix = '.foo', src_suf
 env.Append(BUILDERS = {'BuildUbuntuPackage' : versiondebbld})
 
 if 'makeubuntu' in COMMAND_LINE_TARGETS:
-        makeubuntu = env.BuildUbuntuPackage("blah", "defs_version.h" ) #(binary_files)
+        makeubuntu = env.BuildUbuntuPackage("blah", "src/defs_version.h" ) #(binary_files)
         env.Alias('makeubuntu', makeubuntu)
