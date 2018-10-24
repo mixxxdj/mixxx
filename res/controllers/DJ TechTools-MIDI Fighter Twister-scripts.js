@@ -3,18 +3,18 @@ var MidiFighterTwister = {
         var cc = 0xB0;
 
         function linearize(value) {
-            return Math.pow(value / 4, 0.5) * 128;
+            return Math.pow(value / 4, 0.5) * 127;
         }
 
         MidiFighterTwister.connections = [
             engine.makeConnection("[Channel1]", "rate", function(value) {
-                midi.sendShortMsg(cc, 0x04, (value + 1) / 2 * 128);
+                midi.sendShortMsg(cc, 0x04, (value + 1) / 2 * 127);
             }),
             engine.makeConnection("[Channel2]", "rate", function(value) {
-                midi.sendShortMsg(cc, 0x07, (value + 1) / 2 * 128);
+                midi.sendShortMsg(cc, 0x07, (value + 1) / 2 * 127);
             }),
             engine.makeConnection("[Master]", "crossfader", function(value) {
-                var scaled = (value + 1) / 2 * 128;
+                var scaled = (value + 1) / 2 * 127;
                 midi.sendShortMsg(cc, 0x0C, scaled);
             }),
             engine.makeConnection("[Channel1]", "pregain", function(value) {
@@ -46,10 +46,10 @@ var MidiFighterTwister = {
             }),
             // Quick Effect Super Knob
             engine.makeConnection("[QuickEffectRack1_[Channel1]]", "super1", function(value) {
-                midi.sendShortMsg(cc, 0x0D, value * 128);
+                midi.sendShortMsg(cc, 0x0D, value * 127);
             }),
             engine.makeConnection("[QuickEffectRack1_[Channel2]]", "super1", function(value) {
-                midi.sendShortMsg(cc, 0x0E, value * 128);
+                midi.sendShortMsg(cc, 0x0E, value * 127);
             }),
         ];
 
