@@ -4,9 +4,9 @@
 
 WidgetRenderTimer::WidgetRenderTimer(mixxx::Duration renderFrequency,
                                      mixxx::Duration inactivityTimeout)
-        :  m_renderFrequency(renderFrequency),
-           m_inactivityTimeout(inactivityTimeout),
-           m_guiTickTimer(this) {
+        : m_renderFrequency(renderFrequency),
+          m_inactivityTimeout(inactivityTimeout),
+          m_guiTickTimer(this) {
     connect(&m_guiTickTimer, SIGNAL(timeout()),
             this, SLOT(guiTick()));
 }
