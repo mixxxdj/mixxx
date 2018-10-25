@@ -89,6 +89,7 @@ class WSliderComposed : public WWidget  {
     SliderEventHandler<WSliderComposed> m_handler;
     GuiTickTimer m_guiTickTimer;
     mixxx::Duration m_lastActivity;
+    mixxx::Duration m_lastRender;
 
     friend class SliderEventHandler<WSliderComposed>;
 };

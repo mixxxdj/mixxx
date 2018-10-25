@@ -33,6 +33,7 @@ class WKnob : public WDisplay {
   private:
     GuiTickTimer m_guiTickTimer;
     mixxx::Duration m_lastActivity;
+    mixxx::Duration m_lastRender;
 
     KnobEventHandler<WKnob> m_handler;
     friend class KnobEventHandler<WKnob>;

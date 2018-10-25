@@ -236,12 +236,15 @@ void WSliderComposed::guiTick() {
     if (now - m_lastActivity > mixxx::Duration::fromSeconds(1)) {
         m_guiTickTimer.stop();
     }
-    update();
+    if (m_lastActivity > m_lastRender) {
+        update();
+        m_lastRender = m_lastActivity;
+    }
 }
 
 void WSliderComposed::inputActivity() {
     m_lastActivity = mixxx::Time::elapsed();
-    if (!m_guiTickTimer.started()) {
+    if (!m_guiTickTimer.isActive()) {
         m_guiTickTimer.start(mixxx::Duration::fromMillis(20));
     }
 }

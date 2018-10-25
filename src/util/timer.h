@@ -119,7 +119,7 @@ class GuiTickTimer : public QObject {
     virtual ~GuiTickTimer();
 
     void start(mixxx::Duration interval);
-    bool started() const { return m_bActive; }
+    bool isActive() const { return m_bActive; }
     void stop();
 
   signals:
