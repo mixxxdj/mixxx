@@ -13,7 +13,7 @@ WidgetRenderTimer::WidgetRenderTimer(mixxx::Duration renderFrequency,
 
 void WidgetRenderTimer::guiTick() {
     mixxx::Duration now = mixxx::Time::elapsed();
-    if (now - m_lastActivity > mixxx::Duration::fromSeconds(1)) {
+    if (now - m_lastActivity > m_inactivityTimeout) {
         m_guiTickTimer.stop();
     }
     if (m_lastActivity > m_lastRender) {
@@ -35,6 +35,6 @@ void WidgetRenderTimer::activity() {
     // inactivity, we disconnect the timer.
     m_lastActivity = mixxx::Time::elapsed();
     if (!m_guiTickTimer.isActive()) {
-        m_guiTickTimer.start(mixxx::Duration::fromMillis(20));
+        m_guiTickTimer.start(m_renderFrequency);
     }
 }
