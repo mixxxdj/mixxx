@@ -1231,6 +1231,7 @@ class MixxxCore(Feature):
                    "util/autohidpi.cpp",
                    "util/screensaver.cpp",
                    "util/indexrange.cpp",
+                   "util/widgetrendertimer.cpp",
 
                    '#res/mixxx.qrc'
                    ]

@@ -7,7 +7,7 @@
 #include <QWheelEvent>
 
 #include "skin/skincontext.h"
-#include "util/timer.h"
+#include "util/widgetrendertimer.h"
 #include "widget/wwidget.h"
 #include "widget/knobeventhandler.h"
 #include "widget/wpixmapstore.h"
@@ -34,9 +34,6 @@ class WKnobComposed : public WWidget {
     void mouseReleaseEvent(QMouseEvent *e) override;
     void paintEvent(QPaintEvent* /*unused*/) override;
 
-  private slots:
-    void guiTick();
-
   private:
     void inputActivity();
     void clear();
@@ -57,9 +54,7 @@ class WKnobComposed : public WWidget {
     double m_dMaxAngle;
     double m_dKnobCenterXOffset;
     double m_dKnobCenterYOffset;
-    GuiTickTimer m_guiTickTimer;
-    mixxx::Duration m_lastActivity;
-    mixxx::Duration m_lastRender;
+    WidgetRenderTimer m_renderTimer;
 
     friend class KnobEventHandler<WKnobComposed>;
 };

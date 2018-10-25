@@ -27,7 +27,7 @@
 #include <QResizeEvent>
 
 #include "skin/skincontext.h"
-#include "util/timer.h"
+#include "util/widgetrendertimer.h"
 #include "widget/slidereventhandler.h"
 #include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
@@ -60,7 +60,6 @@ class WSliderComposed : public WWidget  {
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void fillDebugTooltip(QStringList* debug) override;
-    void guiTick();
 
   protected:
     void mouseMoveEvent(QMouseEvent* e) override;
@@ -87,9 +86,7 @@ class WSliderComposed : public WWidget  {
     // Pointer to pixmap of the handle
     PaintablePointer m_pHandle;
     SliderEventHandler<WSliderComposed> m_handler;
-    GuiTickTimer m_guiTickTimer;
-    mixxx::Duration m_lastActivity;
-    mixxx::Duration m_lastRender;
+    WidgetRenderTimer m_renderTimer;
 
     friend class SliderEventHandler<WSliderComposed>;
 };
