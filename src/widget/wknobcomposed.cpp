@@ -13,7 +13,7 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dKnobCenterXOffset(0),
           m_dKnobCenterYOffset(0),
           m_renderTimer(mixxx::Duration::fromMillis(20),
-                    mixxx::Duration::fromSeconds(1)) {
+                        mixxx::Duration::fromSeconds(1)) {
     connect(&m_renderTimer, SIGNAL(update()),
             this, SLOT(update()));
 }
