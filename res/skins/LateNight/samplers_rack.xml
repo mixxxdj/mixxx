@@ -15,12 +15,12 @@
             <NumberStates>2</NumberStates>
             <State>
               <Number>0</Number>
-              <Pressed>skin:/buttons/btn_samplerExpand.svg</Pressed>
+              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_samplerExpand.svg</Pressed>
               <Unpressed>skin:/buttons/btn_samplerExpand.svg</Unpressed>
             </State>
             <State>
               <Number>1</Number>
-              <Pressed>skin:/buttons/btn_samplerCollapse.svg</Pressed>
+              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_samplerCollapse.svg</Pressed>
               <Unpressed>skin:/buttons/btn_samplerCollapse.svg</Unpressed>
             </State>
             <Connection>

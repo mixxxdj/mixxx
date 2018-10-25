@@ -11,31 +11,17 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <PushButton>
-            <TooltipId>cue_gotoandplay_cue_default</TooltipId>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Pressed>buttons/btn_play_sampler_down.svg</Pressed>
-              <Unpressed>buttons/btn_play_sampler.svg</Unpressed>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Pressed>buttons/btn_play_sampler_overdown.svg</Pressed>
-              <Unpressed>buttons/btn_play_sampler_over.svg</Unpressed>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,cue_gotoandplay</ConfigKey>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
-              <ButtonState>RightButton</ButtonState>
-            </Connection>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:button_2state_right_display.xml">
+            <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+            <SetVariable name="Size">34f,34f</SetVariable>
+            <SetVariable name="state_0_pressed">play_sampler_down.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">play_sampler.svg</SetVariable>
+            <SetVariable name="state_1_pressed">play_sampler_overdown.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">play_sampler_over.svg</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 
@@ -104,37 +90,19 @@
                 </Connection>
               </PushButton>
 
-              <PushButton>
-                <TooltipId>keylock</TooltipId>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_keylock_sampler.svg</Pressed>
-                  <Unpressed>buttons/btn_keylock_sampler.svg</Unpressed>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Pressed>buttons/btn_keylock_sampler_over.svg</Pressed>
-                  <Unpressed>buttons/btn_keylock_sampler_over.svg</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_2state_nohover.xml">
+                <SetVariable name="TooltipId">keylock</SetVariable>
+                <SetVariable name="icon">keylock</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
+                <SetVariable name="Size">21,18</SetVariable>
+              </Template>
 
-              <PushButton>
-                <TooltipId>eject</TooltipId>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_eject_sampler_over.svg</Pressed>
-                  <Unpressed>buttons/btn_eject_sampler.svg</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,eject</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_2state_nohover.xml">
+                <SetVariable name="TooltipId">eject</SetVariable>
+                <SetVariable name="icon">eject</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
+                <SetVariable name="Size">21,18</SetVariable>
+              </Template>
 
               <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
 
