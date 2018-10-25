@@ -6,7 +6,7 @@
 #include "control/controlproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/duration.h"
-#include "util/memory.h"
+#include "util/parented_ptr.h"
 #include "util/performancetimer.h"
 #include "util/stat.h"
 
@@ -110,13 +110,13 @@ class ScopedTimer {
     bool m_cancel;
 };
 
-// A timer that provides a similar API to QTimer but uses the GuiTick 20ms
-// signal provided by the VsyncThread.
+// A timer that provides a similar API to QTimer but uses render events from the
+// VSyncThread as its source of timing events. This means the timer cannot fire
+// at a rate faster than the user's configured waveform FPS.
 class GuiTickTimer : public QObject {
     Q_OBJECT
   public:
     GuiTickTimer(QObject* pParent);
-    virtual ~GuiTickTimer();
 
     void start(mixxx::Duration interval);
     bool isActive() const { return m_bActive; }
@@ -126,12 +126,12 @@ class GuiTickTimer : public QObject {
     void timeout();
 
   private slots:
-    void slotGuiTick20ms(double v);
+    void slotGuiTick(double v);
 
   private:
-    std::unique_ptr<ControlProxy> m_pGuiTick20ms;
+    parented_ptr<ControlProxy> m_pGuiTick;
     mixxx::Duration m_interval;
-    mixxx::Duration m_elapsed;
+    mixxx::Duration m_lastUpdate;
     bool m_bActive;
 };
 
