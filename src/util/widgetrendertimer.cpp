@@ -23,16 +23,6 @@ void WidgetRenderTimer::guiTick() {
 }
 
 void WidgetRenderTimer::activity() {
-    // Bug #1793015: With Qt 4, we would simply call QWidget::update in response
-    // to input events that required re-rendering widgets, relying on Qt to
-    // batch them together and deliver them at a reasonable frequency. On macOS,
-    // the behavior of QWidget::update in Qt 5 seems to have changed such that
-    // render events happen much more frequently than they used to. To address
-    // this, we instead use a downsampling timer attached to the VSyncThread's
-    // render ticks for the waveform renderers. The timer invokes guiTick(),
-    // which is responsible for actually calling QWidget::update(). When input
-    // arrives, we call inputActivity to attach the timer. After 1 second of
-    // inactivity, we disconnect the timer.
     m_lastActivity = mixxx::Time::elapsed();
     if (!m_guiTickTimer.isActive()) {
         m_guiTickTimer.start(m_renderFrequency);
