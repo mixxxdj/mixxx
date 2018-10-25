@@ -145,7 +145,7 @@ bool Stat::track(const QString& tag,
         return false;
     }
     StatReport report;
-    report.tag = strdup(tag.toAscii().constData());
+    report.tag = strdup(tag.toUtf8().constData());
     report.type = type;
     report.compute = compute;
     report.time = mixxx::Time::elapsed().toIntegerNanos();

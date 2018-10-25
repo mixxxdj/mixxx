@@ -142,22 +142,14 @@ class MixxxBuild(object):
             raise Exception(
                 'Cross-compiling on a non-Linux host not currently supported')
 
-        tools = ['default']
+        tools = ['default', 'qt5', 'protoc']
         toolpath = ['#build/']
         extra_arguments = {}
         from . import depends
-        if int(Script.ARGUMENTS.get('qt5', 1)):
-            tools.append('qt5')
-            if self.machine_is_64bit:
-                default_qtdir = depends.Qt.DEFAULT_QT5DIRS64.get(
-                    self.platform, '')
-            else:
-                default_qtdir = depends.Qt.DEFAULT_QT5DIRS32.get(
-                    self.platform, '')
+        if self.machine_is_64bit:
+            default_qtdir = depends.Qt.DEFAULT_QT5DIRS64.get(self.platform, '')
         else:
-            tools.append('qt4')
-            default_qtdir = depends.Qt.DEFAULT_QT4DIRS.get(self.platform, '')
-        tools.append('protoc')
+            default_qtdir = depends.Qt.DEFAULT_QT5DIRS32.get(self.platform, '')
 
         # Try fallback to pkg-config on Linux
         if not os.path.isdir(default_qtdir) and self.platform == 'linux':
@@ -174,18 +166,15 @@ class MixxxBuild(object):
 
         # Validate the specified qtdir exists
         if not os.path.isdir(qtdir):
-            logging.error("QT path (%s) does not exist or QT4 is not installed." % qtdir)
+            logging.error("Qt path (%s) does not exist or Qt is not installed." % qtdir)
             logging.error(
-                "Please specify your QT path by running 'scons qtdir=[path]'")
+                "Please specify your Qt path by running 'scons qtdir=[path]'")
             Script.Exit(1)
-        # And that it doesn't contain qt3
-        elif qtdir.find("qt3") != -1 or qtdir.find("qt/3") != -1:
-            logging.error("Mixxx now requires QT4 instead of QT3 - please use your QT4 path with the qtdir build flag.")
+        # And that it doesn't contain qt3 or qt4
+        elif 'qt3' in qtdir or 'qt/3' in qtdir or 'qt4' in qtdir:
+            logging.error("Mixxx now requires Qt 5. Please set the qtdir build flag to the path to your Qt 5 installation.")
             Script.Exit(1)
         logging.info("Qt path: %s" % qtdir)
-
-        # Previously this wasn't done for OSX, but I'm not sure why
-        # -- rryan 6/8/2011
         extra_arguments['QTDIR'] = qtdir
 
         if self.platform_is_osx:
@@ -196,7 +185,8 @@ class MixxxBuild(object):
             # support x64.
             # In SConscript.env we use the MSVS tool to let you generate a
             # Visual Studio solution. Consider removing this.
-            tools.extend(['msvs'])
+            tools.extend(['msvs', 'signtool'])
+            toolpath.append('#/build/windows/')
             # SCons's built-in Qt tool attempts to link 'qt' into your binary if
             # you don't do this.
             extra_arguments['QT_LIB'] = ''
@@ -611,8 +601,8 @@ class MixxxBuild(object):
                                         'move or delete it.' % sconsign_file)
                     print("shutil.copy %s -> %s" % (old_virtual_sconsign_file, sconsign_file))
                     shutil.copy(old_virtual_sconsign_file, sconsign_file)
-                if os.path.isfile(old_virtual_sconf_temp_dir):
-                    if os.path.isfile(sconf_temp_dir):
+                if os.path.isdir(old_virtual_sconf_temp_dir):
+                    if os.path.isdir(sconf_temp_dir):
                         raise Exception('%s exists without a .sconsign.branch file so '
                                         'build virtualization cannot continue. Please '
                                         'move or delete it.' % sconf_temp_dir)

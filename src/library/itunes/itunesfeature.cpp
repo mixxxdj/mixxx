@@ -1,7 +1,7 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <QXmlStreamReader>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QFileDialog>
 #include <QMenu>
 #include <QAction>
@@ -265,10 +265,10 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
 QString ITunesFeature::getiTunesMusicPath() {
     QString musicFolder;
 #if defined(__APPLE__)
-    musicFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+    musicFolder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation)
                   + "/iTunes/iTunes Music Library.xml";
 #elif defined(__WINDOWS__)
-    musicFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+    musicFolder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation)
                   + "\\iTunes\\iTunes Music Library.xml";
 #else
     musicFolder = "";

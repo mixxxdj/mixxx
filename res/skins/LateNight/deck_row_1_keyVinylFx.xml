@@ -5,51 +5,25 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <PushButton>
-        <Size>28f,22f</Size>
-        <TooltipId>sync_reset_key</TooltipId>
-        <ObjectName>PitchTweakButton</ObjectName>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>KEY</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>KEY</Text>
-        </State>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="group"/>,pitch_adjust_set_default</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="group"/>,pitch_adjust_set_default</ConfigKey>
-        </Connection>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="group"/>,reset_key</ConfigKey>
-          <ButtonState>RightButton</ButtonState>
-        </Connection>
-      </PushButton>
+      <Template src="skin:button_2state_right.xml">
+        <SetVariable name="TooltipId">sync_reset_key</SetVariable>
+        <SetVariable name="ObjectName">PitchTweakButton</SetVariable>
+        <SetVariable name="Size">28f,22f</SetVariable>
+        <SetVariable name="state_0_text">KEY</SetVariable>
+        <SetVariable name="state_1_text">KEY</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_adjust_set_default</SetVariable>
+        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,reset_key</SetVariable>
+      </Template>
 
-      <PushButton>
-        <Size>16f,22f</Size>
-        <TooltipId>pitch_down</TooltipId>
-        <ObjectName>PitchTweakButton</ObjectName>
-        <NumberStates>1</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Unpressed>buttons/btn_prev.svg</Unpressed>
-          <Pressed>buttons/btn_prev_down.svg</Pressed>
-        </State>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="group"/>,pitch_down</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="group"/>,pitch_down_small</ConfigKey>
-          <ButtonState>RightButton</ButtonState>
-        </Connection>
-      </PushButton>
+      <Template src="skin:button_1state_right.xml">
+        <SetVariable name="TooltipId">pitch_down</SetVariable>
+        <SetVariable name="ObjectName">PitchTweakButton</SetVariable>
+        <SetVariable name="Size">16f,22f</SetVariable>
+        <SetVariable name="state_0_pressed">prev_down.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">prev.svg</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_down</SetVariable>
+        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_down_small</SetVariable>
+      </Template>
 
       <Key>
         <ObjectName>KeyText</ObjectName>
@@ -66,25 +40,15 @@
         </Connection>
       </Key>
 
-      <PushButton>
-        <Size>16f,22f</Size>
-        <TooltipId>pitch_up</TooltipId>
-        <ObjectName>PitchTweakButton</ObjectName>
-        <NumberStates>1</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Unpressed>buttons/btn_next.svg</Unpressed>
-          <Pressed>buttons/btn_next_down.svg</Pressed>
-        </State>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="group"/>,pitch_up</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="group"/>,pitch_up_small</ConfigKey>
-          <ButtonState>RightButton</ButtonState>
-        </Connection>
-      </PushButton>
+      <Template src="skin:button_1state_right.xml">
+        <SetVariable name="TooltipId">pitch_up</SetVariable>
+        <SetVariable name="ObjectName">PitchTweakButton</SetVariable>
+        <SetVariable name="Size">16f,22f</SetVariable>
+        <SetVariable name="state_0_pressed">next_down.svg</SetVariable>
+        <SetVariable name="state_0_unpressed">next.svg</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_up</SetVariable>
+        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_up_small</SetVariable>
+      </Template>
 
       <WidgetGroup>  <!-- spacer -->
         <SizePolicy>min,min</SizePolicy>
@@ -95,7 +59,7 @@
       <WidgetGroup>  <!-- spacer -->
         <SizePolicy>min,min</SizePolicy>
       </WidgetGroup>
-      
+
       <WidgetGroup>
         <Layout>horizontal</Layout>
           <ObjectName>AlignRightTop</ObjectName>

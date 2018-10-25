@@ -32,6 +32,21 @@ Import('mixxxminimal_plugins')
 env = build.env
 flags = build.flags
 
+# Make a static library of all Mixxx's sources. This library will be linked into
+# both mixxx and mixxx-test.
+mixxx_lib = env.StaticLibrary('libmixxx',
+                              [source for source in sources
+                               if str(source) != 'main.cpp'])
+# mixxx.qrc must not be bundled into libmixxx.a since the linker will not link
+# it into the resulting binary unless it is on the link command-line explicitly
+# (it has no link-time symbols that are needed by anything in Mixxx).
+mixxx_qrc = env.StaticObject(env.Qrc5('qrc_mixxx', '#res/mixxx.qrc'))
+# libmixxx.a needs to precede all other libraries so that symbols it requires
+# end up in the linker's list of unresolved symbols before other libraries are
+# searched for symbols.
+env.Prepend(LIBS=mixxx_lib)
+mixxx_main = env.StaticObject('main.cpp')
+
 #Tell SCons to build Mixxx
 #=========================
 if build.platform_is_windows:
@@ -65,17 +80,18 @@ if build.platform_is_windows:
         fo.write(''.join(str_list))
         fo.close()
 
+        mixxx_rc = env.RES('#src/mixxx.rc')
         mixxx_bin = env.Program('mixxx',
-                            [sources, env.RES('#src/mixxx.rc')],
-                            LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+                                [mixxx_main, mixxx_qrc, mixxx_rc],
+                                LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 elif build.platform_is_osx:
         # Bug #1258435: executable name must match CFBundleExecutable in the
         # Info.plist. For codesigned bundles it seems the CFBundleExecutable
         # must match the bundle name or else we SIGILL at startup (not sure
         # why).
-        mixxx_bin = env.Program('Mixxx', sources)
+        mixxx_bin = env.Program('Mixxx', [mixxx_main, mixxx_qrc])
 else:
-        mixxx_bin = env.Program('mixxx', sources)
+        mixxx_bin = env.Program('mixxx', [mixxx_main, mixxx_qrc])
 
 # Make sure mixxxminimal plugins are built before
 # mixxx_bin. This fixes a race where when building with multiple threads the
@@ -102,33 +118,36 @@ def define_test_targets(default=False):
         test_files = [test_env.StaticObject(filename)
                       if filename !='main.cpp' else filename
                       for filename in test_files]
-        mixxx_sources = [filename for filename in sources if filename != 'main.cpp']
-        test_sources = (test_files + mixxx_sources)
+        test_sources = test_files
 
-        env.Append(LIBPATH="#lib/gtest-1.7.0/lib")
-        env.Append(LIBS = 'gtest')
+        test_env.Append(LIBPATH="#lib/gtest-1.7.0/lib")
+        test_env.Append(LIBS=['gtest'])
 
-        env.Append(LIBPATH="#lib/gmock-1.7.0/lib")
-        env.Append(LIBS = 'gmock')
+        test_env.Append(LIBPATH="#lib/gmock-1.7.0/lib")
+        test_env.Append(LIBS=['gmock'])
 
-        env.Append(LIBPATH="#lib/benchmark/lib")
-        env.Append(LIBS = 'benchmark')
+        test_env.Append(LIBPATH="#lib/benchmark/lib")
+        test_env.Append(LIBS=['benchmark'])
 
         if build.platform_is_windows:
                 # For SHGetValueA in Google's benchmark library.
-                env.Append(LIBS = 'Shlwapi')
+                test_env.Append(LIBS=['Shlwapi'])
 
-                # TODO(rryan): Build Mixxx core as a shared object and link it
-                # into mixxx and mixxx-test. We could build both in different
-                # environments right now but then automoc and protoc get run in
-                # both environments which makes SCons unhappy.
+                # We want a terminal for tests.
+                if build.toolchain_is_msvs:
+                    test_env['LINKFLAGS'].remove('/subsystem:windows,6.01')
+                    test_env['LINKFLAGS'].append('/subsystem:console,6.01')
+                elif build.toolchain_is_gnu:
+                    test_env['LINKFLAGS'].remove('--subsystem,windows')
+                    test_env['LINKFLAGS'].append('--subsystem,console')
+
                 # Currently both executables are built with /subsystem:windows
                 # and the console is attached manually
-                test_bin = env.Program(
-                        'mixxx-test', [test_sources, env.RES('#src/mixxx.rc')],
+                test_bin = test_env.Program(
+                        'mixxx-test', [test_sources, mixxx_qrc, mixxx_rc],
                         LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
         else:
-                test_bin = env.Program(target='mixxx-test', source=test_sources)
+                test_bin = test_env.Program('mixxx-test', [test_sources, mixxx_qrc])
 
         if not build.platform_is_windows:
                 copy_test_bin = Command("../mixxx-test", test_bin, Copy("$TARGET", "$SOURCE"))
@@ -302,62 +321,42 @@ elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu
         dll_files = Glob('#/../../mixxx-win%slib-crossmingw' % build.bitwidth)
 
 qt_modules = depends.Qt.enabled_modules(build)
-qt5 = depends.Qt.qt5_enabled(build)
 
 if build.platform_is_windows:
     suffix = 'd.dll' if build.build_is_debug else '.dll'
     if not build.static_qt:
-        if qt5:
-            qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
+        qt_modules = ['$QTDIR/lib/' + module.replace('Qt', 'Qt5') + suffix
                       for module in qt_modules]
-            dll_files.extend(qt_modules)
-        else:
-            qt_modules = ['$QTDIR/lib/' + module + suffix for module in qt_modules]
-            dll_files.extend(qt_modules)
-    if qt5:
-        # https://doc.qt.io/qt-5/windows-deployment.html
-        # "If dynamic OpenGL is used, you additionally need to include the
-        # libraries required for ANGLE and software rendering. For ANGLE, both
-        # libEGL.dll and libGLESv2.dll from Qt's lib directory are required as
-        # well as the HLSL compiler from DirectX. The HLSL compiler library,
-        # d3dcompiler_XX.dll, where XX is the version number that ANGLE
-        # (libGLESv2) was linked against."
-        dll_files.extend(['$QTDIR/bin/libEGL' + suffix,
-                          '$QTDIR/bin/libGLESv2' + suffix])
-        d3dcompiler_path = util.find_d3dcompiler_dll(build.env)
-        if d3dcompiler_path:
-            dll_files.append(d3dcompiler_path)
+        dll_files.extend(qt_modules)
+    # https://doc.qt.io/qt-5/windows-deployment.html
+    # "If dynamic OpenGL is used, you additionally need to include the
+    # libraries required for ANGLE and software rendering. For ANGLE, both
+    # libEGL.dll and libGLESv2.dll from Qt's lib directory are required as
+    # well as the HLSL compiler from DirectX. The HLSL compiler library,
+    # d3dcompiler_XX.dll, where XX is the version number that ANGLE
+    # (libGLESv2) was linked against."
+    dll_files.extend(['$QTDIR/bin/libEGL' + suffix,
+                      '$QTDIR/bin/libGLESv2' + suffix])
+    d3dcompiler_path = util.find_d3dcompiler_dll(build.env)
+    if d3dcompiler_path:
+        dll_files.append(d3dcompiler_path)
 
 # Qt imageformats plugin
 imgfmtdll_files = []
 qt_imagesformats = depends.Qt.enabled_imageformats(build)
 
-if qt5:
-        suffix = 'd.dll' if build.build_is_debug else '.dll'
-        if not build.static_qt:
-            imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
-        # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
-        pdbSuffix = 'd.pdb' if (build.bundle_pdbs and build.build_is_debug) else ''
-        if pdbSuffix:
-                 imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
-else:
-        suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-        if not build.static_qt:
-            imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
-        # We don't have Qt's dll pdb files in our release build environements, so only if build is debug
-        pdbSuffix = 'd4.pdb' if (build.bundle_pdbs and build.build_is_debug) else ''
-        if pdbSuffix:
-                imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
+suffix = 'd.dll' if build.build_is_debug else '.dll'
+if not build.static_qt:
+    imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + suffix for module in qt_imagesformats])
+# We don't have Qt's dll pdb files in our release build environements, so only if build is debug
+pdbSuffix = 'd.pdb' if (build.bundle_pdbs and build.build_is_debug) else ''
+if pdbSuffix:
+    imgfmtdll_files.extend(['$QTDIR/plugins/imageformats/' + module + pdbSuffix for module in qt_imagesformats])
 
 sqldll_files = []
 if int(flags.get('qt_sqlite_plugin', 0)):
-        if qt5:
-                # TODO(rryan): Add the SQLite DLL For Qt5.
-                pass
-        else:
-                suffix = 'd4.dll' if build.build_is_debug else '4.dll'
-                # Qt SQLite plugin
-                sqldll_files = ['$QTDIR/plugins/sqldrivers/qsqlite' + suffix]
+    # TODO(rryan): Add the SQLite DLL For Qt5.
+    pass
 
 if build.platform_is_linux or build.platform_is_bsd:
         flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
@@ -424,32 +423,19 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 
         DMG_ICON="#res/osx/VolumeIcon.icns"
 
-        # this is a BIG HACK to support Qt's plugins (since Qt *requires* that
-        # it's plugins be in specific subdirectories, which OS X doesn't really
-        # play nice with)
-
-        # NOTE(rryan): Only include the SQLite plugin if we are building Qt in
-        # sqlite_plugin mode or Qt 5 is enabled. In Qt 5, the SQLite driver was
-        # moved out of QtSql and into a plugin.
-        sql_dylibs = []
-        if int(flags.get('qt_sqlite_plugin', 0)) or qt5:
-                sql_dylibs = ["libqsqlite.dylib"]
+        # In Qt 5, the SQLite driver was moved out of QtSql and into a plugin.
+        sql_dylibs = ["libqsqlite.dylib"]
 
         qt_plugins = (
                 [("iconengines", e) for e in ["libqsvgicon.dylib"]] +
-                [("imageformats", e) for e in ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
-                [("sqldrivers", e) for e in sql_dylibs])
-
-        # In Qt 5, accessibility features are more tightly integrated.
-        if not qt5:
-                qt_plugins.append(("accessible", "libqtaccessiblewidgets.dylib"))
-
-        if qt5:
+                # Left out libqmng and libqtiff to save space.
+                [("imageformats", e) for e in
+                 ["libqgif.dylib", "libqjpeg.dylib", "libqsvg.dylib"]] +
                 # Cocoa support moved to a plugin in Qt 5.
-                qt_plugins.append(("platforms", "libqcocoa.dylib"))
-                qt_plugins.append(("styles", "libqmacstyle.dylib"))
-
-        #Left out libqmng and libqtiff to save space.
+                [("platforms", "libqcocoa.dylib")] +
+                [("sqldrivers", e) for e in sql_dylibs] +
+                [("styles", "libqmacstyle.dylib")]
+        )
 
         for x in mixxxminimal_plugins:
                 plugins.append(x.get_abspath())
@@ -459,7 +445,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 resource_map[str(tfile)] = 'translations'
 
         qtdir = build.env['QTDIR']
-        qt_frameworks = depends.Qt.find_framework_libdir(qtdir, qt5)
+        qt_frameworks = depends.Qt.find_framework_libdir(qtdir)
         if not qt_frameworks:
                 raise Exception('Could not find frameworks in Qt directory: %s' % qtdir)
         #qt_menu.nib for Cocoa Qt 4.7+
@@ -566,16 +552,29 @@ if build.platform_is_windows:
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
 
+        binaries_to_codesign = [binary, dlls, vamp_plugins]
+
         # imageformats DLL
         if imgfmtdll_files:
                 imageformats_dll = env.Install(os.path.join(base_dist_dir, "imageformats"), imgfmtdll_files)
+                binaries_to_codesign.append(imageformats_dll)
                 env.Alias('mixxx', imageformats_dll)
 
         # QSQLite DLL
         if sqldll_files:
                 sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
+                binaries_to_codesign.append(sql_dlls)
                 env.Alias('mixxx', sql_dlls)
 
+        if 'sign' in COMMAND_LINE_TARGETS:
+            codesign_subject_name = SCons.ARGUMENTS.get('windows_codesign_subject_name', '')
+            if not codesign_subject_name:
+                raise Exception('Code-signing was requested but windows_codesign_subject_name was not provided.')
+            codesign = env.SignTool(
+                'Mixxx_signtool',
+                binaries_to_codesign,
+                SUBJECT_NAME=codesign_subject_name)
+            env.Alias('sign', codesign)
 
 def BuildRelease(target, source, env):
     print("==== Mixxx Post-Build Checks ====")
@@ -593,8 +592,8 @@ def BuildRelease(target, source, env):
     package_version = construct_version(build, mixxx_version, branch_name,
                                         vcs_revision)
     arch = "x64" if build.machine_is_64bit else "x86"
-    exe_name = '%s-%s-%s.msi' % (package_name, package_version, arch)
-    print(exe_name)
+    msi_name = '%s-%s-%s.msi' % (package_name, package_version, arch)
+    print(msi_name)
     print("Top line of README, check version:")
     if build.platform_is_windows:
         os.system('for /l %l in (1,1,1) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" README ^| findstr /r "^%l:"\') do @echo %b')
@@ -605,6 +604,7 @@ def BuildRelease(target, source, env):
         os.system('for /l %l in (1,1,2) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" LICENSE ^| findstr /r "^%l:"\') do @echo %b')
     else:
         os.system('head -n 2 LICENSE')
+
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
         # TODO(XXX): Installing a runtime isn't specific to MSVS?
@@ -748,7 +748,7 @@ def BuildRelease(target, source, env):
         command = '"%(wix)s\\light.exe" -cc .\ -nologo -sw1076 -spdb -ext WixUIExtension -cultures:%(deflang)s -loc build\wix\Localization\mixxx_%(deflang)s.wxl -out %(package_name)s build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
             {'wix': wix_path,
              'deflang': defaultLanguage,
-             'package_name': 'part.' + exe_name}
+             'package_name': 'part.' + msi_name}
         print("Using Command: " + command)
         subprocess.check_call(command)
 
@@ -797,14 +797,14 @@ def BuildRelease(target, source, env):
             command = '"%(wix)s\\torch.exe" -nologo -p -t language %(package_name)s %(lang)s.msi -o %(lang)s.mst' % \
                 {'wix': wix_path,
                  'lang': culture,
-                 'package_name': 'part.' + exe_name}
+                 'package_name': 'part.' + msi_name}
             print("Using Command: " + command)
             subprocess.check_call(command)
 
             command = 'cscript "%(winsdk)s\wisubstg.vbs" %(package_name)s %(lang)s.mst %(langid)s' % \
                 {'winsdk': WinSDK_path,
                  'lang': culture,
-                 'package_name': 'part.' + exe_name,
+                 'package_name': 'part.' + msi_name,
                  'langid': LCID}
             print("Using Command: " + command)
             subprocess.check_call(command)
@@ -816,7 +816,7 @@ def BuildRelease(target, source, env):
         print("*** Add all supported languages to MSI Package attribute")
         command = 'cscript "%(winsdk)s\WiLangId.vbs" %(package_name)s Package %(langid)s' % \
             {'winsdk': WinSDK_path,
-             'package_name': 'part.' + exe_name,
+             'package_name': 'part.' + msi_name,
              'langid': langIds}
         print("Using Command: " + command)
         subprocess.check_call(command)
@@ -827,9 +827,9 @@ def BuildRelease(target, source, env):
         bundlelocfile.close()
 
         # Everything is OK, now rename the msi to final name
-        if os.path.isfile(exe_name):
-            os.remove(exe_name)
-        os.rename('part.' + exe_name, exe_name)
+        if os.path.isfile(msi_name):
+            os.remove(msi_name)
+        os.rename('part.' + msi_name, msi_name)
 
         print("*** Compiling Bundle")
         # Compile bundle wix file
@@ -837,7 +837,7 @@ def BuildRelease(target, source, env):
             {'wix': wix_path,
              'winlibpath': build.winlib_path,
              'arch': winArch,
-             'package_name': exe_name}
+             'package_name': msi_name}
         print("Using Command: " + command)
         subprocess.check_call(command)
         # bundle localisation references
@@ -845,16 +845,47 @@ def BuildRelease(target, source, env):
             {'wix': wix_path,
              'winlibpath': build.winlib_path,
              'arch': winArch,
-             'package_name': exe_name}
+             'package_name': msi_name}
         print("Using Command: " + command)
         subprocess.check_call(command)
+        exe_name = os.path.splitext(msi_name)[0] + '.exe'
         command = '"%(wix)s\\light.exe" -cc .\ -nologo -sw1076 -spdb -ext WixUtilExtension -ext WixBalExtension -dMSIPackage=%(msi_name)s -cultures:%(deflang)s -loc build\wix\Localization\mixxx_%(deflang)s.wxl -out %(package_name)s build\\wix\\bundle\\*.wixobj' % \
             {'wix': wix_path,
              'deflang': defaultLanguage,
-             'msi_name': exe_name,
-             'package_name': os.path.splitext(exe_name)[0] + '.exe'}
+             'msi_name': msi_name,
+             'package_name': exe_name}
         print("Using Command: " + command)
         subprocess.check_call(command)
+
+        if 'sign' in COMMAND_LINE_TARGETS:
+            from build.windows import signtool
+            codesign_subject_name = SCons.ARGUMENTS.get('windows_codesign_subject_name', '')
+            if not codesign_subject_name:
+                raise Exception('Code-signing was requested but windows_codesign_subject_name was not provided.')
+
+            print("*** Signing Bundle")
+            # In addition to simply signing the installer executable, we have to
+            # extract and sign the "burn engine". See
+            # http://wixtoolset.org/documentation/manual/v3/overview/insignia.html for details.
+            command = ("%(wix)s\\insignia.exe -ib %(package_name)s -o setup.exe" % {
+                    "wix": wix_path,
+                    "package_name": exe_name,
+            })
+            print("Using Command: " + command)
+            subprocess.check_call(command)
+
+            # Imperatively sign the file since the whole WiX process is imperative.
+            signtool.signtool_path(codesign_subject_name, 'setup.exe')
+
+            command = ("%(wix)s\\insignia.exe -ab setup.exe %(package_name)s -o %(package_name)s" % {
+                    "wix": wix_path,
+                    "package_name": exe_name,
+            })
+            print("Using Command: " + command)
+            subprocess.check_call(command)
+
+            # Now sign the final package imperatively.
+            signtool.signtool_path(codesign_subject_name, exe_name)
 
         # Some cleaning before leaving
         for file in glob.glob('*.cab'):
@@ -865,7 +896,7 @@ def BuildRelease(target, source, env):
             os.remove(file)
         for file in glob.glob('build\wix\subdirs\*.wxs'):
             os.remove(file)
-        os.remove(exe_name)
+        os.remove(msi_name)
 
     else:
         print("Aborted building installer")
@@ -1007,7 +1038,7 @@ def BuildUbuntuPackage(target, source, env):
                 'localecompare=1',
                 'qt_sqlite_plugin=0',
                 'build=' + build.build,
-                'qt5=%d' % qt5])
+        ])
 
         # Replace environment variables in the rules file.
         # TODO(rryan) something more elegant? I don't know a better way. When

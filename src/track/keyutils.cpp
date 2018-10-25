@@ -291,7 +291,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         // from s_letterToMajorKey. Upper-case means major, lower-case means
         // minor. Then apply the sharps or flats to the key.
         QChar letter = keyMatcher.cap(1).at(0);
-        int letterIndex = letter.toLower().toAscii() - 'a';
+        int letterIndex = letter.toLower().toLatin1() - 'a';
         bool major = letter.isUpper();
 
         // Now apply sharps and flats to the letter key.

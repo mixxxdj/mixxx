@@ -116,8 +116,8 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         int i = iter.next();
         QModelIndex index = itemModel->index(sourceRow, i, sourceParent);
         QVariant data = itemModel->data(index);
-        if (qVariantCanConvert<QString>(data)) {
-            QString strData = qVariantValue<QString>(data);
+        if (data.canConvert(QMetaType::QString)) {
+            QString strData = data.value<QString>();
             if (strData.contains(filter))
                 rowMatches = true;
         }
@@ -144,4 +144,3 @@ void ProxyTrackModel::sort(int column, Qt::SortOrder order) {
         QSortFilterProxyModel::sort(column, order);
     }
 }
-

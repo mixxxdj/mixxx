@@ -1,4 +1,5 @@
 #include <QDesktopServices>
+#include <QStandardPaths>
 #include <QDir>
 #include <QFileDialog>
 #include <QStringList>
@@ -11,8 +12,6 @@
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "sources/soundsourceproxy.h"
-
-#define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
@@ -189,7 +188,7 @@ void DlgPrefLibrary::slotCancel() {
 void DlgPrefLibrary::slotAddDir() {
     QString fd = QFileDialog::getExistingDirectory(
         this, tr("Choose a music directory"),
-        QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+        QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
     if (!fd.isEmpty()) {
         emit(requestAddDir(fd));
         slotUpdate();
@@ -265,8 +264,7 @@ void DlgPrefLibrary::slotRelocateDir() {
     if (!dir.exists() && dir.cdUp()) {
         startDir = dir.absolutePath();
     } else if (!dir.exists()) {
-        startDir = QDesktopServices::storageLocation(
-            QDesktopServices::MusicLocation);
+        startDir = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
     }
 
     QString fd = QFileDialog::getExistingDirectory(

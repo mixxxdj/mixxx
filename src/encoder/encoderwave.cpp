@@ -178,14 +178,14 @@ void EncoderWave::initStream() {
     // libsndfile will work when read back with libsndfile, but may not work with other programs.
     int ret;
     if (!m_metaDataTitle.isEmpty()) {
-        ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_metaDataTitle.toAscii().constData());
+        ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_metaDataTitle.toUtf8().constData());
         if (ret != 0) {
             qWarning("libsndfile error: %s", sf_error_number(ret));
         }
     }
 
     if (!m_metaDataArtist.isEmpty()) {
-        ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_metaDataArtist.toAscii().constData());
+        ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_metaDataArtist.toUtf8().constData());
         if (ret != 0) {
             qWarning("libsndfile error: %s", sf_error_number(ret));
         }
@@ -197,7 +197,7 @@ void EncoderWave::initStream() {
             // write the SF_STR_COMMENT string into the text chunk with id "ANNO".
             strType = SF_STR_COMMENT;
         }
-        ret = sf_set_string(m_pSndfile, strType, m_metaDataAlbum.toAscii().constData());
+        ret = sf_set_string(m_pSndfile, strType, m_metaDataAlbum.toUtf8().constData());
         if (ret != 0) {
             qWarning("libsndfile error: %s", sf_error_number(ret));
         }

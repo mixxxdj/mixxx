@@ -18,6 +18,7 @@
 #include "mixxx.h"
 
 #include <QDesktopServices>
+#include <QStandardPaths>
 #include <QDesktopWidget>
 #include <QFileDialog>
 #include <QGLWidget>
@@ -320,13 +321,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
         // possible with the Windows 7 "Music" library, which is what
-        // QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+        // QStandardPaths::writableLocation(QStandardPaths::MusicLocation)
         // resolves to) and a user hitting 'cancel'. If we get a blank return
         // but the user didn't hit cancel, we need to know this and let the
         // user take some course of action -- bkgood
         QString fd = QFileDialog::getExistingDirectory(
             this, tr("Choose music library directory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
         if (!fd.isEmpty()) {
             // adds Folder to database.
             m_pLibrary->slotRequestAddDir(fd);
@@ -379,9 +380,11 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
-    QGLWidget* pContextWidget = new QGLWidget(this);
-    pContextWidget->hide();
-    SharedGLContext::setWidget(pContextWidget);
+    if (!CmdlineArgs::Instance().getSafeMode()) {
+        QGLWidget* pContextWidget = new QGLWidget(this);
+        pContextWidget->hide();
+        SharedGLContext::setWidget(pContextWidget);
+    }
 
     launchProgress(63);
 
