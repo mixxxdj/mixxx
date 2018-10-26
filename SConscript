@@ -533,7 +533,7 @@ if build.platform_is_windows:
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
 
-        binaries_to_codesign = [binary, dlls, vamp_plugins]
+        binaries_to_codesign = [binary, dlls]
 
         # imageformats DLL
         if imgfmtdll_files:
