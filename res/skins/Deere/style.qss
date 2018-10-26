@@ -438,28 +438,15 @@ QTreeView::branch:open:!has-children:has-siblings:selected {
   background-color: #1F1F1F;
   border: 1px solid #1A1A1A;
 }
-/* transition time in Auto DJ tab */
-WLibrary QSpinBox {
-  min-height: 20px;
-  max-height: 20px;
-  min-width: 40px;
-  max-width: 40px;
-}
-
-#DlgAutoDJ QLabel {
-  font: 10px;
-}
-
-WLibrary QSpinBox:editable {
-  background: transparent;
-  color:#d2d2d2;
-}
+/* transition time in Auto DJ tab is styled pretty much the same as WBeatSpinBox above */
+#DlgAutoDJ QSpinBox {}
 
 /* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
 WLibrary QLabel, WLibrary QRadioButton {
   /* same as QTreeview */
   color: #d2d2d2;
   margin: 9px 10px 6px 0px;
+  font-size: 12px;
 }
 
 WLibrary QRadioButton::indicator {
@@ -491,7 +478,7 @@ WLibrary QRadioButton::indicator:unchecked {
   padding: 4px;
   color: #D2D2D2;
   background-color: #4B4B4B;
-  border: 1px solid #4B4B4B;
+  border: 0px solid #4B4B4B;
   border-radius: 2px;
   outline: none;
 }
@@ -626,6 +613,11 @@ QScrollBar::sub-line:horizontal, QScrollBar::sub-line:vertical {
   height: 0px;
   border: none;
 }
+/* Corner in between two scrollbars */
+QAbstractScrollArea::corner {
+  border-top: 1px solid #141414;
+  border-left: 1px solid #141414;
+}
 
 /*******************************************************************************
  ** END LIBRARY *****************************************************************
@@ -757,52 +749,59 @@ WWidget, QLabel {
   padding: 0px;
 }
 
-WBeatSpinBox {
+WBeatSpinBox,
+#DlgAutoDJ QSpinBox {
   color: #c1cabe;
   background-color: #1f1e1e;
   border: 1px solid #444342;
   border-radius: 3px;
-  padding: 2px;
   font: 15px;
-}
-
-  WBeatSpinBox:hover {
+  }
+  WBeatSpinBox {
+    padding: 2px;
+  }
+  #DlgAutoDJ QSpinBox {
+    padding: 1px 2px 2px 2px;
+    margin: 3px 0px 0px 2px;
+  }
+  WBeatSpinBox:hover,
+  #DlgAutoDJ QSpinBox:hover {
     border: 1px ridge #015d8d;
   }
-
-  WBeatSpinBox::down-button {
+  WBeatSpinBox::down-button,
+  #DlgAutoDJ QSpinBox::down-button {
     subcontrol-origin: border;
     subcontrol-position: bottom right; /* position at the top right corner */
     padding-right: 4px;
     padding-top: -3px;
     border: 0;
   }
-
-  WBeatSpinBox::down-arrow {
+  WBeatSpinBox::down-arrow,
+  #DlgAutoDJ QSpinBox::down-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_down_selector.svg);
   }
-
-  WBeatSpinBox::down-arrow:hover {
+  WBeatSpinBox::down-arrow:hover,
+  #DlgAutoDJ QSpinBox::down-arrow:hover {
     image: url(skin:/icon/ic_chevron_down_selector_hover.svg);
   }
-
-  WBeatSpinBox::up-button {
+  WBeatSpinBox::up-button,
+  #DlgAutoDJ QSpinBox::up-button {
     subcontrol-origin: border;
     subcontrol-position: top right; /* position at the top right corner */
     padding-right: 4px;
     padding-bottom: -3px;
     border: 0;
   }
-
-  WBeatSpinBox::up-arrow {
+  WBeatSpinBox::up-arrow,
+  #DlgAutoDJ QSpinBox::up-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_up_selector.svg);
   }
-
-  WBeatSpinBox::up-arrow:hover {
+  WBeatSpinBox::up-arrow:hover,
+  #DlgAutoDJ QSpinBox::up-arrow:hover {
     image: url(skin:/icon/ic_chevron_up_selector_hover.svg);
   }
 

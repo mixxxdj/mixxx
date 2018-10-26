@@ -229,7 +229,7 @@
 
       <Label>
         <ObjectName>ToolbarLogo</ObjectName>
-        <Size>78f,24f</Size>
+        <Size>72f,24f</Size>
       </Label>
 
       <WidgetGroup> <!-- Spacer -->

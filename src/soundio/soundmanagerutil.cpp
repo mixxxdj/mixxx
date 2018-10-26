@@ -304,6 +304,7 @@ AudioOutput::AudioOutput(AudioPathType type,
                          unsigned char channels,
                          unsigned char index)
     : AudioPath(channelBase, channels) {
+    // TODO(rryan): This is a virtual function call from a constructor.
     setType(type);
     if (isIndexed(type)) {
         m_index = index;
@@ -389,6 +390,7 @@ AudioInput::AudioInput(AudioPathType type,
                        unsigned char channels,
                        unsigned char index)
         : AudioPath(channelBase, channels) {
+    // TODO(rryan): This is a virtual function call from a constructor.
     setType(type);
     if (isIndexed(type)) {
         m_index = index;

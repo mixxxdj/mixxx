@@ -904,7 +904,8 @@ border: 0px;
 
 #ToolbarLogo {
   background: transparent;
-  image: url(skin:style/mixxx_logo_toolbar.png) no-repeat center center;
+  margin: 3px 0px;
+  image: url(skin:style/mixxx_logo.svg) no-repeat center center;
 }
 
 #WaveformMixerContainer {
@@ -1185,7 +1186,7 @@ border: 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
   border-left: 1px solid #585858;
-  padding: 1px 1px 1px 2px;
+  padding: 1px 2px 1px 2px;
 }
 
 #FxUnit1_ExpandCollapseButton,
@@ -1730,9 +1731,14 @@ QLabel, QRadioButton {
   color: #cfb32c;
 }
 
-/* Additional space for QRadionButtons and QLabels */
-WLibrary QRadioButton, WLibrary QLabel {
+/* Additional space for QRadionButtons */
+WLibrary QRadioButton {
   margin: 9px 3px 6px 3px;
+}
+
+/* Additional space for QLabels */
+WLibrary QLabel {
+  margin: 6px 3px 9px 3px;
 }
 
 /* Additional space for the first QRadionButton in the row */
@@ -1767,14 +1773,17 @@ WLibrary QRadioButton::indicator:unchecked {
                                stop:0 #252525,
                                stop:1 #0f0f0f);
   }
-  /* Interesting though: this WOULDN'T affect Preview & BPM button */
-  WLibrary QPushButton:hover,
-  WLibrary QPushButton:focus {
-    border: 1px solid #888;
-  }
-  WLibrary QPushButton:!enabled {
-    color: #666;
-  }
+  /* This wouldn't catch disabled buttons in LateNight...
+WLibrary QPushButton:!enabled {
+  color: #333;
+}*/
+#DlgMissing > QPushButton:!enabled,
+#DlgHidden > QPushButton:!enabled,
+#DlgAutoDJ > QPushButton:!enabled,
+#DlgRecording > QPushButton:!enabled,
+#DlgAnalysis > QPushButton:!enabled {
+  color: #666;
+}
 
 /* Additional space for the first QPushButton in the row */
 #DlgAutoDJ > QPushButton#pushButtonShuffle {
