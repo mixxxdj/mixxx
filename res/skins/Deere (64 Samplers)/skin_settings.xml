@@ -564,7 +564,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Library],show_library</ConfigKey>
+              <ConfigKey>[Skin],show_library</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
             </Connection>
           </PushButton>
