@@ -82,8 +82,8 @@ void WWidgetStack::hideIndex(int index) {
         return;
     }
     if (currentIndex() == index) {
-        QMap<int, int>::const_iterator it = m_hideMap.find(index);
-        if (it != m_hideMap.end()) {
+        auto it = m_hideMap.constFind(index);
+        if (it != m_hideMap.constEnd()) {
             setCurrentIndex(*it);
         } else {
             // TODO: This default behavior is a little odd, is it really what
@@ -177,5 +177,5 @@ bool WWidgetStack::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QFrame::event(pEvent);
+    return QStackedWidget::event(pEvent);
 }

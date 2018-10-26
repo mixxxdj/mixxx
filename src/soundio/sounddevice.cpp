@@ -216,8 +216,7 @@ void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
         // Non Stereo input (iFrameSize != 2)
         // Do crazy deinterleaving of the audio into the correct m_inputBuffers.
 
-        for (QList<AudioInputBuffer>::const_iterator i = m_audioInputs.begin(),
-                     e = m_audioInputs.end(); i != e; ++i) {
+        for (auto i = m_audioInputs.constBegin(), e = m_audioInputs.constEnd(); i != e; ++i) {
             const AudioInputBuffer& in = *i;
             ChannelGroup chanGroup = in.getChannelGroup();
             int iChannelCount = chanGroup.getChannelCount();
@@ -249,8 +248,7 @@ void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
 
 void SoundDevice::clearInputBuffer(const SINT framesToPush,
                                    const SINT framesWriteOffset) {
-    for (QList<AudioInputBuffer>::const_iterator i = m_audioInputs.begin(),
-                 e = m_audioInputs.end(); i != e; ++i) {
+    for (auto i = m_audioInputs.constBegin(), e = m_audioInputs.constEnd(); i != e; ++i) {
         const AudioInputBuffer& in = *i;
         CSAMPLE* pInputBuffer = in.getBuffer();  // Always stereo
         SampleUtil::clear(&pInputBuffer[framesWriteOffset * 2], framesToPush * 2);

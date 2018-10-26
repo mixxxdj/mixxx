@@ -117,7 +117,7 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         QModelIndex index = itemModel->index(sourceRow, i, sourceParent);
         QVariant data = itemModel->data(index);
         if (data.canConvert(QMetaType::QString)) {
-            QString strData = data.value<QString>();
+            QString strData = data.toString();
             if (strData.contains(filter))
                 rowMatches = true;
         }

@@ -211,8 +211,8 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
     // to remove duplicate keys or else we'll duplicate those values.
     auto sortedInputKeys = preset.inputMappings.uniqueKeys();
     std::sort(sortedInputKeys.begin(), sortedInputKeys.end());
-    for (auto key : sortedInputKeys) {
-        for (auto it = preset.inputMappings.constFind(key); 
+    for (const auto& key : sortedInputKeys) {
+        for (auto it = preset.inputMappings.constFind(key);
                 it != preset.inputMappings.constEnd() && it.key() == key; ++it) {
             QDomElement controlNode = inputMappingToXML(doc, it.value());
             controls.appendChild(controlNode);
@@ -225,8 +225,8 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
     QDomElement outputs = doc->createElement("outputs");
     auto sortedOutputKeys = preset.outputMappings.uniqueKeys();
     std::sort(sortedOutputKeys.begin(), sortedOutputKeys.end());
-    for (auto key : sortedOutputKeys) {
-        for (auto it = preset.outputMappings.constFind(key); 
+    for (const auto& key : sortedOutputKeys) {
+        for (auto it = preset.outputMappings.constFind(key);
                 it != preset.outputMappings.constEnd() && it.key() == key; ++it) {
             QDomElement outputNode = outputMappingToXML(doc, it.value());
             outputs.appendChild(outputNode);
