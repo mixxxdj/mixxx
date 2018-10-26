@@ -347,6 +347,8 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         qDebug() << "PortAudio: Started stream successfully";
     }
 
+    m_clkRefTimer.start();
+
     // Get the actual details of the stream & update Mixxx's data
     const PaStreamInfo* streamDetails = Pa_GetStreamInfo(pStream);
     m_dSampleRate = streamDetails->sampleRate;
@@ -999,8 +1001,9 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
     double diff = (timeSinceLastCbSecs + callbackEntrytoDacSecs) -
             (m_lastCallbackEntrytoDacSecs + bufferSizeSec);
 
-    if (timeSinceLastCbSecs < bufferSizeSec * 2 &&
-            fabs(diff) / bufferSizeSec > 0.1) {
+    if (callbackEntrytoDacSecs <= 0 ||
+            (timeSinceLastCbSecs < bufferSizeSec * 2 &&
+            fabs(diff) / bufferSizeSec > 0.1)) {
         // Fall back to CPU timing:
         // If timeSinceLastCbSecs from a CPU timer is reasonable (no underflow)
         // and we have more than 10 % difference to the timing provided by Portaudio
