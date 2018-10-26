@@ -27,21 +27,13 @@ void WidgetStackControlListener::onCurrentWidgetChanged(int index) {
     }
 }
 
-WWidgetStack::WWidgetStack(QWidget* pParent,
-                           ControlObject* pNextControl,
-                           ControlObject* pPrevControl,
-                           ControlObject* pCurrentPageControl)
+WWidgetStack::WWidgetStack(QWidget* pParent, const ConfigKey& nextConfigKey,
+        const ConfigKey& prevConfigKey, const ConfigKey& currentPageConfigKey)
         : QStackedWidget(pParent),
           WBaseWidget(this),
-          m_nextControl(
-                  pNextControl ?
-                  pNextControl->getKey() : ConfigKey(), this),
-          m_prevControl(
-                  pPrevControl ?
-                  pPrevControl->getKey() : ConfigKey(), this),
-          m_currentPageControl(
-                  pCurrentPageControl ?
-                  pCurrentPageControl->getKey() : ConfigKey(), this) {
+          m_nextControl(nextConfigKey, this),
+          m_prevControl(prevConfigKey, this),
+          m_currentPageControl(currentPageConfigKey, this) {
     m_nextControl.connectValueChanged(SLOT(onNextControlChanged(double)));
     m_prevControl.connectValueChanged(SLOT(onPrevControlChanged(double)));
     m_currentPageControl.connectValueChanged(

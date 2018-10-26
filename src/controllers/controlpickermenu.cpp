@@ -541,7 +541,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                effectUnitGroups);
 
             const int iNumDecks = ControlObject::get(
-                ConfigKey("[Master]", "num_decks"));
+                    ConfigKey("[Master]", "num_decks"));
             for (int iDeckNumber = 1; iDeckNumber <= iNumDecks; ++iDeckNumber) {
                 // PlayerManager::groupForDeck is 0-indexed.
                 QString playerGroup = PlayerManager::groupForDeck(iDeckNumber - 1);
