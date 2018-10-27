@@ -1518,7 +1518,7 @@ TEST_F(EngineSyncTest, SyncWithoutBeatgrid) {
 
     ProcessBuffer();
 
-    EXPECT_EQ(0.5,
+    ASSERT_DOUBLE_EQ(0.5,
               ControlObject::get(ConfigKey(m_sGroup1, "rate")));
 
 }
