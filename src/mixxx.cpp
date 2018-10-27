@@ -1306,6 +1306,9 @@ bool MixxxMainWindow::event(QEvent* e) {
 }
 
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
+    // WARNING: We can receive a CloseEvent while only partially
+    // initialized. This is because we call QApplication::processEvents to
+    // render LaunchImage progress in the constructor.
     if (!confirmExit()) {
         event->ignore();
         return;
@@ -1384,7 +1387,7 @@ bool MixxxMainWindow::confirmExit() {
             return false;
         }
     }
-    if (m_pPrefDlg->isVisible()) {
+    if (m_pPrefDlg && m_pPrefDlg->isVisible()) {
         QMessageBox::StandardButton btn = QMessageBox::question(
             this, tr("Confirm Exit"),
             tr("The preferences window is still open.") + "<br>" +

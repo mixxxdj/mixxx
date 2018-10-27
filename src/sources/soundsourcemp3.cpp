@@ -548,6 +548,8 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
     CSAMPLE* pSampleBuffer = writableSampleFrames.writableData();
     SINT numberOfFramesRemaining = numberOfFramesTotal;
     while (0 < numberOfFramesRemaining) {
+        bool abortReading = false;
+
         if (0 >= m_madSynthCount) {
             // When all decoded output data has been consumed...
             DEBUG_ASSERT(0 == m_madSynthCount);
@@ -638,7 +640,9 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             const SINT madFrameChannelCount = MAD_NCHANNELS(&m_madFrame.header);
             if (madFrameChannelCount != channelCount()) {
                 kLogger.warning() << "MP3 frame header with mismatching number of channels"
-                        << madFrameChannelCount << "<>" << channelCount();
+                        << madFrameChannelCount << "<>" << channelCount()
+                        << " - aborting";
+                abortReading = true;
             }
 #endif
 
@@ -648,11 +652,19 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             const SINT madSynthSampleRate =  m_madSynth.pcm.samplerate;
             if (madSynthSampleRate != sampleRate()) {
                 kLogger.warning() << "Reading MP3 data with different sample rate"
-                        << madSynthSampleRate << "<>" << sampleRate();
+                        << madSynthSampleRate << "<>" << sampleRate()
+                        << " - aborting";
+                abortReading = true;
             }
 #endif
             m_madSynthCount = m_madSynth.pcm.length;
             DEBUG_ASSERT(0 < m_madSynthCount);
+        }
+
+        if (abortReading) {
+            // Refuse to continue for preventing crashes while
+            // decoding/reading corrupt files
+            break;
         }
 
         const SINT synthReadCount = math_min(

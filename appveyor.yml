@@ -87,4 +87,4 @@ notifications:
     on_build_success: true
     on_build_failure: true
     on_build_status_changed: true
-    body: "type=stream&to=appveyor&subject={{projectName}} Build {{buildVersion}} {{status}}&content=Build {{buildVersion}} {{status}}{{#isPullRequest}} (PR #{{pullRequestId}}) {{/isPullRequest}}{{#failed}} :cross_mark:{{/failed}}{{#passed}} :heavy_check_mark:{{/passed}} {{buildUrl}}"
+    body: "type=stream&to=appveyor&subject={{projectName}} Build {{buildVersion}} {{status}}&content=Build {{buildVersion}} {{status}}{{#isPullRequest}} (PR #{{pullRequestId}}) {{/isPullRequest}}{{#failed}} :cross_mark:{{/failed}}{{#passed}} :check_mark:{{/passed}} {{buildUrl}}"

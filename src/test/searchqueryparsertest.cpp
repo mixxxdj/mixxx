@@ -812,7 +812,8 @@ TEST_F(SearchQueryParserTest, CrateFilterWithOther){
 
 TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     // User's search term
-    QString searchTermA = "testA";
+    QString searchTermA = "testA'1"; // Also a test if "'" is escaped lp1789728
+    QString searchTermAEsc = "testA''1";
     QString searchTermB = "testB";
 
     // Parse the user query
@@ -855,7 +856,7 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     EXPECT_FALSE(pQueryA->match(pTrackB));
 
     EXPECT_STREQ(
-                 qPrintable("(" + m_crateFilterQuery.arg(searchTermA) +
+                 qPrintable("(" + m_crateFilterQuery.arg(searchTermAEsc) +
                             ") AND (" + m_crateFilterQuery.arg(searchTermB) + ")"),
                  qPrintable(pQueryA->toSql()));
 
@@ -867,7 +868,7 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
     EXPECT_TRUE(pQueryB->match(pTrackB));
 
     EXPECT_STREQ(
-                 qPrintable("(" + m_crateFilterQuery.arg(searchTermA) +
+                 qPrintable("(" + m_crateFilterQuery.arg(searchTermAEsc) +
                             ") AND (NOT (" + m_crateFilterQuery.arg(searchTermB) + "))"),
                  qPrintable(pQueryB->toSql()));
 }
