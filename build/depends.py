@@ -1152,6 +1152,7 @@ class MixxxCore(Feature):
                    "src/util/screensaver.cpp",
                    "src/util/indexrange.cpp",
                    "src/util/desktophelper.cpp",
+                   "src/util/widgetrendertimer.cpp",
                    ]
 
         proto_args = {

@@ -18,20 +18,32 @@
             <SizePolicy>e,min</SizePolicy>
             <Text>Skin Settings</Text>
           </Label>
-          <Template src="skin:left_2state_button.xml">
-            <SetVariable name="TooltipId">skin_settings</SetVariable>
-            <SetVariable name="ObjectName">SidebarShowHideSkinSettingsButton</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text"></SetVariable>
-            <SetVariable name="state_0_pressed">icon/ic_clear_48px.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">icon/ic_clear_48px.svg</SetVariable>
-            <SetVariable name="state_1_text"></SetVariable>
-            <SetVariable name="state_1_pressed">icon/ic_clear_48px.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">icon/ic_clear_48px.svg</SetVariable>
-            <SetVariable name="left_connection_control">[Master],skin_settings</SetVariable>
-          </Template>
+          <PushButton>
+            <TooltipId>skin_settings</TooltipId>
+            <ObjectName>SidebarShowHideSkinSettingsButton</ObjectName>
+            <MinimumSize><Variable name="SquareButtonMinimumSize"/></MinimumSize>
+            <MaximumSize><Variable name="SquareButtonMaximumSize"/></MaximumSize>
+            <SizePolicy><Variable name="SquareButtonSizePolicy"/></SizePolicy>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text><Variable name="state_0_text"/></Text>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_clear_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_clear_48px.svg</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text><Variable name="state_1_text"/></Text>
+              <Pressed scalemode="STRETCH_ASPECT">icon/ic_clear_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_clear_48px.svg</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <!-- This is used to work around Bug 1795663 on OSX -->
+              <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
         </Children>
       </WidgetGroup>
 
