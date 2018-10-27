@@ -347,8 +347,6 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         qDebug() << "PortAudio: Started stream successfully";
     }
 
-    m_clkRefTimer.start();
-
     // Get the actual details of the stream & update Mixxx's data
     const PaStreamInfo* streamDetails = Pa_GetStreamInfo(pStream);
     m_dSampleRate = streamDetails->sampleRate;
@@ -363,6 +361,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
         ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"), bufferMSec);
         m_invalidTimeInfoCount = 0;
+        m_clkRefTimer.start();
     }
     m_pStream = pStream;
     return SOUNDDEVICE_ERROR_OK;
@@ -1005,7 +1004,8 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
             (timeSinceLastCbSecs < bufferSizeSec * 2 &&
             fabs(diff) / bufferSizeSec > 0.1)) {
         // Fall back to CPU timing:
-        // If timeSinceLastCbSecs from a CPU timer is reasonable (no underflow)
+        // If timeSinceLastCbSecs from a CPU timer is reasonable (no underflow),
+        // the callbackEntrytoDacSecs time is not in the past
         // and we have more than 10 % difference to the timing provided by Portaudio
         // we do not trust the Portaudio timing.
         // (A difference up to ~ 5 % is normal)
