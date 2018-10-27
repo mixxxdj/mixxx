@@ -267,7 +267,7 @@
                       <SizePolicy>me,me</SizePolicy>
                       <Orientation>vertical</Orientation>
                       <SplitSizes>100,10000</SplitSizes>
-                      <SplitSizesConfigKey>[Tango],waveform_splitSize</SplitSizesConfigKey>
+                      <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
                       <Collapsible>0,0</Collapsible>
                       <Children>
 

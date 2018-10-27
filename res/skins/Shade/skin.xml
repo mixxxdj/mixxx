@@ -457,7 +457,7 @@
               <Size>me,me</Size>
               <SplitSizes>1,6</SplitSizes>
               <Collapsible>1,0</Collapsible>
-              <SplitSizesConfigKey>[Shade],splitSizeLibTree</SplitSizesConfigKey>
+              <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
               <Children>
                 <WidgetGroup>
                   <Style>QGroupBox {}</Style>

@@ -16,7 +16,7 @@
         <ObjectName>LibrarySplitter</ObjectName>
         <Orientation>horizontal</Orientation>
         <SizePolicy>me,me</SizePolicy>
-        <SplitSizesConfigKey>[Deere],LibrarySidebarSplitSize</SplitSizesConfigKey>
+        <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
         <SplitSizes>2,8</SplitSizes>
         <Children>
           <WidgetGroup>
@@ -41,7 +41,7 @@
                 <Orientation>vertical</Orientation>
                 <SizePolicy>me,me</SizePolicy>
                 <MinimumSize>30,30</MinimumSize>
-                <SplitSizesConfigKey>[Deere],LibraryCoverartSplitSize</SplitSizesConfigKey>
+                <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
                 <SplitSizes>2,8</SplitSizes>
                 <Collapsible>0,0</Collapsible>
                 <Children>

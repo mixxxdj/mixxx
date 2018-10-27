@@ -167,7 +167,7 @@
                   <Orientation>vertical</Orientation>
                   <SizePolicy>me,min</SizePolicy>
                   <SplitSizes>1,5</SplitSizes>
-                  <SplitSizesConfigKey>[LateNight],waveform_splitSize</SplitSizesConfigKey>
+                  <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
                   <Collapsible>1,0</Collapsible>
                   <Children>
 

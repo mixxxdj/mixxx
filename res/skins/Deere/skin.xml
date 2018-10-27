@@ -196,7 +196,7 @@
         <Splitter><!-- Visible when Library is not maximized -->
           <ObjectName>WaveformSplitter</ObjectName>
           <Orientation>vertical</Orientation>
-          <SplitSizesConfigKey>[Deere],StackedWaveformSplitter</SplitSizesConfigKey>
+          <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
           <SplitSizes>90,540</SplitSizes>
           <Size>-1me,-1me</Size>
           <Connection>
