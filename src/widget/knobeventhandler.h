@@ -43,7 +43,7 @@ class KnobEventHandler {
             QCursor::setPos(m_startPos);
             double value = valueFromMouseEvent(pWidget, e);
             pWidget->setControlParameterDown(value);
-            pWidget->update();
+            pWidget->inputActivity();
         }
     }
 
@@ -72,7 +72,7 @@ class KnobEventHandler {
                 QApplication::restoreOverrideCursor();
                 value = valueFromMouseEvent(pWidget, e);
                 pWidget->setControlParameterUp(value);
-                pWidget->update();
+                pWidget->inputActivity();
                 break;
             case Qt::RightButton:
                 m_bRightButtonPressed = false;
@@ -80,7 +80,6 @@ class KnobEventHandler {
             default:
                 break;
         }
-        pWidget->update();
     }
 
     void wheelEvent(T* pWidget, QWheelEvent* e) {
@@ -92,7 +91,7 @@ class KnobEventHandler {
         newValue = math_clamp(newValue, 0.0, 1.0);
 
         pWidget->setControlParameter(newValue);
-        pWidget->update();
+        pWidget->inputActivity();
         e->accept();
     }
 
