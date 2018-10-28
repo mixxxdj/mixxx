@@ -65,6 +65,8 @@
       <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
       <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_1_expanded">0</attribute>
+      <attribute persist="true" config_key="[Skin],sampler_row_2_expanded">0</attribute>
       <attribute persist="false" config_key="[EffectRack1],show">0</attribute>
       <attribute persist="false" config_key="[Microphone],show_microphone">0</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
@@ -419,7 +421,7 @@
         <Template src="skin:effectrow.xml"/>
         <Template src="skin:srcrow.xml"/>
         <Template src="skin:samplerrow.xml">
-          <SetVariable name="rownum">1</SetVariable>
+          <SetVariable name="row">1</SetVariable>
           <SetVariable name="samplernum1">1</SetVariable>
           <SetVariable name="samplernum2">2</SetVariable>
           <SetVariable name="samplernum3">5</SetVariable>
@@ -427,7 +429,7 @@
         </Template>
 
         <Template src="skin:samplerrow.xml">
-          <SetVariable name="rownum">2</SetVariable>
+          <SetVariable name="row">2</SetVariable>
           <SetVariable name="samplernum1">3</SetVariable>
           <SetVariable name="samplernum2">4</SetVariable>
           <SetVariable name="samplernum3">7</SetVariable>
