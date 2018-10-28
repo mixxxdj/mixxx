@@ -38,7 +38,7 @@ class ControlObjectScript : public ControlProxy {
     void slotValueChanged(double v, QObject*);
 
   private:
-    QVector<ScriptConnection> m_scriptConnections;
+    QList<ScriptConnection> m_scriptConnections;
 };
 
 #endif // CONTROLOBJECTSCRIPT_H
