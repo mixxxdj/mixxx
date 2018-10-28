@@ -5,13 +5,15 @@
 #include <QAtomicInt>
 #include "util/assert.h"
 
-// Use this wrapper class to prevent to delete an object that is still in use
-// in a multithread environment. It allows to use the object from mutible
-// threads without locking. The final clear is however locking if the object is still
+// This is a wrapper class that can be used to protect pointers that are owned 
+// by an one object but stored at an other. It prevents that the pointer is removed 
+// from the other object while currently executing an callback from a second thread.
+// It uses a lock free implementations except the final clear if the object is still
 // in use.
-// This can be used to implement callbacks to an object with shorter livetime. It is
-// a replacement for Qt's direct connections, which are not save across threads
-// in this case.
+// This can be used to implement callbacks to an object with shorter lifetime. 
+// This can be used as a save replacement for Qt's direct connections, which must not 
+// be used across threads in this case.
+//
 // Usage:
 // call set(po) and clear() to store and remove a pinter from the object.
 // call the callback from a scope like this
@@ -112,7 +114,7 @@ class use_counting_ptr {
         m_p = nullptr;
         if (load_atomic(m_useCount)) {
             qDebug() << "use_counting_ptr::clear() pointer in use, lock itself";
-            m_mutex.lock(); // lock itselfe by a esond lock call
+            m_mutex.lock(); // lock itselfe by a second lock call
         }
         qDebug() << "use_counting_ptr::clear()" << load_atomic(m_useCount);
     }
