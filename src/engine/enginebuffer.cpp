@@ -454,8 +454,8 @@ void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
     m_iSamplesCalculated = 1000000;
 
     // Must hold the engineLock while using m_engineControls
-    for (QList<EngineControl*>::iterator it = m_engineControls.begin();
-         it != m_engineControls.end(); ++it) {
+    for (auto it = m_engineControls.constBegin();
+         it != m_engineControls.constEnd(); ++it) {
         EngineControl *pControl = *it;
         pControl->notifySeek(m_filepos_play, adjustingPhase);
     }
@@ -1008,9 +1008,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             }
         }
 
-        QListIterator<EngineControl*> it(m_engineControls);
-        while (it.hasNext()) {
-            EngineControl* pControl = it.next();
+        for (const auto& pControl : qAsConst(m_engineControls)) {
             pControl->setCurrentSample(m_filepos_play, m_trackSamplesOld);
             pControl->process(rate, m_filepos_play, m_trackSamplesOld, iBufferSize);
         }
@@ -1266,7 +1264,7 @@ void EngineBuffer::hintReader(const double dRate) {
         m_hintList.append(hint);
     }
 
-    for (const auto& pControl: m_engineControls) {
+    for (const auto& pControl : qAsConst(m_engineControls)) {
         pControl->hintReader(&m_hintList);
     }
     m_pReader->hintAndMaybeWake(m_hintList);

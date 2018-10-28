@@ -2260,8 +2260,6 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
             WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR);
 
     // Write track number/total pair
-    QString trackNumberText;
-    QString trackTotalText;
     TrackNumbers parsedTrackNumbers;
     const TrackNumbers::ParseResult parseResult =
             TrackNumbers::parseFromStrings(

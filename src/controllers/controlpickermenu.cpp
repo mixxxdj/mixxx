@@ -432,7 +432,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Replace Auto DJ Queue with selected tracks"),
                        m_libraryStr, libraryMenu);
 
-            
+
     // Load track (these can be loaded into any channel)
     addDeckAndSamplerControl("LoadSelectedTrack",
                              tr("Load Track"),
@@ -1072,10 +1072,6 @@ void ControlPickerMenu::addAvailableControl(ConfigKey key,
 }
 
 bool ControlPickerMenu::controlExists(ConfigKey key) const {
-    qDebug() << "LOOKING FOR KEY " << key;
-    foreach(const ConfigKey& key, m_titlesByKey.keys()) {
-        qDebug() << "key: " << key;
-    }
     return m_titlesByKey.contains(key);
 }
 

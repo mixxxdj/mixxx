@@ -211,7 +211,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
         emit(messageReceived(status, control, value));
 
         auto it = m_temporaryInputMappings.constFind(mappingKey.key);
-        if (it != m_temporaryInputMappings.end()) {
+        if (it != m_temporaryInputMappings.constEnd()) {
             for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), status, control, value, timestamp);
             }
@@ -220,7 +220,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
     }
 
     auto it = m_preset.inputMappings.constFind(mappingKey.key);
-    for (; it != m_preset.inputMappings.end() && it.key() == mappingKey.key; ++it) {
+    for (; it != m_preset.inputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), status, control, value, timestamp);
     }
 }
@@ -271,8 +271,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     if (mapping_is_14bit) {
         bool found = false;
-        for (QList<QPair<MidiInputMapping, unsigned char> >::iterator it =
-                     m_fourteen_bit_queued_mappings.begin();
+        for (auto it = m_fourteen_bit_queued_mappings.begin();
              it != m_fourteen_bit_queued_mappings.end(); ++it) {
             if (it->first.control == mapping.control) {
                 if ((it->first.options.fourteen_bit_lsb && mapping.options.fourteen_bit_lsb) ||
@@ -463,8 +462,8 @@ void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
         emit(messageReceived(mappingKey.status, mappingKey.control, 0x7F));
 
         auto it = m_temporaryInputMappings.constFind(mappingKey.key);
-        if (it != m_temporaryInputMappings.end()) {
-            for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
+        if (it != m_temporaryInputMappings.constEnd()) {
+            for (; it != m_temporaryInputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), data, timestamp);
             }
             return;
@@ -472,7 +471,7 @@ void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
     }
 
     auto it = m_preset.inputMappings.constFind(mappingKey.key);
-    for (; it != m_preset.inputMappings.end() && it.key() == mappingKey.key; ++it) {
+    for (; it != m_preset.inputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), data, timestamp);
     }
 }

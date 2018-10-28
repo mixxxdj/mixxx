@@ -690,7 +690,6 @@ QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
     QString currentpage_co = node.attribute("currentpage");
     if (currentpage_co.length() > 0) {
         ConfigKey configKey = ConfigKey::parseCommaSeparated(currentpage_co);
-        QString persist_co = node.attribute("persist");
         bool persist = m_pContext->selectAttributeBool(node, "persist", false);
         pCurrentPageControl = controlFromConfigKey(configKey, persist,
                                                    &createdCurrentPage);
@@ -1501,9 +1500,8 @@ QDomElement LegacySkinParser::loadTemplate(const QString& path) {
 
     QString absolutePath = templateFileInfo.absoluteFilePath();
 
-    QHash<QString, QDomElement>::const_iterator it =
-            m_templateCache.find(absolutePath);
-    if (it != m_templateCache.end()) {
+    auto it = m_templateCache.constFind(absolutePath);
+    if (it != m_templateCache.constEnd()) {
         return it.value();
     }
 
