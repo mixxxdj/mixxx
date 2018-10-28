@@ -18,8 +18,6 @@
       <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_rate_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_starrating">1</attribute>
       <attribute persist="true" config_key="[Deere],show_track_info">1</attribute>
       <attribute persist="true" config_key="[Deere],show_bpm_info">1</attribute>
@@ -30,11 +28,11 @@
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
       <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
       <!-- Effects -->
-      <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
+      <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
       <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
       <!-- Samplers -->
-      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
       <!-- item index in skin_settings_sampler_rows.xml, '1' enables 2 sampler rows -->
       <attribute persist="true" config_key="[Skin],sampler_rows">1</attribute>
       <attribute persist="true" config_key="[Skin],sampler_row_1_expanded">0</attribute>
