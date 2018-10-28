@@ -321,7 +321,7 @@
               <Alignment>left</Alignment>
             </State>
             <Connection>
-              <ConfigKey>[Master],show_faders</ConfigKey>
+              <ConfigKey>[Skin],show_faders</ConfigKey>
             </Connection>
           </PushButton>
 
