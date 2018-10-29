@@ -7,7 +7,6 @@ matrix:
       compiler: gcc
 
     - os: osx
-      osx_image: xcode7.3
       compiler: clang
 # install dependencies
 addons:
@@ -52,11 +51,7 @@ before_install:
   # Virtual X, needed for analyzer waveform tests
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0         ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update ; fi
-  # Homebrew uses Python 3 now, and portmidi depends on Python 2 which triggers this bug:
-  # https://github.com/Homebrew/homebrew-core/issues/26358
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband fftw libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv; fi
 
 install:
   ####
