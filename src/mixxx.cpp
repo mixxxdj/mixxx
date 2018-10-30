@@ -1153,36 +1153,42 @@ void MixxxMainWindow::slotOptionsPreferences() {
 }
 
 void MixxxMainWindow::slotNoVinylControlInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this vinyl control.\n"
-           "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+           "Configure an input device in the sound hardware preferences now?"),
+        QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Yes) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this passthrough control.\n"
-           "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+           "Configure an input device in the sound hardware preferences now?"),
+        QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Yes) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this microphone.\n"
-           "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+           "Configure an input device in the sound hardware preferences now?"),
+        QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Yes) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotChangedPlayingDeck(int deck) {
