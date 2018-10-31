@@ -139,6 +139,7 @@ void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds,
         if (playlistID > 0) {
             BansheePlaylistModel* pPlaylistModelToAdd = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
             pPlaylistModelToAdd->setTableModel(playlistID);
+            pPlaylistModelToAdd->select();
 
             // Copy Tracks
             int rows = pPlaylistModelToAdd->rowCount();

@@ -31,38 +31,47 @@
 #define CLM_COMPOSER "composer"
 #define CLM_PREVIEW "preview"
 
+//static
+QAtomicInt BansheePlaylistModel::m_tableNumber;
+
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection)
         : BaseSqlTableModel(pParent, pTrackCollection, "mixxx.db.model.banshee_playlist"),
           m_pConnection(pConnection),
           m_playlistId(-1) {
+    m_tempTableName = BANSHEE_TABLE + QString::number(m_tableNumber.fetchAndAddAcquire(1));
 }
 
 BansheePlaylistModel::~BansheePlaylistModel() {
+    deleteTempTable();
+}
+
+void BansheePlaylistModel::deleteTempTable() {
+    if (m_playlistId >= 0) {
+        // Clear old playlist
+        m_playlistId = -1;
+        QSqlQuery query(m_pTrackCollection->database());
+        QString strQuery("DELETE FROM %1");
+        if (!query.exec(strQuery.arg(m_tempTableName))) {
+            LOG_FAILED_QUERY(query);
+        }
+    }
 }
 
 void BansheePlaylistModel::setTableModel(int playlistId) {
-    //qDebug() << "BansheePlaylistModel::setTableModel" << playlistId;
+    //qDebug() << "BansheePlaylistModel::setTableModel" << this << playlistId;
     if (m_playlistId == playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
         return;
     }
 
-    if (m_playlistId >= 0) {
-        // Clear old playlist
-        m_playlistId = -1;
-        QSqlQuery query(m_pTrackCollection->database());
-        QString strQuery("DELETE FROM " BANSHEE_TABLE);
-        if (!query.exec(strQuery)) {
-            LOG_FAILED_QUERY(query);
-        }
-    }
+    deleteTempTable();
 
     if (playlistId >= 0) {
         // setup new playlist
         m_playlistId = playlistId;
 
         QSqlQuery query(m_pTrackCollection->database());
-        QString strQuery("CREATE TEMP TABLE IF NOT EXISTS " BANSHEE_TABLE
+        QString strQuery("CREATE TEMP TABLE IF NOT EXISTS %1"
             " (" CLM_VIEW_ORDER " INTEGER, "
                  CLM_ARTIST " TEXT, "
                  CLM_TITLE " TEXT, "
@@ -82,11 +91,11 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
                  CLM_PLAYCOUNT" INTEGER, "
                  CLM_COMPOSER " TEXT, "
                  CLM_PREVIEW " TEXT)");
-        if (!query.exec(strQuery)) {
+        if (!query.exec(strQuery.arg(m_tempTableName))) {
             LOG_FAILED_QUERY(query);
         }
 
-        query.prepare("INSERT INTO " BANSHEE_TABLE
+        QString strQuery2("INSERT INTO %1"
                 " (" CLM_VIEW_ORDER ", "
                      CLM_ARTIST ", "
                      CLM_TITLE ", "
@@ -125,6 +134,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
                      CLM_PLAYCOUNT ", :"
                      CLM_COMPOSER ") ");
 
+        query.prepare(strQuery2.arg(m_tempTableName));
 
         QList<struct BansheeDbConnection::PlaylistEntry> list =
                 m_pConnection->getPlaylistEntries(playlistId);
@@ -189,10 +199,10 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
          << CLM_COMPOSER;
 
     QSharedPointer<BaseTrackCache> trackSource(
-            new BaseTrackCache(m_pTrackCollection, BANSHEE_TABLE, CLM_VIEW_ORDER,
+            new BaseTrackCache(m_pTrackCollection, m_tempTableName, CLM_VIEW_ORDER,
                     trackSourceColumns, false));
 
-    setTable(BANSHEE_TABLE, CLM_VIEW_ORDER, tableColumns, trackSource);
+    setTable(m_tempTableName, CLM_VIEW_ORDER, tableColumns, trackSource);
     setSearch("");
     setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
