@@ -113,11 +113,17 @@
 
 #Spacer22 {
   background-color: #222222;
-}
+} /*
 
-TEST1 {
-  background-color: #00B824;
+#TEST1 {
+  background-color: #452219;
 }
+#TEST2 {
+  background-color: #451911;
+}
+#TEST3 {
+  background-color: #114522;
+} */
 
 #AlignLeft {
   qproperty-layoutAlignment: 'AlignLeft';
@@ -828,7 +834,7 @@ WBeatSpinBox,
 }
 
 #ToolBarRight {
-  qproperty-layoutSpacing: 12;
+  qproperty-layoutSpacing: 6;
 }
 
 #NotificationsContainer {
