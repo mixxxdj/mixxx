@@ -11,6 +11,7 @@
 #include "mixer/playermanager.h"
 
 #define BANSHEE_TABLE "banshee"
+#define CLM_TRACK_ID "track_id"
 #define CLM_VIEW_ORDER "position"
 #define CLM_ARTIST "artist"
 #define CLM_TITLE "title"
@@ -72,7 +73,8 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
 
         QSqlQuery query(m_pTrackCollection->database());
         QString strQuery("CREATE TEMP TABLE IF NOT EXISTS %1"
-            " (" CLM_VIEW_ORDER " INTEGER, "
+            " (" CLM_TRACK_ID " INTEGER, "
+                 CLM_VIEW_ORDER " INTEGER, "
                  CLM_ARTIST " TEXT, "
                  CLM_TITLE " TEXT, "
                  CLM_DURATION " INTEGER, "
@@ -96,7 +98,8 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         }
 
         QString strQuery2("INSERT INTO %1"
-                " (" CLM_VIEW_ORDER ", "
+                " (" CLM_TRACK_ID ", "
+                     CLM_VIEW_ORDER ", "
                      CLM_ARTIST ", "
                      CLM_TITLE ", "
                      CLM_DURATION ", "
@@ -115,6 +118,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
                      CLM_PLAYCOUNT ", "
                      CLM_COMPOSER ") "
                      "VALUES (:"
+                     CLM_TRACK_ID ", :"
                      CLM_VIEW_ORDER ", :"
                      CLM_ARTIST ", :"
                      CLM_TITLE ", :"
@@ -143,6 +147,9 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
             beginInsertRows(QModelIndex(), 0, list.size() - 1);
 
             foreach (struct BansheeDbConnection::PlaylistEntry entry, list) {
+                query.bindValue(":" CLM_TRACK_ID, entry.trackId);
+                // Note: entry.viewOrder is 0 for all tracks if they have
+                // never been sorted by the user
                 query.bindValue(":" CLM_VIEW_ORDER, entry.viewOrder + 1);
                 query.bindValue(":" CLM_ARTIST, entry.pArtist->name);
                 query.bindValue(":" CLM_TITLE, entry.pTrack->title);
@@ -175,11 +182,14 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
     }
 
     QStringList tableColumns;
-    tableColumns << CLM_VIEW_ORDER // 0
-         << CLM_PREVIEW;
+    tableColumns
+         << CLM_TRACK_ID // 0
+         << CLM_VIEW_ORDER
+         << CLM_PREVIEW; // 3
 
     QStringList trackSourceColumns;
-    trackSourceColumns << CLM_VIEW_ORDER // 0
+    trackSourceColumns
+         << CLM_TRACK_ID // 0
          << CLM_ARTIST
          << CLM_TITLE
          << CLM_DURATION
@@ -199,10 +209,10 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
          << CLM_COMPOSER;
 
     QSharedPointer<BaseTrackCache> trackSource(
-            new BaseTrackCache(m_pTrackCollection, m_tempTableName, CLM_VIEW_ORDER,
+            new BaseTrackCache(m_pTrackCollection, m_tempTableName, CLM_TRACK_ID,
                     trackSourceColumns, false));
 
-    setTable(m_tempTableName, CLM_VIEW_ORDER, tableColumns, trackSource);
+    setTable(m_tempTableName, CLM_TRACK_ID, tableColumns, trackSource);
     setSearch("");
     setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
@@ -375,6 +385,10 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
 }
 
 bool BansheePlaylistModel::isColumnInternal(int column) {
-    Q_UNUSED(column);
+    if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
+            (PlayerManager::numPreviewDecks() == 0 &&
+             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
+        return true;
+    }
     return false;
 }
