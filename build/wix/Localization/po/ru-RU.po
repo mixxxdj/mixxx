@@ -2,13 +2,14 @@
 # Translators:
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
-# Vladimir Novikov <dancenoise1@gmail.com>, 2016
+# Владимир Новиков <dancenoise1@gmail.com>, 2016
 # Андрей Фролов <andrey_frolov1999@mail.ru>, 2017
+# Владимир Новиков <dancenoise1@gmail.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-07-15 15:06+0000\n"
-"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2017-09-23 22:04+0000\n"
+"Last-Translator: Владимир Новиков <dancenoise1@gmail.com>\n"
 "Language-Team: Russian (Russia) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ru_RU/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -98,7 +99,7 @@ msgid ""
 "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on "
 "this system. This is likely an installer bug that should be reported to "
 "Mixxx developers."
-msgstr ""
+msgstr "Установщик не нашел Microsoft Visual C++ 2015 Redistributable в данной системе. Судя по всему это баг установщика, о котором стоит сообщить создателям Mixxx"
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
@@ -172,15 +173,15 @@ msgstr ""
 
 msgctxt "ConfirmCancelMessage"
 msgid "Are you sure you want to cancel?"
-msgstr ""
+msgstr "Вы уверены, что хотите отменить?"
 
 msgctxt "ExecuteUpgradeRelatedBundleMessage"
 msgid "Previous version"
-msgstr ""
+msgstr "Предыдущая версия"
 
 msgctxt "HelpHeader"
 msgid "Setup Help"
-msgstr ""
+msgstr "Помощь в установке"
 
 msgctxt "HelpText"
 msgid ""
@@ -194,15 +195,15 @@ msgid ""
 " /norestart - suppress any attempts to restart. By default user interface will prompt before restart.\n"
 "\n"
 " /log log.txt - logs to a specific file. By default a log file is created in %TEMP%."
-msgstr ""
+msgstr "/install | /repair | /uninstall | /layout [directory] - устанавливает, восстанавливает, удаляет или\n создает полную локальную копию пакета в каталог.\n Установка (/install) включена по умолчанию.\n\n /passive | /quiet - показывает минималистичный пользовательский интерфейс без запросов параметров или не показывает пользовательский интерфейс вообще\n и без параметров. По умолчанию интерфейс и параметры включены.\n\n /norestart - подавляет попытки перезапуска. По умолчанию будет выводиться окно информирования перед перезагрузкой.\n\n /log log.txt - лог в отдельный файл. По умолчанию лог пишется по пути %TEMP%."
 
 msgctxt "HelpCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Закрыть"
 
 msgctxt "InstallHeader"
 msgid "Welcome"
-msgstr ""
+msgstr "Добро пожаловать"
 
 msgctxt "InstallMessage"
 msgid ""
@@ -225,7 +226,7 @@ msgstr ""
 
 msgctxt "InstallCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Закрыть"
 
 msgctxt "OptionsHeader"
 msgid "Setup Options"
@@ -301,7 +302,7 @@ msgstr ""
 
 msgctxt "ModifyCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Закрыть"
 
 msgctxt "SuccessHeader"
 msgid "Setup Successful"
@@ -333,7 +334,7 @@ msgstr ""
 
 msgctxt "SuccessCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Закрыть"
 
 msgctxt "FailureHeader"
 msgid "Setup Failed"
@@ -368,4 +369,4 @@ msgstr ""
 
 msgctxt "FailureCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Закрыть"

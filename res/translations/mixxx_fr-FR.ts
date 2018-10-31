@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="my" sourcelanguage="en" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="fr_FR" sourcelanguage="en" version="2.1">
 <context>
     <name>:</name>
     <message>
@@ -31,7 +31,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="97"/>
         <source>Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="276"/>
@@ -81,7 +81,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="19"/>
         <source>Import Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းကိုသွင်းမည်။</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="92"/>
@@ -99,7 +99,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="281"/>
         <source>New Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းအသစ်</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="36"/>
@@ -120,17 +120,17 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="44"/>
         <source>Remove</source>
-        <translation>ဖယ်ရှားပါ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="48"/>
         <source>Rename</source>
-        <translation>အမည်ပြောင်းပါ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="52"/>
         <source>Lock</source>
-        <translation>ပိတ်</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="56"/>
@@ -141,7 +141,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="60"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="64"/>
         <source>Import Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းကိုသွင်းမည်။</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="72"/>
@@ -173,12 +173,12 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="68"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="464"/>
         <source>Export Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းကိုထုတ်မည်။</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="181"/>
         <source>Rename Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းကိုအမည်ပြောင်းမည်။</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="194"/>
@@ -1021,7 +1021,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="220"/>
         <source>Hotcues</source>
-        <translation type="unfinished"/>
+        <translation>Points de repère</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="228"/>
@@ -2513,7 +2513,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="749"/>
         <source>Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="751"/>
@@ -2740,7 +2740,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="69"/>
         <source>Remove</source>
-        <translation>ဖယ်ရှားပါ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="65"/>
@@ -2751,13 +2751,13 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="73"/>
         <source>Rename</source>
-        <translation>အမည်ပြောင်းပါ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="77"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="330"/>
         <source>Lock</source>
-        <translation>ပိတ်</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="93"/>
@@ -2931,22 +2931,22 @@
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
         <source>With contributions from:</source>
-        <translation type="unfinished"/>
+        <translation>Avec des contributions de :</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
         <source>And special thanks to:</source>
-        <translation type="unfinished"/>
+        <translation>Et des remerciements spéciaux à :</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
         <source>Past Developers</source>
-        <translation type="unfinished"/>
+        <translation>Anciens développeurs</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
         <source>Past Contributors</source>
-        <translation type="unfinished"/>
+        <translation>Anciens contributeurs</translation>
     </message>
 </context>
 <context>
@@ -2954,12 +2954,12 @@
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="26"/>
         <source>About Mixxx</source>
-        <translation type="unfinished"/>
+        <translation>à propos de Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="104"/>
         <source>Credits</source>
-        <translation type="unfinished"/>
+        <translation>Crédits</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="130"/>
@@ -3060,7 +3060,7 @@
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="142"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="150"/>
         <source>Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="55"/>
@@ -4112,7 +4112,7 @@ Apply settings and continue?</source>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="439"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="492"/>
         <source>Remove</source>
-        <translation>ဖယ်ရှားပါ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="312"/>
@@ -5200,7 +5200,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="57"/>
         <source>Remove</source>
-        <translation>ဖယ်ရှားပါ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="83"/>
@@ -6414,7 +6414,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="261"/>
         <source>Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="235"/>
@@ -6470,7 +6470,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="268"/>
         <source>Live Broadcasting</source>
-        <translation type="unfinished"/>
+        <translation>Diffusion en Direct</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="302"/>
@@ -7353,7 +7353,7 @@ support.</source>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="28"/>
         <source>Import Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းကိုသွင်းမည်။</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="30"/>
@@ -7749,7 +7749,7 @@ Please select an input device in the sound hardware preferences first.</source>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="67"/>
         <source>Lock</source>
-        <translation>ပိတ်</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="40"/>
@@ -8265,7 +8265,7 @@ Default: flat top</source>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="64"/>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="65"/>
         <source>Manual</source>
-        <translation type="unfinished"/>
+        <translation>Manuel</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="31"/>
@@ -9260,7 +9260,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="93"/>
         <source>Lock</source>
-        <translation>ပိတ်</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="343"/>
@@ -12472,7 +12472,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="425"/>
         <source>Remove</source>
-        <translation>ဖယ်ရှားပါ</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="428"/>
@@ -12613,7 +12613,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="496"/>
         <source>Hotcues</source>
-        <translation type="unfinished"/>
+        <translation>Points de repère</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="500"/>
@@ -12643,7 +12643,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1602"/>
         <source>New Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းအသစ်</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1609"/>

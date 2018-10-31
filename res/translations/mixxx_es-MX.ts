@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="my" sourcelanguage="en" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="es_MX" sourcelanguage="en" version="2.1">
 <context>
     <name>:</name>
     <message>
@@ -13,7 +13,7 @@
     <message>
         <location filename="../../src/library/analysisfeature.cpp" line="33"/>
         <source>Analyze</source>
-        <translation type="unfinished"/>
+        <translation>Analizar</translation>
     </message>
 </context>
 <context>
@@ -21,7 +21,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="66"/>
         <source>Crates</source>
-        <translation type="unfinished"/>
+        <translation>Cajas</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="86"/>
@@ -31,7 +31,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="97"/>
         <source>Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>DJ Automatico</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="276"/>
@@ -51,7 +51,7 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="75"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="84"/>
         <source>Error loading Banshee database</source>
-        <translation type="unfinished"/>
+        <translation>Error al cargar la base de datos Banshee</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
@@ -71,27 +71,27 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="11"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Agregar a la lista de DJ Automatico (Final)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="15"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Agregar a la lista de DJ Automatico (Inicio)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="19"/>
         <source>Import Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းကိုသွင်းမည်။</translation>
+        <translation>Importar Lista de Reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="92"/>
         <source>Playlist Creation Failed</source>
-        <translation type="unfinished"/>
+        <translation>Fallo la creación de lista de Reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="93"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation type="unfinished"/>
+        <translation>Un error desconocido ocurrio mientras la creacion de la lista de reproducción</translation>
     </message>
 </context>
 <context>
@@ -99,113 +99,113 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="281"/>
         <source>New Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းအသစ်</translation>
+        <translation>Nueva lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="36"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Agreagar a la lista de DJ Automatico (Final)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="32"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="278"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Crear una nueva lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="40"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Agregar a la lista de DJ Automatico (Inicio)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="44"/>
         <source>Remove</source>
-        <translation>ဖယ်ရှားပါ</translation>
+        <translation>Quitar</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="48"/>
         <source>Rename</source>
-        <translation>အမည်ပြောင်းပါ</translation>
+        <translation>Renombrar</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="52"/>
         <source>Lock</source>
-        <translation>ပိတ်</translation>
+        <translation>Bloquear</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="56"/>
         <source>Duplicate</source>
-        <translation type="unfinished"/>
+        <translation>Duplicar</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="60"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="64"/>
         <source>Import Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းကိုသွင်းမည်။</translation>
+        <translation>Importar Lista de Reproduccion</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="72"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>Exportar pistas de audio</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="76"/>
         <source>Analyze entire Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Analizar toda la lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="182"/>
         <source>Enter new name for playlist:</source>
-        <translation type="unfinished"/>
+        <translation>Introducir nuevo nombre de Lista de Repoducción</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="222"/>
         <source>Duplicate Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Duplicar lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="223"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="279"/>
         <source>Enter name for new playlist:</source>
-        <translation type="unfinished"/>
+        <translation>Introducir nuevo nombre de lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="68"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="464"/>
         <source>Export Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းကိုထုတ်မည်။</translation>
+        <translation>Exportar lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="181"/>
         <source>Rename Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းကိုအမည်ပြောင်းမည်။</translation>
+        <translation>Renombrar Lista de Reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="194"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="198"/>
         <source>Renaming Playlist Failed</source>
-        <translation type="unfinished"/>
+        <translation>Renombrando lista de reproducción fallida</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="195"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="237"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="291"/>
         <source>A playlist by that name already exists.</source>
-        <translation type="unfinished"/>
+        <translation>Una lista de reproducción ya existe con el mismo nombre</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="199"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="241"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="295"/>
         <source>A playlist cannot have a blank name.</source>
-        <translation type="unfinished"/>
+        <translation>El nombre de una lista de reproduccion no puede estar vacío</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="226"/>
         <source>_copy</source>
         <comment>[noun]</comment>
         <extracomment>Appendix to default name when duplicating a playlist</extracomment>
-        <translation type="unfinished"/>
+        <translation>Copiar</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="236"/>
@@ -215,23 +215,24 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="307"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="432"/>
         <source>Playlist Creation Failed</source>
-        <translation type="unfinished"/>
+        <translation>Fallo la creación de lista de Reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="308"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="433"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation type="unfinished"/>
+        <translation>Un error desconocido ocurrio mientras la creacion de la lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="461"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation type="unfinished"/>
+        <translation>Lista de Reproducción M3U (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="466"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation type="unfinished"/>
+        <translation>
+M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</translation>
     </message>
 </context>
 <context>
@@ -239,97 +240,97 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="64"/>
         <source>Played</source>
-        <translation type="unfinished"/>
+        <translation>Reproducido</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="66"/>
         <source>Artist</source>
-        <translation type="unfinished"/>
+        <translation>Artista</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="68"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="70"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="72"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Artista del Album</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="74"/>
         <source>Genre</source>
-        <translation type="unfinished"/>
+        <translation>Genero</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="76"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Compositor</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="78"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Agrupación</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="80"/>
         <source>Year</source>
-        <translation type="unfinished"/>
+        <translation>Año</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="82"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="84"/>
         <source>Location</source>
-        <translation type="unfinished"/>
+        <translation>Ubicación</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="86"/>
         <source>Comment</source>
-        <translation type="unfinished"/>
+        <translation>Comentario</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="88"/>
         <source>Duration</source>
-        <translation type="unfinished"/>
+        <translation>Duración</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="90"/>
         <source>Rating</source>
-        <translation type="unfinished"/>
+        <translation>Calificación</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="92"/>
         <source>Bitrate</source>
-        <translation type="unfinished"/>
+        <translation>Tasa de Muestreo</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="94"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="96"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation>Pista #</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="98"/>
         <source>Date Added</source>
-        <translation type="unfinished"/>
+        <translation>Fecha de Agregado</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="100"/>
         <source>#</source>
-        <translation type="unfinished"/>
+        <translation>#</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="102"/>
@@ -339,17 +340,17 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="104"/>
         <source>Key</source>
-        <translation type="unfinished"/>
+        <translation>Tono</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="106"/>
         <source>BPM Lock</source>
-        <translation type="unfinished"/>
+        <translation>BPM Bloqueado</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="108"/>
         <source>Preview</source>
-        <translation type="unfinished"/>
+        <translation>Vista Previa</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="110"/>
@@ -359,7 +360,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="112"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>Reproducir otra vez</translation>
     </message>
 </context>
 <context>
@@ -367,7 +368,7 @@
     <message>
         <location filename="../../src/mixer/basetrackplayer.cpp" line="283"/>
         <source>Couldn&apos;t load track.</source>
-        <translation type="unfinished"/>
+        <translation>No se puede cargar la pista</translation>
     </message>
 </context>
 <context>
@@ -375,12 +376,12 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="105"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Acción fallida</translation>
     </message>
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="106"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
-        <translation type="unfinished"/>
+        <translation>Por favor habilite al menos una conexión para usar el Broadcasting en vivo</translation>
     </message>
 </context>
 <context>
@@ -398,7 +399,7 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="488"/>
         <source>Settings error</source>
-        <translation type="unfinished"/>
+        <translation>Error de configuración</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="489"/>
@@ -411,42 +412,42 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="126"/>
         <source>Enabled</source>
-        <translation type="unfinished"/>
+        <translation>Habilitado</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="128"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Nombre</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
         <source>Status</source>
-        <translation type="unfinished"/>
+        <translation>Estado</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="176"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>Desconectado</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
         <source>Connecting...</source>
-        <translation type="unfinished"/>
+        <translation>Conectando...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
         <source>Connected</source>
-        <translation type="unfinished"/>
+        <translation>Conectado</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
         <source>Failed</source>
-        <translation type="unfinished"/>
+        <translation>Falló</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="185"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>Desconocido</translation>
     </message>
 </context>
 <context>
@@ -454,54 +455,54 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="39"/>
         <source>Add to Quick Links</source>
-        <translation type="unfinished"/>
+        <translation>Agregar Link Rapido</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="42"/>
         <source>Remove from Quick Links</source>
-        <translation type="unfinished"/>
+        <translation>Quitar Link Rapido</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="45"/>
         <source>Add to Library</source>
-        <translation type="unfinished"/>
+        <translation>Agregar Biblioteca</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="60"/>
         <source>Quick Links</source>
-        <translation type="unfinished"/>
+        <translation>Enlaces Rapidos</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="64"/>
         <location filename="../../src/library/browse/browsefeature.cpp" line="90"/>
         <source>Devices</source>
-        <translation type="unfinished"/>
+        <translation>Dispositivos</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="92"/>
         <source>Removable Devices</source>
-        <translation type="unfinished"/>
+        <translation>Dispositivos Removibles</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="126"/>
         <location filename="../../src/library/browse/browsefeature.cpp" line="380"/>
         <source>Computer</source>
-        <translation type="unfinished"/>
+        <translation>Procesar</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="159"/>
         <source>Music Directory Added</source>
-        <translation type="unfinished"/>
+        <translation>Directorio de Musica Agregado</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="160"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
-        <translation type="unfinished"/>
+        <translation>Agregaste uno o mas directorios de musica. Las pistas en esas carpetas no estaran disponibles hasta que se reescaneé tu bliblioteca. Te gustaria reescanear ahora?</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="164"/>
         <source>Scan</source>
-        <translation type="unfinished"/>
+        <translation>Escanear</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="381"/>
@@ -514,117 +515,117 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="27"/>
         <source>Preview</source>
-        <translation type="unfinished"/>
+        <translation>Vista Previa</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="28"/>
         <source>Filename</source>
-        <translation type="unfinished"/>
+        <translation>Nombre de Archivo</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="29"/>
         <source>Artist</source>
-        <translation type="unfinished"/>
+        <translation>Artista</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="30"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="31"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="32"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation>Pista #</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="33"/>
         <source>Year</source>
-        <translation type="unfinished"/>
+        <translation>Año</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="34"/>
         <source>Genre</source>
-        <translation type="unfinished"/>
+        <translation>Genero</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="35"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Compositor</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="36"/>
         <source>Comment</source>
-        <translation type="unfinished"/>
+        <translation>Comentario</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="37"/>
         <source>Duration</source>
-        <translation type="unfinished"/>
+        <translation>Duración</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="38"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="39"/>
         <source>Key</source>
-        <translation type="unfinished"/>
+        <translation>Tono</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="40"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="41"/>
         <source>Bitrate</source>
-        <translation type="unfinished"/>
+        <translation>Tasa de Muestreo</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="42"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>Reproducir otra vez</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="43"/>
         <source>Location</source>
-        <translation type="unfinished"/>
+        <translation>Ubicación</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="44"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Artista del Album</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="45"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Agrupación</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="46"/>
         <source>File Modified</source>
-        <translation type="unfinished"/>
+        <translation>Archivo Modificado</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="47"/>
         <source>File Created</source>
-        <translation type="unfinished"/>
+        <translation>Archivo Creado</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="106"/>
         <source>Mixxx Library</source>
-        <translation type="unfinished"/>
+        <translation>Bliblioteca Mixxx</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="107"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
-        <translation type="unfinished"/>
+        <translation>No se puede cargar el siguiente archivo porque este es usado por Mixxx u otra aplicación</translation>
     </message>
 </context>
 <context>
@@ -632,7 +633,7 @@
     <message>
         <location filename="../../src/controllers/bulk/bulkcontroller.cpp" line="88"/>
         <source>USB Controller</source>
-        <translation type="unfinished"/>
+        <translation>Controlador USB</translation>
     </message>
 </context>
 <context>
@@ -640,7 +641,7 @@
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="47"/>
         <source>No control chosen.</source>
-        <translation type="unfinished"/>
+        <translation>Controlador no seleccionado</translation>
     </message>
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="51"/>
@@ -653,7 +654,7 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="6"/>
         <source>Group</source>
-        <translation type="unfinished"/>
+        <translation>Grupo</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="7"/>
@@ -663,22 +664,22 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="8"/>
         <source>Value</source>
-        <translation type="unfinished"/>
+        <translation>Valor</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="9"/>
         <source>Parameter</source>
-        <translation type="unfinished"/>
+        <translation>Parametro</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="10"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="11"/>
         <source>Description</source>
-        <translation type="unfinished"/>
+        <translation>Descripción</translation>
     </message>
 </context>
 <context>
@@ -686,12 +687,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="17"/>
         <source>Master Output</source>
-        <translation type="unfinished"/>
+        <translation>Salida Maestra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="18"/>
         <source>Headphone Output</source>
-        <translation type="unfinished"/>
+        <translation>Salida de Audífonos</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="19"/>
@@ -723,7 +724,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="24"/>
         <source>Reset to default</source>
-        <translation type="unfinished"/>
+        <translation>Restaurar a defabrica</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="25"/>
@@ -738,7 +739,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="32"/>
         <source>Mixer</source>
-        <translation type="unfinished"/>
+        <translation>Mezclar</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="33"/>
@@ -871,7 +872,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="79"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="80"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="81"/>
@@ -1765,7 +1766,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="423"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Agreagar a la lista de DJ Automatico (Final)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="424"/>
@@ -1775,7 +1776,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="427"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Agregar a la lista de DJ Automatico (Inicio)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="428"/>
@@ -2513,7 +2514,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="749"/>
         <source>Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>DJ Automatico</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="751"/>
@@ -2684,7 +2685,7 @@
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="42"/>
         <source>Comment</source>
-        <translation type="unfinished"/>
+        <translation>Comentario</translation>
     </message>
 </context>
 <context>
@@ -2732,7 +2733,7 @@
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="44"/>
         <source>Comment</source>
-        <translation type="unfinished"/>
+        <translation>Comentario</translation>
     </message>
 </context>
 <context>
@@ -2740,7 +2741,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="69"/>
         <source>Remove</source>
-        <translation>ဖယ်ရှားပါ</translation>
+        <translation>Quitar</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="65"/>
@@ -2751,23 +2752,23 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="73"/>
         <source>Rename</source>
-        <translation>အမည်ပြောင်းပါ</translation>
+        <translation>Renombrar</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="77"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="330"/>
         <source>Lock</source>
-        <translation>ပိတ်</translation>
+        <translation>Bloquear</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="93"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>Exportar pistas de audio</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="97"/>
         <source>Duplicate</source>
-        <translation type="unfinished"/>
+        <translation>Duplicar</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="101"/>
@@ -2788,7 +2789,7 @@
         <location filename="../../src/library/crate/cratefeature.cpp" line="132"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="140"/>
         <source>Crates</source>
-        <translation type="unfinished"/>
+        <translation>Cajas</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="81"/>
@@ -2831,7 +2832,8 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="668"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation type="unfinished"/>
+        <translation>
+M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="141"/>
@@ -2979,7 +2981,7 @@
         <location filename="../../src/library/dlganalysis.ui" line="105"/>
         <location filename="../../src/library/dlganalysis.cpp" line="159"/>
         <source>Analyze</source>
-        <translation type="unfinished"/>
+        <translation>Analizar</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="52"/>
@@ -3060,7 +3062,7 @@
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="142"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="150"/>
         <source>Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>DJ Automatico</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="55"/>
@@ -3638,7 +3640,7 @@ You tried to learn: %1,%2</source>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="537"/>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="571"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Acción fallida</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="203"/>
@@ -3813,7 +3815,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="613"/>
         <source>Genre</source>
-        <translation type="unfinished"/>
+        <translation>Genero</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="447"/>
@@ -3823,7 +3825,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="564"/>
         <source>Description</source>
-        <translation type="unfinished"/>
+        <translation>Descripción</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="255"/>
@@ -3833,7 +3835,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="279"/>
         <source>Bitrate</source>
-        <translation type="unfinished"/>
+        <translation>Tasa de Muestreo</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="263"/>
@@ -3854,7 +3856,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="679"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="720"/>
@@ -4004,7 +4006,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="512"/>
         <source>Filename</source>
-        <translation type="unfinished"/>
+        <translation>Nombre de Archivo</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="514"/>
@@ -4073,7 +4075,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="267"/>
         <source>Enabled</source>
-        <translation type="unfinished"/>
+        <translation>Habilitado</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="133"/>
@@ -4112,7 +4114,7 @@ Apply settings and continue?</source>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="439"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="492"/>
         <source>Remove</source>
-        <translation>ဖယ်ရှားပါ</translation>
+        <translation>Quitar</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="312"/>
@@ -5122,17 +5124,17 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="92"/>
         <source>Music Directory Added</source>
-        <translation type="unfinished"/>
+        <translation>Directorio de Musica Agregado</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="93"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
-        <translation type="unfinished"/>
+        <translation>Agregaste uno o mas directorios de musica. Las pistas en esas carpetas no estaran disponibles hasta que se reescaneé tu bliblioteca. Te gustaria rescanear ahora?</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="97"/>
         <source>Scan</source>
-        <translation type="unfinished"/>
+        <translation>Escanear</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="199"/>
@@ -5200,7 +5202,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="57"/>
         <source>Remove</source>
-        <translation>ဖယ်ရှားပါ</translation>
+        <translation>Quitar</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="83"/>
@@ -5600,7 +5602,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="289"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="311"/>
@@ -5610,7 +5612,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="333"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="233"/>
@@ -5831,7 +5833,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="164"/>
         <source>Enabled</source>
-        <translation type="unfinished"/>
+        <translation>Habilitado</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="171"/>
@@ -6414,7 +6416,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="261"/>
         <source>Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>DJ Automatico</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="235"/>
@@ -6542,24 +6544,24 @@ Select from different types of displays for the waveform, which differ primarily
         <location filename="../../src/library/dlgtagfetcher.ui" line="61"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="490"/>
         <source>Year</source>
-        <translation type="unfinished"/>
+        <translation>Año</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="66"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="71"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="500"/>
         <source>Artist</source>
-        <translation type="unfinished"/>
+        <translation>Artista</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="76"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="505"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="116"/>
@@ -6707,7 +6709,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="588"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="671"/>
@@ -6737,52 +6739,52 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="88"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation>Pista #</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="117"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Artista del Album</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="127"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Compositor</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="164"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>Título</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="174"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Agrupación</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="216"/>
         <source>Key</source>
-        <translation type="unfinished"/>
+        <translation>Tono</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="239"/>
         <source>Year</source>
-        <translation type="unfinished"/>
+        <translation>Año</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="268"/>
         <source>Artist</source>
-        <translation type="unfinished"/>
+        <translation>Artista</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="284"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="326"/>
         <source>Genre</source>
-        <translation type="unfinished"/>
+        <translation>Genero</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="406"/>
@@ -7014,12 +7016,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/effectsettingsmodel.cpp" line="102"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Nombre</translation>
     </message>
     <message>
         <location filename="../../src/preferences/effectsettingsmodel.cpp" line="104"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Tipo</translation>
     </message>
 </context>
 <context>
@@ -7353,7 +7355,7 @@ support.</source>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="28"/>
         <source>Import Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းကိုသွင်းမည်။</translation>
+        <translation>Importar Lista de Reproduccion</translation>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="30"/>
@@ -7686,7 +7688,7 @@ Please select an input device in the sound hardware preferences first.</source>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="43"/>
         <source>Location</source>
-        <translation type="unfinished"/>
+        <translation>Ubicación</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="130"/>
@@ -7749,7 +7751,7 @@ Please select an input device in the sound hardware preferences first.</source>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="67"/>
         <source>Lock</source>
-        <translation>ပိတ်</translation>
+        <translation>Bloquear</translation>
     </message>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="40"/>
@@ -7785,7 +7787,7 @@ Please select an input device in the sound hardware preferences first.</source>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="240"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Crear una nueva lista de reproducción</translation>
     </message>
 </context>
 <context>
@@ -7804,7 +7806,7 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="440"/>
         <source>Scan</source>
-        <translation type="unfinished"/>
+        <translation>Escanear</translation>
     </message>
     <message>
         <location filename="../../src/preferences/upgrade.cpp" line="441"/>
@@ -8346,7 +8348,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="30"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="31"/>
@@ -9260,7 +9262,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="93"/>
         <source>Lock</source>
-        <translation>ပိတ်</translation>
+        <translation>Bloquear</translation>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="343"/>
@@ -9494,7 +9496,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="9"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Nombre</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="10"/>
@@ -9504,7 +9506,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="11"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="12"/>
@@ -10127,7 +10129,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="344"/>
         <source>Key</source>
-        <translation type="unfinished"/>
+        <translation>Tono</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="348"/>
@@ -12472,7 +12474,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="425"/>
         <source>Remove</source>
-        <translation>ဖယ်ရှားပါ</translation>
+        <translation>Quitar</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="428"/>
@@ -12523,7 +12525,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <location filename="../../src/widget/wtracktableview.cpp" line="1576"/>
         <location filename="../../src/widget/wtracktableview.cpp" line="1599"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Crear una nueva lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1688"/>
@@ -12533,7 +12535,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1600"/>
         <source>Enter name for new playlist:</source>
-        <translation type="unfinished"/>
+        <translation>Introducir nuevo nombre de lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="75"/>
@@ -12553,7 +12555,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="86"/>
         <source>Crates</source>
-        <translation type="unfinished"/>
+        <translation>Cajas</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="94"/>
@@ -12623,7 +12625,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="504"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>Reproducir otra vez</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="508"/>
@@ -12643,29 +12645,29 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1602"/>
         <source>New Playlist</source>
-        <translation>ဖွင့်မည့်စာရင်းအသစ်</translation>
+        <translation>Nueva lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1609"/>
         <location filename="../../src/widget/wtracktableview.cpp" line="1613"/>
         <location filename="../../src/widget/wtracktableview.cpp" line="1622"/>
         <source>Playlist Creation Failed</source>
-        <translation type="unfinished"/>
+        <translation>Fallo la creación de lista de Reproducción</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1610"/>
         <source>A playlist by that name already exists.</source>
-        <translation type="unfinished"/>
+        <translation>Una lista de reproducción ya existe con el mismo nombre</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1614"/>
         <source>A playlist cannot have a blank name.</source>
-        <translation type="unfinished"/>
+        <translation>El nombre de una lista de reproduccion no puede estar vacío</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="1623"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation type="unfinished"/>
+        <translation>Un error desconocido ocurrio mientras la creacion de la lista de reproducción</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="517"/>
