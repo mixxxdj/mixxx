@@ -10,6 +10,7 @@ namespace mixxx {
 // needed for i18n message strings. The class contains mutable
 // static data and must only be used within the UI thread.
 class DlgTrackMetadataExport: private QDialog {
+    Q_OBJECT
   public:
     static void showMessageBoxOncePerSession();
 
