@@ -850,7 +850,7 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
                        &dThisBeatLength, &dThisBeatFraction)) {
         pGroupFeatures->has_beat_length_sec = true;
         // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)  
-        pGroupFeatures->beat_length_sec = dThisBeatLength / m_pTrack->getSampleRate() / 2 * calcRateRatio();
+        pGroupFeatures->beat_length_sec = dThisBeatLength / m_pTrack->getSampleRate() / 2 / calcRateRatio();
 
         pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction = dThisBeatFraction;
