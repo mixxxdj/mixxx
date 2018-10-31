@@ -1,10 +1,10 @@
 language: c++
 matrix:
   include:
-    - os: linux
-      dist: trusty
-      sudo: required
-      compiler: gcc
+    # - os: linux
+    #   dist: trusty
+    #   sudo: required
+    #   compiler: gcc
 
     - os: osx
       compiler: clang
