@@ -862,7 +862,6 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
 }
 
 double BpmControl::calcRateRatio() const {
-    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
-            m_pRateSlider->get();
-    return rateRatio;
+    return std::max(1e-6,
+            1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get());
 }
