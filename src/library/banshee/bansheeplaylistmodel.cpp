@@ -32,14 +32,15 @@
 #define CLM_COMPOSER "composer"
 #define CLM_PREVIEW "preview"
 
-//static
-QAtomicInt BansheePlaylistModel::m_tableNumber;
+namespace {
+QAtomicInt sTableNumber;
+}
 
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pTrackCollection, BansheeDbConnection* pConnection)
         : BaseSqlTableModel(pParent, pTrackCollection, "mixxx.db.model.banshee_playlist"),
           m_pConnection(pConnection),
           m_playlistId(-1) {
-    m_tempTableName = BANSHEE_TABLE + QString::number(m_tableNumber.fetchAndAddAcquire(1));
+    m_tempTableName = BANSHEE_TABLE + QString::number(sTableNumber.fetchAndAddAcquire(1));
 }
 
 BansheePlaylistModel::~BansheePlaylistModel() {

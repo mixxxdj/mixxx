@@ -46,7 +46,6 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     BansheeDbConnection* m_pConnection;
     int m_playlistId;
     QString m_tempTableName;
-    static QAtomicInt m_tableNumber;
 };
 
 #endif // BANSHEEPLAYLISTMODEL_H
