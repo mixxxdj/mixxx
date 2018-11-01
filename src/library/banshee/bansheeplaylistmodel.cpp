@@ -348,6 +348,15 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
     return pTrack;
 }
 
+TrackId BansheePlaylistModel::getTrackId(const QModelIndex& index) const {
+    const auto track = getTrack(index);
+    if (track) {
+        return track->getId();
+    } else {
+        return TrackId();
+    }
+}
+
 // Gets the on-disk location of the track at the given location.
 QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
     if (!index.isValid()) {
