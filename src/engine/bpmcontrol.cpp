@@ -14,6 +14,7 @@
 #include "util/math.h"
 #include "util/duration.h"
 
+namespace {
 const int kMinBpm = 30;
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
@@ -21,6 +22,8 @@ const int kFilterLength = 5;
 // The local_bpm is calculated forward and backward this number of beats, so
 // the actual number of beats is this x2.
 const int kLocalBpmSpan = 4;
+const SINT kSamplesPerFrame = 2;
+}
 
 BpmControl::BpmControl(QString group,
                        UserSettingsPointer pConfig) :
@@ -849,8 +852,9 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
                        dThisPrevBeat, dThisNextBeat,
                        &dThisBeatLength, &dThisBeatFraction)) {
         pGroupFeatures->has_beat_length_sec = true;
-        // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)  
-        pGroupFeatures->beat_length_sec = dThisBeatLength / m_pTrack->getSampleRate() / 2 / calcRateRatio();
+        // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)
+        pGroupFeatures->beat_length_sec = dThisBeatLength / kSamplesPerFrame
+                / m_pTrack->getSampleRate() / calcRateRatio();
 
         pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction = dThisBeatFraction;
