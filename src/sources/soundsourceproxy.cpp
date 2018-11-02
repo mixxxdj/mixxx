@@ -186,7 +186,9 @@ void SoundSourceProxy::loadPlugins() {
     // that have been registered before (see above)!
     const QList<QDir> pluginDirs(getSoundSourcePluginDirectories());
     for (const auto& pluginDir: pluginDirs) {
-        kLogger.info() << "Loading SoundSource plugins" << pluginDir.path();
+        // This is a warning, because Mixxx can crash if the qt libs do not match
+        // In this case this is the last entry.
+        kLogger.warning() << "Loading SoundSource plugins" << pluginDir.path();
         const QStringList files(pluginDir.entryList(
                 SOUND_SOURCE_PLUGIN_FILENAME_PATTERN,
                 QDir::Files | QDir::NoDotAndDotDot));
