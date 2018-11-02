@@ -73,6 +73,10 @@ development and community news:
 - Join the developer [mailing list].
 - Post on the [Mixxx forums][forums].
 
+## Distributed
+
+[![Packaging status](https://repology.org/badge/tiny-repos/mixxx.svg)](https://repology.org/metapackage/mixxx/versions)
+
 ## License
 
 Mixxx is released under the GPLv2. See the LICENSE file for a full copy of the
