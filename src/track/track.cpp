@@ -206,7 +206,7 @@ QString Track::getCanonicalLocation() const {
     QMutexLocker lock(&m_qMutex);
 
     // Note: We return here the cached value that was calculated just after 
-    // init this Track object. This avoid repeady use of time 
+    // init this Track object. This avoid repeadly use of time 
     // consuming file IO.
     // We ignore the case when the user changes a symbolic link to 
     // point a file to an other location, since this is a user action.
@@ -219,7 +219,7 @@ QString Track::getCanonicalLocation() const {
         // The user might have restored the track in the meanwhile.
         // So try again it again. 
         m_fileInfo.refresh();
-        QString loc = TrackRef::canonicalLocation(m_fileInfo);
+        loc = TrackRef::canonicalLocation(m_fileInfo);
     }
     return loc;
 }
