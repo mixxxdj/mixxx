@@ -246,6 +246,7 @@
 
                           <PushButton>
                             <TooltipId>orientation</TooltipId>
+                            <Size>34f,15f</Size>
                             <NumberStates>3</NumberStates>
                             <State>
                               <Number>0</Number>
