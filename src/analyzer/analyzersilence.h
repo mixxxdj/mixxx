@@ -22,11 +22,11 @@ class AnalyzerSilence : public Analyzer {
     float m_fThreshold;
     int m_iFramesProcessed;
     bool m_bPrevSilence;
-    int m_iSignalBegin;
+    int m_iSignalStart;
     int m_iSignalEnd;
 
     TrackPointer m_pTrack;
-    CuePointer m_pBeginCue;
+    CuePointer m_pStartCue;
     CuePointer m_pEndCue;
 };
 

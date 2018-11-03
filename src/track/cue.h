@@ -28,7 +28,7 @@ class Cue : public QObject {
         BEAT    = 3,
         LOOP    = 4,
         JUMP    = 5,
-        BEGIN   = 6,
+        START   = 6,
         END     = 7,
     };
 

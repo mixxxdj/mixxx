@@ -322,8 +322,8 @@ void CueControl::trackCuesUpdated() {
         if (pCue->getType() == Cue::LOAD) {
             DEBUG_ASSERT(!pLoadCue);  // There should be only one LOAD cue
             pLoadCue = pCue;
-        } else if (pCue->getType() == Cue::BEGIN) {
-            DEBUG_ASSERT(!pStartCue);  // There should be only one BEGIN cue
+        } else if (pCue->getType() == Cue::START) {
+            DEBUG_ASSERT(!pStartCue);  // There should be only one START cue
             pStartCue = pCue;
         } else if (pCue->getType() == Cue::END) {
             DEBUG_ASSERT(!pEndCue);  // There should be only one END cue
@@ -1002,10 +1002,10 @@ void CueControl::autoDJStartSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::BEGIN);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::START);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::BEGIN);
+            pCue->setType(Cue::START);
         }
         pCue->setSource(Cue::MANUAL);
         pCue->setPosition(position);
@@ -1024,7 +1024,7 @@ void CueControl::autoDJStartClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::BEGIN);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::START);
         if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
