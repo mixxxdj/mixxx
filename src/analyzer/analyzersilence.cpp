@@ -3,12 +3,12 @@
 
 namespace {
     const mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
-    const float kSilenceThresholdDb = -60.0f;
+    const float kSilenceThreshold = db2ratio(-60.0f);
 }  // anonymous namespace
 
 AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
     : m_pConfig(pConfig),
-      m_fThreshold(db2ratio(kSilenceThresholdDb)),
+      m_fThreshold(kSilenceThreshold),
       m_iFramesProcessed(0),
       m_bPrevSilence(true),
       m_iSignalStart(-1),
