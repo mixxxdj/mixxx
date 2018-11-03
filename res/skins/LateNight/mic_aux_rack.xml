@@ -55,34 +55,18 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <PushButton>
-                    <!--Size>65f,28f</Size-->
-                    <ObjectName>MicDuckingButton</ObjectName>
-                    <TooltipId>talkover_duck_mode</TooltipId>
-                    <NumberStates>3</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_micDuck.svg</Pressed>
-                      <Unpressed>buttons/btn_micDuck.svg</Unpressed>
-                      <Text>OFF</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_micDuck_over.svg</Pressed>
-                      <Unpressed>buttons/btn_micDuck_over.svg</Unpressed>
-                      <Text>AUTO</Text>
-                    </State>
-                    <State>
-                      <Number>2</Number>
-                      <Pressed>buttons/btn_micDuck_over.svg</Pressed>
-                      <Unpressed>buttons/btn_micDuck_over.svg</Unpressed>
-                      <Text>MANUAL</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[Master],talkoverDucking</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_3state.xml">
+                    <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
+                    <SetVariable name="ObjectName">MicDuckingButton</SetVariable>
+                    <SetVariable name="Size">62f,28f</SetVariable>
+                    <SetVariable name="state_0">micDuck</SetVariable>
+                    <SetVariable name="state_0_text">OFF</SetVariable>
+                    <SetVariable name="state_1">micDuck_over</SetVariable>
+                    <SetVariable name="state_1_text">AUTO</SetVariable>
+                    <SetVariable name="state_2">micDuck_over</SetVariable>
+                    <SetVariable name="state_2_text">MANUAL</SetVariable>
+                    <SetVariable name="ConfigKey">[Master],talkoverDucking</SetVariable>
+                  </Template>
 
                   <WidgetGroup>
                     <ObjectName>MicDuckingStrengthKnob</ObjectName>
