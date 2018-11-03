@@ -302,61 +302,67 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,max</SizePolicy>
                 <Children>
-                  <!-- We allow to hide track/artist info (aka AM-Mode) in the skin settings,
-                       display just a label with asterixes instead. -->
-                  <TrackProperty>
-                    <TooltipId>track_artist</TooltipId>
-                    <Property>artist</Property>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Elide>right</Elide>
-                    <Group><Variable name="group"/></Group>
-                    <Connection>
-                      <ConfigKey>[Deere],show_track_info</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </TrackProperty>
-
-                  <Label>
-                    <TooltipId>track_artist</TooltipId>
-                    <Size>me,min</Size>
-                    <ObjectName>HiddenTrackArtistInfo</ObjectName>
-                    <Text>***</Text>
-                    <Connection>
-                      <ConfigKey>[Deere],show_track_info</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform>
-                        <Not/>
-                      </Transform>
-                    </Connection>
-                  </Label>
-
                   <WidgetGroup>
-                    <ObjectName>StarratingGutter</ObjectName>
                     <Layout>horizontal</Layout>
-                    <SizePolicy>min,min</SizePolicy>
+                    <SizePolicy>i,max</SizePolicy>
                     <Children>
-                      <StarRating>
-                        <TooltipId>starrating</TooltipId>
+                      <!-- We allow to hide track/artist info (aka AM-Mode) in the skin settings,
+                           display just a label with asterixes instead. -->
+                      <TrackProperty>
+                        <TooltipId>track_artist</TooltipId>
+                        <Property>artist</Property>
+                        <SizePolicy>me,min</SizePolicy>
+                        <Elide>right</Elide>
                         <Group><Variable name="group"/></Group>
-                      </StarRating>
-                    </Children>
-                    <Connection>
-                      <ConfigKey>[Deere],show_starrating</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
+                        <Connection>
+                          <ConfigKey>[Deere],show_track_info</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </TrackProperty>
 
-                  <WidgetGroup>
-                    <ObjectName>PositionGutter</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>min,max</SizePolicy>
-                    <MinimumSize>70,20</MinimumSize>
-                    <MaximumSize>190,30</MaximumSize>
-                    <Children>
-                      <NumberPos>
-                        <TooltipId>track_time</TooltipId>
-                        <Group><Variable name="group"/></Group>
-                      </NumberPos>
+                      <Label>
+                        <TooltipId>track_artist</TooltipId>
+                        <Size>me,min</Size>
+                        <ObjectName>HiddenTrackArtistInfo</ObjectName>
+                        <Text>***</Text>
+                        <Connection>
+                          <ConfigKey>[Deere],show_track_info</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                          <Transform>
+                            <Not/>
+                          </Transform>
+                        </Connection>
+                      </Label>
+
+                      <WidgetGroup>
+                        <ObjectName>StarratingGutter</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,min</SizePolicy>
+                        <Children>
+                          <StarRating>
+                            <TooltipId>starrating</TooltipId>
+                            <Group><Variable name="group"/></Group>
+                          </StarRating>
+                        </Children>
+                        <Connection>
+                          <ConfigKey>[Deere],show_starrating</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
+
+                      <WidgetGroup>
+                        <ObjectName>PositionGutter</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>min,max</SizePolicy>
+                        <MinimumSize>70,20</MinimumSize>
+                        <MaximumSize>190,30</MaximumSize>
+                        <Children>
+                          <NumberPos>
+                            <TooltipId>track_time</TooltipId>
+                            <Group><Variable name="group"/></Group>
+                          </NumberPos>
+                        </Children>
+                      </WidgetGroup>
                     </Children>
                   </WidgetGroup>
                   <!-- Fake a click-able multi-state widget by stacking a
