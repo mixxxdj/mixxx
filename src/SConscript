@@ -1117,6 +1117,9 @@ def BuildUbuntuPackage(target, source, env):
                 'qt_sqlite_plugin=0',
                 'build=' + build.build,
                 'qt5=%d' % qt5])
+        ppa_only_flags = ['faad=1']
+        if ubuntu_ppa is not None:
+                scons_flags = '%s %s' % (scons_flags, ' '.join(ppa_only_flags))
 
         # Replace environment variables in the rules file.
         # TODO(rryan) something more elegant? I don't know a better way. When
