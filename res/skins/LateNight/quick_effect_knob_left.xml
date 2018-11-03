@@ -18,25 +18,12 @@
             <SizePolicy>min,min</SizePolicy>
             <MinimumSize>22,30</MinimumSize>
             <Children>
-              <PushButton>
-                <TooltipId>QuickEffectRack_enabled</TooltipId>
-                <Size>18f,18f</Size>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_eq_kill_down.svg</Pressed>
-                  <Unpressed>buttons/btn_eq_kill.svg</Unpressed>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Pressed>buttons/btn_quickEffect_overdown.svg</Pressed>
-                  <Unpressed>buttons/btn_quickEffect_over.svg</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="QuickEffect"/>,enabled</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
+                <SetVariable name="icon">quickEffect</SetVariable>
+                <SetVariable name="Size">18f,18f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="QuickEffect"/>,enabled</SetVariable>
+              </Template>
             </Children>
             <Connection>
               <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
