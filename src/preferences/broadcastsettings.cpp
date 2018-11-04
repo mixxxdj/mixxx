@@ -150,7 +150,7 @@ QString BroadcastSettings::getProfilesFolder() {
 }
 
 void BroadcastSettings::saveAll() {
-    for(auto kv : m_profiles.values()) {
+    for (const auto& kv : m_profiles) {
         saveProfile(kv);
     }
     emit(profilesChanged());
@@ -184,7 +184,8 @@ void BroadcastSettings::onConnectionStatusChanged(int newStatus) {
 }
 
 BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
-    return m_profiles.values().value(index, BroadcastProfilePtr(nullptr));
+    auto it = m_profiles.begin() + index;
+    return it != m_profiles.end() ? it.value() : BroadcastProfilePtr(nullptr);
 }
 
 QList<BroadcastProfilePtr> BroadcastSettings::profiles() {
@@ -198,7 +199,7 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     // TODO(Palakis): lock both lists against modifications while syncing
 
     // Step 1: find profiles to delete from the settings
-    for(BroadcastProfilePtr actualProfile : m_profiles.values()) {
+    for(const auto& actualProfile : m_profiles) {
         QString profileName = actualProfile->getProfileName();
         if (!pModel->getProfileByName(profileName)) {
             // If profile exists in settings but not in the model,
@@ -232,4 +233,3 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
 
     saveAll();
 }
-

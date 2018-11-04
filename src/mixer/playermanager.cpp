@@ -46,43 +46,23 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         m_pCONumDecks(new ControlObject(
                 ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(
-            ConfigKey("[Master]", "num_samplers"), true, true)),
+                ConfigKey("[Master]", "num_samplers"), true, true)),
         m_pCONumPreviewDecks(new ControlObject(
-            ConfigKey("[Master]", "num_preview_decks"), true, true)),
+                ConfigKey("[Master]", "num_preview_decks"), true, true)),
         m_pCONumMicrophones(new ControlObject(
                 ConfigKey("[Master]", "num_microphones"), true, true)),
         m_pCONumAuxiliaries(new ControlObject(
                 ConfigKey("[Master]", "num_auxiliaries"), true, true)) {
-    connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumDecksControlChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pCONumDecks, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotNumDecksControlChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pCONumSamplers, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumSamplersControlChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pCONumSamplers, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotNumSamplersControlChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pCONumPreviewDecks, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumPreviewDecksControlChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pCONumPreviewDecks, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotNumPreviewDecksControlChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pCONumMicrophones, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumMicrophonesControlChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pCONumMicrophones, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotNumMicrophonesControlChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pCONumAuxiliaries, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumAuxiliariesControlChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pCONumAuxiliaries, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotNumAuxiliariesControlChanged(double)),
-            Qt::DirectConnection);
+    m_pCONumDecks->connectValueChangeRequest(this,
+            SLOT(slotChangeNumDecks(double)), Qt::DirectConnection);
+    m_pCONumSamplers->connectValueChangeRequest(this,
+            SLOT(slotChangeNumSamplers(double)), Qt::DirectConnection);
+    m_pCONumPreviewDecks->connectValueChangeRequest(this,
+            SLOT(slotChangeNumPreviewDecks(double)), Qt::DirectConnection);
+    m_pCONumMicrophones->connectValueChangeRequest(this,
+            SLOT(slotChangeNumMicrophones(double)), Qt::DirectConnection);
+    m_pCONumAuxiliaries->connectValueChangeRequest(this,
+            SLOT(slotChangeNumAuxiliaries(double)), Qt::DirectConnection);
 
     // This is parented to the PlayerManager so does not need to be deleted
     m_pSamplerBank = new SamplerBank(this);
@@ -155,7 +135,7 @@ bool PlayerManager::isDeckGroup(const QString& group, int* number) {
     }
 
     bool ok = false;
-    int deckNum = group.mid(8,group.lastIndexOf("]")-8).toInt(&ok);
+    int deckNum = group.midRef(8,group.lastIndexOf("]")-8).toInt(&ok);
     if (!ok || deckNum <= 0) {
         return false;
     }
@@ -172,7 +152,7 @@ bool PlayerManager::isSamplerGroup(const QString& group, int* number) {
     }
 
     bool ok = false;
-    int deckNum = group.mid(8,group.lastIndexOf("]")-8).toInt(&ok);
+    int deckNum = group.midRef(8,group.lastIndexOf("]")-8).toInt(&ok);
     if (!ok || deckNum <= 0) {
         return false;
     }
@@ -189,7 +169,7 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
     }
 
     bool ok = false;
-    int deckNum = group.mid(12,group.lastIndexOf("]")-12).toInt(&ok);
+    int deckNum = group.midRef(12,group.lastIndexOf("]")-12).toInt(&ok);
     if (!ok || deckNum <= 0) {
         return false;
     }
@@ -254,7 +234,7 @@ unsigned int PlayerManager::numPreviewDecks() {
     return pCOPNumPreviewDecks ? pCOPNumPreviewDecks->get() : 0;
 }
 
-void PlayerManager::slotNumDecksControlChanged(double v) {
+void PlayerManager::slotChangeNumDecks(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
 
@@ -264,22 +244,24 @@ void PlayerManager::slotNumDecksControlChanged(double v) {
 
     if (num < m_decks.size()) {
         // The request was invalid -- reset the value.
-        m_pCONumDecks->set(m_decks.size());
         qDebug() << "Ignoring request to reduce the number of decks to" << num;
         return;
     }
 
-    while (m_decks.size() < num) {
-        addDeckInner();
+    if (m_decks.size() < num) {
+        do {
+            addDeckInner();
+        } while (m_decks.size() < num);
+        m_pCONumDecks->setAndConfirm(m_decks.size());
+        emit(numberOfDecksChanged(m_decks.count()));
     }
 }
 
-void PlayerManager::slotNumSamplersControlChanged(double v) {
+void PlayerManager::slotChangeNumSamplers(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
     if (num < m_samplers.size()) {
-        // The request was invalid -- reset the value.
-        m_pCONumSamplers->set(m_samplers.size());
+        // The request was invalid -- don't set the value.
         qDebug() << "Ignoring request to reduce the number of samplers to" << num;
         return;
     }
@@ -287,66 +269,59 @@ void PlayerManager::slotNumSamplersControlChanged(double v) {
     while (m_samplers.size() < num) {
         addSamplerInner();
     }
+    m_pCONumSamplers->setAndConfirm(m_samplers.size());
 }
 
-void PlayerManager::slotNumPreviewDecksControlChanged(double v) {
+void PlayerManager::slotChangeNumPreviewDecks(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
     if (num < m_preview_decks.size()) {
-        // The request was invalid -- reset the value.
-        m_pCONumPreviewDecks->set(m_preview_decks.size());
+        // The request was invalid -- don't set the value.
         qDebug() << "Ignoring request to reduce the number of preview decks to" << num;
         return;
     }
-
     while (m_preview_decks.size() < num) {
         addPreviewDeckInner();
     }
+    m_pCONumPreviewDecks->setAndConfirm(m_preview_decks.size());
 }
 
-void PlayerManager::slotNumMicrophonesControlChanged(double v) {
+void PlayerManager::slotChangeNumMicrophones(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
     if (num < m_microphones.size()) {
-        // The request was invalid -- reset the value.
-        m_pCONumMicrophones->set(m_microphones.size());
+        // The request was invalid -- don't set the value.
         qDebug() << "Ignoring request to reduce the number of microphones to" << num;
         return;
     }
-
     while (m_microphones.size() < num) {
         addMicrophoneInner();
     }
+    m_pCONumMicrophones->setAndConfirm(m_microphones.size());
 }
 
-void PlayerManager::slotNumAuxiliariesControlChanged(double v) {
+void PlayerManager::slotChangeNumAuxiliaries(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
     if (num < m_auxiliaries.size()) {
-        // The request was invalid -- reset the value.
-        m_pCONumAuxiliaries->set(m_auxiliaries.size());
+        // The request was invalid -- don't set the value.
         qDebug() << "Ignoring request to reduce the number of auxiliaries to" << num;
         return;
     }
-
     while (m_auxiliaries.size() < num) {
         addAuxiliaryInner();
     }
+    m_pCONumAuxiliaries->setAndConfirm(m_auxiliaries.size());
 }
 
 void PlayerManager::addDeck() {
     QMutexLocker locker(&m_mutex);
-    addDeckInner();
-    m_pCONumDecks->set((double)m_decks.count());
-    emit(numberOfDecksChanged(m_decks.count()));
+    double count = m_pCONumDecks->get() + 1;
+    slotChangeNumDecks(count);
 }
 
 void PlayerManager::addConfiguredDecks() {
-    // Cache this value in case it changes out from under us.
-    int deck_count = m_pSoundManager->getConfiguredDeckCount();
-    for (int i = 0; i < deck_count; ++i) {
-        addDeck();
-    }
+    slotChangeNumDecks(m_pSoundManager->getConfiguredDeckCount());
 }
 
 void PlayerManager::addDeckInner() {
@@ -414,8 +389,8 @@ void PlayerManager::loadSamplers() {
 
 void PlayerManager::addSampler() {
     QMutexLocker locker(&m_mutex);
-    addSamplerInner();
-    m_pCONumSamplers->set(m_samplers.count());
+    double count = m_pCONumSamplers->get() + 1;
+    slotChangeNumSamplers(count);
 }
 
 void PlayerManager::addSamplerInner() {
@@ -442,8 +417,7 @@ void PlayerManager::addSamplerInner() {
 
 void PlayerManager::addPreviewDeck() {
     QMutexLocker locker(&m_mutex);
-    addPreviewDeckInner();
-    m_pCONumPreviewDecks->set(m_preview_decks.count());
+    slotChangeNumPreviewDecks(m_pCONumPreviewDecks->get() + 1);
 }
 
 void PlayerManager::addPreviewDeckInner() {
@@ -470,8 +444,7 @@ void PlayerManager::addPreviewDeckInner() {
 
 void PlayerManager::addMicrophone() {
     QMutexLocker locker(&m_mutex);
-    addMicrophoneInner();
-    m_pCONumMicrophones->set(m_microphones.count());
+    slotChangeNumMicrophones(m_pCONumMicrophones->get() + 1);
 }
 
 void PlayerManager::addMicrophoneInner() {
@@ -487,8 +460,7 @@ void PlayerManager::addMicrophoneInner() {
 
 void PlayerManager::addAuxiliary() {
     QMutexLocker locker(&m_mutex);
-    addAuxiliaryInner();
-    m_pCONumAuxiliaries->set(m_auxiliaries.count());
+    slotChangeNumAuxiliaries(m_pCONumAuxiliaries->get() + 1);
 }
 
 void PlayerManager::addAuxiliaryInner() {

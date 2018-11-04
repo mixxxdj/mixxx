@@ -12,6 +12,18 @@
 * Add preference option to adjust opacity of beatgrid markers on
   scrolling waveforms
 
+==== 2.1.5 2018-10-28 ====
+
+* Code signing for Windows builds. lp:1517823
+* Fix crash on exit when preferences is open. lp:1793185
+* Fix crash when analyzing corrupt MP3s. lp:1793387
+* Fix crash when importing metadata from MusicBrainz. lp:1794993
+* Library search fixes when single quotes are used. lp:1784090 lp:1789728
+* Fix scrolling waveform on Windows with WDM-KS sound API. lp:1729345
+* Fix right clicking on beatgrid alignment button in Tango and LateNight skins. lp:1798237
+* Improve speed of importing iTunes library. lp:1785545
+* Add 2 deck mapping for DJTechTools MIDI Fighter Twister.
+
 ==== 2.1.4 2018-08-29 ====
 Fix track selection not getting shown in the track
 table on Windows. There are no changes to the

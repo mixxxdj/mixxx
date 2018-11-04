@@ -66,8 +66,13 @@ void AcoustidClient::cancel(int id) {
 }
 
 void AcoustidClient::cancelAll() {
-    qDeleteAll(m_requests.keys());
+    auto requests = m_requests;
     m_requests.clear();
+
+    for (auto it = requests.constBegin();
+         it != requests.constEnd(); ++it) {
+        delete it.key();
+    }
 }
 
 void AcoustidClient::requestFinished() {

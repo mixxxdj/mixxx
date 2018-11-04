@@ -452,9 +452,8 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
     // metadata. Currently the upper-levels will not delegate row-specific
     // columns to this method, but there should still be a check here I think.
     if (!result.isValid()) {
-        QHash<TrackId, QVector<QVariant> >::const_iterator it =
-                m_trackInfo.find(trackId);
-        if (it != m_trackInfo.end()) {
+        auto it = m_trackInfo.constFind(trackId);
+        if (it != m_trackInfo.constEnd()) {
             const QVector<QVariant>& fields = it.value();
             result = fields.value(column, result);
         }

@@ -249,8 +249,7 @@ template <class ValueType> void ConfigObject<ValueType>::save() {
 
         QString grp = "";
 
-        typename QMap<ConfigKey, ValueType>::const_iterator i;
-        for (i = m_values.begin(); i != m_values.end(); ++i) {
+        for (auto i = m_values.constBegin(); i != m_values.constEnd(); ++i) {
             //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
             if (i.key().group != grp) {
                 grp = i.key().group;
@@ -287,8 +286,7 @@ QMultiHash<ValueType, ConfigKey> ConfigObject<ValueType>::transpose() const {
     QReadLocker lock(&m_valuesLock);
 
     QMultiHash<ValueType, ConfigKey> transposedHash;
-    for (typename QMap<ConfigKey, ValueType>::const_iterator it =
-            m_values.begin(); it != m_values.end(); ++it) {
+    for (auto it = m_values.constBegin(); it != m_values.constEnd(); ++it) {
         transposedHash.insert(it.value(), it.key());
     }
     return transposedHash;

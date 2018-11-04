@@ -1153,6 +1153,7 @@ class MixxxCore(Feature):
                    "src/util/screensaver.cpp",
                    "src/util/indexrange.cpp",
                    "src/util/desktophelper.cpp",
+                   "src/util/widgetrendertimer.cpp",
                    ]
 
         proto_args = {
@@ -1376,6 +1377,7 @@ class MixxxCore(Feature):
                 # system libraries. This cuts down on Mixxx's compilation output
                 # significantly when using Homebrew installed to /usr/local.
                 build.env.Append(CCFLAGS=['-isystem', '/usr/local/include'])
+
         elif build.platform_is_bsd:
             build.env.Append(CPPDEFINES='__BSD__')
             build.env.Append(CPPPATH=['/usr/include',

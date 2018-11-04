@@ -183,9 +183,8 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
         for (const auto& in: pDevice->inputs()) {
             // Need to tell all registered AudioDestinations for this AudioInput
             // that the input was disconnected.
-            for (QHash<AudioInput, AudioDestination*>::const_iterator it =
-                         m_registeredDestinations.find(in);
-                 it != m_registeredDestinations.end() && it.key() == in; ++it) {
+            for (auto it = m_registeredDestinations.constFind(in);
+                 it != m_registeredDestinations.constEnd() && it.key() == in; ++it) {
                 it.value()->onInputUnconfigured(in);
                 m_pMaster->onInputDisconnected(in);
             }
@@ -193,9 +192,8 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
         for (const auto& out: pDevice->outputs()) {
             // Need to tell all registered AudioSources for this AudioOutput
             // that the output was disconnected.
-            for (QHash<AudioOutput, AudioSource*>::const_iterator it =
-                    m_registeredSources.find(out);
-                    it != m_registeredSources.end() && it.key() == out; ++it) {
+            for (auto it = m_registeredSources.constFind(out);
+                 it != m_registeredSources.constEnd() && it.key() == out; ++it) {
                 it.value()->onOutputDisconnected(out);
             }
         }
@@ -355,7 +353,7 @@ SoundDeviceError SoundManager::setupDevices() {
     QSet<QString> devicesNotFound = m_config.getDevices();
 
     // pair is isInput, isOutput
-    QList<DeviceMode> toOpen;
+    QVector<DeviceMode> toOpen;
     bool haveOutput = false;
     // loop over all available devices
     for (const auto& pDevice: qAsConst(m_devices)) {
@@ -364,7 +362,7 @@ SoundDeviceError SoundManager::setupDevices() {
         pDevice->clearOutputs();
         m_pErrorDevice = pDevice;
         for (const auto& in:
-                 m_config.getInputs().values(pDevice->getInternalName())) {
+                     m_config.getInputs().values(pDevice->getInternalName())) {
             mode.isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
@@ -591,9 +589,8 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
                  e = inputs.end(); i != e; ++i) {
         const AudioInputBuffer& in = *i;
         CSAMPLE* pInputBuffer = in.getBuffer();
-        for (QHash<AudioInput, AudioDestination*>::const_iterator it =
-                m_registeredDestinations.find(in);
-                it != m_registeredDestinations.end() && it.key() == in; ++it) {
+        for (auto it = m_registeredDestinations.constFind(in);
+             it != m_registeredDestinations.constEnd() && it.key() == in; ++it) {
             it.value()->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
         }
     }
