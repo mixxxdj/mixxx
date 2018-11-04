@@ -1157,9 +1157,9 @@ void MixxxMainWindow::slotNoVinylControlInputConfigured() {
         this,
         Version::applicationName(),
         tr("There is no input device selected for this vinyl control.\n"
-           "Configure an input device in the sound hardware preferences now?"),
-        QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);
-    if (btn == QMessageBox::Yes) {
+           "Please select an input device in the sound hardware preferences first."),
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage();
     }
@@ -1170,9 +1170,9 @@ void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
         this,
         Version::applicationName(),
         tr("There is no input device selected for this passthrough control.\n"
-           "Configure an input device in the sound hardware preferences now?"),
-        QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);
-    if (btn == QMessageBox::Yes) {
+           "Please select an input device in the sound hardware preferences first."),
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage();
     }
@@ -1183,9 +1183,9 @@ void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
         this,
         Version::applicationName(),
         tr("There is no input device selected for this microphone.\n"
-           "Configure an input device in the sound hardware preferences now?"),
-        QMessageBox::Yes | QMessageBox::Cancel, QMessageBox::Cancel);
-    if (btn == QMessageBox::Yes) {
+           "Please select an input device in the sound hardware preferences first."),
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
         m_pPrefDlg->show();
         m_pPrefDlg->showSoundHardwarePage();
     }
