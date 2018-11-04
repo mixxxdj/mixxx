@@ -1,30 +1,194 @@
 <Template>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerExpandbutton_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <PushButton>
+            <TooltipId>show_samplers</TooltipId>
+            <ObjectName>SamplerExpandbutton</ObjectName>
+            <Size>min,me</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_samplerExpand.svg</Pressed>
+              <Unpressed>skin:/buttons/btn_samplerExpand.svg</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_samplerCollapse.svg</Pressed>
+              <Unpressed>skin:/buttons/btn_samplerCollapse.svg</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey>[Skin],expand_samplers</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+
+          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler1Small_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:samplersmall.xml">
+            <SetVariable name="samplernum">1</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler2Small_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:samplersmall.xml">
+            <SetVariable name="samplernum">2</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler3Small_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:samplersmall.xml">
+            <SetVariable name="samplernum">3</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler4Small_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:samplersmall.xml">
+            <SetVariable name="samplernum">4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler1Big_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="samplernum">1</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler2Big_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="samplernum">2</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler3Big_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="samplernum">3</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler4Big_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:sampler.xml">
+            <SetVariable name="samplernum">4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
+    <Connection>
+      <ConfigKey>[Samplers],show_samplers</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
     <Children>
 
-      <Template src="skin:sampler.xml">
-        <SetVariable name="samplernum">1</SetVariable>
-      </Template>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetStack currentpage="[Skin],8_samplers">
+            <Children>
 
-      <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+              <!--only 4 Sampler but big -->
+              <Template src="skin:samplers_4decks.xml"/>
 
-      <Template src="skin:sampler.xml">
-        <SetVariable name="samplernum">2</SetVariable>
-      </Template>
+              <!--8 Sampler -->
+              <Template trigger="[Skin],8_samplers" on_hide_select="0" src="skin:samplers_8decks.xml"/>
 
-      <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+            </Children>
+          </WidgetStack>
 
-      <Template src="skin:sampler.xml">
-        <SetVariable name="samplernum">3</SetVariable>
-      </Template>
-
-      <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
-
-      <Template src="skin:sampler.xml">
-        <SetVariable name="samplernum">4</SetVariable>
-      </Template>
+        </Children>
+      </WidgetGroup>
 
       <WidgetGroup>
         <Size>5f,1min</Size>
@@ -35,9 +199,5 @@
       </WidgetGroup>
 
     </Children>
-    <Connection>
-      <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
   </WidgetGroup>
 </Template>

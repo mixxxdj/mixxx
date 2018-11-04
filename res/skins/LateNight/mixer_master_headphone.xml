@@ -82,43 +82,23 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
-                  <PushButton>
-                    <Size>35me,22f</Size>
-                    <TooltipId>EffectUnit_master_enabled</TooltipId>
-                    <ObjectName>FxAssignButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>FX&#8202;1</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>FX&#8202;1</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[EffectRack1_EffectUnit1],group_[Master]_enable</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Size">35me,22f</SetVariable>
+                    <SetVariable name="state_0_text">FX&#8202;1</SetVariable>
+                    <SetVariable name="state_1_text">FX&#8202;1</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit1],group_[Master]_enable</SetVariable>
+                  </Template>
 
-                  <PushButton>
-                    <Size>35me,22f</Size>
-                    <TooltipId>EffectUnit_master_enabled</TooltipId>
-                    <ObjectName>FxAssignButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>FX&#8202;2</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>FX&#8202;2</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[EffectRack1_EffectUnit2],group_[Master]_enable</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Size">35me,22f</SetVariable>
+                    <SetVariable name="state_0_text">FX&#8202;2</SetVariable>
+                    <SetVariable name="state_1_text">FX&#8202;2</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit2],group_[Master]_enable</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup><!-- /FX buttons 1/2 -->
 
@@ -127,43 +107,23 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
-                  <PushButton>
-                    <Size>35me,22f</Size>
-                    <TooltipId>EffectUnit_master_enabled</TooltipId>
-                    <ObjectName>FxAssignButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>FX&#8202;3</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>FX&#8202;3</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[EffectRack1_EffectUnit3],group_[Master]_enable</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Size">35me,22f</SetVariable>
+                    <SetVariable name="state_0_text">FX&#8202;3</SetVariable>
+                    <SetVariable name="state_1_text">FX&#8202;3</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit3],group_[Master]_enable</SetVariable>
+                  </Template>
 
-                  <PushButton>
-                    <Size>35me,22f</Size>
-                    <TooltipId>EffectUnit_master_enabled</TooltipId>
-                    <ObjectName>FxAssignButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>FX&#8202;4</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>FX&#8202;4</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[EffectRack1_EffectUnit4],group_[Master]_enable</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Size">35me,22f</SetVariable>
+                    <SetVariable name="state_0_text">FX&#8202;4</SetVariable>
+                    <SetVariable name="state_1_text">FX&#8202;4</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit4],group_[Master]_enable</SetVariable>
+                  </Template>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
@@ -345,30 +305,20 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
-                  <PushButton>
-                    <Size>68f,22f</Size>
-                    <TooltipId>headSplit</TooltipId>
-                    <ObjectName>FxAssignButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>Split Cue</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>Split Cue</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[Master],headSplit</ConfigKey>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">headSplit</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Size">68f,22f</SetVariable>
+                    <SetVariable name="state_0_text">Split Cue</SetVariable>
+                    <SetVariable name="state_1_text">Split Cue</SetVariable>
+                    <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup><!-- /HeadSplit button -->
 
             </Children>
-          </WidgetGroup><!-- /HeadphoneControls
+          </WidgetGroup><!-- /HeadphoneControls -->
 
-          <WidgetGroup><Size>0min,0me</Size></WidgetGroup> -->
         </Children>
       </WidgetGroup>
     </Children>

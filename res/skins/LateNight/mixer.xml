@@ -169,30 +169,14 @@
                         <SizePolicy>min,me</SizePolicy>
                         <Children>
 
-                          <PushButton>
-                            <Size>34f,15f</Size>
-                            <TooltipId>orientation</TooltipId>
-                            <NumberStates>3</NumberStates>
-                            <State>
-                              <Number>0</Number>
-                              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckLeft_left.svg</Pressed>
-                              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckLeft_left.svg</Unpressed>
-                            </State>
-                            <State>
-                              <Number>1</Number>
-                              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deck_master.svg</Pressed>
-                              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deck_master.svg</Unpressed>
-                            </State>
-                            <State>
-                              <Number>2</Number>
-                              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckLeft_right.svg</Pressed>
-                              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckLeft_right.svg</Unpressed>
-                            </State>
-                            <Connection>
-                              <ConfigKey>[Channel1],orientation</ConfigKey>
-                              <ButtonState>LeftButton</ButtonState>
-                            </Connection>
-                          </PushButton>
+                          <Template src="skin:button_3state.xml">
+                            <SetVariable name="TooltipId">orientation</SetVariable>
+                            <SetVariable name="Size">34f,15f</SetVariable>
+                            <SetVariable name="state_0">orientation_deckLeft_left</SetVariable>
+                            <SetVariable name="state_1">orientation_deck_master</SetVariable>
+                            <SetVariable name="state_2">orientation_deckLeft_right</SetVariable>
+                            <SetVariable name="ConfigKey">[Channel1],orientation</SetVariable>
+                          </Template>
 
                           <WidgetGroup><Size>min,me</Size></WidgetGroup>
                         </Children>
@@ -244,29 +228,14 @@
                         <SizePolicy>min,me</SizePolicy>
                         <Children>
 
-                          <PushButton>
-                            <TooltipId>orientation</TooltipId>
-                            <NumberStates>3</NumberStates>
-                            <State>
-                              <Number>0</Number>
-                              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckRight_left.svg</Pressed>
-                              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckRight_left.svg</Unpressed>
-                            </State>
-                            <State>
-                              <Number>1</Number>
-                              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deck_master.svg</Pressed>
-                              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deck_master.svg</Unpressed>
-                            </State>
-                            <State>
-                              <Number>2</Number>
-                              <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckRight_right.svg</Pressed>
-                              <Unpressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_deckRight_right.svg</Unpressed>
-                            </State>
-                            <Connection>
-                              <ConfigKey>[Channel2],orientation</ConfigKey>
-                              <ButtonState>LeftButton</ButtonState>
-                            </Connection>
-                          </PushButton>
+                          <Template src="skin:button_3state.xml">
+                            <SetVariable name="TooltipId">orientation</SetVariable>
+                            <SetVariable name="Size">34f,15f</SetVariable>
+                            <SetVariable name="state_0">orientation_deckRight_left</SetVariable>
+                            <SetVariable name="state_1">orientation_deck_master</SetVariable>
+                            <SetVariable name="state_2">orientation_deckRight_right</SetVariable>
+                            <SetVariable name="ConfigKey">[Channel2],orientation</SetVariable>
+                          </Template>
 
                           <WidgetGroup><Size>min,me</Size></WidgetGroup>
                         </Children>
