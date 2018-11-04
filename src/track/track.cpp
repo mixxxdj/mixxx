@@ -205,8 +205,8 @@ QString Track::getCanonicalLocation() const {
     // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
 
-    // Note: We return here the cached value that was calculated just after 
-    // init this Track object. This avoid repeadly use of time 
+    // Note: We return here the cached value, that was calculated just after 
+    // init this Track object. This will avoid repeated use of the time 
     // consuming file IO.
     // We ignore the case when the user changes a symbolic link to 
     // point a file to an other location, since this is a user action.
