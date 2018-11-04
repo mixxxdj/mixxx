@@ -102,6 +102,7 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
         return;
     }
 
+    DEBUG_ASSERT(pPlaylist);
     *pPlaylist = m_lastRightClickedIndex.data().toString();
     QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
             getPlaylistModelForPlaylist(*pPlaylist));
