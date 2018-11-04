@@ -18,7 +18,9 @@ static const qint64 kSecondsPerDay = 24 * kSecondsPerHour;
 } // namespace
 
 // static
+// Unicode for thin space
 QChar DurationBase::kCentisecondSeparator = QChar(0x2009);
+// Unicode for bottom left corner
 QChar DurationBase::kHectosecondSeparator = QChar(0x231E);
 
 // static
