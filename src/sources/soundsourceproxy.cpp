@@ -68,12 +68,17 @@ QList<QDir> getSoundSourcePluginDirectories() {
     // 'bin' folder of $PREFIX, so we just traverse
     // ../lib/mixxx/plugins/soundsource.
     QDir libPluginDir(UNIX_LIB_PATH);
-    if (libPluginDir.cd("plugins") && libPluginDir.cd("soundsource")) {
+    #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+        QString soundsourceDir = "soundsourceqt5";
+    #else
+        QString soundsourceDir = "soundsource";
+    #endif
+    if (libPluginDir.cd("plugins") && libPluginDir.cd(soundsourceDir)) {
         pluginDirs << libPluginDir;
     }
 
     QDir dataPluginDir(dataLocation);
-    if (dataPluginDir.cd("plugins") && dataPluginDir.cd("soundsource")) {
+    if (dataPluginDir.cd("plugins") && dataPluginDir.cd(soundsourceDir)) {
         pluginDirs << dataPluginDir;
     }
 

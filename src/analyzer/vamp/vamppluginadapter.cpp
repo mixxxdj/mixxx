@@ -96,15 +96,20 @@ void initPluginPaths() {
         logIgnoringNonExistentPath(dataPluginDir);
     }
 #elif __LINUX__
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QString vampDir = "vampqt5";
+#else
+    QString vampDir = "vamp";
+#endif
     QDir libPath(UNIX_LIB_PATH);
-    if (libPath.cd("plugins") && libPath.cd("vamp")) {
+    if (libPath.cd("plugins") && libPath.cd(vampDir)) {
         envPathList = composeEnvPathList(envPathList, libPath);
     } else {
         logIgnoringNonExistentPath(libPath);
     }
 
     QDir dataPluginDir(dataLocation);
-    if (dataPluginDir.cd("plugins") && dataPluginDir.cd("vamp")) {
+    if (dataPluginDir.cd("plugins") && dataPluginDir.cd(vampDir)) {
         envPathList = composeEnvPathList(envPathList, dataPluginDir);
     } else {
         logIgnoringNonExistentPath(dataPluginDir);
