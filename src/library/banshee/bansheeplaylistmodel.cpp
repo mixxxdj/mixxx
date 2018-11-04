@@ -395,10 +395,7 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
 }
 
 bool BansheePlaylistModel::isColumnInternal(int column) {
-    if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
+    return (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
             (PlayerManager::numPreviewDecks() == 0 &&
-             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW))) {
-        return true;
-    }
-    return false;
+             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)));
 }
