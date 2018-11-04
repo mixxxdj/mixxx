@@ -43,7 +43,7 @@ class BansheePlaylistModel : public BaseSqlTableModel {
   private:
     QString getFieldString(const QModelIndex& index, const QString& fieldName) const;
     QVariant getFieldVariant(const QModelIndex& index, const QString& fieldName) const;
-    void deleteTempTable();
+    void dropTempTable();
 
     BansheeDbConnection* m_pConnection;
     int m_playlistId;

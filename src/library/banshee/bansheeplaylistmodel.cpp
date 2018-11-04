@@ -44,15 +44,15 @@ BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pT
 }
 
 BansheePlaylistModel::~BansheePlaylistModel() {
-    deleteTempTable();
+    dropTempTable();
 }
 
-void BansheePlaylistModel::deleteTempTable() {
+void BansheePlaylistModel::dropTempTable() {
     if (m_playlistId >= 0) {
         // Clear old playlist
         m_playlistId = -1;
         QSqlQuery query(m_pTrackCollection->database());
-        QString strQuery("DELETE FROM %1");
+        QString strQuery("DROP TABLE IF EXISTS %1");
         if (!query.exec(strQuery.arg(m_tempTableName))) {
             LOG_FAILED_QUERY(query);
         }
@@ -66,7 +66,7 @@ void BansheePlaylistModel::setTableModel(int playlistId) {
         return;
     }
 
-    deleteTempTable();
+    dropTempTable();
 
     if (playlistId >= 0) {
         // setup new playlist
