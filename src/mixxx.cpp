@@ -368,7 +368,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                     m_pControllerManager, m_pVCManager, pLV2Backend, m_pEffectsManager,
                                     m_pSettingsManager, m_pLibrary);
-    m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
     launchProgress(60);
@@ -730,7 +730,7 @@ void MixxxMainWindow::initializeWindow() {
     restoreState(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
         ConfigKey("[MainWindow]", "state")).toUtf8()));
 
-    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     slotUpdateWindowTitle(TrackPointer());
 }
 
