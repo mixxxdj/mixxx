@@ -72,6 +72,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             getGroup(), "loop_start_position", this);
     m_pLoopOutPoint = std::make_unique<ControlProxy>(
             getGroup(), "loop_end_position", this);
+    m_pLoopEnabled = std::make_unique<ControlProxy>(
+            getGroup(), "loop_enabled", this);
 
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = std::make_unique<ControlObject>(
@@ -373,6 +375,48 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
 
 TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
     return m_pLoadedTrack;
+}
+
+void BaseTrackPlayerImpl::slotCopyFrom(const QString& group) {
+    qDebug() << "BaseTrackPlayerImpl::slotCopyFrom" << getGroup() << "<-" << group;
+    TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(group);
+    if (!pTrack) {
+        return;
+    }
+
+    slotLoadTrack(pTrack, false);
+
+    ControlObject* pControl = NULL;
+
+    // copy play state
+    pControl = ControlObject::getControl(group, "play");
+    if (pControl) {
+        m_pPlay->set(pControl->get());
+    }
+
+    // copy rate
+    pControl = ControlObject::getControl(group, "rate");
+    if (pControl && m_pRateSlider != NULL) {
+        m_pRateSlider->set(pControl->get());
+    }
+
+    // copy pitch
+    pControl = ControlObject::getControl(group, "pitch_adjust");
+    if (pControl && m_pPitchAdjust != NULL) {
+        m_pPitchAdjust->set(pControl->get());
+    }
+
+    // copy the play position
+    pControl = ControlObject::getControl(group, "playposition");
+    if (pControl) {
+        m_pChannel->getEngineBuffer()->slotControlSeekExact(pControl->get());
+    }
+
+    // copy the loop state
+    pControl = ControlObject::getControl(group, "loop_enabled");
+    if (pControl) {
+        m_pLoopEnabled->set(pControl->get());
+    }
 }
 
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {

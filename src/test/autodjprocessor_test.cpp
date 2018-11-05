@@ -77,6 +77,10 @@ class FakeDeck : public BaseTrackPlayer {
         play.set(bPlay);
     }
 
+    void slotCopyFrom(const QString& group) override {
+        return;
+    }
+
     TrackPointer loadedTrack;
     ControlLinPotmeter playposition;
     ControlPushButton play;

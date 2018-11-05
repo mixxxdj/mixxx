@@ -38,6 +38,7 @@ class BaseTrackPlayer : public BasePlayer {
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
+    virtual void slotCopyFrom(const QString& group) = 0;
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -74,6 +75,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay) final;
+    void slotCopyFrom(const QString& group) final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, QString reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
@@ -133,6 +135,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlProxy> m_pPassthroughEnabled;
     std::unique_ptr<ControlProxy> m_pVinylControlEnabled;
     std::unique_ptr<ControlProxy> m_pVinylControlStatus;
+    std::unique_ptr<ControlProxy> m_pLoopEnabled;
 };
 
 #endif // MIXER_BASETRACKPLAYER_H
