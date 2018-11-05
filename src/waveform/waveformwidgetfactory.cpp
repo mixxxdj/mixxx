@@ -31,6 +31,31 @@
 #include "util/timer.h"
 #include "util/math.h"
 
+namespace {
+// Returns true if the given waveform should be rendered.
+bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
+    if (pWaveformWidget == nullptr ||
+        pWaveformWidget->getWidth() == 0 ||
+        pWaveformWidget->getHeight() == 0) {
+        return false;
+    }
+
+    auto glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
+    if (glw == nullptr || !glw->isValid() || !glw->isVisible()) {
+        return false;
+    }
+
+    // Strangely, a widget can have non-zero width/height, be valid and visible,
+    // yet still not show up on the screen. QWindow::isExposed tells us this.
+    auto window = glw->windowHandle();
+    if (window == nullptr || !window->isExposed()) {
+        return false;
+    }
+
+    return true;
+}
+}  // anonymous namespace
+
 ///////////////////////////////////////////
 
 WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
@@ -516,9 +541,18 @@ void WaveformWidgetFactory::render() {
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform
             // next rendered frame is displayed after next buffer swap and than after VSync
+            QVarLengthArray<bool, 10> shouldRenderWaveforms(m_waveformWidgetHolders.size());
             for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
+                WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
+                // Don't bother doing the pre-render work if we aren't going to
+                // render this widget.
+                bool shouldRender = shouldRenderWaveform(pWaveformWidget);
+                shouldRenderWaveforms[i] = shouldRender;
+                if (!shouldRender) {
+                    continue;
+                }
                 // Calculate play position for the new Frame in following run
-                m_waveformWidgetHolders[i].m_waveformWidget->preRender(m_vsyncThread);
+                pWaveformWidget->preRender(m_vsyncThread);
             }
             //qDebug() << "prerender" << m_vsyncThread->elapsed();
 
@@ -527,10 +561,10 @@ void WaveformWidgetFactory::render() {
             // all render commands are delayed until the swap from the previous run is executed
             for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
-                if (pWaveformWidget->getWidth() > 0 &&
-                        pWaveformWidget->getWidget()->isVisible()) {
-                    (void)pWaveformWidget->render();
+                if (!shouldRenderWaveforms[i]) {
+                    continue;
                 }
+                pWaveformWidget->render();
                 //qDebug() << "render" << i << m_vsyncThread->elapsed();
             }
         }
@@ -568,20 +602,18 @@ void WaveformWidgetFactory::swap() {
             //qDebug() << "swap() start" << m_vsyncThread->elapsed();
             for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
-                if (pWaveformWidget->getWidth() > 0) {
-                    QGLWidget* glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
-                    // Don't swap invalid / invisible widgets or widgets with an
-                    // unexposed window. Prevents continuous log spew of
-                    // "QOpenGLContext::swapBuffers() called with non-exposed
-                    // window, behavior is undefined" on Qt5. See Bug #1779487.
-                    if (glw && glw->isValid() && glw->isVisible()) {
-                        auto window = glw->windowHandle();
-                        if (window && window->isExposed()) {
-                            VSyncThread::swapGl(glw, i);
-                        }
-                    }
-                }
 
+                // Don't swap invalid / invisible widgets or widgets with an
+                // unexposed window. Prevents continuous log spew of
+                // "QOpenGLContext::swapBuffers() called with non-exposed
+                // window, behavior is undefined" on Qt5. See Bug #1779487.
+                if (!shouldRenderWaveform(pWaveformWidget)) {
+                    continue;
+                }
+                QGLWidget* glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
+                if (glw != nullptr) {
+                    VSyncThread::swapGl(glw, i);
+                }
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();
             }
         }
