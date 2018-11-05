@@ -1,7 +1,7 @@
 # 
 # Translators:
-# Jorge Marcos (Jorgeelalto) <jormarchav@gmail.com>, 2016
-# Jorge Marcos (Jorgeelalto) <jormarchav@gmail.com>, 2016
+# Jorge Marcos (Jorgeelalto) <inactive+jormarchav@transifex.com>, 2016
+# Jorge Marcos (Jorgeelalto) <inactive+jormarchav@transifex.com>, 2016
 # Josep Maria Antolin <josepma@gmail.com>, 2016-2017
 # Josep Maria Antolin <josepma@gmail.com>, 2016
 # miguel angel <mig261166@gmail.com>, 2017

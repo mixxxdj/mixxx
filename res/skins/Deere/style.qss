@@ -861,34 +861,38 @@ WBeatSpinBox,
   padding: 2px;
 }
 
+#PositionGutter {
+  margin-right: 4px;
+}
+
 /* Start editable widgets in decks */
-#BpmEditRowCollapsed:hover, #KeyEditRowCollapsed:hover,
-#BpmEditRowExpanded:hover, #KeyEditRowExpanded:hover,
+#BpmKeyEditRowCollapsed:hover,
+#BpmKeyEditRowExpanded:hover,
 #PositionGutter:hover, #StarratingGutter:hover {
   /* emphasize editable widgets on hover */
   border: 1px solid #FF6600;
   background-color: rgba(255, 102, 0, 128);
 }
-#BpmEditRowCollapsed, #KeyEditRowCollapsed {
+#BpmKeyEditRowCollapsed {
   qproperty-layoutAlignment: 'AlignCenter';
   /* emphasize active widget */
   border: 1px solid #666666;
 }
 
-#BpmEditRowExpanded, #KeyEditRowExpanded {
+#BpmKeyEditRowExpanded {
   /* emphasize active widget */
   border: 1px solid #FF6600;
   background: rgba(255, 102, 0, 64);
   color: #D6D6D6;
 }
 
-#BpmEditTrigger, #KeyEditTrigger {
+#BpmKeyEditTrigger {
   /* make trigger button transparent */
   background-color: none;
   border: none;
 }
 
-#BpmEditRowControls, #KeyEditRowControls {
+#BpmKeyEditRowControls {
   /* Make room between buttons */
   background-color: #333333;
   padding-left: 1px;
@@ -897,8 +901,16 @@ WBeatSpinBox,
   qproperty-layoutSpacing: 2;
 }
 
-#BpmEditTriggerLabel, #KeyEditTriggerLabel {
+#BpmKeyEditTriggerLabel {
   padding-right: 1px;
+}
+
+#BpmKeyInfoShow {
+  image: url(skin:/icon/ic_chevron_left_24x48px.svg) center center;
+}
+
+#BpmKeyInfoHide {
+  image: url(skin:/icon/ic_chevron_right_24x48px.svg) center center;
 }
 /* End editable widgets in decks */
 

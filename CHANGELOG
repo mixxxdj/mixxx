@@ -1,16 +1,23 @@
 ==== 2.2.0 (draft) 2018-09-12 ====
-* Update from Qt4 to Qt5
+
+* Update from Qt4 to Qt5.
 * Remove GUI scaling option from preferences; use Qt5's automatic
-  scaling instead
-* Add mix mode switch (Dry/Wet vs Dry+Wet) for effect units
-* Add support for LV2 effects plugins (currently no way to show plugin GUIs)
+  scaling instead.
+* Add mix mode switch (Dry/Wet vs Dry+Wet) for effect units.
+* Add support for LV2 effects plugins. (currently no way to show plugin GUIs)
 * Add preference option for selecting which effects are shown in the
-  list of available effects in the main window (all LV2 effects are
+  list of available effects in the main window. (all LV2 effects are
   hidden by default and must be explicitly enabled by users)
 * Add preference option for adjusting play position marker of
-  scrolling waveforms
+  scrolling waveforms.
 * Add preference option to adjust opacity of beatgrid markers on
-  scrolling waveforms
+  scrolling waveforms.
+* Add 8 sampler and small sampler options to LateNight.
+* Add key / BPM expansion indicators to Deere decks.
+* Vectorize Deere, LateNight and Tango skin assets for better HiDPI support.
+* Behringer CMD-MM1 controller preset improvements.
+* Support IRC/AIM/ICQ broadcast metadata.
+* Add skin settings menu to LateNight.
 
 ==== 2.1.5 2018-10-28 ====
 

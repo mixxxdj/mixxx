@@ -29,6 +29,7 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 };
 
 class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
+    Q_OBJECT
   public:
     GLSLFilteredWaveformWidget(const char* group, QWidget* parent);
     virtual ~GLSLFilteredWaveformWidget() {}
@@ -42,6 +43,7 @@ class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
 };
 
 class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
+    Q_OBJECT
   public:
     GLSLRGBWaveformWidget(const char* group, QWidget* parent);
     virtual ~GLSLRGBWaveformWidget() {}
