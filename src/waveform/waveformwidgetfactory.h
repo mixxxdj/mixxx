@@ -164,6 +164,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int m_beatGridAlpha;
 
     VSyncThread* m_vsyncThread;
+    GuiTick* m_pGuiTick;  // not owned
 
     //Debug
     PerformanceTimer m_time;

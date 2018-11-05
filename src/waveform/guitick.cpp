@@ -10,7 +10,7 @@ GuiTick::GuiTick(QObject* pParent)
     m_cpuTimer.start();
 }
 
-// this is called from the VSyncThread
+// this is called from WaveformWidgetFactory::render
 // with the configured waveform frame rate
 void GuiTick::process() {
     m_cpuTimeLastTick += m_cpuTimer.restart();

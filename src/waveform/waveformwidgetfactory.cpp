@@ -96,6 +96,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_openGLShaderAvailable(false),
         m_beatGridAlpha(90),
         m_vsyncThread(NULL),
+        m_pGuiTick(nullptr),
         m_frameCnt(0),
         m_actualFrameRate(0),
         m_vSyncType(0),
@@ -588,6 +589,9 @@ void WaveformWidgetFactory::render() {
             m_frameCnt = 0.0;
         }
     }
+
+    m_pGuiTick->process();
+
     //qDebug() << "refresh end" << m_vsyncThread->elapsed();
     m_vsyncThread->vsyncSlotFinished();
 }
@@ -826,7 +830,8 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
 }
 
 void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick) {
-    m_vsyncThread = new VSyncThread(this, pGuiTick);
+    m_pGuiTick = pGuiTick;
+    m_vsyncThread = new VSyncThread(this);
     m_vsyncThread->start(QThread::NormalPriority);
 
     connect(m_vsyncThread, SIGNAL(vsyncRender()),
