@@ -535,6 +535,10 @@ void WaveformWidgetFactory::render() {
             }
         }
 
+        // WSpinnys are also double-buffered QGLWidgets, like all the waveform
+        // renderers. Render all the WSpinny widgets now.
+        emit(renderSpinnies());
+
         // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
         // update.
         //int t1 = m_vsyncThread->elapsed();
@@ -581,6 +585,9 @@ void WaveformWidgetFactory::swap() {
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();
             }
         }
+        // WSpinnys are also double-buffered QGLWidgets, like all the waveform
+        // renderers. Swap all the WSpinny widgets now.
+        emit(swapSpinnies());
     }
     //qDebug() << "swap end" << m_vsyncThread->elapsed();
     m_vsyncThread->vsyncSlotFinished();
