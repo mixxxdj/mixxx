@@ -950,7 +950,7 @@ def enable_modules(self, modules, debug=False, crosscompiling=False, staticdeps=
 # port qt4-mac:
                 self.Append(LIBS=module)
         if 'QtOpenGL' in modules:
-            self.AppendUnique(LINKFLAGS="-F/System/Library/Frameworks")
+            self.AppendUnique(LINKFLAGS=("-F" + build.env['OSX_SYSROOT'] + "/System/Library/Frameworks"))
             self.Append(LINKFLAGS=['-framework', 'AGL']) #TODO ughly kludge to avoid quotes
             self.Append(LINKFLAGS=['-framework', 'OpenGL'])
         self["QT4_MOCCPPPATH"] = self["CPPPATH"]

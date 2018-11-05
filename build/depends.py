@@ -83,7 +83,7 @@ class SecurityFramework(Dependence):
     def configure(self, build, conf):
         if not build.platform_is_osx:
             return
-        build.env.Append(CPPPATH='/System/Library/Frameworks/Security.framework/Headers/')
+        build.env.Append(CPPPATH=build.env['OSX_SYSROOT'] + '/System/Library/Frameworks/Security.framework/Headers/')
         build.env.Append(LINKFLAGS='-framework Security')
 
 
@@ -91,7 +91,7 @@ class CoreServices(Dependence):
     def configure(self, build, conf):
         if not build.platform_is_osx:
             return
-        build.env.Append(CPPPATH='/System/Library/Frameworks/CoreServices.framework/Headers/')
+        build.env.Append(CPPPATH=build.env['OSX_SYSROOT'] + '/System/Library/Frameworks/CoreServices.framework/Headers/')
         build.env.Append(LINKFLAGS='-framework CoreServices')
 
 class IOKit(Dependence):
@@ -100,7 +100,7 @@ class IOKit(Dependence):
         if not build.platform_is_osx:
             return
         build.env.Append(
-            CPPPATH='/System/Library/Frameworks/IOKit.framework/Headers/')
+            CPPPATH=build.env['OSX_SYSROOT'] + '/System/Library/Frameworks/IOKit.framework/Headers/')
         build.env.Append(LINKFLAGS='-framework IOKit')
 
 class UPower(Dependence):

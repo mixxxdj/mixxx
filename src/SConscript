@@ -505,7 +505,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                              "/usr/local/lib",
                              "/opt/local/lib",
                              "/sw/local/lib"]
-        otool_system_paths = ["/System/Library/Frameworks",
+        otool_system_paths = [build.env['OSX_SYSROOT'] + "/System/Library/Frameworks",
                               "/Network/Library/Frameworks",
                               "/usr/lib"]
         mixxx_osxlib_path = SCons.ARGUMENTS.get('osxlib', None)

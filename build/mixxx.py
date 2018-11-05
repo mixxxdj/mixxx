@@ -323,11 +323,13 @@ class MixxxBuild(object):
         sysroot = Script.ARGUMENTS.get('sysroot', '')
         if sysroot:
             self.env.Append(CCFLAGS=['-isysroot', sysroot])
+            self.env.Append(LINKFLAGS=['-isysroot', sysroot, '-Wl,-syslibroot,' + sysroot])
+            self.env.Append(OSX_SYSROOT=sysroot)
 
         # If no sysroot was specified, pick one automatically. The only platform
         # we pick one automatically on is OS X.
         if self.platform_is_osx:
-            if '-isysroot' in self.env['CXXFLAGS'] or '-isysroot' in self.env['CFLAGS']:
+            if '-isysroot' in self.env['CXXFLAGS'] or '-isysroot' in self.env['CFLAGS'] or '-isysroot' in self.env['CCFLAGS']:
                 print("Skipping OS X automatic sysroot selection because -isysroot is in your CCFLAGS.")
                 return
 
@@ -372,6 +374,7 @@ class MixxxBuild(object):
                     ]
                     self.env.Append(CCFLAGS=common_flags)
                     self.env.Append(LINKFLAGS=common_flags + link_flags)
+                    self.env.Append(OSX_SYSROOT=sdk_path)
                     return
 
                 print("Could not find a supported Mac OS X SDK.")
