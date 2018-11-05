@@ -189,7 +189,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
 
-    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"));
+    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), false);
     m_pTrackLoaded->setReadOnly();
 
     // Quantization Controller for enabling and disabling the
