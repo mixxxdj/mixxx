@@ -103,6 +103,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     TrackPointer m_pLoadedTrack;
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
+    QString m_copyFrom;
 
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;

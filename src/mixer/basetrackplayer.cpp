@@ -344,22 +344,58 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                 ConfigKey("[Mixer Profile]", "GainAutoReset"), false)) {
             m_pPreGain->set(1.0);
         }
-        int reset = m_pConfig->getValue<int>(
-                ConfigKey("[Controls]", "SpeedAutoReset"), RESET_PITCH);
-        if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
-            // Avoid resetting speed if master sync is enabled and other decks with sync enabled
-            // are playing, as this would change the speed of already playing decks.
-            if (!m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
-                if (m_pRateSlider != NULL) {
-                    m_pRateSlider->set(0.0);
+
+        if (m_copyFrom.isEmpty()) {
+            int reset = m_pConfig->getValue<int>(
+                    ConfigKey("[Controls]", "SpeedAutoReset"), RESET_PITCH);
+            if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
+                // Avoid resetting speed if master sync is enabled and other decks with sync enabled
+                // are playing, as this would change the speed of already playing decks.
+                if (!m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
+                    if (m_pRateSlider != NULL) {
+                        m_pRateSlider->set(0.0);
+                    }
                 }
             }
-        }
-        if (reset == RESET_PITCH || reset == RESET_PITCH_AND_SPEED) {
-            if (m_pPitchAdjust != NULL) {
-                m_pPitchAdjust->set(0.0);
+            if (reset == RESET_PITCH || reset == RESET_PITCH_AND_SPEED) {
+                if (m_pPitchAdjust != NULL) {
+                    m_pPitchAdjust->set(0.0);
+                }
+            }
+        } else {
+            ControlObject* pControl = NULL;
+
+            // copy play state
+            pControl = ControlObject::getControl(m_copyFrom, "play");
+            if (pControl) {
+                m_pPlay->set(pControl->get());
+            }
+
+            // copy rate
+            pControl = ControlObject::getControl(m_copyFrom, "rate");
+            if (pControl && m_pRateSlider != NULL) {
+                m_pRateSlider->set(pControl->get());
+            }
+
+            // copy pitch
+            pControl = ControlObject::getControl(m_copyFrom, "pitch_adjust");
+            if (pControl && m_pPitchAdjust != NULL) {
+                m_pPitchAdjust->set(pControl->get());
+            }
+
+            // copy the play position
+            pControl = ControlObject::getControl(m_copyFrom, "playposition");
+            if (pControl) {
+                m_pChannel->getEngineBuffer()->slotControlSeekExact(pControl->get());
+            }
+
+            // copy the loop state
+            pControl = ControlObject::getControl(m_copyFrom, "loop_enabled");
+            if (pControl) {
+                m_pLoopEnabled->set(pControl->get());
             }
         }
+
         emit(newTrackLoaded(m_pLoadedTrack));
     } else {
         // this is the result from an outdated load or unload signal
@@ -367,6 +403,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         // Ignore this signal and wait for the new one
         qDebug() << "stray BaseTrackPlayerImpl::slotTrackLoaded()";
     }
+
+    m_copyFrom.clear();
 
     // Update the PlayerInfo class that is used in EngineBroadcast to replace
     // the metadata of a stream
@@ -384,39 +422,9 @@ void BaseTrackPlayerImpl::slotCopyFrom(const QString& group) {
         return;
     }
 
+    m_copyFrom = group;
+
     slotLoadTrack(pTrack, false);
-
-    ControlObject* pControl = NULL;
-
-    // copy play state
-    pControl = ControlObject::getControl(group, "play");
-    if (pControl) {
-        m_pPlay->set(pControl->get());
-    }
-
-    // copy rate
-    pControl = ControlObject::getControl(group, "rate");
-    if (pControl && m_pRateSlider != NULL) {
-        m_pRateSlider->set(pControl->get());
-    }
-
-    // copy pitch
-    pControl = ControlObject::getControl(group, "pitch_adjust");
-    if (pControl && m_pPitchAdjust != NULL) {
-        m_pPitchAdjust->set(pControl->get());
-    }
-
-    // copy the play position
-    pControl = ControlObject::getControl(group, "playposition");
-    if (pControl) {
-        m_pChannel->getEngineBuffer()->slotControlSeekExact(pControl->get());
-    }
-
-    // copy the loop state
-    pControl = ControlObject::getControl(group, "loop_enabled");
-    if (pControl) {
-        m_pLoopEnabled->set(pControl->get());
-    }
 }
 
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
