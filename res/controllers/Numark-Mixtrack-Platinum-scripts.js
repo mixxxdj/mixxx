@@ -236,6 +236,7 @@ MixtrackPlatinum.shutdown = function() {
 
 MixtrackPlatinum.EffectUnit = function (unitNumbers) {
     var eu = this;
+    this.unitNumbers = unitNumbers;
 
     this.setCurrentUnit = function (newNumber) {
         this.currentUnitNumber = newNumber;
@@ -257,20 +258,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
         });
     };
 
-    if (unitNumbers !== undefined) {
-        if (Array.isArray(unitNumbers)) {
-            this.unitNumbers = unitNumbers;
-            this.setCurrentUnit(unitNumbers[0]);
-        } else if (typeof unitNumbers === 'number' &&
-                  Math.floor(unitNumbers) === unitNumbers &&
-                  isFinite(unitNumbers)) {
-            this.unitNumbers = [unitNumbers];
-            this.setCurrentUnit(unitNumbers);
-        }
-    } else {
-        print('ERROR! new EffectUnit() called without specifying any unit numbers!');
-        return;
-    }
+    this.setCurrentUnit(unitNumbers[0]);
 
     this.dryWetKnob = new components.Encoder({
         group: this.group,
