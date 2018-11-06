@@ -245,6 +245,18 @@ NumarkN4.topContainer = function (channel) {
       };
     },
   });
+  this.shutdown = function () {
+    // turn off hotcueButtons
+    for (var i = hotcueButtons.length;i;i--) {
+      theContainer.hotcueButtons[i].send(0);
+    }
+    // turn all remaining LEDS of the topContainer
+    theContainer.btnEffect1.send(0);
+    theContainer.btnEffect2.send(0);
+    theContainer.btnSample3.send(0);
+    theContainer.btnSample4.send(0);
+  };
+
   if (NumarkN4.resetHotCuePageOnTrackLoad) {
     engine.makeConnection(this.group, "track_loaded", function (value, group, control) {
       theContainer.encSample3.applyHotcuePage(0, false);
@@ -618,14 +630,29 @@ NumarkN4.Deck = function (channel) {
            c.group = this.currentDeck;
        }
    });
+   this.shutdown = function () {
+     this.topContainer.shutdown();
+     this.pitchLedHandler.disconnect();
+     midi.sendShortMsg(0xB0+channel,0x37,0); // turn off pitchLED
+     this.pitchRange.send(0);
+     this.keylockButton.send(0);
+     this.searchButton.send(0);
+     this.tapButton.send(0);
+     this.syncButton.send(0);
+     this.pitchBendPlus.send(0);
+     this.pitchBendMinus.send(0);
+     this.cueButton.send(0);
+     this.playButton.send(0);
+     this.shiftButton.send(0);
+     midi.sendShortMsg(0xB0,0x1D+channel,0); // turn off small triangle above LOAD button.
+   }
 };
 
 NumarkN4.Deck.prototype = new components.Deck();
 
 NumarkN4.shutdown = function () {
-  if (delete NumarkN4.Decks) {
-    print("gracefull shutdown failed")
+  for (var i = NumarkN4.Decks;i;i--) {
+    NumarkN4.Decks[i].shutdown();
   }
-  //destroy mixer, decks, and their timers.
   // midi.sendSysexMsg(NumarkN4.ShutoffSequence,NumarkN4.ShutoffSequence.length);
 };
