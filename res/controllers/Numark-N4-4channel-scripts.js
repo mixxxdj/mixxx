@@ -15,6 +15,8 @@ NumarkN4.blinkInterval=1000; //blinkInterval for the triangular Leds over the ch
 
 NumarkN4.encoderResolution=0.05; // 1/encoderResolution = number of steps going from 0% to 100%
 
+NumarkN4.resetHotCuePageOnTrackLoad=true; // resets the page of the Hotcue back to 1 after loading a new track.
+
 NumarkN4.cueReverseRoll=true;
 
 // possible ranges (0.0..3.0 where 0.06=6%)
@@ -180,6 +182,32 @@ NumarkN4.topContainer = function (channel) {
     midi: [0xB0+channel,0x5A],
     currentLoopSizeIndex: 7,
     hotCuePage: 0,
+    applyHotcuePage: function (layer, displayFeedback) {
+      // ES3 doesn't allow default values in the function signature
+      // Could be replaced after migration to QJSEngine by "displayFeedback=true"
+      if (displayFeedback == undefined) {
+        displayFeedback = true;
+      }
+      layer = Math.max(Math.min(layer,3),0); // clamp layer value to [0;3] range
+      this.hotCuePage = layer;
+      if (this.timer) {engine.stopTimer(this.timer)}
+      var number = 0;
+      for (var i=0;i<theContainer.hotcueButtons.length;++i) {
+        number = (i+1)+theContainer.hotcueButtons.length*this.hotCuePage;
+        theContainer.hotcueButtons[i].disconnect();
+        theContainer.hotcueButtons[i].number=number;
+        theContainer.hotcueButtons[i].outKey='hotcue_' + number + '_enabled';
+        theContainer.hotcueButtons[i].unshift(); // for setting inKey based on number property.
+        theContainer.hotcueButtons[i].connect();
+        theContainer.hotcueButtons[i].trigger();
+      }
+      if (displayFeedback) {
+        for (var i=0;i<4;++i) {
+          midi.sendShortMsg(0xB0+channel,0x0B+i,(i-this.hotCuePage)?0x00:0x7F);
+        }
+      }
+      this.timer=engine.beginTimer(1000,function () {theContainer.reconnectComponents()},true);
+    },
     shift: function () {
       this.group=theContainer.group;
       this.inKey="beatloop_size";
@@ -197,29 +225,7 @@ NumarkN4.topContainer = function (channel) {
     },
     unshift: function () {
       this.input = function (channel, control, value, status, group) {
-        if (this.timer) {engine.stopTimer(this.timer)}
-        this.hotCuePage=
-        Math.max(
-          Math.min(
-            this.hotCuePage+(value===0x01?1:-1),
-            3
-          ),
-          0
-        );
-        var number = 0;
-        for (var i=0;i<theContainer.hotcueButtons.length;++i) {
-          number = (i+1)+theContainer.hotcueButtons.length*this.hotCuePage;
-          theContainer.hotcueButtons[i].disconnect();
-          theContainer.hotcueButtons[i].number=number;
-          theContainer.hotcueButtons[i].outKey='hotcue_' + number + '_enabled';
-          theContainer.hotcueButtons[i].unshift(); // for setting inKey based on number property.
-          theContainer.hotcueButtons[i].connect();
-          theContainer.hotcueButtons[i].trigger();
-        }
-        for (var i=0;i<4;++i) {
-          midi.sendShortMsg(0xB0+channel,0x0B+i,(i-this.hotCuePage)?0x00:0x7F);
-        }
-        this.timer=engine.beginTimer(1000,function () {theContainer.reconnectComponents()},true);
+        this.applyHotcuePage(this.hotCuePage+(value===0x01?1:-1));
       }
     },
   });
@@ -239,6 +245,12 @@ NumarkN4.topContainer = function (channel) {
       };
     },
   });
+  if (NumarkN4.resetHotCuePageOnTrackLoad) {
+    engine.makeConnection(this.group, "track_loaded", function (value, group, control) {
+      theContainer.encSample3.applyHotcuePage(0, false);
+      // resets the hotcuepage to 0 hidden (without feedback to the user);
+    });
+  }
 };
 NumarkN4.topContainer.prototype = new components.ComponentContainer();
 
