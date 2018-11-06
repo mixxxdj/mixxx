@@ -77,8 +77,9 @@ NumarkN4.init = function (id) {
   engine.setParameter("[Master]","headGain",Math.max(engine.getParameter("[Master]","headGain"),0.5));
   engine.setParameter("[Master]","headMix",0); //Headphone out = 100% pfl signal.
   NumarkN4.Decks=[];
-  for (var iterator=1;iterator<=4;iterator++){
-    NumarkN4.Decks[iterator] = new NumarkN4.Deck(iterator);
+  for (var i=1;i<=4;i++){
+    // Array is based on 1 because it makes more sense in the XML
+    NumarkN4.Decks[i] = new NumarkN4.Deck(i);
 
   }
 
@@ -247,7 +248,7 @@ NumarkN4.topContainer = function (channel) {
   });
   this.shutdown = function () {
     // turn off hotcueButtons
-    for (var i = hotcueButtons.length;i;i--) {
+    for (var i=0;i<theContainer.hotcueButtons.length;i++) {
       theContainer.hotcueButtons[i].send(0);
     }
     // turn all remaining LEDS of the topContainer
@@ -651,7 +652,8 @@ NumarkN4.Deck = function (channel) {
 NumarkN4.Deck.prototype = new components.Deck();
 
 NumarkN4.shutdown = function () {
-  for (var i = NumarkN4.Decks;i;i--) {
+  for (var i=1;i<=4;i++) {
+    // View Definition of Array for explanation.
     NumarkN4.Decks[i].shutdown();
   }
   // midi.sendSysexMsg(NumarkN4.ShutoffSequence,NumarkN4.ShutoffSequence.length);
