@@ -378,8 +378,22 @@ NumarkN4.Deck = function (channel) {
           midi: [0xB0, 0x29 + i + 5*(channel-1)],
           group: '[EqualizerRack1_'+theDeck.group+'_Effect1]',
           inKey: 'parameter' + i,
+
+          // The exact center of the Pots on my N4 are roughly around 0x3e instead of 0x40
+          // This is a Hack which adds that offset back when the pot is in the center range.
+          // The Pot snaps physically between values of 7700 and 8300.
+          // 0.469970703125=7700/(1<<14) 0.506591796875=8300/(1<<14)
+          // 0.015625=(0x40-0x3e)/0x80 => normalized offset
+          inValueScale: function (value) {
+              if (value > this.max*0.469970703125 && value < this.max*0.506591796875) {
+                  return (value + this.max*0.015625) / this.max;
+              } else {
+                return value / this.max;
+              }
+          },
       });
   }
+  // for some reason the gainKnobs don't suffer the same issues as the EQKnobs
   this.gainKnob = new components.Pot({
     midi: [0xB0, 0x2C + 5*(channel-1)],
     shift: function () {
