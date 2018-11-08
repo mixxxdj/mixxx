@@ -123,15 +123,16 @@ void SearchQueryParser::parseTokens(QStringList tokens,
         } else if (m_textFilterMatcher.indexIn(token) != -1) {
             QString field = m_textFilterMatcher.cap(1);
             QString argument = getTextArgument(
-                m_textFilterMatcher.cap(2), &tokens).trimmed();
+                    m_textFilterMatcher.cap(2), &tokens);
 
             if (!argument.isEmpty()) {
                 if (field == "crate") {
                     pNode = std::make_unique<CrateFilterNode>(
-                          &m_pTrackCollection->crates(), argument);
+                            &m_pTrackCollection->crates(), argument);
                 } else {
                     pNode = std::make_unique<TextFilterNode>(
-                          m_pTrackCollection->database(), m_fieldToSqlColumns[field], argument);
+                            m_pTrackCollection->database(),
+                            m_fieldToSqlColumns[field], argument);
                 }
             }
         } else if (m_numericFilterMatcher.indexIn(token) != -1) {
@@ -141,7 +142,7 @@ void SearchQueryParser::parseTokens(QStringList tokens,
 
             if (!argument.isEmpty()) {
                 pNode = std::make_unique<NumericFilterNode>(
-                     m_fieldToSqlColumns[field], argument);
+                        m_fieldToSqlColumns[field], argument);
             }
         } else if (m_specialFilterMatcher.indexIn(token) != -1) {
             bool fuzzy = token.startsWith(kFuzzyPrefix);

@@ -157,8 +157,14 @@ bool TextFilterNode::match(const TrackPointer& pTrack) const {
 
 QString TextFilterNode::toSql() const {
     FieldEscaper escaper(m_database);
-    QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + m_argument + kSqlLikeMatchAll);
-
+    QString argument = m_argument;
+    if (argument.right(1) == " ") {
+        // LIKE eats a tailing space. This can be avoided by adding "_" for any
+        // followng character
+        argument += "_";
+    }
+    QString escapedArgument = escaper.escapeString(
+            kSqlLikeMatchAll + argument + kSqlLikeMatchAll);
     QStringList searchClauses;
     for (const auto& sqlColumn: m_sqlColumns) {
         searchClauses << QString("%1 LIKE %2").arg(sqlColumn, escapedArgument);
