@@ -178,8 +178,9 @@ void SearchQueryParser::parseTokens(QStringList tokens,
             }
             // Don't trigger on a lone minus sign.
             if (!token.isEmpty()) {
+                QString argument = getTextArgument(token, &tokens);
                 pNode = std::make_unique<TextFilterNode>(
-                                m_pTrackCollection->database(), searchColumns, token);
+                                m_pTrackCollection->database(), searchColumns, argument);
             }
         }
         if (pNode) {
