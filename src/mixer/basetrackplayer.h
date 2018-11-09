@@ -136,7 +136,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlProxy> m_pPassthroughEnabled;
     std::unique_ptr<ControlProxy> m_pVinylControlEnabled;
     std::unique_ptr<ControlProxy> m_pVinylControlStatus;
-    std::unique_ptr<ControlProxy> m_pLoopEnabled;
 };
 
 #endif // MIXER_BASETRACKPLAYER_H

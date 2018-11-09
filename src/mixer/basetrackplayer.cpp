@@ -72,8 +72,6 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
             getGroup(), "loop_start_position", this);
     m_pLoopOutPoint = std::make_unique<ControlProxy>(
             getGroup(), "loop_end_position", this);
-    m_pLoopEnabled = std::make_unique<ControlProxy>(
-            getGroup(), "loop_enabled", this);
 
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = std::make_unique<ControlObject>(
@@ -363,36 +361,22 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                 }
             }
         } else {
-            ControlObject* pControl = NULL;
-
-            // copy play state
-            pControl = ControlObject::getControl(m_copyFrom, "play");
-            if (pControl) {
-                m_pPlay->set(pControl->get());
-            }
-
             // copy rate
-            pControl = ControlObject::getControl(m_copyFrom, "rate");
-            if (pControl && m_pRateSlider != NULL) {
-                m_pRateSlider->set(pControl->get());
+            if (m_pRateSlider != NULL) {
+                m_pRateSlider->set(ControlObject::get(ConfigKey(m_copyFrom, "rate")));
             }
 
             // copy pitch
-            pControl = ControlObject::getControl(m_copyFrom, "pitch_adjust");
-            if (pControl && m_pPitchAdjust != NULL) {
-                m_pPitchAdjust->set(pControl->get());
+            if (m_pPitchAdjust != NULL) {
+                m_pPitchAdjust->set(ControlObject::get(ConfigKey(m_copyFrom, "pitch_adjust")));
             }
 
             // copy the play position
-            pControl = ControlObject::getControl(m_copyFrom, "playposition");
-            if (pControl) {
-                m_pChannel->getEngineBuffer()->slotControlSeekExact(pControl->get());
-            }
+            ControlObject::set(ConfigKey(getGroup(), "playposition"), ControlObject::get(ConfigKey(m_copyFrom, "playposition")));
 
             // copy the loop state
-            pControl = ControlObject::getControl(m_copyFrom, "loop_enabled");
-            if (pControl) {
-                m_pLoopEnabled->set(pControl->get());
+            if (ControlObject::get(ConfigKey(m_copyFrom, "loop_enabled")) == 1.0) {
+                ControlObject::set(ConfigKey(getGroup(), "reloop_toggle"), 1.0);
             }
         }
 
@@ -424,7 +408,7 @@ void BaseTrackPlayerImpl::slotCopyFrom(const QString& group) {
 
     m_copyFrom = group;
 
-    slotLoadTrack(pTrack, false);
+    slotLoadTrack(pTrack, ControlObject::get(ConfigKey(group, "play")) != 0.0);
 }
 
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
