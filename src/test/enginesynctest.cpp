@@ -82,8 +82,6 @@ TEST_F(EngineSyncTest, ControlObjectsExist) {
 TEST_F(EngineSyncTest, SetMasterSuccess) {
     // If we set the first channel to master, EngineSync should get that message.
 
-    // Throughout these tests we use ControlProxys so that we can trigger ValueChanged,
-    // and not just ValueChangedFromEngine.
     auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->slotSet(SYNC_MASTER);
     ProcessBuffer();
@@ -1499,6 +1497,29 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
 
 }
 
+
+TEST_F(EngineSyncTest, SyncWithoutBeatgrid) {
+    // this tests bug lp1783020, notresetting rate when other deck has no beatgrid
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    pFileBpm1->set(128.0);
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 128, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    m_pTrack2->setBeats(BeatsPointer());
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), 0.5);
+
+    // Play a buffer, which is enough to see if the beat distances align.
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_enabled"), 1);
+
+    ProcessBuffer();
+
+    ASSERT_DOUBLE_EQ(0.5,
+              ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+
+}
 
 TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");

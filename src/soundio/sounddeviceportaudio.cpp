@@ -138,7 +138,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     PaError err;
 
     if (m_audioOutputs.empty() && m_audioInputs.empty()) {
-        m_lastError = QString::fromAscii(
+        m_lastError = QStringLiteral(
                 "No inputs or outputs in SDPA::open() "
                 "(THIS IS A BUG, this should be filtered by SM::setupDevices)");
         return SOUNDDEVICE_ERROR_ERR;

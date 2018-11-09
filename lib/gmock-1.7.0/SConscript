@@ -25,8 +25,3 @@ gmock = env.StaticLibrary(target='gmock',
 # it is also used by the tests for Google Mock itself.
 gmock_main = env.StaticLibrary(target='gmock_main',
                                source=gmock_main_sources)
-
-# Install the libraries if needed.
-if 'LIB_OUTPUT' in env.Dictionary():
-    env.Install('$LIB_OUTPUT', source=[gmock, gmock_main])
-

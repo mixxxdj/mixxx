@@ -8,7 +8,6 @@ import shutil
 from build import util
 
 Import('build')
-Import('mixxxminimal_depends')
 
 mixxxminimal_sources = [
 	"base/Pitch.cpp",
@@ -51,24 +50,21 @@ if int(build.flags['vamp']):
     conf = Configure(env, custom_tests = { 'CheckForPKGConfig' : util.CheckForPKGConfig,
                                        'CheckForPKG' : util.CheckForPKG })
 
-    # If there is no system vamp-sdk is installed or if the version
-    # of the installed vamp-sdk is less than the bundled version,
-    # then we'll directly link the bundled vamp-sdk.
-    if not conf.CheckLib('vamp-sdk') or not conf.CheckForPKG('vamp-plugin-sdk', '2.7.1'):
-        INTERNAL_VAMP_PATH = '#lib/vamp'
-        # For header includes
-        env.Append(CPPPATH=[INTERNAL_VAMP_PATH])
-        sdk_src_path = '%s/src/vamp-sdk' % INTERNAL_VAMP_PATH
-        mixxxminimal_sources.extend(path % sdk_src_path for path in
-                                    ['%s/PluginAdapter.cpp',
-                                     '%s/RealTime.cpp'])
+    env.Append(CPPPATH=['.'])
 
-    for depend in mixxxminimal_depends:
-        depend = depend()
-        # Hack to get rid of EngineBufferScaleST since the SoundTouch dependence
-        # includes this.
-        depend_source = [x for x in depend.sources(build) if 'enginebufferscalest' not in x]
-        mixxxminimal_sources.extend(depend_source)
+    # A relative LIBPATH pointing to lib/vamp tells SCons that the 'vamp-sdk'
+    # target defined in lib/vamp/SConscript should be built.  If we used an
+    # absolute path (e.g. '#lib/vamp'), then SCons will not automatically add
+    # linXX_build/lib/vamp to the LIBPATH, which is where our internally-linked
+    # versions of VAPM and SoundTouch are written.
+
+    env.Append(LIBPATH='../lib/vamp')
+    env['LIBS'].remove('vamp-hostsdk')
+    env.Append(LIBS=['vamp-sdk'])
+
+    # A relative LIBPATH pointing to lib/soundtouch tells SCons that the
+    # 'soundtouch' target defined in lib/soundtouch/SConscript should be built.
+    env.Append(LIBPATH='../lib/soundtouch')
 
     env = conf.Finish()
     results = []
@@ -88,11 +84,11 @@ if int(build.flags['vamp']):
         if build.bundle_pdbs:
             mixxxminimal_pdb = env.SideEffect('libmixxxminimal.pdb', mixxxminimal_bin)
             results.append("mixxxminimal_pdb")
-
     else:
         mixxxminimal_bin = env.SharedLibrary('mixxxminimal', mixxxminimal_sources)
         results.append("mixxxminimal_bin")
-    #Pass this library object file back to the SConscript above us.
+
+    # Pass this library object file back to the SConscript above us.
     Return(results)
 else:
     Return("")

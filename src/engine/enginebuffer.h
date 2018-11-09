@@ -96,7 +96,7 @@ class EngineBuffer : public EngineObject {
                            // if Quantize is enabled.
         SEEK_EXACT_PHASE = SEEK_PHASE | SEEK_EXACT, 
 						   // This is an artificial state that happens if
-                           // an exact seek and a phase seek are sheduled
+                           // an exact seek and a phase seek are scheduled
                            // at the same time.
         SEEK_STANDARD = 0x04, // This seeks to the exact position if Quantize is
                               // disabled or performs an in-phase seek if it is enabled.
@@ -185,7 +185,6 @@ class EngineBuffer : public EngineObject {
     void slotControlSeek(double);
     void slotControlSeekAbs(double);
     void slotControlSeekExact(double);
-    void slotControlSlip(double);
     void slotKeylockEngineChanged(double);
 
     void slotEjectTrack(double);
@@ -316,8 +315,6 @@ class EngineBuffer : public EngineObject {
     double m_dSlipPosition;
     // Saved value of rate for slip mode
     double m_dSlipRate;
-    // m_slipEnabled is a boolean accessed from multiple threads, so we use an atomic int.
-    QAtomicInt m_slipEnabled;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
     bool m_bSlipEnabledProcessing;
 

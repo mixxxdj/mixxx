@@ -3,7 +3,7 @@
 #include <QInputDialog>
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QDesktopServices>
+#include <QStandardPaths>
 
 #include "library/export/trackexportwizard.h"
 #include "library/library.h"
@@ -374,7 +374,7 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString &playlist_file) {
     if (playlist_parser) {
       QStringList entries = playlist_parser->parse(playlist_file);
 
-      // Iterate over the List that holds URLs of playlist entires
+      // Iterate over the List that holds URLs of playlist entries
       m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
 
       // delete the parser object
@@ -453,7 +453,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
     QString lastPlaylistDirectory = m_pConfig->getValue(
                 ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
-                QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+                QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
     // Open a dialog to let the user choose the file location for playlist export.
     // The location is set to the last used directory for import/export and the file
@@ -623,8 +623,8 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     int selected_row = -1;
 
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
+    for (auto it = m_playlistList.constBegin();
+         it != m_playlistList.constEnd(); ++it, ++row) {
         int playlist_id = it->first;
         QString playlist_name = it->second;
 
@@ -654,8 +654,8 @@ void BasePlaylistFeature::updateChildModel(int selected_id) {
     buildPlaylistList();
 
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
+    for (auto it = m_playlistList.constBegin();
+         it != m_playlistList.constEnd(); ++it, ++row) {
         int playlist_id = it->first;
         QString playlist_name = it->second;
 
@@ -680,8 +680,8 @@ void BasePlaylistFeature::clearChildModel() {
 
 QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
+    for (auto it = m_playlistList.constBegin();
+         it != m_playlistList.constEnd(); ++it, ++row) {
         int current_id = it->first;
         QString playlist_name = it->second;
 
@@ -708,8 +708,8 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
+    for (auto it = m_playlistList.constBegin();
+         it != m_playlistList.constEnd(); ++it, ++row) {
         TreeItem* playlist = rootItem->child(row);
         if (playlist == nullptr) {
             continue;

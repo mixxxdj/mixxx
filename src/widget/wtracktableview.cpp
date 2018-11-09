@@ -33,6 +33,7 @@
 #include "util/time.h"
 #include "util/assert.h"
 #include "util/parented_ptr.h"
+#include "util/desktophelper.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
@@ -319,8 +320,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     setModel(model);
     setHorizontalHeader(header);
-    header->setMovable(true);
-    header->setClickable(true);
+    header->setSectionsMovable(true);
+    header->setSectionsClickable(true);
     header->setHighlightSections(true);
     header->setSortIndicatorShown(m_sorting);
     header->setDefaultAlignment(Qt::AlignLeft);
@@ -633,35 +634,14 @@ void WTrackTableView::slotOpenInFileBrowser() {
 
     QModelIndexList indices = selectionModel()->selectedRows();
 
-    QSet<QString> sDirs;
+    QStringList locations;
     for (const QModelIndex& index : indices) {
         if (!index.isValid()) {
             continue;
         }
-
-        QDir dir;
-        QStringList splittedPath = trackModel->getTrackLocation(index).split("/");
-        do {
-            dir = QDir(splittedPath.join("/"));
-            splittedPath.removeLast();
-        } while (!dir.exists() && splittedPath.size());
-
-        // This function does not work for a non-existent directory!
-        // so it is essential that in the worst case it try opening
-        // a valid directory, in this case, 'QDir::home()'.
-        // Otherwise nothing would happen...
-        if (!dir.exists()) {
-            // it ensures a valid dir for any OS (Windows)
-            dir = QDir::home();
-        }
-
-        // not open the same dir twice
-        QString dirPath = dir.absolutePath();
-        if (!sDirs.contains(dirPath)) {
-            sDirs.insert(dirPath);
-            QDesktopServices::openUrl(QUrl::fromLocalFile(dirPath));
-        }
+        locations << trackModel->getTrackLocation(index);
     }
+    mixxx::DesktopHelper::openInFileBrowser(locations);
 }
 
 void WTrackTableView::slotHide() {

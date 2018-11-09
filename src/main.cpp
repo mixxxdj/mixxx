@@ -111,8 +111,7 @@ int main(int argc, char * argv[]) {
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 #endif
 
-    // Enumerate and load SoundSource plugins
-    SoundSourceProxy::loadPlugins();
+    SoundSourceProxy::registerSoundSourceProviders();
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());

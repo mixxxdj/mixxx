@@ -144,7 +144,7 @@ QString NotNode::toSql() const {
 bool TextFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn: m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
-        if (!value.isValid() || !qVariantCanConvert<QString>(value)) {
+        if (!value.isValid() || !value.canConvert(QMetaType::QString)) {
             continue;
         }
 
@@ -243,7 +243,7 @@ double NumericFilterNode::parse(const QString& arg, bool *ok) {
 bool NumericFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn: m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
-        if (!value.isValid() || !qVariantCanConvert<double>(value)) {
+        if (!value.isValid() || !value.canConvert(QMetaType::Double)) {
             continue;
         }
 

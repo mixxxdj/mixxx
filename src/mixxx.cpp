@@ -18,6 +18,7 @@
 #include "mixxx.h"
 
 #include <QDesktopServices>
+#include <QStandardPaths>
 #include <QDesktopWidget>
 #include <QFileDialog>
 #include <QGLWidget>
@@ -320,13 +321,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
         // possible with the Windows 7 "Music" library, which is what
-        // QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+        // QStandardPaths::writableLocation(QStandardPaths::MusicLocation)
         // resolves to) and a user hitting 'cancel'. If we get a blank return
         // but the user didn't hit cancel, we need to know this and let the
         // user take some course of action -- bkgood
         QString fd = QFileDialog::getExistingDirectory(
             this, tr("Choose music library directory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
         if (!fd.isEmpty()) {
             // adds Folder to database.
             m_pLibrary->slotRequestAddDir(fd);
@@ -368,7 +369,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                     m_pControllerManager, m_pVCManager, pLV2Backend, m_pEffectsManager,
                                     m_pSettingsManager, m_pLibrary);
-    m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
     launchProgress(60);
@@ -730,7 +731,7 @@ void MixxxMainWindow::initializeWindow() {
     restoreState(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
         ConfigKey("[MainWindow]", "state")).toUtf8()));
 
-    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     slotUpdateWindowTitle(TrackPointer());
 }
 
@@ -1153,36 +1154,42 @@ void MixxxMainWindow::slotOptionsPreferences() {
 }
 
 void MixxxMainWindow::slotNoVinylControlInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this vinyl control.\n"
            "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this passthrough control.\n"
            "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this microphone.\n"
            "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotChangedPlayingDeck(int deck) {

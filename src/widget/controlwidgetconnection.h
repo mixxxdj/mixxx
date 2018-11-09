@@ -46,7 +46,7 @@ class ControlWidgetConnection : public QObject {
     QScopedPointer<ValueTransformer> m_pValueTransformer;
 };
 
-class ControlParameterWidgetConnection : public ControlWidgetConnection {
+class ControlParameterWidgetConnection final : public ControlWidgetConnection {
     Q_OBJECT
   public:
     enum EmitOption {
@@ -124,7 +124,7 @@ class ControlParameterWidgetConnection : public ControlWidgetConnection {
     EmitOption m_emitOption;
 };
 
-class ControlWidgetPropertyConnection : public ControlWidgetConnection {
+class ControlWidgetPropertyConnection final : public ControlWidgetConnection {
     Q_OBJECT
   public:
     ControlWidgetPropertyConnection(WBaseWidget* pBaseWidget,

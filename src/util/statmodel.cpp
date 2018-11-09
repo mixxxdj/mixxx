@@ -22,8 +22,8 @@ StatModel::~StatModel() {
 }
 
 void StatModel::statUpdated(const Stat& stat) {
-    QHash<QString, int>::const_iterator it = m_statNameToRow.find(stat.m_tag);
-    if (it != m_statNameToRow.end()) {
+    auto it = m_statNameToRow.constFind(stat.m_tag);
+    if (it != m_statNameToRow.constEnd()) {
         int row = it.value();
         m_stats[row] = stat;
         QModelIndex left = index(row, 0);
@@ -67,7 +67,6 @@ QVariant StatModel::data(const QModelIndex& index,
     }
 
     const Stat& stat = m_stats.at(row);
-    QString value;
     switch (column) {
         case STAT_COLUMN_NAME:
             return stat.m_tag;
