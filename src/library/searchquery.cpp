@@ -158,10 +158,12 @@ bool TextFilterNode::match(const TrackPointer& pTrack) const {
 QString TextFilterNode::toSql() const {
     FieldEscaper escaper(m_database);
     QString argument = m_argument;
-    if (argument.right(1) == " ") {
-        // LIKE eats a tailing space. This can be avoided by adding "_" for any
-        // followng character
-        argument += "_";
+    if (argument.size() > 0) {
+        if (argument[argument.size() - 1].isSpace()) {
+            // LIKE eats a tailing space. This can be avoided by adding a '_'
+            // that matches any following character.
+            argument.append('_');
+        }
     }
     QString escapedArgument = escaper.escapeString(
             kSqlLikeMatchAll + argument + kSqlLikeMatchAll);
