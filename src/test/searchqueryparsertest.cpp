@@ -260,6 +260,44 @@ TEST_F(SearchQueryParserTest, TextFilterAllowsSpace) {
         qPrintable(pQuery->toSql()));
 }
 
+TEST_F(SearchQueryParserTest, TextFilterQuotes) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+
+    auto pQuery(
+        m_parser.parseQuery("comment:\"asdf ewe\"", searchColumns, ""));
+
+    TrackPointer pTrack(Track::newTemporary());
+    pTrack->setArtist("asdf");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setComment("test ASDF ewetest");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("comment LIKE '%asdf ewe%'")),
+        qPrintable(pQuery->toSql()));
+}
+
+TEST_F(SearchQueryParserTest, TextFilterTailingSpace) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+
+    auto pQuery(
+        m_parser.parseQuery("comment:\"asdf \"", searchColumns, ""));
+
+    TrackPointer pTrack(Track::newTemporary());
+    pTrack->setArtist("asdf");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setComment("test ASDF test");
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("comment LIKE '%asdf _%'")),
+        qPrintable(pQuery->toSql()));
+}
+
 TEST_F(SearchQueryParserTest, TextFilterNegation) {
     QStringList searchColumns;
     searchColumns << "artist"
