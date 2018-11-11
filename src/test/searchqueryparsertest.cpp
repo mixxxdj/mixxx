@@ -320,6 +320,17 @@ TEST_F(SearchQueryParserTest, TextFilterTailingSpace) {
     EXPECT_STREQ(
         qPrintable(QString("comment LIKE '%asdf _%'")),
         qPrintable(pQuery->toSql()));
+
+    // We allow to search for two consequitve spaces
+    auto pQuery2(
+        m_parser.parseQuery("comment:\"  \"", searchColumns, ""));
+
+    EXPECT_FALSE(pQuery2->match(pTrack));
+
+    EXPECT_STREQ(
+        qPrintable(QString("comment LIKE '%  _%'")),
+        qPrintable(pQuery2->toSql()));
+
 }
 
 TEST_F(SearchQueryParserTest, TextFilterNegation) {
