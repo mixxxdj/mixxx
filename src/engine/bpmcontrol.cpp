@@ -614,16 +614,18 @@ double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectL
     } else {
         // If not, we have to figure it out
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-        if (pOtherEngineBuffer == NULL) {
-            return dThisPosition;
+        if (playing) {
+            if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
+                // "this" track is playing, or just starting
+                // only match phase if the sync target is playing as well
+                // else use the previouse phase of "this" track before the seek
+                pOtherEngineBuffer = getEngineBuffer();
+            }
         }
 
-        if (playing) {
-            // "this" track is playing, or just starting
-            // only match phase if the sync target is playing as well
-            if (pOtherEngineBuffer->getSpeed() == 0.0) {
-                return dThisPosition;
-            }
+        if (!pOtherEngineBuffer) {
+            // no suitable sync buffer found
+            return dThisPosition;
         }
 
         TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();

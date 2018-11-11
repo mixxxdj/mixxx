@@ -1499,6 +1499,23 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
 
 }
 
+TEST_F(EngineSyncTest, SeekStayInPhase) {
+    ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
+
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    ControlObject::set(ConfigKey(m_sGroup1, "beat_distance"), 0.2);
+    pFileBpm1->set(130.0);
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition"), 0.2);
+    ProcessBuffer();
+
+    ASSERT_DOUBLE_EQ(0.20464410501585786, ControlObject::get(ConfigKey(m_sGroup1, "playposition")));
+}
 
 TEST_F(EngineSyncTest, SyncWithoutBeatgrid) {
     // this tests bug lp1783020, notresetting rate when other deck has no beatgrid
