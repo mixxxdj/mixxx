@@ -22,6 +22,8 @@ class DbConnection final {
         QString* string,
         QChar esc);
 
+    static void makeStringLatinLow(QString* string);
+
     struct Params {
         QString type;
         QString hostName;

@@ -279,6 +279,30 @@ TEST_F(SearchQueryParserTest, TextFilterQuotes) {
         qPrintable(pQuery->toSql()));
 }
 
+TEST_F(SearchQueryParserTest, TextFilterDecoration) {
+    QStringList searchColumns;
+    searchColumns << "artist"
+                  << "album";
+
+    auto pQuery(
+        m_parser.parseQuery(QString::fromUtf8("comment:\"asdf\xC2\xB0 ewe\""), searchColumns, ""));  // with ˚
+
+    TrackPointer pTrack(Track::newTemporary());
+    pTrack->setArtist("asdf");
+    EXPECT_FALSE(pQuery->match(pTrack));
+    pTrack->setComment("test ASDF  ewetest");
+    EXPECT_FALSE(pQuery->match(pTrack));
+
+    pTrack->setComment(QString::fromUtf8("comment:\"asdf\xC2\xB0 ewe\""));
+    EXPECT_TRUE(pQuery->match(pTrack));
+
+    qDebug() << pQuery->toSql();
+
+    EXPECT_STREQ(
+        qPrintable(QString::fromUtf8("comment LIKE '%asdf\xC2\xB0 ewe%'")),
+        qPrintable(pQuery->toSql()));
+}
+
 TEST_F(SearchQueryParserTest, TextFilterTailingSpace) {
     QStringList searchColumns;
     searchColumns << "artist"
@@ -485,7 +509,7 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
     EXPECT_STREQ(
         qPrintable(QString("((bpm >= 127.12) AND (bpm <= 129)) AND "
                            "((artist LIKE '%com truise%') OR (album_artist LIKE '%com truise%')) AND "
-                           "((artist LIKE '%Colorvision%') OR (title LIKE '%Colorvision%'))")),
+                           "((artist LIKE '%colorvision%') OR (title LIKE '%colorvision%'))")),
         qPrintable(pQuery->toSql()));
 }
 
