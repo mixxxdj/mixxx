@@ -218,11 +218,11 @@
     -->
 
     <!-- minimum OS version check disabled for now because we do not want to enforce installing mixxx on older systems.
-         Anyway, we display a warning message when installing on XP and below
+         Anyway, we display a warning message when installing on XP and below -->
     <Condition Message="!(loc.OS2Old)">
        <![CDATA[Installed OR (VersionNT >= 501)]]>
     </Condition>
-    -->
+
 
     <!--
       2. Check OS bitness
