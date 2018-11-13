@@ -117,6 +117,7 @@ bool decodeFrameHeader(
         mad_header* pMadHeader,
         mad_stream* pMadStream,
         bool skipId3Tag) {
+    DEBUG_ASSERT(pMadStream);
     DEBUG_ASSERT(isStreamValid(*pMadStream));
     if (mad_header_decode(pMadHeader, pMadStream)) {
         // Something went wrong when decoding the frame header...
@@ -227,7 +228,8 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
 
     // Decode all the headers and calculate audio properties
 
-    unsigned long sumBitrate = 0;
+    quint64 sumBitrate = 0;
+    quint64 cntBitrate = 0;
 
     mad_header madHeader;
     mad_header_init(&madHeader);
@@ -284,7 +286,12 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         addSeekFrame(m_curFrameIndex, m_madStream.this_frame);
 
         // Accumulate data from the header
-        sumBitrate += madHeader.bitrate;
+        if (Bitrate(madHeader.bitrate).valid()) {
+            // Accumulate the bitrate per decoded sample frame to calculate
+            // a weighted average for the whole file (see below)
+            sumBitrate += static_cast<quint64>(madHeader.bitrate) * static_cast<quint64>(madFrameLength);
+            cntBitrate += madFrameLength;
+        }
 
         // Update current stream position
         m_curFrameIndex += madFrameLength;
@@ -354,9 +361,13 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     initFrameIndexRangeOnce(IndexRange::forward(0, m_curFrameIndex));
 
     // Calculate average values
-    m_avgSeekFrameCount = frameLength() / m_seekFrameList.size();
-    const unsigned long avgBitrate = sumBitrate / m_seekFrameList.size();
-    initBitrateOnce(avgBitrate / 1000);
+    if (m_seekFrameList.size() > 0) {
+        m_avgSeekFrameCount = frameLength() / m_seekFrameList.size();
+    }
+    if (cntBitrate > 0) {
+        const unsigned long avgBitrate = sumBitrate / cntBitrate;
+        initBitrateOnce(avgBitrate / 1000);
+    }
 
     // Terminate m_seekFrameList
     addSeekFrame(m_curFrameIndex, 0);
