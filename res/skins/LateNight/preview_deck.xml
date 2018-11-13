@@ -47,6 +47,19 @@
                         <Group>[PreviewDeck1]</Group>
                         <Elide>right</Elide>
                       </Text>
+                      <Number>
+                        <TooltipId>visual_bpm</TooltipId>
+                        <Group>[PreviewDeck1]</Group>
+                        <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                        <Alignment>left</Alignment>
+                        <Connection>
+                          <ConfigKey>[PreviewDeck1],visual_bpm</ConfigKey>
+                        </Connection>
+			<Connection>
+			  <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
+			  <BindProperty>visible</BindProperty>
+			</Connection>
+                      </Number>
                     </Children>
                   </WidgetGroup>
                   <WidgetGroup>
