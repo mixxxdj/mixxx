@@ -172,7 +172,7 @@ QString TextFilterNode::toSql() const {
     QString argument = m_argument;
     if (argument.size() > 0) {
         if (argument[argument.size() - 1].isSpace()) {
-            // LIKE eats a tailing space. This can be avoided by adding a '_'
+            // LIKE eats a trailing space. This can be avoided by adding a '_'
             // as a delimiter that matches any following character.
             argument.append('_');
         }

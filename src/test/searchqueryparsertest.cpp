@@ -303,7 +303,7 @@ TEST_F(SearchQueryParserTest, TextFilterDecoration) {
         qPrintable(pQuery->toSql()));
 }
 
-TEST_F(SearchQueryParserTest, TextFilterTailingSpace) {
+TEST_F(SearchQueryParserTest, TextFilterTrailingSpace) {
     QStringList searchColumns;
     searchColumns << "artist"
                   << "album";
