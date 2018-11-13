@@ -25,19 +25,19 @@
                 <Group><Variable name="group"/></Group>
                 <Elide>right</Elide>
               </TrackProperty>
-	            <Number>
-		            <TooltipId>visual_bpm</TooltipId>
-	              <Group>[Sampler<Variable name="samplernum"/>]</Group>
-	              <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-	              <Alignment>left</Alignment>
-	              <Connection>
-		              <ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
-		            </Connection>
-		            <Connection>
-		              <ConfigKey>[Sampler<Variable name="samplernum"/>],track_loaded</ConfigKey>
-		              <BindProperty>visible</BindProperty>
-		            </Connection>
-	            </Number>
+              <Number>
+                <TooltipId>visual_bpm</TooltipId>
+                <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                <Alignment>left</Alignment>
+                <Connection>
+                  <ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
+                </Connection>
+                <Connection>
+                <ConfigKey>[Sampler<Variable name="samplernum"/>],track_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </Number>
             </Children>
           </WidgetGroup>
 
