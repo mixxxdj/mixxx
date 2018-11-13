@@ -129,6 +129,8 @@ class EngineBuffer : public EngineObject {
 
     // Queues a new seek position. Use SEEK_EXACT or SEEK_STANDARD as seekType
     void queueNewPlaypos(double newpos, enum SeekRequest seekType);
+    // Copy the play position from the given buffer
+    void copyPlaypos(EngineBuffer* pEngineBuffer);
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
     void requestSyncMode(SyncMode mode);

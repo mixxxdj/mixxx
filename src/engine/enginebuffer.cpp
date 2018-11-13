@@ -370,6 +370,10 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     m_iSeekQueued = seekType;
 }
 
+void EngineBuffer::copyPlaypos(EngineBuffer* pEngineBuffer) {
+    doSeekPlayPos(pEngineBuffer->m_filepos_play, SEEK_EXACT);
+}
+
 void EngineBuffer::requestSyncPhase() {
     // Don't overwrite m_iSeekQueued
     m_iSeekPhaseQueued = 1;

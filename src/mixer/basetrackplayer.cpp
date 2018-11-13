@@ -372,7 +372,9 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             }
 
             // copy the play position
-            ControlObject::set(ConfigKey(getGroup(), "playposition"), ControlObject::get(ConfigKey(m_copyFrom, "playposition")));
+            EngineChannel* pChannel = m_pEngineMaster->getChannel(m_copyFrom);
+            DEBUG_ASSERT(pChannel);
+            m_pEngineMaster->copyPlayPosition(pChannel, m_pChannel);
 
             // copy the loop state
             if (ControlObject::get(ConfigKey(m_copyFrom, "loop_enabled")) == 1.0) {
