@@ -362,6 +362,8 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                 }
             }
         } else {
+            // perform a clone of the given channel
+
             // copy rate
             if (m_pRateSlider != NULL) {
                 m_pRateSlider->set(ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "rate")));
