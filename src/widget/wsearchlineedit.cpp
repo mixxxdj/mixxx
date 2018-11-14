@@ -26,6 +26,9 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
       WBaseWidget(this),
       m_clearButton(new QToolButton(this)),
       m_state(State::Inactive) {
+    DEBUG_ASSERT(kEmptySearch.isEmpty());  
+    DEBUG_ASSERT(!kEmptySearch.isNull());   
+
     setAcceptDrops(false);
 
     QPixmap pixmap(":/images/library/cross.png");
