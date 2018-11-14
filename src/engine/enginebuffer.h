@@ -85,6 +85,7 @@ class EngineBuffer : public EngineObject {
         SYNC_REQUEST_ENABLE,
         SYNC_REQUEST_DISABLE,
         SYNC_REQUEST_ENABLEDISABLE,
+        SYNC_REQUEST_POSITION,
     };
   public:
     enum SeekRequest {
@@ -129,11 +130,10 @@ class EngineBuffer : public EngineObject {
 
     // Queues a new seek position. Use SEEK_EXACT or SEEK_STANDARD as seekType
     void queueNewPlaypos(double newpos, enum SeekRequest seekType);
-    // Copy the play position from the given buffer
-    void copyPlaypos(EngineBuffer* pEngineBuffer);
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
     void requestSyncMode(SyncMode mode);
+    void requestSyncPosition();
 
     // The process methods all run in the audio callback.
     void process(CSAMPLE* pOut, const int iBufferSize);
@@ -225,6 +225,9 @@ class EngineBuffer : public EngineObject {
     // for transitioning from one scaler to another, or reseeking a scaler
     // to prevent pops.
     void readToCrossfadeBuffer(const int iBufferSize);
+
+    // Copy the play position from the given buffer
+    void seekCloneBuffer(EngineBuffer* pOtherBuffer);
 
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(double playpos, bool adjustingPhase);

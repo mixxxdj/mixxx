@@ -189,11 +189,6 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     m_pHeadphoneEnabled->setReadOnly();
 
     // Note: the EQ Rack is set in EffectsManager::setupDefaults();
-
-    PlayPositionCloneData data;
-    data.source = 0;
-    data.dest = 0;
-    m_queuedPositionCopy.setValue(data);
 }
 
 EngineMaster::~EngineMaster() {
@@ -269,24 +264,6 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer() const {
 
 const CSAMPLE* EngineMaster::getSidechainBuffer() const {
     return m_pSidechainMix;
-}
-
-void EngineMaster::copyPlayPosition(EngineChannel* source, EngineChannel* dest) {
-    PlayPositionCloneData data;
-    data.source = source;
-    data.dest = dest;
-    m_queuedPositionCopy.setValue(data);
-}
-
-void EngineMaster::processChannelCopies() {
-    PlayPositionCloneData clone_data = m_queuedPositionCopy.getValue();
-    if (!clone_data.source) {
-        return;
-    }
-
-    clone_data.dest->getEngineBuffer()->copyPlaypos(clone_data.source->getEngineBuffer());
-    clone_data = {0, 0};
-    m_queuedPositionCopy.setValue(clone_data);
 }
 
 void EngineMaster::processChannels(int iBufferSize) {
@@ -415,9 +392,6 @@ void EngineMaster::process(const int iBufferSize) {
     if (m_pEngineEffectsManager) {
         m_pEngineEffectsManager->onCallbackStart();
     }
-
-    // Perform pending copies
-    processChannelCopies();
 
     // Update internal master sync rate.
     m_pMasterSync->onCallbackStart(m_iSampleRate, m_iBufferSize);

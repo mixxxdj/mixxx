@@ -370,10 +370,6 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     m_iSeekQueued = seekType;
 }
 
-void EngineBuffer::copyPlaypos(EngineBuffer* pEngineBuffer) {
-    doSeekPlayPos(pEngineBuffer->m_filepos_play, SEEK_EXACT);
-}
-
 void EngineBuffer::requestSyncPhase() {
     // Don't overwrite m_iSeekQueued
     m_iSeekPhaseQueued = 1;
@@ -413,6 +409,11 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
     }
 }
 
+void EngineBuffer::requestSyncPosition() {
+    m_iEnableSyncQueued = SYNC_REQUEST_POSITION;
+    m_iSyncModeQueued = SYNC_INVALID;
+}
+
 void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
     if (!m_bCrossfadeReady) {
         // Read buffer, as if there where no parameter change
@@ -422,6 +423,10 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
         m_pReadAheadManager->notifySeek(m_filepos_play);
         m_bCrossfadeReady = true;
      }
+}
+
+void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
+    doSeekPlayPos(pOtherBuffer->m_filepos_play, SEEK_EXACT);
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
@@ -1087,6 +1092,7 @@ void EngineBuffer::processSyncRequests() {
                     m_iEnableSyncQueued.fetchAndStoreRelease(SYNC_REQUEST_NONE));
     SyncMode mode_request =
             static_cast<SyncMode>(m_iSyncModeQueued.fetchAndStoreRelease(SYNC_INVALID));
+    EngineChannel* pChannel;
     switch (enable_request) {
     case SYNC_REQUEST_ENABLE:
         m_pEngineSync->requestEnableSync(m_pSyncControl, true);
@@ -1097,6 +1103,12 @@ void EngineBuffer::processSyncRequests() {
     case SYNC_REQUEST_ENABLEDISABLE:
         m_pEngineSync->requestEnableSync(m_pSyncControl, true);
         m_pEngineSync->requestEnableSync(m_pSyncControl, false);
+        break;
+    case SYNC_REQUEST_POSITION:
+        pChannel = m_pEngineSync->pickNonSyncSyncTarget(m_pSyncControl->getChannel());
+        if (pChannel) {
+            seekCloneBuffer(pChannel->getEngineBuffer());
+        }
         break;
     case SYNC_REQUEST_NONE:
         break;

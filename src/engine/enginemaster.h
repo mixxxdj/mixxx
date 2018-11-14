@@ -110,8 +110,6 @@ class EngineMaster : public QObject, public AudioSource {
         return m_pMasterSync;
     }
 
-    void copyPlayPosition(EngineChannel* source, EngineChannel* dest);
-
     // These are really only exposed for tests to use.
     const CSAMPLE* getMasterBuffer() const;
     const CSAMPLE* getBoothBuffer() const;
@@ -124,11 +122,6 @@ class EngineMaster : public QObject, public AudioSource {
     EngineSideChain* getSideChain() const {
         return m_pEngineSideChain;
     }
-
-    struct PlayPositionCloneData {
-        EngineChannel* source;
-        EngineChannel* dest;
-    };
 
     struct ChannelInfo {
         ChannelInfo(int index)
@@ -277,8 +270,6 @@ class EngineMaster : public QObject, public AudioSource {
     // respective output.
     void processChannels(int iBufferSize);
 
-    void processChannelCopies();
-
     ChannelHandleFactory* m_pChannelHandleFactory;
     void applyMasterEffects();
     void processHeadphones(const double masterMixGainInHeadphones);
@@ -366,8 +357,6 @@ class EngineMaster : public QObject, public AudioSource {
 
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
-
-    ControlValueAtomic<PlayPositionCloneData> m_queuedPositionCopy;
 };
 
 #endif

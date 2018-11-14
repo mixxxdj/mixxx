@@ -37,7 +37,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
           m_pConfig(pConfig),
           m_pEngineMaster(pMixingEngine),
           m_pLoadedTrack(),
-          m_replaygainPending(false) {
+          m_replaygainPending(false),
+          m_cloneFromChannel(NULL) {
     ChannelHandleAndGroup channelGroup =
             pMixingEngine->registerChannelGroup(group);
     m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine,
@@ -343,7 +344,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             m_pPreGain->set(1.0);
         }
 
-        if (m_copyFrom.isEmpty()) {
+        if (!m_cloneFromChannel) {
             int reset = m_pConfig->getValue<int>(
                     ConfigKey("[Controls]", "SpeedAutoReset"), RESET_PITCH);
             if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
@@ -363,21 +364,19 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         } else {
             // copy rate
             if (m_pRateSlider != NULL) {
-                m_pRateSlider->set(ControlObject::get(ConfigKey(m_copyFrom, "rate")));
+                m_pRateSlider->set(ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "rate")));
             }
 
             // copy pitch
             if (m_pPitchAdjust != NULL) {
-                m_pPitchAdjust->set(ControlObject::get(ConfigKey(m_copyFrom, "pitch_adjust")));
+                m_pPitchAdjust->set(ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "pitch_adjust")));
             }
 
             // copy the play position
-            EngineChannel* pChannel = m_pEngineMaster->getChannel(m_copyFrom);
-            DEBUG_ASSERT(pChannel);
-            m_pEngineMaster->copyPlayPosition(pChannel, m_pChannel);
+            m_pChannel->getEngineBuffer()->requestSyncPosition();
 
             // copy the loop state
-            if (ControlObject::get(ConfigKey(m_copyFrom, "loop_enabled")) == 1.0) {
+            if (ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "loop_enabled")) == 1.0) {
                 ControlObject::set(ConfigKey(getGroup(), "reloop_toggle"), 1.0);
             }
         }
@@ -390,7 +389,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         qDebug() << "stray BaseTrackPlayerImpl::slotTrackLoaded()";
     }
 
-    m_copyFrom.clear();
+    m_cloneFromChannel = NULL;
 
     // Update the PlayerInfo class that is used in EngineBroadcast to replace
     // the metadata of a stream
@@ -401,16 +400,20 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
     return m_pLoadedTrack;
 }
 
-void BaseTrackPlayerImpl::slotCopyFrom(const QString& group) {
-    qDebug() << "BaseTrackPlayerImpl::slotCopyFrom" << getGroup() << "<-" << group;
-    TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(group);
-    if (!pTrack) {
+void BaseTrackPlayerImpl::slotCloneChannel() {
+    m_cloneFromChannel = m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel);
+    if (!m_cloneFromChannel) {
         return;
     }
 
-    m_copyFrom = group;
 
-    slotLoadTrack(pTrack, ControlObject::get(ConfigKey(group, "play")) != 0.0);
+    TrackPointer pTrack = m_cloneFromChannel->getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        m_cloneFromChannel = NULL;
+        return;
+    }
+
+    slotLoadTrack(pTrack, ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "play")) != 0.0);
 }
 
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
