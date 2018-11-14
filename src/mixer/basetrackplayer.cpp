@@ -168,20 +168,28 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
 
     // The loop in and out points must be set here and not in slotTrackLoaded
     // so LoopingControl::trackLoaded can access them.
-    const QList<CuePointer> trackCues(m_pLoadedTrack->getCuePoints());
-    QListIterator<CuePointer> it(trackCues);
-    while (it.hasNext()) {
-        CuePointer pCue(it.next());
-        if (pCue->getType() == Cue::LOOP) {
-            double loopStart = pCue->getPosition();
-            double loopEnd = loopStart + pCue->getLength();
-            if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
-                m_pLoopInPoint->set(loopStart);
-                m_pLoopOutPoint->set(loopEnd);
-                break;
+    if (!m_cloneFromChannel) {
+        const QList<CuePointer> trackCues(m_pLoadedTrack->getCuePoints());
+        QListIterator<CuePointer> it(trackCues);
+        while (it.hasNext()) {
+            CuePointer pCue(it.next());
+            if (pCue->getType() == Cue::LOOP) {
+                double loopStart = pCue->getPosition();
+                double loopEnd = loopStart + pCue->getLength();
+                if (loopStart != kNoTrigger && loopEnd != kNoTrigger && loopStart <= loopEnd) {
+                    m_pLoopInPoint->set(loopStart);
+                    m_pLoopOutPoint->set(loopEnd);
+                    break;
+                }
             }
         }
+    } else {
+        // copy loop in and out points from other deck because any new loops
+        // won't be saved yet
+        m_pLoopInPoint->set(ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "loop_start_position")));
+        m_pLoopOutPoint->set(ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "loop_end_position")));
     }
+
 
     connectLoadedTrack();
 }
