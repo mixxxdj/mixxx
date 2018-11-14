@@ -108,12 +108,12 @@ QString WSearchLineEdit::getSearchText() const {
 
 void WSearchLineEdit::focusInEvent(QFocusEvent* event) {
     QLineEdit::focusInEvent(event);
-    hidePlaceholder(getSearchText());
+    showSearchText(getSearchText());
 }
 
 void WSearchLineEdit::focusOutEvent(QFocusEvent* event) {
     QLineEdit::focusOutEvent(event);
-    updatePlaceholder(getSearchText());
+    updateEditBox(getSearchText());
 }
 
 // slot
@@ -130,7 +130,7 @@ void WSearchLineEdit::restoreSearch(const QString& text) {
     } else {
         setEnabled(true);
         // Updating the placeholder implicitly updates the text and the clear button
-        updatePlaceholder(text);
+        updateEditBox(text);
     }
 }
 
@@ -161,7 +161,7 @@ void WSearchLineEdit::showPlaceholder() {
     emit searchActive(false);
 }
 
-void WSearchLineEdit::hidePlaceholder(const QString& text) {
+void WSearchLineEdit::showSearchText(const QString& text) {
     DEBUG_ASSERT(isEnabled());
 
     // Reactivate text change listener
@@ -188,11 +188,11 @@ void WSearchLineEdit::hidePlaceholder(const QString& text) {
     emit searchActive(true);
 }
 
-void WSearchLineEdit::updatePlaceholder(const QString& text) {
+void WSearchLineEdit::updateEditBox(const QString& text) {
     if (text.isEmpty()) {
         showPlaceholder();
     } else {
-        hidePlaceholder(text);
+        showSearchText(text);
     }
 }
 
