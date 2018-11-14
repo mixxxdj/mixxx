@@ -176,6 +176,8 @@ void WSearchLineEdit::hidePlaceholder(const QString& text) {
     }
     blockSignals(false);
 
+    updateClearButton(text);
+
     QPalette pal = palette();
     pal.setColor(foregroundRole(), m_foregroundColor);
     setPalette(pal);
