@@ -361,9 +361,8 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     initFrameIndexRangeOnce(IndexRange::forward(0, m_curFrameIndex));
 
     // Calculate average values
-    if (m_seekFrameList.size() > 0) {
-        m_avgSeekFrameCount = frameLength() / m_seekFrameList.size();
-    }
+    DEBUG_ASSERT(m_seekFrameList.size() > 0); // see above
+    m_avgSeekFrameCount = frameLength() / m_seekFrameList.size();
     if (cntBitrate > 0) {
         const unsigned long avgBitrate = sumBitrate / cntBitrate;
         initBitrateOnce(avgBitrate / 1000);
