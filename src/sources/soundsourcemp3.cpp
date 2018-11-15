@@ -228,8 +228,14 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
 
     // Decode all the headers and calculate audio properties
 
-    quint64 sumBitrate = 0;
-    quint64 cntBitrate = 0;
+    // The average bitrate is calculated by summing up the bitrate
+    // (in bps <= 320_000) for each counted sample frame and dividing
+    // by the number of counted sample frames. The maximum value for
+    // the nominator is 320_000 * number of sample frames which is
+    // sufficient for 2^63-1 / 320_000 bps / 48_000 Hz = almost
+    // 7000 days of audio duration.
+    quint64 sumBitrateFrames = 0; // nominator
+    quint64 cntBitrateFrames = 0; // denominator
 
     mad_header madHeader;
     mad_header_init(&madHeader);
@@ -289,8 +295,8 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         if (Bitrate(madHeader.bitrate).valid()) {
             // Accumulate the bitrate per decoded sample frame to calculate
             // a weighted average for the whole file (see below)
-            sumBitrate += static_cast<quint64>(madHeader.bitrate) * static_cast<quint64>(madFrameLength);
-            cntBitrate += madFrameLength;
+            sumBitrateFrames += static_cast<quint64>(madHeader.bitrate) * static_cast<quint64>(madFrameLength);
+            cntBitrateFrames += madFrameLength;
         }
 
         // Update current stream position
@@ -363,9 +369,11 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     // Calculate average values
     DEBUG_ASSERT(m_seekFrameList.size() > 0); // see above
     m_avgSeekFrameCount = frameLength() / m_seekFrameList.size();
-    if (cntBitrate > 0) {
-        const unsigned long avgBitrate = sumBitrate / cntBitrate;
-        initBitrateOnce(avgBitrate / 1000);
+    if (cntBitrateFrames > 0) {
+        const unsigned long avgBitrate = sumBitrateFrames / cntBitrateFrames;
+        initBitrateOnce(avgBitrate / 1000); // bps -> kbps
+    } else {
+        kLogger.warning() << "Bitrate cannot be calculated from headers";
     }
 
     // Terminate m_seekFrameList
