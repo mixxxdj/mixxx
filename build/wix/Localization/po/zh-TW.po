@@ -41,8 +41,8 @@ msgstr "安裝 Mixxx"
 #.  Error messages
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
-msgid "This product requires Windows XP or above."
-msgstr "此產品需要 Windows XP 或以上。"
+msgid "This product requires Windows 7 or above."
+msgstr "此產品需要 Windows 7 或以上。"
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."

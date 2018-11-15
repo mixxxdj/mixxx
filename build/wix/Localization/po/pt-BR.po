@@ -40,8 +40,8 @@ msgstr "Instala o Mixx"
 #.  Error messages
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
-msgid "This product requires Windows XP or above."
-msgstr "Esse produto requer Windows XP ou melhor."
+msgid "This product requires Windows 7 or above."
+msgstr "Esse produto requer Windows 7 ou melhor."
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."
