@@ -207,7 +207,7 @@
     <!--
       Launch conditions
 
-      1. Check minimum OS version (501  = Windows XP)
+      1. Check minimum OS version (601  = Windows 7)
          If not, the installation is aborted.
          By doing the (Installed OR ...) property means that this condition will only be evaluated if the app is being installed and not on uninstall or changing
 

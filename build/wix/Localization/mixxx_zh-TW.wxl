@@ -22,7 +22,7 @@
 
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
-  <String Id="OS2Old">此產品需要 Windows XP 或以上。</String>
+  <String Id="OS2Old">此產品需要 Windows 7 或以上。</String>
   <String Id="NewerInstalled">已安裝相同版本或更新版本的這種產品。</String>
   <String Id="x64VersionRequired">您需要在 64 位 Windows 上安裝此產品的 64 位版本。</String>
   <String Id="x86VersionRequired">您需要在 32 位 Windows 上安裝 32 位版本的這種產品。</String>
