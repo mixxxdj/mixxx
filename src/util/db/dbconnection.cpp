@@ -100,7 +100,6 @@ int likeCompareInner(
         const QChar* string, // The string to compare against
         int stringSize,
         const QChar esc) { // The escape character
-
     int iPattern = 0; // Current index in pattern
     int iString = 0; // Current index in string
 

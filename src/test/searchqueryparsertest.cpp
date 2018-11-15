@@ -330,7 +330,6 @@ TEST_F(SearchQueryParserTest, TextFilterTrailingSpace) {
     EXPECT_STREQ(
         qPrintable(QString("comment LIKE '%  _%'")),
         qPrintable(pQuery2->toSql()));
-
 }
 
 TEST_F(SearchQueryParserTest, TextFilterNegation) {
