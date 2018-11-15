@@ -13,7 +13,7 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,me</SizePolicy>
     <Children>
-      <WidgetGroup>
+      <!--WidgetGroup>
         <ObjectName>EffectUnitGroupControls</ObjectName>
         <SizePolicy>me,max</SizePolicy>
         <Layout>horizontal</Layout>
@@ -70,7 +70,7 @@
           </WidgetGroup>
 
         </Children>
-      </WidgetGroup>
+      </WidgetGroup-->
 
       <WidgetGroup>
         <Layout>vertical</Layout>

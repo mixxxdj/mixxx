@@ -20,6 +20,19 @@ Variables:
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <Children>
+
+          <WidgetGroup>
+            <ObjectName>AlignTop</ObjectName>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:hide_show_button.xml">
+                <SetVariable name="object_name">EffectUnitToggle</SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
+                <SetVariable name="control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_parameters</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
           <WidgetGroup>
             <ObjectName>EffectUnitEffects</ObjectName>
             <SizePolicy>me,min</SizePolicy>
@@ -41,10 +54,55 @@ Variables:
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>EffectUnitControls</ObjectName>
+            <ObjectName>EffectUnitGroupControls</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>min,max</SizePolicy>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
+
+              <WidgetGroup>
+                <ObjectName></ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>EffectUnitLabel</ObjectName>
+                    <Text>FX<Variable name="EffectUnit"/></Text>
+                    <Alignment>center</Alignment>
+                  </Label>
+
+                  <WidgetGroup>
+                    <ObjectName>AlignCenter</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <Template src="skin:left_2state_button.xml">
+                        <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
+                        <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
+                        <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+                        <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+                        <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+                        <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                        <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                        <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+                        <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+                        <SetVariable name="left_connection_control">[EffectRack1_EffectUnit<Variable name="EffectUnit"/>],group_[Headphone]_enable</SetVariable>
+                      </Template>
+
+                      <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+                      <Template src="skin:left_2state_button.xml">
+                        <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                        <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
+                        <SetVariable name="MinimumSize">26,22</SetVariable>
+                        <SetVariable name="SizePolicy">f,f</SetVariable>
+                        <SetVariable name="state_0_text">MST</SetVariable>
+                        <SetVariable name="state_1_text">MST</SetVariable>
+                        <SetVariable name="left_connection_control">[EffectRack1_EffectUnit<Variable name="EffectUnit"/>],group_[Master]_enable</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+
+                </Children>
+              </WidgetGroup>
 
               <Template src="skin:knob.xml">
                 <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>

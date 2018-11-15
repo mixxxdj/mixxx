@@ -11,7 +11,7 @@ Variables:
   <WidgetGroup>
     <ObjectName>FocusableEffect</ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>max,max</SizePolicy>
+    <SizePolicy>me,max</SizePolicy>
     <Children>
 
       <WidgetGroup>
@@ -35,7 +35,9 @@ Variables:
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
-            <Size>120f,-1</Size>
+            <MinimumSize>90,20</MinimumSize>
+            <MaximumSize>120,-1</MaximumSize>
+            <SizePolicy>me,min</SizePolicy>
           </EffectSelector>
 
         </Children>
@@ -82,7 +84,9 @@ Variables:
             <EffectRack><Variable name="EffectRack"/></EffectRack>
             <EffectUnit><Variable name="EffectUnit"/></EffectUnit>
             <Effect><Variable name="Effect"/></Effect>
-            <Size>120f,-1</Size>
+            <MinimumSize>90,20</MinimumSize>
+            <MaximumSize>120,-1</MaximumSize>
+            <SizePolicy>me,min</SizePolicy>
           </EffectSelector>
 
         </Children>

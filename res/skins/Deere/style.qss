@@ -127,6 +127,14 @@ TEST1 {
   qproperty-layoutAlignment: 'AlignRight';
 }
 
+#AlignCenter {
+  qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
+}
+
+#AlignTop {
+  qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
+}
+
 #SampleDecksContainer {
   border: 0px;
 }
@@ -942,7 +950,7 @@ WBeatSpinBox,
   font-weight: bold;
   font-size: 15px;
   text-transform: none;
-  text-align: left;
+  text-align: center;
 }
 
 #EffectUnitNameRow {
@@ -989,7 +997,10 @@ WBeatSpinBox,
 
 #EffectUnitGroupControls {
   border: 1px solid #222222;
-  border-width: 0px 0px 1px 0px;
+  border-width: 0px 0px 0px 1px;
+  qproperty-layoutSpacing: 2;
+  padding: 0px 2px 2px 2px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
 #EffectUnitGroupControlsLeft {
@@ -1346,8 +1357,9 @@ WStarRating {
   border-width: 0px 0px 5px 0px;
 }
 
-#EffectUnitNoParameters {
-  padding-left: 5px;
+#EffectUnitNoParameters { /*
+  padding-left: 5px;  */
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
 #EffectUnitEffectsNoParameters {
