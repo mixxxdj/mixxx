@@ -111,7 +111,6 @@ class Library: public QObject,
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void restoreSearch(const QString&);
     void search(const QString& text);
-    void searchActive(bool active);
     void disableSearch();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);

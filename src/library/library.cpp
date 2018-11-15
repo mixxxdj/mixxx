@@ -251,8 +251,6 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
     connect(this, SIGNAL(setSelectedClick(bool)),
             pTrackTableView, SLOT(setSelectedClick(bool)));
-    connect(this, SIGNAL(searchActive(bool)),
-            pTrackTableView, SLOT(onSearchActive(bool)));
 
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 

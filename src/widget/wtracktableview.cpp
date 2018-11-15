@@ -1058,22 +1058,20 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 void WTrackTableView::onSearch(const QString& text) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel) {
+        bool searchWasEmpty = false;
+        if (trackModel->currentSearch().isEmpty()) {
+            saveNoSearchVScrollBarPos();
+            searchWasEmpty = true;
+        }
         trackModel->search(text);
-    }
-    if (text.isEmpty()) {
-        restoreVScrollBarPos();
-    }
-}
-
-void WTrackTableView::onSearchActive(bool active) {
-    if (active) {
-        // Save the current position before a new search starts
-        saveVScrollBarPos();
+        if (!searchWasEmpty && text.isEmpty()) {
+            restoreNoSearchVScrollBarPos();
+        }
+        trackModel->search(text);
     }
 }
 
 void WTrackTableView::onShow() {
-    restoreVScrollBarPos();
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
