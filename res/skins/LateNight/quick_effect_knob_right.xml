@@ -45,7 +45,7 @@
                   </Label>
                 </Children>
                   <Connection>
-                    <ConfigKey>[Master],show_eq_buttons_text</ConfigKey>
+                    <ConfigKey>[Master],show_eq_knobs_text</ConfigKey>
                     <BindProperty>visible</BindProperty>
                   </Connection>
               </WidgetGroup>
