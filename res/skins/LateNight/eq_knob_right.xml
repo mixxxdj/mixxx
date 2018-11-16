@@ -11,6 +11,7 @@
         <Layout>horizontal</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
+
           <!-- EQ knob -->
           <WidgetGroup>
             <Layout>horizontal</Layout>
@@ -30,23 +31,50 @@
             </Children>
           </WidgetGroup>
 
-          <!-- Kill button -->
+          <!-- Knob label & Kill button -->
           <WidgetGroup>
-            <ObjectName>KillButtonRight</ObjectName>
-            <Layout>horizontal</Layout>
+            <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>22,30</MinimumSize>
             <Children>
-              <Template src="skin:fx_button.xml">
-                <SetVariable name="icon">eq_kill</SetVariable>
-                <SetVariable name="Size">18f,18f</SetVariable>
-                <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
-              </Template>
+
+              <!-- Knob label -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>KnobLabel</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <MinimumSize>10,3</MinimumSize>
+                    <Alignment>center</Alignment>
+                    <Text><Variable name="FxName"/></Text>
+                  </Label>
+                </Children>
+                  <Connection>
+                    <ConfigKey>[Master],show_eq_buttons_text</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+              </WidgetGroup>
+
+              <!-- Kill button -->
+              <WidgetGroup>
+                <ObjectName>KillButtonRight</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <MinimumSize>22,20</MinimumSize>
+                <Children>
+                  <Template src="skin:fx_button.xml">
+                    <SetVariable name="icon">eq_kill</SetVariable>
+                    <SetVariable name="Size">18f,18f</SetVariable>
+                    <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
             </Children>
-            <Connection>
-              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup>
 
         </Children>

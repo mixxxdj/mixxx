@@ -12,23 +12,51 @@
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
+          <!-- Knob label & Kill button -->
           <WidgetGroup>
-            <ObjectName>KillButtonLeft</ObjectName>
-            <Layout>horizontal</Layout>
+            <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
-            <MinimumSize>22,30</MinimumSize>
             <Children>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
-                <SetVariable name="icon">quickEffect</SetVariable>
-                <SetVariable name="Size">18f,18f</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="QuickEffect"/>,enabled</SetVariable>
-              </Template>
+
+              <!-- Knob label -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Label>
+                    <ObjectName>KnobLabel</ObjectName>
+                    <SizePolicy>min,min</SizePolicy>
+                    <MinimumSize>10,3</MinimumSize>
+                    <Alignment>left</Alignment>
+                    <Text><Variable name="FxName"/></Text>
+                  </Label>
+                </Children>
+                  <Connection>
+                    <ConfigKey>[Master],show_eq_buttons_text</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>KillButtonLeft</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <MinimumSize>22,20</MinimumSize>
+                <Children>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">QuickEffectRack_enabled</SetVariable>
+                    <SetVariable name="icon">quickEffect</SetVariable>
+                    <SetVariable name="Size">18f,18f</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="QuickEffect"/>,enabled</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
             </Children>
-            <Connection>
-              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup>
 
           <WidgetGroup>
@@ -43,38 +71,13 @@
               </Template>
             </Children>
           </WidgetGroup>
+
         </Children>
         <Connection>
           <ConfigKey><Variable name="QuickEffect"/>,loaded</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Kill button + knob -->
-
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,f</SizePolicy>
-        <Children>
-          <WidgetGroup>
-            <Size>0min,0min</Size>
-            <Children/>
-          </WidgetGroup>
-
-          <EffectName>
-            <ObjectName>KnobLabel</ObjectName>
-            <MinimumSize>40,12</MinimumSize>
-            <MaximumSize>62,12</MaximumSize>
-            <SizePolicy>me,f</SizePolicy>
-            <Elide>right</Elide>
-            <EffectRackGroup>[QuickEffectRack1]</EffectRackGroup>
-            <EffectUnitGroup><Variable name="QuickEffectGroup"/></EffectUnitGroup>
-            <Effect>1</Effect>
-          </EffectName>
-        </Children>
-        <Connection>
-          <ConfigKey><Variable name="QuickEffect"/>,loaded</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
 
     </Children>
     <Connection>

@@ -48,14 +48,17 @@
 
       <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">3</SetVariable>
+        <SetVariable name="FxName">h</SetVariable>
       </Template>
 
       <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">2</SetVariable>
+        <SetVariable name="FxName">m</SetVariable>
       </Template>
 
       <Template src="skin:eq_knob_4decks.xml">
         <SetVariable name="FxParameter">1</SetVariable>
+        <SetVariable name="FxName">l</SetVariable>
       </Template>
 
       <Template src="skin:quick_effect_knob_4decks.xml"/>
