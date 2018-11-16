@@ -195,6 +195,32 @@ Description:
                 </Children>
               </WidgetGroup><!-- /EQ Kill -->
 
+              <WidgetGroup><!-- Quick Effect Knob -->
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="text">Quickeffect Knob</SetVariable>
+                    <SetVariable name="Setting">[Master],show_quickeffect_knob</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- /Quick Effect Knob -->
+
               <WidgetGroup><!-- crossfader -->
                 <Layout>stacked</Layout>
                 <Size>190f,17f</Size>

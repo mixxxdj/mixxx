@@ -112,6 +112,10 @@
 
     </Children>
     <Connection>
+      <ConfigKey>[Master],show_quickeffect_knob</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+    <Connection>
       <ConfigKey>[Master],show_eqs</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
