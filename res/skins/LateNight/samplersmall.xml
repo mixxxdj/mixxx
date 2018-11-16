@@ -70,6 +70,8 @@
                 </Connection>
               </Number>
 
+              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
+
               <PushButton>
                 <TooltipId>orientation</TooltipId>
                 <NumberStates>3</NumberStates>
@@ -107,8 +109,6 @@
                 <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
                 <SetVariable name="Size">21,18</SetVariable>
               </Template>
-
-              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
 
             </Children>
           </WidgetGroup>
