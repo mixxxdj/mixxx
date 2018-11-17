@@ -191,6 +191,8 @@ public:
     // Temporary pitchrate, added to the permanent rate for calculateRate
     double m_tempRateRatio;
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
+    // Speed for temporary rate change
+    double m_dRateTempRampChange;
     // Return speed for temporary rate change
     double m_dRateTempRampbackChange;
 };

@@ -38,6 +38,7 @@ RateControl::RateControl(QString group,
       m_dTempRateChange(0.0),
       m_tempRateRatio(0.0),
       m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
+      m_dRateTempRampChange(0.0),
       m_dRateTempRampbackChange(0.0) {
     m_pScratchController = new PositionScratchController(group);
 
@@ -571,7 +572,7 @@ void RateControl::process(const double rate, const double currentSample,
             }
         } else if (m_eRateRampMode == RampMode::Linear) {
             double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
-            m_dTemporaryRateChangeCoarse = (latrate / ((double)m_iRateRampSensitivity / 100.));
+            m_dRateTempRampChange = (latrate / ((double)m_iRateRampSensitivity / 100.));
 
             if (m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) {
                 m_dRateTempRampbackChange = 0.0;
@@ -583,9 +584,9 @@ void RateControl::process(const double rate, const double currentSample,
         if (m_ePbCurrent) {
             // apply ramped pitchbending
             if (m_ePbCurrent == RateControl::RATERAMP_UP) {
-                addRateTemp(m_dTemporaryRateChangeCoarse * m_pRateRange->get());
+                addRateTemp(m_dRateTempRampChange * m_pRateRange->get());
             } else if (m_ePbCurrent == RateControl::RATERAMP_DOWN) {
-                subRateTemp(m_dTemporaryRateChangeCoarse * m_pRateRange->get());
+                subRateTemp(m_dRateTempRampChange * m_pRateRange->get());
             }
         } else if ((m_bTempStarted)
                 || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE)
