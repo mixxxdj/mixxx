@@ -21,30 +21,32 @@
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
-              <!-- Knob label -->
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <Label>
-                    <ObjectName>KnobLabel</ObjectName>
-                    <SizePolicy>min,min</SizePolicy>
-                    <MinimumSize>10,3</MinimumSize>
-                    <Alignment>center</Alignment>
-                    <Text><Variable name="FxName"/></Text>
-                  </Label>
-                </Children>
-                  <Connection>
-                    <ConfigKey>[Master],show_eq_knobs_text</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
-              </WidgetGroup>
-
               <!-- Kill button -->
               <WidgetGroup>
                 <Layout>vertical</Layout>
-                <Size>22f,20min</Size>
+                <SizePolicy>min,min</SizePolicy>
+                <MinimumSize>22,20</MinimumSize>
                 <Children>
+
+                  <!-- Knob label -->
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Label>
+                        <ObjectName>KnobLabel</ObjectName>
+                        <SizePolicy>min,min</SizePolicy>
+                        <MinimumSize>10,3</MinimumSize>
+                        <Alignment>center</Alignment>
+                        <Text><Variable name="FxName"/></Text>
+                      </Label>
+                    </Children>
+                      <Connection>
+                        <ConfigKey>[Master],show_eq_knobs_text</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                  </WidgetGroup>
+
                   <WidgetGroup>
                     <ObjectName>KillButtonLeft</ObjectName>
                     <Layout>vertical</Layout>
@@ -65,7 +67,6 @@
               </WidgetGroup>
             </Children>
           </WidgetGroup>
-
 
           <!-- EQ knob -->
           <WidgetGroup>
