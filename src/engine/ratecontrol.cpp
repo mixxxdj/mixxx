@@ -82,52 +82,52 @@ RateControl::RateControl(QString group,
     m_pVCMode = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_mode"));
 
     // Permanent rate-change buttons
-    buttonRatePermDown =
+    m_pButtonRatePermDown =
         new ControlPushButton(ConfigKey(group,"rate_perm_down"));
-    connect(buttonRatePermDown, SIGNAL(valueChanged(double)),
+    connect(m_pButtonRatePermDown, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRatePermDown(double)),
             Qt::DirectConnection);
 
-    buttonRatePermDownSmall =
+    m_pButtonRatePermDownSmall =
         new ControlPushButton(ConfigKey(group,"rate_perm_down_small"));
-    connect(buttonRatePermDownSmall, SIGNAL(valueChanged(double)),
+    connect(m_pButtonRatePermDownSmall, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRatePermDownSmall(double)),
             Qt::DirectConnection);
 
-    buttonRatePermUp =
+    m_pButtonRatePermUp =
         new ControlPushButton(ConfigKey(group,"rate_perm_up"));
-    connect(buttonRatePermUp, SIGNAL(valueChanged(double)),
+    connect(m_pButtonRatePermUp, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRatePermUp(double)),
             Qt::DirectConnection);
 
-    buttonRatePermUpSmall =
+    m_pButtonRatePermUpSmall =
         new ControlPushButton(ConfigKey(group,"rate_perm_up_small"));
-    connect(buttonRatePermUpSmall, SIGNAL(valueChanged(double)),
+    connect(m_pButtonRatePermUpSmall, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRatePermUpSmall(double)),
             Qt::DirectConnection);
 
     // Temporary rate-change buttons
-    buttonRateTempDown =
+    m_pButtonRateTempDown =
         new ControlPushButton(ConfigKey(group,"rate_temp_down"));
-    connect(buttonRateTempDown, SIGNAL(valueChanged(double)),
+    connect(m_pButtonRateTempDown, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempDown(double)),
             Qt::DirectConnection);
 
-    buttonRateTempDownSmall =
+    m_pButtonRateTempDownSmall =
         new ControlPushButton(ConfigKey(group,"rate_temp_down_small"));
-    connect(buttonRateTempDownSmall, SIGNAL(valueChanged(double)),
+    connect(m_pButtonRateTempDownSmall, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempDownSmall(double)),
             Qt::DirectConnection);
 
-    buttonRateTempUp =
+    m_pButtonRateTempUp =
         new ControlPushButton(ConfigKey(group,"rate_temp_up"));
-    connect(buttonRateTempUp, SIGNAL(valueChanged(double)),
+    connect(m_pButtonRateTempUp, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempUp(double)),
             Qt::DirectConnection);
 
-    buttonRateTempUpSmall =
+    m_pButtonRateTempUpSmall =
         new ControlPushButton(ConfigKey(group,"rate_temp_up_small"));
-    connect(buttonRateTempUpSmall, SIGNAL(valueChanged(double)),
+    connect(m_pButtonRateTempUpSmall, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlRateTempUpSmall(double)),
             Qt::DirectConnection);
 
@@ -185,14 +185,14 @@ RateControl::~RateControl() {
     delete m_pForwardButton;
     delete m_pBackButton;
 
-    delete buttonRateTempDown;
-    delete buttonRateTempDownSmall;
-    delete buttonRateTempUp;
-    delete buttonRateTempUpSmall;
-    delete buttonRatePermDown;
-    delete buttonRatePermDownSmall;
-    delete buttonRatePermUp;
-    delete buttonRatePermUpSmall;
+    delete m_pButtonRateTempDown;
+    delete m_pButtonRateTempDownSmall;
+    delete m_pButtonRateTempUp;
+    delete m_pButtonRateTempUpSmall;
+    delete m_pButtonRatePermDown;
+    delete m_pButtonRatePermDownSmall;
+    delete m_pButtonRatePermUp;
+    delete m_pButtonRatePermUpSmall;
 
     delete m_pWheel;
     delete m_pScratch2;
@@ -281,112 +281,111 @@ void RateControl::slotReverseRollActivate(double v) {
     }
 }
 
-void RateControl::slotControlFastForward(double v)
-{
+void RateControl::slotControlFastForward(double v) {
     //qDebug() << "slotControlFastForward(" << v << ")";
-    if (v==0.)
-        m_pRateSearch->set(0.);
-    else
-        m_pRateSearch->set(4.);
+    if (v > 0.0) {
+        m_pRateSearch->set(4.0);
+    } else {
+        m_pRateSearch->set(0.0);
+    }
 }
 
-void RateControl::slotControlFastBack(double v)
-{
+void RateControl::slotControlFastBack(double v) {
     //qDebug() << "slotControlFastBack(" << v << ")";
-    if (v==0.)
-        m_pRateSearch->set(0.);
-    else
-        m_pRateSearch->set(-4.);
-}
-
-void RateControl::slotControlRatePermDown(double)
-{
-    // Adjusts temp rate down if button pressed
-    if (buttonRatePermDown->get()) {
-        m_pRateSlider->set(m_pRateSlider->get() -
-                           m_pRateDir->get() * m_dPermanentRateChangeCoarse / (100 * m_pRateRange->get()));
+    if (v > 0.0) {
+        m_pRateSearch->set(-4.0);
+    } else {
+        m_pRateSearch->set(0.0);
     }
 }
 
-void RateControl::slotControlRatePermDownSmall(double)
-{
+void RateControl::slotControlRatePermDown(double v) {
     // Adjusts temp rate down if button pressed
-    if (buttonRatePermDownSmall->get())
+    if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
-                           m_pRateDir->get() * m_dPermanentRateChangeFine / (100. * m_pRateRange->get()));
-}
-
-void RateControl::slotControlRatePermUp(double)
-{
-    // Adjusts temp rate up if button pressed
-    if (buttonRatePermUp->get()) {
-        m_pRateSlider->set(m_pRateSlider->get() +
-                           m_pRateDir->get() * m_dPermanentRateChangeCoarse / (100. * m_pRateRange->get()));
+                m_pRateDir->get() * m_dPermanentRateChangeCoarse / (100 * m_pRateRange->get()));
     }
 }
 
-void RateControl::slotControlRatePermUpSmall(double)
-{
-    // Adjusts temp rate up if button pressed
-    if (buttonRatePermUpSmall->get())
-        m_pRateSlider->set(m_pRateSlider->get() +
-                           m_pRateDir->get() * m_dPermanentRateChangeFine / (100. * m_pRateRange->get()));
+void RateControl::slotControlRatePermDownSmall(double v) {
+    // Adjusts temp rate down if button pressed
+    if (v > 0.0) {
+        m_pRateSlider->set(m_pRateSlider->get() -
+                m_pRateDir->get() * m_dPermanentRateChangeFine / (100. * m_pRateRange->get()));
+    }
 }
 
-void RateControl::slotControlRateTempDown(double)
-{
+void RateControl::slotControlRatePermUp(double v) {
+    // Adjusts temp rate up if button pressed
+    if (v > 0.0) {
+        m_pRateSlider->set(m_pRateSlider->get() +
+                m_pRateDir->get() * m_dPermanentRateChangeCoarse / (100. * m_pRateRange->get()));
+    }
+}
+
+void RateControl::slotControlRatePermUpSmall(double v) {
+    // Adjusts temp rate up if button pressed
+    if (v > 0.0) {
+        m_pRateSlider->set(m_pRateSlider->get() +
+                m_pRateDir->get() * m_dPermanentRateChangeFine / (100. * m_pRateRange->get()));
+    }
+}
+
+void RateControl::slotControlRateTempDown(double value) {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempDown->get() && !(m_ePbPressed & RateControl::RATERAMP_DOWN))
+    bool pressed = value > 0;
+    if (pressed && !(m_ePbPressed & RateControl::RATERAMP_DOWN))
     {
         m_ePbPressed |= RateControl::RATERAMP_DOWN;
         m_ePbCurrent = RateControl::RATERAMP_DOWN;
     }
-    else if (!buttonRateTempDown->get())
+    else if (!pressed)
     {
         m_ePbPressed &= ~RateControl::RATERAMP_DOWN;
         m_ePbCurrent = m_ePbPressed;
     }
 }
 
-void RateControl::slotControlRateTempDownSmall(double)
-{
+void RateControl::slotControlRateTempDownSmall(double value) {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempDownSmall->get() && !(m_ePbPressed & RateControl::RATERAMP_DOWN))
+    bool pressed = value > 0;
+    if (pressed && !(m_ePbPressed & RateControl::RATERAMP_DOWN))
     {
         m_ePbPressed |= RateControl::RATERAMP_DOWN;
         m_ePbCurrent = RateControl::RATERAMP_DOWN;
     }
-    else if (!buttonRateTempDownSmall->get())
+    else if (!pressed)
     {
         m_ePbPressed &= ~RateControl::RATERAMP_DOWN;
         m_ePbCurrent = m_ePbPressed;
     }
 }
 
-void RateControl::slotControlRateTempUp(double)
-{
+void RateControl::slotControlRateTempUp(double value) {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempUp->get() && !(m_ePbPressed & RateControl::RATERAMP_UP))
+    bool pressed = value > 0;
+    if (pressed && !(m_ePbPressed & RateControl::RATERAMP_UP))
     {
         m_ePbPressed |= RateControl::RATERAMP_UP;
         m_ePbCurrent = RateControl::RATERAMP_UP;
     }
-    else if (!buttonRateTempUp->get())
+    else if (!pressed)
     {
         m_ePbPressed &= ~RateControl::RATERAMP_UP;
         m_ePbCurrent = m_ePbPressed;
     }
 }
 
-void RateControl::slotControlRateTempUpSmall(double)
+void RateControl::slotControlRateTempUpSmall(double value)
 {
     // Set the state of the Temporary button. Logic is handled in ::process()
-    if (buttonRateTempUpSmall->get() && !(m_ePbPressed & RateControl::RATERAMP_UP))
+    bool pressed = value > 0;
+    if (pressed && !(m_ePbPressed & RateControl::RATERAMP_UP))
     {
         m_ePbPressed |= RateControl::RATERAMP_UP;
         m_ePbCurrent = RateControl::RATERAMP_UP;
     }
-    else if (!buttonRateTempUpSmall->get())
+    else if (!pressed)
     {
         m_ePbPressed &= ~RateControl::RATERAMP_UP;
         m_ePbCurrent = m_ePbPressed;
@@ -533,11 +532,8 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
     return rate;
 }
 
-void RateControl::process(const double rate,
-                            const double currentSample,
-                            const double totalSamples,
-                            const int bufferSamples)
-{
+void RateControl::process(const double rate, const double currentSample,
+        const double totalSamples, const int bufferSamples) {
     Q_UNUSED(rate);
     Q_UNUSED(currentSample);
     Q_UNUSED(totalSamples);
@@ -554,9 +550,6 @@ void RateControl::process(const double rate,
      * the troublesome Latency ControlObject... Either the Master or Soundcard
      * one.
      */
-
-    double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
-
 
     if ((m_ePbPressed) && (!m_bTempStarted)) {
         m_bTempStarted = true;
@@ -576,19 +569,22 @@ void RateControl::process(const double rate,
             double csmall = m_pRateDir->get() * m_dTemporaryRateChangeFine /
                                     (100. * range);
 
-            if (buttonRateTempUp->get())
+            if (m_pButtonRateTempUp->toBool()) {
                 addRateTemp(change);
-            else if (buttonRateTempDown->get())
+            } else if (m_pButtonRateTempDown->toBool()) {
                 subRateTemp(change);
-            else if (buttonRateTempUpSmall->get())
+            } else if (m_pButtonRateTempUpSmall->toBool()) {
                 addRateTemp(csmall);
-            else if (buttonRateTempDownSmall->get())
+            } else if (m_pButtonRateTempDownSmall->toBool()) {
                 subRateTemp(csmall);
+            }
         } else if (m_eRateRampMode == RampMode::Linear) {
-            m_dTemporaryRateChangeCoarse = ((double)latrate / ((double)m_iRateRampSensitivity / 100.));
+            double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
+            m_dTemporaryRateChangeCoarse = (latrate / ((double)m_iRateRampSensitivity / 100.));
 
-            if (m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD)
+            if (m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) {
                 m_dRateTempRampbackChange = 0.0;
+            }
         }
 
     }

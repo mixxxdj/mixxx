@@ -130,18 +130,18 @@ public:
     static double m_dPermanentRateChangeCoarse;
     static double m_dPermanentRateChangeFine;
 
-    ControlPushButton *buttonRateTempDown;
-    ControlPushButton *buttonRateTempDownSmall;
-    ControlPushButton *buttonRateTempUp;
-    ControlPushButton *buttonRateTempUpSmall;
+    ControlPushButton* m_pButtonRateTempDown;
+    ControlPushButton* m_pButtonRateTempDownSmall;
+    ControlPushButton* m_pButtonRateTempUp;
+    ControlPushButton* m_pButtonRateTempUpSmall;
 
-    ControlPushButton *buttonRatePermDown;
-    ControlPushButton *buttonRatePermDownSmall;
-    ControlPushButton *buttonRatePermUp;
-    ControlPushButton *buttonRatePermUpSmall;
+    ControlPushButton* m_pButtonRatePermDown;
+    ControlPushButton* m_pButtonRatePermDownSmall;
+    ControlPushButton* m_pButtonRatePermUp;
+    ControlPushButton* m_pButtonRatePermUpSmall;
 
-    ControlObject *m_pRateDir;
-    ControlObject *m_pRateRange;
+    ControlObject* m_pRateDir;
+    ControlObject* m_pRateRange;
     ControlPotmeter* m_pRateSlider;
     ControlPotmeter* m_pRateSearch;
     ControlPushButton* m_pReverseButton;
