@@ -13,7 +13,7 @@
         <Children>
           <Template src="skin:button_2state_right_display.xml">
             <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
-            <SetVariable name="Size">34f,34f</SetVariable>
+            <SetVariable name="Size">26f,26f</SetVariable>
             <SetVariable name="state_0_pressed">play_sampler_down.svg</SetVariable>
             <SetVariable name="state_0_unpressed">play_sampler.svg</SetVariable>
             <SetVariable name="state_1_pressed">play_sampler_overdown.svg</SetVariable>
@@ -64,7 +64,13 @@
                 <Connection>
                   <ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
                 </Connection>
+                <Connection>
+                  <ConfigKey>[Sampler<Variable name="samplernum"/>],track_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </Number>
+
+              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
 
               <PushButton>
                 <TooltipId>orientation</TooltipId>
@@ -92,19 +98,17 @@
 
               <Template src="skin:button_2state_nohover.xml">
                 <SetVariable name="TooltipId">keylock</SetVariable>
-                <SetVariable name="icon">keylock</SetVariable>
+                <SetVariable name="icon">keylock_sampler</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
                 <SetVariable name="Size">21,18</SetVariable>
               </Template>
 
               <Template src="skin:button_2state_nohover.xml">
                 <SetVariable name="TooltipId">eject</SetVariable>
-                <SetVariable name="icon">eject</SetVariable>
+                <SetVariable name="icon">eject_sampler</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
                 <SetVariable name="Size">21,18</SetVariable>
               </Template>
-
-              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
 
             </Children>
           </WidgetGroup>
