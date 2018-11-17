@@ -486,7 +486,8 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
                 if (useScratch2Value) {
                     rate = scratchFactor;
                 } else {
-                    rate = speed + getTempRate();
+                    // add temp rate, but don't go backwards
+                    rate = math_max(speed + getTempRate(), 0.0);
                     rate += wheelFactor;
                 }
                 rate += jogFactor;
@@ -619,16 +620,11 @@ void RateControl::process(const double rate, const double currentSample,
 }
 
 double RateControl::getTempRate() {
-    qDebug() << m_tempRateRatio;
+    // qDebug() << m_tempRateRatio;
     return m_tempRateRatio;
 }
 
 void RateControl::setRateTemp(double v) {
-    // Do not go backwards
-    if ((calcRateRatio() + v) < 0) {
-        return;
-    }
-
     m_tempRateRatio = v;
     if (m_tempRateRatio < -1.0) {
         m_tempRateRatio = -1.0;
