@@ -36,7 +36,7 @@ RateControl::RateControl(QString group,
       m_ePbPressed(0),
       m_bTempStarted(false),
       m_dTempRateChange(0.0),
-      m_dRateTemp(0.0),
+      m_tempRateRatio(0.0),
       m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
       m_dRateTempRampbackChange(0.0) {
     m_pScratchController = new PositionScratchController(group);
@@ -556,27 +556,17 @@ void RateControl::process(const double rate, const double currentSample,
 
         if (m_eRateRampMode == RampMode::Stepping) {
             // old temporary pitch shift behavior
-            double range = m_pRateRange->get();
-
-            // Avoid Division by Zero
-            if (range == 0) {
-                qDebug() << "Avoiding a Division by Zero in RATERAMP_STEP code";
-                return;
-            }
-
-            double change = m_pRateDir->get() * m_dTemporaryRateChangeCoarse /
-                                    (100. * range);
-            double csmall = m_pRateDir->get() * m_dTemporaryRateChangeFine /
-                                    (100. * range);
+            double change = m_dTemporaryRateChangeCoarse / 100.0;
+            double csmall = m_dTemporaryRateChangeFine / 100.0;
 
             if (m_pButtonRateTempUp->toBool()) {
-                addRateTemp(change);
+                setRateTemp(change);
             } else if (m_pButtonRateTempDown->toBool()) {
-                subRateTemp(change);
+                setRateTemp(-change);
             } else if (m_pButtonRateTempUpSmall->toBool()) {
-                addRateTemp(csmall);
+                setRateTemp(csmall);
             } else if (m_pButtonRateTempDownSmall->toBool()) {
-                subRateTemp(csmall);
+                setRateTemp(-csmall);
             }
         } else if (m_eRateRampMode == RampMode::Linear) {
             double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
@@ -586,20 +576,19 @@ void RateControl::process(const double rate, const double currentSample,
                 m_dRateTempRampbackChange = 0.0;
             }
         }
-
     }
 
     if (m_eRateRampMode == RampMode::Linear) {
         if (m_ePbCurrent) {
             // apply ramped pitchbending
             if (m_ePbCurrent == RateControl::RATERAMP_UP) {
-                addRateTemp(m_dTemporaryRateChangeCoarse);
+                addRateTemp(m_dTemporaryRateChangeCoarse * m_pRateRange->get());
             } else if (m_ePbCurrent == RateControl::RATERAMP_DOWN) {
-                subRateTemp(m_dTemporaryRateChangeCoarse);
+                subRateTemp(m_dTemporaryRateChangeCoarse * m_pRateRange->get());
             }
         } else if ((m_bTempStarted)
                 || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE)
-                        && (m_dRateTemp != 0.0))) {
+                        && (m_tempRateRatio != 0.0))) {
             // No buttons pressed, so time to deinitialize
             m_bTempStarted = false;
 
@@ -607,15 +596,15 @@ void RateControl::process(const double rate, const double currentSample,
                     && (m_dRateTempRampbackChange == 0.0)) {
                 int period = 2;
                 m_dRateTempRampbackChange = fabs(
-                        m_dRateTemp / period);
+                        m_tempRateRatio / period);
             } else if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE)
                     && (m_dRateTempRampbackChange == 0.0)) {
-                if (fabs(m_dRateTemp) < m_dRateTempRampbackChange) {
+                if (fabs(m_tempRateRatio) < m_dRateTempRampbackChange) {
                     resetRateTemp();
-                } else if (m_dRateTemp > 0) {
-                    subRateTemp(m_dRateTempRampbackChange);
+                } else if (m_tempRateRatio > 0) {
+                    subRateTemp(m_dRateTempRampbackChange * m_pRateRange->get());
                 } else {
-                    addRateTemp(m_dRateTempRampbackChange);
+                    addRateTemp(m_dRateTempRampbackChange * m_pRateRange->get());
                 }
             } else {
                 resetRateTemp();
@@ -630,34 +619,34 @@ void RateControl::process(const double rate, const double currentSample,
 }
 
 double RateControl::getTempRate() {
-    return (m_pRateDir->get() * (m_dRateTemp * m_pRateRange->get()));
+    qDebug() << m_tempRateRatio;
+    return m_tempRateRatio;
 }
 
-void RateControl::setRateTemp(double v)
-{
+void RateControl::setRateTemp(double v) {
     // Do not go backwards
     if ((calcRateRatio() + v) < 0) {
         return;
     }
 
-    m_dRateTemp = v;
-    if (m_dRateTemp < -1.0) {
-        m_dRateTemp = -1.0;
-    } else if (m_dRateTemp > 1.0) {
-        m_dRateTemp = 1.0;
-    } else if (isnan(m_dRateTemp)) {
-        m_dRateTemp = 0;
+    m_tempRateRatio = v;
+    if (m_tempRateRatio < -1.0) {
+        m_tempRateRatio = -1.0;
+    } else if (m_tempRateRatio > 1.0) {
+        m_tempRateRatio = 1.0;
+    } else if (isnan(m_tempRateRatio)) {
+        m_tempRateRatio = 0;
     }
 }
 
 void RateControl::addRateTemp(double v)
 {
-    setRateTemp(m_dRateTemp + v);
+    setRateTemp(m_tempRateRatio + v);
 }
 
 void RateControl::subRateTemp(double v)
 {
-    setRateTemp(m_dRateTemp - v);
+    setRateTemp(m_tempRateRatio - v);
 }
 
 void RateControl::resetRateTemp(void)

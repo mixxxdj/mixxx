@@ -189,7 +189,7 @@ public:
     // Factor applied to jogwheels when the track is paused to speed up seeking.
     static const double kPausedJogMultiplier;
     // Temporary pitchrate, added to the permanent rate for calculateRate
-    double m_dRateTemp;
+    double m_tempRateRatio;
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
     // Return speed for temporary rate change
     double m_dRateTempRampbackChange;
