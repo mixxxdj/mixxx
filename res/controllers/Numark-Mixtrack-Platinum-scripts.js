@@ -1150,7 +1150,13 @@ MixtrackPlatinum.wheelTouch = function (channel, control, value, status, group) 
     var deck = channel + 1;
 
     // ignore touch events if not in vinyl mode
-    if (!MixtrackPlatinum.shift && !MixtrackPlatinum.searching[deck] && !MixtrackPlatinum.wheel[channel]) return;
+    if (!MixtrackPlatinum.shift
+        && !MixtrackPlatinum.searching[deck]
+        && !MixtrackPlatinum.wheel[channel]
+        && value != 0)
+    {
+        return;
+    }
 
     MixtrackPlatinum.touching[deck] = 0x7F == value;
 
