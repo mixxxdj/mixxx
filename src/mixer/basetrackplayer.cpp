@@ -416,7 +416,6 @@ void BaseTrackPlayerImpl::slotCloneChannel() {
         return;
     }
 
-
     TrackPointer pTrack = m_cloneFromChannel->getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         m_cloneFromChannel = NULL;
