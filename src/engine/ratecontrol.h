@@ -48,17 +48,6 @@ public:
         Linear = 1 // pitch moves up/down in a progresively linear fashion
     };
 
-    // This defines how the rate returns to normal. Currently unused.
-    // Rate ramp back mode:
-    //  RATERAMP_RAMPBACK_NONE: returns back to normal all at once.
-    //  RATERAMP_RAMPBACK_SPEED: moves back in a linearly progresive manner.
-    //  RATERAMP_RAMPBACK_PERIOD: returns to normal within a period of time.
-    enum RATERAMP_RAMPBACK_MODE {
-        RATERAMP_RAMPBACK_NONE,
-        RATERAMP_RAMPBACK_SPEED,
-        RATERAMP_RAMPBACK_PERIOD
-    };
-
     void setBpmControl(BpmControl* bpmcontrol);
 
     // Returns the current engine rate.  "reportScratching" is used to tell
@@ -186,11 +175,8 @@ public:
     static const double kPausedJogMultiplier;
     // Temporary pitchrate, added to the permanent rate for calculateRate
     double m_tempRateRatio;
-    enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
     // Speed for temporary rate change
     double m_dRateTempRampChange;
-    // Return speed for temporary rate change
-    double m_dRateTempRampbackChange;
 };
 
 #endif /* RATECONTROL_H */

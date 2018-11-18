@@ -37,9 +37,7 @@ RateControl::RateControl(QString group,
       m_bTempStarted(false),
       m_dTempRateChange(0.0),
       m_tempRateRatio(0.0),
-      m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
-      m_dRateTempRampChange(0.0),
-      m_dRateTempRampbackChange(0.0) {
+      m_dRateTempRampChange(0.0) {
     m_pScratchController = new PositionScratchController(group);
 
     m_pRateDir = new ControlObject(ConfigKey(group, "rate_dir"));
@@ -572,10 +570,6 @@ void RateControl::processTempRate(const int bufferSamples) {
         } else if (m_eRateRampMode == RampMode::Linear) {
             double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
             m_dRateTempRampChange = (latrate / ((double)m_iRateRampSensitivity / 100.));
-
-            if (m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD) {
-                m_dRateTempRampbackChange = 0.0;
-            }
         }
     }
 
@@ -588,28 +582,10 @@ void RateControl::processTempRate(const int bufferSamples) {
                 subRateTemp(m_dRateTempRampChange * m_pRateRange->get());
             }
         } else if ((m_bTempStarted)
-                || ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE)
-                        && (m_tempRateRatio != 0.0))) {
+                || (m_tempRateRatio != 0.0)) {
             // No buttons pressed, so time to deinitialize
             m_bTempStarted = false;
-
-            if ((m_eRampBackMode == RATERAMP_RAMPBACK_PERIOD)
-                    && (m_dRateTempRampbackChange == 0.0)) {
-                int period = 2;
-                m_dRateTempRampbackChange = fabs(
-                        m_tempRateRatio / period);
-            } else if ((m_eRampBackMode != RATERAMP_RAMPBACK_NONE)
-                    && (m_dRateTempRampbackChange == 0.0)) {
-                if (fabs(m_tempRateRatio) < m_dRateTempRampbackChange) {
-                    resetRateTemp();
-                } else if (m_tempRateRatio > 0) {
-                    subRateTemp(m_dRateTempRampbackChange * m_pRateRange->get());
-                } else {
-                    addRateTemp(m_dRateTempRampbackChange * m_pRateRange->get());
-                }
-            } else {
-                resetRateTemp();
-            }
+            resetRateTemp();
         }
     } else if ((m_eRateRampMode == RampMode::Stepping) && (m_bTempStarted)) {
         if (!m_ePbCurrent) {
