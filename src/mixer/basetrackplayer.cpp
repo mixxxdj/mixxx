@@ -302,6 +302,7 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, QString reason) {
     } else {
         qDebug() << "Failed to load track (NULL track object)" << reason;
     }
+    m_cloneFromChannel = NULL;
     // Alert user.
     QMessageBox::warning(NULL, tr("Couldn't load track."), reason);
 }
