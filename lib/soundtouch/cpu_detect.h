@@ -1,15 +1,15 @@
 ////////////////////////////////////////////////////////////////////////////////
-/// 
-/// Cubic interpolation routine.
+///
+/// A header file for detecting the Intel MMX instructions set extension.
+///
+/// Please see 'mmx_win.cpp', 'mmx_cpp.cpp' and 'mmx_non_x86.cpp' for the 
+/// routine implementations for x86 Windows, x86 gnu version and non-x86 
+/// platforms, respectively.
 ///
 /// Author        : Copyright (c) Olli Parviainen
 /// Author e-mail : oparviai 'at' iki.fi
 /// SoundTouch WWW: http://www.surina.net/soundtouch
 ///
-////////////////////////////////////////////////////////////////////////////////
-//
-// $Id: InterpolateCubic.h 225 2015-07-26 14:45:48Z oparviai $
-//
 ////////////////////////////////////////////////////////////////////////////////
 //
 // License :
@@ -33,35 +33,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _InterpolateCubic_H_
-#define _InterpolateCubic_H_
+#ifndef _CPU_DETECT_H_
+#define _CPU_DETECT_H_
 
-#include "RateTransposer.h"
 #include "STTypes.h"
 
-namespace soundtouch
-{
+#define SUPPORT_MMX         0x0001
+#define SUPPORT_3DNOW       0x0002
+#define SUPPORT_ALTIVEC     0x0004
+#define SUPPORT_SSE         0x0008
+#define SUPPORT_SSE2        0x0010
 
-class InterpolateCubic : public TransposerBase
-{
-protected:
-    virtual void resetRegisters();
-    virtual int transposeMono(SAMPLETYPE *dest, 
-                        const SAMPLETYPE *src, 
-                        int &srcSamples);
-    virtual int transposeStereo(SAMPLETYPE *dest, 
-                        const SAMPLETYPE *src, 
-                        int &srcSamples);
-    virtual int transposeMulti(SAMPLETYPE *dest, 
-                        const SAMPLETYPE *src, 
-                        int &srcSamples);
+/// Checks which instruction set extensions are supported by the CPU.
+///
+/// \return A bitmask of supported extensions, see SUPPORT_... defines.
+uint detectCPUextensions(void);
 
-    double fract;
+/// Disables given set of instruction extensions. See SUPPORT_... defines.
+void disableExtensions(uint wDisableMask);
 
-public:
-    InterpolateCubic();
-};
-
-}
-
-#endif
+#endif  // _CPU_DETECT_H_

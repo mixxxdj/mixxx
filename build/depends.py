@@ -550,7 +550,7 @@ class Ebur128Mit(Dependence):
 
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch-2.0.0'
+    SOUNDTOUCH_INTERNAL_PATH = '#lib/soundtouch'
     INTERNAL_LINK = True
 
     def sources(self, build):
@@ -585,15 +585,14 @@ class SoundTouch(Dependence):
             # Try using system lib
             if conf.CheckForPKG('soundtouch', '2.0.0'):
                 # System Lib found
-                build.env.ParseConfig('pkg-config soundtouch --silence-errors \
-                                      --cflags --libs')
+                build.env.ParseConfig('pkg-config soundtouch --silence-errors --cflags --libs')
                 self.INTERNAL_LINK = False
 
         if self.INTERNAL_LINK:
             env.Append(CPPPATH=[self.SOUNDTOUCH_INTERNAL_PATH])
 
             # Prevents circular import.
-            from features import Optimize
+            from .features import Optimize
 
             # If we do not want optimizations then disable them.
             optimize = (build.flags['optimize'] if 'optimize' in build.flags

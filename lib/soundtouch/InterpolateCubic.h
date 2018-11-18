@@ -1,15 +1,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// 
-/// Linear interpolation routine.
+/// Cubic interpolation routine.
 ///
 /// Author        : Copyright (c) Olli Parviainen
 /// Author e-mail : oparviai 'at' iki.fi
 /// SoundTouch WWW: http://www.surina.net/soundtouch
 ///
-////////////////////////////////////////////////////////////////////////////////
-//
-// $Id: InterpolateLinear.h 225 2015-07-26 14:45:48Z oparviai $
-//
 ////////////////////////////////////////////////////////////////////////////////
 //
 // License :
@@ -33,8 +29,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _InterpolateLinear_H_
-#define _InterpolateLinear_H_
+#ifndef _InterpolateCubic_H_
+#define _InterpolateCubic_H_
 
 #include "RateTransposer.h"
 #include "STTypes.h"
@@ -42,49 +38,24 @@
 namespace soundtouch
 {
 
-/// Linear transposer class that uses integer arithmetics
-class InterpolateLinearInteger : public TransposerBase
+class InterpolateCubic : public TransposerBase
 {
 protected:
-    int iFract;
-    int iRate;
-
     virtual void resetRegisters();
-
     virtual int transposeMono(SAMPLETYPE *dest, 
-                       const SAMPLETYPE *src, 
-                       int &srcSamples);
+                        const SAMPLETYPE *src, 
+                        int &srcSamples);
     virtual int transposeStereo(SAMPLETYPE *dest, 
-                         const SAMPLETYPE *src, 
-                         int &srcSamples);
-    virtual int transposeMulti(SAMPLETYPE *dest, const SAMPLETYPE *src, int &srcSamples);
-public:
-    InterpolateLinearInteger();
+                        const SAMPLETYPE *src, 
+                        int &srcSamples);
+    virtual int transposeMulti(SAMPLETYPE *dest, 
+                        const SAMPLETYPE *src, 
+                        int &srcSamples);
 
-    /// Sets new target rate. Normal rate = 1.0, smaller values represent slower 
-    /// rate, larger faster rates.
-    virtual void setRate(double newRate);
-};
-
-
-/// Linear transposer class that uses floating point arithmetics
-class InterpolateLinearFloat : public TransposerBase
-{
-protected:
     double fract;
 
-    virtual void resetRegisters();
-
-    virtual int transposeMono(SAMPLETYPE *dest, 
-                       const SAMPLETYPE *src, 
-                       int &srcSamples);
-    virtual int transposeStereo(SAMPLETYPE *dest, 
-                         const SAMPLETYPE *src, 
-                         int &srcSamples);
-    virtual int transposeMulti(SAMPLETYPE *dest, const SAMPLETYPE *src, int &srcSamples);
-
 public:
-    InterpolateLinearFloat();
+    InterpolateCubic();
 };
 
 }
