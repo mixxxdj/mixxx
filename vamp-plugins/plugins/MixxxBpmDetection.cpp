@@ -1,5 +1,10 @@
 #include "MixxxBpmDetection.h"
 
+#include <QString>
+#include <QtDebug>
+
+#include <stdexcept>
+
 MixxxBpmDetection::MixxxBpmDetection(float inputSampleRate):
         Vamp::Plugin(inputSampleRate),
         m_pDetector(NULL),
@@ -202,7 +207,16 @@ bool MixxxBpmDetection::initialise(size_t channels, size_t stepSize, size_t bloc
     if (channels < getMinChannelCount() ||
             channels > getMaxChannelCount()) return false;
 
-    m_pDetector = new soundtouch::BPMDetect(channels, m_iSampleRate);
+    try {
+        // Starting with SoundTouch 2.1.1 the constructor of
+        // BPMDetect may throw an exception.
+        m_pDetector = new soundtouch::BPMDetect(channels, m_iSampleRate);
+    } catch (const std::runtime_error& e) {
+        qWarning()
+                << "Failed to initialize BPM detection:"
+                << QString::fromStdString(e.what());
+        return false;
+    }
     m_iBlockSize = blockSize;
     return true;
 }
