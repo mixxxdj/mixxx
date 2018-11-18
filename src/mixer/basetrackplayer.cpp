@@ -399,6 +399,10 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                 m_pPitchAdjust->set(ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "pitch_adjust")));
             }
 
+            // copy play state
+            ControlObject::set(ConfigKey(getGroup(), "play"),
+                ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "play")));
+
             // copy the play position
             m_pChannel->getEngineBuffer()->requestSyncPosition(m_cloneFromChannel);
 
@@ -439,7 +443,7 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
         return;
     }
 
-    slotLoadTrackInternal(pTrack, ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "play")) != 0.0);
+    slotLoadTrackInternal(pTrack, false);
 }
 
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
