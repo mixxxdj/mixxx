@@ -11,6 +11,7 @@
 #include "mixer/baseplayer.h"
 #include "track/track.h"
 #include "util/memory.h"
+#include "util/performancetimer.h"
 
 class EngineMaster;
 class ControlObject;
@@ -82,6 +83,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotPlayToggled(double);
 
   private slots:
+    void slotLoadTrackInternal(TrackPointer pNewTrack, bool bPlay);
     void slotPassthroughEnabled(double v);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
@@ -104,6 +106,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
     EngineChannel* m_cloneFromChannel;
+    PerformanceTimer m_cloneTimer;
 
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;

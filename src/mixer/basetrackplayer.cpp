@@ -110,6 +110,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pPlay->connectValueChanged(this, &BaseTrackPlayerImpl::slotPlayToggled);
 
     pVisualsManager->addDeck(group);
+
+    m_cloneTimer.start();
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
@@ -253,6 +255,17 @@ void BaseTrackPlayerImpl::disconnectLoadedTrack() {
 }
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
+    mixxx::Duration elapsed = m_cloneTimer.restart();
+    if (elapsed < mixxx::Duration::fromSeconds(1)) {
+        // load pressed twice quickly, clone instead of loading
+        slotCloneChannel();
+    }
+    else {
+        slotLoadTrackInternal(pNewTrack, bPlay);
+    }
+}
+
+void BaseTrackPlayerImpl::slotLoadTrackInternal(TrackPointer pNewTrack, bool bPlay) {
     qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup();
     // Before loading the track, ensure we have access. This uses lazy
     // evaluation to make sure track isn't NULL before we dereference it.
@@ -422,7 +435,7 @@ void BaseTrackPlayerImpl::slotCloneChannel() {
         return;
     }
 
-    slotLoadTrack(pTrack, ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "play")) != 0.0);
+    slotLoadTrackInternal(pTrack, ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "play")) != 0.0);
 }
 
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
