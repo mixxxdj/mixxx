@@ -437,6 +437,9 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
                                    bool* pReportReverse) {
     *pReportScratching = false;
     *pReportReverse = false;
+
+    processTempRate(iSamplesPerBuffer);
+
     double rate = (paused ? 0 : 1.0);
     double searching = m_pRateSearch->get();
     if (searching) {
@@ -534,11 +537,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
     return rate;
 }
 
-void RateControl::process(const double rate, const double currentSample,
-        const double totalSamples, const int bufferSamples) {
-    Q_UNUSED(rate);
-    Q_UNUSED(currentSample);
-    Q_UNUSED(totalSamples);
+void RateControl::processTempRate(const int bufferSamples) {
     /*
      * Code to handle temporary rate change buttons.
      *
