@@ -188,8 +188,10 @@ void BaseTrackPlayerImpl::loadTrack(TrackPointer pTrack) {
     } else {
         // copy loop in and out points from other deck because any new loops
         // won't be saved yet
-        m_pLoopInPoint->set(ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "loop_start_position")));
-        m_pLoopOutPoint->set(ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "loop_end_position")));
+        m_pLoopInPoint->set(ControlObject::get(
+                ConfigKey(m_cloneFromChannel->getGroup(), "loop_start_position")));
+        m_pLoopOutPoint->set(ControlObject::get(
+                ConfigKey(m_cloneFromChannel->getGroup(), "loop_end_position")));
     }
 
 
