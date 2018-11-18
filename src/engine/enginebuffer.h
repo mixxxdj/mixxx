@@ -85,7 +85,6 @@ class EngineBuffer : public EngineObject {
         SYNC_REQUEST_ENABLE,
         SYNC_REQUEST_DISABLE,
         SYNC_REQUEST_ENABLEDISABLE,
-        SYNC_REQUEST_POSITION,
     };
   public:
     enum SeekRequest {
@@ -133,7 +132,7 @@ class EngineBuffer : public EngineObject {
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
     void requestSyncMode(SyncMode mode);
-    void requestSyncPosition();
+    void requestSyncPosition(EngineChannel* pChannel);
 
     // The process methods all run in the audio callback.
     void process(CSAMPLE* pOut, const int iBufferSize);
@@ -385,6 +384,7 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
     ControlValueAtomic<double> m_queuedSeekPosition;
+    ControlValueAtomic<EngineChannel*> m_pSyncPosition;
 
     // Is true if the previous buffer was silent due to pausing
     QAtomicInt m_iTrackLoading;
