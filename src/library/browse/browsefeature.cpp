@@ -216,7 +216,7 @@ void BrowseFeature::bindWidget(WLibrary* libraryWidget,
 
 void BrowseFeature::activate() {
     emit(switchToView("BROWSEHOME"));
-    emit(restoreSearch(QString()));
+    emit disableSearch();
     emit(enableCoverArtDisplay(false));
 }
 

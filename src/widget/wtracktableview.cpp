@@ -110,7 +110,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     // right-click)
     createActions();
 
-    //Connect slots and signals to make the world go 'round.
+    // Connect slots and signals to make the world go 'round.
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
             this, SLOT(slotMouseDoubleClicked(const QModelIndex &)));
 
@@ -1074,24 +1074,20 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 void WTrackTableView::onSearch(const QString& text) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel) {
+        bool searchWasEmpty = false;
+        if (trackModel->currentSearch().isEmpty()) {
+            saveNoSearchVScrollBarPos();
+            searchWasEmpty = true;
+        }
+        trackModel->search(text);
+        if (!searchWasEmpty && text.isEmpty()) {
+            restoreNoSearchVScrollBarPos();
+        }
         trackModel->search(text);
     }
 }
 
-void WTrackTableView::onSearchStarting() {
-    saveVScrollBarPos();
-}
-
-void WTrackTableView::onSearchCleared() {
-    restoreVScrollBarPos();
-    TrackModel* trackModel = getTrackModel();
-    if (trackModel) {
-        trackModel->search("");
-    }
-}
-
 void WTrackTableView::onShow() {
-    restoreVScrollBarPos();
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
@@ -1185,7 +1181,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     // the SQL data models causes a select() (ie. generation of a new result set),
     // which causes view to reset itself. A view reset causes the widget to scroll back
     // up to the top, which is confusing when you're dragging and dropping. :)
-    saveVScrollBarPos();
+    int vScrollBarPos = verticalScrollBar()->value();
 
 
     // Calculate the model index where the track or tracks are destined to go.
@@ -1351,7 +1347,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     }
 
     event->acceptProposedAction();
-    restoreVScrollBarPos();
+    updateGeometries();
+    verticalScrollBar()->setValue(vScrollBarPos);
 }
 
 TrackModel* WTrackTableView::getTrackModel() const {
