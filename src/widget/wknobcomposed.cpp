@@ -137,5 +137,9 @@ void WKnobComposed::wheelEvent(QWheelEvent* e) {
 }
 
 void WKnobComposed::inputActivity() {
+#ifdef __APPLE__
     m_renderTimer.activity();
+#else
+    update();
+#endif
 }
