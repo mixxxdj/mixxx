@@ -28,14 +28,10 @@
                     <ObjectName>KnobLabel</ObjectName>
                     <SizePolicy>min,min</SizePolicy>
                     <MinimumSize>10,3</MinimumSize>
-                    <Alignment>left</Alignment>
+                    <Alignment>right</Alignment>
                     <Text><Variable name="FxName"/></Text>
                   </Label>
                 </Children>
-                  <Connection>
-                    <ConfigKey>[Master],show_eq_knobs_text</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
               </WidgetGroup>
 
               <WidgetGroup>
@@ -111,10 +107,6 @@
       </WidgetGroup>
 
     </Children>
-    <Connection>
-      <ConfigKey>[Master],show_quickeffect_knob</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
     <Connection>
       <ConfigKey>[Master],show_eqs</ConfigKey>
       <BindProperty>visible</BindProperty>

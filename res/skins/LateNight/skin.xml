@@ -50,8 +50,6 @@
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
       <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
       <attribute persist="true" config_key="[Master],show_eq_kill_buttons">1</attribute>
-      <attribute persist="true" config_key="[Master],show_eq_knobs_text">0</attribute>
-      <attribute persist="true" config_key="[Master],show_quickeffect_knob">1</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Master],show_4effectunits">0</attribute>

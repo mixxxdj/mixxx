@@ -31,10 +31,6 @@
                     <Text><Variable name="FxName"/></Text>
                   </Label>
                 </Children>
-                  <Connection>
-                    <ConfigKey>[Master],show_eq_knobs_text</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
               </WidgetGroup>
 
               <WidgetGroup>
@@ -79,11 +75,33 @@
         </Connection>
       </WidgetGroup><!-- /Kill button + knob -->
 
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,f</SizePolicy>
+        <Children>
+          <EffectName>
+            <ObjectName>KnobLabel</ObjectName>
+            <MinimumSize>40,12</MinimumSize>
+            <MaximumSize>62,12</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Elide>right</Elide>
+            <EffectRackGroup>[QuickEffectRack1]</EffectRackGroup>
+            <EffectUnitGroup><Variable name="QuickEffectGroup"/></EffectUnitGroup>
+            <Effect>1</Effect>
+          </EffectName>
+
+          <WidgetGroup>
+            <Size>0min,0min</Size>
+            <Children/>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="QuickEffect"/>,loaded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
     </Children>
-    <Connection>
-      <ConfigKey>[Master],show_quickeffect_knob</ConfigKey>
-      <BindProperty>visible</BindProperty>
-    </Connection>
     <Connection>
       <ConfigKey>[Master],show_eqs</ConfigKey>
       <BindProperty>visible</BindProperty>

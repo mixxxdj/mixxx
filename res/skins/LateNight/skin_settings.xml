@@ -136,43 +136,12 @@ Description:
                   </WidgetGroup>
 
                   <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="text">EQ + Q-Effect Knobs</SetVariable>
+                    <SetVariable name="text">EQ Knobs</SetVariable>
                     <SetVariable name="Setting">[Master],show_eqs</SetVariable>
                   </Template>
 
                 </Children>
               </WidgetGroup><!-- /EQ knobs -->
-
-              <WidgetGroup><!-- EQ Knobs Text -->
-                <Layout>stacked</Layout>
-                <Size>190f,17f</Size>
-                <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <Size>190f,17f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="text">EQ Knobs Text</SetVariable>
-                    <SetVariable name="Setting">[Master],show_eq_knobs_text</SetVariable>
-                  </Template>
-
-                </Children>
-              </WidgetGroup><!-- /EQ Knobs Text -->
 
               <WidgetGroup><!-- EQ Kill -->
                 <Layout>stacked</Layout>
@@ -185,11 +154,6 @@ Description:
                     <ObjectName>SubmenuCover</ObjectName>
                     <Layout>vertical</Layout>
                     <Size>190f,17f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
                     <Connection>
                       <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
                       <Transform><Not/></Transform>
@@ -204,37 +168,6 @@ Description:
 
                 </Children>
               </WidgetGroup><!-- /EQ Kill -->
-
-              <WidgetGroup><!-- Quick Effect Knob -->
-                <Layout>stacked</Layout>
-                <Size>190f,17f</Size>
-                <Children>
-                  <!-- index 0 due to bug -->
-                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                  <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <Size>190f,17f</Size>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-                      <Transform><Not/></Transform>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
-
-                  <Template src="skin:skin_settings_button_2state.xml">
-                    <SetVariable name="text">Quickeffect Knob</SetVariable>
-                    <SetVariable name="Setting">[Master],show_quickeffect_knob</SetVariable>
-                  </Template>
-
-                </Children>
-              </WidgetGroup><!-- /Quick Effect Knob -->
 
               <WidgetGroup><!-- crossfader -->
                 <Layout>stacked</Layout>

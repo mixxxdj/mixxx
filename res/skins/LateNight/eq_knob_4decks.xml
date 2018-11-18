@@ -41,10 +41,6 @@
                         <Text><Variable name="FxName"/></Text>
                       </Label>
                     </Children>
-                      <Connection>
-                        <ConfigKey>[Master],show_eq_knobs_text</ConfigKey>
-                        <BindProperty>visible</BindProperty>
-                      </Connection>
                   </WidgetGroup>
 
                   <WidgetGroup>
