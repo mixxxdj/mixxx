@@ -14,6 +14,7 @@ class QItemSelection;
 
 class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     Q_OBJECT
+
   public:
     DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
               Library* pLibrary, TrackCollection* pTrackCollection,
