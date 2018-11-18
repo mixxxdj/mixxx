@@ -411,7 +411,6 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
 
 void EngineBuffer::requestSyncPosition() {
     m_iEnableSyncQueued = SYNC_REQUEST_POSITION;
-    m_iSyncModeQueued = SYNC_INVALID;
 }
 
 void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
