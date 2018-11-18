@@ -36,6 +36,7 @@
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wsearchlineedit.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 
@@ -251,11 +252,6 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     connect(this, SIGNAL(setSelectedClick(bool)),
             pTrackTableView, SLOT(setSelectedClick(bool)));
 
-    connect(this, SIGNAL(searchStarting()),
-            pTrackTableView, SLOT(onSearchStarting()));
-    connect(this, SIGNAL(searchCleared()),
-            pTrackTableView, SLOT(onSearchCleared()));
-
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);
@@ -287,6 +283,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
+    connect(feature, SIGNAL(disableSearch()),
+            this, SLOT(slotDisableSearch()));
     connect(feature, SIGNAL(enableCoverArtDisplay(bool)),
             this, SIGNAL(enableCoverArtDisplay(bool)));
     connect(feature, SIGNAL(trackSelected(TrackPointer)),
@@ -326,7 +324,11 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
 }
 
 void Library::slotRestoreSearch(const QString& text) {
-    emit(restoreSearch(text));
+    emit restoreSearch(text);
+}
+
+void Library::slotDisableSearch() {
+    emit disableSearch();
 }
 
 void Library::slotRefreshLibraryModels() {

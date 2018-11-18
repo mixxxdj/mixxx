@@ -168,6 +168,11 @@ void MixxxLibraryFeature::activate() {
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
     emit(switchToView(itemName));
+    if (m_pMissingView && itemName == kMissingTitle) {
+        emit(restoreSearch(m_pMissingView->currentSearch()));
+    } else if (m_pHiddenView && itemName == kHiddenTitle) {
+        emit(restoreSearch(m_pHiddenView->currentSearch()));
+    }
     emit(enableCoverArtDisplay(true));
 }
 
