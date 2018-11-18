@@ -39,7 +39,7 @@ class BaseTrackPlayer : public BasePlayer {
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
-    virtual void slotCloneChannel() = 0;
+    virtual void slotCloneChannel(EngineChannel* pChannel) = 0;
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -76,7 +76,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay) final;
-    void slotCloneChannel() final;
+    void slotCloneChannel(EngineChannel* pChannel) final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, QString reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);

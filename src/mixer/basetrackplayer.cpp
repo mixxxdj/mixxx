@@ -260,7 +260,8 @@ void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     mixxx::Duration elapsed = m_cloneTimer.restart();
     if (elapsed < mixxx::Duration::fromSeconds(1)) {
         // load pressed twice quickly, clone instead of loading
-        slotCloneChannel();
+        EngineChannel* pChannel = m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel);
+        slotCloneChannel(pChannel);
     }
     else {
         slotLoadTrackInternal(pNewTrack, bPlay);
@@ -426,8 +427,8 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
     return m_pLoadedTrack;
 }
 
-void BaseTrackPlayerImpl::slotCloneChannel() {
-    m_cloneFromChannel = m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel);
+void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
+    m_cloneFromChannel = pChannel;
     if (!m_cloneFromChannel) {
         return;
     }

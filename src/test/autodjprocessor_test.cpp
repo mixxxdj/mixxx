@@ -77,7 +77,7 @@ class FakeDeck : public BaseTrackPlayer {
         play.set(bPlay);
     }
 
-    void slotCloneChannel() override {
+    void slotCloneChannel(EngineChannel* pChannel) override {
         return;
     }
 
