@@ -33,6 +33,10 @@
                 <Connection>
                   <ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
                 </Connection>
+                <Connection>
+                  <ConfigKey>[Sampler<Variable name="samplernum"/>],track_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </Number>
 
             </Children>

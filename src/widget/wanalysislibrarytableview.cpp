@@ -9,12 +9,6 @@ WAnalysisLibraryTableView::WAnalysisLibraryTableView(QWidget* parent,
     setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
 }
 
-void WAnalysisLibraryTableView::onSearchStarting() {
-}
-
-void WAnalysisLibraryTableView::onSearchCleared() {
-}
-
 void WAnalysisLibraryTableView::onSearch(const QString& text) {
     Q_UNUSED(text);
 }
