@@ -1,11 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>../LICENSE</file>
-      <!-- window icon used in /src/mixxx.cpp and /src/library/scanner/libraryscannerdlg.cpp -->
-      <!-- svg is not accepted so we need to stick with the png here -->
-        <file>images/ic_mixxx_window.png</file>
-      <!-- mouse icon for drag'n'drop actions. won't work with SVG -->
-        <file>images/library/ic_library_drag_and_drop.png</file>
+        <file>images/library/ic_library_drag_and_drop.svg</file>
       <!-- open/closed lock icons for BPM button -->
         <file>images/library/ic_library_locked.svg</file>
         <file>images/library/ic_library_unlocked.svg</file>
@@ -69,16 +65,20 @@
         <file>translations/mixxx_cs.qm</file>
         <file>translations/mixxx_da.qm</file>
         <file>translations/mixxx_de.qm</file>
+        <file>translations/mixxx_de-DE.qm</file>
         <file>translations/mixxx_el.qm</file>
+        <file>translations/mixxx_en.qm</file>
         <file>translations/mixxx_en_GB.qm</file>
         <file>translations/mixxx_eo.qm</file>
         <file>translations/mixxx_es-ES.qm</file>
+        <file>translations/mixxx_es-MX.qm</file>
         <file>translations/mixxx_es.qm</file>
         <file>translations/mixxx_et.qm</file>
         <file>translations/mixxx_eu.qm</file>
         <file>translations/mixxx_fa.qm</file>
         <file>translations/mixxx_fi.qm</file>
         <file>translations/mixxx_fr.qm</file>
+        <file>translations/mixxx_fr-FR.qm</file>
         <file>translations/mixxx_ga.qm</file>
         <file>translations/mixxx_gl.qm</file>
         <file>translations/mixxx_he.qm</file>
@@ -125,5 +125,6 @@
         <file>translations/mixxx_vi.qm</file>
         <file>translations/mixxx_zh_CN.qm</file>
         <file>translations/mixxx_zh_TW.qm</file>
+        <file>translations/mixxx_zh_TW.Big5.qm</file>
     </qresource>
 </RCC>

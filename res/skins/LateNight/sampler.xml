@@ -318,6 +318,7 @@
             <Children>
               <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
+                <SetVariable name="Size">28f,26f</SetVariable>
                 <SetVariable name="state_0_pressed">sync_sampler_overdown.svg</SetVariable>
                 <SetVariable name="state_0_unpressed">sync_sampler.svg</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beatsync</SetVariable>

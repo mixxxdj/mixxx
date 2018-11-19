@@ -1,7 +1,7 @@
 # 
 # Translators:
-# Inpromtu <kmbredt@gmail.com>, 2016
-# Inpromtu <kmbredt@gmail.com>, 2016
+# Klaus Michael Bredt <kmbredt@gmail.com>, 2016
+# Klaus Michael Bredt <kmbredt@gmail.com>, 2016
 # S.Brandt <s.brandt@mixxx.org>, 2017-2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016-2017
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016

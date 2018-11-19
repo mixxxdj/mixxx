@@ -369,7 +369,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                     m_pControllerManager, m_pVCManager, pLV2Backend, m_pEffectsManager,
                                     m_pSettingsManager, m_pLibrary);
-    m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
     launchProgress(60);
@@ -731,7 +731,7 @@ void MixxxMainWindow::initializeWindow() {
     restoreState(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
         ConfigKey("[MainWindow]", "state")).toUtf8()));
 
-    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     slotUpdateWindowTitle(TrackPointer());
 }
 
@@ -1154,36 +1154,42 @@ void MixxxMainWindow::slotOptionsPreferences() {
 }
 
 void MixxxMainWindow::slotNoVinylControlInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this vinyl control.\n"
            "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this passthrough control.\n"
            "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this microphone.\n"
            "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotChangedPlayingDeck(int deck) {
