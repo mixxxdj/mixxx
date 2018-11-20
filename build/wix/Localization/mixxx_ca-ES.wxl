@@ -22,7 +22,7 @@
 
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
-  <String Id="OS2Old">Aquesta aplicació requereix Windows XP o una versió més recent.</String>
+  <String Id="OS2Old">Aquesta aplicació requereix Windows 7 o una versió més recent.</String>
   <String Id="NewerInstalled">Ja teniu instal·lada aquesta versió del Mixxx o una més recent.</String>
   <String Id="x64VersionRequired">Heu d'instal·lar la versió de 64 bits d'aquest producte en un Windows de 64 bits.</String>
   <String Id="x86VersionRequired">Heu d'instal·lar la versió de 32 bits d'aquest producte en un Windows de 32 bits.</String>

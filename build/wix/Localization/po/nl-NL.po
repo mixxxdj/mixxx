@@ -41,8 +41,8 @@ msgstr "Installeert Mixxx"
 #.  Error messages
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
-msgid "This product requires Windows XP or above."
-msgstr "Dit product vereist Windows XP of hoger."
+msgid "This product requires Windows 7 or above."
+msgstr "Dit product vereist Windows 7 of hoger."
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."

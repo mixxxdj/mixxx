@@ -40,8 +40,8 @@ msgstr "Paigaldab Mixxxi"
 #.  Error messages
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
-msgid "This product requires Windows XP or above."
-msgstr "See toode nõuab Windows XP-d või uuemat op. süsteemi."
+msgid "This product requires Windows 7 or above."
+msgstr "See toode nõuab Windows 7-d või uuemat op. süsteemi."
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."

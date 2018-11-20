@@ -22,7 +22,7 @@
 
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
-  <String Id="OS2Old">Tento výrobek vyžaduje Windows XP nebo vyšší.</String>
+  <String Id="OS2Old">Tento výrobek vyžaduje Windows 7 nebo vyšší.</String>
   <String Id="NewerInstalled">Již je nainstalována stejná nebo novější verze tohoto výrobku.</String>
   <String Id="x64VersionRequired">Do 64bitových Windows musíte nainstalovat 64bitovou verzi tohoto výrobku.</String>
   <String Id="x86VersionRequired">Do 32bitových Windows musíte nainstalovat 32bitovou verzi tohoto výrobku.</String>
