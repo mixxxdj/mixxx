@@ -867,6 +867,7 @@ MixtrackPlatinum.Sampler.prototype = new components.ComponentContainer();
 MixtrackPlatinum.HeadGain = function(sampler) {
     components.Pot.call(this);
 
+    this.ignore_next = null;
     this.shifted = false;
     this.sampler = sampler;
     this.sampler.forEachComponent(function(component) {
@@ -877,6 +878,17 @@ MixtrackPlatinum.HeadGain.prototype = new components.Pot({
     group: '[Master]',
     inKey: 'headGain',
     input: function (channel, control, value, status, group) {
+        if (this.ignore_next == "sampler" && !this.shifted) {
+            this.sampler.forEachComponent(function(component) {
+                engine.softTakeoverIgnoreNextValue(component.group, 'volume');
+            });
+            this.ignore_next = null;
+        }
+        else if (this.ignore_next == "headgain" && this.shifted) {
+            engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
+            this.ignore_next = null;
+        }
+
         if (this.shifted) {
             // make head gain control the sampler volume when shifted
             var pot = this;
@@ -889,13 +901,11 @@ MixtrackPlatinum.HeadGain.prototype = new components.Pot({
     },
     shift: function() {
         this.shifted = true;
-        this.disconnect();
-        this.sampler.forEachComponent(function(component) {
-            engine.softTakeoverIgnoreNextValue(component.group, 'volume');
-        });
+        this.ignore_next = "headgain";
     },
     unshift: function() {
         this.shifted = false;
+        this.ignore_next = "sampler";
     },
 });
 
