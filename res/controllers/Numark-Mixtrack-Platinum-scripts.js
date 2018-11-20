@@ -541,6 +541,26 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         this.pitch.firstValueReceived = true;
     }
 
+    var pitch_or_keylock = function (channel, control, value, status, group) {
+        if (this.other.inGetValue() > 0.0 && this.isPress(channel, control, value, status)) {
+            // toggle keylock, both keys pressed
+            engine.setValue(this.group, "keylock", !engine.getValue(this.group, "keylock"));
+        }
+        else {
+            components.Button.prototype.input.call(this, channel, control, value, status, group);
+        }
+    };
+    this.pitch_bend_up = new components.Button({
+        inKey: 'rate_temp_up',
+        input: pitch_or_keylock,
+    });
+    this.pitch_bend_down = new components.Button({
+        inKey: 'rate_temp_down',
+        input: pitch_or_keylock,
+    });
+    this.pitch_bend_up.other = this.pitch_bend_down;
+    this.pitch_bend_down.other = this.pitch_bend_up;
+
     loop_base = function(midino, obj) {
         return _.assign({
             midi: [0x94 + midi_chan, midino],
