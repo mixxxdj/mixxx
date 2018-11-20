@@ -20,21 +20,8 @@ Variables:
       <WidgetGroup>
         <ObjectName>EffectUnitNoParameters</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>min,max</SizePolicy>
+        <SizePolicy>me,max</SizePolicy>
         <Children>
-
-          <WidgetGroup>
-            <ObjectName>AlignTop</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,me</SizePolicy>
-            <Children>
-              <Template src="skin:hide_show_button.xml">
-                <SetVariable name="object_name">EffectUnitToggle</SetVariable>
-                <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                <SetVariable name="control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_parameters</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
 
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
@@ -116,17 +103,41 @@ Variables:
       <WidgetGroup>
         <ObjectName>EffectUnitGroupControls</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <SizePolicy>max,min</SizePolicy>
         <Children>
-          <Label>
-            <ObjectName>EffectUnitLabel</ObjectName>
-            <Text>FX<Variable name="EffectUnit"/></Text>
-            <Alignment>center</Alignment>
-          </Label>
 
           <WidgetGroup>
-            <ObjectName>AlignCenter</ObjectName>
+            <ObjectName>AlignTop</ObjectName>
             <Layout>horizontal</Layout>
+            <SizePolicy>min,max</SizePolicy>
+            <Children>
+              <Label>
+                <ObjectName>EffectUnitLabel</ObjectName>
+                <Text>FX<Variable name="EffectUnit"/></Text>
+                <Alignment>center</Alignment>
+                <Size>35me,22f</Size>
+              </Label>
+              <WidgetGroup>
+                <ObjectName>AlignTop</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <Children>
+                  <Template src="skin:hide_show_button.xml">
+                    <SetVariable name="object_name">EffectUnitToggle</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
+                    <SetVariable name="control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_parameters</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><SizePolicy>min,me</SizePolicy></WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>EffectUnitMasterHead</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
             <Children>
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
@@ -140,8 +151,6 @@ Variables:
                 <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control">[EffectRack1_EffectUnit<Variable name="EffectUnit"/>],group_[Headphone]_enable</SetVariable>
               </Template>
-
-              <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>

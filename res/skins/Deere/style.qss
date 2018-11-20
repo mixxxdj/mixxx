@@ -999,7 +999,7 @@ WBeatSpinBox,
   border: 1px solid #222222;
   border-width: 0px 0px 0px 1px;
   qproperty-layoutSpacing: 2;
-  padding: 0px 2px 2px 2px;
+  padding: 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
@@ -1009,6 +1009,12 @@ WBeatSpinBox,
 
 #EffectUnitGroupControlsRight {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+}
+
+#EffectUnitMasterHead {
+  qproperty-layoutSpacing: 2;
+  padding: 4px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
 }
 
 #EffectMetaKnob, WEffect {
