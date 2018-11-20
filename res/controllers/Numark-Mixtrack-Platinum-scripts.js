@@ -279,6 +279,11 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
     };
     this.EffectUnitTouchStrip.prototype = new components.Pot({
         relative: true, // this disables soft takeover
+        input: function (channel, control, value, status, group) {
+            // never do soft takeover when the touchstrip is used
+            engine.softTakeover(this.group, this.inKey, false);
+            components.Pot.prototype.input.call(this, channel, control, value, status, group);
+        },
         connect: function() {
             this.focus_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
             this.focus_connection.trigger();
@@ -768,10 +773,13 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         },
     });
 
-    this.EqEffectKnob = function (group, in_key, fx_key) {
+    this.EqEffectKnob = function (group, in_key, fx_key, filter_knob) {
         this.unshift_group = group;
         this.unshift_key = in_key;
         this.fx_key = fx_key;
+        if (filter_knob) {
+            this.shift_key = 'super1';
+        }
         this.ignore_next = null;
         components.Pot.call(this, {
             group: group,
@@ -796,10 +804,16 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         },
         shift: function() {
             var focused_effect = engine.getValue(eu.group, "focused_effect");
-            if (focused_effect === 0) return;
-
-            var group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber + '_Effect' + focused_effect + ']';
-            this.switchControl(group, this.fx_key);
+            if (focused_effect === 0) {
+                if (this.shift_key) {
+                    engine.softTakeover(eu.group, this.shift_key, true);
+                    this.switchControl(eu.group, this.shift_key);
+                }
+            }
+            else {
+                var group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber + '_Effect' + focused_effect + ']';
+                this.switchControl(group, this.fx_key);
+            }
         },
         unshift: function() {
             this.switchControl(this.unshift_group, this.unshift_key);
@@ -821,7 +835,8 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     this.filter = new this.EqEffectKnob(
         '[QuickEffectRack1_' + this.currentDeck + ']',
         'super1',
-        'parameter1');
+        'parameter1',
+        true);
 
     this.gain = new this.EqEffectKnob(
         this.currentDeck,
