@@ -22,6 +22,10 @@
 // timer invokes guiTick(), which is responsible for actually calling
 // QWidget::update(). When input arrives, we call inputActivity to attach the
 // timer. After 1 second of inactivity, we disconnect the timer.
+//
+// Ironically, using this class somehow causes severe lagginess on mouse input
+// with Windows, so use #ifdefs to only call activity() on macOS; just call
+// QWidget::update() for other operating systems.
 class WidgetRenderTimer : public QObject {
     Q_OBJECT
   public:
