@@ -772,26 +772,44 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         this.unshift_group = group;
         this.unshift_key = in_key;
         this.fx_key = fx_key;
+        this.ignore_next = null;
         components.Pot.call(this, {
             group: group,
             inKey: in_key,
         });
     };
     this.EqEffectKnob.prototype = new components.Pot({
+        input: function (channel, control, value, status, group) {
+            if (this.ignore_next) {
+                engine.softTakeoverIgnoreNextValue(this.ignore_next.group, this.ignore_next.key);
+                this.ignore_next = null;
+            }
+            components.Pot.prototype.input.call(this, channel, control, value, status, group);
+        },
+        connect: function() {
+            // enable soft takeover on our controls
+            for (var i = 1; i <= 3; i ++) {
+                var group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber + '_Effect' + i + ']';
+                engine.softTakeover(group, this.fx_key, true);
+            }
+            components.Pot.prototype.connect.call(this);
+        },
         shift: function() {
             var focused_effect = engine.getValue(eu.group, "focused_effect");
             if (focused_effect === 0) return;
 
-            this.disconnect();
-            this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber + '_Effect' + focused_effect + ']';
-            this.inKey = this.fx_key;
-            this.connect();
+            var group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber + '_Effect' + focused_effect + ']';
+            this.switchControl(group, this.fx_key);
         },
         unshift: function() {
-            this.disconnect();
-            this.group = this.unshift_group;
-            this.inKey = this.unshift_key;
-            this.connect();
+            this.switchControl(this.unshift_group, this.unshift_key);
+        },
+        switchControl: function(group, key) {
+            if (this.group != group || this.inKey != key) {
+                this.ignore_next = { 'group': this.group, 'key': this.inKey };
+            }
+            this.group = group;
+            this.inKey = key;
         },
     });
 
