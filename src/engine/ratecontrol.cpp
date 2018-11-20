@@ -536,24 +536,13 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
 }
 
 void RateControl::processTempRate(const int bufferSamples) {
-    /*
-     * Code to handle temporary rate change buttons.
-     *
-     * We support two behaviors, the standard ramped pitch bending
-     * and pitch shift stepping, which is the old behavior.
-     */
+    // Code to handle temporary rate change buttons.
+    // We support two behaviors, the standard ramped pitch bending
+    // and pitch shift stepping, which is the old behavior.
 
-    /*
-     * Initialize certain values necessary for pitchbending. Most of this
-     * code should be handled inside a slot, but we'd need to connect to
-     * the troublesome Latency ControlObject... Either the Master or Soundcard
-     * one.
-     */
-
-    if ((m_ePbPressed) && (!m_bTempStarted)) {
-        m_bTempStarted = true;
-
-        if (m_eRateRampMode == RampMode::Stepping) {
+    if (m_eRateRampMode == RampMode::Stepping) {
+        if (m_ePbPressed && !m_bTempStarted) {
+            m_bTempStarted = true;
             // old temporary pitch shift behavior
             double change = m_dTemporaryRateChangeCoarse / 100.0;
             double csmall = m_dTemporaryRateChangeFine / 100.0;
@@ -567,13 +556,21 @@ void RateControl::processTempRate(const int bufferSamples) {
             } else if (m_pButtonRateTempDownSmall->toBool()) {
                 setRateTemp(-csmall);
             }
-        } else if (m_eRateRampMode == RampMode::Linear) {
+        }
+
+        if (m_bTempStarted) {
+            if (!m_ePbCurrent) {
+                m_bTempStarted = false;
+                resetRateTemp();
+            }
+        }
+    } else if (m_eRateRampMode == RampMode::Linear) {
+        if (m_ePbPressed && !m_bTempStarted) {
+            m_bTempStarted = true;
             double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
             m_dRateTempRampChange = (latrate / ((double)m_iRateRampSensitivity / 100.));
         }
-    }
 
-    if (m_eRateRampMode == RampMode::Linear) {
         if (m_ePbCurrent) {
             // apply ramped pitchbending
             if (m_ePbCurrent == RateControl::RATERAMP_UP) {
@@ -584,11 +581,6 @@ void RateControl::processTempRate(const int bufferSamples) {
         } else if ((m_bTempStarted)
                 || (m_tempRateRatio != 0.0)) {
             // No buttons pressed, so time to deinitialize
-            m_bTempStarted = false;
-            resetRateTemp();
-        }
-    } else if ((m_eRateRampMode == RampMode::Stepping) && (m_bTempStarted)) {
-        if (!m_ePbCurrent) {
             m_bTempStarted = false;
             resetRateTemp();
         }
