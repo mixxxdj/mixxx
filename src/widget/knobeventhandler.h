@@ -3,9 +3,11 @@
 
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <QColor>
 #include <QCursor>
 #include <QApplication>
 #include <QPoint>
+#include <QPixmap>
 
 #include "util/math.h"
 
@@ -14,6 +16,9 @@ class KnobEventHandler {
   public:
     KnobEventHandler()
             : m_bRightButtonPressed(false) {
+            QPixmap blankPixmap(32, 32);
+            blankPixmap.fill(QColor(0, 0, 0, 0));
+            m_blankCursor = QCursor(blankPixmap);
     }
 
     double valueFromMouseEvent(T* pWidget, QMouseEvent* e) {
@@ -56,7 +61,9 @@ class KnobEventHandler {
             case Qt::LeftButton:
             case Qt::MidButton:
                 m_startPos = e->globalPos();
-                QApplication::setOverrideCursor(Qt::BlankCursor);
+                // Somehow using Qt::BlankCursor does not work on Windows
+                // https://mixxx.org/forums/viewtopic.php?p=40298#p40298
+                QApplication::setOverrideCursor(m_blankCursor);
                 break;
             default:
                 break;
@@ -101,6 +108,7 @@ class KnobEventHandler {
 
     // Starting point when left mouse button is pressed
     QPoint m_startPos;
+    QCursor m_blankCursor;
 };
 
 #endif /* KNOBEVENTHANDLER_H */
