@@ -75,9 +75,9 @@ const int audioBeatMarkLen = 40;
 const int kiTempLength = 200000;
 
 // Rate at which the playpos slider is updated
-const int kiPlaypositionUpdateRate = 20; // updates per second
+const int kiPlaypositionUpdateRate = 15; // updates per second
 // Number of kiUpdateRates that go by before we update BPM.
-const int kiBpmUpdateCnt = 4; // about 5 updates per sec
+const int kiBpmUpdateCnt = 4; // about 3.75 updates per sec
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
