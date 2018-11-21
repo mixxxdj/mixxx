@@ -129,6 +129,10 @@ class Library: public QObject,
     void scanStarted();
     void scanFinished();
 
+  private slots:
+      void onPlayerManagerTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+      void onPlayerManagerTrackAnalyzerIdle();
+
   private:
     // Callback for GlobalTrackCache
     void saveCachedTrack(Track* pTrack) noexcept override;

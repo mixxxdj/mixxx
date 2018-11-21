@@ -75,8 +75,8 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
                 library->dbConnectionPool(),
                 pConfig,
                 mode));
-        connect(m_workers.back().thread(), SIGNAL(progress(int, AnalyzerThreadState, TrackId, AnalyzerProgress)),
-            this, SLOT(onWorkerThreadProgress(int, AnalyzerThreadState, TrackId, AnalyzerProgress)));
+        connect(m_workers.back().thread(), &AnalyzerThread::progress,
+            this, &TrackAnalysisScheduler::onWorkerThreadProgress);
     }
     // 2nd pass: Start worker threads in a suspended state
     for (const auto& worker: m_workers) {
@@ -171,7 +171,11 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
             totalTracksCount);
 }
 
-void TrackAnalysisScheduler::onWorkerThreadProgress(int threadId, AnalyzerThreadState threadState, TrackId trackId, AnalyzerProgress analyzerProgress) {
+void TrackAnalysisScheduler::onWorkerThreadProgress(
+        int threadId,
+        AnalyzerThreadState threadState,
+        TrackId trackId,
+        AnalyzerProgress analyzerProgress) {
     auto& worker = m_workers.at(threadId);
     switch (threadState) {
     case AnalyzerThreadState::Void:

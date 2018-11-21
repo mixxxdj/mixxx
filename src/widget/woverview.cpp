@@ -64,8 +64,8 @@ WOverview::WOverview(
     m_playControl = new ControlProxy(m_group, "play", this);
     setAcceptDrops(true);
 
-    connect(pPlayerManager, SIGNAL(trackAnalyzerProgress(TrackId, AnalyzerProgress)),
-            this, SLOT(onTrackAnalyzerProgress(TrackId, AnalyzerProgress)));
+    connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
+            this, &WOverview::onTrackAnalyzerProgress);
 }
 
 void WOverview::setup(const QDomNode& node, const SkinContext& context) {

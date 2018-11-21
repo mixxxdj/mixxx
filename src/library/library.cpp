@@ -127,17 +127,17 @@ Library::Library(
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
 
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig);
-    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
-    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
+    connect(m_pPlaylistFeature, &PlaylistFeature::analyzeTracks,
+            m_pAnalysisFeature, &AnalysisFeature::analyzeTracks);
+    connect(m_pCrateFeature, &CrateFeature::analyzeTracks,
+            m_pAnalysisFeature, &AnalysisFeature::analyzeTracks);
     addFeature(m_pAnalysisFeature);
     // Suspend a batch analysis while an ad-hoc analysis of
     // loaded tracks is in progress and resume it afterwards.
-    connect(pPlayerManager, SIGNAL(trackAnalyzerProgress(TrackId, AnalyzerProgress)),
-            m_pAnalysisFeature, SLOT(suspendAnalysis()));
-    connect(pPlayerManager, SIGNAL(trackAnalyzerIdle()),
-            m_pAnalysisFeature, SLOT(resumeAnalysis()));
+    connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
+            this, &Library::onPlayerManagerTrackAnalyzerProgress);
+    connect(pPlayerManager, &PlayerManager::trackAnalyzerIdle,
+            this, &Library::onPlayerManagerTrackAnalyzerIdle);
 
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
@@ -297,6 +297,19 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SIGNAL(enableCoverArtDisplay(bool)));
     connect(feature, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+}
+
+void Library::onPlayerManagerTrackAnalyzerProgress(
+        TrackId /*trackId*/,AnalyzerProgress /*analyzerProgress*/) {
+    if (m_pAnalysisFeature) {
+        m_pAnalysisFeature->suspendAnalysis();
+    }
+}
+
+void Library::onPlayerManagerTrackAnalyzerIdle() {
+    if (m_pAnalysisFeature) {
+        m_pAnalysisFeature->resumeAnalysis();
+    }
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {

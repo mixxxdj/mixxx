@@ -130,12 +130,12 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
                 m_pConfig,
                 getAnalyzerMode(m_pConfig));
 
-        connect(m_pTrackAnalysisScheduler.get(), SIGNAL(progress(AnalyzerProgress, int, int)),
-                m_pAnalysisView, SLOT(onTrackAnalysisSchedulerProgress(AnalyzerProgress, int, int)));
-        connect(m_pTrackAnalysisScheduler.get(), SIGNAL(progress(AnalyzerProgress, int, int)),
-                this, SLOT(onTrackAnalysisSchedulerProgress(AnalyzerProgress, int, int)));
-        connect(m_pTrackAnalysisScheduler.get(), SIGNAL(finished()),
-                this, SLOT(stopAnalysis()));
+        connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::progress,
+                m_pAnalysisView, &DlgAnalysis::onTrackAnalysisSchedulerProgress);
+        connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::progress,
+                this, &AnalysisFeature::onTrackAnalysisSchedulerProgress);
+        connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::finished,
+                this, &AnalysisFeature::stopAnalysis);
 
         emit(analysisActive(true));
     }

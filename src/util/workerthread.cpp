@@ -39,7 +39,7 @@ WorkerThread::~WorkerThread() {
 
 void WorkerThread::deleteAfterFinished() {
     if (!isFinished()) {
-        connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
+        connect(this, &WorkerThread::finished, this, &WorkerThread::deleteLater);
     }
     if (isFinished()) {
         // Already finished or just finished in the meantime. Calling
