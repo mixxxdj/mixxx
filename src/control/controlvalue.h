@@ -10,7 +10,7 @@
 
 // for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
-const int cDefaultRingSize = 8;
+const int kDefaultRingSize = 8;
 // there are basically unlimited readers allowed at each ring element
 // but we have to count them so max() is just fine.
 // NOTE(rryan): Wrapping max with parentheses avoids conflict with the max macro
@@ -193,7 +193,7 @@ class ControlValueAtomicBase<T, true> {
 // ControlValueAtomicBase to use. For types where sizeof(T) <= sizeof(void*),
 // the specialized implementation of ControlValueAtomicBase for types that are
 // atomic on the architecture is used.
-template <typename T, int cRingSize = cDefaultRingSize>
+template <typename T, int cRingSize = kDefaultRingSize>
 class ControlValueAtomic : public ControlValueAtomicBase<T, cRingSize, sizeof(T) <= sizeof(void*)> {
   public:
     ControlValueAtomic() = default;
