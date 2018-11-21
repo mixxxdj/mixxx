@@ -17,6 +17,9 @@ Q_DECLARE_METATYPE(AnalyzerProgress);
 inline
 int analyzerProgressPercent(AnalyzerProgress analyzerProgress) {
     DEBUG_ASSERT(analyzerProgress >= kAnalyzerProgressNone);
-    return int((100 * (math_min(analyzerProgress, kAnalyzerProgressDone) - kAnalyzerProgressNone)) /
-            (kAnalyzerProgressDone - kAnalyzerProgressNone));
+    const auto analyzerProgressClamped =
+            math_min(analyzerProgress, kAnalyzerProgressDone);
+    return static_cast<int>(std::round(
+            100 * (analyzerProgressClamped - kAnalyzerProgressNone) /
+            (kAnalyzerProgressDone - kAnalyzerProgressNone)));
 }
