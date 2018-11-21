@@ -45,6 +45,7 @@ class PlaylistFeature : public BasePlaylistFeature {
 
   private:
     QString getRootViewHtml() const;
+    QIcon m_icon;
 };
 
 #endif /* PLAYLISTFEATURE_H */
