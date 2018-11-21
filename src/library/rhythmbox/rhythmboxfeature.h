@@ -63,6 +63,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     bool m_cancelImport;
 
     QSharedPointer<BaseTrackCache>  m_trackSource;
+    QIcon m_icon;
 };
 
 #endif // RHYTHMBOXFEATURE_H

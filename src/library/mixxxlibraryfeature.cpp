@@ -32,7 +32,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pHiddenView(NULL),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_icon(":/images/library/ic_library_tracks.svg") {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -140,7 +141,7 @@ QVariant MixxxLibraryFeature::title() {
 }
 
 QIcon MixxxLibraryFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_tracks.svg");
+    return m_icon;
 }
 
 TreeItemModel* MixxxLibraryFeature::getChildModel() {
