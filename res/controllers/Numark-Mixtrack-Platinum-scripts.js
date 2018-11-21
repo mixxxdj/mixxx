@@ -27,6 +27,9 @@ var UseAutolLoopAsCue = false;
 // should we use the hotcue buttons for samplers 5-8?
 var UseCueAsSampler = false;
 
+// should shift+load eject or load and play?
+var ShiftLoadEjects = false;
+
 
 var MixtrackPlatinum = {};
 
@@ -476,6 +479,21 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         shift: function() {
             this.inKey = 'play_stutter';
             this.type = components.Button.prototype.types.push;
+        },
+    });
+
+    this.load = new components.Button({
+        inKey: 'LoadSelectedTrack',
+        shift: function() {
+            if (ShiftLoadEjects) {
+                this.inKey = 'eject';
+            }
+            else {
+                this.inKey = 'LoadSelectedTrackAndPlay';
+            }
+        },
+        unshift: function() {
+            this.inKey = 'LoadSelectedTrack';
         },
     });
 
