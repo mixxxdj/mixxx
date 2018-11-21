@@ -56,7 +56,7 @@ class KnobEventHandler {
             case Qt::LeftButton:
             case Qt::MidButton:
                 m_startPos = e->globalPos();
-                QApplication::setOverrideCursor(Qt::BlankCursor);
+                QApplication::setOverrideCursor(QCursor(Qt::BlankCursor));
                 break;
             default:
                 break;
