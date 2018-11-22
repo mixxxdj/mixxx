@@ -1296,6 +1296,10 @@ void EngineBuffer::slotEjectTrack(double v) {
     }
 }
 
+double EngineBuffer::getExactPlayPos() {
+    return getVisualPlayPos() * getTrackSamples();
+}
+
 double EngineBuffer::getVisualPlayPos() {
     return m_visualPlayPos->getEnginePlayPos();
 }

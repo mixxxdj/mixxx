@@ -143,6 +143,7 @@ class EngineBuffer : public EngineObject {
     bool isTrackLoaded();
     TrackPointer getLoadedTrack() const;
 
+    double getExactPlayPos();
     double getVisualPlayPos();
     double getTrackSamples();
 
