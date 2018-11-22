@@ -247,7 +247,12 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
             ++m_finishedTracksCount;
             continue;
         }
-        worker->submitNextTrack(std::move(nextTrack));
+        VERIFY_OR_DEBUG_ASSERT(worker->submitNextTrack(std::move(nextTrack))) {
+            // This should never happen
+            kLogger.warning() << "Failed to submit next track";
+            // Retry to avoid skipping the track
+            continue;
+        }
         m_queuedTrackIds.pop_front();
         ++m_dequeuedTracksCount;
         worker->wakeThread();

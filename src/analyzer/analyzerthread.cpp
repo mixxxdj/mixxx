@@ -76,7 +76,6 @@ AnalyzerThread::AnalyzerThread(
           m_sampleBuffer(kAnalysisSamplesPerBlock),
           m_emittedState(AnalyzerThreadState::Void) {
     m_lastBusyProgressEmittedTimer.start();
-    m_nextTrack.setValue(TrackPointer());
     // The types are registered multiple times although once would be sufficient
     qRegisterMetaType<AnalyzerThreadState>();
     // AnalyzerProgress is just an alias/typedef and must be registered explicitly
@@ -186,15 +185,15 @@ void AnalyzerThread::doRun() {
     emitProgress(AnalyzerThreadState::Exit);
 }
 
-void AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
-    DEBUG_ASSERT(!m_nextTrack.getValue());
-    m_nextTrack.setValue(std::move(nextTrack));
+bool AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
+    DEBUG_ASSERT(nextTrack);
+    return m_nextTrack.enqueue(std::move(nextTrack));
 }
 
 WorkerThread::FetchWorkResult AnalyzerThread::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_currentTrack);
-    m_currentTrack = m_nextTrack.getValueOnce();
-    if (m_currentTrack) {
+    if (m_nextTrack.dequeue(&m_currentTrack)) {
+        DEBUG_ASSERT(m_currentTrack);
         return FetchWorkResult::Ready;
     } else {
         if (m_emittedState != AnalyzerThreadState::Idle) {

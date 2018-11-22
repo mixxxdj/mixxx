@@ -10,28 +10,29 @@
 
 // for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
-const int kDefaultRingSize = 8;
+constexpr int kDefaultRingSize = 8;
 // there are basically unlimited readers allowed at each ring element
 // but we have to count them so max() is just fine.
 // NOTE(rryan): Wrapping max with parentheses avoids conflict with the max macro
 // defined in windows.h.
-const int cReaderSlotCnt = (std::numeric_limits<int>::max)();
+constexpr int kMaxReaderSlots = (std::numeric_limits<int>::max)();
 
 // A single instance of a value of type T along with an atomic integer which
 // tracks the current number of readers or writers of the slot. The value
-// m_readerSlots starts at cReaderSlotCnt and counts down to 0. If the value is
+// m_readerSlots starts at kMaxReaderSlots and counts down to 0. If the value is
 // 0 or less then reads to the value fail because there are either too many
 // readers or a write is occurring. A write to the value will fail if
-// m_readerSlots is not equal to cReaderSlotCnt (e.g. there is an active
+// m_readerSlots is not equal to kMaxReaderSlots (e.g. there is an active
 // reader).
 template <typename T>
 class ControlRingValue {
   public:
-    ControlRingValue() : m_readerSlots(cReaderSlotCnt) {
+    ControlRingValue()
+      : m_readerSlots(kMaxReaderSlots) {
     }
 
     // Tries to copy the stored value if a reader slot is available.
-    // This is operation can be repeated multiple times for the same
+    // This operation can be repeated multiple times for the same
     // slot, because the stored value is preserved.
     bool tryGet(T* value) const {
         // Read while consuming one readerSlot
@@ -47,31 +48,11 @@ class ControlRingValue {
         }
     }
 
-    // A destructive read operation that tries to move the stored
-    // value into the provided argument if a reader slot is available.
-    // This is operation should not be repeated once it returned true,
-    // because the stored value becomes invalid after it has been moved.
-    // WARNING: The value is only received EXACTLY ONCE in a multi producer/
-    // single consumer (mpsc) scenario!!
-    bool tryGetOnce(T* value) {
-        // Read while consuming one readerSlot
-        if (m_readerSlots.fetchAndAddAcquire(-1) > 0) {
-            *value = std::move(m_value);
-            m_readerSlots.fetchAndAddRelease(1);
-            return true;
-        } else {
-            // Otherwise a writer is active. The writer will reset
-            // the counter in m_readerSlots when releasing the lock
-            // and we must not re-add the substracted value here!
-            return false;
-        }
-    }
-
     bool trySet(const T& value) {
         // try to lock this element entirely for reading
-        if (m_readerSlots.testAndSetAcquire(cReaderSlotCnt, 0)) {
+        if (m_readerSlots.testAndSetAcquire(kMaxReaderSlots, 0)) {
             m_value = value;
-            m_readerSlots.fetchAndAddRelease(cReaderSlotCnt);
+            m_readerSlots.fetchAndAddRelease(kMaxReaderSlots);
             return true;
         } else {
             return false;
@@ -80,6 +61,7 @@ class ControlRingValue {
 
   private:
     T m_value;
+    int m_maxReaderSlots;
     mutable QAtomicInt m_readerSlots;
 };
 
@@ -97,26 +79,7 @@ class ControlValueAtomicBase {
         unsigned int index = static_cast<unsigned int>(load_atomic(m_readIndex)) % cRingSize;
         while (!m_ring[index].tryGet(&value)) {
             // We are here if
-            // 1) there are more then cReaderSlotCnt reader (get) reading the same value or
-            // 2) the formerly current value is locked by a writer
-            // Case 1 does not happen because we have enough (0x7fffffff) reader slots.
-            // Case 2 happens when the a reader is delayed after reading the
-            // m_currentIndex and in the mean while a reader locks the formally current value
-            // because it has written cRingSize times. Reading the less recent value will fix
-            // it because it is now actually the current value.
-            index = (index - 1) % cRingSize;
-        }
-        return value;
-    }
-
-    // WARNING: The value is only received EXACTLY ONCE in a multi producer/
-    // single consumer (mpsc) scenario!!
-    inline T getValueOnce() {
-        T value;
-        unsigned int index = static_cast<unsigned int>(load_atomic(m_readIndex)) % cRingSize;
-        while (!m_ring[index].tryGetOnce(&value)) {
-            // We are here if
-            // 1) there are more then cReaderSlotCnt reader (get) reading the same value or
+            // 1) there are more then kMaxReaderSlots reader (get) reading the same value or
             // 2) the formerly current value is locked by a writer
             // Case 1 does not happen because we have enough (0x7fffffff) reader slots.
             // Case 2 happens when the a reader is delayed after reading the

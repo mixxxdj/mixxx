@@ -6,7 +6,6 @@
 
 #include "analyzer/analyzerprogress.h"
 #include "analyzer/analyzer.h"
-#include "control/controlvalue.h"
 #include "preferences/usersettings.h"
 #include "sources/audiosource.h"
 #include "track/track.h"
@@ -14,6 +13,7 @@
 #include "util/performancetimer.h"
 #include "util/samplebuffer.h"
 #include "util/memory.h"
+#include "util/mpscfifo.h"
 
 
 enum class AnalyzerMode {
@@ -74,7 +74,7 @@ class AnalyzerThread : public WorkerThread {
     // with state Idle has been received to avoid overwriting
     // a previously sent track that has not been received by the
     // worker thread, yet.
-    void submitNextTrack(TrackPointer nextTrack);
+    bool submitNextTrack(TrackPointer nextTrack);
 
   signals:
     // Use a single signal for progress updates to ensure that all signals
@@ -102,9 +102,9 @@ class AnalyzerThread : public WorkerThread {
     // Thread-safe atomic values
 
     // There is only one consumer (namely the worker thread) and one producer
-    // (the host thread) for this value. Therefore default ring buffer size
-    // is sufficient.
-    ControlValueAtomic<TrackPointer> m_nextTrack;
+    // (the host thread) for this value. A single value is written and read
+    // in turn so the minimum capacity is sufficient.
+    MpscFifo<TrackPointer, 2> m_nextTrack;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local: Only used in the constructor/destructor and within

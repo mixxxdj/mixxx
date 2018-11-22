@@ -92,12 +92,16 @@ class TrackAnalysisScheduler : public QObject {
             return m_analyzerProgress;
         }
 
-        void submitNextTrack(TrackPointer track) {
+        bool submitNextTrack(TrackPointer track) {
             DEBUG_ASSERT(track);
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(m_threadIdle);
-            m_thread->submitNextTrack(std::move(track));
-            m_threadIdle = false;
+            if (m_thread->submitNextTrack(std::move(track))) {
+                m_threadIdle = false;
+                return true;
+            } else {
+                return false;
+            }
         }
 
         void wakeThread() {
