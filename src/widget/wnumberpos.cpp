@@ -27,7 +27,6 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     m_pTimeFormat->connectValueChanged(
             SLOT(slotSetTimeFormat(double)));
     slotSetTimeFormat(m_pTimeFormat->get());
-
 }
 
 void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
