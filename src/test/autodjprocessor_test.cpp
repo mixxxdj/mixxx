@@ -81,6 +81,10 @@ class FakeDeck : public BaseTrackPlayer {
         return;
     }
 
+    void slotCloneDeck(const QString& group) override {
+        return;
+    }
+
     TrackPointer loadedTrack;
     ControlLinPotmeter playposition;
     ControlPushButton play;

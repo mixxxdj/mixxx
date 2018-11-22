@@ -431,6 +431,15 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
     return m_pLoadedTrack;
 }
 
+void BaseTrackPlayerImpl::slotCloneDeck(const QString& group) {
+    EngineChannel* pChannel = m_pEngineMaster->getChannel(group);
+    if (!pChannel) {
+        return;
+    }
+
+    slotCloneChannel(pChannel);
+}
+
 void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
     m_cloneFromChannel = pChannel;
     if (!m_cloneFromChannel) {
