@@ -12,6 +12,7 @@ class ControlProxy;
 
 class WNumberPos : public WNumber {
     Q_OBJECT
+
   public:
     explicit WNumberPos(const char *group, QWidget *parent=nullptr);
 
