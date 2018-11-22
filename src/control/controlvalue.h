@@ -51,6 +51,8 @@ class ControlRingValue {
     // value into the provided argument if a reader slot is available.
     // This is operation should not be repeated once it returned true,
     // because the stored value becomes invalid after it has been moved.
+    // WARNING: The value is only received EXACTLY ONCE in a multi producer/
+    // single consumer (mpsc) scenario!!
     bool tryGetOnce(T* value) {
         // Read while consuming one readerSlot
         if (m_readerSlots.fetchAndAddAcquire(-1) > 0) {
@@ -107,6 +109,8 @@ class ControlValueAtomicBase {
         return value;
     }
 
+    // WARNING: The value is only received EXACTLY ONCE in a multi producer/
+    // single consumer (mpsc) scenario!!
     inline T getValueOnce() {
         T value;
         unsigned int index = static_cast<unsigned int>(load_atomic(m_readIndex)) % cRingSize;
