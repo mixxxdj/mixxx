@@ -6,6 +6,7 @@
 #include "track/keyutils.h"
 #include "library/dao/trackschema.h"
 #include "util/db/sqllikewildcards.h"
+#include "util/db/dbconnection.h"
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
@@ -141,6 +142,15 @@ QString NotNode::toSql() const {
     }
 }
 
+TextFilterNode::TextFilterNode(const QSqlDatabase& database,
+               const QStringList& sqlColumns,
+               const QString& argument)
+        : m_database(database),
+          m_sqlColumns(sqlColumns),
+          m_argument(argument) {
+    mixxx::DbConnection::makeStringLatinLow(&m_argument);
+}
+
 bool TextFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn: m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
@@ -148,7 +158,9 @@ bool TextFilterNode::match(const TrackPointer& pTrack) const {
             continue;
         }
 
-        if (value.toString().contains(m_argument, Qt::CaseInsensitive)) {
+        QString strValue = value.toString();
+        mixxx::DbConnection::makeStringLatinLow(&strValue);
+        if (strValue.contains(m_argument)) {
             return true;
         }
     }
@@ -157,8 +169,16 @@ bool TextFilterNode::match(const TrackPointer& pTrack) const {
 
 QString TextFilterNode::toSql() const {
     FieldEscaper escaper(m_database);
-    QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + m_argument + kSqlLikeMatchAll);
-
+    QString argument = m_argument;
+    if (argument.size() > 0) {
+        if (argument[argument.size() - 1].isSpace()) {
+            // LIKE eats a trailing space. This can be avoided by adding a '_'
+            // as a delimiter that matches any following character.
+            argument.append('_');
+        }
+    }
+    QString escapedArgument = escaper.escapeString(
+            kSqlLikeMatchAll + argument + kSqlLikeMatchAll);
     QStringList searchClauses;
     for (const auto& sqlColumn: m_sqlColumns) {
         searchClauses << QString("%1 LIKE %2").arg(sqlColumn, escapedArgument);

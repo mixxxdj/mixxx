@@ -233,5 +233,9 @@ double WSliderComposed::calculateHandleLength() {
 }
 
 void WSliderComposed::inputActivity() {
+#ifdef __APPLE__
     m_renderTimer.activity();
+#else
+    update();
+#endif
 }

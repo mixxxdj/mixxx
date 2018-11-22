@@ -132,7 +132,7 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
 
 void BasePlaylistFeature::activate() {
     emit(switchToView(m_rootViewName));
-    emit(restoreSearch(QString())); // Null String disables search box
+    emit disableSearch();
     emit(enableCoverArtDisplay(true));
 }
 

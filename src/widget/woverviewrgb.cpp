@@ -17,7 +17,7 @@ WOverviewRGB::WOverviewRGB(
 bool WOverviewRGB::drawNextPixmapPart() {
     ScopedTimer t("WOverviewRGB::drawNextPixmapPart");
 
-    //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
+    //qDebug() << "WOverview::drawNextPixmapPart()";
 
     int currentCompletion;
 
@@ -46,7 +46,8 @@ bool WOverviewRGB::drawNextPixmapPart() {
     const int completionIncrement = waveformCompletion - m_actualCompletion;
 
     int visiblePixelIncrement = completionIncrement * length() / dataSize;
-    if (completionIncrement < 2 || visiblePixelIncrement == 0) {
+    if (waveformCompletion < (dataSize - 2) &&
+            (completionIncrement < 2 || visiblePixelIncrement == 0)) {
         return false;
     }
 

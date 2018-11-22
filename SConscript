@@ -381,9 +381,8 @@ if build.platform_is_linux or build.platform_is_bsd:
                 skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
                 fonts = env.Install(os.path.join(unix_share_path, 'mixxx', 'fonts'), font_files)
                 vamp_plugin =  env.Install(
-                        os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vamp'),
-                        libmixxxminimal_vamp_plugin)
-
+                    os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vampqt5'),
+                    libmixxxminimal_vamp_plugin)
                 controllermappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'controllers'), controllermappings_files)
                 translations = env.Install(os.path.join(unix_share_path, 'mixxx', 'translations'), translation_files)
                 keyboardmappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'keyboard'), keyboardmappings_files)

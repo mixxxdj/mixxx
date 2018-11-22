@@ -44,7 +44,8 @@ AnalysisFeature::AnalysisFeature(
         m_pConfig(pConfig),
         m_pTrackAnalysisScheduler(TrackAnalysisScheduler::nullPointer()),
         m_analysisTitleName(tr("Analyze")),
-        m_pAnalysisView(nullptr) {
+        m_pAnalysisView(nullptr),
+        m_icon(":/images/library/ic_library_prepare.svg") {
     setTitleDefault();
 }
 
@@ -71,7 +72,7 @@ QVariant AnalysisFeature::title() {
 }
 
 QIcon AnalysisFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_prepare.svg");
+    return m_icon;
 }
 
 void AnalysisFeature::bindWidget(WLibrary* libraryWidget,

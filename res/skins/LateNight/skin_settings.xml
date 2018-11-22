@@ -263,30 +263,41 @@ Description:
             </Children>
           </WidgetGroup><!-- /Effects -->
 
-          <Label>
-            <ObjectName>CategoryLabel</ObjectName>
-            <Text>Miscellaneous</Text>
-            <Size>190f,21f</Size>
-          </Label>
+          <!-- Samplers -->
+          <Template src="skin:skin_settings_labelbutton_2state.xml">
+            <SetVariable name="text">Samplers </SetVariable>
+            <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
+          </Template>
 
-          <WidgetGroup>
+
+        <WidgetGroup><!-- 4 buttons -->
             <ObjectName>SkinSettingsCategory</ObjectName>
             <SizePolicy>me,min</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
 
-              <!-- Preview Deck -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">show_previewdeck</SetVariable>
-                <SetVariable name="text">Preview Deck</SetVariable>
-                <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
-              </Template>
-
-              <!-- Cover Art -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="text">Cover Art in Library</SetVariable>
-                <SetVariable name="Setting">[Library],show_coverart</SetVariable>
-              </Template>
+              <WidgetGroup><!-- 8 Samplers -->
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+                  <WidgetGroup>
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>stacked</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="text">8 Samplers</SetVariable>
+                    <SetVariable name="Setting">[Skin],8_samplers</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- / 8 Samplers -->
 
               <PushButton>
                 <TooltipId>LoadSamplerBank</TooltipId>
@@ -321,7 +332,37 @@ Description:
               </PushButton>
 
             </Children>
-          </WidgetGroup><!-- /Miscellaneous -->
+          </WidgetGroup><!-- /Samplers -->
+
+          <Label>
+            <ObjectName>CategoryLabel</ObjectName>
+            <Text>Library</Text>
+            <Size>190f,21f</Size>
+          </Label>
+
+          <WidgetGroup>
+            <ObjectName>SkinSettingsCategory</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+
+              <!-- Preview Deck -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">show_previewdeck</SetVariable>
+                <SetVariable name="text">Preview Deck</SetVariable>
+                <SetVariable name="Setting">[PreviewDeck],show_previewdeck</SetVariable>
+              </Template>
+
+              <!-- Cover Art -->
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="text">Cover Art in Library</SetVariable>
+                <SetVariable name="Setting">[Library],show_coverart</SetVariable>
+              </Template>
+
+
+
+            </Children>
+          </WidgetGroup><!-- /Library -->
         </Children>
       </WidgetGroup><!-- /SkinSettings -->
     </Children>

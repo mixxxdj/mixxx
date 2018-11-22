@@ -62,97 +62,57 @@
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
-          <ObjectName>AlignRightTop</ObjectName>
-           <Children>
+        <ObjectName>AlignRightTop</ObjectName>
+          <Children>
 
-            <!-- FX buttons 1-4 -->
-            <PushButton>
-              <Size>28f,22f</Size>
-              <TooltipId>EffectUnit_deck_enabled</TooltipId>
-              <ObjectName>FxAssignButton</ObjectName>
-              <NumberStates>2</NumberStates>
-              <State>
-                <Number>0</Number>
-                <Text>FX&#8202;1</Text>
-              </State>
-              <State>
-                <Number>1</Number>
-                <Text>FX&#8202;1</Text>
-              </State>
-              <Connection>
-                <ConfigKey>[EffectRack1_EffectUnit1],group_<Variable name="group"/>_enable</ConfigKey>
-                <ButtonState>LeftButton</ButtonState>
-              </Connection>
-            </PushButton>
+          <!-- FX buttons 1-4 -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
+            <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+            <SetVariable name="Size">28f,22f</SetVariable>
+            <SetVariable name="state_0_text">FX&#8202;1</SetVariable>
+            <SetVariable name="state_1_text">FX&#8202;1</SetVariable>
+            <SetVariable name="ConfigKey">[EffectRack1_EffectUnit1],group_<Variable name="group"/>_enable</SetVariable>
+          </Template>
 
-            <PushButton>
-              <Size>28f,22f</Size>
-              <TooltipId>EffectUnit_deck_enabled</TooltipId>
-              <ObjectName>FxAssignButton</ObjectName>
-              <NumberStates>2</NumberStates>
-              <State>
-                <Number>0</Number>
-                <Text>FX&#8202;2</Text>
-              </State>
-              <State>
-                <Number>1</Number>
-                <Text>FX&#8202;2</Text>
-              </State>
-              <Connection>
-                <ConfigKey>[EffectRack1_EffectUnit2],group_<Variable name="group"/>_enable</ConfigKey>
-                <ButtonState>LeftButton</ButtonState>
-              </Connection>
-            </PushButton>
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
+            <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+            <SetVariable name="Size">28f,22f</SetVariable>
+            <SetVariable name="state_0_text">FX&#8202;2</SetVariable>
+            <SetVariable name="state_1_text">FX&#8202;2</SetVariable>
+            <SetVariable name="ConfigKey">[EffectRack1_EffectUnit2],group_<Variable name="group"/>_enable</SetVariable>
+          </Template>
 
-            <WidgetGroup>
-              <Layout>horizontal</Layout>
-              <Connection>
-                <ConfigKey>[Master],show_4effectunits</ConfigKey>
-                <BindProperty>visible</BindProperty>
-              </Connection>
-              <Children>
-                <PushButton>
-                  <Size>28f,22f</Size>
-                  <TooltipId>EffectUnit_deck_enabled</TooltipId>
-                  <ObjectName>FxAssignButton</ObjectName>
-                  <NumberStates>2</NumberStates>
-                  <State>
-                    <Number>0</Number>
-                    <Text>FX&#8202;3</Text>
-                  </State>
-                  <State>
-                    <Number>1</Number>
-                    <Text>FX&#8202;3</Text>
-                  </State>
-                  <Connection>
-                    <ConfigKey>[EffectRack1_EffectUnit3],group_<Variable name="group"/>_enable</ConfigKey>
-                    <ButtonState>LeftButton</ButtonState>
-                  </Connection>
-                </PushButton>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Connection>
+              <ConfigKey>[Master],show_4effectunits</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+            <Children>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
+                <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                <SetVariable name="Size">28f,22f</SetVariable>
+                <SetVariable name="state_0_text">FX&#8202;3</SetVariable>
+                <SetVariable name="state_1_text">FX&#8202;3</SetVariable>
+                <SetVariable name="ConfigKey">[EffectRack1_EffectUnit3],group_<Variable name="group"/>_enable</SetVariable>
+              </Template>
 
-                <PushButton>
-                  <Size>28f,22f</Size>
-                  <TooltipId>EffectUnit_deck_enabled</TooltipId>
-                  <ObjectName>FxAssignButton</ObjectName>
-                  <NumberStates>2</NumberStates>
-                  <State>
-                    <Number>0</Number>
-                    <Text>FX&#8202;4</Text>
-                  </State>
-                  <State>
-                    <Number>1</Number>
-                    <Text>FX&#8202;4</Text>
-                  </State>
-                  <Connection>
-                    <ConfigKey>[EffectRack1_EffectUnit4],group_<Variable name="group"/>_enable</ConfigKey>
-                    <ButtonState>LeftButton</ButtonState>
-                  </Connection>
-                </PushButton>
-              </Children>
-            </WidgetGroup>
-            <!-- /FX buttons 1-4 -->
-      </Children>
-     </WidgetGroup>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
+                <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                <SetVariable name="Size">28f,22f</SetVariable>
+                <SetVariable name="state_0_text">FX&#8202;4</SetVariable>
+                <SetVariable name="state_1_text">FX&#8202;4</SetVariable>
+                <SetVariable name="ConfigKey">[EffectRack1_EffectUnit4],group_<Variable name="group"/>_enable</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+          <!-- /FX buttons 1-4 -->
+        </Children>
+      </WidgetGroup>
     </Children>
   </WidgetGroup>
 </Template>
