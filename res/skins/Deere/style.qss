@@ -1125,7 +1125,7 @@ WEffectSelector {
 }
 
 #MasterControls {
-  qproperty-layoutSpacing: 0;
+  qproperty-layoutSpacing: 2;
 }
 
 #DeckControls {
