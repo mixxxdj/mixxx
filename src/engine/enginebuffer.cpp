@@ -425,9 +425,7 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
 }
 
 void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
-    double otherTrackSamples = ControlObject::get(
-        ConfigKey(pOtherBuffer->getGroup(), "track_samples"));
-    doSeekPlayPos(pOtherBuffer->getVisualPlayPos() * otherTrackSamples, SEEK_EXACT);
+    doSeekPlayPos(pOtherBuffer->getExactPlayPos(), SEEK_EXACT);
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
