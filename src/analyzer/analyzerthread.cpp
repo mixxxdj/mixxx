@@ -35,7 +35,7 @@ mixxx::Logger kLogger("AnalyzerThread");
 // fixed number of channels like the engine does, usually 2 = stereo.
 constexpr mixxx::AudioSignal::ChannelCount kAnalysisChannels = mixxx::kEngineChannelCount;
 constexpr SINT kAnalysisFramesPerBlock = 4096;
-constexpr SINT kAnalysisSamplesPerBlock =
+const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
 
 // Maximum frequency of progress updates while busy. A value of 60 ms
