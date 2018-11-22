@@ -37,6 +37,7 @@
             <Children>
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="Size">40f,34f</SetVariable>
+                <SetVariable name="Color">green</SetVariable>
                 <SetVariable name="group"><Variable name="QuickEffectGroup"/></SetVariable>
                 <SetVariable name="control">super1</SetVariable>
                 <SetVariable name="TooltipId">QuickEffectRack_super1</SetVariable>
