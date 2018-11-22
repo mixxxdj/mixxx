@@ -25,16 +25,22 @@ namespace {
 
 mixxx::Logger kLogger("AnalyzerThread");
 
-// Analysis is done in blocks.
-// We need to use a smaller block size, because on Linux the AnalyzerThread
-// can starve the CPU of its resources, resulting in xruns. A block size
-// of 4096 frames per block seems to do fine.
+// NOTE(uklotzde, 2018-11-23): The parameterization for the analyzers
+// has not been touched while transforming the code from single- to
+// multi-threaded processing! Feel free to adjust this if justified.
+
+// Analysis is done in blocks to avoid dynamic allocation of memory
+// depending on the track length. A block size of 4096 frames per block
+// seems to do fine. Signal processing during analysis uses the same,
+// fixed number of channels like the engine does, usually 2 = stereo.
 constexpr mixxx::AudioSignal::ChannelCount kAnalysisChannels = mixxx::kEngineChannelCount;
 constexpr SINT kAnalysisFramesPerBlock = 4096;
-const SINT kAnalysisSamplesPerBlock =
+constexpr SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
 
-// Maximum frequency of progress updates while busy
+// Maximum frequency of progress updates while busy. A value of 60 ms
+// results in ~17 progress updates per second which is sufficient for
+// continuous feedback.
 const mixxx::Duration kBusyProgressInhibitDuration = mixxx::Duration::fromMillis(60);
 
 void deleteAnalyzerThread(AnalyzerThread* plainPtr) {
