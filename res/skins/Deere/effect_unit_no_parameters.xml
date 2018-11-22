@@ -151,16 +151,6 @@ Variables:
                 <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
                 <SetVariable name="left_connection_control">[EffectRack1_EffectUnit<Variable name="EffectUnit"/>],group_[Headphone]_enable</SetVariable>
               </Template>
-
-              <Template src="skin:left_2state_button.xml">
-                <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
-                <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
-                <SetVariable name="MinimumSize">30,22</SetVariable>
-                <SetVariable name="SizePolicy">f,f</SetVariable>
-                <SetVariable name="state_0_text">MST</SetVariable>
-                <SetVariable name="state_1_text">MST</SetVariable>
-                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit<Variable name="EffectUnit"/>],group_[Master]_enable</SetVariable>
-              </Template>
             </Children>
           </WidgetGroup>
 
