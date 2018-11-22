@@ -96,6 +96,24 @@ class DragAndDropHelper {
                           "AllowTrackLoadToPlayingDeck")).toInt();
     }
 
+    static bool allowDeckCloneAttempt(const QMimeData& mimeData,
+                                   const QString& group) {
+        // only allow clones to decks
+        if (!PlayerManager::isDeckGroup(group, NULL)) {
+            return false;
+        }
+
+        if (!mimeData.hasText() ||
+                 // prevent cloning to ourself
+                 mimeData.text() == group ||
+                 // only allow clone from decks
+                 !PlayerManager::isDeckGroup(mimeData.text(), NULL)) {
+            return false;
+        }
+
+        return true;
+    }
+
     static bool dragEnterAccept(const QMimeData& mimeData,
                                 const QString& sourceIdentifier,
                                 bool firstOnly,

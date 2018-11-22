@@ -56,6 +56,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
   signals:
     void trackDropped(QString filename, QString group);
+    void cloneDeck(QString source_group, QString target_group);
 
   protected:
     //QWidget:

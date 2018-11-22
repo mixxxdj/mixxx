@@ -34,6 +34,7 @@ class WWaveformViewer : public WWidget {
 
 signals:
     void trackDropped(QString filename, QString group);
+    void cloneDeck(QString source_group, QString target_group);
 
 public slots:
     void slotTrackLoaded(TrackPointer track);

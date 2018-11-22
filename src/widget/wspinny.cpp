@@ -688,12 +688,18 @@ void WSpinny::dragEnterEvent(QDragEnterEvent* event) {
 void WSpinny::dropEvent(QDropEvent * event) {
     if (DragAndDropHelper::allowLoadToPlayer(m_group, m_pPlay->get() > 0.0,
                                              m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_group, true, false);
-        if (!files.isEmpty()) {
+        if (DragAndDropHelper::allowDeckCloneAttempt(*event->mimeData(), m_group)) {
             event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
+            emit(cloneDeck(event->mimeData()->text(), m_group));
             return;
+        } else {
+            QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
+                    *event->mimeData(), m_group, true, false);
+            if (!files.isEmpty()) {
+                event->accept();
+                emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
+                return;
+            }
         }
     }
     event->ignore();

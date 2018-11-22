@@ -42,6 +42,7 @@ class WOverview : public WWidget {
 
   signals:
     void trackDropped(QString filename, QString group);
+    void cloneDeck(QString source_group, QString target_group);
 
   protected:
     WOverview(

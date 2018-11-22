@@ -67,12 +67,18 @@ void WTrackProperty::dragEnterEvent(QDragEnterEvent *event) {
 
 void WTrackProperty::dropEvent(QDropEvent *event) {
     if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_pGroup, true, false);
-        if (!files.isEmpty()) {
+        if (DragAndDropHelper::allowDeckCloneAttempt(*event->mimeData(), m_pGroup)) {
             event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_pGroup));
+            emit(cloneDeck(event->mimeData()->text(), m_pGroup));
             return;
+        } else {
+            QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
+                    *event->mimeData(), m_pGroup, true, false);
+            if (!files.isEmpty()) {
+                event->accept();
+                emit(trackDropped(files.at(0).absoluteFilePath(), m_pGroup));
+                return;
+            }
         }
     }
     event->ignore();

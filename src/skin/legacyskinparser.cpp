@@ -937,6 +937,8 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
 
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+    connect(overviewWidget, SIGNAL(cloneDeck(QString,QString)),
+            m_pPlayerManager, SLOT(slotCloneDeck(QString,QString)));
 
     commonWidgetSetup(node, overviewWidget);
     overviewWidget->setup(node, *m_pContext);
@@ -987,6 +989,8 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
 
     connect(viewer, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+    connect(viewer, SIGNAL(cloneDeck(QString,QString)),
+            m_pPlayerManager, SLOT(slotCloneDeck(QString,QString)));
 
     // if any already loaded
     viewer->slotTrackLoaded(pPlayer->getLoadedTrack());
@@ -1012,6 +1016,8 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
             p, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
     connect(p, SIGNAL(trackDropped(QString,QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
+    connect(p, SIGNAL(cloneDeck(QString,QString)),
+            m_pPlayerManager, SLOT(slotCloneDeck(QString,QString)));
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
@@ -1039,6 +1045,8 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
             p, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
     connect(p, SIGNAL(trackDropped(QString,QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString,QString)));
+    connect(p, SIGNAL(cloneDeck(QString,QString)),
+            m_pPlayerManager, SLOT(slotCloneDeck(QString,QString)));
 
     TrackPointer pTrack = pPlayer->getLoadedTrack();
     if (pTrack) {
@@ -1189,6 +1197,8 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
             spinny, SLOT(swap()));
     connect(spinny, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+    connect(spinny, SIGNAL(cloneDeck(QString,QString)),
+            m_pPlayerManager, SLOT(slotCloneDeck(QString,QString)));
 
     spinny->setup(node, *m_pContext);
     spinny->installEventFilter(m_pKeyboard);
@@ -1243,6 +1253,8 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
     } else if (pPlayer != nullptr) {
         connect(pCoverArt, SIGNAL(trackDropped(QString, QString)),
                 m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
+        connect(pCoverArt, SIGNAL(cloneDeck(QString,QString)),
+                m_pPlayerManager, SLOT(slotCloneDeck(QString,QString)));
     }
 
     return pCoverArt;
