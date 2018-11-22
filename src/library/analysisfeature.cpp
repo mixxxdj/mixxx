@@ -42,7 +42,7 @@ AnalysisFeature::AnalysisFeature(
         : LibraryFeature(parent),
         m_library(parent),
         m_pConfig(pConfig),
-        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::nullPointer()),
+        m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()),
         m_analysisTitleName(tr("Analyze")),
         m_pAnalysisView(nullptr),
         m_icon(":/images/library/ic_library_prepare.svg") {

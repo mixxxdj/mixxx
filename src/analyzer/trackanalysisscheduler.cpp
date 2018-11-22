@@ -26,9 +26,8 @@ void deleteTrackAnalysisScheduler(TrackAnalysisScheduler* plainPtr) {
 
 } // anonymous namespace
 
-//static
-TrackAnalysisScheduler::Pointer TrackAnalysisScheduler::nullPointer() {
-    return Pointer(nullptr, [](TrackAnalysisScheduler*){});
+TrackAnalysisScheduler::NullPointer::NullPointer()
+    : Pointer(nullptr, [](TrackAnalysisScheduler*){}) {
 }
 
 //static

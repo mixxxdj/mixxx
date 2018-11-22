@@ -16,7 +16,11 @@ class TrackAnalysisScheduler : public QObject {
 
   public:
     typedef std::unique_ptr<TrackAnalysisScheduler, void(*)(TrackAnalysisScheduler*)> Pointer;
-    static Pointer nullPointer();
+    // Subclass that provides a default constructor and nothing else
+    class NullPointer: public Pointer {
+      public:
+        NullPointer();
+    };
 
     static Pointer createInstance(
             Library* library,
@@ -62,7 +66,7 @@ class TrackAnalysisScheduler : public QObject {
     // that runs the TrackAnalysisScheduler.
     class Worker {
       public:
-        explicit Worker(AnalyzerThread::Pointer thread = AnalyzerThread::nullPointer())
+        explicit Worker(AnalyzerThread::Pointer thread = AnalyzerThread::NullPointer())
             : m_thread(std::move(thread)),
               m_threadIdle(false),
               m_analyzerProgress(kAnalyzerProgressUnknown) {

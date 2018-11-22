@@ -46,7 +46,11 @@ class AnalyzerThread : public WorkerThread {
 
   public:
     typedef std::unique_ptr<AnalyzerThread, void(*)(AnalyzerThread*)> Pointer;
-    static Pointer nullPointer();
+    // Subclass that provides a default constructor and nothing else
+    class NullPointer: public Pointer {
+      public:
+        NullPointer();
+    };
 
     static Pointer createInstance(
             int id,

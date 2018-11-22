@@ -45,9 +45,8 @@ void deleteAnalyzerThread(AnalyzerThread* plainPtr) {
 
 } // anonymous namespace
 
-//static
-AnalyzerThread::Pointer AnalyzerThread::nullPointer() {
-    return Pointer(nullptr, [](AnalyzerThread*){});
+AnalyzerThread::NullPointer::NullPointer()
+    : Pointer(nullptr, [](AnalyzerThread*){}) {
 }
 
 //static
