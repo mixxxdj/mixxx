@@ -11,8 +11,8 @@ EngineControl::EngineControl(QString group,
                              UserSettingsPointer pConfig)
         : m_group(group),
           m_pConfig(pConfig),
-          m_pEngineMaster(NULL),
-          m_pEngineBuffer(NULL) {
+          m_pEngineMaster(nullptr),
+          m_pEngineBuffer(nullptr) {
     setCurrentSample(0.0, 0.0);
 }
 

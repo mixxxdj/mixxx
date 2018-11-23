@@ -236,12 +236,13 @@ class EngineBuffer : public EngineObject {
     bool updateIndicatorsAndModifyPlay(bool newPlay);
     void verifyPlay();
     void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void processTrackLocked(CSAMPLE* pOutput, const int iBufferSize, int sample_rate);
 
     // Holds the name of the control group
     QString m_group;
     UserSettingsPointer m_pConfig;
 
-    LoopingControl* m_pLoopingControl;
+    LoopingControl* m_pLoopingControl; // used for testes
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
