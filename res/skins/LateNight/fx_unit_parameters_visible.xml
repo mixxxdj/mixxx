@@ -13,7 +13,7 @@
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="FxUnit"/></ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <Size>635me,170min</Size>
     <Children>
 
       <WidgetGroup><!-- Fx Parameters -->
