@@ -67,7 +67,7 @@ class EngineControl : public QObject {
 
     // Called whenever a seek occurs to allow the EngineControl to respond.
     virtual void notifySeek(double dNewPlaypo, bool adjustingPhase);
-    virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    virtual void trackLoaded(TrackPointer pNewTrack);
 
   protected:
     void seek(double fractionalPosition);

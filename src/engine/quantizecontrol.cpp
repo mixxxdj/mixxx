@@ -32,8 +32,7 @@ QuantizeControl::~QuantizeControl() {
     delete m_pCOClosestBeat;
 }
 
-void QuantizeControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
+void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
     if (m_pTrack) {
         disconnect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotBeatsUpdated()));

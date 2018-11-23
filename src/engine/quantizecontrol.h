@@ -20,9 +20,7 @@ class QuantizeControl : public EngineControl {
 
     void setCurrentSample(const double dCurrentSample,
             const double dTotalSamples) override;
-
-  public slots:
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
+    void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
     void slotBeatsUpdated();
@@ -39,7 +37,7 @@ class QuantizeControl : public EngineControl {
     ControlObject* m_pCOPrevBeat;
     ControlObject* m_pCOClosestBeat;
 
-    TrackPointer m_pTrack;
+    TrackPointer m_pTrack; // is witten from an engine worker thread
     BeatsPointer m_pBeats;
 };
 

@@ -17,9 +17,7 @@ ClockControl::~ClockControl() {
     delete m_pCOSampleRate;
 }
 
-void ClockControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
-
+void ClockControl::trackLoaded(TrackPointer pNewTrack) {
     // Clear on-beat control
     m_pCOBeatActive->set(0.0);
 

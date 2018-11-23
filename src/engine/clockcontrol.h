@@ -22,13 +22,13 @@ class ClockControl: public EngineControl {
                    const double totalSamples, const int iBufferSize) override;
 
   public slots:
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
+    void trackLoaded(TrackPointer pNewTrack) override;
     void slotBeatsUpdated();
 
   private:
     ControlObject* m_pCOBeatActive;
     ControlProxy* m_pCOSampleRate;
-    TrackPointer m_pTrack;
+    TrackPointer m_pTrack; // is witten from an engine worker thread
     BeatsPointer m_pBeats;
 };
 

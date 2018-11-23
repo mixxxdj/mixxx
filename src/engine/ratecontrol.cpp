@@ -393,8 +393,7 @@ void RateControl::slotControlRateTempUpSmall(double)
     }
 }
 
-void RateControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
+void RateControl::trackLoaded(TrackPointer pNewTrack) {
     m_pTrack = pNewTrack;
 }
 

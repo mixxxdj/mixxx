@@ -501,7 +501,7 @@ void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
     slotTrackLoaded(pTrack, pTrack->getSampleRate(),
                     pTrack->getSampleRate() * pTrack->getDurationInt());
     m_pSyncControl->setLocalBpm(pTrack->getBpm());
-    m_pSyncControl->trackLoaded(pTrack, TrackPointer());
+    m_pSyncControl->trackLoaded(pTrack);
 }
 
 // WARNING: Always called from the EngineWorker thread pool
@@ -1372,7 +1372,7 @@ void EngineBuffer::notifyTrackLoaded(
     // First inform engineControls directly
     // Note: we are still in a worker thread.
     for (const auto& pControl: m_engineControls) {
-        pControl->trackLoaded(pNewTrack, pOldTrack);
+        pControl->trackLoaded(pNewTrack);
     }
     // Inform BaseTrackPlayer via a queued connection
     emit(trackLoaded(pNewTrack, pOldTrack));

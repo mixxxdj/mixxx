@@ -62,8 +62,7 @@ VinylControlControl::~VinylControlControl() {
     delete m_pControlVinylStatus;
 }
 
-void VinylControlControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
+void VinylControlControl::trackLoaded(TrackPointer pNewTrack) {
     m_pCurrentTrack = pNewTrack;
 }
 

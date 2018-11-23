@@ -103,8 +103,7 @@ class CueControl : public EngineControl {
     bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
 
-  public slots:
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
+    void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
     void cueUpdated();
@@ -165,7 +164,7 @@ class CueControl : public EngineControl {
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
 
-    TrackPointer m_pLoadedTrack;
+    TrackPointer m_pLoadedTrack; // is witten from an engine worker thread
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;

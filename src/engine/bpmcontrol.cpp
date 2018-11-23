@@ -745,8 +745,7 @@ void BpmControl::slotUpdateRateSlider() {
     m_pRateSlider->set(dRateSlider);
 }
 
-void BpmControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
+void BpmControl::trackLoaded(TrackPointer pNewTrack) {
     if (m_pTrack) {
         disconnect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));

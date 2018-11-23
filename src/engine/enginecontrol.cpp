@@ -29,9 +29,8 @@ void EngineControl::process(const double dRate,
     Q_UNUSED(iBufferSize);
 }
 
-void EngineControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+void EngineControl::trackLoaded(TrackPointer pNewTrack) {
     Q_UNUSED(pNewTrack);
-    Q_UNUSED(pOldTrack);
 }
 
 void EngineControl::hintReader(HintVector*) {

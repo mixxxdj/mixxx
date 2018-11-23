@@ -70,9 +70,7 @@ class BpmControl : public EngineControl {
     // Example: shortestPercentageChange(0.99, 0.01) == 0.02
     static double shortestPercentageChange(const double& current_percentage,
                                            const double& target_percentage);
-
-  public slots:
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
+    void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
     void slotFileBpmChanged(double);
@@ -158,7 +156,7 @@ class BpmControl : public EngineControl {
 
     TapFilter m_tapFilter;
 
-    TrackPointer m_pTrack;
+    TrackPointer m_pTrack; // is witten from an engine worker thread
     BeatsPointer m_pBeats;
 
     QString m_sGroup;

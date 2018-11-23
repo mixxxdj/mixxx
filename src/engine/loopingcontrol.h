@@ -60,7 +60,7 @@ class LoopingControl : public EngineControl {
     void slotReloopAndStop(double);
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
-    virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
+    void trackLoaded(TrackPointer pNewTrack) override;
     void slotUpdatedTrackBeats();
 
     // Generate a loop of 'beats' length. It can also do fractions for a
@@ -158,7 +158,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pCOLoopMove;
     QList<LoopMoveControl*> m_loopMoves;
 
-    TrackPointer m_pTrack;
+    TrackPointer m_pTrack; // is witten from an engine worker thread
     BeatsPointer m_pBeats;
 };
 
