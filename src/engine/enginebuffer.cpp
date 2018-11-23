@@ -530,8 +530,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     // Reset the pitch value for the new track.
     m_pause.unlock();
 
-    // All EngineControls are connected directly
-    emit(trackLoaded(pTrack, pOldTrack));
+    notifyTrackLoaded(pTrack, pOldTrack);
     // Start buffer processing after all EngineContols are up to date
     // with the current track e.g track is seeked to Cue
     m_iTrackLoading = 0;
@@ -577,7 +576,7 @@ void EngineBuffer::ejectTrack() {
     m_pReader->newTrack(TrackPointer());
 
     if (pTrack) {
-        emit(trackLoaded(TrackPointer(), pTrack));
+        notifyTrackLoaded(TrackPointer(), pTrack);
     }
 }
 
@@ -1302,9 +1301,6 @@ void EngineBuffer::addControl(EngineControl* pControl) {
     // Connect to signals from EngineControl here...
     m_engineControls.push_back(pControl);
     pControl->setEngineBuffer(this);
-    connect(this, SIGNAL(trackLoaded(TrackPointer, TrackPointer)),
-            pControl, SLOT(trackLoaded(TrackPointer, TrackPointer)),
-            Qt::DirectConnection);
 }
 
 void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
@@ -1370,4 +1366,15 @@ void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     if (m_pBpmControl != NULL) {
         m_pBpmControl->collectFeatures(pGroupFeatures);
     }
+}
+
+void EngineBuffer::notifyTrackLoaded(
+        TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    // First inform engineControls directly
+    // Note: we are still in a worker thread.
+    for (const auto& pControl: m_engineControls) {
+        pControl->trackLoaded(pNewTrack, pOldTrack);
+    }
+    // Inform BaseTrackPlayer via a queued connection
+    emit(trackLoaded(pNewTrack, pOldTrack));
 }

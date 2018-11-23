@@ -235,6 +235,7 @@ class EngineBuffer : public EngineObject {
 
     bool updateIndicatorsAndModifyPlay(bool newPlay);
     void verifyPlay();
+    void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
     // Holds the name of the control group
     QString m_group;
