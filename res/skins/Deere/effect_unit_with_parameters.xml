@@ -11,7 +11,7 @@ Variables:
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,max</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <!-- A little more vertical space is needed when show_focus is 1 because of the focused effect's border.-->
     <MinimumSize>446,120</MinimumSize>
     <MaximumSize>-1,190</MaximumSize>

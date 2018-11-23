@@ -11,7 +11,7 @@ Variables:
   <WidgetGroup>
     <ObjectName>EffectUnitControlRow</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectUnitParameters</ObjectName>
