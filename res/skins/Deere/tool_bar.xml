@@ -58,7 +58,7 @@
                 <SetVariable name="MaximumSize">26,22</SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">FX1</SetVariable>
-                <SetVariable name="state_1_text">Master</SetVariable>
+                <SetVariable name="state_1_text">FX1</SetVariable>
                 <SetVariable name="left_connection_control">[EffectRack1_EffectUnit1],group_[Master]_enable</SetVariable>
               </Template>
 
@@ -69,7 +69,7 @@
                 <SetVariable name="MaximumSize">22,22</SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">2</SetVariable>
-                <SetVariable name="state_1_text">Master</SetVariable>
+                <SetVariable name="state_1_text">2</SetVariable>
                 <SetVariable name="left_connection_control">[EffectRack1_EffectUnit2],group_[Master]_enable</SetVariable>
               </Template>
 
@@ -80,7 +80,7 @@
                 <SetVariable name="MaximumSize">22,22</SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">3</SetVariable>
-                <SetVariable name="state_1_text">Master</SetVariable>
+                <SetVariable name="state_1_text">3</SetVariable>
                 <SetVariable name="left_connection_control">[EffectRack1_EffectUnit3],group_[Master]_enable</SetVariable>
               </Template>
 
@@ -91,7 +91,7 @@
                 <SetVariable name="MaximumSize">22,22</SetVariable>
                 <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
                 <SetVariable name="state_0_text">4</SetVariable>
-                <SetVariable name="state_1_text">Master</SetVariable>
+                <SetVariable name="state_1_text">4</SetVariable>
                 <SetVariable name="left_connection_control">[EffectRack1_EffectUnit4],group_[Master]_enable</SetVariable>
               </Template>
 
