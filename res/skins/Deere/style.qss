@@ -995,26 +995,24 @@ WBeatSpinBox,
   qproperty-alignment: 'AlignHCenter';
 }
 
-#EffectUnitGroupControls {
+#EffectUnitControls {
   border: 1px solid #222222;
   border-width: 0px 0px 0px 1px;
   qproperty-layoutSpacing: 2;
-  padding: 0px;
+  padding: 0px 0px 3px 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-}
-
-#EffectUnitGroupControlsLeft {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
-}
-
-#EffectUnitGroupControlsRight {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+  background-color: #333; /*
+  background-color: #664971;  */
 }
 
 #EffectUnitMasterHead {
   qproperty-layoutSpacing: 2;
-  padding: 4px;
+  padding: 4px 4px 3px 4px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+}
+
+#EffectButtonContainer {
+  qproperty-layoutSpacing: 2;
 }
 
 #EffectMetaKnob, WEffect {
@@ -1369,7 +1367,8 @@ WStarRating {
 }
 
 #EffectUnitEffectsNoParameters {
-  qproperty-layoutSpacing: 28;
+  qproperty-layoutSpacing: 20;
+  padding: 0px 4px;
 }
 
 #EffectUnitEffects {
@@ -1381,18 +1380,6 @@ WStarRating {
 #EffectUnitParameters {
   padding: 0 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  qproperty-layoutSpacing: 2;
-}
-
-#EffectUnitControls {
-  padding: 2px;
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  qproperty-layoutSpacing: 2;
-}
-
-#EffectUnitGroupControlsLeft,
-#EffectUnitGroupControlsRight,
-#EffectUnitGroupControlsInputs {
   qproperty-layoutSpacing: 2;
 }
 
