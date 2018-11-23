@@ -372,7 +372,7 @@ double EngineBuffer::getLocalBpm() {
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
-    foreach (EngineControl* pControl, m_engineControls) {
+    for (const auto& pControl: m_engineControls) {
         pControl->setEngineMaster(pEngineMaster);
     }
 }
@@ -461,9 +461,7 @@ void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
     m_iSamplesCalculated = 1000000;
 
     // Must hold the engineLock while using m_engineControls
-    for (QList<EngineControl*>::iterator it = m_engineControls.begin();
-         it != m_engineControls.end(); ++it) {
-        EngineControl *pControl = *it;
+    for (const auto& pControl: m_engineControls) {
         pControl->notifySeek(m_filepos_play, adjustingPhase);
     }
 
@@ -1020,9 +1018,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             }
         }
 
-        QListIterator<EngineControl*> it(m_engineControls);
-        while (it.hasNext()) {
-            EngineControl* pControl = it.next();
+        for (const auto& pControl: m_engineControls) {
             pControl->setCurrentSample(m_filepos_play, m_trackSamplesOld);
             pControl->process(rate, m_filepos_play, m_trackSamplesOld, iBufferSize);
         }
