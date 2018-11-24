@@ -32,11 +32,10 @@ NumarkN4.loopSizes=[0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64];
 NumarkN4.QueryStatusMessage=[0xF0,0x00,0x01,0x3F,0x7F,0x47,0x60,0x00,0x01,0x54,0x01,0x00,0x00,0x00,0x00,0xF7];
 //NumarkN4.ShutoffSequence=[0xF0,0x00,0x01,0x3F,0x7F,0x47,0xB0,0x39,0x00,0x01,0xF7]; // Invalid Midibyte?
 
-NumarkN4.vinylTouched = [false,false,false,false,];
+NumarkN4.vinylTouched = [false,false,false,false];
 
 NumarkN4.globalShift = false;
 
-//NumarkN4.pflVuMeterConnections = [0,0];
 
 components.Encoder.prototype.input = function (channel, control, value, status, group) {
   this.inSetParameter(
@@ -72,10 +71,6 @@ components.Component.prototype.send = function (value) {
 
 NumarkN4.init = function (id) {
   NumarkN4.rateRanges[0]=engine.getValue("[Channel1]","rateRange");
-  //PFL-Master-Mix & headGain are not being controlled by the controller,
-  //this sets them in engine to something reasonable so the user doesn't get confused if there is not sound.
-  engine.setParameter("[Master]","headGain",Math.max(engine.getParameter("[Master]","headGain"),0.5));
-  engine.setParameter("[Master]","headMix",0); //Headphone out = 100% pfl signal.
   NumarkN4.Decks=[];
   for (var i=1;i<=4;i++){
     // Array is based on 1 because it makes more sense in the XML
@@ -139,15 +134,14 @@ NumarkN4.topContainer = function (channel) {
   });
   this.btnSample4 = new components.Button({
     midi: [0x90+channel,0x16,0xB0+channel,0x0E],
+    outkey: "loop_enabled",
     shift: function () {
       this.type=components.Button.prototype.types.toggle;
-      this.inKey="repeat";
-      this.outKey="repeat";
+      this.inKey="reloop_andstop";
     },
     unshift: function () {
       this.type=components.Button.prototype.types.push;
       this.inKey="reloop_toggle";
-      this.outKey="loop_enabled";
     },
   });
   // custom Hotcue Buttons
@@ -191,7 +185,10 @@ NumarkN4.topContainer = function (channel) {
       }
       layer = Math.max(Math.min(layer,3),0); // clamp layer value to [0;3] range
       this.hotCuePage = layer;
-      if (this.timer) {engine.stopTimer(this.timer)}
+      if (this.timer !== 0) {
+        engine.stopTimer(this.timer);
+        this.timer = 0;
+      }
       var number = 0;
       for (var i=0;i<theContainer.hotcueButtons.length;++i) {
         number = (i+1)+theContainer.hotcueButtons.length*this.hotCuePage;
@@ -207,7 +204,10 @@ NumarkN4.topContainer = function (channel) {
           midi.sendShortMsg(0xB0+channel,0x0B+i,(i-this.hotCuePage)?0x00:0x7F);
         }
       }
-      this.timer=engine.beginTimer(1000,function () {theContainer.reconnectComponents()},true);
+      this.timer = engine.beginTimer(1000, function () {
+        theContainer.reconnectComponents();
+        this.timer = 0;
+      }, true);
     },
     shift: function () {
       this.group=theContainer.group;
@@ -236,7 +236,8 @@ NumarkN4.topContainer = function (channel) {
     shift: function () {
       this.inKey="beatjump_size";
       this.input = function (channel, control, value, status, group) {
-        this.currentJumpSizeIndex=Math.max(Math.min(this.currentJumpSizeIndex+(value===0x01?1:-1),NumarkN4.loopSizes.length),0);
+        this.currentJumpSizeIndex += value===0x01 ? 1 : -1;
+        this.currentJumpSizeIndex = Math.max(Math.min(this.currentJumpSizeIndex, NumarkN4.loopSizes.length), 0);
         this.inSetValue(NumarkN4.loopSizes[this.currentJumpSizeIndex]);
       };
     },
@@ -284,24 +285,6 @@ NumarkN4.MixerTemplate = function () {
     },
   });
 
-
-  // NOTE: Unable to control Volume Bar via software.
-  this.pflVuMeter = function (channel, control, value, status, group) {
-    // print("calledPflVuMeter");
-    // print(NumarkN4.pflVuMeterConnections);
-    // for (var i=0;i<NumarkN4.pflVuMeterConnections.length;i++) {
-    //   print(i);
-    //   if (NumarkN4.pflVuMeterConnections[i]) {NumarkN4.pflVuMeterConnections[i].disconnect();}
-    //   if (value) {
-    //     NumarkN4.pflVuMeterConnections[i] = engine.makeConnection("[Channel"+value+"]",("VuMeter"+((i===0)?"L":"R")),
-    //     function (callbackValue){
-    //       print("called channel vumeter: "+callbackValue)
-    //       midi.sendShortMsg(0xB0,0x34+i,Math.round(callbackValue*8+0,5)); // Vu bar range=[0;8]
-    //     });
-    //   }
-    //   NumarkN4.pflVuMeterConnections[i].trigger();
-    // }
-  }
   this.channelInputSwitcherL = new components.Button({
     midi: [0x90,0x49],
     group: "[Channel3]",
@@ -363,7 +346,7 @@ NumarkN4.Deck = function (channel) {
   components.Deck.call(this, channel);
   this.group = '[Channel' + channel + ']';
   this.rateRangeEntry=1;
-  this.lastOrientation=(channel%2?0:2);
+  this.lastOrientation = (channel % 2) ? 0 : 2;
   this.isSearching=false;
   var theDeck = this;
   this.topContainer = new NumarkN4.topContainer(channel);
@@ -405,9 +388,11 @@ NumarkN4.Deck = function (channel) {
       this.inKey="pregain";
     }
   })
-  this.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,this.manageChannelIndicator);
   //timer is more efficent is this case than a callback because it would be called too often.
-  engine.makeConnection(this.group,"track_loaded",function (value) {midi.sendShortMsg(0xB0,0x1D+channel,value?0x7F:0x00)});
+  this.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,this.manageChannelIndicator);
+  engine.makeConnection(this.group, "track_loaded", function (value) {
+    midi.sendShortMsg(0xB0, 0x1D+channel, value ? 0x7F:0x00);
+  });
   this.shiftButton = new components.Button({
     midi: [0x90+channel,0x12,0xB0+channel,0x15],
     type: components.Button.prototype.types.powerWindow,
@@ -491,12 +476,8 @@ NumarkN4.Deck = function (channel) {
   });
   this.loadButton = new components.Button({
     midi:[0x90+channel,0x06],
-    inKey: "LoadSelectedTrack",
     shift: function () {this.inKey="eject";},
     unshift: function () {this.inKey="LoadSelectedTrack";},
-    input: function (channelmidi,control,value) {
-      this.inSetParameter(this.inValueScale(value));
-    },
   });
   this.playButton = new components.PlayButton({
     midi: [0x90+channel,0x11,0xB0+channel,0x09],
@@ -616,7 +597,8 @@ NumarkN4.Deck = function (channel) {
     invert: false,
   });
   this.pitchLedHandler = engine.makeConnection(this.group,"rate",function (value){
-    midi.sendShortMsg(0xB0+channel,0x37,!value); //inexplicit cast to bool; turns on if value===0;
+    // Turns on when rate slider is centered
+    midi.sendShortMsg(0xB0+channel, 0x37, value===0 ? 0x7F : 0x00);
   });
   this.pitchLedHandler.trigger();
 
