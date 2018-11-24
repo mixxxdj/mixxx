@@ -9,7 +9,7 @@ NumarkN4.scratchSettings = {
 
 NumarkN4.searchAmplification = 5; // multiplier for the jogwheel when the search button is held down.
 
-NumarkN4.warnAfterPosition = 0.8; // percentage after when the triangular LEDs should warn that the track ends.
+NumarkN4.warnAfterTime = 30; // Acts like the "End of Track warning" setting within the waveform settings.
 
 NumarkN4.blinkInterval=1000; //blinkInterval for the triangular Leds over the channels in milliseconds.
 
@@ -541,7 +541,9 @@ NumarkN4.Deck = function (channel) {
 
   this.manageChannelIndicator = function () {
     this.alternating=!this.alternating; //mimics a static variable
-    midi.sendShortMsg(0xB0,0x1D+channel,((engine.getValue(theDeck.group,"playposition")>NumarkN4.warnAfterPosition)&&this.alternating?0x7F:0x0));
+    this.duration=engine.getParameter(theDeck.group, "duration");
+    this.isInWarnRange = engine.getParameter(theDeck.group, "playposition") * this.duration > (this.duration - NumarkN4.warnAfterTime);
+    midi.sendShortMsg(0xB0,0x1D+channel, this.isInWarnRange && this.alternating?0x7F:0x0);
   };
 
   this.pitchBendMinus = new components.Button({
