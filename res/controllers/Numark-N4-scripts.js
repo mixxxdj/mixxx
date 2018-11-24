@@ -180,6 +180,7 @@ NumarkN4.topContainer = function (channel) {
     applyHotcuePage: function (layer, displayFeedback) {
       // ES3 doesn't allow default values in the function signature
       // Could be replaced after migration to QJSEngine by "displayFeedback=true"
+      // in the function argments.
       if (displayFeedback == undefined) {
         displayFeedback = true;
       }
@@ -199,6 +200,7 @@ NumarkN4.topContainer = function (channel) {
         theContainer.hotcueButtons[i].connect();
         theContainer.hotcueButtons[i].trigger();
       }
+      //  displays the current hotcuepage index within the upper row of the buttongrid
       if (displayFeedback) {
         for (var i=0;i<4;++i) {
           midi.sendShortMsg(0xB0+channel,0x0B+i,(i-this.hotCuePage)?0x00:0x7F);
@@ -460,6 +462,9 @@ NumarkN4.Deck = function (channel) {
   this.pflButton = new components.Button({
     midi: [0x90,0x30+channel,0xB0,0x3F+channel],
     key: "pfl",
+    // The controller echos every change to the pfl lights which would cause
+    // an infinite feedback loop (flicker)
+    // this workaround uses a timer (100ms) to ignore the echoing messages.
     flickerSafetyTimeout: true,
     input: function (channel, control, value, status, group) {
       if (this.flickerSafetyTimeout) {
