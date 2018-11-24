@@ -22,7 +22,7 @@ void BatteryLinux::read() {
     // once. However, while testing this up_client_get_devices(client) returned
     // an empty list when I tried to re-use the UpClient instance.
     UpClient* client = up_client_new();
-    if (client == nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(client) {
       return;
     }
 
@@ -43,7 +43,7 @@ void BatteryLinux::read() {
 
     for (guint i = 0; i < devices->len; ++i) {
       gpointer device = g_ptr_array_index(devices, i);
-      if (device == nullptr) {
+      VERIFY_OR_DEBUG_ASSERT(device) {
         continue;
       }
 
