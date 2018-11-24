@@ -213,7 +213,7 @@ class Qt(Dependence):
             'QtGui',
             'QtNetwork',
             'QtOpenGL',
-            'QtQml',
+            'QtQml', # Needed for QJSEngine
             'QtScript',
             'QtScriptTools',
             'QtSql',
