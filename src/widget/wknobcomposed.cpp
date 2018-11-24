@@ -84,7 +84,7 @@ void WKnobComposed::onConnectedControlChanged(double dParameter, double dValue) 
     // angle range? Right now it's just 1/100th of a degree.
     if (fabs(angle - m_dCurrentAngle) > 0.01) {
         // paintEvent updates m_dCurrentAngle
-        inputActivity();
+        update();
     }
 }
 
@@ -137,5 +137,9 @@ void WKnobComposed::wheelEvent(QWheelEvent* e) {
 }
 
 void WKnobComposed::inputActivity() {
+#ifdef __APPLE__
     m_renderTimer.activity();
+#else
+    update();
+#endif
 }

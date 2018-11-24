@@ -159,7 +159,6 @@ class ControlObject : public QObject {
 
   signals:
     void valueChanged(double);
-    void valueChangedFromEngine(double);
 
   public:
     // DEPRECATED: Called to set the control value from the controller
@@ -177,8 +176,6 @@ class ControlObject : public QObject {
     void readOnlyHandler(double v);
 
   private:
-    void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                    bool bPersist, double defaultValue);
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }

@@ -34,6 +34,7 @@ Variables:
           <Template src="skin:effect_single_with_parameters.xml">
             <SetVariable name="Effect">3</SetVariable>
           </Template>
+
         </Children>
       </WidgetGroup>
 

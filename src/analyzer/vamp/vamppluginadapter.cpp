@@ -3,7 +3,7 @@
 #include <mutex>
 
 #include <QCoreApplication>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QDir>
 #include <QStringBuilder>
 #include <QStringList>
@@ -54,8 +54,8 @@ void initPluginPaths() {
             QString::fromLocal8Bit(qgetenv("VAMP_PATH").constData());
     kLogger.info() << "Current VAMP_PATH is:" << envPathList;
 
-    const QString dataLocation = QDesktopServices::storageLocation(
-            QDesktopServices::DataLocation);
+    const QString dataLocation = QStandardPaths::writableLocation(
+            QStandardPaths::DataLocation);
     const QString applicationPath = QCoreApplication::applicationDirPath();
 
 #ifdef __WINDOWS__

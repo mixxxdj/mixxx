@@ -20,7 +20,7 @@
             <ObjectName>VerticalSplitter</ObjectName>
             <SizePolicy>me,me</SizePolicy>
             <SplitSizes>1,10</SplitSizes>
-            <SplitSizesConfigKey>[LateNight],LibrarySidebarSplitSize</SplitSizesConfigKey>
+            <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
             <Collapsible>1,0</Collapsible>
             <Children>
               <WidgetGroup>
@@ -38,7 +38,7 @@
                     <ObjectName>HorizontalSplitter</ObjectName>
                     <Size>me,me</Size>
                     <SplitSizes>1,1</SplitSizes>
-                    <SplitSizesConfigKey>[LateNight],CoverArtSplitSize</SplitSizesConfigKey>
+                    <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
                     <Orientation>vertical</Orientation>
                     <Collapsible>0,0</Collapsible>
                     <Children>

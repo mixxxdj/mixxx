@@ -33,6 +33,7 @@
 #include "util/time.h"
 #include "util/assert.h"
 #include "util/parented_ptr.h"
+#include "util/desktophelper.h"
 
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  UserSettingsPointer pConfig,
@@ -110,7 +111,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     // right-click)
     createActions();
 
-    //Connect slots and signals to make the world go 'round.
+    // Connect slots and signals to make the world go 'round.
     connect(this, SIGNAL(doubleClicked(const QModelIndex &)),
             this, SLOT(slotMouseDoubleClicked(const QModelIndex &)));
 
@@ -319,8 +320,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
 
     setModel(model);
     setHorizontalHeader(header);
-    header->setMovable(true);
-    header->setClickable(true);
+    header->setSectionsMovable(true);
+    header->setSectionsClickable(true);
     header->setHighlightSections(true);
     header->setSortIndicatorShown(m_sorting);
     header->setDefaultAlignment(Qt::AlignLeft);
@@ -633,35 +634,14 @@ void WTrackTableView::slotOpenInFileBrowser() {
 
     QModelIndexList indices = selectionModel()->selectedRows();
 
-    QSet<QString> sDirs;
+    QStringList locations;
     for (const QModelIndex& index : indices) {
         if (!index.isValid()) {
             continue;
         }
-
-        QDir dir;
-        QStringList splittedPath = trackModel->getTrackLocation(index).split("/");
-        do {
-            dir = QDir(splittedPath.join("/"));
-            splittedPath.removeLast();
-        } while (!dir.exists() && splittedPath.size());
-
-        // This function does not work for a non-existent directory!
-        // so it is essential that in the worst case it try opening
-        // a valid directory, in this case, 'QDir::home()'.
-        // Otherwise nothing would happen...
-        if (!dir.exists()) {
-            // it ensures a valid dir for any OS (Windows)
-            dir = QDir::home();
-        }
-
-        // not open the same dir twice
-        QString dirPath = dir.absolutePath();
-        if (!sDirs.contains(dirPath)) {
-            sDirs.insert(dirPath);
-            QDesktopServices::openUrl(QUrl::fromLocalFile(dirPath));
-        }
+        locations << trackModel->getTrackLocation(index);
     }
+    mixxx::DesktopHelper::openInFileBrowser(locations);
 }
 
 void WTrackTableView::slotHide() {
@@ -918,16 +898,14 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     m_pMenu->addSeparator();
     m_pMetadataMenu->clear();
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
         m_pMetadataMenu->addAction(m_pImportMetadataFromFileAct);
         m_pImportMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMetadataMenu->addAction(m_pImportMetadataFromMusicBrainzAct);
         m_pMetadataMenu->addAction(m_pExportMetadataAct);
-    }
 
-    m_pClearMetadataMenu->clear();
+        m_pClearMetadataMenu->clear();
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_CLEAR_BEATS)) {
         if (trackModel == nullptr) {
             return;
         }
@@ -948,38 +926,38 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pClearMetadataMenu->addAction(m_pClearPlayCountAction);
     }
 
-    //FIXME: Why are clearning the main cue and loop not working?
-//     m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
-    m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
-//     m_pClearMetadataMenu->addAction(m_pClearLoopAction);
-    m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
-    m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
-    m_pClearMetadataMenu->addSeparator();
-    m_pClearMetadataMenu->addAction(m_pClearAllMetadataAction);
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
+        // FIXME: Why are clearning the main cue and loop not working?
+        //m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
+        m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
+        //m_pClearMetadataMenu->addAction(m_pClearLoopAction);
+        m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
+        m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
+        m_pClearMetadataMenu->addSeparator();
+        m_pClearMetadataMenu->addAction(m_pClearAllMetadataAction);
 
-    // Cover art menu only applies if at least one track is selected.
-    if (indices.size()) {
-        // We load a single track to get the necessary context for the cover (we use
-        // last to be consistent with selectionChanged above).
-        QModelIndex last = indices.last();
-        CoverInfo info;
-        info.source = static_cast<CoverInfo::Source>(
-            last.sibling(last.row(), m_iCoverSourceColumn).data().toInt());
-        info.type = static_cast<CoverInfo::Type>(
-            last.sibling(last.row(), m_iCoverTypeColumn).data().toInt());
-        info.hash = last.sibling(last.row(), m_iCoverHashColumn).data().toUInt();
-        info.trackLocation = last.sibling(
-            last.row(), m_iTrackLocationColumn).data().toString();
-        info.coverLocation = last.sibling(
-            last.row(), m_iCoverLocationColumn).data().toString();
-        m_pCoverMenu->setCoverArt(info);
-        m_pMetadataMenu->addMenu(m_pCoverMenu);
-    }
+        // Cover art menu only applies if at least one track is selected.
+        if (indices.size()) {
+            // We load a single track to get the necessary context for the cover (we use
+            // last to be consistent with selectionChanged above).
+            QModelIndex last = indices.last();
+            CoverInfo info;
+            info.source = static_cast<CoverInfo::Source>(
+                last.sibling(last.row(), m_iCoverSourceColumn).data().toInt());
+            info.type = static_cast<CoverInfo::Type>(
+                last.sibling(last.row(), m_iCoverTypeColumn).data().toInt());
+            info.hash = last.sibling(last.row(), m_iCoverHashColumn).data().toUInt();
+            info.trackLocation = last.sibling(
+                last.row(), m_iTrackLocationColumn).data().toString();
+            info.coverLocation = last.sibling(
+                last.row(), m_iCoverLocationColumn).data().toString();
+            m_pCoverMenu->setCoverArt(info);
+            m_pMetadataMenu->addMenu(m_pCoverMenu);
+        }
 
-    m_pMenu->addMenu(m_pMetadataMenu);
-    m_pMenu->addMenu(m_pClearMetadataMenu);
+        m_pMenu->addMenu(m_pMetadataMenu);
+        m_pMenu->addMenu(m_pClearMetadataMenu);
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_MANIPULATEBEATS)) {
         m_pBPMMenu->addAction(m_pBpmDoubleAction);
         m_pBPMMenu->addAction(m_pBpmHalveAction);
         m_pBPMMenu->addAction(m_pBpmTwoThirdsAction);
@@ -1045,8 +1023,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 m_pBpmThreeHalvesAction->setEnabled(true);
             }
         }
+        m_pMenu->addMenu(m_pBPMMenu);
     }
-    m_pMenu->addMenu(m_pBPMMenu);
 
     m_pMenu->addSeparator();
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
@@ -1062,8 +1040,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addAction(m_pPurgeAct);
     }
     m_pMenu->addAction(m_pFileBrowserAct);
-    m_pPropertiesAct->setEnabled(oneSongSelected);
-    m_pMenu->addAction(m_pPropertiesAct);
+
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
+        m_pMenu->addSeparator();
+        m_pPropertiesAct->setEnabled(oneSongSelected);
+        m_pMenu->addAction(m_pPropertiesAct);
+    }
 
     //Create the right-click menu
     m_pMenu->popup(event->globalPos());
@@ -1072,24 +1054,20 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 void WTrackTableView::onSearch(const QString& text) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel) {
+        bool searchWasEmpty = false;
+        if (trackModel->currentSearch().isEmpty()) {
+            saveNoSearchVScrollBarPos();
+            searchWasEmpty = true;
+        }
+        trackModel->search(text);
+        if (!searchWasEmpty && text.isEmpty()) {
+            restoreNoSearchVScrollBarPos();
+        }
         trackModel->search(text);
     }
 }
 
-void WTrackTableView::onSearchStarting() {
-    saveVScrollBarPos();
-}
-
-void WTrackTableView::onSearchCleared() {
-    restoreVScrollBarPos();
-    TrackModel* trackModel = getTrackModel();
-    if (trackModel) {
-        trackModel->search("");
-    }
-}
-
 void WTrackTableView::onShow() {
-    restoreVScrollBarPos();
 }
 
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
@@ -1183,7 +1161,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     // the SQL data models causes a select() (ie. generation of a new result set),
     // which causes view to reset itself. A view reset causes the widget to scroll back
     // up to the top, which is confusing when you're dragging and dropping. :)
-    saveVScrollBarPos();
+    int vScrollBarPos = verticalScrollBar()->value();
 
 
     // Calculate the model index where the track or tracks are destined to go.
@@ -1349,7 +1327,8 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
     }
 
     event->acceptProposedAction();
-    restoreVScrollBarPos();
+    updateGeometries();
+    verticalScrollBar()->setValue(vScrollBarPos);
 }
 
 TrackModel* WTrackTableView::getTrackModel() const {
@@ -1473,7 +1452,7 @@ void WTrackTableView::sendToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
 }
 
 void WTrackTableView::slotImportTrackMetadataFromFileTags() {
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
         return;
     }
 
@@ -1498,7 +1477,7 @@ void WTrackTableView::slotImportTrackMetadataFromFileTags() {
 }
 
 void WTrackTableView::slotExportTrackMetadataIntoFileTags() {
-    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_IMPORTMETADATA)) {
+    if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
         return;
     }
 

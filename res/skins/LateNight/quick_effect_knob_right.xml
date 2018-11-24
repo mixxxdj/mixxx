@@ -39,7 +39,7 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -78,7 +78,7 @@
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey>[Master],show_eqs</ConfigKey>
+      <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

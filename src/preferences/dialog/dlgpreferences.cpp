@@ -106,8 +106,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     m_vinylControlPage = new DlgPrefVinyl(this, pVCManager, m_pConfig);
     addPageWidget(m_vinylControlPage);
 #else
-    m_wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, m_pConfig);
-    addPageWidget(m_wnovinylcontrol);
+    m_noVinylControlPage = new DlgPrefNoVinyl(this, soundman, m_pConfig);
+    addPageWidget(m_noVinylControlPage);
 #endif
 
     m_interfacePage = new DlgPrefInterface(this, mixxx, pSkinLoader, m_pConfig);
@@ -324,7 +324,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_vinylControlPage);
 #else
     } else if (current == m_pVinylControlButton) {
-        switchToPage(m_wnovinylcontrol);
+        switchToPage(m_noVinylControlPage);
 #endif
     } else if (current == m_pInterfaceButton) {
         switchToPage(m_interfacePage);
@@ -413,11 +413,11 @@ void DlgPreferences::onShow() {
     newY = std::max(0, std::min(newY, QApplication::desktop()->screenGeometry().height() - m_geometry[3].toInt()));
     m_geometry[0] = QString::number(newX);
     m_geometry[1] = QString::number(newY);
-    
+
     // Update geometry with last values
 #ifdef __WINDOWS__
     resize(m_geometry[2].toInt(), m_geometry[3].toInt());
-#else 
+#else
     // On linux, when the window is opened for the first time by the window manager, QT does not have
     // information about the frame size so the offset is zero. As such, the first time it opens the window
     // does not include the offset, so it is moved from the last position it had.

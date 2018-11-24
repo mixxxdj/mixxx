@@ -9,7 +9,7 @@
 
 namespace mixxx {
 
-class SoundSourceOpus: public SoundSource {
+class SoundSourceOpus final : public SoundSource {
   public:
     // According to the API documentation of op_pcm_seek():
     // "...decoding after seeking may not return exactly the same

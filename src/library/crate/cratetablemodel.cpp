@@ -107,13 +107,11 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_ADDTOPLAYLIST
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
-            | TRACKMODELCAPS_IMPORTMETADATA
+            | TRACKMODELCAPS_EDITMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_REMOVE_CRATE
-            | TRACKMODELCAPS_MANIPULATEBEATS
-            | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;
     if (m_selectedCrate.isValid()) {
         Crate crate;

@@ -22,7 +22,7 @@
 
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
-  <String Id="OS2Old">Este producto requiere Windows XP o una versión superior.</String>
+  <String Id="OS2Old">Este producto requiere Windows 7 o una versión superior.</String>
   <String Id="NewerInstalled">La misma versión o una más reciente de este producto está ya instalada.</String>
   <String Id="x64VersionRequired">Necesita instalar la versión de 64 bits de este producto en una versión de Windows de 64 bits.</String>
   <String Id="x86VersionRequired">Necesita instalar la versión de 32 bits de este producto en una versión de Windows de 32 bits.</String>

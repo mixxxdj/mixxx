@@ -11,6 +11,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QDesktopServices>
+#include <QStandardPaths>
 #include <QtAlgorithms>
 
 #include "controllers/dlgprefcontroller.h"
@@ -515,7 +516,7 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
         2, new QTableWidgetItem(tr("Built-in")));
     m_ui.m_pScriptsTableWidget->horizontalHeader()
-            ->setResizeMode(QHeaderView::Stretch);
+            ->setSectionResizeMode(QHeaderView::Stretch);
 
     for (int i = 0; i < preset->scripts.length(); ++i) {
         const ControllerPreset::ScriptFileInfo& script = preset->scripts.at(i);
@@ -644,7 +645,7 @@ void DlgPrefController::clearAllOutputMappings() {
 void DlgPrefController::addScript() {
     QString scriptFile = QFileDialog::getOpenFileName(
         this, tr("Add Script"),
-        QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation),
+        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
         tr("Controller Script Files (*.js)"));
 
     if (scriptFile.isNull()) {
@@ -744,5 +745,3 @@ void DlgPrefController::openScript() {
         }
     }
 }
-
-

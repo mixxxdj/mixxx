@@ -579,6 +579,7 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
 
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
+    Init();
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
