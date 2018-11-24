@@ -975,6 +975,20 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignTop';
 }
 
+#EffectUnitToggle {
+  padding: 0px 0px 0px 27px;
+  font: bold 14px/20px;
+  border: 0px;
+}
+
+#EffectUnitToggle[value="0"] {
+  image: url(skin:icon/ic_unfold_more_48px.svg) no-repeat top right;
+}
+
+#EffectUnitToggle[value="1"] {
+  image: url(skin:icon/ic_unfold_less_48px.svg) no-repeat top right;
+}
+
 #EffectUnitFiller {
   border: 1px solid #222;
   border-width: 1px 0px 0px 0px;
@@ -1017,10 +1031,8 @@ WBeatSpinBox,
   background-color: #664971;  */
 }
 
-#EffectUnitMasterHead {
-  qproperty-layoutSpacing: 2;
-  padding: 4px 4px 3px 4px;
-  qproperty-layoutAlignment: 'AlignHCenter | AlignBottom';
+#EffectUnitHead {
+  padding: 0px 0px 3px 0px;
 }
 
 #EffectButtonContainer {

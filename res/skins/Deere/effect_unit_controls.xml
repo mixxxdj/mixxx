@@ -25,7 +25,7 @@
           <WidgetGroup>
             <Layout>vertical</Layout>
             <Connection>
-              <ConfigKey>[Master],show_superknobs</ConfigKey>
+              <ConfigKey>[Skin],show_superknobs</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
             <Children>
@@ -77,33 +77,34 @@
         <SizePolicy>max,min</SizePolicy>
         <Children>
 
-          <WidgetGroup>
-            <ObjectName>AlignTop</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,max</SizePolicy>
-            <Children>
-              <Label>
-                <ObjectName>EffectUnitLabel</ObjectName>
-                <Text>FX<Variable name="EffectUnit"/></Text>
-                <Alignment>center</Alignment>
-                <Size>35me,22f</Size>
-              </Label>
-              <Template src="skin:hide_show_button.xml">
-                <SetVariable name="object_name">EffectUnitToggle</SetVariable>
-                <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                <SetVariable name="control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_parameters</SetVariable>
-              </Template>
-            </Children>
-          </WidgetGroup>
+          <PushButton>
+            <ObjectName>EffectUnitToggle</ObjectName>
+            <TooltipId>EffectUnit_show_parameters</TooltipId>
+            <Size>45min,20f</Size>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text>&#8198;&#8198;FX<Variable name="EffectUnit"/></Text>
+              <Alignment>left</Alignment>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text>&#8198;&#8198;FX<Variable name="EffectUnit"/></Text>
+              <Alignment>left</Alignment>
+            </State>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>
+              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
 
-          <WidgetGroup><SizePolicy>min,me</SizePolicy></WidgetGroup>
+          <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
 
           <WidgetGroup>
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-
-              <WidgetGroup><SizePolicy>min,me</SizePolicy></WidgetGroup>
 
               <WidgetGroup>
                 <Layout>vertical</Layout>
@@ -133,7 +134,7 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Connection>
-                  <ConfigKey>[Master],show_superknobs</ConfigKey>
+                  <ConfigKey>[Skin],show_superknobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
                 <Children>
@@ -143,6 +144,7 @@
                     <SetVariable name="control">super1</SetVariable>
                     <SetVariable name="color">blue_gapless</SetVariable>
                   </Template>
+                  <WidgetGroup><Size>0min,2f</Size></WidgetGroup>
                 </Children>
               </WidgetGroup>
             </Children>
@@ -155,7 +157,7 @@
           <WidgetGroup><SizePolicy>min,me</SizePolicy></WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>EffectUnitMasterHead</ObjectName>
+            <ObjectName>EffectUnitHead</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,max</SizePolicy>
             <Children>

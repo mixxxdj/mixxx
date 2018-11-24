@@ -11,7 +11,7 @@
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>min,me</SizePolicy>
+    <Size>502min,me</Size>
     <Children>
       <WidgetGroup>
         <Layout>horizontal</Layout>
