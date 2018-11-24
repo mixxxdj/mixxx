@@ -28,7 +28,6 @@ NumarkN4.rateRanges = [0,   // default (gets set via script later; don't modifif
 //
 // CONSTANTS DO NOT CHANGE (if you don't know what you are doing)
 //
-NumarkN4.loopSizes=[0.03125, 0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64];
 NumarkN4.QueryStatusMessage=[0xF0,0x00,0x01,0x3F,0x7F,0x47,0x60,0x00,0x01,0x54,0x01,0x00,0x00,0x00,0x00,0xF7];
 //NumarkN4.ShutoffSequence=[0xF0,0x00,0x01,0x3F,0x7F,0x47,0xB0,0x39,0x00,0x01,0xF7]; // Invalid Midibyte?
 
@@ -175,7 +174,6 @@ NumarkN4.topContainer = function (channel) {
   });
   this.encSample3 = new components.Encoder({
     midi: [0xB0+channel,0x5A],
-    currentLoopSizeIndex: 7,
     hotCuePage: 0,
     applyHotcuePage: function (layer, displayFeedback) {
       // ES3 doesn't allow default values in the function signature
@@ -213,17 +211,12 @@ NumarkN4.topContainer = function (channel) {
     },
     shift: function () {
       this.group=theContainer.group;
-      this.inKey="beatloop_size";
       this.input = function (channel, control, value, status, group) {
-        this.currentLoopSizeIndex=
-        Math.max(
-          Math.min(
-            this.currentLoopSizeIndex+(value===0x01?1:-1),
-            NumarkN4.loopSizes.length
-          ),
-          0
-        );
-        this.inSetValue(NumarkN4.loopSizes[this.currentLoopSizeIndex]);
+        if (value === 0x01) {
+          engine.setParameter(this.group, "loop_double", 1);
+        } else {
+          engine.setParameter(this.group, "loop_halve", 1);
+        }
       };
     },
     unshift: function () {
