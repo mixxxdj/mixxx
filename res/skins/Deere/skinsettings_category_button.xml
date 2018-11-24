@@ -1,13 +1,13 @@
 <!DOCTYPE template>
 <!--
   Description:
-    A button that has a left-click display control and a right-click control.
+    A button with a left-click control that toggles a major skin component.
+    It's button and category label at once.
+    It has un/checked circles before the label for enabled/disabled state.
   Variables:
-    ObjectName: The object name.
-    Size: the button size.
-    state_X_text:
-    state_X_pressed:
-    state_X_unpressed:
+    text: name of the skin setting
+    skinsetting: skin setting control
+    TooltipId
 -->
 <Template>
   <PushButton>
