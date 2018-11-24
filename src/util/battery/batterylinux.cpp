@@ -31,7 +31,12 @@ void BatteryLinux::read() {
     up_client_enumerate_devices_sync(client, NULL, NULL);
 #endif
 
+#if UP_CHECK_VERSION(0, 99, 8)
+    GPtrArray* devices = up_client_get_devices2(client);
+#else
+    // See also: https://gitlab.freedesktop.org/upower/upower/issues/14
     GPtrArray* devices = up_client_get_devices(client);
+#endif
     if (devices == nullptr) {
       return;
     }
