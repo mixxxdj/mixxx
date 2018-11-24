@@ -115,8 +115,14 @@
   background-color: #222222;
 }
 
-TEST1 {
-  background-color: #00B824;
+#TEST1 {
+  background-color: #452219;
+}
+#TEST2 {
+  background-color: #451911;
+}
+#TEST3 {
+  background-color: #114522;
 }
 
 #AlignLeft {
@@ -644,31 +650,37 @@ QAbstractScrollArea::corner {
   background: none;
 }
 
-#SkinSettings > #h2 {
-  font: 14px/16px;
+#SkinSettings > #h2,
+#SkinSettingsCategoryButton {
+  font: bold 14px/16px;
   text-align: left;
   color: #d2d2d2;
   background-color: none;
   margin: 0 0.2em .1em 0;
-  border-top: none;
-  border-bottom: 1px solid #A9A9A9;
+  border: 1px solid #A9A9A9;
+  /* revert global WPushButton border style */
+  border-width: 0px 0px 1px 0px;
+  border-radius: 0px;
 }
 
 #SkinSettings > #h3 {
   font: 12px/14px;
   background-color: none;
   text-align: left;
-  margin: .05em 0.5em;
+  margin: .1em 0.5em .5em 0.5em;
 }
 
-#SkinSettings > #h3 WPushButton {
+#SkinSettings > #h3 WPushButton,
+#SkinSettingsButton:hover {
   font: 12px/14px;
   background-color: none;
   text-transform: none;
   border: none;
 }
 
-#SkinSettings > #h3 WPushButton:hover {
+#SkinSettings > #h3 WPushButton:hover,
+#SkinSettingsButton:hover,
+#SkinSettingsCategoryButton:hover {
   background: #222222;
 }
 
@@ -822,7 +834,7 @@ WBeatSpinBox,
 }
 
 #ToolBarRight {
-  qproperty-layoutSpacing: 12;
+  qproperty-layoutSpacing: 6;
 }
 
 #NotificationsContainer {

@@ -28,7 +28,7 @@
                   <Template src="skin:deck_coverArt.xml"/>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Skin],big_spinny</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>

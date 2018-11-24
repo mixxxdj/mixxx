@@ -42,7 +42,7 @@
 
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_4decks</ConfigKey>
+                      <ConfigKey>[Skin],show_4decks</ConfigKey>
                       <BindProperty>visible</BindProperty>
                       <Transform>
                         <Not/>
@@ -73,7 +73,7 @@
 
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_4decks</ConfigKey>
+                      <ConfigKey>[Skin],show_4decks</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup> <!-- DeckControls_SplitWaveforms_4Decks -->
@@ -107,7 +107,7 @@
                       </Template>
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_4decks</ConfigKey>
+                      <ConfigKey>[Skin],show_4decks</ConfigKey>
                       <BindProperty>visible</BindProperty>
                       <Transform>
                         <Not/>
@@ -144,7 +144,7 @@
                               </Template>
                             </Children>
                             <Connection>
-                              <ConfigKey>[Master],show_eqs</ConfigKey>
+                              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                               <BindProperty>visible</BindProperty>
                               <Transform>
                                 <Not/>
@@ -173,7 +173,7 @@
                               </Template>
                             </Children>
                             <Connection>
-                              <ConfigKey>[Master],show_eqs</ConfigKey>
+                              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                               <BindProperty>visible</BindProperty>
                             </Connection>
                           </WidgetGroup> <!-- DeckControls_StackedWaveforms_4Decks_WithEQs -->
@@ -183,7 +183,7 @@
 
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_4decks</ConfigKey>
+                      <ConfigKey>[Skin],show_4decks</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- DeckControls_StackedWaveforms_4Decks -->
@@ -235,7 +235,7 @@
               </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey>[Deere],show_crossfader</ConfigKey>
+              <ConfigKey>[Skin],show_xfader</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- CrossfaderContainer -->

@@ -226,7 +226,7 @@
                       </Template>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- /Hotcues 5-8 -->
