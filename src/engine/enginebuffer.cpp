@@ -69,7 +69,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
           m_pitch_old(0),
           m_baserate_old(0),
           m_rate_old(0.),
-          m_trackSamplesOld(-1),
+          m_trackSamplesOld(0),
           m_trackSampleRateOld(0),
           m_iSamplesCalculated(0),
           m_iUiSlowTick(0),
@@ -319,7 +319,7 @@ EngineBuffer::~EngineBuffer() {
 
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     double fFractionalPlaypos = 0.0;
-    if (m_trackSamplesOld != 0.) {
+    if (m_trackSamplesOld) {
         fFractionalPlaypos = math_min<double>(absolutePlaypos, m_trackSamplesOld);
         fFractionalPlaypos /= m_trackSamplesOld;
     }
@@ -513,7 +513,6 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pause.lock();
     m_visualPlayPos->setInvalid();
     m_pCurrentTrack = pTrack;
-    m_trackSamplesOld = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
     // Reset slip mode
@@ -556,7 +555,6 @@ void EngineBuffer::ejectTrack() {
     m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;
     m_pCurrentTrack.reset();
-    m_trackSamplesOld = 0;
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     m_visualKey->set(0.0);
@@ -602,16 +600,11 @@ void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekT
     if (isnan(fractionalPos)) {
         return;
     }
-    double newSamplePosition = fractionalPos * m_trackSamplesOld;
+    double newSamplePosition = fractionalPos * m_pTrackSamples->get();
     doSeekPlayPos(newSamplePosition, seekType);
 }
 
 void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) {
-    // Don't allow the playposition to go past the end.
-    if (new_playpos > m_trackSamplesOld) {
-        new_playpos = m_trackSamplesOld;
-    }
-
 #ifdef __VINYLCONTROL__
     // Notify the vinyl control that a seek has taken place in case it is in
     // absolute mode and needs be switched to relative.
@@ -630,7 +623,7 @@ bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
     bool playPossible = true;
     if ((!m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0) ||
             (m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0 &&
-             m_filepos_play >= m_trackSamplesOld &&
+             m_filepos_play >= m_pTrackSamples->get() &&
              !load_atomic(m_iSeekQueued))) {
         // play not possible
         playPossible = false;
@@ -726,6 +719,7 @@ void EngineBuffer::processTrackLocked(
     ScopedTimer t("EngineBuffer::process_pauselock");
 
     m_trackSampleRateOld = m_pTrackSampleRate->get();
+    m_trackSamplesOld = m_pTrackSamples->get();
 
     double baserate = 0.0;
     if (sample_rate > 0) {
@@ -1154,6 +1148,11 @@ void EngineBuffer::processSeek(bool paused) {
             m_iSeekQueued.fetchAndStoreRelease(SEEK_NONE));
     double position = m_queuedSeekPosition.getValue();
 
+    // Don't allow the playposition to go past the end.
+    if (position > m_trackSamplesOld) {
+        position = m_trackSamplesOld;
+    }
+
     // Add SEEK_PHASE bit, if any
     if (m_iSeekPhaseQueued.fetchAndStoreRelease(0)) {
         seekType |= SEEK_PHASE;
@@ -1215,7 +1214,7 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    if (!m_trackSampleRateOld) {
+    if (!m_trackSampleRateOld || !m_trackSamplesOld) {
         // no track loaded
         return;
     }
