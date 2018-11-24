@@ -513,7 +513,6 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pause.lock();
     m_visualPlayPos->setInvalid();
     m_pCurrentTrack = pTrack;
-    m_trackSampleRateOld = iTrackSampleRate;
     m_trackSamplesOld = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
@@ -557,7 +556,6 @@ void EngineBuffer::ejectTrack() {
     m_pTrackSampleRate->set(0);
     TrackPointer pTrack = m_pCurrentTrack;
     m_pCurrentTrack.reset();
-    m_trackSampleRateOld = 0;
     m_trackSamplesOld = 0;
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
@@ -727,9 +725,11 @@ void EngineBuffer::processTrackLocked(
         CSAMPLE* pOutput, const int iBufferSize, int sample_rate) {
     ScopedTimer t("EngineBuffer::process_pauselock");
 
+    m_trackSampleRateOld = m_pTrackSampleRate->get();
+
     double baserate = 0.0;
     if (sample_rate > 0) {
-        baserate = ((double)m_trackSampleRateOld / sample_rate);
+        baserate = m_trackSampleRateOld / sample_rate;
     }
 
     // Note: play is also active during cue preview
@@ -1215,6 +1215,10 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
+    if (!m_trackSampleRateOld) {
+        // no track loaded
+        return;
+    }
 
     // Increase samplesCalculated by the buffer size
     m_iSamplesCalculated += iBufferSize;
