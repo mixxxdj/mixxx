@@ -113,7 +113,7 @@
 
 #Spacer22 {
   background-color: #222222;
-} /*
+}
 
 #TEST1 {
   background-color: #452219;
@@ -123,7 +123,7 @@
 }
 #TEST3 {
   background-color: #114522;
-} */
+}
 
 #AlignLeft {
   qproperty-layoutAlignment: 'AlignLeft';
