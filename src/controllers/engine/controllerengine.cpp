@@ -205,7 +205,7 @@ void ControllerEngine::initializeScriptEngine() {
     if (m_pController) {
         qDebug() << "Controller in script engine is:" << m_pController->getName();
 
-        ControllerJSProxy* controllerProxy = new ControllerJSProxy(m_pController);
+        ControllerJSProxy* controllerProxy = m_pController->jsProxy();
 
         // Make the Controller instance available to scripts
         engineGlobalObject.setProperty("controller", m_pScriptEngine->newQObject(controllerProxy));

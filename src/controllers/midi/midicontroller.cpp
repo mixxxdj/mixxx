@@ -28,6 +28,10 @@ MidiController::~MidiController() {
     // destructors.
 }
 
+ControllerJSProxy* MidiController::jsProxy() {
+    return new MidiControllerJSProxy(this);
+}
+
 QString MidiController::presetExtension() {
     return MIDI_PRESET_EXTENSION;
 }

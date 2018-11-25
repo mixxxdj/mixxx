@@ -28,6 +28,10 @@ Controller::~Controller() {
     // destructors.
 }
 
+ControllerJSProxy* Controller::jsProxy() {
+    return new ControllerJSProxy(this);
+}
+
 void Controller::startEngine()
 {
     controllerDebug("  Starting engine");

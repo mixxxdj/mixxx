@@ -20,11 +20,18 @@
 #include "controllers/controllerpresetfilehandler.h"
 #include "util/duration.h"
 
+class ControllerJSProxy;
+
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
     Controller();
     ~Controller() override;  // Subclass should call close() at minimum.
+
+    // The object that is exposed to the JS scripts as the "controller" object.
+    // Subclasses of Controller can return a subclass of ControllerJSProxy to further
+    // customize their JS api.
+    virtual ControllerJSProxy* jsProxy();
 
     // Returns the extension for the controller (type) preset files.  This is
     // used by the ControllerManager to display only relevant preset files for
