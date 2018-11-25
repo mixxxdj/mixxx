@@ -18,11 +18,11 @@ var EnableWheel = true;
 // should we show time elapsed by default? (otherwise time remaining will be shown)
 var ShowTimeElapsed = true;
 
-// should we use the manual loop buttons as cue buttons?
+// should we use the manual loop buttons as hotcue buttons 5-8?
 var UseManualLoopAsCue = false;
 
-// should we use the auto loop buttons as cue buttons?
-var UseAutolLoopAsCue = false;
+// should we use the auto loop buttons as hotcue buttons 5-8?
+var UseAutoLoopAsCue = false;
 
 // should we use the hotcue buttons for samplers 5-8?
 var UseCueAsSampler = false;
@@ -323,7 +323,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
             components.Button.prototype.input.call(this, channel, control, value, status, group);
             if (this.isPress(channel, control, value, status)) {
                 eu.forEachComponent(function (component) {
-                    if (component.tap !== undefined) {
+                    if (component.tap !== undefined && typeof component.tap === 'function') {
                         component.tap();
                     }
                 });
@@ -562,7 +562,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     var pitch_or_keylock = function (channel, control, value, status, group) {
         if (this.other.inGetValue() > 0.0 && this.isPress(channel, control, value, status)) {
             // toggle keylock, both keys pressed
-            engine.setValue(this.group, "keylock", !engine.getValue(this.group, "keylock"));
+            script.toggleControl(this.group, "keylock");
         }
         else {
             components.Button.prototype.input.call(this, channel, control, value, status, group);
