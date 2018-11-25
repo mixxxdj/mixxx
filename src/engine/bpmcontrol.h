@@ -150,9 +150,9 @@ class BpmControl : public EngineControl {
     double m_dSyncTargetBeatDistance;
     double m_dSyncInstantaneousBpm;
     double m_dLastSyncAdjustment;
-    bool m_resetSyncAdjustment;
+    QAtomicInt m_resetSyncAdjustment;
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
-    double m_dUserOffset;
+    ControlValueAtomic<double> m_dUserOffset;
 
     TapFilter m_tapFilter;
 

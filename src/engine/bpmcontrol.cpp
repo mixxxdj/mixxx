@@ -31,8 +31,6 @@ BpmControl::BpmControl(QString group,
         m_dSyncTargetBeatDistance(0.0),
         m_dSyncInstantaneousBpm(0.0),
         m_dLastSyncAdjustment(1.0),
-        m_resetSyncAdjustment(false),
-        m_dUserOffset(0.0),
         m_tapFilter(this, kFilterLength, kMaxInterval),
         m_sGroup(group) {
     m_pPlayButton = new ControlProxy(group, "play", this);
@@ -428,8 +426,8 @@ double BpmControl::calcSyncedRate(double userTweak) {
 }
 
 double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSync) {
-    if (m_resetSyncAdjustment) {
-        m_resetSyncAdjustment = false;
+    int resetSyncAdjustment = m_resetSyncAdjustment.fetchAndStoreRelaxed(0);
+    if (resetSyncAdjustment) {
         m_dLastSyncAdjustment = 1.0;
     }
 
@@ -461,9 +459,9 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     if (userTweakingSync) {
         // Don't do anything else, leave it
         adjustment = 1.0;
-        m_dUserOffset = shortest_distance;
+        m_dUserOffset.setValue(shortest_distance);
     } else {
-        double error = shortest_distance - m_dUserOffset;
+        double error = shortest_distance - m_dUserOffset.getValue();
         // Threshold above which we do sync adjustment.
         const double kErrorThreshold = 0.01;
         // Threshold above which sync is really, really bad, so much so that we
@@ -509,7 +507,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     double dNextBeat = m_pNextBeat->get();
 
     if (dPrevBeat == -1 || dNextBeat == -1) {
-        return 0.0 - m_dUserOffset;
+        return 0.0 - m_dUserOffset.getValue();
     }
 
     double dBeatLength = dNextBeat - dPrevBeat;
@@ -520,7 +518,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     if (dBeatPercentage < 0) ++dBeatPercentage;
     if (dBeatPercentage > 1) --dBeatPercentage;
 
-    return dBeatPercentage - m_dUserOffset;
+    return dBeatPercentage - m_dUserOffset.getValue();
 }
 
 // static
@@ -670,7 +668,7 @@ double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectL
     // infinite beatgrids because the assumption that findNthBeat(-2) always
     // works will be wrong then.
 
-    double dNewPlaypos = (dOtherBeatFraction + m_dUserOffset) * dThisBeatLength;
+    double dNewPlaypos = (dOtherBeatFraction + m_dUserOffset.getValue()) * dThisBeatLength;
     if (this_near_next == other_near_next) {
         dNewPlaypos += dThisPrevBeat;
     } else if (this_near_next && !other_near_next) {
@@ -797,7 +795,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
     if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
         // Must reset the user offset *before* calling getPhaseOffset(),
         // otherwise it will always return 0 if master sync is active.
-        m_dUserOffset = 0.0;
+        m_dUserOffset.setValue(0.0);
 
         double offset = getPhaseOffset(getCurrentSample());
         pBeats->translate(-offset);
@@ -828,7 +826,7 @@ double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(getCurrentSample());
     m_pThisBeatDistance->set(beat_distance);
     if (getSyncMode() == SYNC_NONE) {
-        m_dUserOffset = 0.0;
+        m_dUserOffset.setValue(0.0);
     }
     return beat_distance;
 }
@@ -841,12 +839,11 @@ void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
     m_dSyncInstantaneousBpm = instantaneousBpm;
 }
 
-// TODO(XXX) make this function thread save
 void BpmControl::resetSyncAdjustment() {
     // Immediately edit the beat distance to reflect the new reality.
-    double new_distance = m_pThisBeatDistance->get() + m_dUserOffset;
+    double new_distance = m_pThisBeatDistance->get() + m_dUserOffset.getValue();
     m_pThisBeatDistance->set(new_distance);
-    m_dUserOffset = 0.0;
+    m_dUserOffset.setValue(0.0);
     m_resetSyncAdjustment = true;
 }
 
