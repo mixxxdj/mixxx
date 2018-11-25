@@ -157,7 +157,7 @@ class BpmControl : public EngineControl {
     TapFilter m_tapFilter;
 
     TrackPointer m_pTrack; // is witten from an engine worker thread
-    BeatsPointer m_pBeats;
+    BeatsPointer m_pBeats; // is witten from an engine worker thread
 
     QString m_sGroup;
 };

@@ -984,7 +984,7 @@ void EngineBuffer::processTrackLocked(
     }
 
     for (const auto& pControl: m_engineControls) {
-        pControl->setCurrentSample(m_filepos_play, m_trackSamplesOld);
+        pControl->setCurrentSample(m_filepos_play, m_trackSamplesOld, m_trackSampleRateOld);
         pControl->process(rate, m_filepos_play, iBufferSize);
     }
 

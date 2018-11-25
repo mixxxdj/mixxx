@@ -19,7 +19,7 @@ class QuantizeControl : public EngineControl {
     ~QuantizeControl() override;
 
     void setCurrentSample(const double dCurrentSample,
-            const double dTotalSamples) override;
+            const double dTotalSamples, const double dTrackSampleRate) override;
     void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
