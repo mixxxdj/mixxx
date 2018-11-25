@@ -57,6 +57,7 @@ class EngineControl : public QObject {
             const double dTotalSamples, const double dTrackSampleRate);
     double getCurrentSample() const;
     double getTotalSamples() const;
+    double getTrackSampleRate() const;
     bool atEndPosition() const;
     QString getGroup() const;
 

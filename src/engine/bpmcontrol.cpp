@@ -186,19 +186,18 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
 }
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
-    if (v > 0 && m_pTrack && m_pBeats &&
+    if (v > 0 && m_pBeats &&
             (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
-        // TODO(rryan): Track::getSampleRate is possibly inaccurate!
-        const int translate_dist = m_pTrack->getSampleRate() * -.01;
+        const int translate_dist = getTrackSampleRate() * -.01;
         m_pBeats->translate(translate_dist);
     }
 }
 
 void BpmControl::slotTranslateBeatsLater(double v) {
-    if (v > 0 && m_pTrack && m_pBeats &&
+    if (v > 0 && m_pBeats &&
             (m_pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
-        const int translate_dist = m_pTrack->getSampleRate() * .01;
+        const int translate_dist = getTrackSampleRate() * .01;
         m_pBeats->translate(translate_dist);
     }
 }
@@ -745,6 +744,7 @@ void BpmControl::slotUpdateRateSlider() {
     m_pRateSlider->set(dRateSlider);
 }
 
+// called from an engine worker thread
 void BpmControl::trackLoaded(TrackPointer pNewTrack) {
     if (m_pTrack) {
         disconnect(m_pTrack.get(), SIGNAL(beatsUpdated()),
@@ -766,9 +766,10 @@ void BpmControl::trackLoaded(TrackPointer pNewTrack) {
 }
 
 void BpmControl::slotUpdatedTrackBeats() {
-    if (m_pTrack) {
+    TrackPointer pTrack = m_pTrack;
+    if (pTrack) {
         resetSyncAdjustment();
-        m_pBeats = m_pTrack->getBeats();
+        m_pBeats = pTrack->getBeats();
     }
 }
 
@@ -831,6 +832,7 @@ void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
     m_dSyncInstantaneousBpm = instantaneousBpm;
 }
 
+// TODO(XXX) make this function thread save
 void BpmControl::resetSyncAdjustment() {
     // Immediately edit the beat distance to reflect the new reality.
     double new_distance = m_pThisBeatDistance->get() + m_dUserOffset;
@@ -855,9 +857,10 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
                        dThisPrevBeat, dThisNextBeat,
                        &dThisBeatLength, &dThisBeatFraction)) {
         pGroupFeatures->has_beat_length_sec = true;
+
         // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)
         pGroupFeatures->beat_length_sec = dThisBeatLength / kSamplesPerFrame
-                / m_pTrack->getSampleRate() / calcRateRatio();
+                / getTrackSampleRate() / calcRateRatio();
 
         pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction = dThisBeatFraction;

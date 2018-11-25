@@ -59,6 +59,10 @@ double EngineControl::getTotalSamples() const {
     return m_sampleOfTrack.getValue().total;
 }
 
+double EngineControl::getTrackSampleRate() const {
+    return m_sampleOfTrack.getValue().rate;
+}
+
 bool EngineControl::atEndPosition() const {
     SampleOfTrack sot = m_sampleOfTrack.getValue();
     return (sot.current >= sot.total);
