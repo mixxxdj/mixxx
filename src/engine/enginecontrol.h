@@ -43,9 +43,8 @@ class EngineControl : public QObject {
     // EngineControl can perform any upkeep operations that are necessary during
     // this call.
     virtual void process(const double dRate,
-                           const double dCurrentSample,
-                           const double dTotalSamples,
-                           const int iBufferSize);
+                         const double dCurrentSample,
+                         const int iBufferSize);
 
     // hintReader allows the EngineControl to provide hints to the reader to
     // indicate that the given portion of a song is a potential imminent seek

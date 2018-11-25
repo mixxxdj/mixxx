@@ -985,7 +985,7 @@ void EngineBuffer::processTrackLocked(
 
     for (const auto& pControl: m_engineControls) {
         pControl->setCurrentSample(m_filepos_play, m_trackSamplesOld);
-        pControl->process(rate, m_filepos_play, m_trackSamplesOld, iBufferSize);
+        pControl->process(rate, m_filepos_play, iBufferSize);
     }
 
     m_scratching_old = is_scratching;

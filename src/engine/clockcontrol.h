@@ -19,7 +19,7 @@ class ClockControl: public EngineControl {
     ~ClockControl() override;
 
     void process(const double dRate, const double currentSample,
-                   const double totalSamples, const int iBufferSize) override;
+            const int iBufferSize) override;
 
   public slots:
     void trackLoaded(TrackPointer pNewTrack) override;

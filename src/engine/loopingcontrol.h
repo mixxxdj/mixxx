@@ -35,7 +35,6 @@ class LoopingControl : public EngineControl {
     // the sample that should be seeked to. Otherwise it returns currentSample.
     void process(const double dRate,
                    const double currentSample,
-                   const double totalSamples,
                    const int iBufferSize) override;
 
     // nextTrigger returns the sample at which the engine will be triggered to

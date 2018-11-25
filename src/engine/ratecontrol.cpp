@@ -533,13 +533,11 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
 }
 
 void RateControl::process(const double rate,
-                            const double currentSample,
-                            const double totalSamples,
-                            const int bufferSamples)
+                          const double currentSample,
+                          const int bufferSamples)
 {
     Q_UNUSED(rate);
     Q_UNUSED(currentSample);
-    Q_UNUSED(totalSamples);
     /*
      * Code to handle temporary rate change buttons.
      *

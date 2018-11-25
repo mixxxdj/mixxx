@@ -63,9 +63,8 @@ public:
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
     void process(const double dRate,
-                   const double currentSample,
-                   const double totalSamples,
-                   const int bufferSamples) override;
+                 const double currentSample,
+                 const int bufferSamples) override;
     // Returns the current engine rate.  "reportScratching" is used to tell
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.

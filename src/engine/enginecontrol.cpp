@@ -21,11 +21,9 @@ EngineControl::~EngineControl() {
 
 void EngineControl::process(const double dRate,
                            const double dCurrentSample,
-                           const double dTotalSamples,
                            const int iBufferSize) {
     Q_UNUSED(dRate);
     Q_UNUSED(dCurrentSample);
-    Q_UNUSED(dTotalSamples);
     Q_UNUSED(iBufferSize);
 }
 

@@ -304,10 +304,8 @@ void LoopingControl::slotLoopDouble(double pressed) {
 }
 
 void LoopingControl::process(const double dRate,
-                               const double currentSample,
-                               const double totalSamples,
-                               const int iBufferSize) {
-    Q_UNUSED(totalSamples);
+                             const double currentSample,
+                             const int iBufferSize) {
     Q_UNUSED(iBufferSize);
     Q_UNUSED(dRate);
 
