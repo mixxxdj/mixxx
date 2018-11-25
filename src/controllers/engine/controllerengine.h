@@ -182,7 +182,7 @@ class ControllerEngine : public QObject {
     QJSValue evaluateProgram(const QString& program, const QString& fileName = QString(),
     		int lineNumber = 1);
     // Throws EvaluationException
-    void handleEvaluationException(QJSValue evaluationResult);
+    void checkForEvaluationException(QJSValue evaluationResult);
     void showScriptExceptionDialog(EvaluationException exception);
     QJSEngine *m_pScriptEngine;
 

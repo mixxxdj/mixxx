@@ -361,7 +361,7 @@ bool ControllerEngine::internalExecute(QJSValue thisObject, QJSValue functionObj
     QJSValue returnValue = functionObject.callWithInstance(thisObject, args);
 
     try {
-        handleEvaluationException(returnValue);
+        checkForEvaluationException(returnValue);
     } catch (EvaluationException& exception) {
         showScriptExceptionDialog(exception);
         return false;
@@ -417,14 +417,14 @@ QJSValue ControllerEngine::evaluateProgram(const QString& program, const QString
     }
 
     QJSValue evaluationResult = m_pScriptEngine->evaluate(program, fileName, lineNumber);
-    handleEvaluationException(evaluationResult);
+    checkForEvaluationException(evaluationResult);
 
     return evaluationResult;
 }
 
 // Check if a script evaluation threw an exception. If so, register that the source
 // file threw and error and throw an EvaluationException.
-void ControllerEngine::handleEvaluationException(QJSValue evaluationResult) {
+void ControllerEngine::checkForEvaluationException(QJSValue evaluationResult) {
     // TODO: add test for this
     if (evaluationResult.isError()) {
         QString errorMessage = evaluationResult.toString();
