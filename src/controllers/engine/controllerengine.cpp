@@ -312,7 +312,7 @@ bool ControllerEngine::internalExecute(QJSValue thisObject,
     try {
         scriptFunction = evaluateProgram(scriptCode);
     } catch (EvaluationException& exception) {
-        presentErrorDialogForEvaluationException(exception);
+        showScriptExceptionDialog(exception);
         qDebug() << "Exception evaluating:" << scriptCode;
         return false;
     } catch (NullEngineException& exception) {
@@ -363,7 +363,7 @@ bool ControllerEngine::internalExecute(QJSValue thisObject, QJSValue functionObj
     try {
         handleEvaluationException(rc);
     } catch (EvaluationException& exception) {
-        presentErrorDialogForEvaluationException(exception);
+        showScriptExceptionDialog(exception);
         return false;
     }
     return true;
@@ -443,7 +443,7 @@ void ControllerEngine::handleEvaluationException(QJSValue evaluationResult) {
     }
 }
 
-void ControllerEngine::presentErrorDialogForEvaluationException(EvaluationException exception) {
+void ControllerEngine::showScriptExceptionDialog(EvaluationException exception) {
     QString filename = exception.filename;
     QString errorMessage = exception.errorMessage;
     QString line = exception.line;
