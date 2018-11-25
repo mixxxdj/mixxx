@@ -63,7 +63,7 @@ VinylControlControl::~VinylControlControl() {
 }
 
 void VinylControlControl::trackLoaded(TrackPointer pNewTrack) {
-    m_pCurrentTrack = pNewTrack;
+    m_pTrack = pNewTrack;
 }
 
 void VinylControlControl::notifySeekQueued() {
@@ -84,7 +84,8 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
     }
 
     // Do nothing if no track is loaded.
-    if (!m_pCurrentTrack) {
+    TrackPointer pTrack = m_pTrack;
+    if (!pTrack) {
         return;
     }
 
@@ -106,7 +107,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
             return; // If off, do nothing.
         case MIXXX_RELATIVE_CUE_ONECUE:
             //if onecue, just seek to the regular cue
-            seekExact(m_pCurrentTrack->getCuePoint());
+            seekExact(pTrack->getCuePoint());
             return;
         case MIXXX_RELATIVE_CUE_HOTCUE:
             // Continue processing in this function.
@@ -119,7 +120,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
         double shortest_distance = 0;
         int nearest_playpos = -1;
 
-        const QList<CuePointer> cuePoints(m_pCurrentTrack->getCuePoints());
+        const QList<CuePointer> cuePoints(pTrack->getCuePoints());
         QListIterator<CuePointer> it(cuePoints);
         while (it.hasNext()) {
             CuePointer pCue(it.next());
