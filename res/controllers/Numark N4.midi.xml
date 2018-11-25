@@ -10,7 +10,7 @@
       <file filename="common-controller-scripts.js"/>
       <file filename="lodash.mixxx.js"/>
       <file filename="midi-components-0.0.js"/>
-      <file functionprefix="NumarkN4" filename="Numark-N4-4channel-scripts.js"/>
+      <file functionprefix="NumarkN4" filename="Numark-N4-scripts.js"/>
     </scriptfiles>
     <controls>
       <!-- nav encoder -->
