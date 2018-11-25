@@ -69,6 +69,12 @@ components.Component.prototype.send = function (value) {
 };
 
 NumarkN4.init = function (id) {
+	NumarkN4.xFaderSettings = {
+		mode: engine.getValue("[Mixer Profile]", "xFaderMode"),
+		curve: engine.getValue("[Mixer Profile]","xFaderCurve"),
+		calibration: engine.getValue("[Mixer Profile]","xFaderCalibration")
+	}
+	NumarkN4.setCrossfaderSettings(NumarkN4.xFaderSettings);
   NumarkN4.rateRanges[0]=engine.getValue("[Channel1]","rateRange");
   NumarkN4.Decks=[];
   for (var i=1;i<=4;i++){
@@ -83,6 +89,12 @@ NumarkN4.init = function (id) {
   midi.sendSysexMsg(NumarkN4.QueryStatusMessage,NumarkN4.QueryStatusMessage.length)
 
 };
+
+NumarkN4.setCrossfaderSettings = function (settingsStruct) {
+	engine.setValue("[Mixer Profile]","xFaderMode",settingsStruct.mode);
+	engine.setValue("[Mixer Profile]","xFaderCurve",settingsStruct.curve);
+	engine.setValue("[Mixer Profile]","xFaderCalibration",settingsStruct.calibration);
+}
 
 NumarkN4.topContainer = function (channel) {
   this.group = '[Channel'+channel+']';
@@ -292,15 +304,16 @@ NumarkN4.MixerTemplate = function () {
   // BUG: Help on Mixxx forum is needed
   this.changeCrossfaderContour = new components.Button({
     midi: [0x90,0x4B],
-    group: "[Mixer Profile]",
-    inKey: "xFaderMode",
     input: function (channel, control, value, status, group) {
       if (this.isPress(channel,control, value, status)) {
-        engine.setValue("[Mixer Profile]","xFaderCurve",2); // REVIEW: value yet to review
+        NumarkN4.setCrossfaderSettings({
+					mode: 0, // fast cut (additive)
+					curve: 999.60,
+					calibration: 1.0
+				});
       } else {
-        engine.setValue("[Mixer Profile]","xFaderCalibration",0.5); // REVIEW: value yet to review
+				NumarkN4.setCrossfaderSettings(NumarkN4.xFaderSettings);
       }
-      this.inSetParameter(!value);
     }
   });
 
@@ -639,6 +652,7 @@ NumarkN4.Deck = function (channel) {
      this.playButton.send(0);
      this.shiftButton.send(0);
      midi.sendShortMsg(0xB0,0x1D+channel,0); // turn off small triangle above LOAD button.
+
    }
 };
 
@@ -649,5 +663,7 @@ NumarkN4.shutdown = function () {
     // View Definition of Array for explanation.
     NumarkN4.Decks[i].shutdown();
   }
+	// reset crossfader parameters to user preferences.
+	NumarkN4.setCrossfaderSettings(NumarkN4.xFaderSettings);
   // midi.sendSysexMsg(NumarkN4.ShutoffSequence,NumarkN4.ShutoffSequence.length);
 };
