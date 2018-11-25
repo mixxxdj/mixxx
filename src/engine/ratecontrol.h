@@ -105,7 +105,6 @@ public:
     void slotControlRateTempUpSmall(double);
     void slotControlFastForward(double);
     void slotControlFastBack(double);
-    void trackLoaded(TrackPointer pNewTrack) override;
 
   private:
     double getJogFactor() const;
@@ -161,8 +160,6 @@ public:
     Rotary* m_pJogFilter;
 
     ControlObject* m_pSampleRate;
-
-    TrackPointer m_pTrack; // is witten from an engine worker thread
 
     // For Master Sync
     BpmControl* m_pBpmControl;

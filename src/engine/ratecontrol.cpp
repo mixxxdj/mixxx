@@ -393,10 +393,6 @@ void RateControl::slotControlRateTempUpSmall(double)
     }
 }
 
-void RateControl::trackLoaded(TrackPointer pNewTrack) {
-    m_pTrack = pNewTrack;
-}
-
 double RateControl::calcRateRatio() const {
     double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
             m_pRateSlider->get();
