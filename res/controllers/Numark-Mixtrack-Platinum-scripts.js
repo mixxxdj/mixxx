@@ -627,6 +627,10 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         loop_toggle: new components.HotcueButton(loop_base(0x32, {
             number: 7,
         })),
+        // there are two hotcue 8 controls, one for the loop_halve button and
+        // one for the loop_double button. These buttons are two individual
+        // functions when in manual loop mode, but they behave as one button
+        // in hotcue mode.
         loop_halve: new components.HotcueButton(loop_base(0x34, {
             number: 8,
         })),
