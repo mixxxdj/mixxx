@@ -10,11 +10,13 @@
 				<Channel><Variable name="channum"/></Channel>
 				<BgColor><Variable name="SignalBgColor"/></BgColor>
 				<SignalColor><Variable name="signal_color"/></SignalColor>
-        <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
-        <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-        <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
-				<BeatColor>#ffffff</BeatColor>
-				<BeatHighlightColor></BeatHighlightColor>
+                <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
+                <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
+                <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
+                <BeatColor>#ffffff</BeatColor>
+                <BarColor>#00ff00</BarColor>
+                <PhraseColor>#ccffff</PhraseColor>
+                <BeatHighlightColor></BeatHighlightColor>
 				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>

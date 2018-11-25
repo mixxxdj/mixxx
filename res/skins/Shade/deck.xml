@@ -153,8 +153,10 @@
 												<SignalMidColor></SignalMidColor>
 												<SignalLowColor></SignalLowColor>
 												<SignalColor>#191F24</SignalColor>
-												<BeatColor>#FFFFFF</BeatColor>
-												<PlayPosColor>#00FF00</PlayPosColor>
+                                                <BeatColor>#FFFFFF</BeatColor>
+                                                <BarColor>#00ff00</BarColor>
+                                                <PhraseColor>#ccffff</PhraseColor>
+                                                <PlayPosColor>#00FF00</PlayPosColor>
 												<EndOfTrackColor>#EA0000</EndOfTrackColor>
 												<AxesColor>#00FF00</AxesColor>
 												<Align></Align>
