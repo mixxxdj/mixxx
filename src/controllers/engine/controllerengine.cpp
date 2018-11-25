@@ -358,10 +358,10 @@ bool ControllerEngine::internalExecute(QJSValue thisObject, QJSValue functionObj
     }
 
     // If it does happen to be a function, call it.
-    QJSValue rc = functionObject.callWithInstance(thisObject, args);
+    QJSValue returnValue = functionObject.callWithInstance(thisObject, args);
 
     try {
-        handleEvaluationException(rc);
+        handleEvaluationException(returnValue);
     } catch (EvaluationException& exception) {
         showScriptExceptionDialog(exception);
         return false;
