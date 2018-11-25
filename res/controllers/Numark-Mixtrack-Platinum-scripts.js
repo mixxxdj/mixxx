@@ -503,9 +503,6 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         sendShifted: true,
         shiftControl: true,
         shiftOffset: 4,
-        shift: function() {
-            this.inKey = 'start';
-        },
     });
 
     this.sync_button = new components.SyncButton({
