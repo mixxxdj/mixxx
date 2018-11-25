@@ -227,13 +227,10 @@ NumarkN4.topContainer = function (channel) {
   });
   this.encSample4 = new components.Encoder({
     midi: [0xB0+channel,0x59],
-    currentJumpSizeIndex: 7, //custom property
     shift: function () {
       this.inKey="beatjump_size";
       this.input = function (channel, control, value, status, group) {
-        this.currentJumpSizeIndex += value===0x01 ? 1 : -1;
-        this.currentJumpSizeIndex = Math.max(Math.min(this.currentJumpSizeIndex, NumarkN4.loopSizes.length), 0);
-        this.inSetValue(NumarkN4.loopSizes[this.currentJumpSizeIndex]);
+        this.inSetValue(this.inGetValue() * (value===0x01 ? 2 : 0.5));
       };
     },
     unshift: function () {
