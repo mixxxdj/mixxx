@@ -167,7 +167,7 @@
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Skin],8_hotcues</ConfigKey>
+                  <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -208,7 +208,7 @@
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Skin],8_hotcues</ConfigKey>
+                  <ConfigKey>[Skin],show_8_hotcues</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>

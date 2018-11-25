@@ -128,7 +128,7 @@ Description:
 		              </WidgetGroup>
 		            </Children>
 		            <Connection>
-		              <ConfigKey persist="true">[Master],show_xfader</ConfigKey>
+		              <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
 		              <BindProperty>visible</BindProperty>
 		            </Connection>
 		          </WidgetGroup>
@@ -219,7 +219,7 @@ Description:
                 <SetVariable name="Size">20f,20f</SetVariable>
                 <SetVariable name="state_0_icon">loop_beatjump_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">loop_beatjump_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],loop_beatjump_controls</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_loop_beatjump_controls</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -230,7 +230,7 @@ Description:
                 <SetVariable name="TooltipId">toggle_4decks</SetVariable>
                 <SetVariable name="state_0_icon">2decks.svg</SetVariable>
                 <SetVariable name="state_1_icon">4decks.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Master],show_4decks</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_4decks</SetVariable>
               </Template>
             </Children>
             <Connection>

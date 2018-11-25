@@ -60,7 +60,7 @@ Variables:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Master],show_eq_kill_buttons</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_eq_kill_buttons</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -88,7 +88,7 @@ Variables:
       <WidgetGroup>
         <Size>0min,4f</Size>
         <Connection>
-          <ConfigKey persist="true">[Master],show_eq_kill_buttons</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_eq_kill_buttons</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -106,7 +106,7 @@ Variables:
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_eq_kill_buttons</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_eq_kill_buttons</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
