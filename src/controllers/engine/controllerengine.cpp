@@ -101,11 +101,11 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
 }
 
 QJSValue ControllerEngine::byteArrayToScriptValue(const QByteArray byteArray) {
-	// The QJSEngine converts the QByteArray to an ArrayBuffer object.
-	QJSValue arrayBuffer = m_pEngine->toScriptValue(byteArray);
-	// We convert the ArrayBuffer to a Uint8 typed array so we can access its bytes
-	// with the [] operator.
-	QJSValue m_byteArrayToScriptValueJSFunction = evaluateProgram("(function(arg1) { return new Uint8Array(arg1) })");
+    // The QJSEngine converts the QByteArray to an ArrayBuffer object.
+    QJSValue arrayBuffer = m_pEngine->toScriptValue(byteArray);
+    // We convert the ArrayBuffer to a Uint8 typed array so we can access its bytes
+    // with the [] operator.
+    QJSValue m_byteArrayToScriptValueJSFunction = evaluateProgram("(function(arg1) { return new Uint8Array(arg1) })");
     QJSValueList args;
     args << arrayBuffer;
     return m_byteArrayToScriptValueJSFunction.call(args);
