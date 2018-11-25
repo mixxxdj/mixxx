@@ -343,7 +343,6 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
         this.group = '[EffectRack1_EffectUnit' + eu.currentUnitNumber +
                       '_Effect' + this.number + ']';
         this.midi = [0x97 + eu.currentUnitNumber, this.number - 1];
-        this.inToggle = components.Button.prototype.inToggle;
         this.flash_timer = null;
 
         components.Button.call(this);
