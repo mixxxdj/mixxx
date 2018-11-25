@@ -32,7 +32,7 @@ const int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 
 ControllerEngine::ControllerEngine(Controller* controller)
-        : m_pEngine(nullptr),
+        : m_pScriptEngine(nullptr),
           m_pController(controller),
           m_bPopups(true) {
     // Handle error dialog buttons
@@ -67,9 +67,9 @@ ControllerEngine::~ControllerEngine() {
 
     // Delete the script engine, first clearing the pointer so that
     // other threads will not get the dead pointer after we delete it.
-    if (m_pEngine != nullptr) {
-        QJSEngine *engine = m_pEngine;
-        m_pEngine = nullptr;
+    if (m_pScriptEngine != nullptr) {
+        QJSEngine *engine = m_pScriptEngine;
+        m_pScriptEngine = nullptr;
         engine->deleteLater();
     }
 }
@@ -81,7 +81,7 @@ Output:  -
 -------- ------------------------------------------------------ */
 void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes,
                                              const QString& function, QJSValueList args) {
-    const QJSValue global = m_pEngine->globalObject();
+    const QJSValue global = m_pScriptEngine->globalObject();
 
     for (const QString& prefixName : scriptFunctionPrefixes) {
         QJSValue prefix = global.property(prefixName);
@@ -102,7 +102,7 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
 
 QJSValue ControllerEngine::byteArrayToScriptValue(const QByteArray byteArray) {
     // The QJSEngine converts the QByteArray to an ArrayBuffer object.
-    QJSValue arrayBuffer = m_pEngine->toScriptValue(byteArray);
+    QJSValue arrayBuffer = m_pScriptEngine->toScriptValue(byteArray);
     // We convert the ArrayBuffer to a Uint8 typed array so we can access its bytes
     // with the [] operator.
     QJSValue m_byteArrayToScriptValueJSFunction = evaluateProgram("(function(arg1) { return new Uint8Array(arg1) })");
@@ -189,18 +189,18 @@ void ControllerEngine::gracefulShutdown() {
 }
 
 bool ControllerEngine::isReady() {
-    bool ret = m_pEngine != nullptr;
+    bool ret = m_pScriptEngine != nullptr;
     return ret;
 }
 
 void ControllerEngine::initializeScriptEngine() {
     // Create the Script Engine
-    m_pEngine = new QJSEngine(this);
+    m_pScriptEngine = new QJSEngine(this);
 
     // Make this ControllerEngine instance available to scripts as 'engine'.
-    QJSValue engineGlobalObject = m_pEngine->globalObject();
+    QJSValue engineGlobalObject = m_pScriptEngine->globalObject();
     ControllerEngineJSProxy* proxy = new ControllerEngineJSProxy(this);
-    engineGlobalObject.setProperty("engine", m_pEngine->newQObject(proxy));
+    engineGlobalObject.setProperty("engine", m_pScriptEngine->newQObject(proxy));
 
     if (m_pController) {
         qDebug() << "Controller in script engine is:" << m_pController->getName();
@@ -208,10 +208,10 @@ void ControllerEngine::initializeScriptEngine() {
         ControllerJSProxy* controllerProxy = new ControllerJSProxy(m_pController);
 
         // Make the Controller instance available to scripts
-        engineGlobalObject.setProperty("controller", m_pEngine->newQObject(controllerProxy));
+        engineGlobalObject.setProperty("controller", m_pScriptEngine->newQObject(controllerProxy));
 
         // ...under the legacy name as well
-        engineGlobalObject.setProperty("midi", m_pEngine->newQObject(controllerProxy));
+        engineGlobalObject.setProperty("midi", m_pScriptEngine->newQObject(controllerProxy));
     }
 
     m_byteArrayToScriptValueJSFunction = evaluateProgram("(function(arg1) { return new Uint8Array(arg1) })");
@@ -259,9 +259,9 @@ void ControllerEngine::scriptHasChanged(const QString& scriptFilename) {
 
     // Delete the script engine, first clearing the pointer so that
     // other threads will not get the dead pointer after we delete it.
-    if (m_pEngine != nullptr) {
-        QJSEngine *engine = m_pEngine;
-        m_pEngine = nullptr;
+    if (m_pScriptEngine != nullptr) {
+        QJSEngine *engine = m_pScriptEngine;
+        m_pScriptEngine = nullptr;
         engine->deleteLater();
     }
 
@@ -329,11 +329,11 @@ bool ControllerEngine::internalExecute(QJSValue thisObject,
 }
 
 bool ControllerEngine::internalExecute(const QString& scriptCode) {
-	VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
+	VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
         return false;
     }
 
-    return internalExecute(m_pEngine->globalObject(), scriptCode);
+    return internalExecute(m_pScriptEngine->globalObject(), scriptCode);
 }
 
 /* -------- ------------------------------------------------------
@@ -371,11 +371,11 @@ bool ControllerEngine::internalExecute(QJSValue thisObject, QJSValue functionObj
 
 bool ControllerEngine::internalExecute(QJSValue functionObject,
                                        QJSValueList args) {
-	VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
+	VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
         return false;
     }
 
-    return internalExecute(m_pEngine->globalObject(), functionObject, args);
+    return internalExecute(m_pScriptEngine->globalObject(), functionObject, args);
 }
 
 bool ControllerEngine::execute(QJSValue functionObject,
@@ -386,7 +386,7 @@ bool ControllerEngine::execute(QJSValue functionObject,
                                const QString& group,
                                mixxx::Duration timestamp) {
     Q_UNUSED(timestamp);
-    VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
+    VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
         return false;
     }
     QJSValueList args;
@@ -395,19 +395,19 @@ bool ControllerEngine::execute(QJSValue functionObject,
     args << QJSValue(value);
     args << QJSValue(status);
     args << QJSValue(group);
-    return internalExecute(m_pEngine->globalObject(), functionObject, args);
+    return internalExecute(m_pScriptEngine->globalObject(), functionObject, args);
 }
 
 bool ControllerEngine::execute(QJSValue function, const QByteArray data,
                                mixxx::Duration timestamp) {
     Q_UNUSED(timestamp);
-    VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
+    VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
         return false;
     }
     QJSValueList args;
     args << byteArrayToScriptValue(data);
     args << QJSValue(data.size());
-    return internalExecute(m_pEngine->globalObject(), function, args);
+    return internalExecute(m_pScriptEngine->globalObject(), function, args);
 }
 
 // Check if a script evaluation threw an exception. If so, register that the source
@@ -417,11 +417,11 @@ bool ControllerEngine::execute(QJSValue function, const QByteArray data,
 // Output: true if there was an exception, false otherwise.
 QJSValue ControllerEngine::evaluateProgram(const QString& program, const QString& fileName,
 		int lineNumber) {
-	VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
+	VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
 		throw NullEngineException();
 	}
 
-	QJSValue evaluationResult = m_pEngine->evaluate(program, fileName, lineNumber);
+	QJSValue evaluationResult = m_pScriptEngine->evaluate(program, fileName, lineNumber);
 	handleEvaluationException(evaluationResult);
 
     return evaluationResult;
@@ -686,7 +686,7 @@ void ControllerEngine::log(QString message) {
 //          If unsuccessful, returns undefined.
 QJSValue ControllerEngine::makeConnection(QString group, QString name,
                                               const QJSValue callback) {
-    VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine != nullptr) {
         return QJSValue();
     }
 
@@ -711,7 +711,7 @@ QJSValue ControllerEngine::makeConnection(QString group, QString name,
     connection.id = QUuid::createUuid();
 
     if (coScript->addScriptConnection(connection)) {
-        return m_pEngine->newQObject(new ScriptConnectionInvokableWrapper(connection));
+        return m_pScriptEngine->newQObject(new ScriptConnectionInvokableWrapper(connection));
     }
 
     return QJSValue();
@@ -743,7 +743,7 @@ void ControllerEngine::removeScriptConnection(const ScriptConnection connection)
     ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
                                                            connection.key.item);
 
-    if (m_pEngine == nullptr || coScript == nullptr) {
+    if (m_pScriptEngine == nullptr || coScript == nullptr) {
         return;
     }
 
@@ -759,7 +759,7 @@ void ScriptConnectionInvokableWrapper::disconnect() {
    Input:   the ScriptConnection to trigger
    -------- ------------------------------------------------------ */
 void ControllerEngine::triggerScriptConnection(const ScriptConnection connection) {
-	VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
+	VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
         return;
     }
 
@@ -817,7 +817,7 @@ QJSValue ControllerEngine::connectControl(
     if (passedCallback.isString()) {
         // This check is redundant with makeConnection, but it must be done here
         // before evaluating the code string.
-        VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
+        VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine != nullptr) {
             qWarning() << "Tried to connect script callback, but there is no script engine!";
             return QJSValue(false);
         }
@@ -852,7 +852,7 @@ QJSValue ControllerEngine::connectControl(
                           "use engine.makeConnection. Returning reference to connection " +
                           connection.id.toString();
 
-            return m_pEngine->newQObject(new ScriptConnectionInvokableWrapper(connection));
+            return m_pScriptEngine->newQObject(new ScriptConnectionInvokableWrapper(connection));
         }
     } else if (passedCallback.isQObject()) {
         // Assume a ScriptConnection and assume that the script author
@@ -911,7 +911,7 @@ void ControllerEngine::trigger(QString group, QString name) {
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
 bool ControllerEngine::evaluateScriptFile(const QString& scriptName, QList<QString> scriptPaths) {
-	VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
+	VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
         return false;
     }
 
