@@ -329,8 +329,7 @@ bool ControllerEngine::internalExecute(QJSValue thisObject,
 }
 
 bool ControllerEngine::internalExecute(const QString& scriptCode) {
-    if (m_pEngine == nullptr) {
-        qDebug() << "ControllerEngine::execute: No script engine exists!";
+	VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
         return false;
     }
 
@@ -372,8 +371,7 @@ bool ControllerEngine::internalExecute(QJSValue thisObject, QJSValue functionObj
 
 bool ControllerEngine::internalExecute(QJSValue functionObject,
                                        QJSValueList args) {
-    if (m_pEngine == nullptr) {
-        qDebug() << "ControllerEngine::execute: No script engine exists!";
+	VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
         return false;
     }
 
@@ -388,7 +386,7 @@ bool ControllerEngine::execute(QJSValue functionObject,
                                const QString& group,
                                mixxx::Duration timestamp) {
     Q_UNUSED(timestamp);
-    if (m_pEngine == nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
         return false;
     }
     QJSValueList args;
@@ -403,7 +401,7 @@ bool ControllerEngine::execute(QJSValue functionObject,
 bool ControllerEngine::execute(QJSValue function, const QByteArray data,
                                mixxx::Duration timestamp) {
     Q_UNUSED(timestamp);
-    if (m_pEngine == nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
         return false;
     }
     QJSValueList args;
@@ -419,7 +417,7 @@ bool ControllerEngine::execute(QJSValue function, const QByteArray data,
 // Output: true if there was an exception, false otherwise.
 QJSValue ControllerEngine::evaluateProgram(const QString& program, const QString& fileName,
 		int lineNumber) {
-	if (m_pEngine == nullptr) {
+	VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
 		throw NullEngineException();
 	}
 
@@ -689,7 +687,6 @@ void ControllerEngine::log(QString message) {
 QJSValue ControllerEngine::makeConnection(QString group, QString name,
                                               const QJSValue callback) {
     VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
-        qWarning() << "Tried to connect script callback, but there is no script engine!";
         return QJSValue();
     }
 
@@ -762,7 +759,7 @@ void ScriptConnectionInvokableWrapper::disconnect() {
    Input:   the ScriptConnection to trigger
    -------- ------------------------------------------------------ */
 void ControllerEngine::triggerScriptConnection(const ScriptConnection connection) {
-    if (m_pEngine == nullptr) {
+	VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
         return;
     }
 
@@ -914,7 +911,7 @@ void ControllerEngine::trigger(QString group, QString name) {
    Output:  false if the script file has errors or doesn't exist
    -------- ------------------------------------------------------ */
 bool ControllerEngine::evaluateScriptFile(const QString& scriptName, QList<QString> scriptPaths) {
-    if (m_pEngine == nullptr) {
+	VERIFY_OR_DEBUG_ASSERT(!(m_pEngine == nullptr)) {
         return false;
     }
 
