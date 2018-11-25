@@ -752,7 +752,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     });
 
     // swap normal and alternate auto loop controls
-    if (UseAutolLoopAsCue) {
+    if (UseAutoLoopAsCue) {
         var autoloop = this.normal_autoloop;
         this.normal_autoloop = this.alternate_autoloop;
         this.alternate_autoloop = autoloop;
