@@ -17,6 +17,7 @@ ClockControl::~ClockControl() {
     delete m_pCOSampleRate;
 }
 
+// called from an engine worker thread
 void ClockControl::trackLoaded(TrackPointer pNewTrack) {
     // Clear on-beat control
     m_pCOBeatActive->set(0.0);
@@ -39,8 +40,9 @@ void ClockControl::trackLoaded(TrackPointer pNewTrack) {
 }
 
 void ClockControl::slotBeatsUpdated() {
-    if(m_pTrack) {
-        m_pBeats = m_pTrack->getBeats();
+    TrackPointer pTrack = m_pTrack;
+    if(pTrack) {
+        m_pBeats = pTrack->getBeats();
     }
 }
 
@@ -57,8 +59,9 @@ void ClockControl::process(const double dRate,
     // by the rate.
     const double blinkIntervalSamples = 2.0 * samplerate * (1.0 * dRate) * blinkSeconds;
 
-    if (m_pBeats) {
-        double closestBeat = m_pBeats->findClosestBeat(currentSample);
+    BeatsPointer pBeats = m_pBeats;
+    if (pBeats) {
+        double closestBeat = pBeats->findClosestBeat(currentSample);
         double distanceToClosestBeat = fabs(currentSample - closestBeat);
         m_pCOBeatActive->set(distanceToClosestBeat < blinkIntervalSamples / 2.0);
     }

@@ -29,7 +29,7 @@ class ClockControl: public EngineControl {
     ControlObject* m_pCOBeatActive;
     ControlProxy* m_pCOSampleRate;
     TrackPointer m_pTrack; // is witten from an engine worker thread
-    BeatsPointer m_pBeats;
+    BeatsPointer m_pBeats; // is witten from an engine worker thread
 };
 
 #endif /* CLOCKCONTROL_H */

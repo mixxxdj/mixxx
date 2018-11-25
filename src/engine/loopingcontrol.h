@@ -158,7 +158,7 @@ class LoopingControl : public EngineControl {
     QList<LoopMoveControl*> m_loopMoves;
 
     TrackPointer m_pTrack; // is witten from an engine worker thread
-    BeatsPointer m_pBeats;
+    BeatsPointer m_pBeats; // is witten from an engine worker thread
 };
 
 // Class for handling loop moves of a set size. This allows easy access from
