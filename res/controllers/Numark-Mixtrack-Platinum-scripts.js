@@ -584,24 +584,20 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         if (this.is_pressed) {
             if (this.other.is_pressed) {
                 // reset if both buttons are pressed
-                this.inSetValue(0.0);
+                engine.setValue(deck.currentDeck, "pitch_adjust", 0.0);
             }
             else {
-                var old = this.inGetValue();
-                // the gui only allows 7 steps, we replicate that behavior here
-                if (Math.abs(old + this.direction) < 8.0) {
-                    this.inSetValue(Math.round(old + 1.0 * this.direction));
-                }
+                this.inSetValue(1.0);
             }
         }
     };
     this.key_up = new components.Button({
-        inKey: 'pitch_adjust',
+        inKey: 'pitch_up',
         direction: 1,
         input: key_up_or_down,
     });
     this.key_down = new components.Button({
-        inKey: 'pitch_adjust',
+        inKey: 'pitch_down',
         direction: -1,
         input: key_up_or_down,
     });
