@@ -57,8 +57,9 @@ void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
 }
 
 void QuantizeControl::slotBeatsUpdated() {
-    if (m_pTrack) {
-        m_pBeats = m_pTrack->getBeats();
+    TrackPointer pTrack = m_pTrack;
+    if (pTrack) {
+        m_pBeats = pTrack->getBeats();
         lookupBeatPositions(getCurrentSample());
         updateClosestBeat(getCurrentSample());
     }
@@ -85,9 +86,10 @@ void QuantizeControl::setCurrentSample(const double dCurrentSample,
 }
 
 void QuantizeControl::lookupBeatPositions(double dCurrentSample) {
-    if (m_pBeats) {
+    BeatsPointer pBeats = m_pBeats;
+    if (pBeats) {
         double prevBeat, nextBeat;
-        m_pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat);
+        pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat);
         m_pCOPrevBeat->set(prevBeat);
         m_pCONextBeat->set(nextBeat);
     }
