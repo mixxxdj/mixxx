@@ -787,6 +787,7 @@ class MixxxCore(Feature):
                    "src/controllers/delegates/midiopcodedelegate.cpp",
                    "src/controllers/delegates/midibytedelegate.cpp",
                    "src/controllers/delegates/midioptionsdelegate.cpp",
+                   "src/controllers/learningutils.cpp",
                    "src/controllers/engine/controllerengine.cpp",
                    "src/controllers/engine/controllerenginejsproxy.cpp",
                    "src/controllers/midi/midimessage.cpp",
