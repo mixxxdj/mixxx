@@ -30,6 +30,9 @@ var UseCueAsSampler = false;
 // should shift+load eject or load and play?
 var ShiftLoadEjects = false;
 
+// should we show effect parameters when an effect is focused?
+var ShowFocusedEffectParameters = false;
+
 
 var MixtrackPlatinum = {};
 
@@ -383,12 +386,16 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
         toggle_focused_effect: function() {
             if (engine.getValue(eu.group, "focused_effect") === this.number) {
                 engine.setValue(eu.group, "show_focus", 0);
-                engine.setValue(eu.group, "show_parameters", 0);
+                if (ShowFocusedEffectParameters) {
+                    engine.setValue(eu.group, "show_parameters", 0);
+                }
                 engine.setValue(eu.group, "focused_effect", 0);
             }
             else {
                 engine.setValue(eu.group, "show_focus", 1);
-                engine.setValue(eu.group, "show_parameters", 1);
+                if (ShowFocusedEffectParameters) {
+                    engine.setValue(eu.group, "show_parameters", 1);
+                }
                 engine.setValue(eu.group, "focused_effect", this.number);
             }
         },
