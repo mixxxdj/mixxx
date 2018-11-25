@@ -410,11 +410,6 @@ bool ControllerEngine::execute(QJSValue function, const QByteArray data,
     return internalExecute(m_pScriptEngine->globalObject(), function, args);
 }
 
-// Check if a script evaluation threw an exception. If so, register that the source
-// file threw and error and show error dialog.
-//
-// Input: QJSValue returned from evaluation
-// Output: true if there was an exception, false otherwise.
 QJSValue ControllerEngine::evaluateProgram(const QString& program, const QString& fileName,
         int lineNumber) {
     VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
@@ -427,6 +422,8 @@ QJSValue ControllerEngine::evaluateProgram(const QString& program, const QString
     return evaluationResult;
 }
 
+// Check if a script evaluation threw an exception. If so, register that the source
+// file threw and error and throw an EvaluationException.
 void ControllerEngine::handleEvaluationException(QJSValue evaluationResult) {
     // TODO: add test for this
     if (evaluationResult.isError()) {
