@@ -128,24 +128,24 @@ MixtrackPlatinum.init = function(id, debug) {
     midi.sendShortMsg(0xBF, 0x45, 0);
 
     // setup position tracking
-    engine.connectControl("[Channel1]", "playposition", MixtrackPlatinum.positionCallback);
-    engine.connectControl("[Channel2]", "playposition", MixtrackPlatinum.positionCallback);
-    engine.connectControl("[Channel3]", "playposition", MixtrackPlatinum.positionCallback);
-    engine.connectControl("[Channel4]", "playposition", MixtrackPlatinum.positionCallback);
+    engine.makeConnection("[Channel1]", "playposition", MixtrackPlatinum.positionCallback);
+    engine.makeConnection("[Channel2]", "playposition", MixtrackPlatinum.positionCallback);
+    engine.makeConnection("[Channel3]", "playposition", MixtrackPlatinum.positionCallback);
+    engine.makeConnection("[Channel4]", "playposition", MixtrackPlatinum.positionCallback);
 
     // setup bpm tracking
-    engine.connectControl("[Channel1]", "bpm", MixtrackPlatinum.bpmCallback);
-    engine.connectControl("[Channel2]", "bpm", MixtrackPlatinum.bpmCallback);
-    engine.connectControl("[Channel3]", "bpm", MixtrackPlatinum.bpmCallback);
-    engine.connectControl("[Channel4]", "bpm", MixtrackPlatinum.bpmCallback);
+    engine.makeConnection("[Channel1]", "bpm", MixtrackPlatinum.bpmCallback);
+    engine.makeConnection("[Channel2]", "bpm", MixtrackPlatinum.bpmCallback);
+    engine.makeConnection("[Channel3]", "bpm", MixtrackPlatinum.bpmCallback);
+    engine.makeConnection("[Channel4]", "bpm", MixtrackPlatinum.bpmCallback);
 
     // setup vumeter tracking
-    engine.connectControl("[Channel1]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.connectControl("[Channel2]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.connectControl("[Channel3]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.connectControl("[Channel4]", "VuMeter", MixtrackPlatinum.vuCallback);
-    engine.connectControl("[Master]", "VuMeterL", MixtrackPlatinum.vuCallback);
-    engine.connectControl("[Master]", "VuMeterR", MixtrackPlatinum.vuCallback);
+    engine.makeConnection("[Channel1]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeConnection("[Channel2]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeConnection("[Channel3]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeConnection("[Channel4]", "VuMeter", MixtrackPlatinum.vuCallback);
+    engine.makeConnection("[Master]", "VuMeterL", MixtrackPlatinum.vuCallback);
+    engine.makeConnection("[Master]", "VuMeterR", MixtrackPlatinum.vuCallback);
 };
 
 MixtrackPlatinum.shutdown = function() {
@@ -526,7 +526,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         type: components.Button.prototype.types.toggle,
         connect: function() {
             components.Button.prototype.connect.call(this);
-            this.connections[1] = engine.connectControl(this.group, this.outKey, MixtrackPlatinum.pflToggle);
+            this.connections[1] = engine.makeConnection(this.group, this.outKey, MixtrackPlatinum.pflToggle);
         },
     });
 
