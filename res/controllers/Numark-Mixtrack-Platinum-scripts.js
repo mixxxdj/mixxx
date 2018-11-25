@@ -147,9 +147,9 @@ MixtrackPlatinum.init = function(id, debug) {
 
 MixtrackPlatinum.shutdown = function() {
     // note: not all of this appears to be strictly necessary, things work fine
-    // with out this, but other software has been observed sending these led
-    // reset messages during shutdown. The last sysex message may be necessary
-    // to re-enable demo mode.
+    // with out this, but Serato has been observed sending these led reset
+    // messages during shutdown. The last sysex message may be necessary to
+    // re-enable demo mode.
 
     // turn off a bunch of channel specific leds
     for (var i = 0; i < 4; ++i) {
