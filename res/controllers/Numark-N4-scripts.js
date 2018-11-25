@@ -69,12 +69,12 @@ components.Component.prototype.send = function (value) {
 };
 
 NumarkN4.init = function (id) {
-	NumarkN4.xFaderSettings = {
-		mode: engine.getValue("[Mixer Profile]", "xFaderMode"),
-		curve: engine.getValue("[Mixer Profile]","xFaderCurve"),
-		calibration: engine.getValue("[Mixer Profile]","xFaderCalibration")
-	}
-	NumarkN4.setCrossfaderSettings(NumarkN4.xFaderSettings);
+  NumarkN4.xFaderSettings = {
+    mode: engine.getValue("[Mixer Profile]", "xFaderMode"),
+    curve: engine.getValue("[Mixer Profile]","xFaderCurve"),
+    calibration: engine.getValue("[Mixer Profile]","xFaderCalibration")
+  }
+  NumarkN4.setCrossfaderSettings(NumarkN4.xFaderSettings);
   NumarkN4.rateRanges[0]=engine.getValue("[Channel1]","rateRange");
   NumarkN4.Decks=[];
   for (var i=1;i<=4;i++){
@@ -91,9 +91,9 @@ NumarkN4.init = function (id) {
 };
 
 NumarkN4.setCrossfaderSettings = function (settingsStruct) {
-	engine.setValue("[Mixer Profile]","xFaderMode",settingsStruct.mode);
-	engine.setValue("[Mixer Profile]","xFaderCurve",settingsStruct.curve);
-	engine.setValue("[Mixer Profile]","xFaderCalibration",settingsStruct.calibration);
+  engine.setValue("[Mixer Profile]","xFaderMode",settingsStruct.mode);
+  engine.setValue("[Mixer Profile]","xFaderCurve",settingsStruct.curve);
+  engine.setValue("[Mixer Profile]","xFaderCalibration",settingsStruct.calibration);
 }
 
 NumarkN4.topContainer = function (channel) {
@@ -307,12 +307,12 @@ NumarkN4.MixerTemplate = function () {
     input: function (channel, control, value, status, group) {
       if (this.isPress(channel,control, value, status)) {
         NumarkN4.setCrossfaderSettings({
-					mode: 0, // fast cut (additive)
-					curve: 999.60,
-					calibration: 1.0
-				});
+          mode: 0, // fast cut (additive)
+          curve: 999.60,
+          calibration: 1.0
+        });
       } else {
-				NumarkN4.setCrossfaderSettings(NumarkN4.xFaderSettings);
+        NumarkN4.setCrossfaderSettings(NumarkN4.xFaderSettings);
       }
     }
   });
@@ -631,29 +631,28 @@ NumarkN4.Deck = function (channel) {
   });
 
   this.reconnectComponents(function (c) {
-       if (c.group === undefined) {
-           // 'this' inside a function passed to reconnectComponents refers to the ComponentContainer
-           // so 'this' refers to the custom Deck object being constructed
-           c.group = this.currentDeck;
-       }
-   });
-   this.shutdown = function () {
-     this.topContainer.shutdown();
-     this.pitchLedHandler.disconnect();
-     midi.sendShortMsg(0xB0+channel,0x37,0); // turn off pitchLED
-     this.pitchRange.send(0);
-     this.keylockButton.send(0);
-     this.searchButton.send(0);
-     this.tapButton.send(0);
-     this.syncButton.send(0);
-     this.pitchBendPlus.send(0);
-     this.pitchBendMinus.send(0);
-     this.cueButton.send(0);
-     this.playButton.send(0);
-     this.shiftButton.send(0);
-     midi.sendShortMsg(0xB0,0x1D+channel,0); // turn off small triangle above LOAD button.
-
-   }
+    if (c.group === undefined) {
+      // 'this' inside a function passed to reconnectComponents refers to the ComponentContainer
+      // so 'this' refers to the custom Deck object being constructed
+      c.group = this.currentDeck;
+    }
+  });
+  this.shutdown = function () {
+    this.topContainer.shutdown();
+    this.pitchLedHandler.disconnect();
+    midi.sendShortMsg(0xB0+channel,0x37,0); // turn off pitchLED
+    this.pitchRange.send(0);
+    this.keylockButton.send(0);
+    this.searchButton.send(0);
+    this.tapButton.send(0);
+    this.syncButton.send(0);
+    this.pitchBendPlus.send(0);
+    this.pitchBendMinus.send(0);
+    this.cueButton.send(0);
+    this.playButton.send(0);
+    this.shiftButton.send(0);
+    midi.sendShortMsg(0xB0,0x1D+channel,0); // turn off small triangle above LOAD button.
+  }
 };
 
 NumarkN4.Deck.prototype = new components.Deck();
@@ -663,7 +662,7 @@ NumarkN4.shutdown = function () {
     // View Definition of Array for explanation.
     NumarkN4.Decks[i].shutdown();
   }
-	// reset crossfader parameters to user preferences.
-	NumarkN4.setCrossfaderSettings(NumarkN4.xFaderSettings);
+  // reset crossfader parameters to user preferences.
+  NumarkN4.setCrossfaderSettings(NumarkN4.xFaderSettings);
   // midi.sendSysexMsg(NumarkN4.ShutoffSequence,NumarkN4.ShutoffSequence.length);
 };
