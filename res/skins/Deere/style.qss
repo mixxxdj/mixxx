@@ -101,7 +101,7 @@
 #Sampler {
   border-style: solid;
   border-color: #222;
-  border-width: 0px 1px;
+  border-width: 0px 2px 0px 0px;
 }
 
 #SamplerMiddleSpacer {
@@ -315,7 +315,7 @@ QHeaderView::down-arrow {
 
 /* library search bar */
 WSearchLineEdit {
-  margin: 0px 0px 0px 1px;
+  margin: 0px 2px 0px 0px;
   padding: 2px;
   border: 1px solid #4B4B4B;
   background-color: #1e1e1e;
@@ -365,7 +365,11 @@ WSearchLineEdit:focus {
 
 /* Spacing between treeview and preview deck/search bar */
 QTreeView {
-  margin: 4px 0px 0px 0px;
+  margin: 0px;
+}
+
+#LibraryCoverArtSplitter {
+  margin-top: 4px;
 }
 
 /* sidebar, as well as root items for playlists, crates, and history */
