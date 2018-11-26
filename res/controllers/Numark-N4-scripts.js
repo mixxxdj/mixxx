@@ -393,11 +393,6 @@ NumarkN4.Deck = function (channel) {
       this.inKey="pregain";
     }
   })
-  //timer is more efficent is this case than a callback because it would be called too often.
-  this.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,this.manageChannelIndicator);
-  engine.makeConnection(this.group, "track_loaded", function (value) {
-    midi.sendShortMsg(0xB0, 0x1D+channel, value ? 0x7F:0x00);
-  });
   this.shiftButton = new components.Button({
     midi: [0x90+channel,0x12,0xB0+channel,0x15],
     type: components.Button.prototype.types.powerWindow,
@@ -550,10 +545,23 @@ NumarkN4.Deck = function (channel) {
   this.manageChannelIndicator = function () {
     this.alternating=!this.alternating; //mimics a static variable
     this.duration=engine.getParameter(theDeck.group, "duration");
-    this.isInWarnRange = engine.getParameter(theDeck.group, "playposition") * this.duration > (this.duration - NumarkN4.warnAfterTime);
-    midi.sendShortMsg(0xB0,0x1D+channel, this.isInWarnRange && this.alternating?0x7F:0x0);
+    // checks if the playposition is in the warnTimeFrame
+    if (engine.getParameter(theDeck.group, "playposition") * this.duration > (this.duration - NumarkN4.warnAfterTime)) {
+      midi.sendShortMsg(0xB0,0x1D+channel, this.alternating?0x7F:0x0);
+    } else {
+      midi.sendShortMsg(0xB0,0x1D+channel, 0x7F);
+    }
   };
-
+  engine.makeConnection(this.group, "track_loaded", function (value) {
+    if (value === 0) {
+      // track ejected, stop timer and manager
+      engine.stopTimer(theDeck.blinkTimer);
+      theDeck.blinkTimer=0;
+      return; // return early so no new timer gets created.
+    }
+    //timer is more efficent is this case than a callback because it would be called too often.
+    theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,theDeck.manageChannelIndicator);
+  });
   this.pitchBendMinus = new components.Button({
     midi: [0x90+channel,0x18,0xB0+channel,0x3D],
     key: "rate_temp_down",
@@ -651,6 +659,9 @@ NumarkN4.Deck = function (channel) {
     this.cueButton.send(0);
     this.playButton.send(0);
     this.shiftButton.send(0);
+    if (theDeck.blinkTimer != 0) {
+      engine.stopTimer(theDeck.blinkTimer);
+    }
     midi.sendShortMsg(0xB0,0x1D+channel,0); // turn off small triangle above LOAD button.
   }
 };
