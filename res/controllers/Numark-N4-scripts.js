@@ -531,6 +531,7 @@ NumarkN4.Deck = function (channel) {
   this.jogWheelTurn = new components.Pot({
     midi: [0xB0+channel,0x2C],
     inKey: "jog",
+    group: theDeck.group,
     input: function (channelmidi, control, value, status, group) {
       value=(value<0x40?value:value-0x7F); // centers values at 0
       if (theDeck.isSearching) {value*=NumarkN4.searchAmplification;}
@@ -612,6 +613,7 @@ NumarkN4.Deck = function (channel) {
   this.bpmSlider = new components.Pot({
     midi: [0xB0+channel,0x01,0xB0+channel,0x37], //only specifing input MSB
     inKey: "rate",
+    group: theDeck.group,
     invert: false,
   });
   this.pitchLedHandler = engine.makeConnection(this.group,"rate",function (value){
