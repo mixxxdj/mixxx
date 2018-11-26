@@ -145,7 +145,7 @@ NumarkN4.topContainer = function (channel) {
   });
   this.btnSample4 = new components.Button({
     midi: [0x90+channel,0x16,0xB0+channel,0x0E],
-    outkey: "loop_enabled",
+    outKey: "loop_enabled",
     shift: function () {
       this.type=components.Button.prototype.types.toggle;
       this.inKey="reloop_andstop";
