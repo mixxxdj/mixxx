@@ -126,6 +126,10 @@ BroadcastProfilePtr BroadcastProfile::loadFromFile(
     return profile;
 }
 
+QString BroadcastProfile::getLastFilename() const {
+    return m_filename;
+}
+
 bool BroadcastProfile::equals(BroadcastProfilePtr other) {
     return ((getProfileName() == other->getProfileName())
             && valuesEquals(other));
@@ -268,6 +272,8 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     if (doc.childNodes().size() < 1)
         return false;
 
+    m_filename = filename;
+
 #ifdef __QTKEYCHAIN__
     m_secureCredentials = (bool)XmlParse::selectNodeInt(doc, kSecureCredentials);
 #else
@@ -405,6 +411,7 @@ bool BroadcastProfile::save(const QString& filename) {
 
     QFile xmlFile(filename);
     if (xmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        m_filename = filename;
         QTextStream fileStream(&xmlFile);
         doc.save(fileStream, 4);
         xmlFile.close();

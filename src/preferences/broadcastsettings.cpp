@@ -132,11 +132,12 @@ bool BroadcastSettings::deleteFileForProfile(BroadcastProfilePtr profile) {
     if (!profile)
         return false;
 
-    return deleteFileForProfile(profile->getProfileName());
-}
+    QString filename = profile->getLastFilename();
+    if (filename.isEmpty()) {
+        filename = filePathForProfile(profile);
+    }
 
-bool BroadcastSettings::deleteFileForProfile(const QString& profileName) {
-    QFileInfo xmlFile(filePathForProfile(profileName));
+    QFileInfo xmlFile(filename);
     if (xmlFile.exists()) {
         return QFile::remove(xmlFile.absoluteFilePath());
     }
@@ -165,7 +166,7 @@ void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
         m_profiles.insert(newName, profile);
         emit(profileRenamed(oldName, profile));
 
-        deleteFileForProfile(oldName);
+        deleteFileForProfile(profile);
         saveProfile(profile);
     }
 }
@@ -196,7 +197,7 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
             // If profile exists in settings but not in the model,
             // remove the profile from the settings
             const auto removedProfile = *actualProfile;
-            deleteFileForProfile(profileName);
+            deleteFileForProfile(removedProfile);
             actualProfile = m_profiles.erase(actualProfile);
             emit(profileRemoved(removedProfile));
         } else {

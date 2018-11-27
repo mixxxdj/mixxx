@@ -41,7 +41,6 @@ class BroadcastSettings : public QObject {
     QString filePathForProfile(BroadcastProfilePtr profile);
     QString filePathForProfile(const QString& profileName);
     bool deleteFileForProfile(BroadcastProfilePtr profile);
-    bool deleteFileForProfile(const QString& profileName);
     QString getProfilesFolder();
 
     void loadLegacySettings(BroadcastProfilePtr profile);
