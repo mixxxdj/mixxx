@@ -121,20 +121,20 @@ class MidiControllerJSProxy: public ControllerJSProxy {
   public:
     MidiControllerJSProxy(MidiController* m_pController)
     : ControllerJSProxy(m_pController),
-      m_pController(m_pController) {
+      m_pMidiController(m_pController) {
     }
 
     Q_INVOKABLE void sendShortMsg(unsigned char status,
             unsigned char byte1, unsigned char byte2) {
-        m_pController->sendShortMsg(status, byte1, byte2);
+        m_pMidiController->sendShortMsg(status, byte1, byte2);
     }
 
     Q_INVOKABLE void sendSysexMsg(QList<int> data, unsigned int length = 0) {
-        m_pController->sendSysexMsg(data, length);
+        m_pMidiController->sendSysexMsg(data, length);
     }
 
   private:
-    MidiController* m_pController;
+    MidiController* m_pMidiController;
 };
 
 #endif
