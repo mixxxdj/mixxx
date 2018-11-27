@@ -50,6 +50,7 @@ const char* kNoDelayFirstReconnect = "NoDelayFirstReconnect";
 const char* kOggDynamicUpdate = "OggDynamicUpdate";
 const char* kPassword = "Password";
 const char* kPort = "Port";
+const char* kProfileName = "ProfileName";
 const char* kReconnectFirstDelay = "ReconnectFirstDelay";
 const char* kReconnectPeriod = "ReconnectPeriod";
 const char* kServertype = "Servertype";
@@ -275,6 +276,15 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_secureCredentials = false;
 #endif
 
+    // ProfileName is special because it was not previously saved in the file.
+    // When loading old files, we need to use the file name (set in the
+    // constructor) as the profile name and only load it if present in the
+    // file.
+    QDomNode node = XmlParse::selectNode(doc, kProfileName);
+    if (!node.isNull()) {
+        m_profileName = node.toElement().text();
+    }
+
     m_enabled = (bool)XmlParse::selectNodeInt(doc, kEnabled);
 
     m_host = XmlParse::selectNodeQString(doc, kHost);
@@ -331,6 +341,8 @@ bool BroadcastProfile::loadValues(const QString& filename) {
 bool BroadcastProfile::save(const QString& filename) {
     QDomDocument doc(kDoctype);
     QDomElement docRoot = doc.createElement(kDocumentRoot);
+
+    XmlParse::addElement(doc, docRoot, kProfileName, m_profileName);
 
     XmlParse::addElement(doc, docRoot,
                          kSecureCredentials, QString::number((int)m_secureCredentials));
