@@ -17,17 +17,14 @@ Variables:
       <WidgetGroup>
         <ObjectName>EffectHighlightable</ObjectName>
         <Layout>vertical</Layout>
-        <Size>-1max,70f</Size>
+        <Size>-1max,65f</Size>
         <Children>
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-
               <Template src="skin:effect_buttons.xml"/>
-
               <Template src="skin:effect_meta_knob.xml"/>
-
             </Children>
           </WidgetGroup>
 
@@ -72,11 +69,8 @@ Variables:
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-
               <Template src="skin:effect_buttons.xml"/>
-
               <Template src="skin:effect_meta_knob.xml"/>
-
             </Children>
           </WidgetGroup>
 

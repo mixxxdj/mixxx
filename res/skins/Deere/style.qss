@@ -1004,12 +1004,12 @@ WBeatSpinBox,
 
 #EffectHighlightable[highlight="0"] {
   border: 0px;
-  padding: 4px;
+  padding: 3px 4px 3px 4px;
 }
 
 #EffectHighlightable[highlight="1"] {
   border: 2px solid #0081bd;
-  padding: 2px;
+  padding: 1px 2px 1px 2px;
 }
 
 #EffectChainGroupControlButton {
