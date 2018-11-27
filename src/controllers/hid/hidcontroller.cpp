@@ -25,6 +25,10 @@ HidReader::HidReader(hid_device* device)
 HidReader::~HidReader() {
 }
 
+ControllerJSProxy* HidController::jsProxy() {
+    return new HidControllerJSProxy(this);
+}
+
 void HidReader::run() {
     m_stop = 0;
     unsigned char *data = new unsigned char[255];

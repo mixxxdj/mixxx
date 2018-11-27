@@ -44,6 +44,8 @@ class HidController final : public Controller {
     HidController(const hid_device_info deviceInfo);
     ~HidController() override;
 
+    ControllerJSProxy* jsProxy();
+
     QString presetExtension() override;
 
     ControllerPresetPointer getPreset() const override {
@@ -72,7 +74,7 @@ class HidController final : public Controller {
     static QString safeDecodeWideString(const wchar_t* pStr, size_t max_length);
 
   protected:
-    Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
+    void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
 
   private slots:
     int open() override;
@@ -109,6 +111,24 @@ class HidController final : public Controller {
     hid_device* m_pHidDevice;
     HidReader* m_pReader;
     HidControllerPreset m_preset;
+
+    friend class HidControllerJSProxy;
+};
+
+class HidControllerJSProxy: public ControllerJSProxy {
+  Q_OBJECT
+  public:
+  HidControllerJSProxy(HidController* m_pController)
+    : ControllerJSProxy(m_pController),
+      m_pHidController(m_pController) {
+    }
+
+    Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0) {
+        m_pHidController->send(data, length, reportID);
+    }
+
+  private:
+    HidController* m_pHidController;
 };
 
 #endif
