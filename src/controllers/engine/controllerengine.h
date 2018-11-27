@@ -79,9 +79,6 @@ class ControllerEngine : public QObject {
     // Check whether a source file that was evaluated()'d has errors.
     bool hasErrors(const QString& filename);
 
-    // Get the errors for a source file that was evaluated()'d
-    const QStringList getErrors(const QString& filename);
-
     void setPopups(bool bPopups) {
         m_bPopups = bPopups;
     }

@@ -991,12 +991,6 @@ bool ControllerEngine::hasErrors(const QString& filename) {
     return ret;
 }
 
-const QStringList ControllerEngine::getErrors(const QString& filename) {
-    QStringList ret = m_scriptErrors.value(filename, QStringList());
-    return ret;
-}
-
-
 /* -------- ------------------------------------------------------
    Purpose: Creates & starts a timer that runs some script code
                 on timeout
