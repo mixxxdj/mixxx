@@ -118,6 +118,7 @@ class MidiController : public Controller {
 };
 
 class MidiControllerJSProxy: public ControllerJSProxy {
+  Q_OBJECT
   public:
     MidiControllerJSProxy(MidiController* m_pController)
     : ControllerJSProxy(m_pController),
