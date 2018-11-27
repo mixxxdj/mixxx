@@ -309,7 +309,7 @@ void HidController::send(QList<int> data, unsigned int length, unsigned int repo
     send(temp, reportID);
 }
 
-void HidController::send(QByteArray data) {
+void HidController::sendByteArray(QByteArray data) {
     send(data, 0);
 }
 

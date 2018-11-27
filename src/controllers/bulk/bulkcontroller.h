@@ -71,9 +71,6 @@ class BulkController : public Controller {
 
     bool matchPreset(const PresetInfo& preset) override;
 
-  protected:
-    Q_INVOKABLE void send(QList<int> data, unsigned int length);
-
   private slots:
     int open() override;
     int close() override;
@@ -81,7 +78,7 @@ class BulkController : public Controller {
   private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void send(QByteArray data) override;
+    void sendByteArray(QByteArray data) override;
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.

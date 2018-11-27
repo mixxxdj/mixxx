@@ -99,7 +99,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
   protected:
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
-    void send(QList<int> data, unsigned int length = 0);
+    virtual void send(QList<int> data, unsigned int length = 0);
 
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
@@ -148,7 +148,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
   private:
     // This must be reimplemented by sub-classes desiring to send raw bytes to a
     // controller.
-    virtual void send(QByteArray data) = 0;
+    virtual void sendByteArray(QByteArray data) = 0;
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.

@@ -74,6 +74,7 @@ class HidController final : public Controller {
     static QString safeDecodeWideString(const wchar_t* pStr, size_t max_length);
 
   protected:
+    using Controller::send;
     void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
 
   private slots:
@@ -83,7 +84,7 @@ class HidController final : public Controller {
   private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void send(QByteArray data) override;
+    void sendByteArray(QByteArray data) override;
     void virtual send(QByteArray data, unsigned int reportID);
 
     // Returns a pointer to the currently loaded controller preset. For internal
