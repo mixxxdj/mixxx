@@ -156,15 +156,6 @@ void BroadcastSettings::saveAll() {
     emit(profilesChanged());
 }
 
-void BroadcastSettings::deleteProfile(BroadcastProfilePtr profile) {
-    if (!profile)
-        return;
-
-    deleteFileForProfile(profile);
-    m_profiles.remove(profile->getProfileName());
-    emit(profileRemoved(profile));
-}
-
 void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
     if (!m_profiles.contains(oldName))
         return;

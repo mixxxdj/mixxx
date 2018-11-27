@@ -37,7 +37,6 @@ class BroadcastSettings : public QObject {
   private:
     void loadProfiles();
     bool addProfile(BroadcastProfilePtr profile);
-    void deleteProfile(BroadcastProfilePtr profile);
 
     QString filePathForProfile(BroadcastProfilePtr profile);
     QString filePathForProfile(const QString& profileName);
