@@ -180,6 +180,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
 // constitute the api that is provided to scripts under "controller" object.
 // See comments on ControllerEngineJSProxy.
 class ControllerJSProxy: public QObject {
+  Q_OBJECT
   public:
     ControllerJSProxy(Controller* m_pController)
         : m_pController(m_pController) {
