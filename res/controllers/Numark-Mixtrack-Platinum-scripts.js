@@ -1225,8 +1225,8 @@ MixtrackPlatinum.vuCallback = function(value, group, control) {
     }
 };
 
-// these functions track if the user has let go of the deck but it is still
-// spinning
+// these functions track if the user has let go of the jog wheel but it is
+// still spinning
 MixtrackPlatinum.scratch_timer = [];
 MixtrackPlatinum.scratch_tick = [];
 MixtrackPlatinum.resetScratchTimer = function (deck, tick) {
