@@ -191,17 +191,17 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     // TODO(Palakis): lock both lists against modifications while syncing
 
     // Step 1: find profiles to delete from the settings
-    for(auto actualProfile = m_profiles.begin(); actualProfile != m_profiles.end();) {
-        QString profileName = (*actualProfile)->getProfileName();
+    for(auto profileIter = m_profiles.begin(); profileIter != m_profiles.end();) {
+        QString profileName = (*profileIter)->getProfileName();
         if (!pModel->getProfileByName(profileName)) {
             // If profile exists in settings but not in the model,
             // remove the profile from the settings
-            const auto removedProfile = *actualProfile;
+            const auto removedProfile = *profileIter;
             deleteFileForProfile(removedProfile);
-            actualProfile = m_profiles.erase(actualProfile);
+            profileIter = m_profiles.erase(profileIter);
             emit(profileRemoved(removedProfile));
         } else {
-            ++actualProfile;
+            ++profileIter;
         }
     }
 
