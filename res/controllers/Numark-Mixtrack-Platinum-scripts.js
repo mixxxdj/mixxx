@@ -15,9 +15,6 @@
 // should wheel be enabled on startup?
 var EnableWheel = true;
 
-// should we show time elapsed by default? (otherwise time remaining will be shown)
-var ShowTimeElapsed = true;
-
 // should we use the manual loop buttons as hotcue buttons 5-8?
 var UseManualLoopAsCue = false;
 
@@ -117,10 +114,6 @@ MixtrackPlatinum.init = function(id, debug) {
         // initialize wheel mode (and leds)
         MixtrackPlatinum.wheel[i] = EnableWheel;
         midi.sendShortMsg(0x90 | i, 0x07, EnableWheel ? 0x7F : 0x01);
-
-        // initialize elapsed/remaining mode
-        MixtrackPlatinum.show_elapsed[i] = ShowTimeElapsed;
-        midi.sendShortMsg(0x90 | i, 0x46, ShowTimeElapsed ? 0x00 : 0x7F);
     }
 
     // zero vu meters
@@ -138,6 +131,9 @@ MixtrackPlatinum.init = function(id, debug) {
     engine.makeConnection("[Channel2]", "bpm", MixtrackPlatinum.bpmCallback);
     engine.makeConnection("[Channel3]", "bpm", MixtrackPlatinum.bpmCallback);
     engine.makeConnection("[Channel4]", "bpm", MixtrackPlatinum.bpmCallback);
+
+    // setup elapsed/remaining tracking
+    engine.makeConnection("[Controls]", "ShowDurationRemaining", MixtrackPlatinum.timeElapsedCallback);
 
     // setup vumeter tracking
     engine.makeConnection("[Channel1]", "VuMeter", MixtrackPlatinum.vuCallback);
@@ -1117,13 +1113,43 @@ MixtrackPlatinum.channelMap = {
     "[Channel4]": 0x03,
 };
 
-MixtrackPlatinum.show_elapsed = [];
 MixtrackPlatinum.elapsedToggle = function (channel, control, value, status, group) {
     if (value != 0x7F) return;
-    MixtrackPlatinum.show_elapsed[channel] = !MixtrackPlatinum.show_elapsed[channel];
-    var on_off = 0x7F;
-    if (MixtrackPlatinum.show_elapsed[channel]) on_off = 0x00;
-    midi.sendShortMsg(0x90 | channel, 0x46, on_off);
+
+    var current_setting = engine.getValue('[Controls]', 'ShowDurationRemaining');
+    if (current_setting === 0) {
+        // currently showing elapsed, set to remaining
+        engine.setValue('[Controls]', 'ShowDurationRemaining', 1);
+    } else if (current_setting === 1) {
+        // currently showing remaining, set to elapsed
+        engine.setValue('[Controls]', 'ShowDurationRemaining', 0);
+    } else {
+        // currently showing both (that means we are showing remaining, set to elapsed
+        engine.setValue('[Controls]', 'ShowDurationRemaining', 0);
+    }
+};
+
+MixtrackPlatinum.timeElapsedCallback = function(value, group, control) {
+    // 0 = elapsed
+    // 1 = remaining
+    // 2 = both (we ignore this as the controller can't show both)
+    var on_off;
+    if (value === 0) {
+        // show elapsed
+        on_off = 0x00;
+    } else if (value === 1) {
+        // show remaining
+        on_off = 0x7F;
+    } else {
+        // both, ignore the event
+        return;
+    }
+
+    // update all 4 decks on the controller
+    midi.sendShortMsg(0x90, 0x46, on_off);
+    midi.sendShortMsg(0x91, 0x46, on_off);
+    midi.sendShortMsg(0x92, 0x46, on_off);
+    midi.sendShortMsg(0x93, 0x46, on_off);
 };
 
 MixtrackPlatinum.timeMs = function(deck, position, duration) {
