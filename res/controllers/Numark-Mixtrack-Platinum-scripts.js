@@ -1214,7 +1214,9 @@ MixtrackPlatinum.startScratchTimer = function (deck) {
     if (MixtrackPlatinum.scratch_timer[deck]) return;
 
     MixtrackPlatinum.scratch_tick[deck] = 0;
-    MixtrackPlatinum.scratch_timer[deck] = engine.beginTimer(20, "MixtrackPlatinum.scratchTimer("+deck+")");
+    MixtrackPlatinum.scratch_timer[deck] = engine.beginTimer(20, function() {
+        MixtrackPlatinum.scratchTimerCallback(deck);
+    });
 };
 
 MixtrackPlatinum.stopScratchTimer = function (deck) {
@@ -1224,7 +1226,7 @@ MixtrackPlatinum.stopScratchTimer = function (deck) {
     MixtrackPlatinum.scratch_timer[deck] = null;
 };
 
-MixtrackPlatinum.scratchTimer = function (deck) {
+MixtrackPlatinum.scratchTimerCallback = function (deck) {
     // here we see if the platter is still physically moving even though the
     // platter is not being touched. For forward motion, we stop scratching
     // before the platter has physically stopped  and delay a little longer
