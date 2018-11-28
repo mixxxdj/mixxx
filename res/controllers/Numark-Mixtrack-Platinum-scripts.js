@@ -858,6 +858,19 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     };
     this.EqEffectKnob.prototype = new components.Pot({
         input: function (channel, control, value, status, group) {
+            // if the control group and key has changed, ignore_next will hold
+            // the old settings. We need to tell the soft takeover engine to
+            // ignore the next values for that control so that when we
+            // eventually switch back to it, soft takeover will manage it
+            // properly.
+            //
+            // We call IgnoreNextValue() here instead of in shift()/unshift()
+            // (via connect()/disconnect()) because if we did that, pressing
+            // the shift key would cause the next value on the control to be
+            // ignored even if the control wasn't moved, which would trigger
+            // a phantom soft takeover if the control was moved fast enough. We
+            // only need to IgnoreNextValue() if the control has actually moved
+            // after switching the target group/key.
             if (this.ignore_next) {
                 engine.softTakeoverIgnoreNextValue(this.ignore_next.group, this.ignore_next.key);
                 this.ignore_next = null;
@@ -875,6 +888,9 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         shift: function() {
             var focused_effect = engine.getValue(eu.group, "focused_effect");
             if (focused_effect === 0) {
+                // we need this here so that shift+filter works with soft
+                // takeover because touching the touch strip disables it each
+                // time
                 if (this.shift_key) {
                     engine.softTakeover(eu.group, this.shift_key, true);
                     this.switchControl(eu.group, this.shift_key);
@@ -963,6 +979,11 @@ MixtrackPlatinum.HeadGain.prototype = new components.Pot({
     group: '[Master]',
     inKey: 'headGain',
     input: function (channel, control, value, status, group) {
+        // we call softTakeoverIgnoreNextValue() here on the non-targeted
+        // control only if the control was moved when focus was switched. This
+        // is to avoid a phantom triggering of soft takeover that can happen if
+        // ignoreNextValue() is called un-conditionally when the control target
+        // is changed (like in shfit()/unshift()).
         if (this.ignore_next == "sampler" && !this.shifted) {
             this.sampler.forEachComponent(function(component) {
                 engine.softTakeoverIgnoreNextValue(component.group, 'volume');
