@@ -1130,12 +1130,12 @@ MixtrackPlatinum.timeMs = function(deck, position, duration) {
     return Math.round(duration * position * 1000);
 };
 
-MixtrackPlatinum.positionCallback = function(value, group, control) {
+MixtrackPlatinum.positionCallback = function(playposition, group, control) {
     var midi_chan = MixtrackPlatinum.channelMap[group];
     // the controller appears to expect a value in the range of 0-52
     // representing the position of the track. Here we send a message to the
     // controller to update the position display with our current position.
-    var pos = Math.round(value * 52);
+    var pos = Math.round(playposition * 52);
     if (pos < 0) pos = 0;
     midi.sendShortMsg(0xB0 | midi_chan, 0x3F, pos);
 
@@ -1144,14 +1144,16 @@ MixtrackPlatinum.positionCallback = function(value, group, control) {
     MixtrackPlatinum.screenDuration(midi_chan + 1, duration * 1000);
 
     // update the time display
-    var time = MixtrackPlatinum.timeMs(midi_chan + 1, value, duration);
+    var time = MixtrackPlatinum.timeMs(midi_chan + 1, playposition, duration);
     MixtrackPlatinum.screenTime(midi_chan + 1, time);
 
     // update the spinner (range 64-115, 52 values)
     //
-    // the visual spinner in the mixxx interface looks like it takes 1.8
-    // seconds to loop, so we use that value here
-    var spinner = Math.round((duration * value) % 1.8 * (52 / 1.8));
+    // the visual spinner in the mixxx interface takes 1.8 seconds to loop
+    // (60 seconds/min divided by 33 1/3 revolutions per min)
+    var period = 60 / (33+1/3);
+    var resolution = 52; // the controller expects a value range of 64-115
+    var spinner = Math.round((duration * playposition) % period * (resolution / period));
     if (spinner < 0) spinner += 115;
     else spinner += 64;
 
