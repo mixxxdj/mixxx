@@ -1296,12 +1296,9 @@ MixtrackPlatinum.wheelTouch = function (channel, control, value, status, group) 
 
 // The wheel that actually controls the scratching
 MixtrackPlatinum.scratch_direction = []; // true == forward
-MixtrackPlatinum.scratch_accumulator = [];
-MixtrackPlatinum.scratch_accumulator[1] = 0;
-MixtrackPlatinum.scratch_accumulator[2] = 0;
-MixtrackPlatinum.scratch_accumulator[3] = 0;
-MixtrackPlatinum.scratch_accumulator[4] = 0;
-MixtrackPlatinum.last_scratch_tick = [];
+// indexed by deck numbers starting at 1, so include an extra element
+MixtrackPlatinum.scratch_accumulator = [0, 0, 0, 0, 0];
+MixtrackPlatinum.last_scratch_tick = [0, 0, 0, 0, 0];
 MixtrackPlatinum.wheelTurn = function (channel, control, value, status, group) {
     var deck = channel + 1;
     var direction;
