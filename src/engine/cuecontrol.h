@@ -123,7 +123,6 @@ class CueControl : public EngineControl {
     bool isCueRecallEnabled();
     void trackLoaded(TrackPointer pNewTrack) override;
     SeekOnLoadMode getSeekOnLoadMode();
-    Cue::CueSource getCueSource();
 
   private slots:
     void quantizeChanged(double v);
@@ -169,7 +168,9 @@ class CueControl : public EngineControl {
     void createControls();
     void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
-    void setCue(double position, Cue::CueSource source);
+    void loadMainCue(double position, Cue::CueSource source);
+    void loadStartCue(double position, Cue::CueSource source);
+    void loadEndCue(double position, Cue::CueSource source);
     TrackAt getTrackAt() const;
 
     bool m_bPreviewing;
@@ -177,6 +178,7 @@ class CueControl : public EngineControl {
     ControlObject* m_pStopButton;
     int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
+    ControlObject* m_pPrevBeat;
     ControlObject* m_pNextBeat;
     ControlObject* m_pClosestBeat;
     bool m_bypassCueSetByPlay;

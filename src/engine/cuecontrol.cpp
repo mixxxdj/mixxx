@@ -46,6 +46,7 @@ CueControl::CueControl(QString group,
             this, SLOT(quantizeChanged(double)),
             Qt::DirectConnection);
 
+    m_pPrevBeat = ControlObject::getControl(ConfigKey(group, "beat_prev"));
     m_pNextBeat = ControlObject::getControl(ConfigKey(group, "beat_next"));
     m_pClosestBeat = ControlObject::getControl(ConfigKey(group, "beat_closest"));
 
@@ -356,34 +357,22 @@ void CueControl::trackCuesUpdated() {
         }
     }
 
-    SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
-
     if (pLoadCue) {
-        setCue(pLoadCue->getPosition(), pLoadCue->getSource());
+        loadMainCue(pLoadCue->getPosition(), pLoadCue->getSource());
     } else {
         m_pCuePoint->set(-1.0);
         m_pCueSource->set(Cue::UNKNOWN);
     }
 
     if (pStartCue) {
-        bool wasTrackAtStart = isTrackAtADJStart();
-
-        // Update COs.
-        m_pAutoDJStartPosition->set(pStartCue->getPosition());
-        m_pAutoDJStartSource->set(pStartCue->getSource());
-
-        // If track was at AutoDJ start, move track along with it.
-        if (wasTrackAtStart && seekOnLoadMode == SEEK_ON_LOAD_ADJ_START) {
-            seekExact(pStartCue->getPosition());
-        }
+        loadStartCue(pStartCue->getPosition(), pStartCue->getSource());
     } else {
         m_pAutoDJStartPosition->set(-1.0);
         m_pAutoDJStartSource->set(Cue::UNKNOWN);
     }
 
     if (pEndCue) {
-        m_pAutoDJEndPosition->set(pEndCue->getPosition());
-        m_pAutoDJEndSource->set(pEndCue->getSource());
+        loadEndCue(pEndCue->getPosition(), pEndCue->getSource());
     } else {
         m_pAutoDJEndPosition->set(-1.0);
         m_pAutoDJEndSource->set(Cue::UNKNOWN);
@@ -401,7 +390,7 @@ void CueControl::trackBeatsUpdated() {
     if (!m_pLoadedTrack)
         return;
 
-    setCue(m_pCuePoint->get(), getCueSource());
+    trackCuesUpdated();
 }
 
 void CueControl::quantizeChanged(double v) {
@@ -410,7 +399,7 @@ void CueControl::quantizeChanged(double v) {
     trackCuesUpdated();
 }
 
-void CueControl::setCue(double position, Cue::CueSource source) {
+void CueControl::loadMainCue(double position, Cue::CueSource source) {
     TrackAt trackAt = getTrackAt();
     SampleOfTrack sampleOfTrack = getSampleOfTrack();
 
@@ -437,6 +426,55 @@ void CueControl::setCue(double position, Cue::CueSource source) {
             seekExact(position);
         }
     }
+}
+
+void CueControl::loadStartCue(double position, Cue::CueSource source) {
+    bool wasTrackAtStart = isTrackAtADJStart();
+
+    // Snap automatically-placed start cue point to nearest previous beat, but
+    // only of quantization is enabled.
+    if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
+        BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+        if (pBeats) {
+            double prevBeat, nextBeat;
+            pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
+            if (prevBeat != -1.0) {
+                position = prevBeat;
+            } else if (nextBeat != -1.0) {
+                position = nextBeat;
+            }
+        }
+    }
+
+    // Update COs.
+    m_pAutoDJStartPosition->set(position);
+    m_pAutoDJStartSource->set(source);
+
+    // If track was at AutoDJ start, move track along with it.
+    if (wasTrackAtStart && getSeekOnLoadMode() == SEEK_ON_LOAD_ADJ_START) {
+        seekExact(position);
+    }
+}
+
+void CueControl::loadEndCue(double position, Cue::CueSource source) {
+    // Snap automatically-placed end cue point to nearest following beat, but
+    // only if quantization is enabled.
+    if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
+        BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+        if (pBeats) {
+            double prevBeat, nextBeat;
+            pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
+            if (nextBeat != -1.0) {
+                position = nextBeat;
+            } else if (prevBeat != -1.0) {
+                position = prevBeat;
+            }
+        }
+    }
+
+    // Update COs.
+    m_pAutoDJEndPosition->set(position);
+    m_pAutoDJEndSource->set(source);
 }
 
 void CueControl::hotcueSet(HotcueControl* pControl, double v) {
@@ -997,7 +1035,24 @@ void CueControl::autoDJStartSet(double v) {
     }
 
     QMutexLocker lock(&m_mutex);
-    double position = getSampleOfTrack().current;
+    SampleOfTrack sampleOfTrack = getSampleOfTrack();
+
+    // Quantize cue point to nearest beat before current position.
+    // Fall back to nearest beat after or current position.
+    double position;
+    if (m_pQuantizeEnabled->toBool()) {
+        double prevBeat = m_pPrevBeat->get();
+        double nextBeat = m_pNextBeat->get();
+        if (prevBeat != -1.0) {
+            position = prevBeat;
+        } else if (nextBeat != -1.0) {
+            position = nextBeat;
+        } else {
+            position = sampleOfTrack.current;
+        }
+    } else {
+        position = sampleOfTrack.current;
+    }
 
     // Make sure user is not trying to place start cue on or after end cue.
     if (position >= m_pAutoDJEndPosition->get()) {
@@ -1047,7 +1102,24 @@ void CueControl::autoDJEndSet(double v) {
     }
 
     QMutexLocker lock(&m_mutex);
-    double position = getSampleOfTrack().current;
+    SampleOfTrack sampleOfTrack = getSampleOfTrack();
+
+    // Quantize cue point to nearest beat after current position.
+    // Fall back to nearest beat before or current position.
+    double position;
+    if (m_pQuantizeEnabled->toBool()) {
+        double prevBeat = m_pPrevBeat->get();
+        double nextBeat = m_pNextBeat->get();
+        if (nextBeat != -1.0) {
+            position = nextBeat;
+        } else if (prevBeat != -1.0) {
+            position = prevBeat;
+        } else {
+            position = sampleOfTrack.current;
+        }
+    } else {
+        position = sampleOfTrack.current;
+    }
 
     // Make sure user is not trying to place end cue on or before start cue.
     if (position <= m_pAutoDJStartPosition->get()) {
@@ -1269,15 +1341,6 @@ bool CueControl::isCueRecallEnabled() {
 
 SeekOnLoadMode CueControl::getSeekOnLoadMode() {
     return seekOnLoadModeFromDouble(m_pSeekOnLoadMode->get());
-}
-
-Cue::CueSource CueControl::getCueSource() {
-    // msvs does not allow to cast from double to an enum
-    Cue::CueSource source = static_cast<Cue::CueSource>(int(m_pCueSource->get()));
-    if (source < 0 || source > 2) {
-        return Cue::UNKNOWN;
-    }
-    return source;
 }
 
 
