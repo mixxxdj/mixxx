@@ -1095,13 +1095,13 @@ MixtrackPlatinum.screenTime = function(deck, time) {
 };
 
 MixtrackPlatinum.screenBpm = function(deck, bpm) {
-    bpm = MixtrackPlatinum.encodeNumToArray(bpm);
-    bpm.shift();
-    bpm.shift();
+    bpmArray = MixtrackPlatinum.encodeNumToArray(bpm);
+    bpmArray.shift();
+    bpmArray.shift();
 
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x01];
     var bytePostfix = [0xF7];
-    var byteArray = bytePrefix.concat(bpm, bytePostfix);
+    var byteArray = bytePrefix.concat(bpmArray, bytePostfix);
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
