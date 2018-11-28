@@ -997,7 +997,6 @@ MixtrackPlatinum.HeadGain.prototype = new components.Pot({
 MixtrackPlatinum.BrowseKnob = function() {
     this.knob = new components.Encoder({
         group: '[Library]',
-        inKey: 'Move',
         input: function (channel, control, value, status, group) {
             if (value === 1) {
                 engine.setParameter(this.group, this.inKey + 'Down', 1);
