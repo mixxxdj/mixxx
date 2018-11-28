@@ -26,16 +26,17 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
     // efficiently.
     QMap<QString, QFileInfo> copylist;
     for (const auto& it : tracks) {
-        const auto fileInfo = it->getFileInfo();
-
-        const auto canonicalFilePath = fileInfo.canonicalFilePath();
-        if (canonicalFilePath.isEmpty()) {
+        if (it->getCanonicalLocation().isEmpty()) {
             qWarning()
                     << "File not found or inaccessible while exporting"
                     << it->getLocation();
             // Skip file
             continue;
         }
+
+        // When obtaining the canonical location the file info of the
+        // track might have been refreshed. Get it now.
+        const auto fileInfo = it->getFileInfo();
 
         const auto fileName = fileInfo.fileName();
         auto destFileName = fileName;
@@ -47,7 +48,7 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
                 copylist[destFileName] = fileInfo;
                 break;
             }
-            if (canonicalFilePath == duplicateIter->canonicalFilePath()) {
+            if (fileInfo.canonicalFilePath() == duplicateIter->canonicalFilePath()) {
                 // Silently ignore and skip duplicate files that point
                 // to the same location on disk
                 break;
