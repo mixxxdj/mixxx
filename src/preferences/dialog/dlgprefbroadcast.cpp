@@ -281,9 +281,6 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
     } while(!existingProfile.isNull());
 
     BroadcastProfilePtr newProfile(new BroadcastProfile(newName));
-    if (m_pProfileListSelection) {
-        m_pProfileListSelection->copyValuesTo(newProfile);
-    }
     m_pSettingsModel->addProfileToModel(newProfile);
     selectConnectionRowByName(newProfile->getProfileName());
 }
