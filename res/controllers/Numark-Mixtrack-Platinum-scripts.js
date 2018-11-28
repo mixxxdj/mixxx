@@ -1227,8 +1227,8 @@ MixtrackPlatinum.stopScratchTimer = function (deck) {
 MixtrackPlatinum.scratchTimer = function (deck) {
     // here we see if the platter is still physically moving even though the
     // platter is not being touched. For forward motion, we stop scratching
-    // before the platter has physically stopped when moving forward and delay
-    // a little longer when moving back. This is to mimic actual vinyl better.
+    // before the platter has physically stopped  and delay a little longer
+    // when moving back. This is to mimic actual vinyl better.
     if ((MixtrackPlatinum.scratch_direction[deck] // forward
             && Math.abs(MixtrackPlatinum.scratch_tick[deck]) > 2)
         || (!MixtrackPlatinum.scratch_direction[deck] // backward
