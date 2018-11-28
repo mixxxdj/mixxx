@@ -201,8 +201,11 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     ScopedTimer t("MixxxMainWindow::initialize");
 
 #ifdef Q_OS_LINUX
-    for (auto i = 0; i < NUM_HANDLERS; ++i) {
-        XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
+    // XESetWireToError will segfault if running as a Wayland client
+    if (pApp->platformName() == QStringLiteral("xcb")) {
+        for (auto i = 0; i < NUM_HANDLERS; ++i) {
+            XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
+        }
     }
 #endif
 
