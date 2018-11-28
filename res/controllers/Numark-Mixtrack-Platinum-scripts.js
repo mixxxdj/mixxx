@@ -1133,7 +1133,8 @@ MixtrackPlatinum.timeMs = function(deck, position, duration) {
 MixtrackPlatinum.positionCallback = function(value, group, control) {
     var midi_chan = MixtrackPlatinum.channelMap[group];
     // the controller appears to expect a value in the range of 0-52
-    // representing the position of the track
+    // representing the position of the track. Here we send a message to the
+    // controller to update the position display with our current position.
     var pos = Math.round(value * 52);
     if (pos < 0) pos = 0;
     midi.sendShortMsg(0xB0 | midi_chan, 0x3F, pos);
