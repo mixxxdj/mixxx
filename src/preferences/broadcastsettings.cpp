@@ -134,7 +134,8 @@ bool BroadcastSettings::deleteFileForProfile(BroadcastProfilePtr profile) {
 
     QString filename = profile->getLastFilename();
     if (filename.isEmpty()) {
-        filename = filePathForProfile(profile);
+        // no file was saved, there is no file to delete
+        return false;
     }
 
     QFileInfo xmlFile(filename);
