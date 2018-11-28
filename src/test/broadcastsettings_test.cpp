@@ -67,4 +67,38 @@ TEST_F(BroadcastSettingsTest, ReuseExistingFile) {
     ASSERT_TRUE(pProfile->getLastFilename() == filename);
 }
 
+TEST_F(BroadcastSettingsTest, AddRemoveUpdateFromModel) {
+    QString name("Profile Name");
+    QString host("http://example.com");
+
+    BroadcastSettings settings(config());
+    BroadcastProfilePtr pProfile(new BroadcastProfile(name));
+    BroadcastSettingsModel model;
+
+    // add the profile to the model and apply the model to the settings
+    model.addProfileToModel(pProfile);
+    settings.applyModel(&model);
+    ASSERT_EQ(settings.profiles().size(), 1);
+
+    // make sure the profile was saved
+    QString filename = settings.profileAt(0)->getLastFilename();
+    ASSERT_TRUE(QFile::exists(filename));
+    ASSERT_TRUE(settings.profileAt(0)->getProfileName() == name);
+
+    // update the profile host and apply again
+    ASSERT_FALSE(settings.profileAt(0)->getHost() == host);
+    model.getProfileByName(name)->setHost(host);
+    settings.applyModel(&model);
+    ASSERT_EQ(settings.profiles().size(), 1);
+    ASSERT_TRUE(settings.profileAt(0)->getHost() == host);
+
+    // now remove the profile from the model and apply again
+    model.deleteProfileFromModel(pProfile);
+    settings.applyModel(&model);
+    ASSERT_EQ(settings.profiles().size(), 0);
+
+    // make sure the profile was removed
+    ASSERT_FALSE(QFile::exists(filename));
+}
+
 } // namespace

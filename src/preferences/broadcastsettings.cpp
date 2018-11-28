@@ -95,19 +95,6 @@ bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
     return true;
 }
 
-BroadcastProfilePtr BroadcastSettings::createProfile(const QString& profileName) {
-    QFileInfo xmlFile(filePathForProfile(profileName));
-
-    if (!xmlFile.exists()) {
-        BroadcastProfilePtr profile(new BroadcastProfile(profileName));
-        if (addProfile(profile)) {
-            saveProfile(profile);
-            return profile;
-        }
-    }
-    return BroadcastProfilePtr(nullptr);
-}
-
 bool BroadcastSettings::saveProfile(BroadcastProfilePtr profile) {
     if (!profile)
         return false;

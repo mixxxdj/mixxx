@@ -18,7 +18,6 @@ class BroadcastSettings : public QObject {
 
     bool saveProfile(BroadcastProfilePtr profile);
     void saveAll();
-    BroadcastProfilePtr createProfile(const QString& profileName);
     QList<BroadcastProfilePtr> profiles();
     BroadcastProfilePtr profileAt(int index);
 
