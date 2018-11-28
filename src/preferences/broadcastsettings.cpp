@@ -112,7 +112,25 @@ bool BroadcastSettings::saveProfile(BroadcastProfilePtr profile) {
     if (!profile)
         return false;
 
-    return profile->save(filePathForProfile(profile));
+    QString filename = profile->getLastFilename();
+    if (filename.isEmpty()) {
+        // there was no previous filename, find an unused filename
+        for (int index = 0;; ++index) {
+            if (index > 0) {
+                // add an index to the file name to make it unique
+                filename = filePathForProfile(profile->getProfileName() + QString::number(index));
+            } else {
+                filename = filePathForProfile(profile->getProfileName());
+            }
+
+            QFileInfo fileInfo(filename);
+            if (!fileInfo.exists()) {
+                break;
+            }
+        }
+    }
+
+    return profile->save(filename);
 }
 
 QString BroadcastSettings::filePathForProfile(const QString& profileName) {
