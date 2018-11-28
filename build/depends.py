@@ -245,7 +245,10 @@ class Qt(Dependence):
             'QtTest',
             'QtXml',
         ]
+
         if qt5:
+            if build.platform_is_linux:
+                build.env.Append(LIBS = 'Qt5X11Extras')
             qt_modules.extend([
                 # Keep alphabetized.
                 'QtConcurrent',

@@ -81,9 +81,40 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 
+#ifdef Q_OS_LINUX
+#include <QtGui/QX11Info>
+#include <X11/Xlib.h>
+#include <X11/Xlibint.h>
+// Xlibint.h predates C++ and defines macros which conflict
+// with references to std::max and std::min
+#undef max
+#undef min
+#endif
+
 namespace {
 
 const mixxx::Logger kLogger("MixxxMainWindow");
+
+// hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
+// https://bugs.launchpad.net/mixxx/+bug/1805559
+#ifdef Q_OS_LINUX
+typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
+
+const int NUM_HANDLERS = 256;
+WireToErrorType __oldHandlers[NUM_HANDLERS] = {0};
+
+Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
+    // Call any previous handler first in case it needs to do real work.
+    auto code = static_cast<int>(event->error_code);
+    if (__oldHandlers[code] != NULL) {
+        __oldHandlers[code](display, event, error);
+    }
+
+    // Always return false so the error does not get passed to the normal
+    // application defined handler.
+    return False;
+}
+#endif
 
 } // anonymous namespace
 
@@ -168,6 +199,12 @@ MixxxMainWindow::~MixxxMainWindow() {
 
 void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     ScopedTimer t("MixxxMainWindow::initialize");
+
+#ifdef Q_OS_LINUX
+    for (auto i = 0; i < NUM_HANDLERS; ++i) {
+        XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
+    }
+#endif
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
