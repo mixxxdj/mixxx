@@ -1047,7 +1047,7 @@ MixtrackPlatinum.BrowseKnob = function() {
 
 MixtrackPlatinum.BrowseKnob.prototype = new components.ComponentContainer();
 
-MixtrackPlatinum.encodeNum = function(number) {
+MixtrackPlatinum.encodeNumToArray = function(number) {
     var number_array = [
         (number >> 28) & 0x0F,
         (number >> 24) & 0x0F,
@@ -1077,7 +1077,7 @@ MixtrackPlatinum.screenDuration = function(deck, duration) {
     MixtrackPlatinum.duration[deck - 1] = duration;
 
     if (duration < 1) duration = 1;
-    duration = MixtrackPlatinum.encodeNum(duration - 1);
+    duration = MixtrackPlatinum.encodeNumToArray(duration - 1);
 
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x03];
     var bytePostfix = [0xF7];
@@ -1086,7 +1086,7 @@ MixtrackPlatinum.screenDuration = function(deck, duration) {
 };
 
 MixtrackPlatinum.screenTime = function(deck, time) {
-    var time_val = MixtrackPlatinum.encodeNum(time);
+    var time_val = MixtrackPlatinum.encodeNumToArray(time);
 
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x04];
     var bytePostfix = [0xF7];
@@ -1095,7 +1095,7 @@ MixtrackPlatinum.screenTime = function(deck, time) {
 };
 
 MixtrackPlatinum.screenBpm = function(deck, bpm) {
-    bpm = MixtrackPlatinum.encodeNum(bpm);
+    bpm = MixtrackPlatinum.encodeNumToArray(bpm);
     bpm.shift();
     bpm.shift();
 
