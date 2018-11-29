@@ -76,9 +76,6 @@ class ControllerEngine : public QObject {
 
     bool isReady();
 
-    // Check whether a source file that was evaluated()'d has errors.
-    bool hasErrors(const QString& filename);
-
     void setPopups(bool bPopups) {
         m_bPopups = bPopups;
     }
@@ -178,9 +175,10 @@ class ControllerEngine : public QObject {
     // Throws EvaluationException and NullEngineException.
     QJSValue evaluateProgram(const QString& program, const QString& fileName = QString(),
     		int lineNumber = 1);
-    // Throws EvaluationException
-    void checkForEvaluationException(QJSValue evaluationResult);
-    void showScriptExceptionDialog(EvaluationException exception);
+
+    // Shows a UI dialog notifying of an script evaluation error.
+    // Precondition: QJSValue.isError() == true
+    void showScriptExceptionDialog(QJSValue evaluationResult);
     QJSEngine *m_pScriptEngine;
 
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
@@ -194,7 +192,6 @@ class ControllerEngine : public QObject {
     Controller* m_pController;
     bool m_bPopups;
     QList<QString> m_scriptFunctionPrefixes;
-    QMap<QString, QStringList> m_scriptErrors;
     QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     struct TimerInfo {
         QJSValue callback;
