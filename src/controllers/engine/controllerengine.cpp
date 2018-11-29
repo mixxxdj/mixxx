@@ -415,6 +415,9 @@ QJSValue ControllerEngine::evaluateProgram(const QString& program, const QString
 }
 
 void ControllerEngine::showScriptExceptionDialog(QJSValue evaluationResult) {
+    VERIFY_OR_DEBUG_ASSERT(evaluationResult.isError()) {
+        return;
+    }
     QString errorMessage = evaluationResult.toString();
     QString line = evaluationResult.property("lineNumber").toString();
     QString backtrace = evaluationResult.property("stack").toString();
