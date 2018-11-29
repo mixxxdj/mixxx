@@ -567,7 +567,7 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
         "    if (this.executeTheCallback) {"
         "      engine.setValue('[Test]', 'passed', 1);"
         "    }"
-        "  });"
+        "  }.bind(this));"
         "};"
         "var someObject = new TestObject();"
         "someObject.connection.trigger();"));
