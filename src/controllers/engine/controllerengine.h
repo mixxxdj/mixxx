@@ -149,7 +149,6 @@ class ControllerEngine : public QObject {
 
   signals:
     void initialized();
-    void resetController();
 
   private slots:
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);
@@ -163,6 +162,7 @@ class ControllerEngine : public QObject {
     bool internalExecute(QJSValue functionObject,
                          QJSValueList arguments);
     void initializeScriptEngine();
+    void reloadScripts();
 
     void scriptErrorDialog(const QString& detailedError);
     void generateScriptFunctions(const QString& code);

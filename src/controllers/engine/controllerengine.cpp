@@ -245,11 +245,14 @@ bool ControllerEngine::loadScriptFiles(const QList<QString>& scriptPaths,
 // Slot to run when a script file has changed
 void ControllerEngine::scriptHasChanged(const QString& scriptFilename) {
     Q_UNUSED(scriptFilename);
-    qDebug() << "ControllerEngine: Reloading Scripts";
-    ControllerPresetPointer pPreset = m_pController->getPreset();
-
     disconnect(&m_scriptWatcher, SIGNAL(fileChanged(QString)),
                this, SLOT(scriptHasChanged(QString)));
+    reloadScripts();
+}
+
+void ControllerEngine::reloadScripts() {
+    qDebug() << "ControllerEngine: Reloading Scripts";
+    ControllerPresetPointer pPreset = m_pController->getPreset();
 
     gracefulShutdown();
 
@@ -478,7 +481,7 @@ void ControllerEngine::errorDialogButton(const QString& key, QMessageBox::Standa
                SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
 
     if (button == QMessageBox::Retry) {
-        emit(resetController());
+        reloadScripts();
     }
 }
 
