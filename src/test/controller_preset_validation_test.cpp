@@ -74,6 +74,7 @@ class FakeController : public Controller {
     }
 
   protected:
+    using Controller::send;
     Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID) {
         Q_UNUSED(data);
         Q_UNUSED(length);
