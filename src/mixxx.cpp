@@ -81,7 +81,7 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX)
 #include <QtGui/QX11Info>
 #include <X11/Xlib.h>
 #include <X11/Xlibint.h>
@@ -97,7 +97,7 @@ const mixxx::Logger kLogger("MixxxMainWindow");
 
 // hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
 // https://bugs.launchpad.net/mixxx/+bug/1805559
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX)
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
 const int NUM_HANDLERS = 256;
@@ -181,7 +181,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     setCentralWidget(m_pWidgetParent);
 
     show();
-#if defined(Q_WS_X11)
+#if defined(Q_OS_LINUX)
     // In asynchronous X11, the window will be mapped to screen
     // some time after being asked to show itself on the screen.
     extern void qt_x11_wait_for_window_manager(QWidget *mainWin);
@@ -200,7 +200,7 @@ MixxxMainWindow::~MixxxMainWindow() {
 void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     ScopedTimer t("MixxxMainWindow::initialize");
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX)
     // XESetWireToError will segfault if running as a Wayland client
     if (pApp->platformName() == QStringLiteral("xcb")) {
         for (auto i = 0; i < NUM_HANDLERS; ++i) {
