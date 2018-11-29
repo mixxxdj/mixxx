@@ -89,7 +89,7 @@ class FakeController : public Controller {
     }
 
   private:
-    void sendByteArray(QByteArray data) override {
+    void send(QByteArray data) override {
         Q_UNUSED(data);
     }
     virtual void send(QByteArray data, unsigned int reportID) {

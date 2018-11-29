@@ -101,6 +101,10 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // were required to specify it.
     virtual void send(QList<int> data, unsigned int length = 0);
 
+    // This must be reimplemented by sub-classes desiring to send raw bytes to a
+    // controller.
+    virtual void send(QByteArray data) = 0;
+
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
     void startEngine();
@@ -146,10 +150,6 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     }
 
   private:
-    // This must be reimplemented by sub-classes desiring to send raw bytes to a
-    // controller.
-    virtual void sendByteArray(QByteArray data) = 0;
-
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
     virtual ControllerPreset* preset() = 0;

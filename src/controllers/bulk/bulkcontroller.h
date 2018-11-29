@@ -78,7 +78,7 @@ class BulkController : public Controller {
   private:
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void sendByteArray(QByteArray data) override;
+    void send(QByteArray data) override;
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
