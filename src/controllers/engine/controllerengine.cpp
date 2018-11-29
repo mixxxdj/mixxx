@@ -451,11 +451,9 @@ void ControllerEngine::scriptErrorDialog(const QString& detailedError) {
 
     // Allow user to suppress further notifications about this particular error
     props->addButton(QMessageBox::Ignore);
-
     props->addButton(QMessageBox::Retry);
-    props->addButton(QMessageBox::Close);
-    props->setDefaultButton(QMessageBox::Close);
-    props->setEscapeButton(QMessageBox::Close);
+    props->setDefaultButton(QMessageBox::Ignore);
+    props->setEscapeButton(QMessageBox::Ignore);
     props->setModal(false);
 
     if (ErrorDialogHandler::instance()->requestErrorDialog(props)) {
