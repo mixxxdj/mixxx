@@ -173,7 +173,7 @@ class ControllerEngine : public QObject {
     // Convert a byteArray to a JS typed array over an ArrayBuffer
     QJSValue byteArrayToScriptValue(const QByteArray byteArray);
     // Throws EvaluationException and NullEngineException.
-    QJSValue evaluateProgram(const QString& program, const QString& fileName = QString(),
+    QJSValue evaluateCodeString(const QString& program, const QString& fileName = QString(),
     		int lineNumber = 1);
 
     // Shows a UI dialog notifying of a script evaluation error.

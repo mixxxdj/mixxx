@@ -105,7 +105,7 @@ QJSValue ControllerEngine::byteArrayToScriptValue(const QByteArray byteArray) {
     QJSValue arrayBuffer = m_pScriptEngine->toScriptValue(byteArray);
     // We convert the ArrayBuffer to a Uint8 typed array so we can access its bytes
     // with the [] operator.
-    QJSValue m_byteArrayToScriptValueJSFunction = evaluateProgram("(function(arg1) { return new Uint8Array(arg1) })");
+    QJSValue m_byteArrayToScriptValueJSFunction = evaluateCodeString("(function(arg1) { return new Uint8Array(arg1) })");
     QJSValueList args;
     args << arrayBuffer;
     return m_byteArrayToScriptValueJSFunction.call(args);
@@ -137,7 +137,7 @@ QJSValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
         QString wrappedCode = "(function (" + wrapperArgs + ") { (" +
                                 codeSnippet + ")(" + wrapperArgs + "); })";
 
-        wrappedFunction = evaluateProgram(wrappedCode);
+        wrappedFunction = evaluateCodeString(wrappedCode);
         m_scriptWrappedFunctionCache[codeSnippet] = wrappedFunction;
     }
     return wrappedFunction;
@@ -214,7 +214,7 @@ void ControllerEngine::initializeScriptEngine() {
         engineGlobalObject.setProperty("midi", m_pScriptEngine->newQObject(controllerProxy));
     }
 
-    m_byteArrayToScriptValueJSFunction = evaluateProgram("(function(arg1) { return new Uint8Array(arg1) })");
+    m_byteArrayToScriptValueJSFunction = evaluateCodeString("(function(arg1) { return new Uint8Array(arg1) })");
 }
 
 /* -------- ------------------------------------------------------
@@ -308,7 +308,7 @@ bool ControllerEngine::internalExecute(QJSValue thisObject,
     //  (execute() would print an error that it's not a function every time a timer fires.)
     QJSValue scriptFunction;
 
-    scriptFunction = evaluateProgram(scriptCode);
+    scriptFunction = evaluateCodeString(scriptCode);
 
     if (scriptFunction.isError()) {
         showScriptExceptionDialog(scriptFunction);
@@ -403,7 +403,7 @@ bool ControllerEngine::execute(QJSValue function, const QByteArray data,
     return internalExecute(m_pScriptEngine->globalObject(), function, args);
 }
 
-QJSValue ControllerEngine::evaluateProgram(const QString& program, const QString& fileName,
+QJSValue ControllerEngine::evaluateCodeString(const QString& program, const QString& fileName,
         int lineNumber) {
     VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
         // TODO(xxx): Throw a JS error here when we use Qt 5.12
@@ -795,7 +795,7 @@ QJSValue ControllerEngine::connectControl(
             return QJSValue(false);
         }
 
-        actualCallbackFunction = evaluateProgram(passedCallback.toString());
+        actualCallbackFunction = evaluateCodeString(passedCallback.toString());
 
         if (actualCallbackFunction.isError() || !actualCallbackFunction.isCallable()) {
             qWarning() << "Could not evaluate callback function:"
@@ -926,7 +926,7 @@ bool ControllerEngine::evaluateScriptFile(const QString& scriptName, QList<QStri
     input.close();
 
     // Evaluate the code
-    QJSValue scriptFunction = evaluateProgram(scriptCode, filename);
+    QJSValue scriptFunction = evaluateCodeString(scriptCode, filename);
     if (scriptFunction.isError()) {
         showScriptExceptionDialog(scriptFunction);
         return false;
