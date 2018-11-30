@@ -457,7 +457,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     this.bpm = new components.Component({
         outKey: "bpm",
         output: function(value, group, control) {
-            MixtrackPlatinum.screenBpm(number, Math.round(value * 100));
+            MixtrackPlatinum.sendScreenBpmMidi(number, Math.round(value * 100));
         },
     });
 
@@ -465,7 +465,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         outKey: "duration",
         output: function(duration, group, control) {
             // update duration
-            MixtrackPlatinum.screenDuration(number, duration * 1000);
+            MixtrackPlatinum.sendScreenDurationMidi(number, duration * 1000);
 
             // when the duration changes, we need to update the play position
             deck.position.trigger();
@@ -489,7 +489,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
 
             // update the time display
             var time = MixtrackPlatinum.timeMs(number, playposition, duration);
-            MixtrackPlatinum.screenTime(number, time);
+            MixtrackPlatinum.sendScreenTimeMidi(number, time);
 
             // update the spinner (range 64-115, 52 values)
             //
@@ -1102,7 +1102,7 @@ MixtrackPlatinum.encodeNumToArray = function(number) {
     return number_array;
 };
 
-MixtrackPlatinum.screenDuration = function(deck, duration) {
+MixtrackPlatinum.sendScreenDurationMidi = function(deck, duration) {
     if (duration < 1) {
         duration = 1;
     }
@@ -1114,7 +1114,7 @@ MixtrackPlatinum.screenDuration = function(deck, duration) {
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
-MixtrackPlatinum.screenTime = function(deck, time) {
+MixtrackPlatinum.sendScreenTimeMidi = function(deck, time) {
     var time_val = MixtrackPlatinum.encodeNumToArray(time);
 
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x04];
@@ -1123,7 +1123,7 @@ MixtrackPlatinum.screenTime = function(deck, time) {
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
-MixtrackPlatinum.screenBpm = function(deck, bpm) {
+MixtrackPlatinum.sendScreenBpmMidi = function(deck, bpm) {
     bpmArray = MixtrackPlatinum.encodeNumToArray(bpm);
     bpmArray.shift();
     bpmArray.shift();
