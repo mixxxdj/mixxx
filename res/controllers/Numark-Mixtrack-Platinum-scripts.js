@@ -461,6 +461,17 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         },
     });
 
+    this.duration = new components.Component({
+        outKey: "duration",
+        output: function(duration, group, control) {
+            // update duration
+            MixtrackPlatinum.screenDuration(number, duration * 1000);
+
+            // when the duration changes, we need to update the play position
+            deck.position.trigger();
+        },
+    });
+
     this.position = new components.Component({
         outKey: "playposition",
         output: function(playposition, group, control) {
@@ -473,9 +484,8 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
             }
             midi.sendShortMsg(0xB0 | midi_chan, 0x3F, pos);
 
-            // update duration if necessary
-            var duration = engine.getValue(group, 'duration');
-            MixtrackPlatinum.screenDuration(number, duration * 1000);
+            // get the current duration
+            duration = deck.duration.outGetValue();
 
             // update the time display
             var time = MixtrackPlatinum.timeMs(number, playposition, duration);
@@ -1092,18 +1102,10 @@ MixtrackPlatinum.encodeNumToArray = function(number) {
     return number_array;
 };
 
-MixtrackPlatinum.duration = [
-    -1,
-    -1,
-    -1,
-    -1,
-];
 MixtrackPlatinum.screenDuration = function(deck, duration) {
-    // don't do anything if duration didn't change
-    if (MixtrackPlatinum.duration[deck - 1] == duration) return;
-    MixtrackPlatinum.duration[deck - 1] = duration;
-
-    if (duration < 1) duration = 1;
+    if (duration < 1) {
+        duration = 1;
+    }
     duration = MixtrackPlatinum.encodeNumToArray(duration - 1);
 
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x03];
