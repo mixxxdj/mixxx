@@ -383,7 +383,10 @@ class Vamp(Feature):
             env.SConscript(env.File('SConscript', vamp_dir))
 
             build.env.Append(LIBPATH=self.INTERNAL_VAMP_PATH)
-            build.env.Append(LIBS=['vamp-hostsdk', 'dl'])
+            build.env.Append(LIBS=['vamp-hostsdk'])
+
+            if build.platform_is_linux:
+                build.env.Append(LIBS=['dl'])
 
         return ['src/analyzer/vamp/vampanalyzer.cpp',
                 'src/analyzer/vamp/vamppluginadapter.cpp',
