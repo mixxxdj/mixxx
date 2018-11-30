@@ -381,17 +381,9 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
         },
         toggle_focused_effect: function() {
             if (engine.getValue(eu.group, "focused_effect") === this.number) {
-                engine.setValue(eu.group, "show_focus", 0);
-                if (ShowFocusedEffectParameters) {
-                    engine.setValue(eu.group, "show_parameters", 0);
-                }
                 engine.setValue(eu.group, "focused_effect", 0);
             }
             else {
-                engine.setValue(eu.group, "show_focus", 1);
-                if (ShowFocusedEffectParameters) {
-                    engine.setValue(eu.group, "show_parameters", 1);
-                }
                 engine.setValue(eu.group, "focused_effect", this.number);
             }
         },
@@ -443,6 +435,21 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
             this.trigger();
         },
     });
+
+    this.show_focus_connection = engine.makeConnection(eu.group, "focused_effect", function(focused_effect, group, control) {
+        if (focused_effect === 0) {
+            engine.setValue(eu.group, "show_focus", 0);
+            if (ShowFocusedEffectParameters) {
+                engine.setValue(eu.group, "show_parameters", 0);
+            }
+        } else {
+            engine.setValue(eu.group, "show_focus", 1);
+            if (ShowFocusedEffectParameters) {
+                engine.setValue(eu.group, "show_parameters", 1);
+            }
+        }
+    });
+    this.show_focus_connection.trigger();
 
     this.touch_strip = new this.EffectUnitTouchStrip();
     this.enableButtons = new components.ComponentContainer();
