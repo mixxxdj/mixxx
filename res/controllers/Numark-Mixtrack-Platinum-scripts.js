@@ -454,10 +454,12 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
 
     components.Deck.call(this, number);
 
-    this.bpm_connection = engine.makeConnection(deck.currentDeck, "bpm", function(value, group, control) {
-        MixtrackPlatinum.screenBpm(number, Math.round(value * 100));
+    this.bpm = new components.Component({
+        outKey: "bpm",
+        output: function(value, group, control) {
+            MixtrackPlatinum.screenBpm(number, Math.round(value * 100));
+        },
     });
-    this.bpm_connection.trigger();
 
     this.position_connection = engine.makeConnection(deck.currentDeck, "playposition", function(playposition, group, control) {
         // the controller appears to expect a value in the range of 0-52
