@@ -1179,8 +1179,8 @@ MixtrackPlatinum.timeMs = function(deck, position, duration) {
 
 // these functions track if the user has let go of the jog wheel but it is
 // still spinning
-MixtrackPlatinum.scratch_timer = [];
-MixtrackPlatinum.scratch_tick = [];
+MixtrackPlatinum.scratch_timer = []; // initialized before use (null is an acceptable value)
+MixtrackPlatinum.scratch_tick = [];  // initialized before use
 MixtrackPlatinum.resetScratchTimer = function (deck, tick) {
     if (!MixtrackPlatinum.scratch_timer[deck]) return;
     MixtrackPlatinum.scratch_tick[deck] = tick;
@@ -1235,8 +1235,9 @@ MixtrackPlatinum.scratchEnable = function (deck) {
 };
 
 // The button that enables/disables scratching
-MixtrackPlatinum.touching = [];
-MixtrackPlatinum.searching = [];
+// these arrays are indexed from 1, so we initialize them with 5 values
+MixtrackPlatinum.touching = [false, false, false, false, false];
+MixtrackPlatinum.searching = [false, false, false, false, false];
 MixtrackPlatinum.wheelTouch = function (channel, control, value, status, group) {
     var deck = channel + 1;
 
@@ -1273,7 +1274,7 @@ MixtrackPlatinum.wheelTouch = function (channel, control, value, status, group) 
 };
 
 // The wheel that actually controls the scratching
-MixtrackPlatinum.scratch_direction = []; // true == forward
+MixtrackPlatinum.scratch_direction = []; // true == forward, initialized before use
 // indexed by deck numbers starting at 1, so include an extra element
 MixtrackPlatinum.scratch_accumulator = [0, 0, 0, 0, 0];
 MixtrackPlatinum.last_scratch_tick = [0, 0, 0, 0, 0];
@@ -1349,7 +1350,7 @@ MixtrackPlatinum.wheelTurn = function (channel, control, value, status, group) {
     }
 };
 
-MixtrackPlatinum.wheel = [];
+MixtrackPlatinum.wheel = []; // initialzed in the MixtrackPlatinum.init() function
 MixtrackPlatinum.wheelToggle = function (channel, control, value, status, group) {
     if (value != 0x7F) return;
     MixtrackPlatinum.wheel[channel] = !MixtrackPlatinum.wheel[channel];
