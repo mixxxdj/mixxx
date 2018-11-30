@@ -489,8 +489,11 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
             var midiResolution = 52; // the controller expects a value range of 64-115
             var timeElapsed = duration * playposition;
             var spinner = Math.round(timeElapsed % period * (midiResolution / period));
-            if (spinner < 0) spinner += 115;
-            else spinner += 64;
+            if (spinner < 0) {
+                spinner += 115;
+            } else {
+                spinner += 64;
+            }
 
             midi.sendShortMsg(0xB0 | midi_chan, 0x06, spinner);
         },
