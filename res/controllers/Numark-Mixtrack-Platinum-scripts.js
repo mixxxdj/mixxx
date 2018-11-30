@@ -461,38 +461,40 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         },
     });
 
-    this.position_connection = engine.makeConnection(deck.currentDeck, "playposition", function(playposition, group, control) {
-        // the controller appears to expect a value in the range of 0-52
-        // representing the position of the track. Here we send a message to the
-        // controller to update the position display with our current position.
-        var pos = Math.round(playposition * 52);
-        if (pos < 0) {
-            pos = 0;
-        }
-        midi.sendShortMsg(0xB0 | midi_chan, 0x3F, pos);
+    this.position = new components.Component({
+        outKey: "playposition",
+        output: function(playposition, group, control) {
+            // the controller appears to expect a value in the range of 0-52
+            // representing the position of the track. Here we send a message to the
+            // controller to update the position display with our current position.
+            var pos = Math.round(playposition * 52);
+            if (pos < 0) {
+                pos = 0;
+            }
+            midi.sendShortMsg(0xB0 | midi_chan, 0x3F, pos);
 
-        // update duration if necessary
-        var duration = engine.getValue(group, 'duration');
-        MixtrackPlatinum.screenDuration(number, duration * 1000);
+            // update duration if necessary
+            var duration = engine.getValue(group, 'duration');
+            MixtrackPlatinum.screenDuration(number, duration * 1000);
 
-        // update the time display
-        var time = MixtrackPlatinum.timeMs(number, playposition, duration);
-        MixtrackPlatinum.screenTime(number, time);
+            // update the time display
+            var time = MixtrackPlatinum.timeMs(number, playposition, duration);
+            MixtrackPlatinum.screenTime(number, time);
 
-        // update the spinner (range 64-115, 52 values)
-        //
-        // the visual spinner in the mixxx interface takes 1.8 seconds to loop
-        // (60 seconds/min divided by 33 1/3 revolutions per min)
-        var period = 60 / (33+1/3);
-        var midiResolution = 52; // the controller expects a value range of 64-115
-        var timeElapsed = duration * playposition;
-        var spinner = Math.round(timeElapsed % period * (midiResolution / period));
-        if (spinner < 0) spinner += 115;
-        else spinner += 64;
+            // update the spinner (range 64-115, 52 values)
+            //
+            // the visual spinner in the mixxx interface takes 1.8 seconds to loop
+            // (60 seconds/min divided by 33 1/3 revolutions per min)
+            var period = 60 / (33+1/3);
+            var midiResolution = 52; // the controller expects a value range of 64-115
+            var timeElapsed = duration * playposition;
+            var spinner = Math.round(timeElapsed % period * (midiResolution / period));
+            if (spinner < 0) spinner += 115;
+            else spinner += 64;
 
-        midi.sendShortMsg(0xB0 | midi_chan, 0x06, spinner);
+            midi.sendShortMsg(0xB0 | midi_chan, 0x06, spinner);
+        },
     });
-    this.position_connection.trigger();
 
     this.play_button = new components.PlayButton({
         midi: [0x90 + midi_chan, 0x00],
