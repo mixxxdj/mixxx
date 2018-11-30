@@ -37,8 +37,9 @@ class QuantizeControl : public EngineControl {
     ControlObject* m_pCOPrevBeat;
     ControlObject* m_pCOClosestBeat;
 
-    TrackPointer m_pTrack; // is witten from an engine worker thread
-    BeatsPointer m_pBeats; // is witten from an engine worker thread
+    // objects below are written from an engine worker thread
+    TrackPointer m_pTrack;
+    BeatsPointer m_pBeats;
 };
 
 #endif // QUANTIZECONTROL_H

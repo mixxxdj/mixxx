@@ -35,7 +35,9 @@ class VinylControlControl : public EngineControl {
     ControlPushButton* m_pControlVinylCueing;
     ControlPushButton* m_pControlVinylSignalEnabled;
     ControlProxy* m_pPlayEnabled;
-    TrackPointer m_pTrack; // is witten from an engine worker thread
+
+    TrackPointer m_pTrack; // is written from an engine worker thread
+
     bool m_bSeekRequested;
 };
 

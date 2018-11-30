@@ -157,8 +157,9 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pCOLoopMove;
     QList<LoopMoveControl*> m_loopMoves;
 
-    TrackPointer m_pTrack; // is witten from an engine worker thread
-    BeatsPointer m_pBeats; // is witten from an engine worker thread
+    // objects below are written from an engine worker thread
+    TrackPointer m_pTrack;
+    BeatsPointer m_pBeats;
 };
 
 // Class for handling loop moves of a set size. This allows easy access from

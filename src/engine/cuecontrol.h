@@ -164,7 +164,7 @@ class CueControl : public EngineControl {
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
 
-    TrackPointer m_pLoadedTrack; // is witten from an engine worker thread
+    TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
