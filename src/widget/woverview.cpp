@@ -600,7 +600,7 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
 void WOverview::dropEvent(QDropEvent* event) {
     if (DragAndDropHelper::allowLoadToPlayer(m_group, m_playControl->get() > 0.0,
                                              m_pConfig)) {
-        if (DragAndDropHelper::allowDeckCloneAttempt(*event->mimeData(), m_group)) {
+        if (DragAndDropHelper::allowDeckCloneAttempt(*event, m_group)) {
             event->accept();
             emit(cloneDeck(event->mimeData()->text(), m_group));
             return;

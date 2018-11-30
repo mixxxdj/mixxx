@@ -264,7 +264,7 @@ void WCoverArt::dropEvent(QDropEvent *event) {
     // accept track drops.
     if (!m_group.isEmpty() &&
             DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig)) {
-        if (DragAndDropHelper::allowDeckCloneAttempt(*event->mimeData(), m_group)) {
+        if (DragAndDropHelper::allowDeckCloneAttempt(*event, m_group)) {
             event->accept();
             emit(cloneDeck(event->mimeData()->text(), m_group));
             return;

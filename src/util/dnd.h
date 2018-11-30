@@ -3,6 +3,7 @@
 
 #include <QUrl>
 #include <QDrag>
+#include <QDropEvent>
 #include <QMimeData>
 #include <QList>
 #include <QString>
@@ -96,18 +97,23 @@ class DragAndDropHelper {
                           "AllowTrackLoadToPlayingDeck")).toInt();
     }
 
-    static bool allowDeckCloneAttempt(const QMimeData& mimeData,
+    static bool allowDeckCloneAttempt(const QDropEvent& event,
                                    const QString& group) {
         // only allow clones to decks
         if (!PlayerManager::isDeckGroup(group, NULL)) {
             return false;
         }
 
-        if (!mimeData.hasText() ||
+        // only clone if shift is pressed
+        if (!event.keyboardModifiers().testFlag(Qt::ShiftModifier)) {
+            return false;
+        }
+
+        if (!event.mimeData()->hasText() ||
                  // prevent cloning to ourself
-                 mimeData.text() == group ||
+                 event.mimeData()->text() == group ||
                  // only allow clone from decks
-                 !PlayerManager::isDeckGroup(mimeData.text(), NULL)) {
+                 !PlayerManager::isDeckGroup(event.mimeData()->text(), NULL)) {
             return false;
         }
 

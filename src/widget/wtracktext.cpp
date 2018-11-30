@@ -56,7 +56,7 @@ void WTrackText::dragEnterEvent(QDragEnterEvent *event) {
 
 void WTrackText::dropEvent(QDropEvent *event) {
     if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig)) {
-        if (DragAndDropHelper::allowDeckCloneAttempt(*event->mimeData(), m_pGroup)) {
+        if (DragAndDropHelper::allowDeckCloneAttempt(*event, m_pGroup)) {
             event->accept();
             emit(cloneDeck(event->mimeData()->text(), m_pGroup));
             return;
