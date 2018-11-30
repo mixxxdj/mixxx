@@ -74,8 +74,6 @@ class ControllerEngine : public QObject {
     ControllerEngine(Controller* controller);
     virtual ~ControllerEngine();
 
-    bool isReady();
-
     void setPopups(bool bPopups) {
         m_bPopups = bPopups;
     }

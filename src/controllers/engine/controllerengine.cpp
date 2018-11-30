@@ -188,11 +188,6 @@ void ControllerEngine::gracefulShutdown() {
     }
 }
 
-bool ControllerEngine::isReady() {
-    bool ret = m_pScriptEngine != nullptr;
-    return ret;
-}
-
 void ControllerEngine::initializeScriptEngine() {
     // Create the Script Engine
     m_pScriptEngine = new QJSEngine(this);
