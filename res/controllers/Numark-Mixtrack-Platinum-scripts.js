@@ -1367,13 +1367,6 @@ MixtrackPlatinum.wheelToggle = function (channel, control, value, status, group)
     midi.sendShortMsg(0x90 | channel, 0x07, on_off);
 };
 
-MixtrackPlatinum.pitch = [
-    [ 0, 0 ],
-    [ 0, 0 ],
-    [ 0, 0 ],
-    [ 0, 0 ],
-];
-
 MixtrackPlatinum.deckSwitch = function (channel, control, value, status, group) {
     var deck = channel + 1;
     MixtrackPlatinum.decks[deck].setActive(value == 0x7F);
