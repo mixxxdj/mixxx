@@ -26,13 +26,12 @@ const SINT kSamplesPerFrame = 2;
 }
 
 BpmControl::BpmControl(QString group,
-                       UserSettingsPointer pConfig) :
-        EngineControl(group, pConfig),
-        m_dSyncTargetBeatDistance(0.0),
-        m_dSyncInstantaneousBpm(0.0),
-        m_dLastSyncAdjustment(1.0),
-        m_tapFilter(this, kFilterLength, kMaxInterval),
-        m_sGroup(group) {
+                       UserSettingsPointer pConfig)
+        : EngineControl(group, pConfig),
+          m_tapFilter(this, kFilterLength, kMaxInterval),
+          m_dSyncInstantaneousBpm(0.0),
+          m_dLastSyncAdjustment(1.0),
+          m_sGroup(group) {
     m_pPlayButton = new ControlProxy(group, "play", this);
     m_pReverseButton = new ControlProxy(group, "reverse", this);
     m_pRateSlider = new ControlProxy(group, "rate", this);
@@ -123,7 +122,7 @@ BpmControl::BpmControl(QString group,
 
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlProxy(group, "beat_distance", this);
-    m_pSyncMode = ControlObject::getControl(ConfigKey(group, "sync_mode"));
+    m_pSyncMode = new ControlProxy(group, "sync_mode", this);
 }
 
 BpmControl::~BpmControl() {
@@ -444,7 +443,7 @@ double BpmControl::calcSyncAdjustment(double my_percentage, bool userTweakingSyn
     // than modular 1.0 beat fractions. This will allow sync to work across loop
     // boundaries too.
 
-    double master_percentage = m_dSyncTargetBeatDistance;
+    double master_percentage = m_dSyncTargetBeatDistance.getValue();
     double shortest_distance = shortestPercentageChange(
         master_percentage, my_percentage);
 
@@ -578,7 +577,8 @@ bool BpmControl::getBeatContextNoLookup(
     return true;
 }
 
-double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectLoops, bool playing) {
+double BpmControl::getNearestPositionInPhase(
+        double dThisPosition, bool respectLoops, bool playing) {
     // Without a beatgrid, we don't know the phase offset.
     BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
@@ -613,7 +613,7 @@ double BpmControl::getNearestPositionInPhase(double dThisPosition, bool respectL
     double dOtherBeatFraction;
     if (getSyncMode() == SYNC_FOLLOWER) {
         // If we're a follower, it's easy to get the other beat fraction
-        dOtherBeatFraction = m_dSyncTargetBeatDistance;
+        dOtherBeatFraction = m_dSyncTargetBeatDistance.getValue();
     } else {
         // If not, we have to figure it out
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
@@ -832,7 +832,7 @@ double BpmControl::updateBeatDistance() {
 }
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {
-    m_dSyncTargetBeatDistance = beatDistance;
+    m_dSyncTargetBeatDistance.setValue(beatDistance);
 }
 
 void BpmControl::setInstantaneousBpm(double instantaneousBpm) {

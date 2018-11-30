@@ -144,23 +144,25 @@ class BpmControl : public EngineControl {
     // Button that translates beats to match another playing deck
     ControlPushButton* m_pBeatsTranslateMatchAlignment;
 
-    // Master Sync objects and values.
-    ControlObject* m_pSyncMode;
     ControlProxy* m_pThisBeatDistance;
-    double m_dSyncTargetBeatDistance;
+    ControlValueAtomic<double> m_dSyncTargetBeatDistance;
+    ControlValueAtomic<double> m_dUserOffset;
+    QAtomicInt m_resetSyncAdjustment;
+    ControlProxy* m_pSyncMode;
+
+    TapFilter m_tapFilter; // TODO: not threadsave
+
+    // used in the engine thread only
     double m_dSyncInstantaneousBpm;
     double m_dLastSyncAdjustment;
-    QAtomicInt m_resetSyncAdjustment;
-    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
-    ControlValueAtomic<double> m_dUserOffset;
-
-    TapFilter m_tapFilter;
 
     // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
 
-    QString m_sGroup;
+    const QString m_sGroup;
+
+    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
 };
 
 
