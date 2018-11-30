@@ -44,7 +44,7 @@ class HidController final : public Controller {
     HidController(const hid_device_info deviceInfo);
     ~HidController() override;
 
-    ControllerJSProxy* jsProxy();
+    ControllerJSProxy* jsProxy() override;
 
     QString presetExtension() override;
 
