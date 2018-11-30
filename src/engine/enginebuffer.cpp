@@ -410,7 +410,7 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
 }
 
 void EngineBuffer::requestSyncPosition(EngineChannel* pChannel) {
-    m_pSyncPosition.setValue(pChannel);
+    m_pSyncFromChannel.store(pChannel);
 }
 
 void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
@@ -1086,6 +1086,10 @@ void EngineBuffer::processSlip(int iBufferSize) {
 }
 
 void EngineBuffer::processSyncRequests() {
+    EngineChannel* pChannel = m_pSyncFromChannel.fetchAndStoreRelaxed(NULL);
+    if (pChannel) {
+        seekCloneBuffer(pChannel->getEngineBuffer());
+    }
     SyncRequestQueued enable_request =
             static_cast<SyncRequestQueued>(
                     m_iEnableSyncQueued.fetchAndStoreRelease(SYNC_REQUEST_NONE));
@@ -1108,11 +1112,6 @@ void EngineBuffer::processSyncRequests() {
     if (mode_request != SYNC_INVALID) {
         m_pEngineSync->requestSyncMode(m_pSyncControl,
                                        static_cast<SyncMode>(mode_request));
-    }
-    EngineChannel* pChannel = m_pSyncPosition.getValue();
-    if (pChannel) {
-        m_pSyncPosition.setValue(NULL);
-        seekCloneBuffer(pChannel->getEngineBuffer());
     }
 }
 
