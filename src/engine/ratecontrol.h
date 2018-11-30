@@ -123,10 +123,10 @@ public:
     double getTempRate(void);
 
     // Values used when temp and perm rate buttons are pressed
-    static double m_dTemporaryRateChangeCoarse;
-    static double m_dTemporaryRateChangeFine;
-    static double m_dPermanentRateChangeCoarse;
-    static double m_dPermanentRateChangeFine;
+    static ControlValueAtomic<double> m_dTemporaryRateChangeCoarse;
+    static ControlValueAtomic<double> m_dTemporaryRateChangeFine;
+    static ControlValueAtomic<double> m_dPermanentRateChangeCoarse;
+    static ControlValueAtomic<double> m_dPermanentRateChangeFine;
 
     ControlPushButton *buttonRateTempDown;
     ControlPushButton *buttonRateTempDownSmall;
