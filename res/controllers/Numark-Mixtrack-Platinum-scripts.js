@@ -91,12 +91,6 @@ MixtrackPlatinum.init = function(id, debug) {
     for (var i = 0; i < 4; ++i) {
         var group = "[Channel"+(i+1)+"]";
 
-        // update duration, time elapsed, and the spinner
-        var duration = engine.getValue(group, 'duration');
-        var position = engine.getValue(group, 'playposition');
-        if (duration == 0) position = 0;
-        MixtrackPlatinum.positionCallback(position, group, 'playposition');
-
         // keylock indicator
         led(group, 'keylock', i, 0x0D);
 
@@ -115,12 +109,6 @@ MixtrackPlatinum.init = function(id, debug) {
     // zero vu meters
     midi.sendShortMsg(0xBF, 0x44, 0);
     midi.sendShortMsg(0xBF, 0x45, 0);
-
-    // setup position tracking
-    engine.makeConnection("[Channel1]", "playposition", MixtrackPlatinum.positionCallback);
-    engine.makeConnection("[Channel2]", "playposition", MixtrackPlatinum.positionCallback);
-    engine.makeConnection("[Channel3]", "playposition", MixtrackPlatinum.positionCallback);
-    engine.makeConnection("[Channel4]", "playposition", MixtrackPlatinum.positionCallback);
 
     // setup elapsed/remaining tracking
     engine.makeConnection("[Controls]", "ShowDurationRemaining", MixtrackPlatinum.timeElapsedCallback);
@@ -470,6 +458,39 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         MixtrackPlatinum.screenBpm(number, Math.round(value * 100));
     });
     this.bpm_connection.trigger();
+
+    this.position_connection = engine.makeConnection(deck.currentDeck, "playposition", function(playposition, group, control) {
+        // the controller appears to expect a value in the range of 0-52
+        // representing the position of the track. Here we send a message to the
+        // controller to update the position display with our current position.
+        var pos = Math.round(playposition * 52);
+        if (pos < 0) {
+            pos = 0;
+        }
+        midi.sendShortMsg(0xB0 | midi_chan, 0x3F, pos);
+
+        // update duration if necessary
+        var duration = engine.getValue(group, 'duration');
+        MixtrackPlatinum.screenDuration(number, duration * 1000);
+
+        // update the time display
+        var time = MixtrackPlatinum.timeMs(number, playposition, duration);
+        MixtrackPlatinum.screenTime(number, time);
+
+        // update the spinner (range 64-115, 52 values)
+        //
+        // the visual spinner in the mixxx interface takes 1.8 seconds to loop
+        // (60 seconds/min divided by 33 1/3 revolutions per min)
+        var period = 60 / (33+1/3);
+        var midiResolution = 52; // the controller expects a value range of 64-115
+        var timeElapsed = duration * playposition;
+        var spinner = Math.round(timeElapsed % period * (midiResolution / period));
+        if (spinner < 0) spinner += 115;
+        else spinner += 64;
+
+        midi.sendShortMsg(0xB0 | midi_chan, 0x06, spinner);
+    });
+    this.position_connection.trigger();
 
     this.play_button = new components.PlayButton({
         midi: [0x90 + midi_chan, 0x00],
@@ -1104,13 +1125,6 @@ MixtrackPlatinum.screenBpm = function(deck, bpm) {
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
-MixtrackPlatinum.channelMap = {
-    "[Channel1]": 0x00,
-    "[Channel2]": 0x01,
-    "[Channel3]": 0x02,
-    "[Channel4]": 0x03,
-};
-
 MixtrackPlatinum.elapsedToggle = function (channel, control, value, status, group) {
     if (value != 0x7F) return;
 
@@ -1152,37 +1166,6 @@ MixtrackPlatinum.timeElapsedCallback = function(value, group, control) {
 
 MixtrackPlatinum.timeMs = function(deck, position, duration) {
     return Math.round(duration * position * 1000);
-};
-
-MixtrackPlatinum.positionCallback = function(playposition, group, control) {
-    var midi_chan = MixtrackPlatinum.channelMap[group];
-    // the controller appears to expect a value in the range of 0-52
-    // representing the position of the track. Here we send a message to the
-    // controller to update the position display with our current position.
-    var pos = Math.round(playposition * 52);
-    if (pos < 0) pos = 0;
-    midi.sendShortMsg(0xB0 | midi_chan, 0x3F, pos);
-
-    // update duration if necessary
-    var duration = engine.getValue(group, 'duration');
-    MixtrackPlatinum.screenDuration(midi_chan + 1, duration * 1000);
-
-    // update the time display
-    var time = MixtrackPlatinum.timeMs(midi_chan + 1, playposition, duration);
-    MixtrackPlatinum.screenTime(midi_chan + 1, time);
-
-    // update the spinner (range 64-115, 52 values)
-    //
-    // the visual spinner in the mixxx interface takes 1.8 seconds to loop
-    // (60 seconds/min divided by 33 1/3 revolutions per min)
-    var period = 60 / (33+1/3);
-    var midiResolution = 52; // the controller expects a value range of 64-115
-    var timeElapsed = duration * playposition;
-    var spinner = Math.round(timeElapsed % period * (midiResolution / period));
-    if (spinner < 0) spinner += 115;
-    else spinner += 64;
-
-    midi.sendShortMsg(0xB0 | midi_chan, 0x06, spinner);
 };
 
 // these functions track if the user has let go of the jog wheel but it is
