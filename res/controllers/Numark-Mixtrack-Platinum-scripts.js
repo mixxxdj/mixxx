@@ -1106,20 +1106,20 @@ MixtrackPlatinum.sendScreenDurationMidi = function(deck, duration) {
     if (duration < 1) {
         duration = 1;
     }
-    duration = MixtrackPlatinum.encodeNumToArray(duration - 1);
+    durationArray = MixtrackPlatinum.encodeNumToArray(duration - 1);
 
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x03];
     var bytePostfix = [0xF7];
-    var byteArray = bytePrefix.concat(duration, bytePostfix);
+    var byteArray = bytePrefix.concat(durationArray, bytePostfix);
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
 MixtrackPlatinum.sendScreenTimeMidi = function(deck, time) {
-    var time_val = MixtrackPlatinum.encodeNumToArray(time);
+    var timeArray = MixtrackPlatinum.encodeNumToArray(time);
 
     var bytePrefix = [0xF0, 0x00, 0x20, 0x7F, deck, 0x04];
     var bytePostfix = [0xF7];
-    var byteArray = bytePrefix.concat(time_val, bytePostfix);
+    var byteArray = bytePrefix.concat(timeArray, bytePostfix);
     midi.sendSysexMsg(byteArray, byteArray.length);
 };
 
