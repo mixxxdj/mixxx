@@ -1186,71 +1186,6 @@ MixtrackPlatinum.positionCallback = function(playposition, group, control) {
     midi.sendShortMsg(0xB0 | midi_chan, 0x06, spinner);
 };
 
-MixtrackPlatinum.deckSwitch = function (channel, control, value, status, group) {
-    var deck = channel + 1;
-    MixtrackPlatinum.decks[deck].setActive(value == 0x7F);
-
-    // change effects racks
-    if (MixtrackPlatinum.decks[deck].active && (channel == 0x00 || channel == 0x02)) {
-        MixtrackPlatinum.effects[1].setCurrentUnit(deck);
-    }
-    else if (MixtrackPlatinum.decks[deck].active && (channel == 0x01 || channel == 0x03)) {
-        MixtrackPlatinum.effects[2].setCurrentUnit(deck);
-    }
-
-    // also zero vu meters
-    if (value != 0x7F) return;
-    midi.sendShortMsg(0xBF, 0x44, 0);
-    midi.sendShortMsg(0xBF, 0x45, 0);
-};
-
-// zero vu meters when toggling pfl
-MixtrackPlatinum.pflToggle = function(value, group, control) {
-    midi.sendShortMsg(0xBF, 0x44, 0);
-    midi.sendShortMsg(0xBF, 0x45, 0);
-};
-
-MixtrackPlatinum.vuCallback = function(value, group, control) {
-    // the top LED lights up at 81
-    var level = value * 80;
-
-    // if any channel pfl is active, show channel levels
-    if (engine.getValue('[Channel1]', 'pfl')
-        || engine.getValue('[Channel2]', 'pfl')
-        || engine.getValue('[Channel3]', 'pfl')
-        || engine.getValue('[Channel4]', 'pfl'))
-    {
-        if (engine.getValue(group, "PeakIndicator")) {
-            level = 81;
-        }
-
-        if (group == '[Channel1]' && MixtrackPlatinum.decks[1].active) {
-            midi.sendShortMsg(0xBF, 0x44, level);
-        }
-        else if (group == '[Channel3]' && MixtrackPlatinum.decks[3].active) {
-            midi.sendShortMsg(0xBF, 0x44, level);
-        }
-        else if (group == '[Channel2]' && MixtrackPlatinum.decks[2].active) {
-            midi.sendShortMsg(0xBF, 0x45, level);
-        }
-        else if (group == '[Channel4]' && MixtrackPlatinum.decks[4].active) {
-            midi.sendShortMsg(0xBF, 0x45, level);
-        }
-    }
-    else if (group == '[Master]' && control == 'VuMeterL') {
-        if (engine.getValue(group, "PeakIndicatorL")) {
-            level = 81;
-        }
-        midi.sendShortMsg(0xBF, 0x44, level);
-    }
-    else if (group == '[Master]' && control == 'VuMeterR') {
-        if (engine.getValue(group, "PeakIndicatorR")) {
-            level = 81;
-        }
-        midi.sendShortMsg(0xBF, 0x45, level);
-    }
-};
-
 // these functions track if the user has let go of the jog wheel but it is
 // still spinning
 MixtrackPlatinum.scratch_timer = [];
@@ -1438,6 +1373,72 @@ MixtrackPlatinum.pitch = [
     [ 0, 0 ],
     [ 0, 0 ],
 ];
+
+MixtrackPlatinum.deckSwitch = function (channel, control, value, status, group) {
+    var deck = channel + 1;
+    MixtrackPlatinum.decks[deck].setActive(value == 0x7F);
+
+    // change effects racks
+    if (MixtrackPlatinum.decks[deck].active && (channel == 0x00 || channel == 0x02)) {
+        MixtrackPlatinum.effects[1].setCurrentUnit(deck);
+    }
+    else if (MixtrackPlatinum.decks[deck].active && (channel == 0x01 || channel == 0x03)) {
+        MixtrackPlatinum.effects[2].setCurrentUnit(deck);
+    }
+
+    // also zero vu meters
+    if (value != 0x7F) return;
+    midi.sendShortMsg(0xBF, 0x44, 0);
+    midi.sendShortMsg(0xBF, 0x45, 0);
+};
+
+// zero vu meters when toggling pfl
+MixtrackPlatinum.pflToggle = function(value, group, control) {
+    midi.sendShortMsg(0xBF, 0x44, 0);
+    midi.sendShortMsg(0xBF, 0x45, 0);
+};
+
+MixtrackPlatinum.vuCallback = function(value, group, control) {
+    // the top LED lights up at 81
+    var level = value * 80;
+
+    // if any channel pfl is active, show channel levels
+    if (engine.getValue('[Channel1]', 'pfl')
+        || engine.getValue('[Channel2]', 'pfl')
+        || engine.getValue('[Channel3]', 'pfl')
+        || engine.getValue('[Channel4]', 'pfl'))
+    {
+        if (engine.getValue(group, "PeakIndicator")) {
+            level = 81;
+        }
+
+        if (group == '[Channel1]' && MixtrackPlatinum.decks[1].active) {
+            midi.sendShortMsg(0xBF, 0x44, level);
+        }
+        else if (group == '[Channel3]' && MixtrackPlatinum.decks[3].active) {
+            midi.sendShortMsg(0xBF, 0x44, level);
+        }
+        else if (group == '[Channel2]' && MixtrackPlatinum.decks[2].active) {
+            midi.sendShortMsg(0xBF, 0x45, level);
+        }
+        else if (group == '[Channel4]' && MixtrackPlatinum.decks[4].active) {
+            midi.sendShortMsg(0xBF, 0x45, level);
+        }
+    }
+    else if (group == '[Master]' && control == 'VuMeterL') {
+        if (engine.getValue(group, "PeakIndicatorL")) {
+            level = 81;
+        }
+        midi.sendShortMsg(0xBF, 0x44, level);
+    }
+    else if (group == '[Master]' && control == 'VuMeterR') {
+        if (engine.getValue(group, "PeakIndicatorR")) {
+            level = 81;
+        }
+        midi.sendShortMsg(0xBF, 0x45, level);
+    }
+};
+
 
 // track the state of the shift key
 MixtrackPlatinum.shift = false;
