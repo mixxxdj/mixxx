@@ -1178,8 +1178,9 @@ MixtrackPlatinum.positionCallback = function(playposition, group, control) {
     // the visual spinner in the mixxx interface takes 1.8 seconds to loop
     // (60 seconds/min divided by 33 1/3 revolutions per min)
     var period = 60 / (33+1/3);
-    var resolution = 52; // the controller expects a value range of 64-115
-    var spinner = Math.round((duration * playposition) % period * (resolution / period));
+    var midiResolution = 52; // the controller expects a value range of 64-115
+    var timeElapsed = duration * playposition;
+    var spinner = Math.round(timeElapsed % period * (midiResolution / period));
     if (spinner < 0) spinner += 115;
     else spinner += 64;
 
