@@ -97,10 +97,6 @@ MixtrackPlatinum.init = function(id, debug) {
         if (duration == 0) position = 0;
         MixtrackPlatinum.positionCallback(position, group, 'playposition');
 
-        // update bpm
-        var bpm = engine.getValue(group, 'bpm');
-        if (bpm != 0) MixtrackPlatinum.screenBpm(i + 1, Math.round(bpm * 100));
-
         // keylock indicator
         led(group, 'keylock', i, 0x0D);
 
@@ -125,12 +121,6 @@ MixtrackPlatinum.init = function(id, debug) {
     engine.makeConnection("[Channel2]", "playposition", MixtrackPlatinum.positionCallback);
     engine.makeConnection("[Channel3]", "playposition", MixtrackPlatinum.positionCallback);
     engine.makeConnection("[Channel4]", "playposition", MixtrackPlatinum.positionCallback);
-
-    // setup bpm tracking
-    engine.makeConnection("[Channel1]", "bpm", MixtrackPlatinum.bpmCallback);
-    engine.makeConnection("[Channel2]", "bpm", MixtrackPlatinum.bpmCallback);
-    engine.makeConnection("[Channel3]", "bpm", MixtrackPlatinum.bpmCallback);
-    engine.makeConnection("[Channel4]", "bpm", MixtrackPlatinum.bpmCallback);
 
     // setup elapsed/remaining tracking
     engine.makeConnection("[Controls]", "ShowDurationRemaining", MixtrackPlatinum.timeElapsedCallback);
@@ -475,6 +465,12 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
     this.active = (number == 1 || number == 2);
 
     components.Deck.call(this, number);
+
+    this.bpm_connection = engine.makeConnection(deck.currentDeck, "bpm", function(value, group, control) {
+        MixtrackPlatinum.screenBpm(number, Math.round(value * 100));
+    });
+    this.bpm_connection.trigger();
+
     this.play_button = new components.PlayButton({
         midi: [0x90 + midi_chan, 0x00],
         off: 0x01,
@@ -1106,11 +1102,6 @@ MixtrackPlatinum.screenBpm = function(deck, bpm) {
     var bytePostfix = [0xF7];
     var byteArray = bytePrefix.concat(bpmArray, bytePostfix);
     midi.sendSysexMsg(byteArray, byteArray.length);
-};
-
-MixtrackPlatinum.bpmCallback = function(value, group, control) {
-    var midi_chan = MixtrackPlatinum.channelMap[group];
-    MixtrackPlatinum.screenBpm(midi_chan + 1, Math.round(value * 100));
 };
 
 MixtrackPlatinum.channelMap = {
