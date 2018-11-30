@@ -661,7 +661,6 @@ void ControllerEngine::log(QString message) {
 QJSValue ControllerEngine::makeConnection(QString group, QString name,
                                               const QJSValue callback) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine != nullptr) {
-        qWarning() << "Tried to connect script callback, but there is no script engine!";
         return QJSValue();
     }
 
@@ -793,7 +792,6 @@ QJSValue ControllerEngine::connectControl(
         // This check is redundant with makeConnection, but it must be done here
         // before evaluating the code string.
         VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine != nullptr) {
-            qWarning() << "Tried to connect script callback, but there is no script engine!";
             return QJSValue(false);
         }
 
