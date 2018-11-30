@@ -152,7 +152,14 @@ Variables:
             <SizePolicy>me,i</SizePolicy>
             <Children>
               <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
-              <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,i</SizePolicy>
+                <Children>
+                  <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
+                  <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1me</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup>
         </Children>
@@ -224,7 +231,10 @@ Variables:
 
           <Template src="skin:deck_buttons_right.xml" />
 
-          <Template src="skin:loop_jump_controls_right.xml"/>
+          <Template src="skin:loop_jump_controls.xml">
+            <SetVariable name="SpaceLeft">70</SetVariable>
+            <SetVariable name="SpaceRight">-1</SetVariable>
+          </Template>
 
         </Children>
       </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->

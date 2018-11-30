@@ -7,7 +7,8 @@ Variables:
 -->
 <Template>
   <SizeAwareStack>
-    <Size><Variable name="Size"/></Size>
+    <SizePolicy>min,min</SizePolicy>
+    <MaximumSize><Variable name="MaxSize"/></MaximumSize>
     <Children>
       <WidgetGroup>
         <MinimumSize>0,0</MinimumSize>
@@ -16,6 +17,7 @@ Variables:
       <WidgetGroup>
         <ObjectName>RoundFiller<Variable name="Color"/></ObjectName>
         <MinimumSize>16,-1</MinimumSize>
+        <MaximumSize><Variable name="MaxSize"/></MaximumSize>
       </WidgetGroup>
     </Children>
   </SizeAwareStack>

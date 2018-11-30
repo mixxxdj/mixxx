@@ -953,6 +953,10 @@ WWidgetGroup {
  #######  Loop Controls  ########################################
 ##############################################################*/
 
+#LoopBeatJumpContainer {
+  background-color: #1e1e1e;
+}
+
 #LoopBeatJumpButton,
 #LoopSizeButton {
   font-weight: bold;

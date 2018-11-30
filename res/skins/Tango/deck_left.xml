@@ -52,7 +52,10 @@ Variables:
 
           <Template src="skin:deck_buttons_left.xml"/>
 
-          <Template src="skin:loop_jump_controls_left.xml"/>
+          <Template src="skin:loop_jump_controls.xml">
+            <SetVariable name="SpaceLeft">-1</SetVariable>
+            <SetVariable name="SpaceRight">70</SetVariable>
+          </Template>
 
         </Children>
       </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
@@ -105,7 +108,14 @@ Variables:
             <SizePolicy>me,i</SizePolicy>
             <Children>
               <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
-              <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,i</SizePolicy>
+                <Children>
+                  <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1me</Size></WidgetGroup>
+                  <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup>
         </Children>
