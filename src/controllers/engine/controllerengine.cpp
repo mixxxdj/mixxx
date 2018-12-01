@@ -292,46 +292,11 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
     emit(initialized());
 }
 
-/* -------- ------------------------------------------------------
-Purpose: Evaluate & run script code
-Input:   'this' object if applicable, Code string
-Output:  false if an exception
--------- ------------------------------------------------------ */
-bool ControllerEngine::internalExecute(QJSValue thisObject,
-                                       const QString& scriptCode) {
-    // A special version of safeExecute since we're evaluating strings, not actual functions
-    //  (execute() would print an error that it's not a function every time a timer fires.)
-    QJSValue scriptFunction;
-
-    scriptFunction = evaluateCodeString(scriptCode);
-
-    if (scriptFunction.isError()) {
-        return false;
-    }
-
-    if (!scriptFunction.isCallable()) {
-        // scriptCode was plain code called in evaluate above
-        return false;
-    }
-
-    return internalExecute(thisObject, scriptFunction, QJSValueList());
-}
-
-bool ControllerEngine::internalExecute(const QString& scriptCode) {
+bool ControllerEngine::executeFunction(QJSValue functionObject, QJSValueList args) {
     VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
         return false;
     }
 
-    return internalExecute(m_pScriptEngine->globalObject(), scriptCode);
-}
-
-/* -------- ------------------------------------------------------
-Purpose: Evaluate & run script code
-Input:   'this' object if applicable, Code string
-Output:  false if an exception
--------- ------------------------------------------------------ */
-bool ControllerEngine::internalExecute(QJSValue thisObject, QJSValue functionObject,
-                                       QJSValueList args) {
     if (functionObject.isError()) {
         qDebug() << "ControllerEngine::internalExecute:"
                  << functionObject.toString();
@@ -347,23 +312,13 @@ bool ControllerEngine::internalExecute(QJSValue thisObject, QJSValue functionObj
     }
 
     // If it does happen to be a function, call it.
-    QJSValue returnValue = functionObject.callWithInstance(thisObject, args);
+    QJSValue returnValue = functionObject.call(args);
 
     if (returnValue.isError()) {
         return false;
     }
     return true;
 }
-
-bool ControllerEngine::executeFunction(QJSValue functionObject,
-                                       QJSValueList args) {
-    VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
-        return false;
-    }
-
-    return internalExecute(m_pScriptEngine->globalObject(), functionObject, args);
-}
-
 
 bool ControllerEngine::executeFunction(QJSValue functionObject, const QByteArray data) {
     VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
@@ -995,7 +950,11 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
     }
 
     if (timerTarget.callback.isString()) {
-        internalExecute(timerTarget.callback.toString());
+        QJSValue callback = evaluateCodeString(timerTarget.callback.toString());
+
+        if (!callback.isError() && callback.isCallable()) {
+            executeFunction(callback.toString(), QJSValueList());
+        }
     } else if (timerTarget.callback.isCallable()) {
         executeFunction(timerTarget.callback, QJSValueList());
     }

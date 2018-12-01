@@ -143,10 +143,6 @@ class ControllerEngine : public QObject {
 
   private:
     bool evaluateScriptFile(const QString& scriptName, QList<QString> scriptPaths);
-    bool internalExecute(QJSValue thisObject, const QString& scriptCode);
-    bool internalExecute(const QString& scriptCode);
-    bool internalExecute(QJSValue thisObject, QJSValue functionObject,
-                         QJSValueList arguments);
     void initializeScriptEngine();
     void reloadScripts();
 
