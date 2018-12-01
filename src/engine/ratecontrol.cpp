@@ -35,7 +35,6 @@ RateControl::RateControl(QString group,
       m_ePbCurrent(0),
       m_ePbPressed(0),
       m_bTempStarted(false),
-      m_dTempRateChange(0.0),
       m_dRateTemp(0.0),
       m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
       m_dRateTempRampbackChange(0.0) {

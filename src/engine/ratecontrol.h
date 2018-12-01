@@ -174,8 +174,6 @@ public:
 
     // This is true if we've already started to ramp the rate
     bool m_bTempStarted;
-    // Set to the rate change used for rate temp
-    double m_dTempRateChange;
     // Set the Temporary Rate Change Mode
     static RampMode m_eRateRampMode;
     // The Rate Temp Sensitivity, the higher it is the slower it gets
