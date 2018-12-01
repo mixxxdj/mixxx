@@ -306,7 +306,6 @@ bool ControllerEngine::internalExecute(QJSValue thisObject,
     scriptFunction = evaluateCodeString(scriptCode);
 
     if (scriptFunction.isError()) {
-        showScriptExceptionDialog(scriptFunction);
         return false;
     }
 
@@ -351,7 +350,6 @@ bool ControllerEngine::internalExecute(QJSValue thisObject, QJSValue functionObj
     QJSValue returnValue = functionObject.callWithInstance(thisObject, args);
 
     if (returnValue.isError()) {
-        showScriptExceptionDialog(returnValue);
         return false;
     }
     return true;
@@ -406,7 +404,9 @@ QJSValue ControllerEngine::evaluateCodeString(const QString& program, const QStr
         return QJSValue::UndefinedValue;
     }
 
-    return m_pScriptEngine->evaluate(program, fileName, lineNumber);
+    QJSValue returnValue = m_pScriptEngine->evaluate(program, fileName, lineNumber);
+    showScriptExceptionDialog(returnValue);
+    return returnValue;
 }
 
 void ControllerEngine::showScriptExceptionDialog(QJSValue evaluationResult) {
@@ -923,7 +923,6 @@ bool ControllerEngine::evaluateScriptFile(const QString& scriptName, QList<QStri
     // Evaluate the code
     QJSValue scriptFunction = evaluateCodeString(scriptCode, filename);
     if (scriptFunction.isError()) {
-        showScriptExceptionDialog(scriptFunction);
         return false;
     }
 
