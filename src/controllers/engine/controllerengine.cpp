@@ -298,14 +298,14 @@ bool ControllerEngine::executeFunction(QJSValue functionObject, QJSValueList arg
     }
 
     if (functionObject.isError()) {
-        qDebug() << "ControllerEngine::internalExecute:"
+        qDebug() << "ControllerEngine::executeFunction:"
                  << functionObject.toString();
         return false;
     }
 
     // If it's not a function, we're done.
     if (!functionObject.isCallable()) {
-        qDebug() << "ControllerEngine::internalExecute:"
+        qDebug() << "ControllerEngine::executeFunction:"
                  << functionObject.toVariant()
                  << "Not a function";
         return false;
