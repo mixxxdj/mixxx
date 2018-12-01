@@ -78,11 +78,11 @@ class ControllerEngine : public QObject {
         m_bPopups = bPopups;
     }
 
+    // Execute a JS function in the engine
     bool executeFunction(QJSValue functionObject, QJSValueList arguments);
     bool executeFunction(QJSValue functionObject, const QByteArray data);
 
     // Wrap a snippet of JS code in an anonymous function
-    // Throws EvaluationException and NullEngineException.
     QJSValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
 
     // Look up registered script function prefixes
@@ -154,9 +154,8 @@ class ControllerEngine : public QObject {
     void callFunctionOnObjects(QList<QString>, const QString&, QJSValueList args = QJSValueList());
     // Convert a byteArray to a JS typed array over an ArrayBuffer
     QJSValue byteArrayToScriptValue(const QByteArray byteArray);
-    // Throws EvaluationException and NullEngineException.
     QJSValue evaluateCodeString(const QString& program, const QString& fileName = QString(),
-    		int lineNumber = 1);
+            int lineNumber = 1);
 
     // Shows a UI dialog notifying of a script evaluation error.
     // Precondition: QJSValue.isError() == true
