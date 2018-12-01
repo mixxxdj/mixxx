@@ -78,6 +78,9 @@ class ControllerEngine : public QObject {
         m_bPopups = bPopups;
     }
 
+    bool executeFunction(QJSValue functionObject, QJSValueList arguments);
+    bool executeFunction(QJSValue functionObject, const QByteArray data);
+
     // Wrap a snippet of JS code in an anonymous function
     // Throws EvaluationException and NullEngineException.
     QJSValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
@@ -124,19 +127,6 @@ class ControllerEngine : public QObject {
     virtual void timerEvent(QTimerEvent *event);
 
   public slots:
-    // Execute a basic MIDI message callback.
-    bool execute(QJSValue function,
-                 unsigned char channel,
-                 unsigned char control,
-                 unsigned char value,
-                 unsigned char status,
-                 const QString& group,
-                 mixxx::Duration timestamp);
-
-    // Execute a byte array callback.
-    bool execute(QJSValue function, const QByteArray data,
-                 mixxx::Duration timestamp);
-
     // Evaluates all provided script files and returns true if no script errors
     // occurred while evaluating them.
     bool loadScriptFiles(const QList<QString>& scriptPaths,
@@ -156,8 +146,6 @@ class ControllerEngine : public QObject {
     bool internalExecute(QJSValue thisObject, const QString& scriptCode);
     bool internalExecute(const QString& scriptCode);
     bool internalExecute(QJSValue thisObject, QJSValue functionObject,
-                         QJSValueList arguments);
-    bool internalExecute(QJSValue functionObject,
                          QJSValueList arguments);
     void initializeScriptEngine();
     void reloadScripts();

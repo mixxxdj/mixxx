@@ -355,7 +355,7 @@ bool ControllerEngine::internalExecute(QJSValue thisObject, QJSValue functionObj
     return true;
 }
 
-bool ControllerEngine::internalExecute(QJSValue functionObject,
+bool ControllerEngine::executeFunction(QJSValue functionObject,
                                        QJSValueList args) {
     VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
         return false;
@@ -364,36 +364,15 @@ bool ControllerEngine::internalExecute(QJSValue functionObject,
     return internalExecute(m_pScriptEngine->globalObject(), functionObject, args);
 }
 
-bool ControllerEngine::execute(QJSValue functionObject,
-                               unsigned char channel,
-                               unsigned char control,
-                               unsigned char value,
-                               unsigned char status,
-                               const QString& group,
-                               mixxx::Duration timestamp) {
-    Q_UNUSED(timestamp);
-    VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
-        return false;
-    }
-    QJSValueList args;
-    args << QJSValue(channel);
-    args << QJSValue(control);
-    args << QJSValue(value);
-    args << QJSValue(status);
-    args << QJSValue(group);
-    return internalExecute(m_pScriptEngine->globalObject(), functionObject, args);
-}
 
-bool ControllerEngine::execute(QJSValue function, const QByteArray data,
-                               mixxx::Duration timestamp) {
-    Q_UNUSED(timestamp);
+bool ControllerEngine::executeFunction(QJSValue functionObject, const QByteArray data) {
     VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
         return false;
     }
     QJSValueList args;
     args << byteArrayToScriptValue(data);
     args << QJSValue(data.size());
-    return internalExecute(m_pScriptEngine->globalObject(), function, args);
+    return executeFunction(functionObject, args);
 }
 
 QJSValue ControllerEngine::evaluateCodeString(const QString& program, const QString& fileName,
@@ -1018,7 +997,7 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
     if (timerTarget.callback.isString()) {
         internalExecute(timerTarget.callback.toString());
     } else if (timerTarget.callback.isCallable()) {
-        internalExecute(timerTarget.callback, QJSValueList());
+        executeFunction(timerTarget.callback, QJSValueList());
     }
 }
 
