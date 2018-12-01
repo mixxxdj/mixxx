@@ -112,7 +112,9 @@ Variables:
           <WidgetGroup><!-- show when Spinny/Cover ON & small selected -->
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:spinnyCover_mini.xml"/>
+              <Template src="skin:spinnyCover_mini.xml">
+                <SetVariable name="deck"><Variable name="chanNum"/></SetVariable>
+              </Template>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
@@ -127,7 +129,9 @@ Variables:
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:spinnyCover_mini.xml"/>
+                  <Template src="skin:spinnyCover_mini.xml">
+                    <SetVariable name="deck"><Variable name="chanNum"/></SetVariable>
+                  </Template>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Master],show_mixer</ConfigKey>

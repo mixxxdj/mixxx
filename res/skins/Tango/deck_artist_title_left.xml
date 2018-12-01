@@ -60,28 +60,6 @@ Variables:
                 <Connection>
                   <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                 </Connection>
-                <Connection>
-                  <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
-                  <Transform><IsEqual>2</IsEqual><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </NumberPos>
-              
-              <!-- Elapsed & Remaining -->
-              <NumberPos>
-                <ObjectName>PlayPosition</ObjectName>
-                <TooltipId>track_time</TooltipId>
-                <Size>162min,22f</Size>
-                <Alignment>right</Alignment>
-                <Channel><Variable name="chanNum"/></Channel>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
-                </Connection>
-                <Connection>
-                  <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
-                  <Transform><IsEqual>2</IsEqual></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
               </NumberPos>
 
               <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
