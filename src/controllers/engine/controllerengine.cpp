@@ -315,6 +315,7 @@ bool ControllerEngine::executeFunction(QJSValue functionObject, QJSValueList arg
     QJSValue returnValue = functionObject.call(args);
 
     if (returnValue.isError()) {
+        showScriptExceptionDialog(returnValue);
         return false;
     }
     return true;
@@ -339,7 +340,9 @@ QJSValue ControllerEngine::evaluateCodeString(const QString& program, const QStr
     }
 
     QJSValue returnValue = m_pScriptEngine->evaluate(program, fileName, lineNumber);
-    showScriptExceptionDialog(returnValue);
+    if (returnValue.isError()) {
+        showScriptExceptionDialog(returnValue);
+    }
     return returnValue;
 }
 
@@ -632,6 +635,9 @@ void ScriptConnection::executeCallback(double value) const {
     QJSValue func = callback; // copy function because QJSValue::call is not const
     QJSValue result = func.call(args);
     if (result.isError()) {
+        if (controllerEngine != nullptr) {
+            controllerEngine->showScriptExceptionDialog(result);
+        }
         qWarning() << "ControllerEngine: Invocation of connection " << id.toString()
                    << "connected to (" + key.group + ", " + key.item + ") failed:"
                    << result.toString();

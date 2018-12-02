@@ -194,6 +194,7 @@ class ControllerEngine : public QObject {
     QFileSystemWatcher m_scriptWatcher;
     QList<QString> m_lastScriptPaths;
 
+    friend class ScriptConnection;
     friend class ControllerEngineJSProxy;
     friend class ControllerEngineTest;
 };
