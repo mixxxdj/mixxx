@@ -6,6 +6,7 @@
 
 #include "control/controlproxy.h"
 #include "track/track.h"
+#include "util/color.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "widget/wskincolor.h"
@@ -22,6 +23,7 @@ WaveformRenderMark::WaveformRenderMark(
 }
 
 void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
+    setupColorsRepresentation(node, context);
     m_marks.setup(m_waveformRenderer->getGroup(), node, context,
                   *m_waveformRenderer->getWaveformSignalColors());
 }
@@ -108,7 +110,7 @@ void WaveformRenderMark::slotCuesUpdated() {
         }
 
         QString newLabel = pCue->getLabel();
-        QColor newColor = pCue->getColor();
+        QColor newColor = m_pPredefinedColorsRepresentation->map(pCue->getColor());
 
         // Here we assume no two cues can have the same hotcue assigned,
         // because WaveformMarkSet stores one mark for each hotcue.
@@ -224,8 +226,8 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
         // Prepare colors for drawing of marker lines
         QColor lineColor = markProperties.m_color;
         lineColor.setAlpha(200);
-        bool markerBrightnessLow= isDimmColor(lineColor);
-        QColor contrastLineColor =  chooseContrastColorB(markerBrightnessLow);
+        bool markerBrightnessLow= Color::isDimmColor(lineColor);
+        QColor contrastLineColor =  Color::chooseContrastColorB(markerBrightnessLow);
         contrastLineColor.setAlpha(180);
 
         // Draw marker lines
@@ -297,7 +299,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
         // Draw text
         painter.setBrush(QBrush(QColor(0,0,0,0)));
         painter.setFont(font);
-        painter.setPen(chooseContrastColorB(markerBrightnessLow));
+        painter.setPen(Color::chooseContrastColorB(markerBrightnessLow));
         painter.drawText(labelRect, Qt::AlignCenter, label);
     }
     else //no text draw triangle
@@ -368,5 +370,17 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
         painter.setPen(QColor(0,0,0,100));
         painter.drawLine(middle - 1, lineTop, middle - 1, lineBottom);
         painter.drawLine(middle + 1, lineTop, middle + 1, lineBottom);
+    }
+}
+
+void WaveformRenderMark::setupColorsRepresentation(const QDomNode& node, const SkinContext& context) {
+    m_pPredefinedColorsRepresentation = Color::defaultRepresentation();
+
+    for (QString colorName : Color::predefinedColorsNames()) {
+        QColor representation = context.selectColor(node, colorName);
+        if (representation.isValid()) {
+            QString colorCode = Color::predefinedColorFromName(colorName);
+            m_pPredefinedColorsRepresentation->setRepresentation(colorCode, representation);
+        }
     }
 }

@@ -33,6 +33,9 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
 
   private:
     void generateMarkImage(WaveformMark* pMark);
+    void setupColorsRepresentation(const QDomNode& node, const SkinContext& context);
+
+    std::unique_ptr<ColorsRepresentation> m_pPredefinedColorsRepresentation;
 
     WaveformMarkSet m_marks;
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
