@@ -78,11 +78,11 @@ QList<QString> ParserM3u::parse(QString sFilename)
             textstream.setCodec("windows-1252");
         }
 
-        while(!textstream.atEnd()) {
+        while (!textstream.atEnd()) {
             QString sLine = getFilepath(&textstream, basepath);
-            if(sLine.isEmpty())
-                break;
-
+            if (sLine.isEmpty()) {
+                continue;
+            }
             //qDebug() << "ParserM3u: parsed: " << (sLine);
             m_sLocations.append(sLine);
         }
@@ -96,7 +96,7 @@ QList<QString> ParserM3u::parse(QString sFilename)
 }
 
 
-QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
+QString ParserM3u::getFilepath(QTextStream* stream, QString basepath)
 {
     QString textline,filename = "";
 
