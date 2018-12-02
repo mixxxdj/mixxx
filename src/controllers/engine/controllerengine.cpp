@@ -31,7 +31,8 @@ const int kScratchTimerMs = 1;
 const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 
 ControllerEngine::ControllerEngine(Controller* controller)
-        : m_pScriptEngine(nullptr),
+        : m_bDisplayingExceptionDialog(false),
+          m_pScriptEngine(nullptr),
           m_pController(controller),
           m_bPopups(true) {
     // Handle error dialog buttons
@@ -349,6 +350,7 @@ void ControllerEngine::showScriptExceptionDialog(QJSValue evaluationResult) {
     VERIFY_OR_DEBUG_ASSERT(evaluationResult.isError()) {
         return;
     }
+
     QString errorMessage = evaluationResult.toString();
     QString line = evaluationResult.property("lineNumber").toString();
     QString backtrace = evaluationResult.property("stack").toString();
@@ -357,15 +359,19 @@ void ControllerEngine::showScriptExceptionDialog(QJSValue evaluationResult) {
     QString errorText = tr("Uncaught exception at line %1 in file %2: %3")
             .arg(line, (filename.isEmpty() ? "" : filename), errorMessage);
 
-    qDebug() << errorText;
-
     if (filename.isEmpty())
         errorText = tr("Uncaught exception at line %1 in passed code: %2")
                 .arg(line, errorMessage);
 
-    scriptErrorDialog(ControllerDebug::enabled() ?
+    QString detailedError = ControllerDebug::enabled() ?
             QString("%1\nBacktrace:\n%2")
-            .arg(errorText, backtrace) : errorText);
+            .arg(errorText, backtrace) : errorText;
+
+    qWarning() << "ControllerEngine:" << detailedError;
+
+    if (!m_bDisplayingExceptionDialog) {
+        scriptErrorDialog(detailedError);
+    }
 }
 
 /*  -------- ------------------------------------------------------
@@ -375,7 +381,6 @@ void ControllerEngine::showScriptExceptionDialog(QJSValue evaluationResult) {
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scriptErrorDialog(const QString& detailedError) {
-    qWarning() << "ControllerEngine:" << detailedError;
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Controller script error"));
@@ -394,6 +399,7 @@ void ControllerEngine::scriptErrorDialog(const QString& detailedError) {
     props->setModal(false);
 
     if (ErrorDialogHandler::instance()->requestErrorDialog(props)) {
+        m_bDisplayingExceptionDialog = true;
         // Enable custom handling of the dialog buttons
         connect(ErrorDialogHandler::instance(), SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),
                 this, SLOT(errorDialogButton(QString, QMessageBox::StandardButton)));
@@ -408,6 +414,7 @@ void ControllerEngine::scriptErrorDialog(const QString& detailedError) {
 void ControllerEngine::errorDialogButton(const QString& key, QMessageBox::StandardButton button) {
     Q_UNUSED(key);
 
+    m_bDisplayingExceptionDialog = false;
     // Something was clicked, so disable this signal now
     disconnect(ErrorDialogHandler::instance(),
                SIGNAL(stdButtonClicked(QString, QMessageBox::StandardButton)),

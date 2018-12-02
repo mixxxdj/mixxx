@@ -160,6 +160,7 @@ class ControllerEngine : public QObject {
     // Shows a UI dialog notifying of a script evaluation error.
     // Precondition: QJSValue.isError() == true
     void showScriptExceptionDialog(QJSValue evaluationResult);
+    bool m_bDisplayingExceptionDialog;
     QJSEngine *m_pScriptEngine;
 
     ControlObjectScript* getControlObjectScript(const QString& group, const QString& name);
