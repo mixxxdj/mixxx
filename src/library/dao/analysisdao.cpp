@@ -125,7 +125,6 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
             "VALUES (:trackId,:type,:description,:version,:data_checksum)")
                       .arg(s_analysisTableName));
 
-        QByteArray waveformBytes;
         query.bindValue(":trackId", info->trackId.toVariant());
         query.bindValue(":type", info->type);
         query.bindValue(":description", info->description);

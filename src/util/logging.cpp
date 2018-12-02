@@ -210,7 +210,7 @@ void Logging::initialize(const QDir& settingsDir,
             QString olderlogname =
                     settingsDir.filePath(QString("mixxx.log.%1").arg(i + 1));
             // This should only happen with number 10
-            if (QFileInfo(olderlogname).exists()) {
+            if (QFileInfo::exists(olderlogname)) {
                 QFile::remove(olderlogname);
             }
             if (!QFile::rename(logFileName, olderlogname)) {

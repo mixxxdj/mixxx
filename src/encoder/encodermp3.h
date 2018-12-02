@@ -6,7 +6,7 @@
 #include "util/types.h"
 #include "encoder/encoder.h"
 
-class EncoderMp3 : public Encoder {
+class EncoderMp3 final : public Encoder {
   public:
     static const int MONO_BITRATE_THRESHOLD;
     static const int MONO_VBR_THRESHOLD;

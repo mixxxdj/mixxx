@@ -185,7 +185,8 @@ class MixxxBuild(object):
             # support x64.
             # In SConscript.env we use the MSVS tool to let you generate a
             # Visual Studio solution. Consider removing this.
-            tools.extend(['msvs'])
+            tools.extend(['msvs', 'signtool'])
+            toolpath.append('#/build/windows/')
             # SCons's built-in Qt tool attempts to link 'qt' into your binary if
             # you don't do this.
             extra_arguments['QT_LIB'] = ''
@@ -600,8 +601,8 @@ class MixxxBuild(object):
                                         'move or delete it.' % sconsign_file)
                     print("shutil.copy %s -> %s" % (old_virtual_sconsign_file, sconsign_file))
                     shutil.copy(old_virtual_sconsign_file, sconsign_file)
-                if os.path.isfile(old_virtual_sconf_temp_dir):
-                    if os.path.isfile(sconf_temp_dir):
+                if os.path.isdir(old_virtual_sconf_temp_dir):
+                    if os.path.isdir(sconf_temp_dir):
                         raise Exception('%s exists without a .sconsign.branch file so '
                                         'build virtualization cannot continue. Please '
                                         'move or delete it.' % sconf_temp_dir)

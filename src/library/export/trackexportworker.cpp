@@ -26,42 +26,44 @@ QMap<QString, QFileInfo> createCopylist(const QList<TrackPointer>& tracks) {
     // efficiently.
     QMap<QString, QFileInfo> copylist;
     for (const auto& it : tracks) {
-        auto fileinfo = it->getFileInfo();
+        if (it->getCanonicalLocation().isEmpty()) {
+            qWarning()
+                    << "File not found or inaccessible while exporting"
+                    << it->getLocation();
+            // Skip file
+            continue;
+        }
 
-        // The munging loop is on the outside because for each munged name
-        // we have to see if we already munged the same file the same way.
-        bool success = false;
-        for (int i = 0; i < 10000; ++i) {
-            QString dest_filename;
-            // For the first case, just use the filename as-is.
-            if (i == 0) {
-                dest_filename = fileinfo.fileName();
-            } else {
-                dest_filename = rewriteFilename(fileinfo, i);
-            }
-            auto seen_it = copylist.find(dest_filename);
-            if (seen_it == copylist.end()) {
+        // When obtaining the canonical location the file info of the
+        // track might have been refreshed. Get it now.
+        const auto fileInfo = it->getFileInfo();
+
+        const auto fileName = fileInfo.fileName();
+        auto destFileName = fileName;
+        int duplicateCounter = 0;
+        do {
+            const auto duplicateIter = copylist.find(destFileName);
+            if (duplicateIter == copylist.end()) {
                 // Usual case -- haven't seen this filename before, so add it.
-                copylist[dest_filename] = fileinfo;
-                success = true;
+                copylist[destFileName] = fileInfo;
                 break;
             }
-
-            if (fileinfo.canonicalFilePath() == seen_it->canonicalFilePath()) {
-                // These are the same file, so don't add this new one to the
-                // list.
-                success = true;
+            if (fileInfo.canonicalFilePath() == duplicateIter->canonicalFilePath()) {
+                // Silently ignore and skip duplicate files that point
+                // to the same location on disk
                 break;
             }
-
-            // seen filename, but different files.  Need to munge so continue
-            // the loop.
-        }
-
-        if (!success) {
-            qWarning() << "We tried 10000 mungings of the filename and did not "
-                    "find anything that wasn't taken. Giving up.";
-        }
+            if (++duplicateCounter >= 10000) {
+                qWarning()
+                        << "Failed to generate a unique file name from"
+                        << fileName
+                        << "while exporting"
+                        << it->getLocation();
+                break;
+            }
+            // Next round
+            destFileName = rewriteFilename(fileInfo, duplicateCounter);
+        } while (!destFileName.isEmpty());
     }
     return copylist;
 }

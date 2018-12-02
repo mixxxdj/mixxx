@@ -49,6 +49,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
             this, SLOT(trackLoaded(QString, TrackPointer)));
     connect(&m_pTrackCollection->getTrackDAO(), SIGNAL(forceModelUpdate()),
             this, SLOT(select()));
+    // TODO(rryan): This is a virtual function call from a constructor.
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 

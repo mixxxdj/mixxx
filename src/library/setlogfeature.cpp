@@ -18,7 +18,8 @@ SetlogFeature::SetlogFeature(QObject* parent,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
           m_playlistId(-1),
-          m_libraryWidget(nullptr) {
+          m_libraryWidget(nullptr),
+          m_icon(":/images/library/ic_library_history.svg") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true); //show all tracks
@@ -54,7 +55,7 @@ QVariant SetlogFeature::title() {
 }
 
 QIcon SetlogFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_history.svg");
+    return m_icon;
 }
 
 void SetlogFeature::bindWidget(WLibrary* libraryWidget,

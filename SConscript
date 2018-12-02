@@ -36,23 +36,23 @@ flags = build.flags
 # both mixxx and mixxx-test.
 mixxx_lib = env.StaticLibrary('libmixxx',
                               [source for source in sources
-                               if str(source) != 'main.cpp'])
+                               if str(source) != 'src/main.cpp'])
 # mixxx.qrc must not be bundled into libmixxx.a since the linker will not link
 # it into the resulting binary unless it is on the link command-line explicitly
 # (it has no link-time symbols that are needed by anything in Mixxx).
-mixxx_qrc = env.StaticObject(env.Qrc5('qrc_mixxx', '#res/mixxx.qrc'))
+mixxx_qrc = env.StaticObject(env.Qrc5('res/mixxx.cc', 'res/mixxx.qrc'))
 # libmixxx.a needs to precede all other libraries so that symbols it requires
 # end up in the linker's list of unresolved symbols before other libraries are
 # searched for symbols.
 env.Prepend(LIBS=mixxx_lib)
-mixxx_main = env.StaticObject('main.cpp')
+mixxx_main = env.StaticObject('src/main.cpp')
 
 #Tell SCons to build Mixxx
 #=========================
 if build.platform_is_windows:
         dist_dir = 'dist%s' % build.bitwidth
         # Populate the stuff that changes in the .rc file
-        fo = open(File('#src/mixxx.rc.include').abspath, "w")
+        fo = open(File('src/mixxx.rc.include').abspath, "w")
 
         str_list = []
         str_list.append('#define VER_FILEVERSION             ')
@@ -80,7 +80,7 @@ if build.platform_is_windows:
         fo.write(''.join(str_list))
         fo.close()
 
-        mixxx_rc = env.RES('#src/mixxx.rc')
+        mixxx_rc = env.RES('src/mixxx.rc')
         mixxx_bin = env.Program('mixxx',
                                 [mixxx_main, mixxx_qrc, mixxx_rc],
                                 LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
@@ -110,24 +110,24 @@ else:
 test_bin = None
 def define_test_targets(default=False):
         global test_bin
-        test_files = Glob('test/*.cpp', strings=True)
+        test_files = Glob('src/test/*.cpp', strings=True)
         test_env = env.Clone()
-        test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
-        test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
-        test_env.Append(CPPPATH="#lib/benchmark/include")
-        test_files = [test_env.StaticObject(filename)
-                      if filename !='main.cpp' else filename
-                      for filename in test_files]
-        test_sources = test_files
 
-        test_env.Append(LIBPATH="#lib/gtest-1.7.0/lib")
+        test_env.Append(CPPPATH="lib/gtest-1.7.0/include")
+        test_env.Append(LIBPATH="lib/gtest-1.7.0")
         test_env.Append(LIBS=['gtest'])
 
-        test_env.Append(LIBPATH="#lib/gmock-1.7.0/lib")
+        test_env.Append(CPPPATH="lib/gmock-1.7.0/include")
+        test_env.Append(LIBPATH="lib/gmock-1.7.0")
         test_env.Append(LIBS=['gmock'])
 
-        test_env.Append(LIBPATH="#lib/benchmark/lib")
+        test_env.Append(CPPPATH="lib/benchmark/include")
+        test_env.Append(LIBPATH="lib/benchmark")
         test_env.Append(LIBS=['benchmark'])
+
+        test_files = [test_env.StaticObject(filename)
+                      if filename !='src/test/main.cpp' else filename
+                      for filename in test_files]
 
         if build.platform_is_windows:
                 # For SHGetValueA in Google's benchmark library.
@@ -144,10 +144,10 @@ def define_test_targets(default=False):
                 # Currently both executables are built with /subsystem:windows
                 # and the console is attached manually
                 test_bin = test_env.Program(
-                        'mixxx-test', [test_sources, mixxx_qrc, mixxx_rc],
+                        'mixxx-test', [test_files, mixxx_qrc, mixxx_rc],
                         LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
         else:
-                test_bin = test_env.Program('mixxx-test', [test_sources, mixxx_qrc])
+                test_bin = test_env.Program('mixxx-test', [test_files, mixxx_qrc])
 
         if not build.platform_is_windows:
                 copy_test_bin = Command("../mixxx-test", test_bin, Copy("$TARGET", "$SOURCE"))
@@ -381,9 +381,8 @@ if build.platform_is_linux or build.platform_is_bsd:
                 skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
                 fonts = env.Install(os.path.join(unix_share_path, 'mixxx', 'fonts'), font_files)
                 vamp_plugin =  env.Install(
-                        os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vamp'),
-                        libmixxxminimal_vamp_plugin)
-
+                    os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vampqt5'),
+                    libmixxxminimal_vamp_plugin)
                 controllermappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'controllers'), controllermappings_files)
                 translations = env.Install(os.path.join(unix_share_path, 'mixxx', 'translations'), translation_files)
                 keyboardmappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'keyboard'), keyboardmappings_files)
@@ -552,16 +551,29 @@ if build.platform_is_windows:
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
 
+        binaries_to_codesign = [binary, dlls, vamp_plugins]
+
         # imageformats DLL
         if imgfmtdll_files:
                 imageformats_dll = env.Install(os.path.join(base_dist_dir, "imageformats"), imgfmtdll_files)
+                binaries_to_codesign.append(imageformats_dll)
                 env.Alias('mixxx', imageformats_dll)
 
         # QSQLite DLL
         if sqldll_files:
                 sql_dlls = env.Install(os.path.join(base_dist_dir, "sqldrivers"), sqldll_files)
+                binaries_to_codesign.append(sql_dlls)
                 env.Alias('mixxx', sql_dlls)
 
+        if 'sign' in COMMAND_LINE_TARGETS:
+            codesign_subject_name = SCons.ARGUMENTS.get('windows_codesign_subject_name', '')
+            if not codesign_subject_name:
+                raise Exception('Code-signing was requested but windows_codesign_subject_name was not provided.')
+            codesign = env.SignTool(
+                'Mixxx_signtool',
+                binaries_to_codesign,
+                SUBJECT_NAME=codesign_subject_name)
+            env.Alias('sign', codesign)
 
 def BuildRelease(target, source, env):
     print("==== Mixxx Post-Build Checks ====")
@@ -579,8 +591,8 @@ def BuildRelease(target, source, env):
     package_version = construct_version(build, mixxx_version, branch_name,
                                         vcs_revision)
     arch = "x64" if build.machine_is_64bit else "x86"
-    exe_name = '%s-%s-%s.msi' % (package_name, package_version, arch)
-    print(exe_name)
+    msi_name = '%s-%s-%s.msi' % (package_name, package_version, arch)
+    print(msi_name)
     print("Top line of README, check version:")
     if build.platform_is_windows:
         os.system('for /l %l in (1,1,1) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" README ^| findstr /r "^%l:"\') do @echo %b')
@@ -591,6 +603,7 @@ def BuildRelease(target, source, env):
         os.system('for /l %l in (1,1,2) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" LICENSE ^| findstr /r "^%l:"\') do @echo %b')
     else:
         os.system('head -n 2 LICENSE')
+
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
         # TODO(XXX): Installing a runtime isn't specific to MSVS?
@@ -734,7 +747,7 @@ def BuildRelease(target, source, env):
         command = '"%(wix)s\\light.exe" -cc .\ -nologo -sw1076 -spdb -ext WixUIExtension -cultures:%(deflang)s -loc build\wix\Localization\mixxx_%(deflang)s.wxl -out %(package_name)s build\wix\*.wixobj build\wix\subdirs\*.wixobj' % \
             {'wix': wix_path,
              'deflang': defaultLanguage,
-             'package_name': 'part.' + exe_name}
+             'package_name': 'part.' + msi_name}
         print("Using Command: " + command)
         subprocess.check_call(command)
 
@@ -783,14 +796,14 @@ def BuildRelease(target, source, env):
             command = '"%(wix)s\\torch.exe" -nologo -p -t language %(package_name)s %(lang)s.msi -o %(lang)s.mst' % \
                 {'wix': wix_path,
                  'lang': culture,
-                 'package_name': 'part.' + exe_name}
+                 'package_name': 'part.' + msi_name}
             print("Using Command: " + command)
             subprocess.check_call(command)
 
             command = 'cscript "%(winsdk)s\wisubstg.vbs" %(package_name)s %(lang)s.mst %(langid)s' % \
                 {'winsdk': WinSDK_path,
                  'lang': culture,
-                 'package_name': 'part.' + exe_name,
+                 'package_name': 'part.' + msi_name,
                  'langid': LCID}
             print("Using Command: " + command)
             subprocess.check_call(command)
@@ -802,7 +815,7 @@ def BuildRelease(target, source, env):
         print("*** Add all supported languages to MSI Package attribute")
         command = 'cscript "%(winsdk)s\WiLangId.vbs" %(package_name)s Package %(langid)s' % \
             {'winsdk': WinSDK_path,
-             'package_name': 'part.' + exe_name,
+             'package_name': 'part.' + msi_name,
              'langid': langIds}
         print("Using Command: " + command)
         subprocess.check_call(command)
@@ -813,9 +826,9 @@ def BuildRelease(target, source, env):
         bundlelocfile.close()
 
         # Everything is OK, now rename the msi to final name
-        if os.path.isfile(exe_name):
-            os.remove(exe_name)
-        os.rename('part.' + exe_name, exe_name)
+        if os.path.isfile(msi_name):
+            os.remove(msi_name)
+        os.rename('part.' + msi_name, msi_name)
 
         print("*** Compiling Bundle")
         # Compile bundle wix file
@@ -823,7 +836,7 @@ def BuildRelease(target, source, env):
             {'wix': wix_path,
              'winlibpath': build.winlib_path,
              'arch': winArch,
-             'package_name': exe_name}
+             'package_name': msi_name}
         print("Using Command: " + command)
         subprocess.check_call(command)
         # bundle localisation references
@@ -831,16 +844,47 @@ def BuildRelease(target, source, env):
             {'wix': wix_path,
              'winlibpath': build.winlib_path,
              'arch': winArch,
-             'package_name': exe_name}
+             'package_name': msi_name}
         print("Using Command: " + command)
         subprocess.check_call(command)
+        exe_name = os.path.splitext(msi_name)[0] + '.exe'
         command = '"%(wix)s\\light.exe" -cc .\ -nologo -sw1076 -spdb -ext WixUtilExtension -ext WixBalExtension -dMSIPackage=%(msi_name)s -cultures:%(deflang)s -loc build\wix\Localization\mixxx_%(deflang)s.wxl -out %(package_name)s build\\wix\\bundle\\*.wixobj' % \
             {'wix': wix_path,
              'deflang': defaultLanguage,
-             'msi_name': exe_name,
-             'package_name': os.path.splitext(exe_name)[0] + '.exe'}
+             'msi_name': msi_name,
+             'package_name': exe_name}
         print("Using Command: " + command)
         subprocess.check_call(command)
+
+        if 'sign' in COMMAND_LINE_TARGETS:
+            from build.windows import signtool
+            codesign_subject_name = SCons.ARGUMENTS.get('windows_codesign_subject_name', '')
+            if not codesign_subject_name:
+                raise Exception('Code-signing was requested but windows_codesign_subject_name was not provided.')
+
+            print("*** Signing Bundle")
+            # In addition to simply signing the installer executable, we have to
+            # extract and sign the "burn engine". See
+            # http://wixtoolset.org/documentation/manual/v3/overview/insignia.html for details.
+            command = ("%(wix)s\\insignia.exe -ib %(package_name)s -o setup.exe" % {
+                    "wix": wix_path,
+                    "package_name": exe_name,
+            })
+            print("Using Command: " + command)
+            subprocess.check_call(command)
+
+            # Imperatively sign the file since the whole WiX process is imperative.
+            signtool.signtool_path(codesign_subject_name, 'setup.exe')
+
+            command = ("%(wix)s\\insignia.exe -ab setup.exe %(package_name)s -o %(package_name)s" % {
+                    "wix": wix_path,
+                    "package_name": exe_name,
+            })
+            print("Using Command: " + command)
+            subprocess.check_call(command)
+
+            # Now sign the final package imperatively.
+            signtool.signtool_path(codesign_subject_name, exe_name)
 
         # Some cleaning before leaving
         for file in glob.glob('*.cab'):
@@ -851,7 +895,7 @@ def BuildRelease(target, source, env):
             os.remove(file)
         for file in glob.glob('build\wix\subdirs\*.wxs'):
             os.remove(file)
-        os.remove(exe_name)
+        os.remove(msi_name)
 
     else:
         print("Aborted building installer")
@@ -1128,5 +1172,5 @@ versiondebbld = Builder(action = BuildUbuntuPackage) #, suffix = '.foo', src_suf
 env.Append(BUILDERS = {'BuildUbuntuPackage' : versiondebbld})
 
 if 'makeubuntu' in COMMAND_LINE_TARGETS:
-        makeubuntu = env.BuildUbuntuPackage("blah", "defs_version.h" ) #(binary_files)
+        makeubuntu = env.BuildUbuntuPackage("blah", "src/defs_version.h" ) #(binary_files)
         env.Alias('makeubuntu', makeubuntu)

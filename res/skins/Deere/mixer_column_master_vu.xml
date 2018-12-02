@@ -18,7 +18,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform>
             <Not/>
@@ -66,7 +66,7 @@
                       </WidgetGroup>
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_faders</ConfigKey>
+                      <ConfigKey>[Skin],show_faders</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- show EQ, show faders -->
@@ -92,14 +92,14 @@
                       </WidgetGroup>
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_faders</ConfigKey>
+                      <ConfigKey>[Skin],show_faders</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- show EQ, no faders -->
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- show EQ -->
@@ -124,13 +124,13 @@
                     <Children>
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_faders</ConfigKey>
+                      <ConfigKey>[Skin],show_faders</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- no EQ, show faders -->
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -169,7 +169,7 @@
                   </WidgetGroup>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- show EQ -->
@@ -194,13 +194,13 @@
                     <Children>
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_faders</ConfigKey>
+                      <ConfigKey>[Skin],show_faders</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- no EQ, show faders -->
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -214,7 +214,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- MasterVu4Deck -->

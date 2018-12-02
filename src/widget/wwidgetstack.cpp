@@ -27,21 +27,13 @@ void WidgetStackControlListener::onCurrentWidgetChanged(int index) {
     }
 }
 
-WWidgetStack::WWidgetStack(QWidget* pParent,
-                           ControlObject* pNextControl,
-                           ControlObject* pPrevControl,
-                           ControlObject* pCurrentPageControl)
+WWidgetStack::WWidgetStack(QWidget* pParent, const ConfigKey& nextConfigKey,
+        const ConfigKey& prevConfigKey, const ConfigKey& currentPageConfigKey)
         : QStackedWidget(pParent),
           WBaseWidget(this),
-          m_nextControl(
-                  pNextControl ?
-                  pNextControl->getKey() : ConfigKey(), this),
-          m_prevControl(
-                  pPrevControl ?
-                  pPrevControl->getKey() : ConfigKey(), this),
-          m_currentPageControl(
-                  pCurrentPageControl ?
-                  pCurrentPageControl->getKey() : ConfigKey(), this) {
+          m_nextControl(nextConfigKey, this),
+          m_prevControl(prevConfigKey, this),
+          m_currentPageControl(currentPageConfigKey, this) {
     m_nextControl.connectValueChanged(SLOT(onNextControlChanged(double)));
     m_prevControl.connectValueChanged(SLOT(onPrevControlChanged(double)));
     m_currentPageControl.connectValueChanged(
@@ -82,8 +74,8 @@ void WWidgetStack::hideIndex(int index) {
         return;
     }
     if (currentIndex() == index) {
-        QMap<int, int>::const_iterator it = m_hideMap.find(index);
-        if (it != m_hideMap.end()) {
+        auto it = m_hideMap.constFind(index);
+        if (it != m_hideMap.constEnd()) {
             setCurrentIndex(*it);
         } else {
             // TODO: This default behavior is a little odd, is it really what
@@ -177,5 +169,5 @@ bool WWidgetStack::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QFrame::event(pEvent);
+    return QStackedWidget::event(pEvent);
 }

@@ -52,7 +52,8 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
           m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),
           m_pAutoDJProcessor(NULL),
           m_pAutoDJView(NULL),
-          m_autoDjCratesDao(m_iAutoDJPlaylistId, pTrackCollection, pConfig) {
+          m_autoDjCratesDao(m_iAutoDJPlaylistId, pTrackCollection, pConfig),
+          m_icon(":/images/library/ic_library_autodj.svg") {
 
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
@@ -98,7 +99,7 @@ QVariant AutoDJFeature::title() {
 }
 
 QIcon AutoDJFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_autodj.svg");
+    return m_icon;
 }
 
 void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
@@ -132,7 +133,7 @@ TreeItemModel* AutoDJFeature::getChildModel() {
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
     emit(switchToView(m_sAutoDJViewName));
-    emit(restoreSearch(QString())); //Null String disables search box
+    emit disableSearch();
     emit(enableCoverArtDisplay(true));
 }
 

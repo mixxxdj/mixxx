@@ -59,8 +59,12 @@ void MusicBrainzClient::cancel(int id) {
 }
 
 void MusicBrainzClient::cancelAll() {
-    qDeleteAll(m_requests.keys());
+    auto requests = m_requests;
     m_requests.clear();
+    for (auto it = requests.constBegin();
+         it != requests.constEnd(); ++it) {
+        delete it.key();
+    }
 }
 
 namespace {

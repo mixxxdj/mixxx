@@ -127,8 +127,9 @@
         </Children>
       </WidgetGroup>
 
-
-      <Template src="skin:spacer_h.xml"/>
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>ToolBarRight</ObjectName>
@@ -215,6 +216,7 @@
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
 
               <WidgetGroup>
@@ -266,21 +268,34 @@
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <SizePolicy>me,min</SizePolicy>
             <Children>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">show_mixer</SetVariable>
+                <SetVariable name="ObjectName">ToolbarButton</SetVariable>
+                <SetVariable name="MinimumSize">55,22</SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="ToolbarButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy">me,f</SetVariable>
+                <SetVariable name="state_0_text">MIXER</SetVariable>
+                <SetVariable name="state_1_text">MIXER</SetVariable>
+                <SetVariable name="left_connection_control">[Master],show_mixer</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
 
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">show_effects</SetVariable>
                 <SetVariable name="ObjectName">ToolbarButton</SetVariable>
-                <SetVariable name="MinimumSize"><Variable name="ToolbarButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MinimumSize">55,22</SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="ToolbarButtonMaximumSize"/></SetVariable>
-                <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
+                <SetVariable name="SizePolicy">me,f</SetVariable>
                 <SetVariable name="state_0_text">EFFECTS</SetVariable>
                 <SetVariable name="state_1_text">EFFECTS</SetVariable>
                 <SetVariable name="left_connection_control">[EffectRack1],show</SetVariable>
               </Template>
 
-              <WidgetGroup><Size>12f,1min</Size></WidgetGroup>
+              <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
 
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">show_samplers</SetVariable>
@@ -293,7 +308,7 @@
                 <SetVariable name="left_connection_control">[Samplers],show_samplers</SetVariable>
               </Template>
 
-              <WidgetGroup><Size>12f,1min</Size></WidgetGroup>
+              <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
 
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">show_microphone</SetVariable>
@@ -313,29 +328,43 @@
             </Connection>
           </WidgetGroup>
 
+          <!-- Hack to apply layoutPadding twice here -->
+          <WidgetGroup><Size>0f,1min</Size></WidgetGroup>
+
           <WidgetGroup>
-            <Size>107f,25f</Size>
-            <BackPath>image/mixxx_logo.svg</BackPath>
+            <Size>94f,22f</Size>
+            <BackPath scalemode="STRETCH_ASPECT">image/mixxx_logo.svg</BackPath>
           </WidgetGroup>
 
           <WidgetGroup>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:left_2state_button.xml">
-                <SetVariable name="TooltipId">skin_settings</SetVariable>
-                <SetVariable name="ObjectName">ShowHideSkinSettingsButton</SetVariable>
-                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text"></SetVariable>
-                <SetVariable name="state_0_pressed">icon/ic_settings_48px.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">icon/ic_settings_48px.svg</SetVariable>
-                <SetVariable name="state_1_text"></SetVariable>
-                <SetVariable name="state_1_pressed">icon/ic_settings_48px.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">icon/ic_settings_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control">[Master],skin_settings</SetVariable>
-              </Template>
+              <PushButton>
+                <TooltipId>skin_settings</TooltipId>
+                <ObjectName>SidebarShowHideSkinSettingsButton</ObjectName>
+                <MinimumSize><Variable name="SquareButtonMinimumSize"/></MinimumSize>
+                <MaximumSize><Variable name="SquareButtonMaximumSize"/></MaximumSize>
+                <SizePolicy><Variable name="SquareButtonSizePolicy"/></SizePolicy>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text><Variable name="state_0_text"/></Text>
+                  <Pressed scalemode="STRETCH_ASPECT">icon/ic_settings_48px.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">icon/ic_settings_48px.svg</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text><Variable name="state_1_text"/></Text>
+                  <Pressed scalemode="STRETCH_ASPECT">icon/ic_settings_48px.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">icon/ic_settings_48px.svg</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
             </Children>
             <Connection>
               <ConfigKey>[Master],skin_settings</ConfigKey>

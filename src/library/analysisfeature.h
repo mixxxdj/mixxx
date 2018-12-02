@@ -77,6 +77,7 @@ class AnalysisFeature : public LibraryFeature {
     const static QString m_sAnalysisViewName;
     QString m_analysisTitleName;
     DlgAnalysis* m_pAnalysisView;
+    QIcon m_icon;
 };
 
 

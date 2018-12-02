@@ -103,9 +103,8 @@ void SoundSourceProviderRegistry::deregisterProviderForFileExtension(
 QList<SoundSourceProviderRegistration>
 SoundSourceProviderRegistry::getRegistrationsForFileExtension(
         const QString& fileExtension) const {
-    FileExtension2RegistrationList::const_iterator i(
-            m_registry.find(fileExtension));
-    if (m_registry.end() != i) {
+    auto i = m_registry.constFind(fileExtension);
+    if (m_registry.constEnd() != i) {
         return i.value();
     } else {
         return QList<SoundSourceProviderRegistration>();

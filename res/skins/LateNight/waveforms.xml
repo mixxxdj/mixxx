@@ -15,20 +15,11 @@
         </Children>
       </WidgetGroup>
 
-      <PushButton>
-        <ObjectName>BeatgridButtonsToggle</ObjectName>
-        <Size>28f,40me</Size>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-        </State>
-        <State>
-          <Number>1</Number>
-        </State>
-        <Connection>
-          <ConfigKey persist="true">[Skin],beatgrid_buttons</ConfigKey>
-        </Connection>
-      </PushButton>
+      <Template src="skin:button_2state_persist.xml">
+        <SetVariable name="ObjectName">BeatgridButtonsToggle</SetVariable>
+        <SetVariable name="Size">28f,40me</SetVariable>
+        <SetVariable name="ConfigKey">[Skin],beatgrid_buttons</SetVariable>
+      </Template>
 
     </Children>
   </WidgetGroup>

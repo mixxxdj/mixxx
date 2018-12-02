@@ -171,13 +171,13 @@ Variables:
                   </StarRating>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],stars</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_starrating</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey>[Tango],stars_fit</ConfigKey>
+              <ConfigKey>[Tango],starrating_fits</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Stars -->

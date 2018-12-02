@@ -14,7 +14,7 @@
 
           <Template src="skin:hide_show_button.xml">
             <SetVariable name="object_name">SamplerRowExpandButton</SetVariable>
-            <SetVariable name="control">[SamplerRow<Variable name="row"/>],expanded</SetVariable>
+            <SetVariable name="control">[Skin],sampler_row_<Variable name="row"/>_expanded</SetVariable>
           </Template>
 
           <!-- Push the button up to the top. -->

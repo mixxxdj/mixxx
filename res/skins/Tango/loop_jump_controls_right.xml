@@ -203,7 +203,7 @@ Variables:
       </WidgetGroup><!-- /Loop & beatjump controls -->
     </Children>
     <Connection>
-      <ConfigKey>[Tango],loop_beatjump_controls</ConfigKey>
+      <ConfigKey>[Skin],show_loop_beatjump_controls</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>
