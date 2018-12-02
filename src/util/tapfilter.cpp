@@ -11,6 +11,7 @@ TapFilter::~TapFilter() {
 }
 
 void TapFilter::tap() {
+    QMutexLocker locker(&m_mutex);
     mixxx::Duration elapsed = m_timer.restart();
     if (elapsed <= m_maxInterval) {
         emit(tapped(m_mean.insert(elapsed.toDoubleMillis()), m_mean.size()));
