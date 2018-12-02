@@ -14,9 +14,9 @@
 
 class EchoGroupState : public EffectState {
   public:
-    // 3 seconds max. This supports the full range of 2 beats for tempos down to
+    // 6 seconds max. This supports the full range of 4 beats for tempos down to
     // 40 BPM.
-    static constexpr int kMaxDelaySeconds = 3;
+    static constexpr int kMaxDelaySeconds = 6;
 
     EchoGroupState(const mixxx::EngineParameters bufferParameters)
            : EffectState(bufferParameters) {

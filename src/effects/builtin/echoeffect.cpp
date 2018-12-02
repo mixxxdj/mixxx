@@ -47,14 +47,14 @@ EffectManifestPointer EchoEffect::getManifest() {
     delay->setShortName(QObject::tr("Time"));
     delay->setDescription(QObject::tr(
         "Delay time\n"
-        "1/8 - 2 beats if tempo is detected\n"
-        "1/8 - 2 seconds if no tempo is detected"));
+        "1/8 - 4 beats if tempo is detected\n"
+        "1/8 - 4 seconds if no tempo is detected"));
     delay->setControlHint(EffectManifestParameter::ControlHint::KNOB_LINEAR);
     delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
     delay->setMinimum(0.0);
     delay->setDefault(0.5);
-    delay->setMaximum(2.0);
+    delay->setMaximum(4.0);
 
     EffectManifestParameterPointer feedback = pManifest->addParameter();
     feedback->setId("feedback_amount");
