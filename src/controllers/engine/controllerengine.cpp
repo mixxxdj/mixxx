@@ -9,7 +9,6 @@
 #include "controllers/engine/controllerengine.h"
 
 #include "controllers/engine/controllerenginejsproxy.h"
-#include "controllers/engine/controllerengineexceptions.h"
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "control/controlobject.h"
