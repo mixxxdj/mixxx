@@ -1,7 +1,6 @@
 <!--
 Description:
-    Full looping controls: in/goto, out/goto, spinbox for beatloop size,
-                           loop move, reloop, reloop cue, beatloop
+    Beatjump controls: jump backward, jump forward, beatsize spinbox
 Variables:
     group : The group for the controls.
 -->

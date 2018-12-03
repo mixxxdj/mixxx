@@ -1,6 +1,6 @@
 <!--
 Description:
-    Looping controls (in, out, reloop, loop move).
+    Fixed-size beatloop buttons
 Variables:
     group: The group for the controls.
 -->
