@@ -181,12 +181,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     setCentralWidget(m_pWidgetParent);
 
     show();
-#if defined(Q_OS_LINUX)
-    // In asynchronous X11, the window will be mapped to screen
-    // some time after being asked to show itself on the screen.
-    extern void qt_x11_wait_for_window_manager(QWidget *mainWin);
-    qt_x11_wait_for_window_manager(this);
-#endif
     pApp->processEvents();
 
     initialize(pApp, args);
