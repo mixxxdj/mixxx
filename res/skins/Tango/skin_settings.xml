@@ -171,7 +171,7 @@ Description:
                     <MinimumSize>182,13</MinimumSize>
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
-                    <Text>Permanent Deck controls:</Text>
+                    <Text>Permanent Deck Controls:</Text>
                     <Alignment>left</Alignment>
                   </Label>
                   <WidgetGroup><!-- Permanent deck control icons -->
@@ -216,7 +216,7 @@ Description:
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
                         <SetVariable name="state_0_icon">xfader_center.svg</SetVariable>
-                        <SetVariable name="state_1_icon">xfader_visible.svg</SetVariable>
+                        <SetVariable name="state_1_icon">xfader_center_attention.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_orientation</SetVariable>
                       </Template>
 
