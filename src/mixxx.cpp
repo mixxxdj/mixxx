@@ -82,7 +82,7 @@
 #endif
 
 #if defined(Q_OS_LINUX)
-#include <QtGui/QX11Info>
+#include <QtX11Extras/QX11Info>
 #include <X11/Xlib.h>
 #include <X11/Xlibint.h>
 // Xlibint.h predates C++ and defines macros which conflict
