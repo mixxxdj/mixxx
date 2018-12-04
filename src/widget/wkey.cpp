@@ -35,7 +35,7 @@ void WKey::setValue(double dValue) {
         if (m_displayKey) {
             keyStr = KeyUtils::keyToString(key);
         }
-        else if (m_displayCents) {
+        if (m_displayCents) {
             double diff_cents = m_engineKeyDistance.get();
             int cents_to_display = static_cast<int>(diff_cents * 100);
             char sign = ' ';
