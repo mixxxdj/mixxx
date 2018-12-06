@@ -47,49 +47,15 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QPushButton" name="pushButtonShuffle">
+      <widget class="QPushButton" name="pushButtonAutoDJ">
        <property name="toolTip">
-        <string>Shuffle the content of the Auto DJ queue.</string>
+        <string>Turn Auto DJ on or off.</string>
        </property>
        <property name="text">
-        <string>Shuffle</string>
+        <string>Enable Auto DJ</string>
        </property>
        <property name="checkable">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonAddRandom">
-       <property name="toolTip">
-        <string>Adds a random track from track sources (crates) to the Auto DJ queue.
-If no track sources are configured, the track is added from the library instead.</string>
-       </property>
-       <property name="text">
-        <string>Add Random</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonSkipNext">
-       <property name="toolTip">
-        <string>Skip the next track in the Auto DJ queue.</string>
-       </property>
-       <property name="text">
-        <string>Skip Track</string>
-       </property>
-       <property name="checkable">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonFadeNow">
-       <property name="toolTip">
-        <string>Trigger the transition to the next track.</string>
-       </property>
-       <property name="text">
-        <string>Fade Now</string>
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -126,6 +92,53 @@ If no track sources are configured, the track is added from the library instead.
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="pushButtonFadeNow">
+       <property name="toolTip">
+        <string>Trigger the transition to the next track.</string>
+       </property>
+       <property name="text">
+        <string>Fade Now</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonSkipNext">
+       <property name="toolTip">
+        <string>Skip the next track in the Auto DJ queue.</string>
+       </property>
+       <property name="text">
+        <string>Skip Track</string>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonShuffle">
+       <property name="toolTip">
+        <string>Shuffle the content of the Auto DJ queue.</string>
+       </property>
+       <property name="text">
+        <string>Shuffle</string>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonAddRandom">
+       <property name="toolTip">
+        <string>Adds a random track from track sources (crates) to the Auto DJ queue.
+If no track sources are configured, the track is added from the library instead.</string>
+       </property>
+       <property name="text">
+        <string>Add Random</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -142,19 +155,6 @@ If no track sources are configured, the track is added from the library instead.
       <widget class="QLabel" name="labelSelectionInfo">
        <property name="text">
         <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonAutoDJ">
-       <property name="toolTip">
-        <string>Turn Auto DJ on or off.</string>
-       </property>
-       <property name="text">
-        <string>Enable Auto DJ</string>
-       </property>
-       <property name="checkable">
-        <bool>true</bool>
        </property>
       </widget>
      </item>
