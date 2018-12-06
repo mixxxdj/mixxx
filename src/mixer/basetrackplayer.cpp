@@ -258,7 +258,7 @@ void BaseTrackPlayerImpl::disconnectLoadedTrack() {
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
     mixxx::Duration elapsed = m_cloneTimer.restart();
-    if (elapsed < mixxx::Duration::fromSeconds(1)) {
+    if (elapsed < mixxx::Duration::fromSeconds(0.5)) {
         // load pressed twice quickly, clone instead of loading
         EngineChannel* pChannel = m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel);
         slotCloneChannel(pChannel);
