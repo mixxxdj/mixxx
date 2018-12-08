@@ -105,7 +105,6 @@ QJSValue ControllerEngine::byteArrayToScriptValue(const QByteArray byteArray) {
     QJSValue arrayBuffer = m_pScriptEngine->toScriptValue(byteArray);
     // We convert the ArrayBuffer to a Uint8 typed array so we can access its bytes
     // with the [] operator.
-    QJSValue m_byteArrayToScriptValueJSFunction = evaluateCodeString("(function(arg1) { return new Uint8Array(arg1) })");
     QJSValueList args;
     args << arrayBuffer;
     return m_byteArrayToScriptValueJSFunction.call(args);
