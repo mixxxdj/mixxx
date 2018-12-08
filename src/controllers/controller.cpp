@@ -140,9 +140,7 @@ void Controller::receive(const QByteArray data, mixxx::Duration timestamp) {
             continue;
         }
         function.append(".incomingData");
-        QJSValue incomingData = m_pEngine->wrapFunctionCode(function, 2);
-        if (!m_pEngine->executeFunction(incomingData, data)) {
-            qWarning() << "Controller: Invalid script function" << function;
-        }
+        QJSValue incomingDataFunction = m_pEngine->wrapFunctionCode(function, 2);
+        m_pEngine->executeFunction(incomingDataFunction, data);
     }
 }
