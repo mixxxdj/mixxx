@@ -884,7 +884,11 @@ bool ControllerEngine::evaluateScriptFile(const QString& scriptName, QList<QStri
    -------- ------------------------------------------------------ */
 int ControllerEngine::beginTimer(int interval, QJSValue timerCallback,
                                  bool oneShot) {
-    if (!timerCallback.isCallable() && !timerCallback.isString()) {
+    if (timerCallback.isString()) {
+        timerCallback = evaluateCodeString(timerCallback.toString());
+    }
+
+    if (!timerCallback.isCallable()) {
         qWarning() << "Invalid timer callback provided to beginTimer."
                    << "Valid callbacks are strings and functions.";
         return 0;
@@ -961,15 +965,7 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
         stopTimer(timerId);
     }
 
-    if (timerTarget.callback.isString()) {
-        QJSValue callback = evaluateCodeString(timerTarget.callback.toString());
-
-        if (!callback.isError() && callback.isCallable()) {
-            executeFunction(callback.toString(), QJSValueList());
-        }
-    } else if (timerTarget.callback.isCallable()) {
-        executeFunction(timerTarget.callback, QJSValueList());
-    }
+    executeFunction(timerTarget.callback, QJSValueList());
 }
 
 double ControllerEngine::getDeckRate(const QString& group) {
