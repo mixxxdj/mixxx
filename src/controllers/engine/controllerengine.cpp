@@ -33,8 +33,7 @@ const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 ControllerEngine::ControllerEngine(Controller* controller)
         : m_bDisplayingExceptionDialog(false),
           m_pScriptEngine(nullptr),
-          m_pController(controller),
-          m_bPopups(true) {
+          m_pController(controller) {
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
 
@@ -846,17 +845,15 @@ bool ControllerEngine::evaluateScriptFile(const QString& scriptName, QList<QStri
     if (!input.open(QIODevice::ReadOnly)) {
         qWarning() << QString("ControllerEngine: Problem opening the script file: %1, error # %2, %3")
                 .arg(filename, QString::number(input.error()), input.errorString());
-        if (m_bPopups) {
-            // Set up error dialog
-            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-            props->setType(DLG_WARNING);
-            props->setTitle("Controller script file problem");
-            props->setText(QString("There was a problem opening the controller script file %1.").arg(filename));
-            props->setInfoText(input.errorString());
+        // Set up error dialog
+        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle("Controller script file problem");
+        props->setText(QString("There was a problem opening the controller script file %1.").arg(filename));
+        props->setInfoText(input.errorString());
 
-            // Ask above layer to display the dialog & handle user response
-            ErrorDialogHandler::instance()->requestErrorDialog(props);
-        }
+        // Ask above layer to display the dialog & handle user response
+        ErrorDialogHandler::instance()->requestErrorDialog(props);
         return false;
     }
 

@@ -74,10 +74,6 @@ class ControllerEngine : public QObject {
     ControllerEngine(Controller* controller);
     virtual ~ControllerEngine();
 
-    void setPopups(bool bPopups) {
-        m_bPopups = bPopups;
-    }
-
     // Execute a JS function in the engine
     bool executeFunction(QJSValue functionObject, QJSValueList arguments);
     bool executeFunction(QJSValue functionObject, const QByteArray data);
@@ -172,7 +168,6 @@ class ControllerEngine : public QObject {
     double getDeckRate(const QString& group);
 
     Controller* m_pController;
-    bool m_bPopups;
     QList<QString> m_scriptFunctionPrefixes;
     QHash<ConfigKey, ControlObjectScript*> m_controlCache;
     struct TimerInfo {

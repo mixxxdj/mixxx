@@ -19,7 +19,6 @@ class ControllerEngineTest : public MixxxTest {
         QThread::currentThread()->setObjectName("Main");
         cEngine = new ControllerEngine(nullptr);
         ControllerDebug::enable();
-        cEngine->setPopups(false);
     }
 
     void TearDown() override {
