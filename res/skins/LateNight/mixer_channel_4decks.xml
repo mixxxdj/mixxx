@@ -34,6 +34,7 @@
           </WidgetGroup>
           <Template src="skin:knob.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
+            <SetVariable name="Color">orange</SetVariable>
             <SetVariable name="group"><Variable name="group"/></SetVariable>
             <SetVariable name="control">pregain</SetVariable>
             <SetVariable name="label">gain</SetVariable>

@@ -124,6 +124,7 @@
                       <Template src="skin:knob_textless.xml">
                         <SetVariable name="TooltipId">pregain</SetVariable>
                         <SetVariable name="Size">36f,30f</SetVariable>
+                        <SetVariable name="Color">orange</SetVariable>
                         <SetVariable name="group"><Variable name="group"/></SetVariable>
                         <SetVariable name="control">pregain</SetVariable>
                       </Template>
