@@ -17812,7 +17812,7 @@ var console$1 = {
 };
 
 /* eslint-disable no-global-assign, no-native-reassign */
-console = console$1;
+var console = console$1;
 /* eslint-enable no-global-assign, no-native-reassign */
 
 var buttons = {
