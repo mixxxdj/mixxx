@@ -80,8 +80,8 @@ install:
   # NOTE(rryan): 2016-11-15 we are experiencing Travis timeouts for the OSX
   # build.  Turning off optimizations to see if that speeds up compile times.
   # TODO(rryan): localecompare doesn't work on Travis with qt5 for some reason.
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export EXTRA_FLAGS="optimize=none asan=0 localecompare=0" ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export EXTRA_FLAGS="localecompare=1" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export EXTRA_FLAGS="optimize=none asan=0 localecompare=0 qtkeychain=0" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export EXTRA_FLAGS="localecompare=1 qtkeychain=1" ; fi
 
   ####
   # Common Build
