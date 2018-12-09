@@ -103,7 +103,7 @@ void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
         } else {
             kLogger.warning()
                     << "Failed to parse foreground color"
-                    << bgColorName;
+                    << fgColorName;
         }
     }
     m_foregroundColor = WSkinColor::getCorrectColor(m_foregroundColor);
