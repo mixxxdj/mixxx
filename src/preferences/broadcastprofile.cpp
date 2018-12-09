@@ -10,9 +10,14 @@
 #include <QStringList>
 
 #ifdef __QTKEYCHAIN__
+#ifdef __QT5KEYCHAIN__
+// Library and include directory have been renamed in Fedora
+#include <qt5keychain/keychain.h>
+#else
 #include <qtkeychain/keychain.h>
+#endif // __QT5KEYCHAIN__
 using namespace QKeychain;
-#endif
+#endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
