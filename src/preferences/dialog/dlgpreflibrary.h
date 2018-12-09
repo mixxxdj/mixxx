@@ -56,6 +56,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotRowHeightValueChanged(int);
     void slotSelectFont();
     void slotSyncTrackMetadataExportToggled();
+    void slotSearchDebouncingTimeoutMillisChanged(int);
 
   private:
     void initializeDirList();
