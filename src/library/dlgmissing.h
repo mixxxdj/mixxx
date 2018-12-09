@@ -13,6 +13,7 @@ class MissingTableModel;
 
 class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     Q_OBJECT
+
   public:
     DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
                Library* pLibrary, TrackCollection* pTrackCollection,
@@ -22,6 +23,7 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     void onShow() override;
     bool hasFocus() const override;
     void onSearch(const QString& text) override;
+    QString currentSearch();
 
   public slots:
     void clicked();

@@ -68,6 +68,10 @@ void DlgMissing::onSearch(const QString& text) {
     m_pMissingTableModel->search(text);
 }
 
+QString DlgMissing::currentSearch() {
+    return m_pMissingTableModel->currentSearch();
+}
+
 void DlgMissing::selectAll() {
     m_pTrackTableView->selectAll();
 }

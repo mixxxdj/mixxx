@@ -80,6 +80,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     QString m_title;
 
     QSharedPointer<BaseTrackCache> m_trackSource;
+    QIcon m_icon;
 };
 
 #endif // TRAKTOR_FEATURE_H

@@ -36,12 +36,24 @@ Description:
               <!-- push Close button to far right -->
               <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
 
-              <Template src="skin:../Tango/button_2state.xml">
-                <SetVariable name="TooltipId">skin_settings</SetVariable>
-                <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
-                <SetVariable name="Size">20f,24f</SetVariable>
-                <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
-              </Template>
+              <PushButton>
+                <TooltipId>skin_settings</TooltipId>
+                <ObjectName>SkinSettingsClose</ObjectName>
+                <Size>20f,24f</Size>
+                <!-- This is used to work around Bug 1795663 on OSX -->
+                <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
             </Children>
           </WidgetGroup>
 

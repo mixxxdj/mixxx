@@ -189,7 +189,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
 
-    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"));
+    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), false);
     m_pTrackLoaded->setReadOnly();
 
     // Quantization Controller for enabling and disabling the
@@ -1235,7 +1235,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
-    if (m_iSamplesCalculated > (m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
+    if (m_iSamplesCalculated > (kSamplesPerFrame * m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
         const double samplePositionToSeconds = 1.0 / m_trackSampleRateOld
                 / kSamplesPerFrame / m_tempo_ratio_old;
         m_timeElapsed->set(m_filepos_play * samplePositionToSeconds);

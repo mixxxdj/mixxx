@@ -73,7 +73,14 @@ inline int compareLocaleAwareCaseInsensitive(
 void makeLatinLow(QChar* c, int count) {
     for (int i = 0; i < count; ++i) {
         if (c[i].decompositionTag() != QChar::NoDecomposition) {
-            c[i] = c[i].decomposition()[0];
+            QString decomposition = c[i].decomposition();
+            if (!decomposition[0].isSpace())  {
+                // here we remove the decoration brom all characters.
+                // We want "o" matching "ó" and all other variants but we
+                // do not decompose decoration only characters like "˚" where
+                // the base character is a space
+                c[i] = c[i].decomposition()[0];
+            }
         }
         if (c[i].isUpper()) {
             c[i] = c[i].toLower();
@@ -88,12 +95,11 @@ const QChar kSqlLikeEscapeDefault = '\0';
 // false (0) if they are different.
 // This is the original sqlite3 icuLikeCompare rewritten for QChar
 int likeCompareInner(
-    const QChar* pattern, // LIKE pattern
-    int patternSize,
-    const QChar* string, // The string to compare against
-    int stringSize,
-    const QChar esc) { // The escape character
-
+        const QChar* pattern, // LIKE pattern
+        int patternSize,
+        const QChar* string, // The string to compare against
+        int stringSize,
+        const QChar esc) { // The escape character
     int iPattern = 0; // Current index in pattern
     int iString = 0; // Current index in string
 
@@ -374,6 +380,11 @@ int DbConnection::likeCompareLatinLow(
             pattern->data(), pattern->length(),
             string->data(), string->length(),
             esc);
+}
+
+//static
+void DbConnection::makeStringLatinLow(QString* string) {
+    makeLatinLow(string->data(), string->length());
 }
 
 QDebug operator<<(QDebug debug, const DbConnection& connection) {

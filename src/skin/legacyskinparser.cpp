@@ -1166,7 +1166,11 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
     }
     commonWidgetSetup(node, spinny);
 
-    WaveformWidgetFactory::instance()->addTimerListener(spinny);
+    auto waveformWidgetFactory = WaveformWidgetFactory::instance();
+    connect(waveformWidgetFactory, SIGNAL(renderSpinnies()),
+            spinny, SLOT(render()));
+    connect(waveformWidgetFactory, SIGNAL(swapSpinnies()),
+            spinny, SLOT(swap()));
     connect(spinny, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
 
@@ -1178,6 +1182,16 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 }
 
 QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
+    // TODO(XXX): Currently this is the only opportunity to initialize
+    // the static configuration settings of the widget. The settings
+    // don't need to be static, if the widget instance could be connected
+    // to changes in the configuration.
+    const auto searchDebouncingTimeoutMillis =
+            m_pConfig->getValue(
+                    ConfigKey("[Library]","SearchDebouncingTimeoutMillis"),
+                    WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
+    WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
+
     WSearchLineEdit* pLineEditSearch = new WSearchLineEdit(m_pParent);
     commonWidgetSetup(node, pLineEditSearch, false);
     pLineEditSearch->setup(node, *m_pContext);
@@ -1185,10 +1199,8 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     // Connect search box signals to the library
     connect(pLineEditSearch, SIGNAL(search(const QString&)),
             m_pLibrary, SIGNAL(search(const QString&)));
-    connect(pLineEditSearch, SIGNAL(searchCleared()),
-            m_pLibrary, SIGNAL(searchCleared()));
-    connect(pLineEditSearch, SIGNAL(searchStarting()),
-            m_pLibrary, SIGNAL(searchStarting()));
+    connect(m_pLibrary, SIGNAL(disableSearch()),
+            pLineEditSearch, SLOT(disableSearch()));
     connect(m_pLibrary, SIGNAL(restoreSearch(const QString&)),
             pLineEditSearch, SLOT(restoreSearch(const QString&)));
 
