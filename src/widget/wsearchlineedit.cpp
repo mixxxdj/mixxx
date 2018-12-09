@@ -283,10 +283,7 @@ void WSearchLineEdit::updateText(const QString& text) {
             // Deactivate the timer if the timeout is invalid.
             // Disabling the timer permanently by setting the timeout
             // to an invalid value is an expected and valid use case.
-            if (m_debouncingTimer.isActive()) {
-                kLogger.debug() << "Deactivating debouncing timer";
-                m_debouncingTimer.stop();
-            }
+            m_debouncingTimer.stop();
         }
     } else {
         updateClearButton(QString());
