@@ -81,7 +81,7 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && QT_VERSION >= 0x050000
 #include <QtX11Extras/QX11Info>
 #include <X11/Xlib.h>
 #include <X11/Xlibint.h>
@@ -97,7 +97,7 @@ const mixxx::Logger kLogger("MixxxMainWindow");
 
 // hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
 // https://bugs.launchpad.net/mixxx/+bug/1805559
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && QT_VERSION >= 0x050000
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
 const int NUM_HANDLERS = 256;
@@ -194,7 +194,7 @@ MixxxMainWindow::~MixxxMainWindow() {
 void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     ScopedTimer t("MixxxMainWindow::initialize");
 
-#if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX) && QT_VERSION >= 0x050000
     // XESetWireToError will segfault if running as a Wayland client
     if (pApp->platformName() == QStringLiteral("xcb")) {
         for (auto i = 0; i < NUM_HANDLERS; ++i) {
