@@ -9,8 +9,14 @@
 #include "skin/skincontext.h"
 
 #include "util/assert.h"
+#include "util/logger.h"
 
 namespace {
+
+const mixxx::Logger kLogger("WSearchLineEdit");
+
+const QColor kDefaultForegroundColor = QColor(0, 0, 0);
+const QColor kDefaultBackgroundColor = QColor(255, 255, 255);
 
 // Delay for triggering a search while typing.
 const int kDebouncingTimeoutMillis = 300;
@@ -25,6 +31,7 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
     : QLineEdit(pParent),
       WBaseWidget(this),
       m_clearButton(new QToolButton(this)),
+      m_foregroundColor(kDefaultForegroundColor),
       m_state(State::Inactive) {
     DEBUG_ASSERT(kEmptySearch.isEmpty());
     DEBUG_ASSERT(!kEmptySearch.isNull());
@@ -64,24 +71,54 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
 }
 
 void WSearchLineEdit::setup(const QDomNode& node, const SkinContext& context) {
-    QColor backgroundColor(255, 255, 255);
-    QString bgColorStr;
-    if (context.hasNodeSelectString(node, "BgColor", &bgColorStr)) {
-        backgroundColor.setNamedColor(bgColorStr);
-        setAutoFillBackground(true);
-    }
-    QPalette pal = palette();
-    pal.setBrush(backgroundRole(), WSkinColor::getCorrectColor(backgroundColor));
-
-    m_foregroundColor = QColor(0, 0, 0);
-    QString fgColorStr;
-    if (context.hasNodeSelectString(node, "FgColor", &fgColorStr)) {
-        m_foregroundColor.setNamedColor(fgColorStr);
+    auto backgroundColor = kDefaultBackgroundColor;
+    QString bgColorName;
+    if (context.hasNodeSelectString(node, "BgColor", &bgColorName)) {
+        auto namedColor = QColor(bgColorName);
+        if (namedColor.isValid()) {
+            backgroundColor = namedColor;
+            setAutoFillBackground(true);
+        } else {
+            kLogger.warning()
+                    << "Failed to parse background color"
+                    << bgColorName;
+        }
     }
     backgroundColor = WSkinColor::getCorrectColor(backgroundColor);
-    m_foregroundColor =
-            QColor(255 - backgroundColor.red(), 255 - backgroundColor.green(),
-                   255 - backgroundColor.blue());
+    kLogger.debug()
+            << "Background color:"
+            << backgroundColor;
+
+    const auto defaultForegroundColor =
+            QColor(
+                    255 - backgroundColor.red(),
+                    255 - backgroundColor.green(),
+                    255 - backgroundColor.blue());
+    m_foregroundColor = defaultForegroundColor;
+    QString fgColorName;
+    if (context.hasNodeSelectString(node, "FgColor", &fgColorName)) {
+        auto namedColor = QColor(fgColorName);
+        if (namedColor.isValid()) {
+            m_foregroundColor = namedColor;
+        } else {
+            kLogger.warning()
+                    << "Failed to parse foreground color"
+                    << bgColorName;
+        }
+    }
+    m_foregroundColor = WSkinColor::getCorrectColor(m_foregroundColor);
+    VERIFY_OR_DEBUG_ASSERT(m_foregroundColor != backgroundColor) {
+        kLogger.warning()
+                << "Invisible foreground color - using default color as fallback";
+        m_foregroundColor = defaultForegroundColor;
+    }
+    kLogger.debug()
+            << "Foreground color:"
+            << m_foregroundColor;
+
+    QPalette pal = palette();
+    DEBUG_ASSERT(backgroundColor != m_foregroundColor);
+    pal.setBrush(backgroundRole(), backgroundColor);
     pal.setBrush(foregroundRole(), m_foregroundColor);
     setPalette(pal);
 }
