@@ -10,7 +10,7 @@
 #include <QStringList>
 
 #ifdef __QTKEYCHAIN__
-#include <qtkeychain/keychain.h>
+#include <qt5keychain/keychain.h>
 using namespace QKeychain;
 #endif
 

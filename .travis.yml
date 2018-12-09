@@ -46,7 +46,7 @@ addons:
       - libqt5x11extras5-dev
       - scons
       - vamp-plugin-sdk
-      - qtkeychain-dev
+      - qt5keychain-dev
       - liblilv-dev
 before_install:
   # Virtual X, needed for analyzer waveform tests
