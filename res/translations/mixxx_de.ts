@@ -10291,7 +10291,7 @@ Ganz rechts: Ende der Effektperiode</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="397"/>
         <source>Toggle visibility of Rate Control</source>
-        <translation type="unfinished"/>
+        <translation>Sichtbarkeit der Geschwindigkeit-Steuerelemente umschalten</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="420"/>
