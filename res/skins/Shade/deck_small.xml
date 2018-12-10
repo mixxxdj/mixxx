@@ -1,0 +1,217 @@
+<Template>
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+  <WidgetGroup>
+    <Size>0e,40f</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+      <!--
+      **********************************************
+      Visual- Waveform
+        Place scrolling waveform behind left border image to make the
+        end-of-track warning appear in minimal deck's overview, as well.
+      **********************************************
+      -->
+      <WidgetGroup>
+        <Layout>stacked</Layout>
+        <Size>5f,40f</Size>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>EffectLeftBorder</ObjectName>
+            <Size>5f,40f</Size>
+            <BackPath>style/style_bg_deck_border.png</BackPath>
+          </WidgetGroup>
+          <SingletonContainer>
+            <ObjectName>Waveform<Variable name="channum"/></ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>DeckSmall</ObjectName>
+        <Size>0me,40f</Size>
+        <BackPath>style/style_bg_looping.png</BackPath>
+        <Layout>horizontal</Layout>
+        <Children>
+          <!-- deck controls -->
+          <Overview>
+            <TooltipId>waveform_overview</TooltipId>
+            <Style></Style>
+            <Channel><Variable name="channum"/></Channel>
+            <Size>150me,30f</Size>
+            <!-- transparent background if no <BgColor> & <BgPixmap> is present -->
+            <BgColor></BgColor>
+            <BgPixmap></BgPixmap>
+            <SignalHighColor></SignalHighColor>
+            <SignalMidColor></SignalMidColor>
+            <SignalLowColor></SignalLowColor>
+            <SignalColor>#191F24</SignalColor>
+            <PlayPosColor>#00FF00</PlayPosColor>
+            <EndOfTrackColor>#EA0000</EndOfTrackColor>
+            <PlayedOverlayColor>#60000000</PlayedOverlayColor>
+            <DefaultMark>
+              <Align>bottom|right</Align>
+              <Color>#FD0564</Color>
+              <TextColor>#FFFFFF</TextColor>
+              <Text> %1 </Text>
+            </DefaultMark>
+            <MarkRange>
+              <StartControl>loop_start_position</StartControl>
+              <EndControl>loop_end_position</EndControl>
+              <EnabledControl>loop_enabled</EnabledControl>
+              <Color>#00FF00</Color>
+              <DisabledColor>#FFFFFF</DisabledColor>
+            </MarkRange>
+            <Mark>
+              <Control>cue_point</Control>
+              <Text>C</Text>
+              <Align>top|right</Align>
+              <Color>#FF001C</Color>
+              <TextColor>#FFFFFF</TextColor>
+            </Mark>
+            <Connection>
+              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+              <EmitOnDownPress>false</EmitOnDownPress>
+            </Connection>
+          </Overview>
+
+          <WidgetGroup>
+            <ObjectName>DeckSmall_TitleTimeKeyBPM</ObjectName>
+            <Size>200f,30f</Size>
+            <Layout>vertical</Layout>
+            <BackPath>style/style_bg_deck_small_titletimebpmkey.png</BackPath>
+            <Style>
+            </Style>
+            <Children>
+              <!-- Title -->
+              <TrackProperty>
+                <TooltipId>track_title</TooltipId>
+                <Style>QLabel {
+                  font: bold 13px sans-serif;
+                  font-family: "Open Sans";
+                  background-color: transparent;
+                  color: #191F24;
+                  text-align: left;
+                  padding: 0px 2px;
+                }
+                </Style>
+                <Property>title</Property>
+                <Channel><Variable name="channum"/></Channel>
+                <SizePolicy>i,f</SizePolicy>
+                <MinimumSize>50,15</MinimumSize>
+                <MaximumSize>,15</MaximumSize>
+                <Alignment>left</Alignment>
+                <Elide>right</Elide>
+              </TrackProperty>
+
+              <!-- Time / Key /BPM -->
+              <WidgetGroup>
+                <Size>10me,15f</Size>
+                <Layout>horizontal</Layout>
+                <Style>
+                  QWidget { margin: 0px; padding: 0; }
+                  QLabel {
+                    font: bold 9px sans-serif;
+                    font-family: "Open Sans";
+                    background-color: transparent;
+                    color: #191F24;
+                  }
+                </Style>
+                <Layout>vertical</Layout>
+                <Children>
+                  <NumberPos>
+                    <TooltipId>track_time</TooltipId>
+                    <Size>90me,15f</Size>
+                    <Style>QLabel {
+                      font: bold 13px sans-serif;
+                      font-family: Open Sans;
+                      color: #191F24;
+                      text-align: left;
+                      padding: 1px 0px 0px 1px;
+                    }
+                    </Style>
+                    <Group><Variable name="group"/></Group>
+                    <Alignment>left</Alignment>
+                  </NumberPos>
+                  <Key>
+                    <TooltipId>visual_key</TooltipId>
+                    <Size>25f,14f</Size>
+                    <Style>QLabel {
+                      text-align: left;
+                      padding: 2px 1px 0px 0px;
+                    }
+                    </Style>
+                    <Channel><Variable name="channum"/></Channel>
+                    <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                    <Alignment>center</Alignment>
+                    <Elide>right</Elide>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                    </Connection>
+                  </Key>
+                  <NumberBpm>
+                    <TooltipId>visual_bpm</TooltipId>
+                    <Size>36f,14f</Size>
+                    <Style>QLabel {
+                      padding: 2px 1px 0px 0px;
+                    }
+                    </Style>
+                    <Channel><Variable name="channum"/></Channel>
+                    <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                    <Alignment>center</Alignment>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                    </Connection>
+                  </NumberBpm>
+                </Children>
+              </WidgetGroup><!-- Time / Key /BPM -->
+
+            </Children>
+          </WidgetGroup><!-- Title // Time / Key /BPM -->
+          
+          <!-- Play -->
+          <WidgetGroup>
+            <Size>41f,30f</Size>
+            <Children>
+              <PushButton>
+                <TooltipId>play_cue_set</TooltipId>
+                <Pos>5,5</Pos>
+                <Style></Style>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>skin:/btn/btn_play_deck_small_down.png</Pressed>
+                  <Unpressed>skin:/btn/btn_play_deck_small.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>skin:/btn/btn_play_deck_small_overdown.png</Pressed>
+                  <Unpressed>skin:/btn/btn_play_deck_small_over.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,play</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,cue_set</ConfigKey>
+                  <ButtonState>RightButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
+                </Connection>
+              </PushButton>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>5f,40f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>
+
