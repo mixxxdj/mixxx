@@ -277,7 +277,14 @@ void WSearchLineEdit::updateText(const QString& text) {
     if (isEnabled() && (m_state == State::Active)) {
         updateClearButton(text);
         DEBUG_ASSERT(m_debouncingTimer.isSingleShot());
-        m_debouncingTimer.start(s_debouncingTimeoutMillis);
+        if (s_debouncingTimeoutMillis > 0) {
+            m_debouncingTimer.start(s_debouncingTimeoutMillis);
+        } else {
+            // Deactivate the timer if the timeout is invalid.
+            // Disabling the timer permanently by setting the timeout
+            // to an invalid value is an expected and valid use case.
+            m_debouncingTimer.stop();
+        }
     } else {
         updateClearButton(QString());
         m_debouncingTimer.stop();
