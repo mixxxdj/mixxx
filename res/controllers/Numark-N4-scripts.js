@@ -544,10 +544,10 @@ NumarkN4.Deck = function (channel) {
   });
 
   this.manageChannelIndicator = function () {
-    this.alternating=!this.alternating; //mimics a static variable
     this.duration=engine.getParameter(theDeck.group, "duration");
     // checks if the playposition is in the warnTimeFrame
     if (engine.getParameter(theDeck.group, "playposition") * this.duration > (this.duration - NumarkN4.warnAfterTime)) {
+      this.alternating=!this.alternating; //mimics a static variable
       midi.sendShortMsg(0xB0,0x1D+channel, this.alternating?0x7F:0x0);
     } else {
       midi.sendShortMsg(0xB0,0x1D+channel, 0x7F);
@@ -560,8 +560,14 @@ NumarkN4.Deck = function (channel) {
       theDeck.blinkTimer=0;
       return; // return early so no new timer gets created.
     }
-    //timer is more efficent is this case than a callback because it would be called too often.
-    theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,theDeck.manageChannelIndicator);
+    // this previouslyLoaded guard is needed because everytime a new track gets
+    // loaded into a deck without previously ejecting, a new timer would get
+    // spawned which conflicted with the old (still running) timers.
+    if (!this.previouslyLoaded) {
+      //timer is more efficent is this case than a callback because it would be called too often.
+      theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,theDeck.manageChannelIndicator);
+    }
+    this.previouslyLoaded=value;
   });
   this.pitchBendMinus = new components.Button({
     midi: [0x90+channel,0x18,0xB0+channel,0x3D],
