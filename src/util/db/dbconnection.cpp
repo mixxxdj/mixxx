@@ -175,11 +175,11 @@ int likeCompareInner(
 int sqliteStringCompareUTF16(void* pArg,
                              int len1, const void* data1,
                              int len2, const void* data2) {
-    QCollator* pCollator = reinterpret_cast<QCollator*>(pArg);
+    StringCollator* pCollator = static_cast<StringCollator*>(pArg);
     // Construct a QString without copy
-    QString string1 = QString::fromRawData(reinterpret_cast<const QChar*>(data1),
+    QString string1 = QString::fromRawData(static_cast<const QChar*>(data1),
                                            len1 / sizeof(QChar));
-    QString string2 = QString::fromRawData(reinterpret_cast<const QChar*>(data2),
+    QString string2 = QString::fromRawData(static_cast<const QChar*>(data2),
                                            len2 / sizeof(QChar));
     return pCollator->compare(string1, string2);
 }
@@ -228,7 +228,7 @@ void sqliteLike(sqlite3_context *context,
 
 #endif // __SQLITE3__
 
-bool initDatabase(QSqlDatabase database, QCollator* pCollator) {
+bool initDatabase(QSqlDatabase database, StringCollator* pCollator) {
     DEBUG_ASSERT(database.isOpen());
 #ifdef __SQLITE3__
     QVariant v = database.driver()->handle();
@@ -298,9 +298,7 @@ bool initDatabase(QSqlDatabase database, QCollator* pCollator) {
 DbConnection::DbConnection(
         const Params& params,
         const QString& connectionName)
-    : m_sqlDatabase(createDatabase(params, connectionName)),
-      m_collator() {
-    m_collator.setCaseSensitivity(Qt::CaseInsensitive);
+    : m_sqlDatabase(createDatabase(params, connectionName)) {
 }
 
 DbConnection::DbConnection(
