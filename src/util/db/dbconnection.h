@@ -3,10 +3,9 @@
 
 
 #include <QSqlDatabase>
-#include <QCollator>
-
 #include <QtDebug>
 
+#include "util/string.h"
 
 namespace mixxx {
 
@@ -64,7 +63,7 @@ class DbConnection final {
     DbConnection(const DbConnection&&) = delete;
 
     QSqlDatabase m_sqlDatabase;
-    QCollator m_collator;
+    StringCollator m_collator;
 };
 
 } // namespace mixxx
