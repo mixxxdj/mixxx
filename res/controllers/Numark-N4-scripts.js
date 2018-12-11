@@ -17,7 +17,11 @@ NumarkN4.encoderResolution=0.05; // 1/encoderResolution = number of steps going 
 
 NumarkN4.resetHotCuePageOnTrackLoad=true; // resets the page of the Hotcue back to 1 after loading a new track.
 
-NumarkN4.cueReverseRoll=true;
+NumarkN4.cueReverseRoll=true; // enables the ability to do a reverse roll while shift-pressing the cue button
+
+// true = wrap around => scrolling past 4 will reset the page to the first page and vice versa
+// false = clamp the the pages to the [1:4] range
+NumarkN4.hotcuePageIndexBehavior=true;
 
 // possible ranges (0.0..3.0 where 0.06=6%)
 NumarkN4.rateRanges = [0,   // default (gets set via script later; don't modifify)
@@ -201,7 +205,8 @@ NumarkN4.topContainer = function (channel) {
       if (displayFeedback == undefined) {
         displayFeedback = true;
       }
-      layer = Math.max(Math.min(layer,3),0); // clamp layer value to [0;3] range
+      // when the layer becommes negative, the (layer+4) will force a positive/valid page indexOf
+      layer = NumarkN4.hotcuePageIndexBehavior ? (layer+4)%4 : Math.max(Math.min(layer,3),0); // clamp layer value to [0;3] range
       this.hotCuePage = layer;
       if (this.timer !== 0) {
         engine.stopTimer(this.timer);
