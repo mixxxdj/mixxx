@@ -32,6 +32,9 @@ BpmControl::BpmControl(QString group,
           m_dSyncInstantaneousBpm(0.0),
           m_dLastSyncAdjustment(1.0),
           m_sGroup(group) {
+    m_dSyncTargetBeatDistance.setValue(0.0);
+    m_dUserOffset.setValue(0.0);
+
     m_pPlayButton = new ControlProxy(group, "play", this);
     m_pReverseButton = new ControlProxy(group, "reverse", this);
     m_pRateSlider = new ControlProxy(group, "rate", this);
@@ -849,7 +852,8 @@ void BpmControl::resetSyncAdjustment() {
 
 void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     // Without a beatgrid we don't know any beat details.
-    if (!m_pBeats) {
+    double dTrackSampleRate = getTrackSampleRate();
+    if (!dTrackSampleRate || !m_pBeats) {
         return;
     }
 
@@ -866,7 +870,7 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
 
         // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)
         pGroupFeatures->beat_length_sec = dThisBeatLength / kSamplesPerFrame
-                / getTrackSampleRate() / calcRateRatio();
+                / dTrackSampleRate / calcRateRatio();
 
         pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction = dThisBeatFraction;
