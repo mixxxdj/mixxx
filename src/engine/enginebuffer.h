@@ -342,7 +342,7 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_timeElapsed;
     ControlObject* m_timeRemaining;
     ControlPotmeter* m_playposSlider;
-    ControlProxy* m_pMasterSampleRate;
+    ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
 
