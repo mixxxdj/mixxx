@@ -698,10 +698,9 @@ class Reverb(Dependence):
 
 class QtKeychain(Dependence):
     def configure(self, build, conf):
-        libs = ['qtkeychain']
-        if not conf.CheckLib(libs):
+        if not conf.CheckLib(['qt5keychain']):
             raise Exception(
-                "Could not find qtkeychain.")
+                "Could not find qt5keychain.")
 
 class MixxxCore(Feature):
 
