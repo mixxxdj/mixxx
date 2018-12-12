@@ -561,7 +561,7 @@ void EngineBuffer::ejectTrack() {
     m_timeElapsed->set(0);
     m_timeRemaining->set(0);
     m_playposSlider->set(0);
-    m_pCueControl->updateIndicators();
+    m_pCueControl->resetIndicators();
     doSeekFractional(0.0, SEEK_EXACT);
     m_pause.unlock();
 
@@ -753,11 +753,6 @@ void EngineBuffer::processTrackLocked(
     double speed = m_pRateControl->calculateSpeed(
             baserate, tempoRatio, paused, iBufferSize, &is_scratching, &is_reverse);
 
-    // The cue indicator may change when scratch state is changed
-    if (is_scratching != m_scratching_old) {
-        m_pCueControl->updateIndicators();
-    }
-
     bool useIndependentPitchAndTempoScaling = false;
 
     // TODO(owen): Maybe change this so that rubberband doesn't disable
@@ -904,9 +899,9 @@ void EngineBuffer::processTrackLocked(
         // master samplerate), the deck speed, the pitch shift, and whether
         // the deck speed should affect the pitch.
 
-            m_pScale->setScaleParameters(baserate,
-                                         &speed,
-                                         &pitchRatio);
+        m_pScale->setScaleParameters(baserate,
+                                     &speed,
+                                     &pitchRatio);
 
         // The way we treat rate inside of EngineBuffer is actually a
         // description of "sample consumption rate" or percentage of samples

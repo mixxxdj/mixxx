@@ -983,6 +983,11 @@ void CueControl::updateIndicators() {
     }
 }
 
+void CueControl::resetIndicators() {
+    m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+    m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
+}
+
 bool CueControl::isTrackAtCue() {
     return (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f);
 }

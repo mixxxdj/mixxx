@@ -99,6 +99,7 @@ class CueControl : public EngineControl {
     virtual void hintReader(HintVector* pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
+    void resetIndicators();
     bool isTrackAtCue();
     bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
