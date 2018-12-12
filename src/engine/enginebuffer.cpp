@@ -371,7 +371,7 @@ double EngineBuffer::getLocalBpm() {
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
-    for (const auto& pControl: m_engineControls) {
+    for (const auto& pControl: qAsConst(m_engineControls)) {
         pControl->setEngineMaster(pEngineMaster);
     }
 }
@@ -460,7 +460,7 @@ void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
     m_iSamplesCalculated = 1000000;
 
     // Must hold the engineLock while using m_engineControls
-    for (const auto& pControl: m_engineControls) {
+    for (const auto& pControl: qAsConst(m_engineControls)) {
         pControl->notifySeek(m_filepos_play, adjustingPhase);
     }
 
@@ -983,7 +983,7 @@ void EngineBuffer::processTrackLocked(
         }
     }
 
-    for (const auto& pControl: m_engineControls) {
+    for (const auto& pControl: qAsConst(m_engineControls)) {
         pControl->setCurrentSample(m_filepos_play, m_trackSamplesOld, m_trackSampleRateOld);
         pControl->process(rate, m_filepos_play, iBufferSize);
     }
@@ -1279,7 +1279,7 @@ void EngineBuffer::hintReader(const double dRate) {
         m_hintList.append(hint);
     }
 
-    for (const auto& pControl: m_engineControls) {
+    for (const auto& pControl: qAsConst(m_engineControls)) {
         pControl->hintReader(&m_hintList);
     }
     m_pReader->hintAndMaybeWake(m_hintList);
@@ -1373,7 +1373,7 @@ void EngineBuffer::notifyTrackLoaded(
         TrackPointer pNewTrack, TrackPointer pOldTrack) {
     // First inform engineControls directly
     // Note: we are still in a worker thread.
-    for (const auto& pControl: m_engineControls) {
+    for (const auto& pControl: qAsConst(m_engineControls)) {
         pControl->trackLoaded(pNewTrack);
     }
     // Inform BaseTrackPlayer via a queued connection
