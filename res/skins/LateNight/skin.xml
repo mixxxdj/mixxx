@@ -200,11 +200,32 @@
                   </Children>
                 </Splitter><!-- Decks, Effects ... Library -->
 
-                <!-- MAximized Library -->
+                <!-- Maximized Library -->
                 <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
+                    <WidgetGroup>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Layout>stacked</Layout>
+                      <Children>
+
+                        <Template src="skin:decks_small.xml"/>
+                        <!-- put invisble waveforms Singleton here to make end-of-track warning work
+                           without actually showing scrolling waveforms -->
+                        <WidgetGroup>
+                          <Layout>horizontal</Layout>
+                          <!-- Size needs to be at least 1x1px for the hack to work -->
+                          <Size>1f,1f</Size>
+                          <Children>
+                            <SingletonContainer>
+                              <ObjectName>WaveformsSingleton</ObjectName>
+                            </SingletonContainer>
+                          </Children>
+                        </WidgetGroup>
+                        
+                      </Children>
+                    </WidgetGroup>
                     <SingletonContainer>
                       <ObjectName>LibrarySingleton</ObjectName>
                     </SingletonContainer>

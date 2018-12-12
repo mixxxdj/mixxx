@@ -7,11 +7,11 @@
       <WidgetGroup>
         <ObjectName>SpinnyContainer</ObjectName>
         <Layout>vertical</Layout>
-        <Size>54f,53me</Size>
+        <SizePolicy>f,me</SizePolicy>
         <Children>
           <CoverArt>
             <TooltipId>coverart</TooltipId>
-            <Size>53f,53f</Size>
+            <Size><Variable name="Size"/></Size>
             <Group><Variable name="group"/></Group>
             <DefaultCover>style/cover_default.svg</DefaultCover>
           </CoverArt>
