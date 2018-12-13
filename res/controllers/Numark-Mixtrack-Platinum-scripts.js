@@ -1210,7 +1210,7 @@ MixtrackPlatinum.scratchTimerCallback = function (deck) {
     if ((MixtrackPlatinum.scratch_direction[deck] // forward
             && Math.abs(MixtrackPlatinum.scratch_tick[deck]) > 2)
         || (!MixtrackPlatinum.scratch_direction[deck] // backward
-            && Math.abs(MixtrackPlatinum.scratch_tick[deck]) > 0))
+            && Math.abs(MixtrackPlatinum.scratch_tick[deck]) > 1))
     {
         // reset tick detection
         MixtrackPlatinum.scratch_tick[deck] = 0;
