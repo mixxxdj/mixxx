@@ -24,7 +24,7 @@ KeyControl::KeyControl(QString group,
     // pitch is the distance to the original pitch in semitones
     // knob in semitones; 9.4 ct per midi step allowOutOfBounds = true;
     m_pPitch = new ControlPotmeter(ConfigKey(group, "pitch"), -6.0, 6.0, true);
-    // Course adjust by full semitone steps.
+    // Coarse adjust by full semitone steps.
     m_pPitch->setStepCount(12);
     // Fine adjust with semitone / 10 = 10 ct;.
     m_pPitch->setSmallStepCount(120);
@@ -36,7 +36,7 @@ KeyControl::KeyControl(QString group,
     // set by the speed slider or to the locked key.
     // pitch_adjust knob in semitones; 4.7 ct per midi step; allowOutOfBounds = true;
     m_pPitchAdjust = new ControlPotmeter(ConfigKey(group, "pitch_adjust"), -3.0, 3.0, true);
-    // Course adjust by full semitone steps.
+    // Coarse adjust by full semitone steps.
     m_pPitchAdjust->setStepCount(6);
     // Fine adjust with semitone / 10 = 10 ct;.
     m_pPitchAdjust->setSmallStepCount(60);
@@ -77,56 +77,28 @@ KeyControl::KeyControl(QString group,
     m_keyunlockMode->setButtonMode(ControlPushButton::TOGGLE);
 
     // In case of vinyl control "rate" is a filtered mean value for display
-    m_pRateSlider = ControlObject::getControl(ConfigKey(group, "rate"));
-    connect(m_pRateSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateChanged()),
-            Qt::DirectConnection);
-    connect(m_pRateSlider, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotRateChanged()),
+    m_pRateSlider = new ControlProxy(group, "rate", this);
+    m_pRateSlider->connectValueChanged(SLOT(slotRateChanged()),
             Qt::DirectConnection);
 
-    m_pRateRange = ControlObject::getControl(ConfigKey(group, "rateRange"));
-    connect(m_pRateRange, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateChanged()),
-            Qt::DirectConnection);
-    connect(m_pRateRange, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotRateChanged()),
+    m_pRateRange = new ControlProxy(group, "rateRange", this);
+    m_pRateRange->connectValueChanged(SLOT(slotRateChanged()),
             Qt::DirectConnection);
 
-    m_pRateDir = ControlObject::getControl(ConfigKey(group, "rate_dir"));
-    connect(m_pRateDir, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateChanged()),
-            Qt::DirectConnection);
-    connect(m_pRateDir, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotRateChanged()),
+    m_pRateDir = new ControlProxy(group, "rate_dir", this);
+    m_pRateDir->connectValueChanged(SLOT(slotRateChanged()),
             Qt::DirectConnection);
 
-    m_pVCEnabled = ControlObject::getControl(ConfigKey(group, "vinylcontrol_enabled"));
-    if (m_pVCEnabled) {
-        connect(m_pVCEnabled, SIGNAL(valueChanged(double)),
-                this, SLOT(slotRateChanged()),
+    m_pVCEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
+    m_pVCEnabled->connectValueChanged(SLOT(slotRateChanged()),
+            Qt::DirectConnection);
+
+    m_pVCRate = new ControlProxy(group, "vinylcontrol_rate", this);
+    m_pVCRate->connectValueChanged(SLOT(slotRateChanged()),
                 Qt::DirectConnection);
-        connect(m_pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotRateChanged()),
-                Qt::DirectConnection);
-    }
 
-    m_pVCRate = ControlObject::getControl(ConfigKey(group, "vinylcontrol_rate"));
-    if (m_pVCRate) {
-        connect(m_pVCRate, SIGNAL(valueChanged(double)),
-                this, SLOT(slotRateChanged()),
-                Qt::DirectConnection);
-        connect(m_pVCRate, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotRateChanged()),
-                Qt::DirectConnection);
-    }
-
-    m_pKeylock = ControlObject::getControl(ConfigKey(group, "keylock"));
-    connect(m_pKeylock, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateChanged()),
-            Qt::DirectConnection);
-    connect(m_pKeylock, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotRateChanged()),
+    m_pKeylock = new ControlProxy(group, "keylock", this);
+    m_pKeylock->connectValueChanged(SLOT(slotRateChanged()),
             Qt::DirectConnection);
 }
 
@@ -172,10 +144,12 @@ void KeyControl::updateRate() {
     // If rate is not 1.0 then we have to try and calculate the octave change
     // caused by it.
 
-    if(m_pVCEnabled && m_pVCEnabled->toBool()) {
+    if(m_pVCEnabled->toBool()) {
         m_pitchRateInfo.tempoRatio = m_pVCRate->get();
     } else {
-        m_pitchRateInfo.tempoRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+        m_pitchRateInfo.tempoRatio = 1.0
+                + m_pRateDir->get() * m_pRateRange->get()
+                        * m_pRateSlider->get();
     }
 
     if (m_pitchRateInfo.tempoRatio == 0) {
@@ -266,7 +240,6 @@ void KeyControl::updateKeyCOs(double fileKeyNumeric, double pitchOctaves) {
     //qDebug() << "updateKeyCOs 2" << diff_to_nearest_full_key;
 }
 
-
 void KeyControl::slotSetEngineKey(double key) {
     // Always set to a full key, reset key_distance
     setEngineKey(key, 0.0);
@@ -345,7 +318,7 @@ void KeyControl::updatePitchAdjust() {
     // speedSliderPitchRatio must be unchanged
     double pitchAdjustKnobRatio = KeyUtils::semitoneChangeToPowerOf2(pitchAdjust);
 
-    // pitch_adjust is a offset to the pitch set by the speed controls
+    // pitch_adjust is an offset to the pitch set by the speed controls
     // calc absolute pitch
     m_pitchRateInfo.pitchTweakRatio = pitchAdjustKnobRatio;
     m_pitchRateInfo.pitchRatio = pitchAdjustKnobRatio * speedSliderPitchRatio;
@@ -368,7 +341,8 @@ void KeyControl::slotSyncKey(double v) {
 
 void KeyControl::slotResetKey(double v) {
     if (v > 0) {
-        slotSetEngineKey(m_pFileKey->get());
+        m_pPitch->set(0);
+        slotPitchChanged(0);
     }
 }
 

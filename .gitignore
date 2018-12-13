@@ -57,3 +57,6 @@ lib/*/*.lib
 lib/*/lib/*.lib
 
 lib/qtscript-bytearray/*.cc
+
+*.vscode
+compile_commands.json

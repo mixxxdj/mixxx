@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="23"
+   height="12"
+   id="svg2"
+   inkscape:version="0.92.3 (unknown)"
+   sodipodi:docname="ic_library_preview_pause.svg"
+   style="display:inline"
+   inkscape:export-filename=""
+   inkscape:export-xdpi="135"
+   inkscape:export-ydpi="135">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="740"
+     id="namedview26"
+     showgrid="true"
+     inkscape:zoom="16"
+     inkscape:cx="0.53331552"
+     inkscape:cy="2.5864597"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="ic_library_unchecked"
+     inkscape:object-paths="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-midpoints="true"
+     inkscape:snap-page="true"
+     inkscape:snap-bbox="true"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:bbox-nodes="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3788"
+       empspacing="4"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       originx="4"
+       spacingx="1"
+       spacingy="1"
+       color="#00ffe0"
+       opacity="0.1254902"
+       empcolor="#0072ff"
+       empopacity="0.25098039"
+       originy="4"
+       dotted="false" />
+  </sodipodi:namedview>
+  <title
+     id="title5647">Mixxx 1.12+ iconset</title>
+  <defs
+     id="defs28">
+    <linearGradient
+       id="linearGradient5515"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5517" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4942">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5695-6">
+      <stop
+         style="stop-color:#3c3c3c;stop-opacity:1;"
+         offset="0"
+         id="stop5697-6" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop5699-7" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5695-4">
+      <stop
+         style="stop-color:#646464;stop-opacity:1;"
+         offset="0"
+         id="stop5697-7" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop5699-6" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4942-73">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944-6" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946-6" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4942-5">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944-9" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946-5" />
+    </linearGradient>
+    <linearGradient
+       gradientTransform="translate(25.999995,-15.999999)"
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient3440"
+       gradientUnits="userSpaceOnUse"
+       x1="-25.999994"
+       y1="34.249996"
+       x2="-25.999996"
+       y2="46.249996" />
+    <linearGradient
+       gradientTransform="translate(30.333329,-18.666668)"
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient3442"
+       gradientUnits="userSpaceOnUse"
+       x1="-22.218445"
+       y1="12.624996"
+       x2="-22.218445"
+       y2="26.624996" />
+    <linearGradient
+       gradientTransform="translate(25.999996,-15.999999)"
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient3415"
+       gradientUnits="userSpaceOnUse"
+       x1="571.46802"
+       y1="611.79181"
+       x2="591.45526"
+       y2="611.79181" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient5259"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(30.333329,-18.666668)"
+       x1="-22.218445"
+       y1="12.624996"
+       x2="-22.218445"
+       y2="26.624996" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient5261"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(25.999996,-15.999999)"
+       x1="571.46802"
+       y1="611.79181"
+       x2="591.45526"
+       y2="611.79181" />
+  </defs>
+  <metadata
+     id="metadata4">
+    <rdf:RDF>
+      <rdf:Description
+         rdf:about="">
+        <dc:title />
+        <dc:creator />
+        <dc:rights />
+        <dc:description />
+        <dc:format>image/svg+xml</dc:format>
+        <dc:language>en</dc:language>
+      </rdf:Description>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Mixxx 1.12+ iconset</dc:title>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>Mixxx</rdf:li>
+            <rdf:li>GUI</rdf:li>
+            <rdf:li>Interface</rdf:li>
+            <rdf:li>Icons</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>s.brandt@mixxx.org</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <cc:license
+           rdf:resource="http://creativecommons.org/publicdomain/zero/1.0/" />
+        <dc:date>2014-04-18</dc:date>
+        <dc:source>www.mixxx.org</dc:source>
+        <dc:description>Iconset for use in Mixxx 1.12s+. Optimized for 48px (16px) icon size. Contains icons for preference menu and library widget
+
+Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc:description>
+        <dc:coverage />
+        <dc:language>en</dc:language>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/publicdomain/zero/1.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     style="display:inline"
+     id="ic_library_crates"
+     inkscape:label="#g6169"
+     transform="translate(0,-20)">
+    <g
+       transform="matrix(0.415098,0,0,0.415098,-1.660392,19.54706)"
+       inkscape:label="#g6145"
+       id="ic_library_unchecked"
+       style="display:inline">
+      <g
+         transform="matrix(2.4090697,0,0,2.4090697,-58.6358,39.636279)"
+         style="display:inline"
+         id="style_library_preview_play"
+         inkscape:label="#g3450"
+         inkscape:export-filename=""
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90">
+        <g
+           style="fill:#979797;fill-opacity:0.5"
+           inkscape:export-ydpi="90"
+           inkscape:export-xdpi="90"
+           inkscape:export-filename=""
+           transform="matrix(0.85714286,0,0,0.85714286,51.044381,-24.571429)"
+           id="g3436">
+          <path
+             inkscape:connector-curvature="0"
+             style="fill:url(#linearGradient3440);fill-opacity:1;fill-rule:nonzero;stroke:none"
+             d="m -26,32 c -3.376146,0 -5.8125,2.420091 -5.8125,5.75 -0.02885,0.04115 -0.0269,0.04484 0,0.0625 v 2.09375 C -31.95368,40.251454 -32,40.690868 -32,41.1875 c 0,1.08133 0.15281,1.96875 1.21875,1.96875 v -3.9375 c -0.05826,0 -0.103077,0.02604 -0.15625,0.03125 v -1.5 c 0,-0.35788 0.03255,-0.711959 0.09375,-1.03125 0.05746,-0.308575 0.173694,-0.595956 0.28125,-0.875 0.707406,-1.67368 2.381799,-2.625 4.5625,-2.625 2.180238,0 3.886417,0.95132 4.59375,2.625 0.235778,0.557893 0.34375,1.19049 0.34375,1.90625 v 1.46875 c -0.05502,-0.0057 -0.09568,0 -0.15625,0 V 43.125 c 1.065786,0 1.21875,-0.856631 1.21875,-1.9375 0,-0.488809 -0.02108,-0.938349 -0.15625,-1.28125 V 37.75 C -20.15625,34.420091 -22.624315,32 -26,32 Z"
+             transform="matrix(1.1666667,0,0,1.1666667,8.1148843,-27.333333)"
+             id="path3438" />
+          <rect
+             style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient5259);fill-opacity:1;fill-rule:evenodd;stroke:#979797;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.25098039;marker:none;enable-background:accumulate"
+             id="rect3440"
+             width="2.5"
+             height="6"
+             x="-20.218449"
+             y="18"
+             rx="1"
+             ry="0.2" />
+          <rect
+             ry="0.2"
+             rx="1"
+             y="18"
+             x="-26.718449"
+             height="6"
+             width="2.5"
+             id="rect3442"
+             style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient3442);fill-opacity:1;fill-rule:evenodd;stroke:#979797;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:0.25098039;marker:none;enable-background:accumulate" />
+        </g>
+        <g
+           transform="translate(0,-0.49999978)"
+           id="g3407">
+          <rect
+             style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient5261);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0;marker:none;enable-background:accumulate"
+             id="rect3370"
+             width="2"
+             height="7"
+             x="43"
+             y="-13" />
+          <rect
+             y="-13"
+             x="47"
+             height="7"
+             width="2"
+             id="rect3372"
+             style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:url(#linearGradient3415);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0;marker:none;enable-background:accumulate" />
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

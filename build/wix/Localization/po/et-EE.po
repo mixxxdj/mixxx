@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-07-15 15:06+0000\n"
+"PO-Revision-Date: 2017-09-22 19:10+0000\n"
 "Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
 "Language-Team: Estonian (Estonia) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/et_EE/)\n"
 "MIME-Version: 1.0\n"
@@ -40,8 +40,8 @@ msgstr "Paigaldab Mixxxi"
 #.  Error messages
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
-msgid "This product requires Windows XP or above."
-msgstr "See toode nõuab Windows XP-d või uuemat op. süsteemi."
+msgid "This product requires Windows 7 or above."
+msgstr "See toode nõuab Windows 7-d või uuemat op. süsteemi."
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."

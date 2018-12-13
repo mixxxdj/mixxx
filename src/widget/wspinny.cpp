@@ -3,6 +3,7 @@
 #include <QUrl>
 #include <QMimeData>
 #include <QStylePainter>
+#include <QWindow>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -11,6 +12,7 @@
 #include "waveform/sharedglcontext.h"
 #include "util/math.h"
 #include "waveform/visualplayposition.h"
+#include "waveform/vsyncthread.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "widget/wspinny.h"
@@ -21,7 +23,7 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
                  UserSettingsPointer pConfig,
                  VinylControlManager* pVCMan,
                  BaseTrackPlayer* pPlayer)
-        : QGLWidget(QGLFormat(QGL::SampleBuffers), parent, SharedGLContext::getWidget()),
+        : QGLWidget(parent, SharedGLContext::getWidget()),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
@@ -56,7 +58,6 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
           m_dRotationsPerSecond(0.),
           m_bClampFailedWarning(false),
           m_bGhostPlayback(false),
-          m_bWidgetDirty(false),
           m_pPlayer(pPlayer),
           m_pDlgCoverArt(new DlgCoverArtFullSize(parent, pPlayer)),
           m_pCoverMenu(new WCoverArtMenu(this)) {
@@ -90,6 +91,12 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
         this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
     connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
         this, SLOT(slotReloadCoverArt()));
+
+    setAttribute(Qt::WA_NoSystemBackground);
+    setAttribute(Qt::WA_OpaquePaintEvent);
+
+    setAutoFillBackground(false);
+    setAutoBufferSwap(false);
 }
 
 WSpinny::~WSpinny() {
@@ -129,7 +136,6 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
             line++;
         }
     }
-    m_bWidgetDirty = true;
 #endif
 }
 
@@ -224,19 +230,6 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
 #endif
 }
 
-void WSpinny::maybeUpdate() {
-    if (!m_pVisualPlayPos.isNull()) {
-        m_pVisualPlayPos->getPlaySlipAt(0,
-                                        &m_dAngleCurrentPlaypos,
-                                        &m_dGhostAngleCurrentPlaypos);
-    }
-    if (m_dAngleCurrentPlaypos != m_dAngleLastPlaypos ||
-            m_dGhostAngleCurrentPlaypos != m_dGhostAngleLastPlaypos ||
-            m_bWidgetDirty) {
-        repaint();
-    }
-}
-
 void WSpinny::slotLoadTrack(TrackPointer pTrack) {
     if (m_loadedTrack) {
         disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
@@ -306,8 +299,24 @@ void WSpinny::slotReloadCoverArt() {
 }
 
 void WSpinny::paintEvent(QPaintEvent *e) {
-    Q_UNUSED(e); //ditch unused param warning
-    m_bWidgetDirty = false;
+    Q_UNUSED(e);
+}
+
+void WSpinny::render() {
+    if (!isValid() || !isVisible()) {
+        return;
+    }
+
+    auto window = windowHandle();
+    if (window == nullptr || !window->isExposed()) {
+        return;
+    }
+
+    if (!m_pVisualPlayPos.isNull()) {
+        m_pVisualPlayPos->getPlaySlipAt(0,
+                                        &m_dAngleCurrentPlaypos,
+                                        &m_dGhostAngleCurrentPlaypos);
+    }
 
     QStyleOption option;
     option.initFrom(this);
@@ -380,6 +389,18 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         p.restore();
     }
 }
+
+void WSpinny::swap() {
+    if (!isValid() || !isVisible()) {
+        return;
+    }
+    auto window = windowHandle();
+    if (window == nullptr || !window->isExposed()) {
+        return;
+    }
+    VSyncThread::swapGl(this, 0);
+}
+
 
 QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
@@ -508,18 +529,15 @@ void WSpinny::updateVinylControlSignalEnabled(double enabled) {
         // fill with transparent black
         m_qImage.fill(qRgba(0,0,0,0));
     }
-    m_bWidgetDirty = true;
 #endif
 }
 
 void WSpinny::updateVinylControlEnabled(double enabled) {
     m_bVinylActive = enabled;
-    m_bWidgetDirty = true;
 }
 
 void WSpinny::updateSlipEnabled(double enabled) {
     m_bGhostPlayback = static_cast<bool>(enabled);
-    m_bWidgetDirty = true;
 }
 
 void WSpinny::mouseMoveEvent(QMouseEvent * e) {

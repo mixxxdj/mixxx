@@ -62,39 +62,29 @@ Variables:
         <SizePolicy>min,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- Spinny/Cover -->
+          <!-- Spinny/Cover if BIG spinny is enabled -->
+          <WidgetGroup>
+            <SizePolicy>max,min</SizePolicy>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
             <Children>
-              <WidgetGroup><!-- if BIG spinny is enabled -->
-                <Layout>horizontal</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Children>
-                  <!-- margin to deck -->
-                  <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
-                  <Template src="skin:spinnyCover.xml"/>
-                </Children>
+
+              <!-- 3px margin to main deck -->
+              <WidgetGroup>
+                <Size>3f,1min</Size>
                 <Connection>
-                  <ConfigKey persist="true">[Tango],spinnyCoverBIG</ConfigKey>
+                  <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-              </WidgetGroup><!-- if BIG spinny is enabled -->
+              </WidgetGroup>
+
+              <Template src="skin:spinnyCover_maxi.xml"/>
+
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],show_spinny_cover</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- /Spinny/Cover -->
-
-          <WidgetGroup>
-            <Size>3f,1min</Size>
-            <Connection>
-              <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <Template src="skin:vumeter_floating.xml"/>
+          </WidgetGroup><!-- /Spinny/Cover if BIG spinny is enabled -->
 
         </Children>
         <Connection>
@@ -129,13 +119,41 @@ Variables:
       <WidgetGroup>
         <Size>3f,1min</Size>
         <Connection>
-          <ConfigKey persist="true">[Tango],pitch_fader</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
 
       <Template src="skin:rate_pitch_key.xml"/>
       <!-- /Pitch slider & Key controls -->
+
+      <WidgetGroup><!-- VUMeter -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+              <Template src="skin:vumeter_floating.xml">
+                <SetVariable name="Label">Deck<Variable name="chanNum"/></SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Tango],vumeter</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- /VUMeter -->
 
       <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 

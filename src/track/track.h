@@ -359,7 +359,7 @@ class Track : public QObject {
     mutable QMutex m_qMutex;
 
     // The file
-    QFileInfo m_fileInfo;
+    mutable QFileInfo m_fileInfo;
 
     SecurityTokenPointer m_pSecurityToken;
 

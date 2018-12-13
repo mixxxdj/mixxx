@@ -75,7 +75,6 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
           m_iUiSlowTick(0),
           m_dSlipPosition(0.),
           m_dSlipRate(1.0),
-          m_slipEnabled(0),
           m_bSlipEnabledProcessing(false),
           m_pRepeat(NULL),
           m_startButton(NULL),
@@ -145,12 +144,6 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
 
     m_pSlipButton = new ControlPushButton(ConfigKey(m_group, "slip_enabled"));
     m_pSlipButton->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pSlipButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlSlip(double)),
-            Qt::DirectConnection);
-    connect(m_pSlipButton, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotControlSlip(double)),
-            Qt::DirectConnection);
 
     // BPM to display in the UI (updated more slowly than the actual bpm)
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
@@ -189,7 +182,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
 
-    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"));
+    m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), false);
     m_pTrackLoaded->setReadOnly();
 
     // Quantization Controller for enabling and disabling the
@@ -461,8 +454,8 @@ void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
     m_iSamplesCalculated = 1000000;
 
     // Must hold the engineLock while using m_engineControls
-    for (QList<EngineControl*>::iterator it = m_engineControls.begin();
-         it != m_engineControls.end(); ++it) {
+    for (auto it = m_engineControls.constBegin();
+         it != m_engineControls.constEnd(); ++it) {
         EngineControl *pControl = *it;
         pControl->notifySeek(m_filepos_play, adjustingPhase);
     }
@@ -522,7 +515,6 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSampleRate->set(iTrackSampleRate);
     // Reset slip mode
     m_pSlipButton->set(0);
-    m_slipEnabled = 0;
     m_bSlipEnabledProcessing = false;
     m_dSlipPosition = 0.;
     m_dSlipRate = 0;
@@ -706,11 +698,6 @@ void EngineBuffer::slotControlStop(double v)
     if (v > 0.0) {
         m_playButton->set(0);
     }
-}
-
-void EngineBuffer::slotControlSlip(double v)
-{
-    m_slipEnabled = static_cast<int>(v > 0.0);
 }
 
 void EngineBuffer::slotKeylockEngineChanged(double dIndex) {
@@ -1021,9 +1008,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
             }
         }
 
-        QListIterator<EngineControl*> it(m_engineControls);
-        while (it.hasNext()) {
-            EngineControl* pControl = it.next();
+        for (const auto& pControl : qAsConst(m_engineControls)) {
             pControl->setCurrentSample(m_filepos_play, m_trackSamplesOld);
             pControl->process(rate, m_filepos_play, m_trackSamplesOld, iBufferSize);
         }
@@ -1034,13 +1019,13 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         at_start = m_filepos_play <= 0;
         at_end = m_filepos_play >= m_trackSamplesOld;
 
-        bool repeat_enabled = m_pRepeat->get() != 0.0;
+        bool repeat_enabled = m_pRepeat->toBool();
 
         bool end_of_track = //(at_start && backwards) ||
             (at_end && !backwards);
 
         // If playbutton is pressed, check if we are at start or end of track
-        if ((m_playButton->get() || (m_fwdButton->get() || m_backButton->get()))
+        if ((m_playButton->toBool() || (m_fwdButton->toBool() || m_backButton->toBool()))
                 && end_of_track) {
             if (repeat_enabled) {
                 double fractionalPos = at_start ? 1.0 : 0;
@@ -1099,7 +1084,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
 
 void EngineBuffer::processSlip(int iBufferSize) {
     // Do a single read from m_bSlipEnabled so we don't run in to race conditions.
-    bool enabled = static_cast<bool>(load_atomic(m_slipEnabled));
+    bool enabled = m_pSlipButton->toBool();
     if (enabled != m_bSlipEnabledProcessing) {
         m_bSlipEnabledProcessing = enabled;
         if (enabled) {
@@ -1171,8 +1156,15 @@ void EngineBuffer::processSeek(bool paused) {
             position = m_filepos_play;
             adjustingPhase = true;
             break;
+        case SEEK_STANDARD:
+            if (m_pQuantize->toBool()) {
+                seekType |= SEEK_PHASE;
+            }
+            // new position was already set above
+            break;
         case SEEK_EXACT:
-        case SEEK_STANDARD: // = SEEK_EXACT | SEEK_PHASE
+        case SEEK_EXACT_PHASE: // artificial state = SEEK_EXACT | SEEK_PHASE
+        case SEEK_STANDARD_PHASE: // artificial state = SEEK_STANDARD | SEEK_PHASE
             // new position was already set above
             break;
         default:
@@ -1180,7 +1172,7 @@ void EngineBuffer::processSeek(bool paused) {
             return;
     }
 
-    if (!paused && ((seekType & SEEK_PHASE) || m_pQuantize->toBool())) {
+    if (!paused && (seekType & SEEK_PHASE)) {
         position = m_pBpmControl->getNearestPositionInPhase(position, true, true);
     }
     if (position != m_filepos_play) {
@@ -1228,7 +1220,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
-    if (m_iSamplesCalculated > (m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
+    if (m_iSamplesCalculated > (kSamplesPerFrame * m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
         const double samplePositionToSeconds = 1.0 / m_trackSampleRateOld
                 / kSamplesPerFrame / m_tempo_ratio_old;
         m_timeElapsed->set(m_filepos_play * samplePositionToSeconds);
@@ -1272,7 +1264,7 @@ void EngineBuffer::hintReader(const double dRate) {
         m_hintList.append(hint);
     }
 
-    for (const auto& pControl: m_engineControls) {
+    for (const auto& pControl : qAsConst(m_engineControls)) {
         pControl->hintReader(&m_hintList);
     }
     m_pReader->hintAndMaybeWake(m_hintList);

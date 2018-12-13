@@ -49,7 +49,7 @@ RateControl::RateControl(QString group,
             Qt::DirectConnection);
 
     m_pRateDir = new ControlObject(ConfigKey(group, "rate_dir"));
-    m_pRateRange = new ControlPotmeter(ConfigKey(group, "rateRange"), 0.01, 0.90);
+    m_pRateRange = new ControlPotmeter(ConfigKey(group, "rateRange"), 0.01, 4.00);
     // Allow rate slider to go out of bounds so that master sync rate
     // adjustments are not capped.
     m_pRateSlider = new ControlPotmeter(ConfigKey(group, "rate"),

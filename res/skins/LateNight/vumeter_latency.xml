@@ -19,7 +19,6 @@
         <MaximumSize>64,4</MaximumSize>
         <PathVu>style/vumeter_latency_over.png</PathVu>
         <PathBack>style/vumeter_latency_bg.png</PathBack>
-        <!-- <PathVu>vumeter_latency.svg</PathVu> -->
         <Horizontal>true</Horizontal>
         <PeakHoldSize>5</PeakHoldSize>
         <PeakHoldTime>1000</PeakHoldTime>

@@ -43,7 +43,7 @@ Variables:
           <WidgetGroup>
             <ObjectName>EffectUnitControls</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>max,max</SizePolicy>
+            <SizePolicy>min,max</SizePolicy>
             <Children>
 
               <Template src="skin:knob.xml">
@@ -55,17 +55,20 @@ Variables:
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="ObjectName">EffectUnitMixModeButton</SetVariable>
                 <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
-                <SetVariable name="MinimumSize">35,20</SetVariable>
-                <SetVariable name="MaximumSize">35,20</SetVariable>
-                <SetVariable name="state_0_text">D/W</SetVariable>
-                <SetVariable name="state_1_text">D+W</SetVariable>
+                <SetVariable name="MinimumSize">40,20</SetVariable>
+                <SetVariable name="MaximumSize">40,20</SetVariable>
+                <SetVariable name="state_0_unpressed">icon/ic_fx_mixmode_d-w.svg</SetVariable>
+                <SetVariable name="state_0_pressed">icon/ic_fx_mixmode_d-w.svg</SetVariable>
+                <SetVariable name="state_1_unpressed">icon/ic_fx_mixmode_d+w.svg</SetVariable>
+                <SetVariable name="state_1_pressed">icon/ic_fx_mixmode_d+w.svg</SetVariable>
                 <SetVariable name="left_connection_control"><Variable name="group"/>,mix_mode</SetVariable>
               </Template>
 
               <WidgetGroup>
                 <Layout>horizontal</Layout>
+                <SizePolicy>min,max</SizePolicy>
                 <Connection>
-                  <ConfigKey>[Master],show_superknobs</ConfigKey>
+                  <ConfigKey>[Skin],show_superknobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
                 <Children>
