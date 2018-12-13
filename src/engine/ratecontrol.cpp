@@ -484,7 +484,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             }
         }
 
-        double currentSample = getCurrentSample();
+        double currentSample = getSampleOfTrack().current;
         m_pScratchController->process(currentSample, rate, iSamplesPerBuffer, baserate);
 
         // If waveform scratch is enabled, override all other controls

@@ -461,7 +461,7 @@ void LoopingControl::setLoopInToCurrentPosition() {
     if (m_pQuantizeEnabled->toBool() && pBeats) {
         if (m_bAdjustingLoopIn) {
             double closestBeat = m_pClosestBeat->get();
-            if (closestBeat == getCurrentSample()) {
+            if (closestBeat == m_currentSample.getValue()) {
                 quantizedBeat = closestBeat;
             } else {
                 quantizedBeat = m_pPreviousBeat->get();
@@ -563,7 +563,7 @@ void LoopingControl::setLoopOutToCurrentPosition() {
     if (m_pQuantizeEnabled->toBool() && pBeats) {
         if (m_bAdjustingLoopOut) {
             double closestBeat = m_pClosestBeat->get();
-            if (closestBeat == getCurrentSample()) {
+            if (closestBeat == m_currentSample.getValue()) {
                 quantizedBeat = closestBeat;
             } else {
                 quantizedBeat = m_pNextBeat->get();
@@ -693,7 +693,7 @@ void LoopingControl::slotReloopToggle(double val) {
         if (loopSamples.start != kNoTrigger && loopSamples.end != kNoTrigger &&
                 loopSamples.start <= loopSamples.end) {
             setLoopingEnabled(true);
-            if (getCurrentSample() > loopSamples.end) {
+            if (m_currentSample.getValue() > loopSamples.end) {
                 slotLoopInGoto(1);
             }
         }
@@ -936,6 +936,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     // give start and end defaults so we can detect problems
     LoopSamples newloopSamples = {kNoTrigger, kNoTrigger, false};
     LoopSamples loopSamples = m_loopSamples.getValue();
+    double currentSample = m_currentSample.getValue();
 
     // Start from the current position/closest beat and
     // create the loop around X beats from there.
@@ -943,16 +944,15 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         if (loopSamples.start != kNoTrigger) {
             newloopSamples.start = loopSamples.start;
         } else {
-            newloopSamples.start = getCurrentSample();
+            newloopSamples.start = currentSample;
         }
     } else {
         // loop_in is set to the previous beat if quantize is on.  The
         // closest beat might be ahead of play position which would cause a seek.
         // TODO: If in reverse, should probably choose nextBeat.
-        double cur_pos = getCurrentSample();
         double prevBeat;
         double nextBeat;
-        pBeats->findPrevNextBeats(cur_pos, &prevBeat, &nextBeat);
+        pBeats->findPrevNextBeats(currentSample, &prevBeat, &nextBeat);
 
         if (m_pQuantizeEnabled->toBool() && prevBeat != -1) {
             if (beats >= 1.0) {
@@ -967,7 +967,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
                 // If I press 1/4 beatloop, we want loop from 50% to 75% etc
                 double beat_len = nextBeat - prevBeat;
                 double loops_per_beat = 1.0 / beats;
-                double beat_pos = cur_pos - prevBeat;
+                double beat_pos = currentSample - prevBeat;
                 int beat_frac =
                         static_cast<int>(floor((beat_pos / beat_len) *
                                                 loops_per_beat));
@@ -975,7 +975,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
             }
 
         } else {
-            newloopSamples.start = cur_pos;
+            newloopSamples.start = currentSample;
         }
     }
 
@@ -1086,7 +1086,7 @@ void LoopingControl::slotBeatJump(double beats) {
         // If inside an active loop, move loop
         slotLoopMove(beats);
     } else {
-        seekAbs(pBeats->findNBeatsFromSample(getCurrentSample(), beats));
+        seekAbs(pBeats->findNBeatsFromSample(currentSample, beats));
     }
 }
 
@@ -1112,7 +1112,7 @@ void LoopingControl::slotLoopMove(double beats) {
         return;
     }
 
-    if (BpmControl::getBeatContext(pBeats, getCurrentSample(),
+    if (BpmControl::getBeatContext(pBeats, m_currentSample.getValue(),
                                    nullptr, nullptr, nullptr, nullptr)) {
         double new_loop_in = pBeats->findNBeatsFromSample(loopSamples.start, beats);
         double new_loop_out = currentLoopMatchesBeatloopSize() ?

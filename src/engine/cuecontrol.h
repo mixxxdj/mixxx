@@ -100,10 +100,8 @@ class CueControl : public EngineControl {
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
     void resetIndicators();
-    bool isTrackAtCue();
     bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
-
     void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
@@ -131,10 +129,17 @@ class CueControl : public EngineControl {
     void playStutter(double v);
 
   private:
+    enum class TrackAt {
+        Cue,
+        End,
+        ElseWhere
+    };
+
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
     void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
+    TrackAt getTrackAt() const;
 
     bool m_bPreviewing;
     ControlObject* m_pPlay;

@@ -89,8 +89,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
         return;
     }
 
-
-    double total_samples = getTotalSamples();
+    double total_samples = getSampleOfTrack().total;
     double new_playpos = round(fractionalPos * total_samples);
 
     if (m_pControlVinylEnabled->get() > 0.0 && m_pControlVinylMode->get() == MIXXX_VCMODE_RELATIVE) {

@@ -7,6 +7,8 @@
 #include <QObject>
 #include <QList>
 
+#include <gtest/gtest_prod.h>
+
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "control/controlvalue.h"
@@ -55,10 +57,6 @@ class EngineControl : public QObject {
     void setEngineBuffer(EngineBuffer* pEngineBuffer);
     virtual void setCurrentSample(const double dCurrentSample,
             const double dTotalSamples, const double dTrackSampleRate);
-    double getCurrentSample() const;
-    double getTotalSamples() const;
-    double getTrackSampleRate() const;
-    bool atEndPosition() const;
     QString getGroup() const;
 
     // Called to collect player features for effects processing.
@@ -71,6 +69,15 @@ class EngineControl : public QObject {
     virtual void trackLoaded(TrackPointer pNewTrack);
 
   protected:
+    struct SampleOfTrack {
+        double current;
+        double total;
+        double rate;
+    };
+
+    SampleOfTrack getSampleOfTrack() const {
+        return m_sampleOfTrack.getValue();
+    }
     void seek(double fractionalPosition);
     void seekAbs(double sample);
     // Seek to an exact sample and don't allow quantizing adjustment.
@@ -85,15 +92,17 @@ class EngineControl : public QObject {
     UserSettingsPointer m_pConfig;
 
   private:
-    struct SampleOfTrack {
-        double current;
-        double total;
-        double rate;
-    };
-
     ControlValueAtomic<SampleOfTrack> m_sampleOfTrack;
     EngineMaster* m_pEngineMaster;
     EngineBuffer* m_pEngineBuffer;
+
+
+    FRIEND_TEST(LoopingControlTest, ReloopToggleButton_DoesNotJumpAhead);
+    FRIEND_TEST(LoopingControlTest, ReloopAndStopButton);
+    FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
+    FRIEND_TEST(LoopingControlTest, LoopMoveTest);
+    FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
+    FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
 };
 
 #endif /* ENGINECONTROL_H */

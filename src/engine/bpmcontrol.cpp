@@ -156,8 +156,8 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         const double beats_bpm =
-                pBeats->getBpmAroundPosition(getCurrentSample(),
-                                               kLocalBpmSpan);
+                pBeats->getBpmAroundPosition(
+                        getSampleOfTrack().current, kLocalBpmSpan);
         if (beats_bpm != -1) {
             m_pLocalBpm->set(beats_bpm);
         } else {
@@ -192,7 +192,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats &&
             (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
-        const int translate_dist = getTrackSampleRate() * -.01;
+        const int translate_dist = getSampleOfTrack().rate * -.01;
         pBeats->translate(translate_dist);
     }
 }
@@ -202,7 +202,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     if (v > 0 && pBeats &&
             (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
-        const int translate_dist = getTrackSampleRate() * .01;
+        const int translate_dist = getSampleOfTrack().rate * .01;
         pBeats->translate(translate_dist);
     }
 }
@@ -401,7 +401,7 @@ double BpmControl::calcSyncedRate(double userTweak) {
 
     // Now we need to get our beat distance so we can figure out how
     // out of phase we are.
-    double dThisPosition = getCurrentSample();
+    double dThisPosition = getSampleOfTrack().current;
     double dBeatLength;
     double my_percentage;
     if (!BpmControl::getBeatContextNoLookup(dThisPosition,
@@ -783,7 +783,7 @@ void BpmControl::slotUpdatedTrackBeats() {
 void BpmControl::slotBeatsTranslate(double v) {
     BeatsPointer pBeats = m_pBeats;
     if (v > 0 && pBeats && (pBeats->getCapabilities() & Beats::BEATSCAP_TRANSLATE)) {
-        double currentSample = getCurrentSample();
+        double currentSample = getSampleOfTrack().current;
         double closestBeat = pBeats->findClosestBeat(currentSample);
         int delta = currentSample - closestBeat;
         if (delta % 2 != 0) {
@@ -800,7 +800,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         // otherwise it will always return 0 if master sync is active.
         m_dUserOffset.setValue(0.0);
 
-        double offset = getPhaseOffset(getCurrentSample());
+        double offset = getPhaseOffset(getSampleOfTrack().current);
         pBeats->translate(-offset);
     }
 }
@@ -810,8 +810,8 @@ double BpmControl::updateLocalBpm() {
     double local_bpm = 0;
     BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        local_bpm = pBeats->getBpmAroundPosition(getCurrentSample(),
-                                                   kLocalBpmSpan);
+        local_bpm = pBeats->getBpmAroundPosition(
+                getSampleOfTrack().current, kLocalBpmSpan);
         if (local_bpm == -1) {
             local_bpm = m_pFileBpm->get();
         }
@@ -826,7 +826,7 @@ double BpmControl::updateLocalBpm() {
 }
 
 double BpmControl::updateBeatDistance() {
-    double beat_distance = getBeatDistance(getCurrentSample());
+    double beat_distance = getBeatDistance(getSampleOfTrack().current);
     m_pThisBeatDistance->set(beat_distance);
     if (getSyncMode() == SYNC_NONE) {
         m_dUserOffset.setValue(0.0);
@@ -852,25 +852,24 @@ void BpmControl::resetSyncAdjustment() {
 
 void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     // Without a beatgrid we don't know any beat details.
-    double dTrackSampleRate = getTrackSampleRate();
-    if (!dTrackSampleRate || !m_pBeats) {
+    SampleOfTrack sot = getSampleOfTrack();
+    if (!sot.rate || !m_pBeats) {
         return;
     }
 
     // Get the current position of this deck.
-    double dThisPosition = getCurrentSample();
     double dThisPrevBeat = m_pPrevBeat->get();
     double dThisNextBeat = m_pNextBeat->get();
     double dThisBeatLength;
     double dThisBeatFraction;
-    if (getBeatContextNoLookup(dThisPosition,
+    if (getBeatContextNoLookup(sot.current,
                        dThisPrevBeat, dThisNextBeat,
                        &dThisBeatLength, &dThisBeatFraction)) {
         pGroupFeatures->has_beat_length_sec = true;
 
         // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)
         pGroupFeatures->beat_length_sec = dThisBeatLength / kSamplesPerFrame
-                / dTrackSampleRate / calcRateRatio();
+                / sot.rate / calcRateRatio();
 
         pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction = dThisBeatFraction;

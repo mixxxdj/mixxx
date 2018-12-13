@@ -60,15 +60,16 @@ void QuantizeControl::slotBeatsUpdated() {
     TrackPointer pTrack = m_pTrack;
     if (pTrack) {
         m_pBeats = pTrack->getBeats();
-        lookupBeatPositions(getCurrentSample());
-        updateClosestBeat(getCurrentSample());
+        double current = getSampleOfTrack().current;
+        lookupBeatPositions(current);
+        updateClosestBeat(current);
     }
 }
 
 void QuantizeControl::setCurrentSample(const double dCurrentSample,
                                        const double dTotalSamples,
                                        const double dTrackSampleRate) {
-    if (dCurrentSample == getCurrentSample()) {
+    if (dCurrentSample == getSampleOfTrack().current) {
         // No need to recalculate.
         return;
     }
