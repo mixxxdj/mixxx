@@ -63,9 +63,8 @@ public:
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
     void process(const double dRate,
-                   const double currentSample,
-                   const double totalSamples,
-                   const int bufferSamples) override;
+                 const double currentSample,
+                 const int bufferSamples) override;
     // Returns the current engine rate.  "reportScratching" is used to tell
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.
@@ -106,7 +105,6 @@ public:
     void slotControlRateTempUpSmall(double);
     void slotControlFastForward(double);
     void slotControlFastBack(double);
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private:
     double getJogFactor() const;
@@ -125,10 +123,10 @@ public:
     double getTempRate(void);
 
     // Values used when temp and perm rate buttons are pressed
-    static double m_dTemporaryRateChangeCoarse;
-    static double m_dTemporaryRateChangeFine;
-    static double m_dPermanentRateChangeCoarse;
-    static double m_dPermanentRateChangeFine;
+    static ControlValueAtomic<double> m_dTemporaryRateChangeCoarse;
+    static ControlValueAtomic<double> m_dTemporaryRateChangeFine;
+    static ControlValueAtomic<double> m_dPermanentRateChangeCoarse;
+    static ControlValueAtomic<double> m_dPermanentRateChangeFine;
 
     ControlPushButton *buttonRateTempDown;
     ControlPushButton *buttonRateTempDownSmall;
@@ -163,8 +161,6 @@ public:
 
     ControlObject* m_pSampleRate;
 
-    TrackPointer m_pTrack;
-
     // For Master Sync
     BpmControl* m_pBpmControl;
 
@@ -178,8 +174,6 @@ public:
 
     // This is true if we've already started to ramp the rate
     bool m_bTempStarted;
-    // Set to the rate change used for rate temp
-    double m_dTempRateChange;
     // Set the Temporary Rate Change Mode
     static RampMode m_eRateRampMode;
     // The Rate Temp Sensitivity, the higher it is the slower it gets

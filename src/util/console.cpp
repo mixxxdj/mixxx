@@ -177,7 +177,7 @@ Console::~Console() {
         }
     }
     if (m_shouldFreeConsole) {
-        // Note: The console has already witten the command on top of the output
+        // Note: The console has already written the command on top of the output
         // because it was originally released due to the /subsystem:windows flag.
         // We may send a fake "Enter" key here, using SendInput() to get a new
         // command prompt, but this executes a user entry unconditionally or has other
