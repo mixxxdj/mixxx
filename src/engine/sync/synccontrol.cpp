@@ -33,9 +33,6 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
           m_pLocalBpm(nullptr),
           m_pFileBpm(nullptr),
           m_pRateRatio(nullptr),
-          m_pRateSlider(nullptr),
-          m_pRateDirection(nullptr),
-          m_pRateRange(nullptr),
           m_pVCEnabled(nullptr),
           m_pSyncPhaseButton(nullptr) {
     // Play button.  We only listen to this to disable master if the deck is
@@ -98,18 +95,8 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
                                     Qt::DirectConnection);
 
     m_pRateRatio = new ControlProxy(getGroup(), "rate_ratio", this);
-
-    m_pRateSlider = new ControlProxy(getGroup(), "rate", this);
-    m_pRateSlider->connectValueChanged(SLOT(slotRateChanged()),
+    m_pRateRatio->connectValueChanged(SLOT(slotRateChanged()),
                                        Qt::DirectConnection);
-
-    m_pRateDirection = new ControlProxy(getGroup(), "rate_dir", this);
-    m_pRateDirection->connectValueChanged(SLOT(slotRateChanged()),
-                                          Qt::DirectConnection);
-
-    m_pRateRange = new ControlProxy(getGroup(), "rateRange", this);
-    m_pRateRange->connectValueChanged(SLOT(slotRateChanged()),
-                                      Qt::DirectConnection);
 
     m_pSyncPhaseButton = new ControlProxy(getGroup(), "beatsync_phase", this);
 
@@ -154,9 +141,8 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     if (mode == SYNC_MASTER) {
         // Make sure all the followers update based on our current rate.
         slotRateChanged();
-        double rateRatio = calcRateRatio();
         m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
-        m_pBpm->set(m_pLocalBpm->get() * rateRatio);
+        m_pBpm->set(m_pLocalBpm->get() * m_pRateRatio->get());
     }
 }
 
@@ -330,12 +316,11 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
             // rate slider are not updated as soon as we need them, so do that now.
             m_pFileBpm->set(pNewTrack->getBpm());
             m_pLocalBpm->set(pNewTrack->getBpm());
-            double dRate = calcRateRatio();
             // We used to set the m_pBpm here, but that causes a signal loop whereby
             // that was interpretted as a rate slider tweak, and the master bpm
             // was changed.  Instead, now we pass the suggested bpm to enginesync
             // explicitly, and it can decide what to do with it.
-            m_pEngineSync->notifyTrackLoaded(this, m_pLocalBpm->get() * dRate);
+            m_pEngineSync->notifyTrackLoaded(this, m_pLocalBpm->get() * m_pRateRatio->get());
         }
     }
 }
@@ -426,9 +411,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
     }
     m_prevLocalBpm = local_bpm;
 
-    // FIXME: This recalculating of the rate is duplicated in bpmcontrol.
-    const double rateRatio = calcRateRatio();
-    double bpm = local_bpm * rateRatio;
+    double bpm = local_bpm * m_pRateRatio->get();
     m_pBpm->set(bpm);
     m_pEngineSync->notifyBpmChanged(this, bpm, true);
 }
@@ -440,9 +423,7 @@ void SyncControl::slotFileBpmChanged() {
 }
 
 void SyncControl::slotRateChanged() {
-    // This slot is fired by rate, rate_dir, and rateRange changes.
-    const double rateRatio = calcRateRatio();
-    double bpm = m_pLocalBpm ? m_pLocalBpm->get() * rateRatio : 0.0;
+    double bpm = m_pLocalBpm ? m_pLocalBpm->get() * m_pRateRatio->get() : 0.0;
     //qDebug() << getGroup() << "SyncControl::slotRateChanged" << rate << bpm;
     if (bpm > 0) {
         // When reporting our bpm, remove the multiplier so the masters all
@@ -462,10 +443,4 @@ void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
     // think the followers have the same bpm.
     double instantaneous_bpm = m_pLocalBpm->get() * speed / m_masterBpmAdjustFactor;
     m_pEngineSync->notifyInstantaneousBpmChanged(this, instantaneous_bpm);
-}
-
-double SyncControl::calcRateRatio() {
-    double rateRatio = 1.0 + m_pRateDirection->get() * m_pRateRange->get() *
-            m_pRateSlider->get();
-    return rateRatio;
 }

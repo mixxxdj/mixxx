@@ -38,16 +38,10 @@ BpmControl::BpmControl(QString group,
     m_pPlayButton = new ControlProxy(group, "play", this);
     m_pReverseButton = new ControlProxy(group, "reverse", this);
     m_pRateRatio = new ControlProxy(group, "rate_ratio", this);
-    m_pRateSlider = new ControlProxy(group, "rate", this);
-    m_pRateSlider->connectValueChanged(SLOT(slotUpdateEngineBpm()),
+    m_pRateRatio->connectValueChanged(SLOT(slotUpdateEngineBpm()),
                                        Qt::DirectConnection);
+
     m_pQuantize = ControlObject::getControl(group, "quantize");
-    m_pRateRange = new ControlProxy(group, "rateRange", this);
-    m_pRateRange->connectValueChanged(SLOT(slotUpdateRateSlider()),
-                                      Qt::DirectConnection);
-    m_pRateDir = new ControlProxy(group, "rate_dir", this);
-    m_pRateDir->connectValueChanged(SLOT(slotUpdateEngineBpm()),
-                                    Qt::DirectConnection);
 
     m_pPrevBeat.reset(new ControlProxy(group, "beat_prev"));
     m_pNextBeat.reset(new ControlProxy(group, "beat_next"));
@@ -85,6 +79,7 @@ BpmControl::BpmControl(QString group,
     // bpm_up / bpm_down steps by 1
     // bpm_up_small / bpm_down_small steps by 0.1
     m_pEngineBpm = new ControlLinPotmeter(ConfigKey(group, "bpm"), 1, 200, 1, 0.1, true);
+    m_pEngineBpm->set(0.0);
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotUpdateRateSlider()),
             Qt::DirectConnection);
@@ -226,7 +221,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
-    double averageBpm = 60.0 * 1000.0 / averageLength / calcRateRatio();
+    double averageBpm = 60.0 * 1000.0 / averageLength / m_pRateRatio->get();
     pBeats->setBpm(averageBpm);
 }
 
@@ -280,11 +275,7 @@ bool BpmControl::syncTempo() {
     // The goal is for this deck's effective BPM to equal the other decks.
     //
     // thisBpm = otherBpm
-    //
-    // The overall rate is the product of range, direction, and scale plus 1:
-    //
-    // rate = 1.0 + rateDir * rateRange * rateScale
-    //
+    ///
     // An effective BPM is the file-bpm times the rate:
     //
     // bpm = fileBpm * rate
@@ -713,9 +704,8 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
 }
 
 void BpmControl::slotUpdateEngineBpm() {
-    // Adjust playback bpm in response to a change in the rate slider.
-    double dRate = calcRateRatio();
-    m_pRateRatio->set(dRate);
+    // Adjust playback bpm in response to a rate_ration update
+    double dRate = m_pRateRatio->get();
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
@@ -729,14 +719,6 @@ void BpmControl::slotUpdateRateSlider() {
 
     double dRateRatio = m_pEngineBpm->get() / localBpm;
     m_pRateRatio->set(dRateRatio);
-
-    double rateScale = m_pRateDir->get() * m_pRateRange->get();
-    if (rateScale == 0.0) {
-        return;
-    }
-
-    double dRateSlider = (dRateRatio - 1.0) / rateScale;
-    m_pRateSlider->set(dRateSlider);
 }
 
 void BpmControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -850,16 +832,11 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
                        dThisPrevBeat, dThisNextBeat,
                        &dThisBeatLength, &dThisBeatFraction)) {
         pGroupFeatures->has_beat_length_sec = true;
-        // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)
+        // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)  
         pGroupFeatures->beat_length_sec = dThisBeatLength / kSamplesPerFrame
-                / m_pTrack->getSampleRate() / calcRateRatio();
+                / m_pTrack->getSampleRate() / m_pRateRatio->get();
 
         pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction = dThisBeatFraction;
     }
-}
-
-double BpmControl::calcRateRatio() const {
-    return std::max(1e-6,
-            1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get());
 }

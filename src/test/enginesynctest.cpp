@@ -263,12 +263,12 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     // Set up decks so they can be playing, and start deck 1.
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(100.0);
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(130.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
-    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 0.0);
     ProcessBuffer();
 
     // Set channel 1 to be enabled
@@ -279,7 +279,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     assertIsMaster(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
     EXPECT_FLOAT_EQ(100.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Set channel 2 to be enabled.
     pButtonSyncEnabled2->set(1);
@@ -295,8 +295,8 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
                     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
 
     // Reset channel 2 rate, set channel 2 to play, and process a buffer.
-    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
-    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
     ProcessBuffer();
 
     // Keep double checking these.
@@ -310,7 +310,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
 
     // Rate should now match channel 2.
     EXPECT_FLOAT_EQ(130.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 
 
@@ -359,35 +359,35 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
 
 TEST_F(EngineSyncTest, RateChangeTest) {
     auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
-    pButtonMasterSync1->slotSet(SYNC_MASTER);
+    pButtonMasterSync1->set(SYNC_MASTER);
     auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
-    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
+    pButtonMasterSync2->set(SYNC_FOLLOWER);
     ProcessBuffer();
 
     // Set the file bpm of channel 1 to 160bpm.
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(160.0);
-    EXPECT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->get());
-    EXPECT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(160.0, ControlObject::get(ConfigKey(m_sGroup1, "file_bpm")));
+    EXPECT_FLOAT_EQ(160.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Set the rate of channel 1 to 1.2.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.2));
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.2));
     EXPECT_FLOAT_EQ(getRateSliderValue(1.2),
-                    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
-    EXPECT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    EXPECT_FLOAT_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
 
     // Internal master should also be 192.
-    EXPECT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(192.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Set the file bpm of channel 2 to 120bpm.
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(120.0);
-    EXPECT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->get());
+    EXPECT_FLOAT_EQ(120.0, ControlObject::get(ConfigKey(m_sGroup2, "file_bpm")));
 
     // rate slider for channel 2 should now be 1.6 = 160 * 1.2 / 120.
     EXPECT_FLOAT_EQ(getRateSliderValue(1.6),
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
-    EXPECT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_FLOAT_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 }
 
 TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
@@ -401,60 +401,60 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
     // Set the file bpm of channel 1 to 160bpm.
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(160.0);
-    EXPECT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(160.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Set the file bpm of channel 2 to 120bpm.
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(120.0);
 
     // Set the rate slider of channel 1 to 1.2.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.2));
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.2));
 
     // Rate slider for channel 2 should now be 1.6 = (160 * 1.2 / 120) - 1.0.
     EXPECT_FLOAT_EQ(getRateSliderValue(1.6),
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
-    EXPECT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_FLOAT_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Internal Master BPM should read the same.
-    EXPECT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    EXPECT_FLOAT_EQ(192.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 
 TEST_F(EngineSyncTest, RateChangeTestOrder3) {
     // Set the file bpm of channel 1 to 160bpm.
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(160.0);
-    EXPECT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->get());
+    EXPECT_FLOAT_EQ(160.0, ControlObject::get(ConfigKey(m_sGroup1, "file_bpm")));
 
     // Set the file bpm of channel 2 to 120bpm.
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(120.0);
-    EXPECT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->get());
+    EXPECT_FLOAT_EQ(120.0, ControlObject::get(ConfigKey(m_sGroup2, "file_bpm")));
 
     // Turn on Master and Follower.
     auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
-    pButtonMasterSync1->slotSet(SYNC_MASTER);
+    pButtonMasterSync1->set(SYNC_MASTER);
     ProcessBuffer();
 
     assertIsMaster(m_sGroup1);
 
     auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
-    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
+    pButtonMasterSync2->set(SYNC_FOLLOWER);
     ProcessBuffer();
 
     // Follower should immediately set its slider.
     EXPECT_FLOAT_EQ(getRateSliderValue(1.3333333333),
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
-    EXPECT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_FLOAT_EQ(160.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(160.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 
 TEST_F(EngineSyncTest, FollowerRateChange) {
     // Confirm that followers can change master sync rate as well.
     auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
-    pButtonMasterSync1->slotSet(SYNC_MASTER);
+    pButtonMasterSync1->set(SYNC_MASTER);
     auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
-    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
+    pButtonMasterSync2->set(SYNC_FOLLOWER);
     ProcessBuffer();
 
     // Set the file bpm of channel 1 to 160bpm.
@@ -466,34 +466,34 @@ TEST_F(EngineSyncTest, FollowerRateChange) {
     pFileBpm2->set(120.0);
 
     // Set the rate slider of channel 1 to 1.2.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.2));
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.2));
 
     // Rate slider for channel 2 should now be 1.6 = (160 * 1.2 / 120).
     EXPECT_FLOAT_EQ(getRateSliderValue(1.6),
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
-    EXPECT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_FLOAT_EQ(192.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Try to twiddle the rate slider on channel 2.
     auto pSlider2 = std::make_unique<ControlProxy>(m_sGroup2, "rate");
-    pSlider2->slotSet(getRateSliderValue(0.8));
+    pSlider2->set(getRateSliderValue(0.8));
     ProcessBuffer();
 
     // Rates should still be changed even though it's a follower.
     EXPECT_FLOAT_EQ(getRateSliderValue(0.8),
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
-    EXPECT_FLOAT_EQ(96.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "rate")));
+    EXPECT_FLOAT_EQ(96.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(getRateSliderValue(0.6),
-                    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
-    EXPECT_FLOAT_EQ(96.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup1, "rate")));
+    EXPECT_FLOAT_EQ(96.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
 }
 
 TEST_F(EngineSyncTest, InternalRateChangeTest) {
     auto pButtonMasterSyncInternal = std::make_unique<ControlProxy>(m_sInternalClockGroup, "sync_master");
-    pButtonMasterSyncInternal->slotSet(SYNC_MASTER);
+    pButtonMasterSyncInternal->set(SYNC_MASTER);
     auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
-    pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
+    pButtonMasterSync1->set(SYNC_FOLLOWER);
     auto pButtonMasterSync2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
-    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
+    pButtonMasterSync2->set(SYNC_FOLLOWER);
     ProcessBuffer();
 
     assertIsMaster(m_sInternalClockGroup);
@@ -566,17 +566,17 @@ TEST_F(EngineSyncTest, MasterStopSliderCheck) {
 
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+    EXPECT_FLOAT_EQ(120.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(getRateSliderValue(0.9375),
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "rate")));
 
     pChannel1Play->set(0.0);
 
     ProcessBuffer();
 
-    EXPECT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+    EXPECT_FLOAT_EQ(120.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_FLOAT_EQ(getRateSliderValue(0.9375),
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "rate")));
 }
 
 TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
@@ -587,9 +587,9 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
 
     // Set internal to master and give it a beat distance.
-    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->set(124.0);
-    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->set(0.5);
-    pButtonMasterSyncInternal->slotSet(SYNC_MASTER);
+    ControlObject::set(ConfigKey(m_sInternalClockGroup, "bpm"), 124.0);
+    ControlObject::set(ConfigKey(m_sInternalClockGroup, "beat_distance"), 0.5);
+    pButtonMasterSyncInternal->set(SYNC_MASTER);
     ProcessBuffer();
 
     // Set up the deck to play.
@@ -607,12 +607,12 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
 
     // Internal clock rate should match master but beat distance should match follower.
     EXPECT_FLOAT_EQ(130.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
-    EXPECT_FLOAT_EQ(130.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
-    EXPECT_FLOAT_EQ(0.2, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_FLOAT_EQ(0.2, ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")));
     EXPECT_FLOAT_EQ(0.2,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
-                                                        "beat_distance"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup,
+                                                        "beat_distance")));
 
     // Enable second deck, beat distance should still match original setting.
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
@@ -625,12 +625,12 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
     m_pEngineSync->requestEnableSync(m_pEngineSync->getSyncableForGroup(m_sGroup2), true);
 
     EXPECT_FLOAT_EQ(130.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
-    EXPECT_FLOAT_EQ(130.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
-    EXPECT_FLOAT_EQ(0.2, ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_FLOAT_EQ(0.2, ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")));
     EXPECT_FLOAT_EQ(0.2,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
-                                                        "beat_distance"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup,
+                                                        "beat_distance")));
 }
 
 TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
@@ -716,66 +716,66 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
 
     // Enable sync on two stopped decks
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
-    pButtonSyncEnabled1->slotSet(1.0);
+    pButtonSyncEnabled1->set(1.0);
 
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
-    pButtonSyncEnabled2->slotSet(1.0);
+    pButtonSyncEnabled2->set(1.0);
 
     // If sync is on and we load a track, that should initialize master.
     TrackPointer track1 = m_pMixerDeck1->loadFakeTrack(false, 140.0);
 
     EXPECT_FLOAT_EQ(140.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     EXPECT_FLOAT_EQ(140.0,
-                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
 
     // If sync is on two decks and we load a track while one is playing,
     // that should not change the playing deck.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
 
     TrackPointer track2 = m_pMixerDeck2->loadFakeTrack(false, 128.0);
 
     EXPECT_FLOAT_EQ(140.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     EXPECT_FLOAT_EQ(140.0,
-                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_FLOAT_EQ(140.0,
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Repeat with RESET_PITCH_AND_SPEED
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
                    ConfigValue(BaseTrackPlayer::RESET_PITCH_AND_SPEED));
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
     m_pMixerDeck1->slotLoadTrack(track1, true);
     m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     m_pMixerDeck2->slotLoadTrack(track2, false);
     m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
     EXPECT_FLOAT_EQ(140.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     EXPECT_FLOAT_EQ(140.0,
-                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_FLOAT_EQ(140.0,
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Repeat with RESET_NONE
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
                    ConfigValue(BaseTrackPlayer::RESET_NONE));
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
-    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup1, "play"),0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
     m_pMixerDeck1->slotLoadTrack(track1, true);
     m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     m_pMixerDeck2->slotLoadTrack(track2, false);
     m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
     EXPECT_FLOAT_EQ(128.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     EXPECT_FLOAT_EQ(128.0,
-                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_FLOAT_EQ(128.0,
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Load two tracks with sync off and RESET_SPEED
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
@@ -783,17 +783,17 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.5));
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.5));
-    pButtonSyncEnabled1->slotSet(0.0);
-    pButtonSyncEnabled2->slotSet(0.0);
+    pButtonSyncEnabled1->set(0.0);
+    pButtonSyncEnabled2->set(0.0);
     m_pMixerDeck1->slotLoadTrack(track1, true);
     m_pMixerDeck1->slotTrackLoaded(track1, m_pTrack1);
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     m_pMixerDeck2->slotLoadTrack(track2, false);
     m_pMixerDeck2->slotTrackLoaded(track2, m_pTrack2);
     EXPECT_FLOAT_EQ(140.0,
-                    ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_FLOAT_EQ(128.0,
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // Load two tracks with sync off and RESET_PITCH_AND_SPEED
     m_pConfig->set(ConfigKey("[Controls]", "SpeedAutoReset"),
@@ -844,13 +844,13 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(130.0);
     ProcessBuffer();
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(100.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
 
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
 
     pButtonSyncEnabled2->set(1.0);
     pButtonSyncEnabled2->set(0.0);
@@ -860,13 +860,13 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     // updated with the value, however.
     assertNoMaster();
     EXPECT_FLOAT_EQ(130.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     assertSyncOff(m_sGroup2);
     EXPECT_FLOAT_EQ(getRateSliderValue(1.3),
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "rate")));
 
     // Reset the pitch of deck 2.
-    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
 
     // The same should work in reverse.
     pButtonSyncEnabled1->set(1.0);
@@ -874,22 +874,22 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     ProcessBuffer();
 
     // There should be no master, and deck2 should match rate of deck1.
-    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "sync_master"))->get());
+    EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "sync_master")));
     EXPECT_FLOAT_EQ(100.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     EXPECT_EQ(NULL, m_pEngineSync->getMaster());
     EXPECT_EQ(NULL, m_pEngineSync->getMasterSyncable());
-    EXPECT_EQ(SYNC_NONE, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->get());
-    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->get());
-    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->get());
+    EXPECT_EQ(SYNC_NONE, ControlObject::get(ConfigKey(m_sGroup1, "sync_mode")));
+    EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "sync_enabled")));
+    EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup1, "sync_master")));
     EXPECT_FLOAT_EQ(getRateSliderValue(100.0 / 130.0),
-                    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup1, "rate")));
 
     // Reset again.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
 
     // If deck 1 is not playing, however, deck 2 should stay at the same rate.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
 
     // The same should work in reverse.
     pButtonSyncEnabled1->set(1.0);
@@ -897,16 +897,16 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     ProcessBuffer();
 
     // There should be no master, and deck2 should match rate of deck1.
-    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "sync_master"))->get());
+    EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "sync_master")));
     EXPECT_FLOAT_EQ(100.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     EXPECT_EQ(NULL, m_pEngineSync->getMaster());
     EXPECT_EQ(NULL, m_pEngineSync->getMasterSyncable());
-    EXPECT_EQ(SYNC_NONE, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->get());
-    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->get());
-    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
+    EXPECT_EQ(SYNC_NONE, ControlObject::get(ConfigKey(m_sGroup2, "sync_mode")));
+    EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "sync_enabled")));
+    EXPECT_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "sync_master")));
     EXPECT_FLOAT_EQ(getRateSliderValue(1.0),
-                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+                    ControlObject::get(ConfigKey(m_sGroup2, "rate")));
 }
 
 TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
@@ -919,17 +919,17 @@ TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
     // Set up decks so they can be playing, and start deck 1.
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(100.0);
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
     pFileBpm2->set(130.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
-    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
     ProcessBuffer();
 
     // Set channel 1 to be enabled momentarily.
-    pButtonSyncEnabled1->slotSet(1.0);
-    pButtonSyncEnabled1->slotSet(0.0);
+    pButtonSyncEnabled1->set(1.0);
+    pButtonSyncEnabled1->set(0.0);
     ProcessBuffer();
 
     // The master sync should still be off and the speed should match deck 2.
@@ -937,51 +937,51 @@ TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
     assertSyncOff(m_sGroup1);
     assertSyncOff(m_sGroup2);
     EXPECT_FLOAT_EQ(130.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Also works if deck 1 is not playing.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
     ProcessBuffer();
-    pButtonSyncEnabled1->slotSet(1.0);
-    pButtonSyncEnabled1->slotSet(0.0);
+    pButtonSyncEnabled1->set(1.0);
+    pButtonSyncEnabled1->set(0.0);
     ProcessBuffer();
     assertNoMaster();
     assertSyncOff(m_sGroup1);
     assertSyncOff(m_sGroup2);
     EXPECT_FLOAT_EQ(130.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Also works if neither deck is playing.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 0.0);
     ProcessBuffer();
-    pButtonSyncEnabled1->slotSet(1.0);
-    pButtonSyncEnabled1->slotSet(0.0);
+    pButtonSyncEnabled1->set(1.0);
+    pButtonSyncEnabled1->set(0.0);
     ProcessBuffer();
     assertNoMaster();
     assertSyncOff(m_sGroup1);
     assertSyncOff(m_sGroup2);
     EXPECT_FLOAT_EQ(130.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
 
     // But it doesn't work if deck 2 isn't playing and deck 1 is. (This would
     // cause deck1 to suddenly change bpm while playing back).
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
-    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate"), getRateSliderValue(1.0));
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 0.0);
     ProcessBuffer();
-    pButtonSyncEnabled1->slotSet(1.0);
-    pButtonSyncEnabled1->slotSet(0.0);
+    pButtonSyncEnabled1->set(1.0);
+    pButtonSyncEnabled1->set(0.0);
     ProcessBuffer();
     assertNoMaster();
     assertSyncOff(m_sGroup1);
     assertSyncOff(m_sGroup2);
     EXPECT_FLOAT_EQ(100.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 
 TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
@@ -989,14 +989,14 @@ TEST_F(EngineSyncTest, EjectTrackSyncRemains) {
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     auto pButtonEject1 = std::make_unique<ControlProxy>(m_sGroup1, "eject");
 
-    pButtonMasterSyncInternal->slotSet(1.0);
+    pButtonMasterSyncInternal->set(1.0);
 
     auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
     pFileBpm1->set(120.0);
-    pButtonSyncEnabled1->slotSet(1.0);
+    pButtonSyncEnabled1->set(1.0);
 
     ProcessBuffer();
-    pButtonEject1->slotSet(1.0);
+    pButtonEject1->set(1.0);
     // When an eject happens, the bpm gets set to zero.
     pFileBpm1->set(0.0);
     ProcessBuffer();
@@ -1020,8 +1020,8 @@ TEST_F(EngineSyncTest, FileBpmChangesDontAffectMaster) {
 
     pFileBpm1->set(160.0);
     EXPECT_FLOAT_EQ(100.0,
-                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
-                                                        "bpm"))->get());
+                    ControlObject::get(ConfigKey(m_sInternalClockGroup,
+                                                        "bpm")));
 }
 
 TEST_F(EngineSyncTest, ExplicitMasterPostProcessed) {

@@ -72,7 +72,6 @@ public:
     double calculateSpeed(double baserate, double speed, bool paused,
                          int iSamplesPerBuffer, bool* pReportScratching,
                          bool* pReportReverse);
-    double calcRateRatio() const;
 
     // Set rate change when temp rate button is pressed
     static void setTemporaryRateChangeCoarseAmount(double v);
@@ -95,6 +94,8 @@ public:
     void notifySeek(double dNewPlaypos, bool adjustingPhase) override;
 
   public slots:
+    void slotRateRangeChanged(double);
+    void slotRateSliderChanged(double);
     void slotRateRatioChanged(double);
     void slotReverseRollActivate(double);
     void slotControlRatePermDown(double);
@@ -126,10 +127,10 @@ public:
     double getTempRate(void);
 
     // Values used when temp and perm rate buttons are pressed
-    static double m_dTemporaryRateChangeCoarse;
-    static double m_dTemporaryRateChangeFine;
-    static double m_dPermanentRateChangeCoarse;
-    static double m_dPermanentRateChangeFine;
+    static double m_sTemporaryRateChangeCoarse;
+    static double m_sTemporaryRateChangeFine;
+    static double m_sPermanentRateChangeCoarse;
+    static double m_sPermanentRateChangeFine;
 
     ControlPushButton* buttonRateTempDown;
     ControlPushButton* buttonRateTempDownSmall;
