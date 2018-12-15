@@ -68,7 +68,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,max</SizePolicy>
                 <Connection>
-                  <ConfigKey>[Master],show_superknobs</ConfigKey>
+                  <ConfigKey>[Skin],show_superknobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
                 <Children>

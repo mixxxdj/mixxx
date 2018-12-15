@@ -184,7 +184,7 @@ Variables:
 
     </Children>
     <Connection>
-      <ConfigKey>[Master],show_rate_control</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup><!-- /RateContainer -->

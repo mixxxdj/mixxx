@@ -64,7 +64,13 @@
                 <Connection>
                   <ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
                 </Connection>
+                <Connection>
+                  <ConfigKey>[Sampler<Variable name="samplernum"/>],track_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </Number>
+
+              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
 
               <PushButton>
                 <TooltipId>orientation</TooltipId>
@@ -92,19 +98,17 @@
 
               <Template src="skin:button_2state_nohover.xml">
                 <SetVariable name="TooltipId">keylock</SetVariable>
-                <SetVariable name="icon">keylock</SetVariable>
+                <SetVariable name="icon">keylock_sampler</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
                 <SetVariable name="Size">21,18</SetVariable>
               </Template>
 
               <Template src="skin:button_2state_nohover.xml">
                 <SetVariable name="TooltipId">eject</SetVariable>
-                <SetVariable name="icon">eject</SetVariable>
+                <SetVariable name="icon">eject_sampler</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
                 <SetVariable name="Size">21,18</SetVariable>
               </Template>
-
-              <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
 
             </Children>
           </WidgetGroup>

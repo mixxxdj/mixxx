@@ -30,7 +30,7 @@
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -42,6 +42,7 @@
             <SizePolicy>me,min</SizePolicy>
             <Children>
               <Template src="skin:knob_textless.xml">
+                <SetVariable name="Color">green</SetVariable>
                 <SetVariable name="Size">40f,34f</SetVariable>
                 <SetVariable name="group"><Variable name="QuickEffectGroup"/></SetVariable>
                 <SetVariable name="control">super1</SetVariable>
@@ -84,7 +85,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey>[Master],show_eqs</ConfigKey>
+      <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

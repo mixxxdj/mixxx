@@ -43,21 +43,21 @@
           </Template>
 
           <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="TooltipId">show_microphone</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">61f,24f</SetVariable>
-            <SetVariable name="state_0_text">MIC/AUX</SetVariable>
-            <SetVariable name="state_1_text">MIC/AUX</SetVariable>
-            <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
-          </Template>
-
-          <Template src="skin:button_2state_persist.xml">
             <SetVariable name="TooltipId">show_samplers</SetVariable>
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
             <SetVariable name="Size">71f,24f</SetVariable>
             <SetVariable name="state_0_text">SAMPLERS</SetVariable>
             <SetVariable name="state_1_text">SAMPLERS</SetVariable>
             <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
+          </Template>
+
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_microphone</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">61f,24f</SetVariable>
+            <SetVariable name="state_0_text">MIC/AUX</SetVariable>
+            <SetVariable name="state_1_text">MIC/AUX</SetVariable>
+            <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
           </Template>
 
         </Children>

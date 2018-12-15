@@ -24,7 +24,7 @@
           <KnobComposed>
             <TooltipId><Variable name="TooltipId"/></TooltipId>
             <Size><Variable name="Size"/></Size>
-            <Knob>knob_indicator.svg</Knob>
+            <Knob>knob_indicator_<Variable name="Color"/>.svg</Knob>
             <BackPath>knob_bg.svg</BackPath>
             <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
             <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>

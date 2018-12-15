@@ -26,7 +26,7 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -38,7 +38,7 @@
             <Children>
               <EffectParameterKnobComposed>
                 <Size>40f,34f</Size>
-                <Knob>skin:knob_indicator.svg</Knob>
+                <Knob>skin:knob_indicator_red.svg</Knob>
                 <BackPath>skin:knob_bg.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
@@ -59,7 +59,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey>[Master],show_eqs</ConfigKey>
+      <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

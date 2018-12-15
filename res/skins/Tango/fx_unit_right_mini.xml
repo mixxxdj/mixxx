@@ -116,7 +116,7 @@ Variables:
           <WidgetGroup>
             <Size>3f,1min</Size>
             <Connection>
-              <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
@@ -136,7 +136,7 @@ Variables:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>

@@ -121,6 +121,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);
+    void renderSpinnies();
+    void swapSpinnies();
 
   protected:
     WaveformWidgetFactory();
@@ -162,6 +164,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int m_beatGridAlpha;
 
     VSyncThread* m_vsyncThread;
+    GuiTick* m_pGuiTick;  // not owned
 
     //Debug
     PerformanceTimer m_time;

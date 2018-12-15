@@ -47,5 +47,9 @@ void WKnob::wheelEvent(QWheelEvent* e) {
 }
 
 void WKnob::inputActivity() {
+#ifdef __APPLE__
     m_renderTimer.activity();
+#else
+    update();
+#endif
 }

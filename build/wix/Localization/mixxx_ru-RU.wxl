@@ -22,7 +22,7 @@
 
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
-  <String Id="OS2Old">Этот продукт поддерживается на Windows XP и выше.</String>
+  <String Id="OS2Old">Этот продукт поддерживается на Windows 7 и выше.</String>
   <String Id="NewerInstalled">Данная или выше версия продукта уже установлена.</String>
   <String Id="x64VersionRequired">Вам необходимо установить 64-битную версию продукта на 64-битную версию Windows.</String>
   <String Id="x86VersionRequired">Вам необходимо установить 32-битную версию продукта на 32-битную версию Windows.</String>

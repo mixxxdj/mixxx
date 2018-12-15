@@ -91,7 +91,7 @@ Variables:
                       </Template>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- /Super Knob, if enabled -->
@@ -99,7 +99,7 @@ Variables:
                   <WidgetGroup><!-- additional spacer for Super Knob, if enabled -->
                     <SizePolicy>min,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- /additional spacer for Super Knob, if enabled -->

@@ -53,7 +53,7 @@ Variables:
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <Connection>
-                  <ConfigKey>[Master],show_superknobs</ConfigKey>
+                  <ConfigKey>[Skin],show_superknobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
                 <Children>
