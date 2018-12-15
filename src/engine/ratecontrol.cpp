@@ -18,10 +18,10 @@
 #include <QtDebug>
 
 // Static default values for rate buttons (percents)
-double RateControl::m_dTemporaryRateChangeCoarse;
-double RateControl::m_dTemporaryRateChangeFine;
-double RateControl::m_dPermanentRateChangeCoarse;
-double RateControl::m_dPermanentRateChangeFine;
+ControlValueAtomic<double> RateControl::m_dTemporaryRateChangeCoarse;
+ControlValueAtomic<double> RateControl::m_dTemporaryRateChangeFine;
+ControlValueAtomic<double> RateControl::m_dPermanentRateChangeCoarse;
+ControlValueAtomic<double> RateControl::m_dPermanentRateChangeFine;
 int RateControl::m_iRateRampSensitivity;
 RateControl::RampMode RateControl::m_eRateRampMode;
 
@@ -35,7 +35,6 @@ RateControl::RateControl(QString group,
       m_ePbCurrent(0),
       m_ePbPressed(0),
       m_bTempStarted(false),
-      m_dTempRateChange(0.0),
       m_tempRateRatio(0.0),
       m_dRateTempRampChange(0.0) {
     m_pScratchController = new PositionScratchController(group);
@@ -232,42 +231,42 @@ void RateControl::setRateRampSensitivity(int sense) {
 
 //static
 void RateControl::setTemporaryRateChangeCoarseAmount(double v) {
-    m_dTemporaryRateChangeCoarse = v;
+    m_dTemporaryRateChangeCoarse.setValue(v);
 }
 
 //static
 void RateControl::setTemporaryRateChangeFineAmount(double v) {
-    m_dTemporaryRateChangeFine = v;
+    m_dTemporaryRateChangeFine.setValue(v);
 }
 
 //static
 void RateControl::setPermanentRateChangeCoarseAmount(double v) {
-    m_dPermanentRateChangeCoarse = v;
+    m_dPermanentRateChangeCoarse.setValue(v);
 }
 
 //static
 void RateControl::setPermanentRateChangeFineAmount(double v) {
-    m_dPermanentRateChangeFine = v;
+    m_dPermanentRateChangeFine.setValue(v);
 }
 
 //static
 double RateControl::getTemporaryRateChangeCoarseAmount() {
-    return m_dTemporaryRateChangeCoarse;
+    return m_dTemporaryRateChangeCoarse.getValue();
 }
 
 //static
 double RateControl::getTemporaryRateChangeFineAmount() {
-    return m_dTemporaryRateChangeFine;
+    return m_dTemporaryRateChangeFine.getValue();
 }
 
 //static
 double RateControl::getPermanentRateChangeCoarseAmount() {
-    return m_dPermanentRateChangeCoarse;
+    return m_dPermanentRateChangeCoarse.getValue();
 }
 
 //static
 double RateControl::getPermanentRateChangeFineAmount() {
-    return m_dPermanentRateChangeFine;
+    return m_dPermanentRateChangeFine.getValue();
 }
 
 void RateControl::slotReverseRollActivate(double v) {
@@ -302,7 +301,7 @@ void RateControl::slotControlRatePermDown(double v) {
     // Adjusts temp rate down if button pressed
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
-                m_pRateDir->get() * m_dPermanentRateChangeCoarse / (100 * m_pRateRange->get()));
+                m_pRateDir->get() * m_dPermanentRateChangeCoarse.getValue() / (100 * m_pRateRange->get()));
     }
 }
 
@@ -310,7 +309,7 @@ void RateControl::slotControlRatePermDownSmall(double v) {
     // Adjusts temp rate down if button pressed
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() -
-                m_pRateDir->get() * m_dPermanentRateChangeFine / (100. * m_pRateRange->get()));
+                m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
     }
 }
 
@@ -318,7 +317,7 @@ void RateControl::slotControlRatePermUp(double v) {
     // Adjusts temp rate up if button pressed
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() +
-                m_pRateDir->get() * m_dPermanentRateChangeCoarse / (100. * m_pRateRange->get()));
+                m_pRateDir->get() * m_dPermanentRateChangeCoarse.getValue() / (100. * m_pRateRange->get()));
     }
 }
 
@@ -326,7 +325,7 @@ void RateControl::slotControlRatePermUpSmall(double v) {
     // Adjusts temp rate up if button pressed
     if (v > 0.0) {
         m_pRateSlider->set(m_pRateSlider->get() +
-                m_pRateDir->get() * m_dPermanentRateChangeFine / (100. * m_pRateRange->get()));
+                m_pRateDir->get() * m_dPermanentRateChangeFine.getValue() / (100. * m_pRateRange->get()));
     }
 }
 
@@ -379,21 +378,13 @@ void RateControl::slotControlRateTempUpSmall(double value)
 {
     // Set the state of the Temporary button. Logic is handled in ::process()
     bool pressed = value > 0;
-    if (pressed && !(m_ePbPressed & RateControl::RATERAMP_UP))
-    {
+    if (pressed && !(m_ePbPressed & RateControl::RATERAMP_UP)) {
         m_ePbPressed |= RateControl::RATERAMP_UP;
         m_ePbCurrent = RateControl::RATERAMP_UP;
-    }
-    else if (!pressed)
-    {
+    } else if (!pressed) {
         m_ePbPressed &= ~RateControl::RATERAMP_UP;
         m_ePbCurrent = m_ePbPressed;
     }
-}
-
-void RateControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
-    m_pTrack = pNewTrack;
 }
 
 double RateControl::calcRateRatio() const {
@@ -496,7 +487,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             }
         }
 
-        double currentSample = getCurrentSample();
+        double currentSample = getSampleOfTrack().current;
         m_pScratchController->process(currentSample, rate, iSamplesPerBuffer, baserate);
 
         // If waveform scratch is enabled, override all other controls
@@ -544,8 +535,8 @@ void RateControl::processTempRate(const int bufferSamples) {
         if (m_ePbPressed && !m_bTempStarted) {
             m_bTempStarted = true;
             // old temporary pitch shift behavior
-            double change = m_dTemporaryRateChangeCoarse / 100.0;
-            double csmall = m_dTemporaryRateChangeFine / 100.0;
+            double change = m_dTemporaryRateChangeCoarse.getValue() / 100.0;
+            double csmall = m_dTemporaryRateChangeFine.getValue() / 100.0;
 
             if (m_pButtonRateTempUp->toBool()) {
                 setRateTemp(change);

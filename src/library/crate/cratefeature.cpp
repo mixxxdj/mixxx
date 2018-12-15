@@ -254,7 +254,7 @@ TreeItemModel* CrateFeature::getChildModel() {
 
 void CrateFeature::activate() {
     emit(switchToView("CRATEHOME"));
-    emit(restoreSearch(QString())); //disable search on crate home
+    emit disableSearch();
     emit(enableCoverArtDisplay(true));
 }
 
@@ -553,7 +553,7 @@ void CrateFeature::slotImportPlaylist() {
     activateChild(m_lastRightClickedIndex);
 }
 
-void CrateFeature::slotImportPlaylistFile(const QString &playlist_file) {
+void CrateFeature::slotImportPlaylistFile(const QString& playlist_file) {
     // The user has picked a new directory via a file dialog. This means the
     // system sandboxer (if we are sandboxed) has granted us permission to this
     // folder. We don't need access to this file on a regular basis so we do not

@@ -76,11 +76,7 @@ class TextFilterNode : public QueryNode {
   public:
     TextFilterNode(const QSqlDatabase& database,
                    const QStringList& sqlColumns,
-                   const QString& argument)
-            : m_database(database),
-              m_sqlColumns(sqlColumns),
-              m_argument(argument) {
-    }
+                   const QString& argument);
 
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;

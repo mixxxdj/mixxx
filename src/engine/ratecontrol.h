@@ -90,7 +90,6 @@ public:
     void slotControlRateTempUpSmall(double);
     void slotControlFastForward(double);
     void slotControlFastBack(double);
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private:
     void processTempRate(const int bufferSamples);
@@ -110,10 +109,10 @@ public:
     double getTempRate(void);
 
     // Values used when temp and perm rate buttons are pressed
-    static double m_dTemporaryRateChangeCoarse;
-    static double m_dTemporaryRateChangeFine;
-    static double m_dPermanentRateChangeCoarse;
-    static double m_dPermanentRateChangeFine;
+    static ControlValueAtomic<double> m_dTemporaryRateChangeCoarse;
+    static ControlValueAtomic<double> m_dTemporaryRateChangeFine;
+    static ControlValueAtomic<double> m_dPermanentRateChangeCoarse;
+    static ControlValueAtomic<double> m_dPermanentRateChangeFine;
 
     ControlPushButton* m_pButtonRateTempDown;
     ControlPushButton* m_pButtonRateTempDownSmall;
@@ -148,8 +147,6 @@ public:
 
     ControlObject* m_pSampleRate;
 
-    TrackPointer m_pTrack;
-
     // For Master Sync
     BpmControl* m_pBpmControl;
 
@@ -163,8 +160,6 @@ public:
 
     // This is true if we've already started to ramp the rate
     bool m_bTempStarted;
-    // Set to the rate change used for rate temp
-    double m_dTempRateChange;
     // Set the Temporary Rate Change Mode
     static RampMode m_eRateRampMode;
     // The Rate Temp Sensitivity, the higher it is the slower it gets
