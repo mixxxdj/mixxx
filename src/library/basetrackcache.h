@@ -18,6 +18,7 @@
 #include "track/track.h"
 #include "util/class.h"
 #include "util/memory.h"
+#include "util/string.h"
 
 class SearchQueryParser;
 class QueryNode;
@@ -121,6 +122,8 @@ class BaseTrackCache : public QObject {
     const QString m_columnsJoined;
 
     const ColumnCache m_columnCache;
+
+    const StringCollator m_collator;
 
     QStringList m_searchColumns;
     QVector<int> m_searchColumnIndices;
