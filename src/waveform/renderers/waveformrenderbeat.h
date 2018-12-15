@@ -6,6 +6,7 @@
 #include "skin/skincontext.h"
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
+#include "preferences/usersettings.h"
 
 class WaveformRenderBeat : public WaveformRendererAbstract {
   public:
@@ -20,6 +21,11 @@ class WaveformRenderBeat : public WaveformRendererAbstract {
     QColor m_barColor;
     QColor m_phraseColor;
     QVector<QLineF> m_beats;
+
+    const int c_numberOfChannels = 2;
+    const int c_secondsPerMinute = 60;
+    const int c_beatsPerBar = 4;
+    const int c_barsPerPhrase = 4;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };

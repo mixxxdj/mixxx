@@ -16,7 +16,7 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="10" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="visualGainLabel">
        <property name="text">
         <string>Visual gain</string>
@@ -64,7 +64,14 @@
        </property>
       </widget>
      </item>
-     <item row="13" column="1">
+     <item row="10" column="1">
+      <widget class="QCheckBox" name="showBarAndPhraseMarksCheckBox">
+       <property name="text">
+        <string>Show bar and phrase marks</string>
+       </property>
+      </widget>
+     </item>
+     <item row="14" column="1">
       <widget class="QLabel" name="openGlStatusIcon">
        <property name="toolTip">
         <string>Displays which OpenGL version is supported by the current platform.</string>
@@ -93,7 +100,7 @@
        </property>
       </widget>
      </item>
-     <item row="14" column="0">
+     <item row="15" column="0">
       <widget class="QLabel" name="openGlStatusLabel_2">
        <property name="toolTip">
         <string/>
@@ -123,14 +130,14 @@
       <widget class="QComboBox" name="defaultZoomComboBox"/>
      </item>
 
-     <item row="12" column="0" colspan="4">
+     <item row="13" column="0" colspan="4">
       <widget class="Line" name="line">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
       </widget>
      </item>
-     <item row="13" column="0">
+     <item row="14" column="0">
       <widget class="QLabel" name="openGlStatusLabel">
        <property name="toolTip">
         <string/>
@@ -165,7 +172,7 @@
        </property>
       </widget>
      </item>
-     <item row="10" column="1" colspan="3">
+     <item row="12" column="1" colspan="3">
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="1" column="2">
         <widget class="QDoubleSpinBox" name="midVisualGain">
@@ -323,7 +330,7 @@ Select from different types of displays for the waveform, which differ primarily
        </property>
       </widget>
      </item>
-     <item row="14" column="1">
+     <item row="16" column="1">
       <widget class="QLabel" name="frameRateAverage">
        <property name="toolTip">
         <string>Displays the actual frame rate.</string>
@@ -518,12 +525,12 @@ Select from different types of displays for the waveform, which differ primarily
      </item>
      <item row="5" column="0">
         <widget class="QLabel" name="label">
-        <property name="text">
-                <string>Play marker position</string>
-        </property>
+         <property name="text">
+          <string>Play marker position</string>
+         </property>
         </widget>
-        </item>
-        <item row="5" column="1" colspan="3">
+     </item>
+     <item row="5" column="1" colspan="3">
         <widget class="QSlider" name="playMarkerPositionSlider">
          <property name="toolTip">
            <string>Moves the play marker position on the waveforms to the left, right or center (default).</string>

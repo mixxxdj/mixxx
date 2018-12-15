@@ -26,22 +26,26 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
     m_barColor = WSkinColor::getCorrectColor(m_barColor).toRgb();
     m_phraseColor.setNamedColor(context.selectString(node, "PhraseColor"));
     m_phraseColor = WSkinColor::getCorrectColor(m_phraseColor).toRgb();
+
+    // trying to get the preferences
+    //ConfigKey prefs = new ConfigKey("[Waveform]", "BarAndPhrase");
+    //m_showBarAndPhrase = prefs->get
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
 
     // No track, nothing to do
-    if (!trackInfo)
+    if (!trackInfo) {
         return;
+    }
 
-    // Gets beats from the track
     BeatsPointer trackBeats = trackInfo->getBeats();
     // No beats, nothing to do
-    if (!trackBeats)
+    if (!trackBeats) {
         return;
+    }
 
-    // Set up Alpha values according to the renderer
     int alpha = m_waveformRenderer->beatGridAlpha();
     // Not visible, nothing to do
     if (alpha == 0)
@@ -53,7 +57,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     // Get number of sample in the track
     const int trackSamples = m_waveformRenderer->getTrackSamples();
 
-    // Empty track, nothing to do (?)
+    // Empty track, nothing to do - Can happen when track fails to load
     if (trackSamples <= 0) {
         return;
     }
@@ -64,7 +68,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             m_waveformRenderer->getLastDisplayedPosition();
 
     // Calculate beat length
-    double beatLength = (60.0 * trackInfo->getSampleRate() / trackInfo->getBpm()) * 2;
+    double beatLength = (c_secondsPerMinute * trackInfo->getSampleRate() / trackInfo->getBpm()) * c_numberOfChannels;
 
 	// Get the visible beats
     std::unique_ptr<BeatIterator> it(trackBeats->findBeats(
@@ -93,7 +97,6 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const float rendererWidth = m_waveformRenderer->getWidth();
     const float rendererHeight = m_waveformRenderer->getHeight();
 
-    // TODO Needed?
     int beatCount = 0;
 
     while (it->hasNext()) {
@@ -103,7 +106,6 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         xBeatPoint = qRound(xBeatPoint);
 
         // If we don't have enough space, double the size.
-        // TODO Needed?
         if (beatCount++ >= m_beats.size()) {
             m_beats.resize(m_beats.size() * 2);
         }
@@ -112,7 +114,8 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         long beatNum = round(beatPosition / beatLength);
 
         // Selects the right pen, if we are in phrase also paints the phrase tag
-        if(beatNum % 16 == 0 && beatNum > 0) {
+        bool showBarAndPhrase = true;
+        if(beatNum % (c_beatsPerBar * c_barsPerPhrase) == 0 && beatNum > 0 && showBarAndPhrase) {
         	// Selects the font
         	QFont font; // Uses the application default
             font.setPointSizeF(10 * scaleFactor());
@@ -151,7 +154,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             painter->drawText(labelRect, Qt::AlignCenter, label);
 
             painter->setPen(phrasePen);
-        } else if(beatNum % 4 == 0 && beatNum > 0) {
+        } else if(beatNum % c_beatsPerBar == 0 && beatNum > 0 && showBarAndPhrase) {
             painter->setPen(barPen);
         }
         else {
