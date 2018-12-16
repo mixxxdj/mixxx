@@ -476,7 +476,7 @@
                                   notation selected in the preferences. The controls stay calm
                                   this way. -->
                             <Layout>stacked</Layout>
-                            <MinimumSize>60,</MinimumSize>
+                            <Size>100f,</Size>
                             <Children>
                               <PushButton>
                                 <ObjectName>BpmKeyEditTrigger</ObjectName>
@@ -484,8 +484,6 @@
                                 <NumberStates>1</NumberStates>
                                 <State>
                                   <Number>0</Number>
-                                  <!-- <Text>&#9998;</Text>
-                                  <Alignment>right</Alignment> -->
                                   <Pressed scalemode="STRETCH"></Pressed>
                                   <Unpressed scalemode="STRETCH"></Unpressed>
                                 </State>
@@ -495,7 +493,9 @@
                               </PushButton>
   
                               <WidgetGroup>
+                                <ObjectName>KeyDisplay</ObjectName>
                                 <Layout>horizontal</Layout>
+                                <Size>100f,-1min</Size>
                                 <Children>
                                   <Label>
                                     <Size>10f,20f</Size>
@@ -505,8 +505,23 @@
                                   <Key>
                                     <ObjectName>BpmKeyEditTriggerLabel</ObjectName>
                                     <Group><Variable name="group"/></Group>
-                                    <SizePolicy>min,</SizePolicy>
+                                    <SizePolicy>e,min</SizePolicy>
+                                    <DisplayKey>true</DisplayKey>
+                                    <DisplayCents>false</DisplayCents>
+                                    <Alignment>center</Alignment>
+                                    <Elide>right</Elide>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                                    </Connection>
+                                  </Key>
+  
+                                  <Key>
+                                    <ObjectName>BpmKeyEditTriggerLabel</ObjectName>
+                                    <Group><Variable name="group"/></Group>
+                                    <SizePolicy>min,min</SizePolicy>
+                                    <DisplayKey>false</DisplayKey>
                                     <DisplayCents>true</DisplayCents>
+                                    <Alignment>right</Alignment>
                                     <Connection>
                                       <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
                                     </Connection>

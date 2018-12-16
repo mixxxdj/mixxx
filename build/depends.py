@@ -221,6 +221,8 @@ class Qt(Dependence):
             'QtWidgets',
             'QtXml',
         ]
+        if build.platform_is_linux:
+            build.env.Append(LIBS = ['Qt5X11Extras'] )
         if build.platform_is_windows:
             qt_modules.extend([
                 # Keep alphabetized.

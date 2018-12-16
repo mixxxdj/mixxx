@@ -632,6 +632,9 @@ WWidgetGroup {
   #VinylCueModeButton,
   #PassthroughButton {
     }
+  #PassthroughButton {
+    margin: 0px 0px 1px 1px;
+    }
   #VinylControlButton[displayValue="0"],
   #VinylModeButton,
   #VinylCueModeButton,
@@ -652,9 +655,9 @@ WWidgetGroup {
   #VinylControlButton[displayValue="1"] {
     color: #eeeeee;
     font-weight: bold;
-    }
+    } /*
   #VinylModeButton[displayValue="1"],
-  #VinylModeButton[displayValue="2"],
+  #VinylModeButton[displayValue="2"], */
   #VinylControlStatus[displayValue="0"] {
     background-color: #666;
     }
@@ -949,6 +952,10 @@ WWidgetGroup {
 /*################################################################
  #######  Loop Controls  ########################################
 ##############################################################*/
+
+#LoopBeatJumpContainer {
+  background-color: #1e1e1e;
+}
 
 #LoopBeatJumpButton,
 #LoopSizeButton {
