@@ -123,7 +123,7 @@ class CrateFilterNode : public QueryNode {
 
 class NoCrateFilterNode : public QueryNode {
   public:
-    NoCrateFilterNode(const CrateStorage* pCrateStorage);
+    explicit NoCrateFilterNode(const CrateStorage* pCrateStorage);
 
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
@@ -167,7 +167,7 @@ class NumericFilterNode : public QueryNode {
 
 class NullNumericFilterNode : public QueryNode {
   public:
-    NullNumericFilterNode(const QStringList& sqlColumns);
+    explicit NullNumericFilterNode(const QStringList& sqlColumns);
 
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
