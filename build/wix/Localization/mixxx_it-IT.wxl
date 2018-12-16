@@ -22,11 +22,11 @@
 
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
-  <String Id="OS2Old">This product requires Windows 7 or above.</String>
+  <String Id="OS2Old">Questo prodotto richiede Windows 7 o superiori.</String>
   <String Id="NewerInstalled">La stessa o una versione più recente di questo prodotto è già installata.</String>
   <String Id="x64VersionRequired">Devi installare la versione a 64-bit di questo prodotto su Windows a 64-bit.</String>
   <String Id="x86VersionRequired">Devi installare la versione a 32-bit di questo prodotto su Windows a 32-bit.</String>
-  <String Id="x86VersionWarning">You are about to install the 32-bit version on a 64-bit operating system. We recommend using the 64-bit version for better performance. You can download the 64-bit installation package from http://mixxx.org/download/</String>
+  <String Id="x86VersionWarning">Stai per installare la versione a 32-bit su un sistema operativo a 64-bit. Raccomandiamo di usare la versione a 64-bit per ottenere prestazioni migliori. Puoi scaricare il pacchetto di installazione a 64-bit da http://mixxx.org/download/</String>
   <String Id="XPWarning">Stai per installare Mixxx su un sistema operativo vecchio. Alcune funzioni potrebbero non funzionare bene o completamente. Raccomandiamo di aggiornare il tuo sistema operativo.</String>
   <String Id="bitWidthMismatch32">Stai per installare la versione a 32-bit ma è già installata una versione a 64-bit. Ciò può portare a comportamenti indesiderati. Disinstallare prima l'esistente Mixxx per favore, oppure scaricare il pacchetto di installazione a 64-bit per eseguire l'aggiornamento (a meno che tu non conosca esattamente quello che stai facendo).</String>
   <String Id="bitWidthMismatch64">Stai per installare la versione a 64-bit ma è già installata una versione a 32-bit. Ciò può portare a comportamenti indesiderati. Disinstallare prima l'esistente Mixxx per favore, oppure scaricare il pacchetto di installazione a 32-bit per eseguire l'aggiornamento (a meno che tu non conosca esattamente quello che stai facendo).</String>
