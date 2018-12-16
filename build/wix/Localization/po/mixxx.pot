@@ -5,7 +5,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#.  Programm informations
+#.  Programm informations 
 msgctxt "ApplicationName"
 msgid "Mixxx"
 msgstr ""
@@ -26,8 +26,8 @@ msgctxt "Comments"
 msgid "Installs Mixxx"
 msgstr ""
 
-#.  Error messages
-#.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
+#.  Error messages 
+#.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE 
 msgctxt "OS2Old"
 msgid "This product requires Windows 7 or above."
 msgstr ""
@@ -45,10 +45,7 @@ msgid "You need to install the 32-bit version of this product on 32-bit Windows.
 msgstr ""
 
 msgctxt "x86VersionWarning"
-msgid ""
-"You are about to install the 32-bit version on a 64-bit operating system.\r\n"
-"We recommend using the 64-bit version for better performance.\r\n"
-"You can download the 64-bit installation package from http://mixxx.org/download/"
+msgid "You are about to install the 32-bit version on a 64-bit operating system. We recommend using the 64-bit version for better performance. You can download the 64-bit installation package from http://mixxx.org/download/"
 msgstr ""
 
 msgctxt "XPWarning"
@@ -71,17 +68,17 @@ msgctxt "VCredistNotFound"
 msgid "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on this system. This is likely an installer bug that should be reported to Mixxx developers."
 msgstr ""
 
-#.  Custom Warning Dialog
+#.  Custom Warning Dialog 
 msgctxt "WarningDlgTitle"
 msgid "{\\WixUI_Font_Title}Warning"
 msgstr ""
 
-#.  Custom exit dialog
+#.  Custom exit dialog 
 msgctxt "StartOnExit"
 msgid "Launch Mixxx when setup exits."
 msgstr ""
 
-#.  Features translations
+#.  Features translations 
 msgctxt "FeatureCompleteDescription"
 msgid "The complete package."
 msgstr ""
@@ -126,7 +123,7 @@ msgctxt "FeatureTranslationsDescription"
 msgid "Resource files that allow Mixxx to display in alternate languages, other than US english"
 msgstr ""
 
-#.  Bootstrapper
+#.  Bootstrapper 
 msgctxt "Caption"
 msgid "[WixBundleName] Setup"
 msgstr ""
