@@ -78,12 +78,12 @@ components.Component.prototype.send = function (value) {
 };
 
 // gets filled via trigger of the callbacks in NumarkN4.crossfaderCallbackConnections
-NumarkN4.currentCrossfaderParams = {};
+NumarkN4.storedCrossfaderParams = {};
 NumarkN4.crossfaderCallbackConnections = [];
 NumarkN4.CrossfaderChangeCallback = function (value, group, control) {
   // indicates that the crossfader settings were changed while during session
   this.changed = true;
-  NumarkN4.currentCrossfaderParams[control] = value;
+  NumarkN4.storedCrossfaderParams[control] = value;
 }
 
 NumarkN4.init = function (id) {
@@ -93,7 +93,7 @@ NumarkN4.init = function (id) {
     // Array is based on 1 because it makes more sense in the XML
     NumarkN4.Decks[i] = new NumarkN4.Deck(i);
   }
-  // create xFader callbacks and trigger them to fill NumarkN4.currentCrossfaderParams
+  // create xFader callbacks and trigger them to fill NumarkN4.storedCrossfaderParams
   _.forEach(NumarkN4.scratchXFader, function (value,control) {
     var connectionObject = engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback);
     connectionObject.trigger();
@@ -329,7 +329,7 @@ NumarkN4.MixerTemplate = function () {
           );
         });
       } else {
-        _.forEach(NumarkN4.currentCrossfaderParams, function (value, control) {
+        _.forEach(NumarkN4.storedCrossfaderParams, function (value, control) {
           engine.setValue("[Mixer Profile]", control, value);
           NumarkN4.crossfaderCallbackConnections.push(
             engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback)
@@ -706,7 +706,7 @@ NumarkN4.shutdown = function () {
   // revert the crossfader parameters only if they haven't been changed by the
   // user and if they are currently set to scratch
   if (!NumarkN4.CrossfaderChangeCallback.changed || NumarkN4.changeCrossfaderContour.state) {
-    _.forEach(NumarkN4.currentCrossfaderParams, function (value, control) {
+    _.forEach(NumarkN4.storedCrossfaderParams, function (value, control) {
       engine.setValue("[Mixer Profile]", control, value);
     })
   }
