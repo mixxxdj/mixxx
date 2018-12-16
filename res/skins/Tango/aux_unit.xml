@@ -64,14 +64,27 @@ Variables:
             <SizePolicy>max,max</SizePolicy>
             <Layout>vertical</Layout>
             <Children>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">pfl</SetVariable>
-                <SetVariable name="ObjectName">PflButton</SetVariable>
-                <SetVariable name="Size">18f,18f</SetVariable>
-                <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
-                <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
-              </Template>
+
+              <WidgetGroup><!-- Pfl button + cover -->
+                <Size>18f,18f</Size>
+                <Layout>stacked</Layout>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <!-- Greyed out if no headphone device is configured -->
+                  <Template src="skin:pfl_cover.xml"/>
+
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">pfl</SetVariable>
+                    <SetVariable name="ObjectName">PflButton</SetVariable>
+                    <SetVariable name="Size">18f,18f</SetVariable>
+                    <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
+                    <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup><!-- /Pfl button + cover -->
 
               <Template src="skin:button_3state_persist.xml">
                 <SetVariable name="TooltipId">orientation</SetVariable>

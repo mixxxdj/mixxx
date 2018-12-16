@@ -49,6 +49,7 @@ class RecordingFeature : public LibraryFeature {
     FolderTreeModel m_childModel;
     const static QString m_sRecordingViewName;
     RecordingManager* m_pRecordingManager;
+    QIcon m_icon;
 };
 
 #endif

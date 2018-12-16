@@ -11,7 +11,7 @@
 
 #include "util/stat.h"
 
-class StatModel : public QAbstractTableModel {
+class StatModel final : public QAbstractTableModel {
     Q_OBJECT
   public:
     enum StatColumn {

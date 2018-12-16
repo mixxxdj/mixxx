@@ -155,8 +155,9 @@ int TreeItemModel::rowCount(const QModelIndex& parent) const {
  * Call this method first, before you do call any other methods.
  */
 TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
+    beginResetModel();
     m_pRootItem = std::move(pRootItem);
-    reset();
+    endResetModel();
     return getRootItem();
 }
 

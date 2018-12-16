@@ -102,7 +102,7 @@ class EngineFilterIIR : public EngineFilterIIRBase {
             char* desc;
             FidFilter* filt = fid_design(spec_d, sampleRate, freq0, freq1, adj, &desc);
             int delay = fid_calc_delay(filt);
-            qDebug() << QString().fromAscii(desc) << "delay:" << delay;
+            qDebug() << QString().fromLatin1(desc) << "delay:" << delay;
             double resp0, phase0;
             resp0 = fid_response_pha(filt, freq0 / sampleRate, &phase0);
             qDebug() << "freq0:" << freq0 << resp0 << phase0;
@@ -155,7 +155,7 @@ class EngineFilterIIR : public EngineFilterIIRBase {
             FidFilter* filt2 = fid_design(spec2, sampleRate, freq02, freq12, adj2, &desc2);
             FidFilter* filt = fid_cat(1, filt1, filt2, NULL);
             int delay = fid_calc_delay(filt);
-            qDebug() << QString().fromAscii(desc1) << "X" << QString().fromAscii(desc2) << "delay:" << delay;
+            qDebug() << QString().fromLatin1(desc1) << "X" << QString().fromLatin1(desc2) << "delay:" << delay;
             double resp0, phase0;
             resp0 = fid_response_pha(filt, freq01 / sampleRate, &phase0);
             qDebug() << "freq01:" << freq01 << resp0 << phase0;

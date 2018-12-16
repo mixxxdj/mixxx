@@ -32,10 +32,18 @@ class HotcueControl : public QObject {
     void setPosition(double position);
 
     // Used for caching the preview state of this hotcue control.
-    inline bool isPreviewing() { return m_bPreviewing; }
-    inline void setPreviewing(bool bPreviewing) { m_bPreviewing = bPreviewing; }
-    inline int getPreviewingPosition() { return m_iPreviewingPosition; }
-    inline void setPreviewingPosition(int iPosition) { m_iPreviewingPosition = iPosition; }
+    inline bool isPreviewing() {
+        return m_bPreviewing;
+    }
+    inline void setPreviewing(bool bPreviewing) {
+        m_bPreviewing = bPreviewing;
+    }
+    inline double getPreviewingPosition() {
+        return m_previewingPosition;
+    }
+    inline void setPreviewingPosition(double position) {
+        m_previewingPosition = position;
+    }
 
   private slots:
     void slotHotcueSet(double v);
@@ -78,7 +86,7 @@ class HotcueControl : public QObject {
     ControlObject* m_hotcueClear;
 
     bool m_bPreviewing;
-    int m_iPreviewingPosition;
+    double m_previewingPosition;
 };
 
 class CueControl : public EngineControl {
@@ -91,12 +99,10 @@ class CueControl : public EngineControl {
     virtual void hintReader(HintVector* pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
-    bool isTrackAtCue();
+    void resetIndicators();
     bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
-
-  public slots:
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
+    void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
     void cueUpdated();
@@ -123,10 +129,17 @@ class CueControl : public EngineControl {
     void playStutter(double v);
 
   private:
+    enum class TrackAt {
+        Cue,
+        End,
+        ElseWhere
+    };
+
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
     void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
+    TrackAt getTrackAt() const;
 
     bool m_bPreviewing;
     ControlObject* m_pPlay;
@@ -157,7 +170,7 @@ class CueControl : public EngineControl {
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
 
-    TrackPointer m_pLoadedTrack;
+    TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;

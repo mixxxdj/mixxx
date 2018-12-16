@@ -28,7 +28,6 @@ void BatteryMac::read() {
     CFArrayRef powerSources = IOPSCopyPowerSourcesList(powerInfo);
 
     if (powerSources == nullptr) {
-        CFRelease(powerSources);
         return;
     }
 

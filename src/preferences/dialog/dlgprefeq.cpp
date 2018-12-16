@@ -230,7 +230,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
             }
         }
         //: Displayed when no effect is selected
-        box->addItem(tr("None"), QVariant());
+        box->addItem(tr("None"), QVariant(QString("")));
         if (selectedEffectId.isNull()) {
             currentIndex = availableEQEffects.size(); // selects "None"
         }
@@ -260,7 +260,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
             }
         }
         //: Displayed when no effect is selected
-        box->addItem(tr("None"), QVariant());
+        box->addItem(tr("None"), QVariant(QString("")));
         if (selectedEffectId.isNull()) {
             currentIndex = availableQuickEffects.size(); // selects "None"
         }

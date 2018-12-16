@@ -64,16 +64,17 @@ void removeDatabase(
     QSqlDatabase::removeDatabase(connectionName);
 }
 
-// The default comparison of strings for sorting.
-inline int compareLocaleAwareCaseInsensitive(
-        const QString& first, const QString& second) {
-    return QString::localeAwareCompare(first.toLower(), second.toLower());
-}
-
 void makeLatinLow(QChar* c, int count) {
     for (int i = 0; i < count; ++i) {
         if (c[i].decompositionTag() != QChar::NoDecomposition) {
-            c[i] = c[i].decomposition()[0];
+            QString decomposition = c[i].decomposition();
+            if (!decomposition[0].isSpace())  {
+                // here we remove the decoration brom all characters.
+                // We want "o" matching "ó" and all other variants but we
+                // do not decompose decoration only characters like "˚" where
+                // the base character is a space
+                c[i] = c[i].decomposition()[0];
+            }
         }
         if (c[i].isUpper()) {
             c[i] = c[i].toLower();
@@ -88,12 +89,11 @@ const QChar kSqlLikeEscapeDefault = '\0';
 // false (0) if they are different.
 // This is the original sqlite3 icuLikeCompare rewritten for QChar
 int likeCompareInner(
-    const QChar* pattern, // LIKE pattern
-    int patternSize,
-    const QChar* string, // The string to compare against
-    int stringSize,
-    const QChar esc) { // The escape character
-
+        const QChar* pattern, // LIKE pattern
+        int patternSize,
+        const QChar* string, // The string to compare against
+        int stringSize,
+        const QChar esc) { // The escape character
     int iPattern = 0; // Current index in pattern
     int iString = 0; // Current index in string
 
@@ -175,13 +175,13 @@ int likeCompareInner(
 int sqliteStringCompareUTF16(void* pArg,
                              int len1, const void* data1,
                              int len2, const void* data2) {
-    Q_UNUSED(pArg);
+    StringCollator* pCollator = static_cast<StringCollator*>(pArg);
     // Construct a QString without copy
-    QString string1 = QString::fromRawData(reinterpret_cast<const QChar*>(data1),
+    QString string1 = QString::fromRawData(static_cast<const QChar*>(data1),
                                            len1 / sizeof(QChar));
-    QString string2 = QString::fromRawData(reinterpret_cast<const QChar*>(data2),
+    QString string2 = QString::fromRawData(static_cast<const QChar*>(data2),
                                            len2 / sizeof(QChar));
-    return compareLocaleAwareCaseInsensitive(string1, string2);
+    return pCollator->compare(string1, string2);
 }
 
 const char* const kLexicographicalCollationFunc = "mixxxLexicographicalCollationFunc";
@@ -228,7 +228,7 @@ void sqliteLike(sqlite3_context *context,
 
 #endif // __SQLITE3__
 
-bool initDatabase(QSqlDatabase database) {
+bool initDatabase(QSqlDatabase database, StringCollator* pCollator) {
     DEBUG_ASSERT(database.isOpen());
 #ifdef __SQLITE3__
     QVariant v = database.driver()->handle();
@@ -254,7 +254,7 @@ bool initDatabase(QSqlDatabase database) {
                     handle,
                     kLexicographicalCollationFunc,
                     SQLITE_UTF16,
-                    nullptr,
+                    pCollator,
                     sqliteStringCompareUTF16);
     VERIFY_OR_DEBUG_ASSERT(result == SQLITE_OK) {
         kLogger.warning()
@@ -325,7 +325,7 @@ bool DbConnection::open() {
                 << m_sqlDatabase.lastError();
         return false; // abort
     }
-    if (!initDatabase(m_sqlDatabase)) {
+    if (!initDatabase(m_sqlDatabase, &m_collator)) {
         kLogger.warning()
                 << "Failed to initialize database connection"
                 << *this;
@@ -374,6 +374,11 @@ int DbConnection::likeCompareLatinLow(
             pattern->data(), pattern->length(),
             string->data(), string->length(),
             esc);
+}
+
+//static
+void DbConnection::makeStringLatinLow(QString* string) {
+    makeLatinLow(string->data(), string->length());
 }
 
 QDebug operator<<(QDebug debug, const DbConnection& connection) {

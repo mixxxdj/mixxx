@@ -47,11 +47,13 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void scrollValueChanged(int);
 
   public slots:
-    void saveVScrollBarPos(); // these slosts remain for compatibility
-    void restoreVScrollBarPos();
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
     void setSelectedClick(bool enable);
+
+  protected:
+    void saveNoSearchVScrollBarPos();
+    void restoreNoSearchVScrollBarPos();
 
   private:
     void loadVScrollBarPosState();
@@ -63,7 +65,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     ConfigKey m_vScrollBarPosKey;
     // The position of the vertical scrollbar slider, eg. before a search is
     // executed
-    int m_iSavedVScrollBarPos;
+    int m_noSearchVScrollBarPos;
 };
 
 

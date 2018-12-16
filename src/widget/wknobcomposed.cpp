@@ -2,6 +2,7 @@
 #include <QStyleOption>
 #include <QTransform>
 
+#include "util/duration.h"
 #include "widget/wknobcomposed.h"
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
@@ -10,7 +11,11 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dMinAngle(-230.0),
           m_dMaxAngle(50.0),
           m_dKnobCenterXOffset(0),
-          m_dKnobCenterYOffset(0) {
+          m_dKnobCenterYOffset(0),
+          m_renderTimer(mixxx::Duration::fromMillis(20),
+                        mixxx::Duration::fromSeconds(1)) {
+    connect(&m_renderTimer, SIGNAL(update()),
+            this, SLOT(update()));
 }
 
 void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
@@ -129,4 +134,12 @@ void WKnobComposed::mouseReleaseEvent(QMouseEvent* e) {
 
 void WKnobComposed::wheelEvent(QWheelEvent* e) {
     m_handler.wheelEvent(this, e);
+}
+
+void WKnobComposed::inputActivity() {
+#ifdef __APPLE__
+    m_renderTimer.activity();
+#else
+    update();
+#endif
 }

@@ -66,7 +66,7 @@ class SliderEventHandler {
             }
 
             // Update display
-            pWidget->update();
+            pWidget->inputActivity();
         }
     }
 
@@ -113,7 +113,7 @@ class SliderEventHandler {
 
         pWidget->setControlParameter(newParameter);
         onConnectedControlChanged(pWidget, newParameter);
-        pWidget->update();
+        pWidget->inputActivity();
         e->accept();
     }
 

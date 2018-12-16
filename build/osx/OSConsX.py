@@ -33,7 +33,7 @@ import otool
 def system(s):
     "wrap system() to give us feedback on what it's doing"
     "anything using this call should be fixed to use SCons's declarative style (once you figure that out, right nick?)"
-    print s,
+    print(s),
     sys.stdout.flush() #ignore line buffering..
     result = os.system(s)
     print
@@ -54,10 +54,10 @@ def InstallDir(target, source, env): #XXX this belongs not in this module
     #Mkdir(os.path.join(str(target), str(source)))
     #translate install(a/, b/) to install(a/b/, [files in b])
     contents = Glob(os.path.join(str(source), "*")) #XXX there's probably a cleaner way that SCons has to do this
-    #print "contents:",contents
+    #print("contents:", contents)
     files = filter(lambda f: isinstance(f, SCons.Node.FS.File), contents)
     folders = filter(lambda f: isinstance(f, SCons.Node.FS.Dir), contents)
-    #print map(str, folders)
+    #print(map(str, folders))
     name = os.path.basename(str(source))
 
     #install the files local to this
@@ -91,7 +91,7 @@ def build_dmg(target, source, env):
     #aah there must be a more SCons-ey (i.e. declarative) way to do all this; the trouble with doing
     os.mkdir(dmg)
     for f in source:
-        print "Copying",f
+        print("Copying", f)
         a, b = str(f), os.path.join(dmg, os.path.basename(str(f.path)))
         if isinstance(f, SCons.Node.FS.Dir): #XXX there's a lot of cases that could throw this off, particularly if you try to pass in subdirs
             copier = shutil.copytree
@@ -102,8 +102,8 @@ def build_dmg(target, source, env):
 
         try:
             copier(a, b)
-        except Exception, e:
-            print "ERRRR", e
+        except Exception as e:
+            print("ERRRR", e)
             raise Exception("Error copying %s: " % (a,), e)
 
     # Symlink Applications to /Applications
@@ -246,6 +246,8 @@ def build_app(target, source, env):
     locals = {} # [ref] => (absolute_path, embedded_path) (ref is the original reference from looking at otool -L; we use this to decide if two libs are the same)
 
     #XXX it would be handy if embed_dependencies returned the otool list for each ref it reads..
+    binary_rpaths = otool.rpaths(str(binary))
+    otool_local_paths = binary_rpaths + otool_local_paths
     for ref, path in otool.embed_dependencies(str(binary), LOCAL=otool_local_paths, SYSTEM=otool_system_paths):
         locals[ref] = (path, embed_lib(path))
 
@@ -259,9 +261,9 @@ def build_app(target, source, env):
             embedded_p = os.path.join(str(plugins), subdir, os.path.basename(str(p)))
             plugins_l.append( (p, embedded_p) )
 
-    print "Scanning plugins for new dependencies:"
+    print("Scanning plugins for new dependencies:")
     for p, ep in plugins_l:
-        print "Scanning plugin", p
+        print("Scanning plugin", p)
         for ref, path in otool.embed_dependencies(p, LOCAL=otool_local_paths, SYSTEM=otool_system_paths):
             if ref not in locals:
                 locals[ref] = path, embed_lib(path)
@@ -272,7 +274,7 @@ def build_app(target, source, env):
     #better yet, make a Frameworks type that you say Framework("QtCore") and then can use that as a dependency
 
 
-    print "Installing main binary:"
+    print("Installing main binary:")
     Execute(Copy(installed_bin, binary)) #e.g. this SHOULD be an env.Install() call, but if scons decides to run build_app before that env.Install then build_app fails and brings the rest of the build with it, of course
     for ref in otool.dependencies(str(installed_bin)):
         if ref in locals:
@@ -282,24 +284,24 @@ def build_app(target, source, env):
         system("strip '%s'" % installed_bin)
 
 
-    print "Installing embedded libs:"
+    print("Installing embedded libs:")
     for ref, (abs, embedded) in locals.items():
         real_abs = os.path.realpath(abs)
-        print "installing", real_abs, "to", embedded
+        print("installing", real_abs, "to", embedded)
         # NOTE(rryan): abs can be a symlink. we want to copy the binary it is
         # pointing to. os.path.realpath does this for us.
         Execute(Copy(embedded, real_abs))
         if not os.access(embedded, os.W_OK):
-            print "Adding write permissions to %s" % embedded_p
+            print("Adding write permissions to %s" % embedded_p)
             mode = os.stat(embedded).st_mode
             os.chmod(embedded, mode | stat.S_IWUSR)
         patch_lib(embedded)
 
 
-    print "Installing plugins:"
+    print("Installing plugins:")
     for p, embedded_p in plugins_l:
         real_p = os.path.realpath(p)
-        print "installing", real_p, "to", embedded_p
+        print("installing", real_p, "to", embedded_p)
         # NOTE(rryan): p can be a symlink. we want to copy the binary it is
         # pointing to. os.path.realpath does this for us.
         Execute(Copy(embedded_p, real_p)) #:/
@@ -448,7 +450,7 @@ def emit_app(target, source, env):
 App = Builder(action = build_app, emitter = emit_app)
 
 def codesign_path(identity, keychain, entitlements, path):
-    print "Codesigning: ", path
+    print("Codesigning: ", path)
     command = "codesign -f -s '%s'%s%s %s" % (
         identity,
         ' --keychain %s' % keychain if keychain else '',
@@ -479,7 +481,7 @@ def do_codesign(target, source, env):
     entitlements = env.get('CODESIGN_ENTITLEMENTS', None)
     if application_identity is not None:
         if keychain and keychain_password is not None:
-            print "Unlocking keychain:"
+            print("Unlocking keychain:")
             if system("security unlock-keychain -p '%s' %s" % (keychain_password, keychain)) != 0:
                 raise Exception('Could not unlock keychain.')
 

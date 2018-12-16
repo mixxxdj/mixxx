@@ -33,7 +33,7 @@ RADIUS2000.escratch = [false, false];
 
 RADIUS2000.UseAcceleration = true;
 
-RADIUS2000.JogSensivity = 0.5;
+RADIUS2000.JogSensitivity = 0.5;
 
 RADIUS2000.init = function (channel, control, value, status, group) {
     midi.sendShortMsg(0x90,0x2A,0x00);
@@ -231,7 +231,7 @@ RADIUS2000.wheelTurn = function (channel, control, value, status, group) {
 		engine.scratchTick(deck + 1, scratchValue);
 	} else {
 
-		jogValue = (value - 0x40) * RADIUS2000.JogSensivity;
+		jogValue = (value - 0x40) * RADIUS2000.JogSensitivity;
 		engine.setValue(group, "jog", jogValue);
 	}
 }

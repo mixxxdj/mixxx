@@ -1,7 +1,7 @@
 <!DOCTYPE template>
 <!--
   Description:
-    A standard knob.
+    A standard knob used for Meta parameter of effect units.
   Variables:
     FxRack_FxUnit_FxNum : [EffectRack1_EffectUnitX_EffectY]
 -->
@@ -14,8 +14,8 @@
       <KnobComposed>
         <TooltipId>EffectSlot_metaknob</TooltipId>
         <Size>25f,25f</Size>
-        <Knob>knob_sm_indicator.svg</Knob>
-        <BackPath>knob_sm_bg.svg</BackPath>
+        <Knob>knob_small_indicator_green.svg</Knob>
+        <BackPath>knob_small_bg.svg</BackPath>
         <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
         <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>
         <Connection>

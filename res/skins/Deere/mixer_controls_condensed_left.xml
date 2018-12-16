@@ -18,7 +18,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_eqs</ConfigKey>
+          <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -47,15 +47,11 @@
                 <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
               </Template>
 
-              <Template src="skin:spacer_hx.xml">
-                <SetVariable name="width">9f,-1</SetVariable>
-              </Template>
+              <WidgetGroup><Size>9f,0min</Size></WidgetGroup>
             </Children>
           </WidgetGroup>
 
-          <Template src="skin:spacer_vx.xml">
-            <SetVariable name="height">-1,3f</SetVariable>
-          </Template>
+          <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
 
           <WidgetGroup>
             <GroupName>CondensedVolumeAndMonoMeter</GroupName>
@@ -89,7 +85,7 @@
               </SliderComposed>
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_faders</ConfigKey>
+              <ConfigKey>[Skin],show_faders</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -121,21 +117,17 @@
                 </Children>
               </WidgetGroup>
 
-              <Template src="skin:spacer_hx.xml">
-                <SetVariable name="width">9</SetVariable>
-              </Template>
+              <WidgetGroup><Size>9f,0min</Size></WidgetGroup>
 
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_faders</ConfigKey>
+              <ConfigKey>[Skin],show_faders</ConfigKey>
               <Transform><Not/></Transform>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
 
-          <Template src="skin:spacer_vx.xml">
-            <SetVariable name="height">-1,3f</SetVariable>
-          </Template>
+          <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>CondensedButtonContainerLeft</ObjectName>
@@ -147,9 +139,7 @@
                 <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>
               </Template>
 
-              <Template src="skin:spacer_hx.xml">
-               <SetVariable name="width">9f,-1</SetVariable>
-              </Template>
+              <WidgetGroup><Size>9f,0min</Size></WidgetGroup>
             </Children>
           </WidgetGroup>
         </Children>
