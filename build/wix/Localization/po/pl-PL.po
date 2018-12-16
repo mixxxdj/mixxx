@@ -2,11 +2,12 @@
 # Translators:
 # Jakub Fabijan (Felidae) <animatorzpolski@gmail.com>, 2018
 # Jan Ochwat <jasiek.zzx@gmail.com>, 2016
+# S.Brandt <s.brandt@mixxx.org>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2018-11-20 15:23+0000\n"
-"Last-Translator: Be Ing <be@mixxx.org>\n"
+"PO-Revision-Date: 2018-12-16 20:42+0000\n"
+"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: Polish (Poland) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/pl_PL/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -39,7 +40,7 @@ msgstr "Instaluje Mixxx"
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
 msgid "This product requires Windows 7 or above."
-msgstr ""
+msgstr "Ten produkt wymaga Windowsa 7 lub wyżsego"
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."
@@ -60,7 +61,7 @@ msgid ""
 "You are about to install the 32-bit version on a 64-bit operating system. We"
 " recommend using the 64-bit version for better performance. You can download"
 " the 64-bit installation package from http://mixxx.org/download/"
-msgstr ""
+msgstr "Masz zamiar zainstalować wersję 32-bitową w 64-bitowym systemie operacyjnym. Zalecane jest użycie 64-bitowej wersji dla lepszej wydajności. Pakiet instalacji 64-bitowej można pobrać z http://mixxx.org/download/"
 
 msgctxt "XPWarning"
 msgid ""

@@ -3,14 +3,15 @@
 # Damtux, 2016
 # Edoardo Codeglia <edocod@linuxmail.org>, 2016
 # Roberto Ekesi <r_ekesi@yahoo.com>, 2017
+# S.Brandt <s.brandt@mixxx.org>, 2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Damtux, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2018-11-20 15:23+0000\n"
-"Last-Translator: Be Ing <be@mixxx.org>\n"
+"PO-Revision-Date: 2018-12-16 20:44+0000\n"
+"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: Italian (Italy) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/it_IT/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -43,7 +44,7 @@ msgstr "Installa Mixxx"
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
 msgid "This product requires Windows 7 or above."
-msgstr ""
+msgstr "Questo prodotto richiede Windows 7 o superiori."
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."
@@ -64,7 +65,7 @@ msgid ""
 "You are about to install the 32-bit version on a 64-bit operating system. We"
 " recommend using the 64-bit version for better performance. You can download"
 " the 64-bit installation package from http://mixxx.org/download/"
-msgstr ""
+msgstr "Stai per installare la versione a 32-bit su un sistema operativo a 64-bit. Raccomandiamo di usare la versione a 64-bit per ottenere prestazioni migliori. Puoi scaricare il pacchetto di installazione a 64-bit da http://mixxx.org/download/"
 
 msgctxt "XPWarning"
 msgid ""
