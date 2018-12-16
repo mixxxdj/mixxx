@@ -32,8 +32,7 @@ QuantizeControl::~QuantizeControl() {
     delete m_pCOClosestBeat;
 }
 
-void QuantizeControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
+void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
     if (m_pTrack) {
         disconnect(m_pTrack.get(), SIGNAL(beatsUpdated()),
                 this, SLOT(slotBeatsUpdated()));
@@ -58,21 +57,24 @@ void QuantizeControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack
 }
 
 void QuantizeControl::slotBeatsUpdated() {
-    if (m_pTrack) {
-        m_pBeats = m_pTrack->getBeats();
-        lookupBeatPositions(getCurrentSample());
-        updateClosestBeat(getCurrentSample());
+    TrackPointer pTrack = m_pTrack;
+    if (pTrack) {
+        m_pBeats = pTrack->getBeats();
+        double current = getSampleOfTrack().current;
+        lookupBeatPositions(current);
+        updateClosestBeat(current);
     }
 }
 
 void QuantizeControl::setCurrentSample(const double dCurrentSample,
-                                       const double dTotalSamples) {
-    if (dCurrentSample == getCurrentSample()) {
+                                       const double dTotalSamples,
+                                       const double dTrackSampleRate) {
+    if (dCurrentSample == getSampleOfTrack().current) {
         // No need to recalculate.
         return;
     }
 
-    EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
+    EngineControl::setCurrentSample(dCurrentSample, dTotalSamples, dTrackSampleRate);
     // We only need to update the prev or next if the current sample is
     // out of range of the existing beat positions or if we've been forced to
     // do so.
@@ -85,9 +87,10 @@ void QuantizeControl::setCurrentSample(const double dCurrentSample,
 }
 
 void QuantizeControl::lookupBeatPositions(double dCurrentSample) {
-    if (m_pBeats) {
+    BeatsPointer pBeats = m_pBeats;
+    if (pBeats) {
         double prevBeat, nextBeat;
-        m_pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat);
+        pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat);
         m_pCOPrevBeat->set(prevBeat);
         m_pCONextBeat->set(nextBeat);
     }

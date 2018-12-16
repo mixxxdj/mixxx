@@ -70,9 +70,7 @@ class BpmControl : public EngineControl {
     // Example: shortestPercentageChange(0.99, 0.01) == 0.02
     static double shortestPercentageChange(const double& current_percentage,
                                            const double& target_percentage);
-
-  public slots:
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
+    void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
     void slotFileBpmChanged(double);
@@ -146,22 +144,25 @@ class BpmControl : public EngineControl {
     // Button that translates beats to match another playing deck
     ControlPushButton* m_pBeatsTranslateMatchAlignment;
 
-    // Master Sync objects and values.
-    ControlObject* m_pSyncMode;
     ControlProxy* m_pThisBeatDistance;
-    double m_dSyncTargetBeatDistance;
+    ControlValueAtomic<double> m_dSyncTargetBeatDistance;
+    ControlValueAtomic<double> m_dUserOffset;
+    QAtomicInt m_resetSyncAdjustment;
+    ControlProxy* m_pSyncMode;
+
+    TapFilter m_tapFilter; // threadsave
+
+    // used in the engine thread only
     double m_dSyncInstantaneousBpm;
     double m_dLastSyncAdjustment;
-    bool m_resetSyncAdjustment;
-    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
-    double m_dUserOffset;
 
-    TapFilter m_tapFilter;
-
+    // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
 
-    QString m_sGroup;
+    const QString m_sGroup;
+
+    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
 };
 
 
