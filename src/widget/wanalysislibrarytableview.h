@@ -14,8 +14,6 @@ class WAnalysisLibraryTableView : public WTrackTableView
         WAnalysisLibraryTableView(QWidget* parent, UserSettingsPointer pConfig,
                                  TrackCollection* pTrackCollection);
 
-        virtual void onSearchStarting();
-        virtual void onSearchCleared();
         void onSearch(const QString& text) override;
 };
 

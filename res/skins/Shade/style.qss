@@ -11,29 +11,47 @@
   font-size: 14px;
 }
 
-WBeatSpinBox {
+WBeatSpinBox,
+/* For some mysterious reason #DlgAutoDJ QSpinBox
+wouldn't style the respective spinbox in Shade (anymore),
+that's why we do it in another way here */
+#spinBoxTransition {
   color: #060613;
   background-color: #aab2b7;
-  border: 1px solid #060613;
-  padding: 0px;
   font: 13px;
+  padding: 0px;
 }
+WBeatSpinBox {
+  border: 1px solid #060613;
+}
+#spinBoxTransition {
+/* omitting the border definition miraculously makes the spinbox grow */
+/* 0px border OTOH makes the spinbox shrink disproportionately
+  border: 0px; */
+  border: 1px solid #72777A;
+  margin: 0px 0px 2px 1px;
+}
+/*
+QSpinBox:editable {
+  font-size: 10pt;
+  background: transparent;
+  color: #ACACAC; }
+QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}*/
 
-WBeatSpinBox::up-button{
+WBeatSpinBox::up-button, 
+#spinBoxTransition::up-button {
   height: 9px;
-  border-style: solid;
-  border-color: #060613;
-  border-width: 0px 0px 0px 1px;
+  border-left: 1px solid #060613;
   image: url(skin:/btn/btn_spin_up.png) no-repeat;
 }
 
-WBeatSpinBox::down-button {
+WBeatSpinBox::down-button,
+#spinBoxTransition::down-button {
   height: 9px;
-  border-style: solid;
-  border-color: #060613;
-  border-width: 0px 0px 0px 1px;
+  border-left: 1px solid #060613;
   image: url(skin:/btn/btn_spin_down.png) no-repeat;
 }
+
 
 WEffectSelector {
   color: #060613;
@@ -366,11 +384,9 @@ In our case make sure that the "frame"-property in the corresponding dlgautodj.u
 The general rule when it comes to stylesheets is always to remember that if you style part of a widget, then you usually have to style all of it.
 */
 /* transition time in Auto DJ tab*/
-QSpinBox:editable {
-  font-size: 10pt;
-  background: transparent;
-  color: #ACACAC; }
-QSpinBox { min-height: 20px; max-height: 20px;min-width: 40px; max-width: 40px;}
+QSpinBox:editable,
+/* or addressed directly */
+#spinBoxTransition {}
 
 /* Cover Art*/
 WCoverArt {
@@ -397,8 +413,10 @@ QLabel, QRadioButton {
 
 WLibrary { margin: 2px 3px 0px 0px; }
 
-/* Additional space for QRadionButtons and QLabels*/
-WLibrary QRadioButton, WLibrary QLabel { margin: 9px 3px 6px 3px; }
+/* Additional space for QRadionButtons */
+WLibrary QRadioButton { margin: 9px 3px 6px 3px; }
+/* Additional space for QLabels */
+WLibrary QLabel { margin: 6px 3px 9px 3px; }
 
 /* Additional space for the first QRadionButton in the row*/
 WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
@@ -424,13 +442,14 @@ WLibrary QPushButton {
   height: 22px;	*/
   color: #0f0f0f;
   margin: 1px 2px 3px 1px;
-  padding: 2px 4px 2px 4px;
+  padding: 1px 3px 0px 3px;
   background-color: #99A0A4;
   background-position: center;
-  border: 0px;
+  border: 1px solid #99A0A4;
   }
   WLibrary QPushButton:!enabled {
     background-color: #72777A;
+    border: 1px solid #72777A;
     }
   WLibrary QPushButton:unchecked {
     color: #888;

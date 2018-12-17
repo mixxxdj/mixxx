@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <cstddef>
 
 #include "util/sample.h"
 #include "util/math.h"
@@ -16,25 +17,37 @@ typedef qint32 int32_t;
 // This also utilizes AVX registers when compiled for a recent 64-bit CPU
 // using scons optimize=native.
 
+namespace {
+
+#ifdef __AVX__
+constexpr size_t kAlignment = 32;
+#else
+constexpr size_t kAlignment = 16;
+#endif
+
 // TODO() Check if uintptr_t is available on all our build targets and use that
 // instead of size_t, we can remove the sizeof(size_t) check than
-static inline bool useAlignedAlloc() {
+constexpr bool useAlignedAlloc() {
     // This will work on all targets and compilers.
-    // It will return true on MSVC 32 bit builds and false for
-    // Linux 32 and 64 bit builds
-    return (sizeof(long double) == 8 && sizeof(CSAMPLE*) <= 8 &&
-            sizeof(CSAMPLE*) == sizeof(size_t));
+    // It will return true bot 32 bit builds and false for 64 bit builds
+    return alignof(max_align_t) < kAlignment &&
+            sizeof(CSAMPLE*) == sizeof(size_t);
 }
+
+} // anonymous namespace
 
 // static
 CSAMPLE* SampleUtil::alloc(SINT size) {
     // To speed up vectorization we align our sample buffers to 16-byte (128
-    // bit) boundaries so that vectorized loops doesn't have to do a serial
-    // ramp-up before going parallel.
+    // bit) boundaries on SSE builds and 32-byte (256 bit) on AVX builds so
+    // that vectorized loops doesn't have to do a serial ramp-up before going
+    // parallel.
     //
     // Pointers returned by malloc are aligned for the largest scalar type. On
     // most platforms the largest scalar type is long double (16 bytes).
     // However, on MSVC x86 long double is 8 bytes.
+    // This can be tested via
+    // alignof(std::max_align_t)
     //
     // On MSVC, we use _aligned_malloc to handle aligning pointers to 16-byte
     // boundaries. On other platforms where long double is 8 bytes this code
@@ -42,16 +55,16 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
     // return to the caller to be 16-byte aligned. We record a pointer to the
     // true start of the buffer in the slack space as well so that we can free
     // it correctly.
-    // TODO(XXX): Replace with C++11 aligned_alloc.
-    // TODO(XXX): consider 32 byte alignment to optimize for AVX builds
+    // TODO(XXX): Replace with C++17 aligned_alloc.
     if (useAlignedAlloc()) {
 #ifdef _MSC_VER
-        return static_cast<CSAMPLE*>(_aligned_malloc(sizeof(CSAMPLE) * size, 16));
+        return static_cast<CSAMPLE*>(
+                _aligned_malloc(sizeof(CSAMPLE) * size, kAlignment));
 #else
         // This block will be only used on non-Windows platforms that don't
         // produce 16-byte aligned pointers via malloc. We allocate 16 bytes of
         // slack space so that we can align the pointer we return to the caller.
-        const size_t alignment = 16;
+        const size_t alignment = kAlignment;
         const size_t unaligned_size = sizeof(CSAMPLE[size]) + alignment;
         void* pUnaligned = std::malloc(unaligned_size);
         if (pUnaligned == NULL) {
@@ -65,9 +78,7 @@ CSAMPLE* SampleUtil::alloc(SINT size) {
         return static_cast<CSAMPLE*>(pAligned);
 #endif
     } else {
-        // Our platform already produces 16-byte aligned pointers (or is an exotic target)
-        // We should be explicit about what we want from the system.
-        // TODO(XXX): Use posix_memalign, memalign, or aligned_alloc.
+        // Our platform already produces aligned pointers (or is an exotic target)
         return new CSAMPLE[size];
     }
 }

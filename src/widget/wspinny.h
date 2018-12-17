@@ -43,9 +43,10 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
     void updateSlipEnabled(double enabled);
+    void render();
+    void swap();
 
   protected slots:
-    void maybeUpdate();
     void slotCoverFound(const QObject* pRequestor,
                         const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
     void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
@@ -124,7 +125,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     double m_dRotationsPerSecond;
     bool m_bClampFailedWarning;
     bool m_bGhostPlayback;
-    bool m_bWidgetDirty;
 
     BaseTrackPlayer* m_pPlayer;
     DlgCoverArtFullSize* m_pDlgCoverArt;

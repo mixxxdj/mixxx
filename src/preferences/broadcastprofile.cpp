@@ -10,9 +10,9 @@
 #include <QStringList>
 
 #ifdef __QTKEYCHAIN__
-#include <qtkeychain/keychain.h>
+#include <qt5keychain/keychain.h>
 using namespace QKeychain;
-#endif
+#endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"

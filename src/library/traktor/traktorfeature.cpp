@@ -53,7 +53,8 @@ bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
 TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollection)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
-          m_cancelImport(false) {
+          m_cancelImport(false),
+          m_icon(":/images/library/ic_library_traktor.svg") {
     QString tableName = "traktor_library";
     QString idColumn = "id";
     QStringList columns;
@@ -120,7 +121,7 @@ QVariant TraktorFeature::title() {
 }
 
 QIcon TraktorFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_traktor.svg");
+    return m_icon;
 }
 
 bool TraktorFeature::isSupported() {

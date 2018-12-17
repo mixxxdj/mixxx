@@ -1,16 +1,35 @@
 ==== 2.2.0 (draft) 2018-09-12 ====
-* Update from Qt4 to Qt5
+
+* Update from Qt4 to Qt5.
 * Remove GUI scaling option from preferences; use Qt5's automatic
-  scaling instead
-* Add mix mode switch (Dry/Wet vs Dry+Wet) for effect units
-* Add support for LV2 effects plugins (currently no way to show plugin GUIs)
+  scaling instead.
+* Add mix mode switch (Dry/Wet vs Dry+Wet) for effect units.
+* Add support for LV2 effects plugins. (currently no way to show plugin GUIs)
 * Add preference option for selecting which effects are shown in the
-  list of available effects in the main window (all LV2 effects are
+  list of available effects in the main window. (all LV2 effects are
   hidden by default and must be explicitly enabled by users)
 * Add preference option for adjusting play position marker of
-  scrolling waveforms
+  scrolling waveforms.
 * Add preference option to adjust opacity of beatgrid markers on
-  scrolling waveforms
+  scrolling waveforms.
+* Add 8 sampler and small sampler options to LateNight.
+* Add key / BPM expansion indicators to Deere decks.
+* Vectorize Deere, LateNight and Tango skin assets for better HiDPI support.
+* Behringer CMD-MM1 controller preset improvements.
+* Support IRC/AIM/ICQ broadcast metadata.
+* Add skin settings menu to LateNight.
+
+==== 2.1.5 2018-10-28 ====
+
+* Code signing for Windows builds. lp:1517823
+* Fix crash on exit when preferences is open. lp:1793185
+* Fix crash when analyzing corrupt MP3s. lp:1793387
+* Fix crash when importing metadata from MusicBrainz. lp:1794993
+* Library search fixes when single quotes are used. lp:1784090 lp:1789728
+* Fix scrolling waveform on Windows with WDM-KS sound API. lp:1729345
+* Fix right clicking on beatgrid alignment button in Tango and LateNight skins. lp:1798237
+* Improve speed of importing iTunes library. lp:1785545
+* Add 2 deck mapping for DJTechTools MIDI Fighter Twister.
 
 ==== 2.1.4 2018-08-29 ====
 Fix track selection not getting shown in the track
@@ -35,17 +54,17 @@ Here is a quick summary of what is new in Mixxx 2.1.2:
 * Pad unreadable samples with silence on cache miss lp1777480
 * Fixing painting of preview coloumn for Qt5 builds lp1776555
 * LateNight: Fix play button right click lp1781829
-* LateNight: Added missing sort up/down buttons 
+* LateNight: Added missing sort up/down buttons
 * Fix sampler play button tooltips lp1779468
 * Shade: remove superfluid margins and padding in sampler.xml lp1773588
-* Deere: Fix background-color code 
+* Deere: Fix background-color code
 * ITunes: Don't stop import in case of duplicated Playlists lp1783493
 
 ==== 2.1.1 2018-06-13 ====
 After two month it is time to do a bugfix release of Mixxx 2.1.
 Here is a quick summary of what is new in Mixxx 2.1.1:
 
-* Require Soundtouch 2.0 to avoid segfault lp1577042 
+* Require Soundtouch 2.0 to avoid segfault lp1577042
 * Imrpoved Skins including library view fix lp1773709 lp1772202 lp1763953
 * Fix crash when importing ID3v2 APIC frames lp1774790
 * Synchronize execution of Vamp analyzers lp1743256
@@ -57,7 +76,7 @@ Here is a quick summary of what is new in Mixxx 2.1.1:
 * Fix memory leak when loading cover art lp1767068
 * Fix clearing of ReplayGain gain/ratio in file tags lp1766094
 * Fix crash when removing a quick link lp1510068
-* Fidlib: Thread-safe and reentrant generation of filters lp1765210 
+* Fidlib: Thread-safe and reentrant generation of filters lp1765210
 * Fix unresponsive scrolling through crates & playlists using encoder lp1719474
 * Swap default values for temp/perm rate changes lp1764254
 

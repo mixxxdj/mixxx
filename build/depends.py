@@ -245,7 +245,10 @@ class Qt(Dependence):
             'QtTest',
             'QtXml',
         ]
+
         if qt5:
+            if build.platform_is_linux:
+                build.env.Append(LIBS = 'Qt5X11Extras')
             qt_modules.extend([
                 # Keep alphabetized.
                 'QtConcurrent',
@@ -695,10 +698,9 @@ class Reverb(Dependence):
 
 class QtKeychain(Dependence):
     def configure(self, build, conf):
-        libs = ['qtkeychain']
-        if not conf.CheckLib(libs):
+        if not conf.CheckLib(['qt5keychain']):
             raise Exception(
-                "Could not find qtkeychain.")
+                "Could not find qt5keychain.")
 
 class MixxxCore(Feature):
 
@@ -1231,6 +1233,7 @@ class MixxxCore(Feature):
                    "util/autohidpi.cpp",
                    "util/screensaver.cpp",
                    "util/indexrange.cpp",
+                   "util/widgetrendertimer.cpp",
 
                    '#res/mixxx.qrc'
                    ]
@@ -1452,7 +1455,10 @@ class MixxxCore(Feature):
             # Stuff you may have compiled by hand
             if os.path.isdir('/usr/local/include'):
                 build.env.Append(LIBPATH=['/usr/local/lib'])
-                build.env.Append(CPPPATH=['/usr/local/include'])
+                # Use -isystem instead of -I to avoid compiler warnings from
+                # system libraries. This cuts down on Mixxx's compilation output
+                # significantly when using Homebrew installed to /usr/local.
+                build.env.Append(CCFLAGS=['-isystem', '/usr/local/include'])
 
             # Non-standard libpaths for fink and certain (most?) darwin ports
             if os.path.isdir('/sw/include'):

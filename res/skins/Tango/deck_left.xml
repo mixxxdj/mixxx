@@ -33,14 +33,14 @@ Variables:
             <Size>250me,111f</Size>
             <Children>
 
-              <Template src="skin:deck_overview_left.xml"/>
+              <Template src="skin:deck_row_overview_left.xml"/>
 
-              <Template src="skin:deck_comment_left.xml"/>
+              <Template src="skin:deck_row_comment_left.xml"/>
 
               <WidgetGroup><!-- Parallel Artist + Time -->
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:deck_artist_title_left.xml"/>
+                  <Template src="skin:deck_row_artist_title_left.xml"/>
                   <Template src="skin:loop_indicator.xml"/>
                 </Children>
               </WidgetGroup>
@@ -50,9 +50,12 @@ Variables:
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1min,1f</Size></WidgetGroup>
 
-          <Template src="skin:deck_buttons_left.xml"/>
+          <Template src="skin:deck_row_transport_left.xml"/>
 
-          <Template src="skin:loop_jump_controls_left.xml"/>
+          <Template src="skin:deck_row_loop_jump.xml">
+            <SetVariable name="SpaceLeft">-1</SetVariable>
+            <SetVariable name="SpaceRight">70</SetVariable>
+          </Template>
 
         </Children>
       </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->
@@ -105,7 +108,14 @@ Variables:
             <SizePolicy>me,i</SizePolicy>
             <Children>
               <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
-              <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,i</SizePolicy>
+                <Children>
+                  <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1me</Size></WidgetGroup>
+                  <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup>
         </Children>

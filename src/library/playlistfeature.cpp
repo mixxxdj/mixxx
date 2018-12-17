@@ -23,7 +23,8 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
                                  TrackCollection* pTrackCollection,
                                  UserSettingsPointer pConfig)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection,
-                              "PLAYLISTHOME") {
+                              "PLAYLISTHOME"),
+          m_icon(":/images/library/ic_library_playlist.svg") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.playlist");
 
@@ -41,7 +42,7 @@ QVariant PlaylistFeature::title() {
 }
 
 QIcon PlaylistFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_playlist.svg");
+    return m_icon;
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
