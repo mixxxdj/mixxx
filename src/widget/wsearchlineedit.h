@@ -19,6 +19,14 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
         Active,
     };
 
+    // Delay for triggering a search while typing
+    static constexpr int kMinDebouncingTimeoutMillis = 100;
+    static constexpr int kDefaultDebouncingTimeoutMillis = 300;
+    static constexpr int kMaxDebouncingTimeoutMillis = 9999;
+
+    // TODO(XXX): Replace with a public slot
+    static void setDebouncingTimeoutMillis(int debouncingTimeoutMillis);
+
     explicit WSearchLineEdit(QWidget* pParent);
     ~WSearchLineEdit() override = default;
 
@@ -45,6 +53,13 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     void triggerSearch();
 
   private:
+    // TODO(XXX): This setting shouldn't be static and the widget
+    // should instead define a public slot for changing the value.
+    // But this would require to connect the widget instance to some
+    // value provider that sends signals whenever the corresponding
+    // configuration value changes.
+    static int s_debouncingTimeoutMillis;
+
     void showPlaceholder();
     void showSearchText(const QString& text);
     void updateEditBox(const QString& text);
@@ -56,6 +71,7 @@ class WSearchLineEdit : public QLineEdit, public WBaseWidget {
     QToolButton* const m_clearButton;
 
     QColor m_foregroundColor;
+
     QTimer m_debouncingTimer;
 
     State m_state;

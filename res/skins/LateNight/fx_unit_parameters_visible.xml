@@ -13,7 +13,7 @@
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="FxUnit"/></ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <Size>635me,170min</Size>
     <Children>
 
       <WidgetGroup><!-- Fx Parameters -->
@@ -78,7 +78,7 @@
                   </SingletonContainer>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>

@@ -234,12 +234,14 @@ class EngineBuffer : public EngineObject {
 
     bool updateIndicatorsAndModifyPlay(bool newPlay);
     void verifyPlay();
+    void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void processTrackLocked(CSAMPLE* pOutput, const int iBufferSize, int sample_rate);
 
     // Holds the name of the control group
     QString m_group;
     UserSettingsPointer m_pConfig;
 
-    LoopingControl* m_pLoopingControl;
+    LoopingControl* m_pLoopingControl; // used for testes
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
@@ -302,7 +304,7 @@ class EngineBuffer : public EngineObject {
     int m_trackSamplesOld;
 
     // Copy of file sample rate
-    int m_trackSampleRateOld;
+    double m_trackSampleRateOld;
 
     // Mutex controlling whether the process function is in pause mode. This happens
     // during seek and loading of a new track

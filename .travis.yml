@@ -44,6 +44,7 @@ addons:
       - protobuf-compiler
       - qt5-default
       - qtscript5-dev
+      - libqt5x11extras5-dev
       - scons
       - vamp-plugin-sdk
       - qtkeychain-dev

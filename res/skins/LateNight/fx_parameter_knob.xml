@@ -32,7 +32,7 @@
             <Children>
               <EffectParameterKnobComposed>
                 <Size>25f,25f</Size>
-                <Knob>skin:knob_small_indicator.svg</Knob>
+                <Knob>skin:knob_small_indicator_green.svg</Knob>
                 <BackPath>skin:knob_small_bg.svg</BackPath>
                 <MinAngle><Variable name="PotiMinAngle"/></MinAngle>
                 <MaxAngle><Variable name="PotiMaxAngle"/></MaxAngle>

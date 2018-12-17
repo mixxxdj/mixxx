@@ -33,6 +33,7 @@
                     <Children>
                       <Template src="skin:knob_textless.xml">
                         <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="Color">orange</SetVariable>
                         <SetVariable name="TooltipId">master_gain</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">gain</SetVariable>
@@ -46,6 +47,7 @@
                     <Children>
                       <Template src="skin:knob_textless.xml">
                         <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="Color">red</SetVariable>
                         <SetVariable name="TooltipId">balance</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">balance</SetVariable>
@@ -126,7 +128,7 @@
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /FX buttons 3/4 -->
@@ -139,6 +141,7 @@
                 <Children>
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="Size">35f,30f</SetVariable>
+                    <SetVariable name="Color">orange</SetVariable>
                     <SetVariable name="TooltipId">booth_gain</SetVariable>
                     <SetVariable name="group">[Master]</SetVariable>
                     <SetVariable name="control">booth_gain</SetVariable>
@@ -222,7 +225,7 @@
                   </WidgetGroup><!-- /Level L + R -->
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /MasterVuMeter4ch -->
@@ -253,6 +256,7 @@
                     <Children>
                       <Template src="skin:knob_textless.xml">
                         <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="Color">orange</SetVariable>
                         <SetVariable name="TooltipId">headphone_gain</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">headGain</SetVariable>
@@ -266,6 +270,7 @@
                     <Children>
                       <Template src="skin:knob_textless.xml">
                         <SetVariable name="Size">35f,30f</SetVariable>
+                        <SetVariable name="Color">green</SetVariable>
                         <SetVariable name="TooltipId">headMix</SetVariable>
                         <SetVariable name="group">[Master]</SetVariable>
                         <SetVariable name="control">headMix</SetVariable>

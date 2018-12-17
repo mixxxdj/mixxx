@@ -15,7 +15,7 @@
         <PathGhost>style/spinny_indicator_ghost.svg</PathGhost>
         <ShowCover>false</ShowCover>
         <Connection>
-          <ConfigKey>[Skin],show_cover_art</ConfigKey>
+          <ConfigKey>[Skin],show_coverart</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -31,14 +31,14 @@
         <PathGhost>style/spinny_indicator_ghost.svg</PathGhost>
         <ShowCover>true</ShowCover>
         <Connection>
-          <ConfigKey>[Skin],show_cover_art</ConfigKey>
+          <ConfigKey>[Skin],show_coverart</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </Spinny>
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

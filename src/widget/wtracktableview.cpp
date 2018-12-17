@@ -1063,7 +1063,6 @@ void WTrackTableView::onSearch(const QString& text) {
         if (!searchWasEmpty && text.isEmpty()) {
             restoreNoSearchVScrollBarPos();
         }
-        trackModel->search(text);
     }
 }
 

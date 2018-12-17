@@ -18,7 +18,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_eqs</ConfigKey>
+          <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -87,7 +87,7 @@
 
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_faders</ConfigKey>
+              <ConfigKey>[Skin],show_faders</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- VU + Vol fader -->
@@ -123,7 +123,7 @@
 
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_faders</ConfigKey>
+              <ConfigKey>[Skin],show_faders</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
             </Connection>

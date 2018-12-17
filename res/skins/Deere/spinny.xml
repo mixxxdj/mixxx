@@ -77,7 +77,7 @@ Use smaller spinny sizes for 4 decks than 2 decks.
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Connection>
-                  <ConfigKey>[Master],show_coverart</ConfigKey>
+                  <ConfigKey>[Skin],show_coverart</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
                 <Children>
@@ -91,7 +91,7 @@ Use smaller spinny sizes for 4 decks than 2 decks.
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Connection>
-                  <ConfigKey>[Master],show_coverart</ConfigKey>
+                  <ConfigKey>[Skin],show_coverart</ConfigKey>
                   <BindProperty>visible</BindProperty>
                   <Transform>
                     <Not/>
@@ -110,7 +110,7 @@ Use smaller spinny sizes for 4 decks than 2 decks.
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
           <Transform>
             <Not/>
           </Transform>
@@ -151,7 +151,7 @@ Use smaller spinny sizes for 4 decks than 2 decks.
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Connection>
-                  <ConfigKey>[Master],show_coverart</ConfigKey>
+                  <ConfigKey>[Skin],show_coverart</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
                 <Children>
@@ -165,7 +165,7 @@ Use smaller spinny sizes for 4 decks than 2 decks.
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Connection>
-                  <ConfigKey>[Master],show_coverart</ConfigKey>
+                  <ConfigKey>[Skin],show_coverart</ConfigKey>
                   <BindProperty>visible</BindProperty>
                   <Transform>
                     <Not/>
@@ -183,13 +183,13 @@ Use smaller spinny sizes for 4 decks than 2 decks.
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey>[Master],show_spinnies</ConfigKey>
+      <ConfigKey>[Skin],show_spinnies</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

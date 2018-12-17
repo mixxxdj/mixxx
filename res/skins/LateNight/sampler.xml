@@ -167,6 +167,7 @@
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="TooltipId">pregain</SetVariable>
                     <SetVariable name="Size">35f,30f</SetVariable>
+                    <SetVariable name="Color">orange</SetVariable>
                     <SetVariable name="group"><Variable name="group"/></SetVariable>
                     <SetVariable name="control">pregain</SetVariable>
                   </Template>
@@ -226,7 +227,7 @@
                       </Template>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- /Hotcues 5-8 -->
