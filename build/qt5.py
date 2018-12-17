@@ -894,6 +894,7 @@ def enable_modules(self, modules, debug=False, crosscompiling=False, staticdeps=
         'QtSvg',
         'QtThemeSupport',
         'QtUiTools',
+        'QtWindowsUIAutomationSupport',
         'QtXml',
         'QtXmlPatterns',
         # Qt Tools

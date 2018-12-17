@@ -28,8 +28,6 @@
 
 #include "util/performancetimer.h"
 
-class GuiTick;
-
 class VSyncThread : public QThread {
     Q_OBJECT
   public:
@@ -44,7 +42,7 @@ class VSyncThread : public QThread {
 
     static void swapGl(QGLWidget* glw, int index);
 
-    VSyncThread(QObject* pParent, GuiTick* pGuiTick);
+    VSyncThread(QObject* pParent);
     ~VSyncThread();
 
     void run();
@@ -113,9 +111,6 @@ class VSyncThread : public QThread {
     QSemaphore m_semaVsyncSlot;
     double m_displayFrameRate;
     int m_vSyncPerRendering;
-
-
-    GuiTick* m_pGuiTick;
 };
 
 

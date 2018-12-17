@@ -86,7 +86,7 @@ Variables:
           <WidgetGroup>
             <Size>4f,0min</Size>
             <Connection>
-              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+              <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -114,7 +114,7 @@ Variables:
           <Template src="skin:quick_fx_knob_right.xml"/><!-- Quick Effect -->
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /EQ + QuickEffect knobs/buttons -->

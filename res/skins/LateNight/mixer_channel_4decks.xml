@@ -17,23 +17,13 @@
           <WidgetGroup>
             <Layout>vertical</Layout>
             <Children>
-              <PushButton>
-                <TooltipId>pfl</TooltipId>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_pfl_down.svg</Pressed>
-                  <Unpressed>buttons/btn_pfl.svg</Unpressed>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Pressed>buttons/btn_pfl_overdown.svg</Pressed>
-                  <Unpressed>buttons/btn_pfl_over.svg</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">pfl</SetVariable>
+                <SetVariable name="icon">pfl</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+                <SetVariable name="Size">26,26</SetVariable>
+              </Template>
+
               <!-- Spacer to put the PFL button a little bit higher -->
               <WidgetGroup>
                 <Layout>vertical</Layout>
@@ -44,6 +34,7 @@
           </WidgetGroup>
           <Template src="skin:knob.xml">
             <SetVariable name="Size">40f,34f</SetVariable>
+            <SetVariable name="Color">orange</SetVariable>
             <SetVariable name="group"><Variable name="group"/></SetVariable>
             <SetVariable name="control">pregain</SetVariable>
             <SetVariable name="label">gain</SetVariable>
@@ -75,29 +66,14 @@
         <Layout>vertical</Layout>
         <SizePolicy>min,min</SizePolicy>
         <Children>
-          <PushButton>
-            <TooltipId>orientation</TooltipId>
-            <NumberStates>3</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Pressed>buttons/btn_orientation_deck<Variable name="deckSide"/>_left.svg</Pressed>
-              <Unpressed>buttons/btn_orientation_deck<Variable name="deckSide"/>_left.svg</Unpressed>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Pressed>buttons/btn_orientation_deck_master.svg</Pressed>
-              <Unpressed>buttons/btn_orientation_deck_master.svg</Unpressed>
-            </State>
-            <State>
-              <Number>2</Number>
-              <Pressed>buttons/btn_orientation_deck<Variable name="deckSide"/>_right.svg</Pressed>
-              <Unpressed>buttons/btn_orientation_deck<Variable name="deckSide"/>_right.svg</Unpressed>
-            </State>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-          </PushButton>
+          <Template src="skin:button_3state.xml">
+            <SetVariable name="TooltipId">orientation</SetVariable>
+            <SetVariable name="Size">34f,15f</SetVariable>
+            <SetVariable name="state_0">orientation_deck<Variable name="deckSide"/>_left</SetVariable>
+            <SetVariable name="state_1">orientation_deck_master</SetVariable>
+            <SetVariable name="state_2">orientation_deck<Variable name="deckSide"/>_right</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 
@@ -160,7 +136,7 @@
 
           <SliderComposed>
             <TooltipId>channel_volume</TooltipId>
-            <Handle>knob_volume_deck.svg</Handle>
+            <Handle scalemode="STRETCH_ASPECT">knob_volume_deck.svg</Handle>
             <Slider>slider_volume_deck.svg</Slider>
             <Horizontal>false</Horizontal>
             <Connection>

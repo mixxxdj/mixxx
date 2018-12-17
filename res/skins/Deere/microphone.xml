@@ -11,17 +11,19 @@
   <WidgetGroup>
     <ObjectName>MicrophoneContainer</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>max,me</SizePolicy>
+    <SizePolicy>max,min</SizePolicy>
     <Children>
 
       <WidgetGroup>
         <ObjectName>MicrophoneControls</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
 
           <WidgetGroup>
-            <Layout>horizontal</Layout>
             <ObjectName>MicLabelContainer</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
             <Children>
               <Label>
                 <ObjectName>MicLabel</ObjectName>
@@ -30,26 +32,40 @@
             </Children>
           </WidgetGroup>
 
-          <Template src="skin:knob_with_button.xml">
-            <SetVariable name="TooltipId">microphone_pregain</SetVariable>
-            <SetVariable name="control">pregain</SetVariable>
-            <SetVariable name="color">green</SetVariable>
-            <SetVariable name="button_TooltipId">mute</SetVariable>
-            <SetVariable name="button_control">mute</SetVariable>
-            <SetVariable name="label">Gain</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Children>
+
+              <Template src="skin:knob_with_button.xml">
+                <SetVariable name="TooltipId">microphone_pregain</SetVariable>
+                <SetVariable name="control">pregain</SetVariable>
+                <SetVariable name="color">green</SetVariable>
+                <SetVariable name="button_TooltipId">mute</SetVariable>
+                <SetVariable name="button_control">mute</SetVariable>
+                <SetVariable name="label">Gain</SetVariable>
+              </Template>
+
+              <Template src="skin:vumeter.xml">
+                <SetVariable name="TooltipId">microphone_VuMeter</SetVariable>
+                <SetVariable name="control">VuMeter</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>MicrophoneButtonsAndMeter</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
 
           <WidgetGroup>
             <ObjectName>MicrophoneControlButtons</ObjectName>
+            <SizePolicy>min,f</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
+
               <Template src="skin:microphone_talkover_button.xml">
                 <SetVariable name="TooltipId">microphone_talkover</SetVariable>
                 <SetVariable name="talk_text">Talk</SetVariable>
@@ -73,13 +89,9 @@
             </Children>
           </WidgetGroup>
 
-          <Template src="skin:vumeter.xml">
-            <SetVariable name="TooltipId">microphone_VuMeter</SetVariable>
-            <SetVariable name="control">VuMeter</SetVariable>
-          </Template>
-
           <WidgetGroup>
             <ObjectName>ButtonGrid</ObjectName>
+            <SizePolicy>min,i</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:fx_unit_group_assignment_button.xml">
@@ -92,27 +104,30 @@
                 <SetVariable name="SourceType">microphone</SetVariable>
               </Template>
 
-              <WidgetGroup>
-                <ObjectName>ButtonGrid</ObjectName>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <Template src="skin:fx_unit_group_assignment_button.xml">
-                    <SetVariable name="EffectUnit">3</SetVariable>
-                    <SetVariable name="SourceType">microphone</SetVariable>
-                  </Template>
-
-                  <Template src="skin:fx_unit_group_assignment_button.xml">
-                    <SetVariable name="EffectUnit">4</SetVariable>
-                    <SetVariable name="SourceType">microphone</SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey>[Master],show_4effectunits</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
             </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <SizePolicy>min,i</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:fx_unit_group_assignment_button.xml">
+                <SetVariable name="EffectUnit">3</SetVariable>
+                <SetVariable name="SourceType">microphone</SetVariable>
+              </Template>
+
+              <!-- Workaround for layout spacing -->
+              <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
+
+              <Template src="skin:fx_unit_group_assignment_button.xml">
+                <SetVariable name="EffectUnit">4</SetVariable>
+                <SetVariable name="SourceType">microphone</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_4effectunits</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
         </Children>

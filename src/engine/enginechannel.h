@@ -51,7 +51,7 @@ class EngineChannel : public EngineObject {
         return m_group.handle();
     }
 
-    virtual const QString& getGroup() const {
+    const QString& getGroup() const {
         return m_group.name();
     }
 
@@ -98,4 +98,3 @@ class EngineChannel : public EngineObject {
 };
 
 #endif
-

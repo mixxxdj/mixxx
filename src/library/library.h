@@ -28,7 +28,6 @@ class LibraryFeature;
 class LibraryTableModel;
 class WLibrarySidebar;
 class WLibrary;
-class WSearchLineEdit;
 class MixxxLibraryFeature;
 class PlaylistFeature;
 class CrateFeature;
@@ -92,6 +91,7 @@ class Library: public QObject,
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
     void slotLoadLocationToPlayer(QString location, QString group);
     void slotRestoreSearch(const QString& text);
+    void slotDisableSearch();
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
@@ -111,8 +111,7 @@ class Library: public QObject,
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void restoreSearch(const QString&);
     void search(const QString& text);
-    void searchCleared();
-    void searchStarting();
+    void disableSearch();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);

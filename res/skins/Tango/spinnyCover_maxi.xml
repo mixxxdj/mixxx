@@ -8,11 +8,7 @@ Variables:
 <Template>
   <WidgetGroup>
     <ObjectName>SpinnyCover_Container</ObjectName>
-  <!-- When toggling from CoverArt to Spinny both are visible from a moment.
-    They are vertically stacked, so they push everything below the decks downwards.
-    Set a mximum size so the flickering only appears when loop/beatjump row is hidden. -->
-    <MaximumSize>-1,161</MaximumSize>
-    <SizePolicy>max,me</SizePolicy>
+    <SizePolicy>max,min</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
 
@@ -55,7 +51,7 @@ Variables:
           </Spinny>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -79,7 +75,7 @@ Variables:
           </CoverArt>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>

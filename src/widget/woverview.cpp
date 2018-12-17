@@ -205,7 +205,7 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack) {
 }
 
 void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack << pOldTrack;
+    //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
     if (m_pCurrentTrack != nullptr) {
         disconnect(m_pCurrentTrack.get(), SIGNAL(waveformSummaryUpdated()),
@@ -579,6 +579,7 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
 
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
+    Init();
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {

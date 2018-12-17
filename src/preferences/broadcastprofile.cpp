@@ -10,9 +10,9 @@
 #include <QStringList>
 
 #ifdef __QTKEYCHAIN__
-#include <qtkeychain/keychain.h>
+#include <qt5keychain/keychain.h>
 using namespace QKeychain;
-#endif
+#endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
@@ -215,7 +215,11 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
 }
 
 void BroadcastProfile::adoptDefaultValues() {
+#ifdef __QTKEYCHAIN__
+    m_secureCredentials = true;
+#else
     m_secureCredentials = false;
+#endif
     m_enabled = false;
 
     m_host = QString();
@@ -259,8 +263,9 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     if (doc.childNodes().size() < 1)
         return false;
 
+#ifdef __QTKEYCHAIN__
     m_secureCredentials = (bool)XmlParse::selectNodeInt(doc, kSecureCredentials);
-#ifndef __QTKEYCHAIN__
+#else
     // Secure credentials storage can't be enabled nor disabled from the UI,
     // so force it to disabled to avoid issues if enabled.
     m_secureCredentials = false;

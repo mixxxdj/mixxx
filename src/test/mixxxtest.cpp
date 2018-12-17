@@ -51,7 +51,7 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
 
     s_pApplication.reset(new MixxxApplication(argc, argv));
 
-    SoundSourceProxy::loadPlugins();
+    SoundSourceProxy::registerSoundSourceProviders();
 }
 
 MixxxTest::ApplicationScope::~ApplicationScope() {

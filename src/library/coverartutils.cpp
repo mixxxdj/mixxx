@@ -9,7 +9,7 @@
 
 //static
 QString CoverArtUtils::defaultCoverLocation() {
-    return QString(":/images/library/cover_default.png");
+    return QString(":/images/library/cover_default.svg");
 }
 
 //static

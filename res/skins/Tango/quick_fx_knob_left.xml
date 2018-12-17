@@ -70,7 +70,7 @@ Variables:
                       </Template>
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+                      <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
@@ -103,7 +103,7 @@ Variables:
                   </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
