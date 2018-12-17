@@ -264,8 +264,8 @@ std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double sto
     if (!isValid() || startSample > stopSample) {
         return std::unique_ptr<BeatIterator>();
     }
-    // qDebug() << "BeatGrid::findBeats startSample" << startSample << "stopSample"
-    //          << stopSample << "beatlength" << m_dBeatLength << "BPM" << bpm();
+    //qDebug() << "BeatGrid::findBeats startSample" << startSample << "stopSample"
+    //         << stopSample << "beatlength" << m_dBeatLength << "BPM" << bpm();
     double curBeat = findNextBeat(startSample);
     if (curBeat == -1.0) {
         return std::unique_ptr<BeatIterator>();

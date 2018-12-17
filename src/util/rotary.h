@@ -18,7 +18,7 @@ class Rotary {
     double filter(double dValue);
     // Hard set event value
     double fillBuffer(double dValue);
-    // Collect callibration data
+    // Collect calibration data
     void calibrate(double dValue);
     // Set filter length
     void setFilterLength(int i);

@@ -138,7 +138,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     PaError err;
 
     if (m_audioOutputs.empty() && m_audioInputs.empty()) {
-        m_lastError = QString::fromAscii(
+        m_lastError = QStringLiteral(
                 "No inputs or outputs in SDPA::open() "
                 "(THIS IS A BUG, this should be filtered by SM::setupDevices)");
         return SOUNDDEVICE_ERROR_ERR;
@@ -361,6 +361,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
         ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
         ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"), bufferMSec);
         m_invalidTimeInfoCount = 0;
+        m_clkRefTimer.start();
     }
     m_pStream = pStream;
     return SOUNDDEVICE_ERROR_OK;
@@ -686,7 +687,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
     // There is a delay of up to one latency between composing a chunk in the Clock
     // Reference callback and write it to the device. So we need at lest one buffer.
     // Unfortunately this delay is somehow random, an WILL produce a delay slow
-    // shift without we can avoid it. (Thats the price for using a cheap USB soundcard).
+    // shift without we can avoid it. (That's the price for using a cheap USB soundcard).
     //
     // Additional we need an filled chunk and an empty chunk. These are used when on
     // sound card overtakes the other. This always happens, if they are driven form
@@ -694,7 +695,7 @@ int SoundDevicePortAudio::callbackProcessDrift(
     // the drift correction takes place and fills or clears the reserve buffers.
     // If this is finished before another overtake happens, we do not face any
     // dropouts or clicks.
-    // So thats why we need a Fifo of 3 chunks.
+    // So that's why we need a Fifo of 3 chunks.
     //
     // In addition there is a jitter effect. It happens that one callback is delayed,
     // in this case the second one fires two times and then the first one fires two
@@ -999,10 +1000,12 @@ void SoundDevicePortAudio::updateCallbackEntryToDacTime(
     double diff = (timeSinceLastCbSecs + callbackEntrytoDacSecs) -
             (m_lastCallbackEntrytoDacSecs + bufferSizeSec);
 
-    if (timeSinceLastCbSecs < bufferSizeSec * 2 &&
-            fabs(diff) / bufferSizeSec > 0.1) {
+    if (callbackEntrytoDacSecs <= 0 ||
+            (timeSinceLastCbSecs < bufferSizeSec * 2 &&
+            fabs(diff) / bufferSizeSec > 0.1)) {
         // Fall back to CPU timing:
-        // If timeSinceLastCbSecs from a CPU timer is reasonable (no underflow)
+        // If timeSinceLastCbSecs from a CPU timer is reasonable (no underflow),
+        // the callbackEntrytoDacSecs time is not in the past
         // and we have more than 10 % difference to the timing provided by Portaudio
         // we do not trust the Portaudio timing.
         // (A difference up to ~ 5 % is normal)

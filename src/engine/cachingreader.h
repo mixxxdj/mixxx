@@ -82,10 +82,20 @@ class CachingReader : public QObject {
 
     virtual void process();
 
+    enum class ReadResult {
+        // No samples read and buffer untouched(!), try again later in case of a cache miss
+        UNAVAILABLE,
+        // Some samples are missing and corresponding range in buffer has been cleared with silence
+        PARTIALLY_AVAILABLE,
+        // All requested samples are available and have been read into buffer
+        AVAILABLE,
+    };
+
     // Read numSamples from the SoundSource starting with sample into
-    // buffer. Returns the total number of samples actually written to buffer
-    // support reading stereo samples in reverse (backward) order
-    virtual SINT read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer);
+    // buffer. It always writes numSamples to the buffer and otherwise
+    // returns ReadResult::UNAVAILABLE.
+    // It support reading stereo samples in reverse (backward) order.
+    virtual ReadResult read(SINT startSample, SINT numSamples, bool reverse, CSAMPLE* buffer);
 
     // Issue a list of hints, but check whether any of the hints request a chunk
     // that is not in the cache. If any hints do request a chunk not in cache,

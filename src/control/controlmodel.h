@@ -13,7 +13,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 
-class ControlModel : public QAbstractTableModel {
+class ControlModel final : public QAbstractTableModel {
     Q_OBJECT
   public:
     enum ControlColumn {

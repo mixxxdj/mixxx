@@ -112,7 +112,7 @@ class Beats {
     double findNBeatsFromSample(double fromSample, double beats) const;
 
 
-    // Adds to pBeatsList the position in samples of every beat occuring between
+    // Adds to pBeatsList the position in samples of every beat occurring between
     // startPosition and endPosition. BeatIterator must be iterated while
     // holding a strong references to the Beats object to ensure that the Beats
     // object is not deleted. Caller takes ownership of the returned BeatIterator;

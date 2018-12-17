@@ -34,7 +34,3 @@ sources = [
 
 benchmark_lib = env.StaticLibrary(target='benchmark',
                                   source=[sources])
-
-# Install the libraries if needed.
-if 'LIB_OUTPUT' in env.Dictionary():
-  env.Install('$LIB_OUTPUT', source=[benchmark_lib])

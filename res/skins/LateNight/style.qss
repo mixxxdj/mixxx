@@ -56,9 +56,6 @@ WTime {
   qproperty-layoutAlignment: 'AlignCenter';
   border-radius: 2px;
   }
-  #Stars:hover {
-    background-color: #0f0f0f;
-  }
   WStarRating {
     color: #f0bb2b;
     font-weight: bold;
@@ -68,7 +65,7 @@ WTime {
 #ToolBar {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
   background-color: #1e1e1e;
-  padding-top: 1px;
+  padding: 2px 0px 2px 2px;
 }
 
 #UIButtonMargin {
@@ -105,8 +102,6 @@ WTime {
   background-color: #1e1e1e;
 }
 
-#DecksLeftContainer,
-#DecksRightContainer,
 #SkinContainer {
   background-color: #0f0f0f;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
@@ -119,13 +114,21 @@ WTime {
   padding: 1px;
 }
 
+#DeckRows234 {/*
+  This alone wouldn't work:
+  border-bottom: 1px solid #585858;
+  this does: */
+  border: 1px solid #585858;
+  border-width: 0px 0px 1px 0px;
+}
+
 #DeckRow_2_3_ArtistTitleTime {
   border-bottom: 1px solid #585858;
   background-color: #1e1e1e;
 }
 
-#DeckRow_4_OverviewSpinny {
-  border-bottom: 1px solid #585858;
+#DeckRow_4_OverviewSpinny {/*
+  border-bottom: 1px solid #585858;*/
   background-color: #1e1e1e;
   padding: 0px;
 }
@@ -139,6 +142,20 @@ WTime {
   background-color: #1e1e1e;
 }
 
+#SpinnyContainer {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';/*
+  background: transparent;*/
+  background-color: #1e1e1e;
+  border-right: 1px solid #585858;
+}
+
+WSpinny {/*
+  This produces artifacts in spinny bg
+  background-color: rgba(1, 1, 1, 10);
+  This makes no difference, the spinny loads some default grey bg
+  background: none;*/
+}
+
 #VisualizationContainer {
   border: 1px solid #585858;
   border-top: 0px;
@@ -150,35 +167,17 @@ WTime {
 #Deck3 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
-  border-right: 0px;
+  margin-right: 5px;
 
 }
-
 #Deck2,
 #Deck4 {
   qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
   border: 1px solid #585858;
-  border-left: 0px;
+  margin-left: 5px;
 }
 
 #DeckContainer {
-  background-color: #0f0f0f;
-}
-
-#DeckLeftMargin {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  border: 1px solid #585858;
-  border-left: 0px;
-  border-bottom: 0px;
-  border-top: 0px;
-  background-color: #0f0f0f;
-}
-
-#DeckRightMargin {
-  border: 0px solid #585858;
-  border-top:0px;
-  border-right: 0px;
-  border-bottom: 0px;
   background-color: #0f0f0f;
 }
 
@@ -421,7 +420,8 @@ WEffectButtonParameter*/
   background-color: #113397;*/
 }
 
-#FxUnit1_PflButton, #FxUnit2_PflButton {
+#FxUnit1_PflButton, #FxUnit2_PflButton,
+#FxUnit3_PflButton, #FxUnit4_PflButton {
   margin: 0px 0px 1px 2px;
 }
 
@@ -475,13 +475,18 @@ WEffectButtonParameter*/
 
 #VinylButton,
 #FxAssignButton,
-#GuiToggleButton {
+#GuiToggleButton,
+#BroadcastButton,
+#SettingsButton {
   border: 1px solid #585858;
   border-radius: 2px;
   }
 
-  #GuiToggleButton {
-    margin: 2px;
+  #GuiToggleButton,
+  #BroadcastButton,
+  #SettingsButton,
+  #RecBox {
+    margin: 2px 3px 2px 2px;
   }
 
   #VinylButton,
@@ -490,6 +495,8 @@ WEffectButtonParameter*/
   }
 
 #VinylButton[displayValue="0"],
+#BroadcastButton[displayValue="0"],
+#SettingsButton[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
 #FxAssignButton[displayValue="0"] {
   color: #ddd;
@@ -502,6 +509,8 @@ WEffectButtonParameter*/
 #VinylButton[displayValue="2"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
+#BroadcastButton[displayValue="1"], /* connecting: yellow */
+#SettingsButton[displayValue="1"],
 #FxAssignButton[displayValue="1"] {
   border: 1px solid #585858;
   border-radius: 2px;
@@ -509,6 +518,26 @@ WEffectButtonParameter*/
   background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
     stop:0 #B69700,
     stop:1 #eece33);
+}
+
+#SettingsButton[displayValue="0"] {
+  image: url(skin:/buttons/btn_settings_off.svg) no-repeat left center;
+}
+
+#SettingsButton[displayValue="1"] {
+  image: url(skin:/buttons/btn_settings_on.svg) no-repeat left center;
+}
+
+#BroadcastButton[displayValue="2"] { /* good: green */
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #3F8A2B,
+    stop:1 #26A803);
+}
+
+#BroadcastButton[displayValue="3"] {  /* failure: pink */
+  background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1,
+    stop:0 #962D8B,
+    stop:1 #E602CD);
 }
 
 #TristateButton {
@@ -568,6 +597,62 @@ WEffectButtonParameter*/
 }
 
 /*################################################################
+ #######  Skin Settings  ########################################
+##############################################################*/
+
+#SkinSettingsContainer {
+}
+
+#SkinSettings {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  text-align: left;
+  padding: 2px 0px 2px 0px;
+  border: 1px solid #585858;
+  border-width: 0px 0px 1px 1px;
+
+}
+#SkinSettingsHeader {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding-right: 2px;
+  }
+  #SkinSettingsClose {
+    margin-bottom: 1px;
+    background-color: transparent;
+    image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center top;
+  }
+
+#SkinSettingsCategory {
+  padding: 3px 8px 10px 9px;
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  border: 1px solid #1e1e1e;
+  border-width: 0px 0px 3px 0px;
+  margin-bottom: 3px;
+  }
+  #CategoryLabel {
+    font-size: 17px/17px;
+    text-align: left;
+    padding: 3px 0px 2px 3px;
+    color: #eece33;
+  }
+
+#SkinSettingsButton {
+  padding-top: 1px;
+  font-size: 12px/14px;
+  color: #d2d2d2;
+}
+
+#SkinSettingsLabelButton {
+  font-size: 17px/21px;
+  text-align: left;
+  padding: 0px 0px 0px 3px;
+  color: #eece33;
+}
+
+#SubmenuCover {
+  background-color: rgba(15, 15, 15, 180);
+}
+
+/*################################################################
 #######  Loop Controls  ########################################
 ##############################################################*/
 
@@ -609,9 +694,9 @@ WEffectButtonParameter*/
 WBeatSpinBox,
 #DlgAutoDJ QSpinBox {
   /* make it 2px smaller in each dimension,
-    border is added for final size */
+    border is added for final size
   width: 55px;
-  height: 22px;
+  height: 22px; */
   border: 1px solid #666;
   border-radius: 2px;
   color: #cfb32c;
@@ -621,14 +706,14 @@ WBeatSpinBox,
   font-size: 13px/13px;
   }
   WBeatSpinBox {
-    padding: 1px 2px 1px 1px;
+    padding: 0px 2px 0px 1px;
     margin: 0px -1px 2px 0px;
   }
   /* Eliminate overlapping right border for transition time in Auto DJ tab */
   #DlgAutoDJ QSpinBox {
     border-right: 0px;
     margin: 0px 0px 0px 2px;
-    padding: 1px 2px 1px 1px;
+    padding: 0px 2px 0px 1px;
   }
   WBeatSpinBox:hover,
   #DlgAutoDJ QSpinBox:hover {
@@ -714,8 +799,7 @@ WBeatSpinBox,
   text-transform: uppercase;
   border-right: 1px solid #585858;
   text-align: center;
-  padding-top: 2px;
-  padding-bottom: 2px;
+  padding: 2px 3px;
 }
 
 #PreviewTitle {
@@ -818,16 +902,10 @@ border: 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
-#Toolbar {
-  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  border: 1px solid #585858;
-  padding: 0px;
-  background-color: #0f0f0f;
-}
-
 #ToolbarLogo {
   background: transparent;
-  image: url(skin:style/mixxx_logo_toolbar.png) no-repeat center center;
+  margin: 3px 0px;
+  image: url(skin:style/mixxx_logo.svg) no-repeat center center;
 }
 
 #WaveformMixerContainer {
@@ -994,17 +1072,20 @@ border: 0px;
   border-top: 1px solid #585858;
   /*border-bottom: 1px solid #585858;*/
   padding-bottom: 0px;
-  padding-left: 5px;
-  padding-right: 5px;
   padding-top: 5px;
 }
 
+#SamplerRow {
+  qproperty-layoutAlignment: 'AlignTop';
+  margin: 5px 0px 2px 0px;
+}
+
 #SamplerDeck {
-  margin-top: 5px;
-  margin-left: 5px;
-  margin-right: 5px;
   border: 1px solid #585858;
   background-color: #1e1e1e;
+}
+
+#SamplerExpandbutton {
 }
 
 #SamplerMainControls {
@@ -1018,10 +1099,22 @@ border: 0px;
   border-left: 0px;
 }
 
+#SamplerTextSmall {
+  qproperty-layoutAlignment: 'AlignLeft';
+  padding: 1px 0px 1px 2px;
+}
+
 #SamplerTitle {
   font-size: 16px/19px;
   text-align: left;
   text-transform: none;
+}
+
+#SamplerTitleSmall {
+  font-size: 12px;
+  text-align: left;
+  text-transform: none;
+  padding: 0px;
 }
 
 #SamplerRowTwo {
@@ -1043,8 +1136,20 @@ border: 0px;
   border-bottom: 0px;
 }
 
+#SamplerPlaySmall {
+  padding: 3px 1px 1px 3px;
+  border-top: 0px;
+  border-left: 0px;
+  border-bottom: 0px;
+}
+
 #SamplerButtonGrid {
   border: 1px solid #585858;
+  border-top: 0px;
+  border-bottom: 0px;
+}
+
+#SmallSamplerButtonGrid {
   border-top: 0px;
   border-bottom: 0px;
 }
@@ -1097,11 +1202,11 @@ border: 0px;
 }
 
 #EffectUnit1, #EffectUnit3 {
-  margin: 5px 5px 2px 2px;
+  margin: 5px 5px 2px 0px;
 }
 
 #EffectUnit2, #EffectUnit4 {
-  margin: 5px 2px 2px 5px;
+  margin: 5px 0px 2px 5px;
 }
 
 #EffectRows {
@@ -1112,14 +1217,13 @@ border: 0px;
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
   border-left: 1px solid #585858;
-  padding: 0px 2px;
+  padding: 1px 2px 1px 2px;
 }
 
 #FxUnit1_ExpandCollapseButton,
 #FxUnit2_ExpandCollapseButton,
 #FxUnit3_ExpandCollapseButton,
 #FxUnit4_ExpandCollapseButton {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   margin: 1px 0px 1px 0px;
 }
 
@@ -1280,7 +1384,7 @@ WEffectSelector {
     background-color: #CDCDCD;
   }
 #FxSuperLinkButton[value="2"] {	/*
-  a simple way to achive a partitioning in thirds	*/
+  a simple way to achieve a partitioning in thirds	*/
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 #A5A5A5,
     stop: 0.33 #A5A5A5,
@@ -1369,8 +1473,9 @@ QTableView, QTextBrowser, QTreeView {
   color: #cfb32c;
   background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
-  selection-color: #cfb32c;
-  selection-background-color: #725309;
+  selection-color: #cfb32c;/*
+  selection-background-color: #725309;*/
+  selection-background-color: #5e4507;
 }
 
 QTableView:focus, QTreeView:focus {
@@ -1381,62 +1486,72 @@ QTableView:focus, QTreeView:focus {
 QTreeView::item:selected,
 QTableView::item:selected {
   color: #fff;
-  background-color: #725309;
+  background-color: #5e4507;
 }
 
 /* checkbox in library "Played" column */
-QTableView::indicator {
+QTableView::indicator {/*
+  This results in 10x10px + 1px border = 12x12px
+  Omitting this definitions makes the checkbox grow to
+  12x12px + 1px border = 14x14px
+  which also miraculously makes the BPM icon grow to 14x14px
+  Neither checkbox nor BPM icon size have an effect on the size... */
   width: 10px;
   height: 10px;
-  margin: 0px;
-  padding: 0px;
-  color: #cfb32c;
   /* border is added to size defined above */
   border: 1px solid transparent;
+  margin: 0px;
+  padding: 0px;
+  /* Play count next to checkbox
+  color: #cfb32c; */
   }
   QTableView::indicator:hover {
-    color: #cfcfcf;
     border: 1px solid #888;
   }
   QTableView::indicator:checked,
   QTableView::indicator:checked:selected {
-    image: url(skin:/style/library_checkbox_checked.png);
+    image: url(skin:/buttons/btn_lib_checkmark.svg);
     border: 1px solid #ff6600;
     }
-    QTableView::indicator:checked:hover {
+    QTableView::indicator:checked:hover,
+    QTableView::indicator:selected:hover {
       border: 1px solid #aaa;
     }
   QTableView::indicator:unchecked {
-    image: url(skin:/style/library_checkbox_unchecked.png);
-    border: 1px solid #444;
+    image: none;
+    border: 1px solid rgba(151,151,151,128);
     }
-    QTableView::indicator:unchecked:hover {
+    QTableView::indicator:unchecked:hover,
+    QTableView::indicator:selected {
       border: 1px solid #888;
-    }
-  QTableView::indicator:selected {
-    border: 1px solid #888;
-    }
-    QTableView::indicator:selected:hover {
-      border: 1px solid #aaa;
     }
 
 /* Entire BPM cell */
 /* Lock icon at the left */
 #LibraryBPMButton::indicator:checked {
-  image: url(skin:/style/library_locked.png);
+  image: url(skin:/buttons/btn_lib_bpm_locked.svg);
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
   }
 #LibraryBPMButton::indicator:unchecked {
-  image: url(skin:/style/library_unlocked.png);
+  image: url(skin:/buttons/btn_lib_bpm_unlocked.svg);
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
   }
 /* BPM value */
 #LibraryBPMButton::item {
   color: #cfb32c;
+  border: 0px;
+  margin: 0px;
+  padding: 0px;
   }
   /* BPM value in selected row. Should match 'selection-color' &
   'selection-background-color' of QTableView */
   #LibraryBPMButton::item:selected {
     color: #ededed;
-    background-color: #725309;
+    background-color: #5e4507;
     }
 #LibraryBPMSpinBox {
   color: #cfb32c;
@@ -1457,25 +1572,26 @@ QTableView::indicator {
   }
 
 /* Button in library "Preview" column */
-#LibraryPreviewButton {
+#LibraryPreviewButton {/*
   width: 23px;
-  height: 12px;
+  height: 12px;*/
   background: transparent;
   margin: 0px;
   padding: 0px;
   border-radius: 2px;
+  border: 1px solid transparent;
   }
-  #LibraryPreviewButton:!checked{
-    image: url(skin:/style/library_preview_play.png);
+  #LibraryPreviewButton:!checked {
+    image: url(skin:/buttons/btn_lib_preview_play.svg);
     }
     #LibraryPreviewButton:!checked:hover {
-      border: 1px solid #725309;
+      border: 1px solid #5e4507;
       background: #0f0f0f;
     }
-  #LibraryPreviewButton:checked{
-    image: url(:/images/library/ic_library_preview_pause.png);
+  #LibraryPreviewButton:checked {
+    image: url(skin:/buttons/btn_lib_preview_pause.svg);
     background-color: #000;
-    border: 1px solid #725309;
+    border: 1px solid #5e4507;
     }
     #LibraryPreviewButton:checked:hover {
       border: 1px solid #888;
@@ -1509,21 +1625,18 @@ QHeaderView::down-arrow {
   border-right: 1px solid #585858;
   }
   QHeaderView::up-arrow {
-    image: url(skin:/style/library_sort_up.svg);
+    image: url(skin:/style/btn_lib_sort_up.png);
     }
-    QHeaderView::up-arrow:hover {
-      image: url(skin:/style/library_sort_down.svg);
-    }
-  QHeaderView::down-arrow:hover {
-    image: url(skin:/style/library_sort_up.svg);
+  QHeaderView::down-arrow {
+    image: url(skin:/style/btn_lib_sort_down.png);
   }
 
 
 
 /* QScrollBar styling is even harder */
 QScrollBar {
-  border: 1px solid #585858;
-  background: #1a1a1a;
+  border: 0px solid #585858;
+  background: #000;
   border-radius: 3px;
   padding: 1px;
   color: #999999;
@@ -1534,24 +1647,25 @@ QScrollBar {
     height: 15px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
-    border-top: 0px;
-    background-color: #0f0f0f;
+    background-color: #000;
   }
   QScrollBar:vertical {
     min-height: 12px;
     width: 15px;
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
-    border-left: 0px;
     color: #b3b3b3;
-    background-color: #0f0f0f;
+    background-color: #000;
   }
+  /* catch scroll bar of focused treeview like this:
+  QTreeView:focus QScrollBar:vertical {
+  }*/
 
   /* "add-page" and "sub-page" are the gutter of the scrollbar */
   QScrollBar::add-page, QScrollBar::sub-page {
     min-width: 15px;
     min-height: 15px;
-    background-color: #0f0f0f;
+    background-color: #000;
     border-radius: 3px;
   }
   QScrollBar::handle:horizontal {
@@ -1648,9 +1762,14 @@ QLabel, QRadioButton {
   color: #cfb32c;
 }
 
-/* Additional space for QRadionButtons and QLabels */
-WLibrary QRadioButton, WLibrary QLabel {
+/* Additional space for QRadionButtons */
+WLibrary QRadioButton {
   margin: 9px 3px 6px 3px;
+}
+
+/* Additional space for QLabels */
+WLibrary QLabel {
+  margin: 6px 3px 9px 3px;
 }
 
 /* Additional space for the first QRadionButton in the row */
@@ -1659,11 +1778,11 @@ WLibrary QRadioButton#radioButtonRecentlyAdded {
 }
 
 WLibrary QRadioButton::indicator:checked {
-  background: url(skin:/buttons/btn_lib_radio_button_on.svg);
+  background: url(skin:/buttons/btn_lib_radio_button_on.svg) center center;
 }
 
 WLibrary QRadioButton::indicator:unchecked {
-  background: url(skin:/buttons/btn_lib_radio_button_off.svg);
+  background: url(skin:/buttons/btn_lib_radio_button_off.svg) center center;
 }
 
 /* Library feature pushbuttons
@@ -1685,14 +1804,17 @@ WLibrary QRadioButton::indicator:unchecked {
                                stop:0 #252525,
                                stop:1 #0f0f0f);
   }
-  /* Interesting though: this WOULDN'T affect Preview & BPM button */
-  WLibrary QPushButton:hover,
-  WLibrary QPushButton:focus {
-    border: 1px solid #888;
-  }
-  WLibrary QPushButton:!enabled {
-    color: #666;
-  }
+  /* This wouldn't catch disabled buttons in LateNight...
+WLibrary QPushButton:!enabled {
+  color: #333;
+}*/
+#DlgMissing > QPushButton:!enabled,
+#DlgHidden > QPushButton:!enabled,
+#DlgAutoDJ > QPushButton:!enabled,
+#DlgRecording > QPushButton:!enabled,
+#DlgAnalysis > QPushButton:!enabled {
+  color: #666;
+}
 
 /* Additional space for the first QPushButton in the row */
 #DlgAutoDJ > QPushButton#pushButtonShuffle {
@@ -1741,14 +1863,14 @@ QTreeView::branch:has-children:!has-siblings:closed:selected,
 QTreeView::branch:closed:has-children:has-siblings:selected {
   border-image: none;
   image: url(skin:/style/library_branch_closed_selected.png);
-  background-color: #725309;
+  background-color: #5e4507;
 }
 /* open branch * selected item */
 QTreeView::branch:open:has-children:!has-siblings:selected,
 QTreeView::branch:open:has-children:has-siblings:selected {
   border-image: none;
   image: url(skin:/style/library_branch_open_selected.png);
-  background-color: #725309;
+  background-color: #5e4507;
   }
   /* space left of selected child item */
   QTreeView::branch:!has-children:!has-siblings:closed:selected,

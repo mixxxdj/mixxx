@@ -17,12 +17,12 @@ class StubReader : public CachingReader {
     StubReader()
             : CachingReader("[test]", UserSettingsPointer()) { }
 
-    SINT read(SINT startSample, SINT numSamples, bool reverse,
+    CachingReader::ReadResult read(SINT startSample, SINT numSamples, bool reverse,
              CSAMPLE* buffer) override {
         Q_UNUSED(startSample);
         Q_UNUSED(reverse);
         SampleUtil::clear(buffer, numSamples);
-        return numSamples;
+        return CachingReader::ReadResult::AVAILABLE;
     }
 };
 
@@ -61,10 +61,8 @@ class StubLoopControl : public LoopingControl {
         Q_UNUSED(adjustingPhase);
     }
 
-  public slots:
-    void trackLoaded(TrackPointer pTrack, TrackPointer pOldTrack) override {
+    void trackLoaded(TrackPointer pTrack) override {
         Q_UNUSED(pTrack);
-        Q_UNUSED(pOldTrack);
     }
 
   protected:

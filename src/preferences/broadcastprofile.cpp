@@ -10,9 +10,9 @@
 #include <QStringList>
 
 #ifdef __QTKEYCHAIN__
-#include <qtkeychain/keychain.h>
+#include <qt5keychain/keychain.h>
 using namespace QKeychain;
-#endif
+#endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
@@ -52,6 +52,9 @@ const char* kServertype = "Servertype";
 const char* kStreamDesc = "StreamDesc";
 const char* kStreamGenre = "StreamGenre";
 const char* kStreamName = "StreamName";
+const char* kStreamIRC = "StreamIRC";
+const char* kStreamAIM = "StreamAIM";
+const char* kStreamICQ = "StreamICQ";
 const char* kStreamPublic = "StreamPublic";
 const char* kStreamWebsite = "StreamWebsite";
 
@@ -105,7 +108,7 @@ QString BroadcastProfile::stripForbiddenChars(const QString& str) {
 BroadcastProfilePtr BroadcastProfile::loadFromFile(
         const QString& filename) {
     QFileInfo xmlFile(filename);
-    if(!xmlFile.exists())
+    if (!xmlFile.exists())
         return BroadcastProfilePtr(nullptr);
 
     QString profileFilename = xmlFile.baseName();
@@ -124,7 +127,7 @@ bool BroadcastProfile::equals(BroadcastProfilePtr other) {
 }
 
 bool BroadcastProfile::valuesEquals(BroadcastProfilePtr other) {
-    if(getEnabled() == other->getEnabled()
+    if (getEnabled() == other->getEnabled()
             && secureCredentialStorage() == other->secureCredentialStorage()
             && getHost() == other->getHost()
             && getPort() == other->getPort()
@@ -146,6 +149,9 @@ bool BroadcastProfile::valuesEquals(BroadcastProfilePtr other) {
             && getStreamGenre() == other->getStreamGenre()
             && getStreamPublic() == other->getStreamPublic()
             && getStreamWebsite() == other->getStreamWebsite()
+            && getStreamIRC() == other->getStreamIRC()
+            && getStreamAIM() == other->getStreamAIM()
+            && getStreamICQ() == other->getStreamICQ()
             && getEnableMetadata() == other->getEnableMetadata()
             && getMetadataCharset() == other->getMetadataCharset()
             && getCustomArtist() == other->getCustomArtist()
@@ -194,6 +200,9 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
     other->setStreamGenre(this->getStreamGenre());
     other->setStreamPublic(this->getStreamPublic());
     other->setStreamWebsite(this->getStreamWebsite());
+    other->setStreamIRC(this->getStreamIRC());
+    other->setStreamAIM(this->getStreamAIM());
+    other->setStreamICQ(this->getStreamICQ());
 
     other->setEnableMetadata(this->getEnableMetadata());
     other->setMetadataCharset(this->getMetadataCharset());
@@ -206,7 +215,11 @@ void BroadcastProfile::copyValuesTo(BroadcastProfilePtr other) {
 }
 
 void BroadcastProfile::adoptDefaultValues() {
+#ifdef __QTKEYCHAIN__
+    m_secureCredentials = true;
+#else
     m_secureCredentials = false;
+#endif
     m_enabled = false;
 
     m_host = QString();
@@ -225,6 +238,9 @@ void BroadcastProfile::adoptDefaultValues() {
     m_streamName = QString();
     m_streamPublic = kDefaultStreamPublic;
     m_streamWebsite = MIXXX_WEBSITE_URL;
+    m_streamIRC.clear();
+    m_streamAIM.clear();
+    m_streamICQ.clear();
 
     m_enableMetadata = kDefaultEnableMetadata;
     m_metadataCharset = QString();
@@ -244,11 +260,12 @@ void BroadcastProfile::adoptDefaultValues() {
 
 bool BroadcastProfile::loadValues(const QString& filename) {
     QDomElement doc = XmlParse::openXMLFile(filename, kDoctype);
-    if(doc.childNodes().size() < 1)
+    if (doc.childNodes().size() < 1)
         return false;
 
+#ifdef __QTKEYCHAIN__
     m_secureCredentials = (bool)XmlParse::selectNodeInt(doc, kSecureCredentials);
-#ifndef __QTKEYCHAIN__
+#else
     // Secure credentials storage can't be enabled nor disabled from the UI,
     // so force it to disabled to avoid issues if enabled.
     m_secureCredentials = false;
@@ -261,7 +278,7 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_serverType = XmlParse::selectNodeQString(doc, kServertype);
 
     m_login = XmlParse::selectNodeQString(doc, kLogin);
-    if(m_secureCredentials) {
+    if (m_secureCredentials) {
         m_password = getSecurePassword(m_login);
     } else {
         m_password = XmlParse::selectNodeQString(doc, kPassword);
@@ -288,6 +305,9 @@ bool BroadcastProfile::loadValues(const QString& filename) {
     m_streamGenre = XmlParse::selectNodeQString(doc, kStreamGenre);
     m_streamPublic = (bool)XmlParse::selectNodeInt(doc, kStreamPublic);
     m_streamWebsite = XmlParse::selectNodeQString(doc, kStreamWebsite);
+    m_streamIRC = XmlParse::selectNodeQString(doc, kStreamIRC);
+    m_streamAIM = XmlParse::selectNodeQString(doc, kStreamAIM);
+    m_streamICQ = XmlParse::selectNodeQString(doc, kStreamICQ);
 
     m_format = XmlParse::selectNodeQString(doc, kFormat);
     m_bitrate = XmlParse::selectNodeInt(doc, kBitrate);
@@ -318,7 +338,7 @@ bool BroadcastProfile::save(const QString& filename) {
     XmlParse::addElement(doc, docRoot, kServertype, m_serverType);
 
     XmlParse::addElement(doc, docRoot, kLogin, m_login);
-    if(m_secureCredentials) {
+    if (m_secureCredentials) {
         setSecurePassword(m_login, m_password);
     } else {
         XmlParse::addElement(doc, docRoot, kPassword, m_password);
@@ -346,6 +366,9 @@ bool BroadcastProfile::save(const QString& filename) {
     XmlParse::addElement(doc, docRoot, kStreamPublic,
                          QString::number((int)m_streamPublic));
     XmlParse::addElement(doc, docRoot, kStreamWebsite, m_streamWebsite);
+    XmlParse::addElement(doc, docRoot, kStreamIRC, m_streamIRC);
+    XmlParse::addElement(doc, docRoot, kStreamAIM, m_streamAIM);
+    XmlParse::addElement(doc, docRoot, kStreamICQ, m_streamICQ);
 
     XmlParse::addElement(doc, docRoot, kFormat, m_format);
     XmlParse::addElement(doc, docRoot, kBitrate,
@@ -365,7 +388,7 @@ bool BroadcastProfile::save(const QString& filename) {
     doc.appendChild(docRoot);
 
     QFile xmlFile(filename);
-    if(xmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    if (xmlFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream fileStream(&xmlFile);
         doc.save(fileStream, 4);
         xmlFile.close();
@@ -379,7 +402,7 @@ void BroadcastProfile::setProfileName(const QString &profileName) {
     QString oldName(m_profileName);
     m_profileName = QString(profileName);
 
-    emit profileNameChanged(oldName, m_profileName);
+    emit(profileNameChanged(oldName, m_profileName));
 }
 
 QString BroadcastProfile::getProfileName() const {
@@ -388,7 +411,7 @@ QString BroadcastProfile::getProfileName() const {
 
 void BroadcastProfile::setConnectionStatus(int newState) {
     m_connectionStatus = newState;
-    emit connectionStatusChanged(connectionStatus());
+    emit(connectionStatusChanged(connectionStatus()));
 }
 
 int BroadcastProfile::connectionStatus() {
@@ -403,7 +426,7 @@ bool BroadcastProfile::secureCredentialStorage() {
     return m_secureCredentials;
 }
 
-bool BroadcastProfile::setSecurePassword(QString login, QString password) {
+bool BroadcastProfile::setSecurePassword(const QString& login, const QString& password) {
 #ifdef __QTKEYCHAIN__
     QString serviceName = QString(kKeychainPrefix) + getProfileName();
 
@@ -418,7 +441,7 @@ bool BroadcastProfile::setSecurePassword(QString login, QString password) {
     writeJob.start();
     loop.exec();
 
-    if(writeJob.error() == Error::NoError) {
+    if (writeJob.error() == Error::NoError) {
         kLogger.debug() << "setSecureValue: write successful";
         return true;
     } else {
@@ -435,7 +458,7 @@ bool BroadcastProfile::setSecurePassword(QString login, QString password) {
 #endif
 }
 
-QString BroadcastProfile::getSecurePassword(QString login) {
+QString BroadcastProfile::getSecurePassword(const QString& login) {
 #ifdef __QTKEYCHAIN__
     QString serviceName = QString(kKeychainPrefix) + getProfileName();
 
@@ -449,7 +472,7 @@ QString BroadcastProfile::getSecurePassword(QString login) {
     readJob.start();
     loop.exec();
 
-    if(readJob.error() == Error::NoError) {
+    if (readJob.error() == Error::NoError) {
         kLogger.debug() << "getSecureValue: read successful";
         return readJob.textData();
     } else {
@@ -458,11 +481,13 @@ QString BroadcastProfile::getSecurePassword(QString login) {
         errorDialog(tr("Secure password retrieval unsuccessful: keychain access failed."),
                         readJob.errorString());
     }
+#else
+    Q_UNUSED(login);
 #endif
     return QString();
 }
 
-void BroadcastProfile::errorDialog(QString text, QString detailedError) {
+void BroadcastProfile::errorDialog(const QString& text, const QString& detailedError) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Settings error"));
@@ -493,7 +518,7 @@ bool BroadcastProfile::getEnabled() const {
 
 void BroadcastProfile::setEnabled(bool value) {
     m_enabled = value;
-    emit statusChanged(m_enabled);
+    emit(statusChanged(m_enabled));
 }
 
 QString BroadcastProfile::getHost() const {
@@ -636,6 +661,30 @@ QString BroadcastProfile::getStreamWebsite() const {
 
 void BroadcastProfile::setStreamWebsite(const QString& value) {
     m_streamWebsite = QString(value);
+}
+
+QString BroadcastProfile::getStreamIRC() const {
+    return m_streamIRC;
+}
+
+void BroadcastProfile::setStreamIRC(const QString& value) {
+    m_streamIRC = value;
+}
+
+QString BroadcastProfile::getStreamAIM() const {
+    return m_streamAIM;
+}
+
+void BroadcastProfile::setStreamAIM(const QString& value) {
+    m_streamAIM = value;
+}
+
+QString BroadcastProfile::getStreamICQ() const {
+    return m_streamICQ;
+}
+
+void BroadcastProfile::setStreamICQ(const QString& value) {
+    m_streamICQ = value;
 }
 
 QString BroadcastProfile::getFormat() const {

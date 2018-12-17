@@ -238,7 +238,7 @@ SINT EngineBufferScaleLinear::do_scale(CSAMPLE* buf, SINT buf_size) {
 
     // Hot frame loop
     while (i < buf_size) {
-        // shift indicies
+        // shift indices
         m_dCurrentFrame = m_dNextFrame;
 
         // Because our index is a float value, we're going to be interpolating

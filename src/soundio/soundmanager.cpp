@@ -19,10 +19,8 @@
 #include <QtDebug>
 #include <cstring> // for memcpy and strcmp
 
-#ifdef __PORTAUDIO__
 #include <QLibrary>
 #include <portaudio.h>
-#endif // ifdef __PORTAUDIO__
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -43,9 +41,7 @@
 #include "util/version.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
-#ifdef __PORTAUDIO__
 typedef PaError (*SetJackClientName)(const char *name);
-#endif
 
 namespace {
 
@@ -66,10 +62,8 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
                            EngineMaster *pMaster)
         : m_pMaster(pMaster),
           m_pConfig(pConfig),
-#ifdef __PORTAUDIO__
           m_paInitialized(false),
           m_jackSampleRate(-1),
-#endif
           m_pErrorDevice(NULL),
           m_underflowHappened(0) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
@@ -109,12 +103,10 @@ SoundManager::~SoundManager() {
     const bool sleepAfterClosing = false;
     clearDeviceList(sleepAfterClosing);
 
-#ifdef __PORTAUDIO__
     if (m_paInitialized) {
         Pa_Terminate();
         m_paInitialized = false;
     }
-#endif
     // vinyl control proxies and input buffers are freed in closeDevices, called
     // by clearDeviceList -- bkgood
 
@@ -191,9 +183,8 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
         for (const auto& in: pDevice->inputs()) {
             // Need to tell all registered AudioDestinations for this AudioInput
             // that the input was disconnected.
-            for (QHash<AudioInput, AudioDestination*>::const_iterator it =
-                         m_registeredDestinations.find(in);
-                 it != m_registeredDestinations.end() && it.key() == in; ++it) {
+            for (auto it = m_registeredDestinations.constFind(in);
+                 it != m_registeredDestinations.constEnd() && it.key() == in; ++it) {
                 it.value()->onInputUnconfigured(in);
                 m_pMaster->onInputDisconnected(in);
             }
@@ -201,9 +192,8 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
         for (const auto& out: pDevice->outputs()) {
             // Need to tell all registered AudioSources for this AudioOutput
             // that the output was disconnected.
-            for (QHash<AudioOutput, AudioSource*>::const_iterator it =
-                    m_registeredSources.find(out);
-                    it != m_registeredSources.end() && it.key() == out; ++it) {
+            for (auto it = m_registeredSources.constFind(out);
+                 it != m_registeredSources.constEnd() && it.key() == out; ++it) {
                 it.value()->onOutputDisconnected(out);
             }
         }
@@ -231,16 +221,13 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     m_devices.clear();
     m_pErrorDevice.clear();
 
-#ifdef __PORTAUDIO__
     if (m_paInitialized) {
         Pa_Terminate();
         m_paInitialized = false;
     }
-#endif
 }
 
 QList<unsigned int> SoundManager::getSampleRates(QString api) const {
-#ifdef __PORTAUDIO__
     if (api == MIXXX_PORTAUDIO_JACK_STRING) {
         // queryDevices must have been called for this to work, but the
         // ctor calls it -bkgood
@@ -248,7 +235,6 @@ QList<unsigned int> SoundManager::getSampleRates(QString api) const {
         samplerates.append(m_jackSampleRate);
         return samplerates;
     }
-#endif
     return m_samplerates;
 }
 
@@ -272,7 +258,6 @@ void SoundManager::clearAndQueryDevices() {
 }
 
 void SoundManager::queryDevicesPortaudio() {
-#ifdef __PORTAUDIO__
     PaError err = paNoError;
     if (!m_paInitialized) {
 #ifdef Q_OS_LINUX
@@ -319,7 +304,6 @@ void SoundManager::queryDevicesPortaudio() {
             m_jackSampleRate = deviceInfo->defaultSampleRate;
         }
     }
-#endif
 }
 
 void SoundManager::queryDevicesMixxx() {
@@ -349,7 +333,7 @@ SoundDeviceError SoundManager::setupDevices() {
     // would like to remove the fact that we close all the devices first and
     // then re-open them, I'm with you! The problem is that SoundDevicePortAudio
     // and SoundManager are not thread safe and the way that mutual exclusion
-    // between the Qt main thread and the PortAudio callback thread is acheived
+    // between the Qt main thread and the PortAudio callback thread is achieved
     // is that we shut off the PortAudio callbacks for all devices by closing
     // every device first. We then update all the SoundDevice settings
     // (configured AudioInputs/AudioOutputs) and then we re-open them.
@@ -369,7 +353,7 @@ SoundDeviceError SoundManager::setupDevices() {
     QSet<QString> devicesNotFound = m_config.getDevices();
 
     // pair is isInput, isOutput
-    QList<DeviceMode> toOpen;
+    QVector<DeviceMode> toOpen;
     bool haveOutput = false;
     // loop over all available devices
     for (const auto& pDevice: qAsConst(m_devices)) {
@@ -378,7 +362,7 @@ SoundDeviceError SoundManager::setupDevices() {
         pDevice->clearOutputs();
         m_pErrorDevice = pDevice;
         for (const auto& in:
-                 m_config.getInputs().values(pDevice->getInternalName())) {
+                     m_config.getInputs().values(pDevice->getInternalName())) {
             mode.isInput = true;
             // TODO(bkgood) look into allocating this with the frames per
             // buffer value from SMConfig
@@ -493,7 +477,7 @@ SoundDeviceError SoundManager::setupDevices() {
     }
 
     qDebug() << outputDevicesOpened << "output sound devices opened";
-    qDebug() << inputDevicesOpened << "input  sound devices opened";
+    qDebug() << inputDevicesOpened << "input sound devices opened";
     for (const auto& deviceName: devicesNotFound) {
         qWarning() << deviceName << "not found";
     }
@@ -567,7 +551,8 @@ SoundDeviceError SoundManager::setConfig(SoundManagerConfig config) {
     // certain parts of mixxx rely on this being here, for the time being, just
     // letting those be -- bkgood
     // Do this first so vinyl control gets the right samplerate -- Owen W.
-    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
+    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),
+                   ConfigValue(static_cast<int>(m_config.getSampleRate())));
 
     err = setupDevices();
     if (err == SOUNDDEVICE_ERROR_OK) {
@@ -604,9 +589,8 @@ void SoundManager::pushInputBuffers(const QList<AudioInputBuffer>& inputs,
                  e = inputs.end(); i != e; ++i) {
         const AudioInputBuffer& in = *i;
         CSAMPLE* pInputBuffer = in.getBuffer();
-        for (QHash<AudioInput, AudioDestination*>::const_iterator it =
-                m_registeredDestinations.find(in);
-                it != m_registeredDestinations.end() && it.key() == in; ++it) {
+        for (auto it = m_registeredDestinations.constFind(in);
+             it != m_registeredDestinations.constEnd() && it.key() == in; ++it) {
             it.value()->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
         }
     }
@@ -657,7 +641,6 @@ QList<AudioInput> SoundManager::registeredInputs() const {
 }
 
 void SoundManager::setJACKName() const {
-#ifdef __PORTAUDIO__
 #ifdef Q_OS_LINUX
     typedef PaError (*SetJackClientName)(const char *name);
     QLibrary portaudio("libportaudio.so.2");
@@ -677,7 +660,6 @@ void SoundManager::setJACKName() const {
     } else {
         qWarning() << "failed to load portaudio for JACK rename";
     }
-#endif
 #endif
 }
 

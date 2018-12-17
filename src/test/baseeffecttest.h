@@ -19,14 +19,14 @@
 
 class TestEffectBackend : public EffectsBackend {
   public:
-    TestEffectBackend() : EffectsBackend(NULL, "TestBackend") {
+    TestEffectBackend() : EffectsBackend(NULL, EffectBackendType::Unknown) {
     }
 
     // Expose as public
     void registerEffect(const QString& id,
-                        const EffectManifest& manifest,
+                        EffectManifestPointer pManifest,
                         EffectInstantiatorPointer pInstantiator) {
-        EffectsBackend::registerEffect(id, manifest, pInstantiator);
+        EffectsBackend::registerEffect(id, pManifest, pInstantiator);
     }
 };
 
@@ -55,7 +55,7 @@ class MockEffectInstantiator : public EffectInstantiator {
   public:
     MockEffectInstantiator() {}
     MOCK_METHOD2(instantiate, EffectProcessor*(EngineEffect* pEngineEffect,
-                                               const EffectManifest& manifest));
+                                               EffectManifestPointer pManifest));
 };
 
 
@@ -72,7 +72,7 @@ class BaseEffectTest : public MixxxTest {
         m_pEffectsManager->addEffectsBackend(m_pTestBackend);
     }
 
-    void registerTestEffect(const EffectManifest& manifest, bool willAddToEngine);
+    void registerTestEffect(EffectManifestPointer pManifest, bool willAddToEngine);
 
     ChannelHandleFactory* m_pChannelHandleFactory;
 

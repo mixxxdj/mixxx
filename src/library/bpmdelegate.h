@@ -23,4 +23,4 @@ class BPMDelegate : public TableItemDelegate {
     QItemEditorFactory* m_pFactory;
 };
 
-#endif // BUTTONCOLUMNDELEGATE_H
+#endif // BPMDELEGATE_H

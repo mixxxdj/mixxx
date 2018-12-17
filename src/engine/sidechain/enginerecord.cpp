@@ -192,7 +192,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         // write a file stream and emit bytesRecorded.
         m_pEncoder->encodeBuffer(pBuffer, iBufferSize);
         
-        //Writing cueLine before updating the time counter since we preffer to be ahead
+        //Writing cueLine before updating the time counter since we prefer to be ahead
         //rather than late.
         if (m_bCueIsEnabled && metaDataHasChanged()) {
             m_cueTrack++;

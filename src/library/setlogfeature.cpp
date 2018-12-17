@@ -18,7 +18,8 @@ SetlogFeature::SetlogFeature(QObject* parent,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
           m_playlistId(-1),
-          m_libraryWidget(nullptr) {
+          m_libraryWidget(nullptr),
+          m_icon(":/images/library/ic_library_history.svg") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true); //show all tracks
@@ -54,7 +55,7 @@ QVariant SetlogFeature::title() {
 }
 
 QIcon SetlogFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_history.png");
+    return m_icon;
 }
 
 void SetlogFeature::bindWidget(WLibrary* libraryWidget,
@@ -146,16 +147,16 @@ void SetlogFeature::buildPlaylistList() {
 
 void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
     if (playlist_id == m_playlistId) {
-        item->setIcon(QIcon(":/images/library/ic_library_history_current.png"));
+        item->setIcon(QIcon(":/images/library/ic_library_history_current.svg"));
     } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
-        item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
+        item->setIcon(QIcon(":/images/library/ic_library_locked.svg"));
     } else {
         item->setIcon(QIcon());
     }
 }
 
 void SetlogFeature::slotGetNewPlaylist() {
-    //qDebug() << "slotGetNewPlaylist() succesfully triggered !";
+    //qDebug() << "slotGetNewPlaylist() successfully triggered !";
 
     // create a new playlist for today
     QString set_log_name_format;
@@ -199,7 +200,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                 return;
             }
 
-            // Add every track from right klicked playlist to that with the next smaller ID
+            // Add every track from right-clicked playlist to that with the next smaller ID
             int previousPlaylistId = m_playlistDao.getPreviousPlaylist(currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
             if (previousPlaylistId >= 0) {
 
@@ -279,7 +280,7 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
             // We have a active view on the history. The user may have some
             // important active selection. For example putting track into crates
             // while the song changes trough autodj. The selection is then lost
-            // and dataloss occures
+            // and dataloss occurs
             const QList<TrackId> trackIds = view->getSelectedTrackIds();
             m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
             view->setSelectedTracks(trackIds);

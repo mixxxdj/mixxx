@@ -545,7 +545,7 @@ Wiimote.coreaccel_ext8_Callbacks = function(packetname) {
 
 // Register callbacks for buttons + accelerometer output report
 // with 8 bytes from extension module
-// NOTE - this code does not acually work, it freezes my wiimote
+// NOTE - this code does not actually work, it freezes my wiimote
 Wiimote.coreaccel_ir12_Callbacks = function(packetname) {
     HIDDebug("Activating core buttons + accelerometer / 12 bytes IR mode");
     var controller = Wiimote.controller;

@@ -63,6 +63,7 @@ class MixxxLibraryFeature : public LibraryFeature {
     TrackDAO& m_trackDao;
     UserSettingsPointer m_pConfig;
     TrackCollection* m_pTrackCollection;
+    QIcon m_icon;
 };
 
 #endif /* MIXXXLIBRARYFEATURE_H */

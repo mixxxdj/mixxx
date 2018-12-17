@@ -1,7 +1,7 @@
 //
 // C++ Implementation: parsercsv
 //
-// Description: module to parse Comma-Separated Values (CSV) formated playlists (rfc4180)
+// Description: module to parse Comma-Separated Values (CSV) formatted playlists (rfc4180)
 //
 //
 // Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004

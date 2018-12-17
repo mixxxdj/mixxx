@@ -242,22 +242,21 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_REORDER
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOPLAYLIST
-            | TRACKMODELCAPS_IMPORTMETADATA
+            | TRACKMODELCAPS_EDITMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_LOADTOPREVIEWDECK
-            | TRACKMODELCAPS_REMOVE
-            | TRACKMODELCAPS_MANIPULATEBEATS
-            | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;
 
-    // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
     if (m_iPlaylistId != m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE)) {
-        caps |= TRACKMODELCAPS_ADDTOAUTODJ;
+        // Only allow Add to AutoDJ if we aren't currently showing the AutoDJ queue.
+        caps |= TRACKMODELCAPS_ADDTOAUTODJ | TRACKMODELCAPS_REMOVE_PLAYLIST;
+    } else {
+        caps |= TRACKMODELCAPS_REMOVE;
     }
-    // Disable reording tracks for history playlists
     if (m_pTrackCollection->getPlaylistDAO().getHiddenType(m_iPlaylistId)== PlaylistDAO::PLHT_SET_LOG) {
-        caps &= ~TRACKMODELCAPS_REORDER;
+        // Disable reording tracks for history playlists
+        caps &= ~(TRACKMODELCAPS_REORDER | TRACKMODELCAPS_REMOVE_PLAYLIST);
     }
     bool locked = m_pTrackCollection->getPlaylistDAO().isPlaylistLocked(m_iPlaylistId);
     if (locked) {

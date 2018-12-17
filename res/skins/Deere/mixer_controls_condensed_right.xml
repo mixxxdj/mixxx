@@ -18,7 +18,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_eqs</ConfigKey>
+          <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -32,9 +32,7 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:spacer_hx.xml">
-                <SetVariable name="width">9f,-1</SetVariable>
-              </Template>
+              <WidgetGroup><Size>9f,0min</Size></WidgetGroup>
 
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
@@ -53,9 +51,7 @@
             </Children>
           </WidgetGroup><!-- PFL -->
 
-          <Template src="skin:spacer_vx.xml">
-            <SetVariable name="height">-1,3f</SetVariable>
-          </Template>
+          <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
 
           <WidgetGroup><!-- VU + Vol fader -->
             <GroupName>CondensedVolumeAndMonoMeter</GroupName>
@@ -91,7 +87,7 @@
 
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_faders</ConfigKey>
+              <ConfigKey>[Skin],show_faders</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- VU + Vol fader -->
@@ -101,9 +97,7 @@
             <SizePolicy>me,min</SizePolicy>
             <Children>
 
-              <Template src="skin:spacer_hx.xml">
-                <SetVariable name="width">9</SetVariable>
-              </Template>
+              <WidgetGroup><Size>9f,0min</Size></WidgetGroup>
 
               <WidgetGroup>
                 <ObjectName>channel_VuMeter_Group</ObjectName>
@@ -129,24 +123,20 @@
 
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_faders</ConfigKey>
+              <ConfigKey>[Skin],show_faders</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
             </Connection>
           </WidgetGroup><!-- VU + spacer -->
 
-          <Template src="skin:spacer_vx.xml">
-            <SetVariable name="height">-1,3f</SetVariable>
-          </Template>
+          <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
 
           <WidgetGroup>
             <ObjectName>CondensedButtonContainerRight</ObjectName>
             <SizePolicy>me,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:spacer_hx.xml">
-               <SetVariable name="width">9f,-1</SetVariable>
-              </Template>
+              <WidgetGroup><Size>9f,0min</Size></WidgetGroup>
 
               <Template src="skin:crossfader_orientation_button.xml">
                 <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>

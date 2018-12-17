@@ -16,7 +16,7 @@ Variables:
     <Children>
 
       <WidgetGroup><!-- FX expand button + FX label -->
-        <ObjectName>Spacer25</ObjectName>
+        <ObjectName>FxUnitControls</ObjectName>
         <Layout>vertical</Layout>
         <Size>30f,30f</Size>
         <Children>
@@ -24,7 +24,7 @@ Variables:
             <ObjectName>FxUnitLabel</ObjectName>
             <Size>28f,15f</Size>
             <Text>FX&#8202;<Variable name="FxUnit"/></Text>
-            <Alignment>right</Alignment>
+            <Alignment>left</Alignment>
           </Label>
 
           <WidgetGroup><!-- normal FX expand button -->
@@ -89,8 +89,6 @@ Variables:
         </Children>
       </WidgetGroup><!-- /FX label + FX expand button -->
 
-      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
       <WidgetGroup><!-- Headphone + Super + Wet/Dry + FX label + expand toggle -->
         <ObjectName>FxUnitMixerRight_mini</ObjectName>
         <Layout>horizontal</Layout>
@@ -106,6 +104,24 @@ Variables:
             <SetVariable name="Color">red</SetVariable>
           </Template>
 
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">MixModeButton</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
+            <SetVariable name="Size">30f,18f</SetVariable>
+            <SetVariable name="state_0_icon">fx_mixmode_d-w.svg</SetVariable>
+            <SetVariable name="state_1_icon">fx_mixmode_d+w.svg</SetVariable>
+            <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
+          </Template>
+
+          <WidgetGroup>
+            <Size>3f,1min</Size>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
           <WidgetGroup>
             <SizePolicy>max,min</SizePolicy>
             <Layout>vertical</Layout>
@@ -120,7 +136,7 @@ Variables:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
@@ -138,16 +154,7 @@ Variables:
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
         
                   <!-- Greyed out if no headphone device is configured -->
-                  <WidgetGroup>
-                    <ObjectName>GuiCover</ObjectName>
-                    <Layout>vertical</Layout>
-                    <SizePolicy>min,me</SizePolicy>
-                    <Connection>
-                      <ConfigKey>[Master],headEnabled</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                      <Transform><Not/></Transform>
-                    </Connection>
-                  </WidgetGroup>
+                  <Template src="skin:pfl_cover.xml"/>
         
                   <Template src="skin:button_2state.xml">
                     <SetVariable name="ObjectName">PflButton</SetVariable>
@@ -177,8 +184,9 @@ Variables:
             <Size>-1max,-1min</Size>
             <Children>
               <WidgetGroup><!-- Effect 1 -->
+                <ObjectName>AlignVCenter</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
+                <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">1</SetVariable></Template>
@@ -189,8 +197,9 @@ Variables:
               </WidgetGroup>
 
               <WidgetGroup><!-- Effect 2 -->
+                <ObjectName>AlignVCenter</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
+                <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">2</SetVariable></Template>
@@ -201,8 +210,9 @@ Variables:
               </WidgetGroup>
 
               <WidgetGroup><!-- Effect 3 -->
+                <ObjectName>AlignVCenter</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
+                <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">3</SetVariable></Template>

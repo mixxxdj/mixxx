@@ -263,7 +263,7 @@ QString Paintable::getAltFileName(const QString& fileName) {
         return fileName;
     }
 
-    QString newFileName = temp[0] + QString::fromAscii("@2x.") + temp[1];
+    QString newFileName = temp[0] + QLatin1String("@2x.") + temp[1];
     QFile file(newFileName);
     if (QFileInfo(file).exists()) {
         return newFileName;

@@ -90,7 +90,7 @@ bool AudioSource::verifyReadable() const {
                     << "Invalid bitrate [kbps]:"
                     << m_bitrate;
             // Don't set the result to false, because bitrate is only
-            // an  informational property that does not effect the ability
+            // an informational property that does not effect the ability
             // to decode audio data!
         }
     }

@@ -85,7 +85,7 @@ void TrackDAO::finish() {
     qDebug() << "Clearing played information for this session";
     QSqlQuery query(m_database);
     if (!query.exec("UPDATE library SET played=0 where played>0")) {
-        // Note: whithout where, this call updates every row which takes long
+        // Note: without where, this call updates every row which takes long
         LOG_FAILED_QUERY(query)
                 << "Error clearing played value";
     }
@@ -1800,7 +1800,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                   "WHERE coverart_source IS NULL or coverart_source = 0 "
                   "ORDER BY track_locations.directory");
 
-    QList<TrackWithoutCover> tracksWithoutCover;
+    QVector<TrackWithoutCover> tracksWithoutCover;
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
@@ -1842,8 +1842,6 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
         "WHERE id=:track_id");
 
 
-    QRegExp coverArtFilenames(CoverArtUtils::supportedCoverArtExtensionsRegex(),
-                              Qt::CaseInsensitive);
     QString currentDirectoryPath;
     MDir currentDirectory;
     QLinkedList<QFileInfo> possibleCovers;

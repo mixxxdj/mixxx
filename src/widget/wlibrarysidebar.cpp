@@ -25,7 +25,7 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent)
     setAutoScroll(true);
     setAttribute(Qt::WA_MacShowFocusRect, false);
     header()->setStretchLastSection(false);
-    header()->setResizeMode(QHeaderView::ResizeToContents);
+    header()->setSectionResizeMode(QHeaderView::ResizeToContents);
     header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 }
 
@@ -137,7 +137,7 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             if (sidebarModel) {
                 QModelIndex destIndex = indexAt(event->pos());
-                // event->source() will return NULL if something is droped from
+                // event->source() will return NULL if something is dropped from
                 // a different application
                 QList<QUrl> urls(event->mimeData()->urls());
                 if (sidebarModel->dropAccept(destIndex, urls, event->source())) {
@@ -206,7 +206,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
     //    TODO(xxx) decide what todo here instead of in librarycontrol
     }
 
-    // Fall through to deafult handler.
+    // Fall through to default handler.
     QTreeView::keyPressEvent(event);
 }
 

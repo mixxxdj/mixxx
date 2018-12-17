@@ -427,4 +427,3 @@ QSet<QString> SoundManagerConfig::getDevices() const {
     }
     return devices;
 }
-

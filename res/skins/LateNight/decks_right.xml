@@ -1,7 +1,7 @@
 <Template>
   <WidgetGroup>
     <ObjectName>DecksSizer</ObjectName>
-    <Layout>vertical</Layout>
+    <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
       <WidgetGroup>
@@ -32,34 +32,22 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_4decks</ConfigKey>
+              <ConfigKey>[Skin],show_4decks</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-
-          <!--WidgetGroup>
-            <ObjectName>NoBorder</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,me</SizePolicy>
-            <MinimumSize>0,0</MinimumSize>
-            <MaximumSize>,70</MaximumSize>
-            <Children/>
-            <Connection>
-              <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <SizePolicy>me,min</SizePolicy>
-            <MinimumSize>0,0</MinimumSize>
-            <MaximumSize>,80</MaximumSize>
-            <Children/>
-          </WidgetGroup-->
 
         </Children>
       </WidgetGroup>
+
+      <WidgetGroup>
+        <Size>5f,1min</Size>
+        <Connection>
+          <ConfigKey>[Master],skin_settings</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
     </Children>
   </WidgetGroup>
 </Template>

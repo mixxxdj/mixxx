@@ -229,7 +229,7 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
             inputDeviceInfo = deviceInfo;
             inputDevIndex = i;
 
-            //Reset our output device variables before we look for one incase we find none.
+            //Reset our output device variables before we look for one in case we find none.
             outputDeviceInfo = NULL;
             outputDevIndex = -1;
 

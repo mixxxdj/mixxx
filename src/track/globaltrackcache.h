@@ -35,7 +35,7 @@ protected:
 class GlobalTrackCacheEntry final {
     // We need to hold two shared pointers, the deletingPtr is
     // responsible for the lifetime of the Track object itselfe.
-    // The second one counts the references ouside Mixxx, if it
+    // The second one counts the references outside Mixxx, if it
     // is not longer referenced, the track is saved and evicted
     // from the cache.
   public:
@@ -186,7 +186,7 @@ public:
     static void evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cacheEntryPtr);
 
 private slots:
-    void evictAndSave(GlobalTrackCacheEntryPointer chacheEntryPtr);
+    void evictAndSave(GlobalTrackCacheEntryPointer cacheEntryPtr);
 
 private:
     friend class GlobalTrackCacheLocker;

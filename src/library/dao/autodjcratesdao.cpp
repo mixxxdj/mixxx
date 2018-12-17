@@ -1092,7 +1092,7 @@ void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(QString group,
 // We are selecting the track in the following manner:
 // We divide the library tracks into three sections, for which
 // we sort the library according to times_played and select a
-// percentage_of_prefered_tracks (70% by default ignoring the least-played
+// percentage_of_preferred_tracks (70% by default ignoring the least-played
 // 15% and most played 15%). We select a random track from this 70%
 // or a random track from the remaining 30%.
 //
@@ -1164,7 +1164,7 @@ TrackId AutoDJCratesDAO::getRandomTrackIdFromLibrary(int iPlaylistId) {
             offset = qrand() % (iIgnoreIndex2 - iIgnoreIndex1) + 1;
         }
         offset = beginIndex + offset;
-        // Incase we end up doing a qRand()%1 above
+        // In case we end up doing a qRand()%1 above
         if( offset >= iTotalTracks) {
             offset= 0 ;
         }

@@ -47,14 +47,14 @@ void StarDelegate::paintItem(QPainter* painter, const QStyleOptionViewItem& opti
         return;
     }
 
-    StarRating starRating = qVariantValue<StarRating>(index.data());
+    StarRating starRating = index.data().value<StarRating>();
     starRating.paint(painter, option.rect);
 }
 
 QSize StarDelegate::sizeHint(const QStyleOptionViewItem& option,
                              const QModelIndex& index) const {
     Q_UNUSED(option);
-    StarRating starRating = qVariantValue<StarRating>(index.data());
+    StarRating starRating = index.data().value<StarRating>();
     return starRating.sizeHint();
 }
 
@@ -73,7 +73,7 @@ QWidget* StarDelegate::createEditor(QWidget* parent,
 
 void StarDelegate::setEditorData(QWidget* editor,
                                  const QModelIndex& index) const {
-    StarRating starRating = qVariantValue<StarRating>(index.data());
+    StarRating starRating = index.data().value<StarRating>();
     StarEditor* starEditor = qobject_cast<StarEditor*>(editor);
     starEditor->setStarRating(starRating);
 }
@@ -86,15 +86,15 @@ void StarDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
 
 void StarDelegate::commitAndCloseEditor() {
     StarEditor* editor = qobject_cast<StarEditor*>(sender());
-    emit commitData(editor);
-    emit closeEditor(editor);
+    emit(commitData(editor));
+    emit(closeEditor(editor));
 }
 
 void StarDelegate::cellEntered(const QModelIndex& index) {
     // This slot is called if the mouse pointer enters ANY cell on the
     // QTableView but the code should only be executed on a column with a
     // StarRating.
-    if (qVariantCanConvert<StarRating>(index.data())) {
+    if (index.data().canConvert(qMetaTypeId<StarRating>())) {
         if (m_isOneCellInEditMode) {
             m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
         }

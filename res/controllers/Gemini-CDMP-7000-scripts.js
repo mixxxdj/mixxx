@@ -15,10 +15,10 @@
 // slip mode doesn't work unless you manually turn it off (disable needs to be called on wheel hand lift)
 // no flashing play buttons, they turn off after first use (need to turn back on after track stop)
 // auto cue button doesn't do anything, easy fix
-// back button does't toggle directory mode
+// back button doesn't toggle directory mode
 // Set Master Tempo to Keylock, not sure what it is now 
 // many more bug fixes where found
-// every once in a while scratch mode ignores vinyl button, hard to respoduce it's intermitent
+// every once in a while scratch mode ignores vinyl button, hard to reproduce it's intermitent
 
 
 // Todo:

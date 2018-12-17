@@ -114,7 +114,7 @@ TEST_F(SchemaManagerTest, FailedUpgrade) {
         EXPECT_EQ(SchemaManager::Result::UpgradeSucceeded, result);
     }
 
-    // Add a column that is added in verison 24.
+    // Add a column that is added in version 24.
     QSqlQuery query(dbConnection());
     EXPECT_TRUE(query.exec(
             "ALTER TABLE library ADD COLUMN coverart_source TEXT"));

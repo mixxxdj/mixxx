@@ -21,7 +21,7 @@ class BpmEditorCreator : public QItemEditorCreatorBase {
         pBpmSpinbox->setFrame(false);
         pBpmSpinbox->setMinimum(0);
         pBpmSpinbox->setMaximum(1000);
-        pBpmSpinbox->setSingleStep(1e-8);
+        pBpmSpinbox->setSingleStep(1e-3);
         pBpmSpinbox->setDecimals(8);
         pBpmSpinbox->setObjectName("LibraryBPMSpinBox");
         return pBpmSpinbox;
@@ -69,10 +69,10 @@ void BPMDelegate::paintItem(QPainter* painter,const QStyleOptionViewItem &option
     //
     // Here's how you would typically style the LibraryBPMButton:
     // #LibraryBPMButton::indicator:checked {
-    //   image: url(:/images/library/ic_library_checked.png);
+    //   image: url(:/images/library/ic_library_locked.svg);
     // }
     // #LibraryBPMButton::indicator:unchecked {
-    //  image: url(:/images/library/ic_library_unchecked.png);
+    //  image: url(:/images/library/ic_library_unlocked.svg);
     // }
     QStyleOptionViewItemV4 opt = option;
     initStyleOption(&opt, index);

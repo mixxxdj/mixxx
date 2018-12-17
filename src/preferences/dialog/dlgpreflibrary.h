@@ -43,7 +43,6 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotAddDir();
     void slotRemoveDir();
     void slotRelocateDir();
-    void slotExtraPlugins();
 
   signals:
     void apply();
@@ -56,6 +55,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     void slotRowHeightValueChanged(int);
     void slotSelectFont();
     void slotSyncTrackMetadataExportToggled();
+    void slotSearchDebouncingTimeoutMillisChanged(int);
 
   private:
     void initializeDirList();

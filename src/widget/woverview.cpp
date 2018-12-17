@@ -205,7 +205,7 @@ void WOverview::slotTrackLoaded(TrackPointer pTrack) {
 }
 
 void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack << pOldTrack;
+    //qDebug() << this << "WOverview::slotLoadingTrack" << pNewTrack.get() << pOldTrack.get();
     DEBUG_ASSERT(m_pCurrentTrack == pOldTrack);
     if (m_pCurrentTrack != nullptr) {
         disconnect(m_pCurrentTrack.get(), SIGNAL(waveformSummaryUpdated()),
@@ -572,13 +572,14 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
     const double zero = (0.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
     const double one = (1.0 - kMinPlayposRange) / (kMaxPlayposRange - kMinPlayposRange);
 
-    // These coeficients convert between widget space and normalized value
+    // These coefficients convert between widget space and normalized value
     // space.
     m_a = (length() - 1) / (one - zero);
     m_b = zero * m_a;
 
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
+    Init();
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {

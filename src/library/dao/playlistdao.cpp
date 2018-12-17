@@ -457,7 +457,6 @@ void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& pos
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
-    QSqlQuery query(m_database);
     foreach (int position , positions) {
     	removeTracksFromPlaylistInner(playlistId, position);
     }
@@ -791,11 +790,11 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
      // Case 2: destination > source (newPos > oldPos)
      //   1) Set position=-1 where pos=source -- Give track a dummy index again.
      //   2) Decrement position where pos > source AND pos <= dest
-     //   3) Set postion=dest where pos=-1 -- Move that track from dummy pos to final destination
+     //   3) Set position=dest where pos=-1 -- Move that track from dummy pos to final destination
 
     QString queryString;
 
-    // Move moved track to  dummy position -1
+    // Move moved track to dummy position -1
     queryString = QString("UPDATE PlaylistTracks SET position=-1 "
                           "WHERE position=%1 AND "
                           "playlist_id=%2").arg(QString::number(oldPosition),
@@ -856,7 +855,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
 
-    int seed = QDateTime::currentDateTime().toTime_t();
+    int seed = QDateTime::currentDateTimeUtc().toTime_t();
     qsrand(seed);
     QHash<int,TrackId> trackPositionIds = allIds;
     QList<int> newPositions = positions;
@@ -1004,8 +1003,8 @@ bool PlaylistDAO::isTrackInPlaylist(TrackId trackId, const int playlistId) const
 void PlaylistDAO::getPlaylistsTrackIsIn(TrackId trackId,
                                         QSet<int>* playlistSet) const {
     playlistSet->clear();
-    for (QHash<TrackId, int>::const_iterator it = m_playlistsTrackIsIn.find(trackId);
-         it != m_playlistsTrackIsIn.end() && it.key() == trackId; ++it) {
+    for (auto it = m_playlistsTrackIsIn.constFind(trackId);
+         it != m_playlistsTrackIsIn.constEnd() && it.key() == trackId; ++it) {
         playlistSet->insert(it.value());
     }
 }

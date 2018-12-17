@@ -24,7 +24,6 @@ Variables:
           <ButtonState>LeftButton</ButtonState>
           <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
         </Connection>
-        <RightClickIsPushButton>true</RightClickIsPushButton>
         <Connection>
           <!-- right click > unfocus -->
           <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>

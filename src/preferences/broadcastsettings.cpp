@@ -25,7 +25,7 @@ BroadcastSettings::BroadcastSettings(
 
 void BroadcastSettings::loadProfiles() {
     QDir profilesFolder(getProfilesFolder());
-    if(!profilesFolder.exists()) {
+    if (!profilesFolder.exists()) {
         kLogger.info() << "Profiles folder doesn't exist. Creating it.";
         profilesFolder.mkpath(profilesFolder.absolutePath());
     }
@@ -35,7 +35,7 @@ void BroadcastSettings::loadProfiles() {
             profilesFolder.entryInfoList(nameFilters, QDir::Files, QDir::Name);
 
     // If *.bcp.xml files exist in the profiles subfolder, those will be loaded
-    // and instanciated in the class' internal profile list for other by it and
+    // and instantiated in the class' internal profile list for other by it and
     // Mixxx subsystems related to Live Broadcasting.
     // If that directory is empty (common reasons: it has been created by the
     // code at the beginning, or all profiles were deleted) then a default
@@ -45,7 +45,7 @@ void BroadcastSettings::loadProfiles() {
     // It's important to take into account that the "legacy" settings are left
     // in mixxx.cfg for retro-compatibility during alpha and beta testing.
 
-    if(files.size() > 0) {
+    if (files.size() > 0) {
         kLogger.info() << "Found" << files.size() << "profile(s)";
 
         // Load profiles from filesystem
@@ -53,7 +53,7 @@ void BroadcastSettings::loadProfiles() {
             BroadcastProfilePtr profile =
                     BroadcastProfile::loadFromFile(fileInfo.absoluteFilePath());
 
-            if(profile)
+            if (profile)
                 addProfile(profile);
         }
     } else {
@@ -70,10 +70,10 @@ void BroadcastSettings::loadProfiles() {
 }
 
 bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return false;
 
-    if(m_profiles.size() >= BROADCAST_MAX_CONNECTIONS) {
+    if (m_profiles.size() >= BROADCAST_MAX_CONNECTIONS) {
         kLogger.warning() << "addProfile: connection limit reached."
                  << "can't add more than" << QString::number(BROADCAST_MAX_CONNECTIONS)
                  << "connections.";
@@ -91,16 +91,16 @@ bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
             this, SLOT(onConnectionStatusChanged(int)));
     m_profiles.insert(profile->getProfileName(), BroadcastProfilePtr(profile));
 
-    emit profileAdded(profile);
+    emit(profileAdded(profile));
     return true;
 }
 
 BroadcastProfilePtr BroadcastSettings::createProfile(const QString& profileName) {
     QFileInfo xmlFile(filePathForProfile(profileName));
 
-    if(!xmlFile.exists()) {
+    if (!xmlFile.exists()) {
         BroadcastProfilePtr profile(new BroadcastProfile(profileName));
-        if(addProfile(profile)) {
+        if (addProfile(profile)) {
             saveProfile(profile);
             return profile;
         }
@@ -109,7 +109,7 @@ BroadcastProfilePtr BroadcastSettings::createProfile(const QString& profileName)
 }
 
 bool BroadcastSettings::saveProfile(BroadcastProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return false;
 
     return profile->save(filePathForProfile(profile));
@@ -122,14 +122,14 @@ QString BroadcastSettings::filePathForProfile(const QString& profileName) {
 }
 
 QString BroadcastSettings::filePathForProfile(BroadcastProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return QString();
 
     return filePathForProfile(profile->getProfileName());
 }
 
 bool BroadcastSettings::deleteFileForProfile(BroadcastProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return false;
 
     return deleteFileForProfile(profile->getProfileName());
@@ -137,7 +137,7 @@ bool BroadcastSettings::deleteFileForProfile(BroadcastProfilePtr profile) {
 
 bool BroadcastSettings::deleteFileForProfile(const QString& profileName) {
     QFileInfo xmlFile(filePathForProfile(profileName));
-    if(xmlFile.exists()) {
+    if (xmlFile.exists()) {
         return QFile::remove(xmlFile.absoluteFilePath());
     }
     return false;
@@ -150,29 +150,29 @@ QString BroadcastSettings::getProfilesFolder() {
 }
 
 void BroadcastSettings::saveAll() {
-    for(auto kv : m_profiles.values()) {
+    for (const auto& kv : m_profiles) {
         saveProfile(kv);
     }
-    emit profilesChanged();
+    emit(profilesChanged());
 }
 
 void BroadcastSettings::deleteProfile(BroadcastProfilePtr profile) {
-    if(!profile)
+    if (!profile)
         return;
 
     deleteFileForProfile(profile);
     m_profiles.remove(profile->getProfileName());
-    emit profileRemoved(profile);
+    emit(profileRemoved(profile));
 }
 
 void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
-    if(!m_profiles.contains(oldName))
+    if (!m_profiles.contains(oldName))
         return;
 
     BroadcastProfilePtr profile = m_profiles.take(oldName);
-    if(profile) {
+    if (profile) {
         m_profiles.insert(newName, profile);
-        emit profileRenamed(oldName, profile);
+        emit(profileRenamed(oldName, profile));
 
         deleteFileForProfile(oldName);
         saveProfile(profile);
@@ -184,7 +184,8 @@ void BroadcastSettings::onConnectionStatusChanged(int newStatus) {
 }
 
 BroadcastProfilePtr BroadcastSettings::profileAt(int index) {
-    return m_profiles.values().value(index, BroadcastProfilePtr(nullptr));
+    auto it = m_profiles.begin() + index;
+    return it != m_profiles.end() ? it.value() : BroadcastProfilePtr(nullptr);
 }
 
 QList<BroadcastProfilePtr> BroadcastSettings::profiles() {
@@ -192,15 +193,15 @@ QList<BroadcastProfilePtr> BroadcastSettings::profiles() {
 }
 
 void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
-    if(!pModel) {
+    if (!pModel) {
         return;
     }
     // TODO(Palakis): lock both lists against modifications while syncing
 
     // Step 1: find profiles to delete from the settings
-    for(BroadcastProfilePtr actualProfile : m_profiles.values()) {
+    for(const auto& actualProfile : m_profiles) {
         QString profileName = actualProfile->getProfileName();
-        if(!pModel->getProfileByName(profileName)) {
+        if (!pModel->getProfileByName(profileName)) {
             // If profile exists in settings but not in the model,
             // remove the profile from the settings
             deleteProfile(actualProfile);
@@ -212,7 +213,7 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
         // Check if profile already exists in settings
         BroadcastProfilePtr existingProfile =
                 m_profiles.value(profileCopy->getProfileName());
-        if(!existingProfile) {
+        if (!existingProfile) {
             // If no profile with the same name exists, add the new
             // profile to the settings.
             // The BroadcastProfile instance is a copy to separate it
@@ -225,11 +226,10 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     for(BroadcastProfilePtr profileCopy : pModel->profiles()) {
         BroadcastProfilePtr actualProfile =
                 m_profiles.value(profileCopy->getProfileName());
-        if(actualProfile) {
+        if (actualProfile) {
             profileCopy->copyValuesTo(actualProfile);
         }
     }
 
     saveAll();
 }
-

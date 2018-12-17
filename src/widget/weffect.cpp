@@ -43,9 +43,10 @@ void WEffect::effectUpdated() {
     if (m_pEffectSlot) {
         EffectPointer pEffect = m_pEffectSlot->getEffect();
         if (pEffect) {
-            const EffectManifest& manifest = pEffect->getManifest();
-            name = manifest.displayName();
-            description = QString("%1\n%2").arg(manifest.name(), manifest.description());
+            EffectManifestPointer pManifest = pEffect->getManifest();
+            name = pManifest->displayName();
+            //: %1 = effect name; %2 = effect description
+            description = tr("%1: %2").arg(pManifest->name(), pManifest->description());
         }
     } else {
         name = tr("None");
