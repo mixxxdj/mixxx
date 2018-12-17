@@ -80,7 +80,7 @@
   <String Id="ProgressHeader">Setup-Fortschritt</String>
   <String Id="ProgressLabel">Wird bearbeitet:</String>
   <String Id="OverallProgressPackageText">Initialisiere...</String>
-  <String Id="ProgressCancelButton">&amp;Cancel</String>
+  <String Id="ProgressCancelButton">&amp;Abbrechen</String>
   <String Id="ModifyHeader">Setup ändern</String>
   <String Id="ModifyRepairButton">&amp;Reparieren</String>
   <String Id="ModifyUninstallButton">&amp;Deinstallieren</String>

@@ -26,7 +26,7 @@
   <String Id="NewerInstalled">Již je nainstalována stejná nebo novější verze tohoto výrobku.</String>
   <String Id="x64VersionRequired">Do 64bitových Windows musíte nainstalovat 64bitovou verzi tohoto výrobku.</String>
   <String Id="x86VersionRequired">Do 32bitových Windows musíte nainstalovat 32bitovou verzi tohoto výrobku.</String>
-  <String Id="x86VersionWarning">Chystáte se nainstalovat 32bitovou verzi do 64bitového operačního systému.&#13;&#10;Doporučujeme použít 64bitovou verzi kvůli lepšímu výkonu.&#13;&#10;Instalační balíček pro 64bitový systém můžete stáhnout z http://mixxx.org/download/</String>
+  <String Id="x86VersionWarning">Chystáte se nainstalovat 32bitovou verzi do 64bitového operačního systému. Doporučujeme použít 64bitovou verzi kvůli lepšímu výkonu. Instalační balíček pro 64bitový systém můžete stáhnout z http://mixxx.org/download/</String>
   <String Id="XPWarning">Instalujete Mixxx do zastaralého operačního systému. Některé funkce nemusí pracovat dobře, nebo nebudou pracovat vůbec. Doporučujeme vám povýšení operačního sytému.</String>
   <String Id="bitWidthMismatch32">Chystáte se nainstalovat 32bitovou verzi, ale již je nainstalována 64bitová verze.&#13;&#10;To může vést k neobvyklému chování. Odinstalujte, prosím, nejprve stávající verzi Mixxxu, nebo pro povýšení verze stáhněte instalační balíček pro 64bitový systém (pokud přesně nevíte, co děláte).</String>
   <String Id="bitWidthMismatch64">Chystáte se nainstalovat 64bitovou verzi, ale již je nainstalována 32bitová verze.&#13;&#10;To může vést k neobvyklému chování. Odinstalujte, prosím, nejprve stávající verzi Mixxxu, nebo pro povýšení verze stáhněte instalační balíček pro 32bitový systém (pokud přesně nevíte, co děláte).</String>
