@@ -2,13 +2,15 @@
 # Translators:
 # Felipe Morato <me@fmorato.com>, 2017
 # Fer22f <Fer22f@gmail.com>, 2016
+# Rui <xymarior@yandex.com>, 2018
+# S.Brandt <s.brandt@mixxx.org>, 2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-09-23 22:04+0000\n"
-"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2018-12-16 20:41+0000\n"
+"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -59,10 +61,10 @@ msgstr "Você precisa instalar a versão 32-bit desse produto no Windows 32-bit.
 
 msgctxt "x86VersionWarning"
 msgid ""
-"You are about to install the 32-bit version on a 64-bit operating system.\r\n"
-"We recommend using the 64-bit version for better performance.\r\n"
-"You can download the 64-bit installation package from http://mixxx.org/download/"
-msgstr "Você está prestes a instalar a versão 32-bit em um sistema operacional 64-bit.\nNós recomendamos usar uma versão 64-bit para melhor performance.\nVocê pode baixar o pacote de instalação 64-bit de http://mixxx.org/download/"
+"You are about to install the 32-bit version on a 64-bit operating system. We"
+" recommend using the 64-bit version for better performance. You can download"
+" the 64-bit installation package from http://mixxx.org/download/"
+msgstr "Você está prestes a instalar a versão 32-bit em um sistema operacional 64-bit. Nós recomendamos usar uma versão 64-bit para melhor performance. Você pode baixar o pacote de instalação 64-bit de http://mixxx.org/download/"
 
 msgctxt "XPWarning"
 msgid ""
@@ -198,11 +200,11 @@ msgstr ""
 
 msgctxt "HelpCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Fechar"
 
 msgctxt "InstallHeader"
 msgid "Welcome"
-msgstr ""
+msgstr "Bem-vindo"
 
 msgctxt "InstallMessage"
 msgid ""
@@ -213,19 +215,19 @@ msgstr ""
 
 msgctxt "InstallVersion"
 msgid "Version [WixBundleVersion]"
-msgstr ""
+msgstr "Versão [WixBundleVersion]"
 
 msgctxt "InstallOptionsButton"
 msgid "&Options"
-msgstr ""
+msgstr "&Opções"
 
 msgctxt "InstallInstallButton"
 msgid "&Install"
-msgstr ""
+msgstr "&Instalar"
 
 msgctxt "InstallCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Fechar"
 
 msgctxt "OptionsHeader"
 msgid "Setup Options"
@@ -245,7 +247,7 @@ msgstr ""
 
 msgctxt "OptionsCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Cancelar"
 
 msgctxt "FilesInUseHeader"
 msgid "Files In Use"
@@ -269,7 +271,7 @@ msgstr ""
 
 msgctxt "FilesInUseCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Cancelar"
 
 msgctxt "ProgressHeader"
 msgid "Setup Progress"
@@ -285,7 +287,7 @@ msgstr ""
 
 msgctxt "ProgressCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Cancelar"
 
 msgctxt "ModifyHeader"
 msgid "Modify Setup"
@@ -301,7 +303,7 @@ msgstr ""
 
 msgctxt "ModifyCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Fechar"
 
 msgctxt "SuccessHeader"
 msgid "Setup Successful"
@@ -333,7 +335,7 @@ msgstr ""
 
 msgctxt "SuccessCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Fechar"
 
 msgctxt "FailureHeader"
 msgid "Setup Failed"
@@ -368,4 +370,4 @@ msgstr ""
 
 msgctxt "FailureCloseButton"
 msgid "&Close"
-msgstr ""
+msgstr "&Fechar"

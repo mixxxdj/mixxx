@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2018-03-22 21:11+0000\n"
+"PO-Revision-Date: 2018-12-16 18:31+0000\n"
 "Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: German (Germany) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/de_DE/)\n"
 "MIME-Version: 1.0\n"
@@ -60,9 +60,9 @@ msgstr "Sie müssen die 32-Bit-Version dieses Produkts auf 32-Bit-Windows instal
 
 msgctxt "x86VersionWarning"
 msgid ""
-"You are about to install the 32-bit version on a 64-bit operating system.\r\n"
-"We recommend using the 64-bit version for better performance.\r\n"
-"You can download the 64-bit installation package from http://mixxx.org/download/"
+"You are about to install the 32-bit version on a 64-bit operating system. We"
+" recommend using the 64-bit version for better performance. You can download"
+" the 64-bit installation package from http://mixxx.org/download/"
 msgstr "Sie installieren gerade die 32-Bit-Version auf einem 64-Bit-Betriebssystem. Wir empfehlen stattdessen die 64-Bit-Version für eine bessere Performance zu installieren. Sie können das 64-Bit-Installationspaket hier herunterladen: http://mixxx.org/download/"
 
 msgctxt "XPWarning"
@@ -286,7 +286,7 @@ msgstr "Initialisiere..."
 
 msgctxt "ProgressCancelButton"
 msgid "&Cancel"
-msgstr "&Cancel"
+msgstr "&Abbrechen"
 
 msgctxt "ModifyHeader"
 msgid "Modify Setup"
