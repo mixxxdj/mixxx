@@ -50,8 +50,11 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Be"
             << "S&eacute;bastien Blaisot";
 
-    QStringList thisReleaseContributors;
-    thisReleaseContributors
+    // This list should contains all contributors committed 
+    // code to the Mixxx core within the past two years. 
+    // New Contributors are added at the end.  
+    QStringList recentContributors;
+    recentContributors
             << "Alex Barker"
             << "Stefan N&uuml;rnberger"
             << "Tuukka Pasanen"
@@ -100,7 +103,7 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Pawe&#322; Goli&#324;ski"
             << "beenisss"
             << "Bernd Binder"
-	    << "Nikolaus Einhauser"; 
+            << "Nikolaus Einhauser";
 
     QStringList specialThanks;
     specialThanks
@@ -287,7 +290,7 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     sections << sectionTemplate.arg(s_devTeam,
                                     thisReleaseDevelopers.join("<br>"))
              << sectionTemplate.arg(s_contributions,
-                                    thisReleaseContributors.join("<br>"))
+                                    recentContributors.join("<br>"))
              << sectionTemplate.arg(s_pastDevs,
                                     pastDevelopers.join("<br>"))
              << sectionTemplate.arg(s_pastContribs,
