@@ -40,47 +40,52 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
 
     QStringList thisReleaseDevelopers;
     thisReleaseDevelopers
-            << "Daniel Sch&uuml;rmann"
-            << "ronso0"
             << "Be"
-            << "Uwe Klotz"
+            << "Daniel Sch&uuml;rmann"
             << "RJ Skerry-Ryan"
-            << "Owen Williams"
+            << "ronso0"
             << "Sean Pappalardo"
             << "S&eacute;bastien Blaisot"
-            << "S. Brandt";
+            << "S. Brandt"
+            << "Uwe Klotz"
+            << "Owen Williams";
 
-    // Use "git shortlog -sne release-2.x.0..HEAD" replacing "release-2.x.0" with
+    // Use "git shortlog -s release-2.x.0..HEAD" replacing "release-2.x.0" with
     // the tag name for the last release to get contributors to the current
-    // release sorted by number of commits. Move everyone who does not appear
-    // in that list to the past contributors list below before releasing.
+    // release sorted alphabetically. Sorting alphabetically avoids implying
+    // potentially contentious judgements or encouraging competition for a
+    // higher spot on the list. Others who have helped with user support,
+    // documentation, testing, or in other ways may be mentioned too if they
+    // have been active since the last release.
+    // Before each release, move everyone else to the past contributors list.
     QStringList thisReleaseContributors;
     thisReleaseContributors
-            << "Nicu Badescu"
-            << "Nikolaus Einhauser"
-            << "Stefan Weber"
-            << "Kshitij Gupta"
-            << "Daniel Poelzleithner"
-            << "Lee Arromba"
-            << "William Lemus"
-            << "luzpaz"
-            << "NTMusic"
-            << "tock203"
-            << "Max Beiersdorfer"
-            << "Pawe&#322; Goli&#324;ski"
-            << "Johan Lasperas"
-            << "Ferran Pujol Camins"
-            << "Nino MP"
-            << "Pradyuman"
-            << "Fayaaz Ahmed"
-            << "Sebastian Reu&szlig;e"
-            << "Jamie Gifford"
-            << "Matthew Nicholson"
-            << "Sjors Gielen"
-            << "Tuukka Pasanen"
             << "banad60"
             << "beenisss"
-            << "David HM";
+            << "Daniel Poelzleithner"
+            << "David HM"
+            << "Fayaaz Ahmed"
+            << "Ferran Pujol Camins"
+            << "Jamie Gifford"
+            << "Johan Lasperas"
+            << "Josep Maria Antol&iacute;n Segura"
+            << "Kshitij Gupta"
+            << "Lee Arromba"
+            << "luzpaz"
+            << "Matthew Nicholson"
+            << "Max Beiersdorfer"
+            << "Nicu Badescu"
+            << "Nikolaus Einhauser"
+            << "Nino MP"
+            << "NTMusic"
+            << "Pawe&#322; Goli&#324;ski"
+            << "Pradyuman"
+            << "Sebastian Reu&szlig;e"
+            << "Sjors Gielen"
+            << "Stefan Weber"
+            << "tock203"
+            << "Tuukka Pasanen"
+            << "William Lemus";
 
     QStringList specialThanks;
     specialThanks
@@ -279,7 +284,6 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Jan Ypma"
             << "Leigh Scott"
             << "Andreas M&uuml;ller"
-            << "Josep Maria Antol&iacute;n Segura"
             << "Sam Cross"
             << "Joey Pabalinas"
             << "Nimit Bhardwaj"
