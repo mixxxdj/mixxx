@@ -54,5 +54,5 @@
 
     // READ ABOVE CAREFULLY BEFORE CHANGING!
     // USE 3 DIGITS VERSION ONLY /!\ _
-    #define MIXXX_VERSION "2.2.0-rc"
+    #define MIXXX_VERSION "2.2.0"
 #endif
