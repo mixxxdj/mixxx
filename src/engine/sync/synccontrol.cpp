@@ -43,6 +43,10 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
     m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)),
                                        Qt::DirectConnection);
 
+    m_pVolumeLevel = new ControlProxy(group, "volume", this);
+    m_pVolumeLevel->connectValueChanged(SLOT(slotControlVolume(double)),
+                                       Qt::DirectConnection);
+
     m_pSyncMode.reset(new ControlPushButton(ConfigKey(group, "sync_mode")));
     m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMode->setStates(SYNC_NUM_MODES);
@@ -226,7 +230,7 @@ void SyncControl::setMasterBaseBpm(double bpm) {
 }
 
 void SyncControl::setMasterBpm(double bpm) {
-    //qDebug() << "SyncControl::setMasterBpm" << getGroup() << bpm;
+    // qDebug() << "SyncControl::setMasterBpm" << getGroup() << bpm;
 
     if (getSyncMode() == SYNC_NONE) {
         qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
@@ -342,6 +346,10 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
 
 void SyncControl::slotControlPlay(double play) {
     m_pEngineSync->notifyPlaying(this, play > 0.0);
+}
+
+void SyncControl::slotControlVolume(double volume) {
+    m_pEngineSync->notifyVolumeChanged(this, volume);
 }
 
 void SyncControl::slotVinylControlChanged(double enabled) {

@@ -356,6 +356,10 @@ void EngineMaster::processChannels(int iBufferSize) {
         if (m_pEngineEffectsManager) {
             GroupFeatureState features;
             pChannel->collectFeatures(&features);
+            
+            // Collect Master BPM features if no BPM info is found in channel
+            collectMasterSyncFeatures(&features);
+
             pChannelInfo->m_features = features;
         }
     }
@@ -437,6 +441,7 @@ void EngineMaster::process(const int iBufferSize) {
             if (m_activeHeadphoneChannels.size() == 1) {
                 headphoneFeatures = m_activeHeadphoneChannels.at(0)->m_features;
             }
+            collectMasterSyncFeatures(&headphoneFeatures);
             m_pEngineEffectsManager->processPostFaderInPlace(
                 m_headphoneHandle.handle(),
                 m_headphoneHandle.handle(),
@@ -457,6 +462,7 @@ void EngineMaster::process(const int iBufferSize) {
     // Process effects on all microphones mixed together
     // We have no metadata for mixed effect buses, so use an empty GroupFeatureState.
     GroupFeatureState busFeatures;
+    collectMasterSyncFeatures(&busFeatures);
     m_pEngineEffectsManager->processPostFaderInPlace(
             m_busTalkoverHandle.handle(),
             m_masterHandle.handle(),
@@ -675,6 +681,7 @@ void EngineMaster::process(const int iBufferSize) {
             GroupFeatureState masterFeatures;
             masterFeatures.has_gain = true;
             masterFeatures.gain = m_pMasterGain->get();
+            collectMasterSyncFeatures(&masterFeatures);
             m_pEngineEffectsManager->processPostFaderInPlace(
                     m_masterOutputHandle.handle(),
                     m_masterHandle.handle(),
@@ -734,6 +741,7 @@ void EngineMaster::applyMasterEffects() {
         GroupFeatureState masterFeatures;
         masterFeatures.has_gain = true;
         masterFeatures.gain = m_pMasterGain->get();
+        collectMasterSyncFeatures(&masterFeatures);
         m_pEngineEffectsManager->processPostFaderInPlace(m_masterHandle.handle(),
                                                          m_masterHandle.handle(),
                                                          m_pMaster,
@@ -961,4 +969,14 @@ void EngineMaster::registerNonEngineChannelSoundIO(SoundManager* pSoundManager) 
         pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, 2, o), this);
     }
     pSoundManager->registerOutput(AudioOutput(AudioOutput::RECORD_BROADCAST, 0, 2), this);
+}
+
+void EngineMaster::collectMasterSyncFeatures(GroupFeatureState* features) {
+    if (!features->has_beat_length_sec) {
+        features->has_beat_length_sec = true;
+        features->beat_length_sec = 60 / m_pMasterSync->masterBpm();
+
+        features->has_beat_fraction = true;
+        features->beat_fraction = m_pMasterSync->masterBeatDistance();
+    }
 }

@@ -275,6 +275,8 @@ class EngineMaster : public QObject, public AudioSource {
     void applyMasterEffects();
     void processHeadphones(const double masterMixGainInHeadphones);
 
+    void collectMasterSyncFeatures(GroupFeatureState* features);
+
     EngineEffectsManager* m_pEngineEffectsManager;
 
     // List of channels added to the engine.
