@@ -729,7 +729,7 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
             result = 0;
         }
     } else {
-        result = val1.toString().localeAwareCompare(val2.toString());
+        result = m_collator.compare(val1.toString(), val2.toString());
     }
 
     // If we're in descending order, flip the comparison.

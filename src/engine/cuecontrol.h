@@ -116,15 +116,14 @@ class CueControl : public EngineControl {
     virtual void hintReader(HintVector* pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
-    bool isTrackAtCue();
     bool isTrackAtADJStart();
+    void resetIndicators();
     bool isPlayingByPlayButton();
+    bool getPlayFlashingAtPause();
     bool isCueRecallEnabled();
+    void trackLoaded(TrackPointer pNewTrack) override;
     SeekOnLoadMode getSeekOnLoadMode();
     Cue::CueSource getCueSource();
-
-  public slots:
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private slots:
     void cueUpdated();
@@ -158,11 +157,18 @@ class CueControl : public EngineControl {
     void autoDJEndClear(double v);
 
   private:
+    enum class TrackAt {
+        Cue,
+        End,
+        ElseWhere
+    };
+
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
     void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
     void setCue(double position, Cue::CueSource source);
+    TrackAt getTrackAt() const;
 
     bool m_bPreviewing;
     ControlObject* m_pPlay;
@@ -207,7 +213,7 @@ class CueControl : public EngineControl {
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
 
-    TrackPointer m_pLoadedTrack;
+    TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;

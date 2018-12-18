@@ -1393,7 +1393,7 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
                                               "beat_distance"))->get());
     EXPECT_LT(difference, .00001);
 
-    EXPECT_FLOAT_EQ(0.0, m_pChannel1->getEngineBuffer()->m_pBpmControl->m_dUserOffset);
+    EXPECT_FLOAT_EQ(0.0, m_pChannel1->getEngineBuffer()->m_pBpmControl->m_dUserOffset.getValue());
 }
 
 TEST_F(EngineSyncTest, MasterBpmNeverZero) {
