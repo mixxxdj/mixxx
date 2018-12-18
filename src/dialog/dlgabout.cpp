@@ -55,32 +55,18 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     // New Contributors are added at the end.  
     QStringList recentContributors;
     recentContributors
-            << "Alex Barker"
             << "Stefan N&uuml;rnberger"
             << "Tuukka Pasanen"
-            << "Jean Claveau"
             << "Nino MP"
-            << "Kevin Wern"
             << "Nico Schl&ouml;mer"
             << "Ferran Pujol Camins"
             << "Markus Kl&ouml;sges"
-            << "Vladim&iacute;r Dudr"
-            << "Neale Pickett"
-            << "Chlo&eacute; Avrillon"
-            << "Hendrik Reglin"
             << "Pavel Potocek"
             << "Joan Marc&egrave; i Igual"
-            << "Serge Ukolov"
-            << "Patric Schmitz"
             << "Timothy Rae"
-            << "Roland Schwarz"
-            << "Jan Ypma"
             << "Leigh Scott"
             << "William Lemus"
-            << "Andreas M&uuml;ller"
             << "Josep Maria Antol&iacute;n Segura"
-            << "Sam Cross"
-            << "Joey Pabalinas"
             << "Nimit Bhardwaj"
             << "Pavel Sokolov"
             << "Devananda van der Veen"
@@ -282,7 +268,22 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Brendan Austin"
             << "Lorenz Drescher"
             << "David Guglielmi"
-            << "James Atwill";
+            << "James Atwill"
+            << "Alex Barker"
+            << "Jean Claveau"
+            << "Kevin Wern"
+            << "Vladim&iacute;r Dudr"
+            << "Neale Pickett"
+            << "Chlo&eacute; Avrillon"
+            << "Hendrik Reglin"
+            << "Serge Ukolov"
+            << "Patric Schmitz"
+            << "Roland Schwarz"
+            << "Jan Ypma"
+            << "Andreas M&uuml;ller"
+            << "Sam Cross"
+            << "Joey Pabalinas";
+
 
     QString sectionTemplate = QString(
         "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");
