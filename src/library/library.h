@@ -8,6 +8,7 @@
 #define LIBRARY_H
 
 #include <QList>
+#include <QString>
 #include <QObject>
 #include <QAbstractItemModel>
 #include <QFont>
@@ -83,6 +84,8 @@ class Library: public QObject,
     void setFont(const QFont& font);
     void setRowHeight(int rowHeight);
     void setEditMedatataSelectedClick(bool enable);
+    void saveCuesToFile(const Track* pTrack);
+
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
