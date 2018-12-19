@@ -42,6 +42,9 @@ CueControl::CueControl(QString group,
     m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(group, "quantize"));
+    connect(m_pQuantizeEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(quantizeChanged(double)),
+            Qt::DirectConnection);
 
     m_pNextBeat = ControlObject::getControl(ConfigKey(group, "beat_next"));
     m_pClosestBeat = ControlObject::getControl(ConfigKey(group, "beat_closest"));
@@ -401,12 +404,18 @@ void CueControl::trackBeatsUpdated() {
     setCue(m_pCuePoint->get(), getCueSource());
 }
 
+void CueControl::quantizeChanged(double v) {
+    Q_UNUSED(v);
+
+    trackCuesUpdated();
+}
+
 void CueControl::setCue(double position, Cue::CueSource source) {
     TrackAt trackAt = getTrackAt();
     SampleOfTrack sampleOfTrack = getSampleOfTrack();
 
-    // Snap automatically-placed cue point to nearest beat
-    if (position != -1.0 && source != Cue::MANUAL) {
+    // Snap automatically-placed cue point to nearest beat only if quantize is enabled
+    if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
         BeatsPointer pBeats = m_pLoadedTrack->getBeats();
         if (pBeats) {
             double closestBeat = pBeats->findClosestBeat(position);

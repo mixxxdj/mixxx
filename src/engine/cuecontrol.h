@@ -126,6 +126,8 @@ class CueControl : public EngineControl {
     Cue::CueSource getCueSource();
 
   private slots:
+    void quantizeChanged(double v);
+
     void cueUpdated();
     void trackCuesUpdated();
     void trackBeatsUpdated();
