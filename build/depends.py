@@ -984,7 +984,9 @@ class MixxxCore(Feature):
                    "src/library/bpmdelegate.cpp",
                    "src/library/previewbuttondelegate.cpp",
                    "src/library/coverartdelegate.cpp",
-				   "src/library/tableitemdelegate.cpp",
+                   "src/library/tableitemdelegate.cpp",
+                   "src/library/colordelegate.cpp",
+                   "src/library/trackcolorpicker.cpp",
 
                    "src/library/treeitemmodel.cpp",
                    "src/library/treeitem.cpp",
