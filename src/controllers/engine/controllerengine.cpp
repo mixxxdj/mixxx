@@ -332,8 +332,6 @@ bool ControllerEngine::executeFunction(QJSValue functionObject, const QByteArray
 QJSValue ControllerEngine::evaluateCodeString(const QString& program, const QString& fileName,
         int lineNumber) {
     VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
-        // TODO(xxx): Throw a JS error here when we use Qt 5.12
-        //            https://bugreports.qt.io/browse/QTBUG-39041
         return QJSValue::UndefinedValue;
     }
 
@@ -736,9 +734,8 @@ QJSValue ControllerEngine::connectControl(
 
         actualCallbackFunction = evaluateCodeString(passedCallback.toString());
 
-        if (actualCallbackFunction.isError() || !actualCallbackFunction.isCallable()) {
-            qWarning() << "Could not evaluate callback function:"
-                        << passedCallback.toString();
+        if (!actualCallbackFunction.isCallable()) {
+            m_pScriptEngine->throwError("Invalid connection callback provided to connectControl.");
             return QJSValue(false);
         }
 
@@ -887,6 +884,7 @@ int ControllerEngine::beginTimer(int interval, QJSValue timerCallback,
     if (!timerCallback.isCallable()) {
         qWarning() << "Invalid timer callback provided to beginTimer."
                    << "Valid callbacks are strings and functions.";
+        m_pScriptEngine->throwError("Invalid timer callback provided to beginTimer.");
         return 0;
     }
 
