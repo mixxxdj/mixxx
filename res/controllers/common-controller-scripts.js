@@ -534,17 +534,4 @@ Deck = function (deckNumber, group) {
 Deck.prototype.setControlValue = Controller.prototype.setControlValue;
 Deck.prototype.addButton = Controller.prototype.addButton;
 
-// Data packet
-function Packet(length, initialValue) {
-    this.length = length;
-    this.data = new Array(length);  // Size the array
-
-    if (!initialValue) initialValue=0;
-
-    // Initialize data values
-    for (i=0; i<this.length; i++) {
-        this.data[i]=initialValue;
-    }
-}
-
 // ----------------- END Object definitions ----------------------

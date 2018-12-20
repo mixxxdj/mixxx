@@ -140,7 +140,7 @@ function HIDPacket(name, reportId, callback, header) {
 
 // Pack a field value to the packet.
 // Can only pack bits and byte values, patches welcome.
-HIDPacket.prototype.pack = function(packet,field) {
+HIDPacket.prototype.pack = function(data,field) {
     var value = 0;
     if (!(field.pack in this.packSizes)) {
         HIDDebug("ERROR parsing packed value: invalid pack format " + field.pack);
@@ -159,7 +159,7 @@ HIDPacket.prototype.pack = function(packet,field) {
         }
         for (bit_id in field.value.bits) {
             var bit = field.value.bits[bit_id];
-            packet.data[field.offset] = packet.data[field.offset] | bit.value;
+            data[field.offset] = data[field.offset] | bit.value;
         }
         return;
     }
@@ -175,12 +175,12 @@ HIDPacket.prototype.pack = function(packet,field) {
         var index = field.offset+byte_index;
         if (signed) {
             if (value>=0) {
-                packet.data[index] = (value>>(byte_index*8)) & 255;
+                data[index] = (value>>(byte_index*8)) & 255;
             } else {
-                packet.data[index] = 255 - ((-(value+1)>>(byte_index*8)) & 255);
+                data[index] = 255 - ((-(value+1)>>(byte_index*8)) & 255);
             }
         } else {
-            packet.data[index] = (value>>(byte_index*8)) & 255;
+            data[index] = (value>>(byte_index*8)) & 255;
         }
     }
 
@@ -643,11 +643,11 @@ HIDPacket.prototype.parse = function(data) {
 HIDPacket.prototype.send = function() {
     var offset = 0;
     var i;
-    var packet = new Packet(this.length);
+    var data = [];
 
     if(this.header !== undefined) {
         for (header_byte = 0; header_byte < this.header.length; header_byte++) {
-            packet.data[header_byte] = this.header[header_byte];
+            data[header_byte] = this.header[header_byte];
         }
     }
 
@@ -660,19 +660,19 @@ HIDPacket.prototype.send = function() {
                     var bit = field.value.bits[bit_id];
                 }
             }
-            this.pack(packet,field);
+            this.pack(data,field);
         }
     }
 
     //var packet_string = "";
-    //for (d in packet.data) {
-    //  if (packet.data[d] < 0x10) {
+    //for (d in data) {
+    //  if (data[d] < 0x10) {
     //    packet_string += "0";
     //  }
-    //  packet_string += packet.data[d].toString(16) + " ";
+    //  packet_string += data[d].toString(16) + " ";
     //}
     //HIDDebug("packet: " + packet_string);
-    controller.send(packet.data, packet.data.length, this.reportId);
+    controller.send(data, data.length, this.reportId);
 }
 
 //
