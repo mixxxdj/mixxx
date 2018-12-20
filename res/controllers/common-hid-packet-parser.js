@@ -640,7 +640,7 @@ HIDPacket.prototype.parse = function(data) {
 // First the header bytes are copied to beginning of packet, then
 // field object values are packed to the HID packet according to the
 // field type.
-HIDPacket.prototype.send = function() {
+HIDPacket.prototype.send = function(debug) {
     var offset = 0;
     var i;
     var data = [];
@@ -652,26 +652,22 @@ HIDPacket.prototype.send = function() {
     }
 
     for (var group_name in this.groups) {
-        var group = this.groups[group_name];
+		var group = this.groups[group_name]
         for (var field_name in group) {
-            var field = group[field_name];
-            if (field.type=="bitvector") {
-                for (var bit_id in field.value.bits) {
-                    var bit = field.value.bits[bit_id];
-                }
-            }
-            this.pack(data,field);
+            this.pack(data, group[field_name])
         }
     }
 
-    //var packet_string = "";
-    //for (d in data) {
-    //  if (data[d] < 0x10) {
-    //    packet_string += "0";
-    //  }
-    //  packet_string += data[d].toString(16) + " ";
-    //}
-    //HIDDebug("packet: " + packet_string);
+    if(debug) {
+		var packet_string = "";
+        for (d in data) {
+            if (data[d] < 0x10) {
+                packet_string += "0";
+            }
+            packet_string += data[d].toString(16) + " ";
+        }
+        HIDDebug("Sending packet: " + packet_string + " with Report ID " + this.reportId);
+    }
     controller.send(data, data.length, this.reportId);
 }
 
