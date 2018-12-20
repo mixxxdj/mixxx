@@ -247,8 +247,6 @@ class Qt(Dependence):
         ]
 
         if qt5:
-            if build.platform_is_linux:
-                build.env.Append(LIBS = 'Qt5X11Extras')
             qt_modules.extend([
                 # Keep alphabetized.
                 'QtConcurrent',
@@ -309,6 +307,9 @@ class Qt(Dependence):
                 raise Exception('Qt >= 5.0 not found')
             elif not qt5 and not conf.CheckForPKG('QtCore', '4.6'):
                 raise Exception('QT >= 4.6 not found')
+
+            if not conf.CheckLib('Qt5X11Extras'):
+                raise Exception('Could not find Qt5X11Extras or its development headers')
 
             qt_modules.extend(['QtDBus'])
             # This automatically converts QtXXX to Qt5XXX where appropriate.
