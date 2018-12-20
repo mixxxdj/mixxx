@@ -672,7 +672,7 @@ HIDPacket.prototype.send = function() {
     //  packet_string += packet.data[d].toString(16) + " ";
     //}
     //HIDDebug("packet: " + packet_string);
-    controller.send(packet.data, packet.data.length, packet.reportId);
+    controller.send(packet.data, packet.data.length, this.reportId);
 }
 
 //

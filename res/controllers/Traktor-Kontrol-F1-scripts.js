@@ -169,7 +169,7 @@ function KontrolF1Controller() {
     }
 
     this.initializeHIDController = function() {
-        this.scalers = new Object();
+        this.scalers = {};
         this.scalers["volume"] = function(value) {
             return script.absoluteLin(value, 0, 1, 0, 4096);
         }
@@ -214,10 +214,6 @@ function KontrolF1Controller() {
         if (value>0x7f)
             value = 0x7f;
         field.value = value;
-    }
-
-    this.segments = function(number) {
-
     }
 
     this.set7SegmentNumber = function(number) {
@@ -326,27 +322,19 @@ KontrolF1.init = function (id) {
 
     KontrolF1.initializeHIDController();
     var controller = KontrolF1.controller;
-
-    KontrolF1.knobs = new Object();
-    KontrolF1.faders = new Object();
-    KontrolF1.grids = new Object();
-    KontrolF1.playbuttons = new Object();
-    KontrolF1.segments = new Object();
-
     controller.postProcessDelta = KontrolF1.ButtonLEDPressUpdate;
+
+    KontrolF1.knobs = {};
+    KontrolF1.faders = {};
+    KontrolF1.grids = {};
+    KontrolF1.playbuttons = {};
+    KontrolF1.segments = {};
 
     KontrolF1.registerCallbacks();
 
     KontrolF1.resetLEDs();
     KontrolF1.setControlMode(KontrolF1.defaultControlMode);
 
-    // Timers can't be defined in prototype with this.
-    if (KontrolF1.LEDUpdateInterval!=undefined) {
-        KontrolF1.LEDTimer = engine.beginTimer(
-            KontrolF1.LEDUpdateInterval,
-            "KontrolF1.controller.updateLEDs(true)"
-        );
-    }
     KontrolF1.segments['empty'] = [0,0,0,0,0,0,0];
     KontrolF1.segments[0] = [0x0,0x40,0x40,0x40,0x40,0x40,0x40];
     KontrolF1.segments[1] = [0x0,0x40,0x40,0x0,0x0,0x0,0x0];
@@ -359,8 +347,8 @@ KontrolF1.init = function (id) {
     KontrolF1.segments[8] = [0x40,0x40,0x40,0x40,0x40,0x40,0x40];
     KontrolF1.segments[9] = [0x40,0x40,0x40,0x40,0x40,0x0,0x40];
 
-    KontrolF1.testUpdateInterval = 5;
     KontrolF1.testSegment = 0;
+    KontrolF1.testUpdateInterval = 20;
     KontrolF1.testTimer = engine.beginTimer(
         KontrolF1.testUpdateInterval,
         "KontrolF1.testSegments()"
@@ -537,8 +525,8 @@ KontrolF1.setLED = function(value,group,key) {
 
 KontrolF1.linkKnob = function(mode,knob,group,name,scaler) {
     if (!(mode in KontrolF1.knobs))
-        KontrolF1.knobs[mode] = new Object();
-    var mapping = new Object();
+        KontrolF1.knobs[mode] = {};
+    var mapping = {};
     mapping.mode = mode;
     mapping.knob = knob;
     mapping.group = group;
@@ -564,8 +552,8 @@ KontrolF1.knob = function(field) {
 
 KontrolF1.linkFader = function(mode,fader,group,name,scaler,callback) {
     if (!(mode in KontrolF1.faders))
-        KontrolF1.faders[mode] = new Object();
-    var mapping = new Object();
+        KontrolF1.faders[mode] = {};
+    var mapping = {};
     mapping.mode = mode;
     mapping.fader = fader;
     mapping.group = group;
@@ -592,7 +580,7 @@ KontrolF1.fader = function(field) {
 
 KontrolF1.linkGrid = function(mode,button,group,name,toggle,callback,ledcolor,ledname) {
     if (!(mode in KontrolF1.grids))
-        KontrolF1.grids[mode] = new Object();
+        KontrolF1.grids[mode] = {};
     if (ledname==undefined) {
         if (name.match(/hotcue_[0-9]/))
             ledname = name + '_enabled';
@@ -602,7 +590,7 @@ KontrolF1.linkGrid = function(mode,button,group,name,toggle,callback,ledcolor,le
     if (ledcolor==undefined) {
         ledcolor = [0x7f,0x7f,0x7f];
     }
-    var mapping = new Object();
+    var mapping = {};
     mapping.mode = mode;
     mapping.button = button;
     mapping.group = group;
@@ -630,7 +618,7 @@ KontrolF1.grid = function(field) {
 
 KontrolF1.linkPlay = function(mode,button,group,name,toggle,callback,ledname) {
     if (!(mode in KontrolF1.playbuttons))
-        KontrolF1.playbuttons[mode] = new Object();
+        KontrolF1.playbuttons[mode] = {};
 
     if (ledname==undefined) {
         if (name.match(/hotcue_[0-9]/))
@@ -638,7 +626,7 @@ KontrolF1.linkPlay = function(mode,button,group,name,toggle,callback,ledname) {
         else
             ledname = name;
     }
-    var mapping = new Object();
+    var mapping = {};
     mapping.mode = mode;
     mapping.button = button;
     mapping.group = group;
@@ -696,7 +684,6 @@ KontrolF1.switchControlMode = function(field) {
         KontrolF1.setControlMode("decks");
     } else {
         HIDDebug("Unconfigured mode selector button: " + field.name);
-        return;
     }
 }
 

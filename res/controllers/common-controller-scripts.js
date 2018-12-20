@@ -1,7 +1,5 @@
 // Functions common to all controllers go in this file
 
-nop = function () {}    // Only here so you don't get a syntax error on load if the file was otherwise empty
-
 // ----------------- Prototype enhancements ---------------------
 
 // Returns an ASCII byte array for the string
@@ -16,18 +14,50 @@ String.prototype.toInt = function() {
 // ----------------- Function overloads ---------------------
 
 // Causes script print() calls to appear in the log file as well
-print = function(string) {
+function print(string) {
     engine.log(string);
 }
 
-var printObject = function (object) {
-    print(JSON.stringify(object, null, 2));
-};
+function printObject(obj, maxdepth) {
+    print(stringifyObject(obj, maxdepth));
+}
+
+function stringifyObject(obj, maxdepth, checked, prefix) {
+    if (!maxdepth)
+        maxdepth = 2;
+    try {
+        return JSON.stringify(obj, null, maxdepth);
+    } catch(e) {
+        if (!checked)
+            checked = [];
+        if (!prefix)
+            prefix = "";
+        if (maxdepth > 0 && typeof obj === 'object' && obj !== null && Object.getPrototypeOf(obj) !== '' && !arrayContains(checked, obj)) {
+            checked.push(obj);
+            var output = '{\n';
+            for (var property in obj) {
+                const value = obj[property];
+                if(typeof value === 'function')
+                    continue;
+                output += prefix + property + ': ' + stringifyObject(value, maxdepth - 1, checked, prefix + '  ') + '\n';
+            }
+            return output + prefix.substr(2) + '}';
+        }
+    }
+    return obj;
+}
+
+function arrayContains(array, elem) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i] === elem)
+            return true;
+    }
+    return false;
+}
 
 // ----------------- Generic functions ---------------------
 
-function secondstominutes(secs)
-{
+function secondstominutes(secs) {
    var m = (secs / 60) | 0;
 
    return (m < 10 ? "0" + m : m)
@@ -35,16 +65,14 @@ function secondstominutes(secs)
           + ( ( secs %= 60 ) < 10 ? "0" + secs : secs);
 }
 
-function msecondstominutes(msecs)
-{
+function msecondstominutes(msecs) {
     var m = (msecs / 60000) | 0;
     msecs %= 60000;
     var secs = (msecs / 1000) | 0;
     msecs %= 1000;
     msecs = Math.round(msecs * 100 / 1000);
-    if (msecs==100) msecs=99;
-
-//     print("secs="+secs+", msecs="+msecs);
+    if (msecs===100)
+        msecs=99;
 
     return (m < 10 ? "0" + m : m)
         + ":"
