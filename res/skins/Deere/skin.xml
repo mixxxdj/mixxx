@@ -180,6 +180,42 @@
     </SingletonDefinition>
 
     <SingletonDefinition>
+      <ObjectName>DeckCoverArt1</ObjectName>
+      <Children>
+        <Template src="skin:coverart.xml">
+          <SetVariable name="group">[Channel1]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckCoverArt2</ObjectName>
+      <Children>
+        <Template src="skin:coverart.xml">
+          <SetVariable name="group">[Channel2]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckCoverArt3</ObjectName>
+      <Children>
+        <Template src="skin:coverart.xml">
+          <SetVariable name="group">[Channel3]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckCoverArt4</ObjectName>
+      <Children>
+        <Template src="skin:coverart.xml">
+          <SetVariable name="group">[Channel4]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
       <ObjectName>Library</ObjectName>
       <Children>
         <Template src="skin:library.xml"/>
@@ -269,12 +305,67 @@
         </Splitter><!-- /Visible when Library is not maximized -->
 
         <WidgetGroup><!-- Maximized Library -->
-          <Layout>horizontal</Layout>
+          <Layout>vertical</Layout>
           <SizePolicy>me,me</SizePolicy>
           <Children>
+
+            <!-- Minimal decks + (Invisible) scrolling waveforms -->
+            <WidgetGroup>
+              <Size>me,45f</Size>
+              <Layout>stacked</Layout>
+              <Children>
+
+                <Template src="skin:decks_small.xml"/>
+                <!-- put invisble waveforms Singleton here to make end-of-track warning work
+                    without actually showing scrolling waveforms -->
+                <WidgetGroup>
+                  <Layout>stacked</Layout>
+                  <!-- Size needs to be at least 1x1px for the hack to work -->
+                  <Size>1f,1f</Size>
+                  <Children>
+
+                    <WidgetGroup>
+                      <Connection>
+                        <ConfigKey>[Skin],show_4decks</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                      <Layout>vertical</Layout>
+                      <Children>
+                        <SingletonContainer>
+                          <ObjectName>DeckVisualRow3</ObjectName>
+                        </SingletonContainer>
+                      </Children>
+                    </WidgetGroup>
+
+                    <SingletonContainer>
+                      <ObjectName>DeckVisualRow1</ObjectName>
+                    </SingletonContainer>
+
+                    <SingletonContainer>
+                      <ObjectName>DeckVisualRow2</ObjectName>
+                    </SingletonContainer>
+
+                    <WidgetGroup>
+                      <Connection>
+                        <ConfigKey>[Skin],show_4decks</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                      <Layout>vertical</Layout>
+                      <Children>
+                        <SingletonContainer>
+                          <ObjectName>DeckVisualRow4</ObjectName>
+                        </SingletonContainer>
+                      </Children>
+                    </WidgetGroup>
+                  </Children>
+                </WidgetGroup><!-- (Invisible) scrolling waveforms -->
+              </Children>
+            </WidgetGroup><!-- Minimal decks + (Invisible) scrolling waveforms -->
+
             <SingletonContainer>
               <ObjectName>Library</ObjectName>
             </SingletonContainer>
+
           </Children>
           <Connection>
             <ConfigKey>[Master],maximize_library</ConfigKey>
