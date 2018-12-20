@@ -645,8 +645,10 @@ HIDPacket.prototype.send = function() {
     var i;
     var packet = new Packet(this.length);
 
-    for (header_byte=0;header_byte<this.header.length;header_byte++) {
-        packet.data[header_byte] = this.header[header_byte];
+    if(this.header !== undefined) {
+        for (header_byte = 0; header_byte < this.header.length; header_byte++) {
+            packet.data[header_byte] = this.header[header_byte];
+        }
     }
 
     for (var group_name in this.groups) {
@@ -1033,14 +1035,16 @@ HIDController.prototype.parsePacket = function(data,length) {
             continue;
         }
 
-        for (var header_byte=0;header_byte<packet.header.length;header_byte++) {
-            if (packet.header[header_byte]!=data[header_byte]) {
-                packet=undefined;
-                break;
+        if(packet.header !== undefined) {
+            for (var header_byte = 0; header_byte < packet.header.length; header_byte++) {
+                if (packet.header[header_byte] != data[header_byte]) {
+                    packet = undefined;
+                    break;
+                }
             }
+            if (packet === undefined)
+                continue;
         }
-        if (packet==undefined)
-            continue;
         changed_data = packet.parse(data);
         if (packet.callback!=undefined) {
             packet.callback(packet,changed_data);

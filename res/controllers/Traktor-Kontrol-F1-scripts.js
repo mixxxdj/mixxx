@@ -25,9 +25,7 @@ function KontrolF1Controller() {
     ];
 
     this.registerInputPackets = function() {
-        var packet = undefined;
-
-        packet = new HIDPacket("control", 0x1);
+        var packet = new HIDPacket("control", 0x1);
         packet.addControl("hid", "grid_8", 1,"I", 0x1);
         packet.addControl("hid", "grid_7", 1,"I", 0x2);
         packet.addControl("hid", "grid_6", 1,"I", 0x4);
@@ -75,9 +73,7 @@ function KontrolF1Controller() {
     }
 
     this.registerOutputPackets = function() {
-        var packet = undefined;
-
-        packet = new HIDPacket("lights", 0x80);
+        var packet = new HIDPacket("lights", 0x80);
         // Right 7-segment element - 0x0 off, 0x40 on
         packet.addControl("hid", "right_segment_dp", 1,"B");
         packet.addControl("hid", "right_segment_1", 2,"B");
