@@ -81,13 +81,25 @@ class Syncable {
 
 class SyncableListener {
   public:
+    virtual ~SyncableListener() {}
+
+    // Used by Syncables to tell EngineSync it wants to be enabled in a
+    // specific mode. If the state change is accepted, EngineSync calls
+    // Syncable::notifySyncModeChanged.
     virtual void requestSyncMode(Syncable* pSyncable, SyncMode mode) = 0;
+
+    // Used by Syncables to tell EngineSync it wants to be enabled in any mode
+    // (master/follower).
     virtual void requestEnableSync(Syncable* pSyncable, bool enabled) = 0;
 
     // A Syncable must never call notifyBpmChanged in response to a setMasterBpm()
     // call.
     virtual void notifyBpmChanged(Syncable* pSyncable, double bpm,
-                                  bool fileChanged=false) = 0;
+                                  bool fileChanged) = 0;
+
+    // Syncables notify EngineSync directly about various events. EngineSync
+    // does not have a say in whether these succeed or not, they are simply
+    // notifications.
     virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) = 0;
 
     // Notify Syncable that the Syncable's scratching state changed.
@@ -96,7 +108,7 @@ class SyncableListener {
     // A Syncable must never call notifyBeatDistanceChanged in respnse to a
     // setBeatDistance() call.
     virtual void notifyBeatDistanceChanged(
-        Syncable* pSyncable, double beatDistance) = 0;
+            Syncable* pSyncable, double beatDistance) = 0;
 
     virtual void notifyPlaying(Syncable* pSyncable, bool playing) = 0;
     // A syncable can notify that a track has been loaded, and passes in the bpm
