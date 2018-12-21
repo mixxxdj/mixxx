@@ -1177,10 +1177,8 @@ WBeatSpinBox,
   padding-top: 1px;
   }
 #BpmLabelMini {
-  qproperty-alignment: 'AlignRight | AlignVCenter';
   font-size: 16px/16px;
   font-weight: bold;
-  text-align: right;
   padding: 1px 0px 0px 0px;
   }
   #SyncButtonOverlay[displayValue="0"]:hover {

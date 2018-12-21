@@ -1,8 +1,8 @@
 <!--
 Description:
-  A minmal deck container
-  * overview          | track title                    | Play/Pause |   loop   |
-  * overview          | elapsed/remaining | key | BPM  |            | indicator|      
+  A minmal deck container, visible when the library is maximized 
+  | loop      | Play/ | Cover/ | track title                   |
+  | indicator | Pasue | Spinny | BPM | Key | elapsed/remaining |
 Variables:
   chanNum : [ChannelN]
 -->
@@ -82,12 +82,12 @@ Variables:
             <Layout>horizontal</Layout>
             <Size>200min,18f</Size>
             <Children>
-              
+
               <!-- Elapsed & Remaining -->
               <WidgetGroup><!-- Time -->
                 <ObjectName>PlayPositionHighlightContainer</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>min,me</SizePolicy>
+                <SizePolicy>me,me</SizePolicy>
                 <Children>
                   <NumberPos>
                     <TooltipId>track_time</TooltipId>
@@ -104,30 +104,46 @@ Variables:
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-              <Key>
-                <TooltipId>visual_key</TooltipId>
-                <ObjectName>KeyDisplayMini</ObjectName>
-                <Channel><Variable name="chanNum"/></Channel>
-                <Size>44min,18f</Size>
-                <Alignment>center</Alignment>
-                <Elide>right</Elide>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-                </Connection>
-              </Key>
+              <WidgetGroup><!-- Key -->
+                <ObjectName>AlignRight</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>30min,18f</Size>
+                <Children>
+                  <Key>
+                    <TooltipId>visual_key</TooltipId>
+                    <ObjectName>KeyDisplayMini</ObjectName>
+                    <Channel><Variable name="chanNum"/></Channel>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Alignment>right</Alignment>
+                    <Elide>right</Elide>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                    </Connection>
+                  </Key>
+                </Children>
+              </WidgetGroup><!-- Key -->
 
-              <Number>
-                <TooltipId>visual_bpm</TooltipId>
-                <ObjectName>BpmLabelMini</ObjectName>
-                <Size>62f,18f</Size>
-                <Channel><Variable name="chanNum" /></Channel>
-                <NumberOfDigits>2</NumberOfDigits>
-                <Alignment>right</Alignment>
-                <Elide>right</Elide>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-                </Connection>
-              </Number><!-- BPM -->
+              <WidgetGroup><Size>7f,0me</Size></WidgetGroup>
+
+              <WidgetGroup><!-- BPM -->
+                <ObjectName>AlignRight</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>55min,18f</Size>
+                <Children>
+                  <Number>
+                    <TooltipId>visual_bpm</TooltipId>
+                    <ObjectName>BpmLabelMini</ObjectName>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Channel><Variable name="chanNum" /></Channel>
+                    <NumberOfDigits>2</NumberOfDigits>
+                    <Alignment>right</Alignment>
+                    <Elide>right</Elide>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                    </Connection>
+                  </Number>
+                </Children>
+              </WidgetGroup><!-- BPM -->
 
             </Children>
           </WidgetGroup><!-- Key / BPM / PlayPos -->
