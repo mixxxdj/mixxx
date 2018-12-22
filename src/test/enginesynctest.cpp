@@ -1568,4 +1568,68 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
     ProcessBuffer();
 }
 
+TEST_F(EngineSyncTest, ChangeBeatGrid) {
+    // https://bugs.launchpad.net/mixxx/+bug/1808698
+
+    auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    auto pFileBpm2 = std::make_unique<ControlProxy>(m_sGroup2, "file_bpm");
+
+    // set beatgrid
+    BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 130, 0.0);
+    m_pTrack1->setBeats(pBeats1);
+    pFileBpm1->set(130.0);
+    pButtonSyncEnabled1->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+
+    ProcessBuffer();
+
+    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+
+    // sync 0 bpm track to the first one
+    pButtonSyncEnabled2->set(1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
+
+    ProcessBuffer();
+
+    // expect no change in Deck 1
+    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_FLOAT_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
+
+    ProcessBuffer();
+
+    // Load a new beatgrid, this happens when the analyser is finisched
+    BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(*m_pTrack2, 140, 0.0);
+    m_pTrack2->setBeats(pBeats2);
+    pFileBpm2->set(140.0);
+
+    ProcessBuffer();
+
+    // we expect that the new beatgrid is allingend to the other playing track
+    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+
+
+    ProcessBuffer();
+
+    // Load a new beatgrid again, this happens when the user adjusts the beatgrid
+    BeatsPointer pBeats2n = BeatFactory::makeBeatGrid(*m_pTrack2, 75, 0.0);
+    m_pTrack2->setBeats(pBeats2n);
+    pFileBpm2->set(75.0);
+
+    ProcessBuffer();
+
+    // we expect that the new beatgrid is allingend to the other playing track
+    // Not the case before fixing lp1808698
+    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    // Expect to sync on half beats
+    EXPECT_FLOAT_EQ(65.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_FLOAT_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+}
 
