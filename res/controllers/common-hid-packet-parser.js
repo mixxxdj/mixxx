@@ -9,7 +9,7 @@ HIDDebug = function (message) { print("HID " + message); }
  * created manually. */
 function HIDBitVector () {
     this.size = 0;
-    this.bits = new Object();
+    this.bits = {};
 }
 
 /** Return bit offset based on bitmask */
@@ -22,7 +22,7 @@ HIDBitVector.prototype.getOffset = function(bitmask) {
 
 /** Add a control bitmask to the HIDBitVector */
 HIDBitVector.prototype.addBitMask = function(group,name,bitmask) {
-    var bit = new Object();
+    var bit = {};
     bit.type = "button";
     bit.packet = undefined;
     bit.id = group+"."+name;
@@ -42,7 +42,7 @@ HIDBitVector.prototype.addBitMask = function(group,name,bitmask) {
 
 /** Add a Output control bitmask to the HIDBitVector */
 HIDBitVector.prototype.addOutputMask = function(group,name,bitmask) {
-    var bit = new Object();
+    var bit = {};
     bit.type = "output";
     bit.packet = undefined;
     bit.id = group+"."+name;
@@ -131,7 +131,7 @@ function HIDPacket(name, reportId, callback, header) {
         this.reportId = reportId;
     }
 
-    this.groups = new Object();
+    this.groups = {};
 
     // Size of various 'pack' values in bytes
     this.packSizes = { b: 1, B: 1, h: 2, H: 2, i: 4, I: 4 };
@@ -225,12 +225,12 @@ HIDPacket.prototype.unpack = function(data,field) {
  * Create group if create is true */
 HIDPacket.prototype.getGroup = function(name,create) {
     if (this.groups==undefined)
-        this.groups = new Object();
+        this.groups = {};
     if (name in this.groups)
         return this.groups[name];
     if (!create)
         return undefined;
-    this.groups[name] = new Object();
+    this.groups[name] = {};
     return this.groups[name];
 }
 
@@ -360,7 +360,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
         return;
     }
 
-    field = new Object();
+    field = {};
     field.packet = undefined;
     field.id = group+"."+name;
     field.group = group;
@@ -426,7 +426,7 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
  * setCallback instead of adding it directly here. But you can do it. */
 HIDPacket.prototype.addOutput = function(group,name,offset,pack,bitmask,callback) {
     var control_group = this.getGroup(group,true);
-    var field = undefined;
+    var field;
     var bitvector = undefined;
     var field_id = group+"."+name;
 
@@ -452,7 +452,7 @@ HIDPacket.prototype.addOutput = function(group,name,offset,pack,bitmask,callback
         return;
     }
 
-    field = new Object();
+    field = {};
     field.id = field_id;
     field.group = group;
     field.name = name;
@@ -555,7 +555,7 @@ HIDPacket.prototype.setMinDelta = function(group,name,mindelta) {
  * Value must be a valid unsigned byte to parse, with enough bits.
  * Returns list of modified bits (delta) */
 HIDPacket.prototype.parseBitVector = function(field,value) {
-    var bits = new Object();
+    var bits = {};
     var bit;
     var new_value;
     for (var bit_id in field.value.bits) {
@@ -573,7 +573,7 @@ HIDPacket.prototype.parseBitVector = function(field,value) {
  * Returns list of changed fields with new value.
  * BitVectors are returned as bits you can iterate separately. */
 HIDPacket.prototype.parse = function(data) {
-    var field_changes = new Object();
+    var field_changes = {};
     var group;
     var group_name;
     var field;
@@ -595,7 +595,7 @@ HIDPacket.prototype.parse = function(data) {
             if (field.type=="bitvector") {
                 // Bitvector deltas are checked in parseBitVector
                 var changed_bits = this.parseBitVector(field,value);
-                for (bit_name in changed_bits)
+                for (var bit_name in changed_bits)
                     field_changes[bit_name] = changed_bits[bit_name];
 
             } else if (field.type=="control") {
@@ -605,6 +605,7 @@ HIDPacket.prototype.parse = function(data) {
                     field.value = value;
                     continue;
                 }
+				var change
                 if (field.isEncoder) {
                     if (field.value==field.max && value==field.min) {
                         change = 1;
@@ -618,7 +619,7 @@ HIDPacket.prototype.parse = function(data) {
                     }
                     field.value = value;
                 } else {
-                    var change = Math.abs(value-field.value);
+                    change = Math.abs(value-field.value);
                     field.delta = value-field.value;
                 }
                 if (field.mindelta==undefined || change>field.mindelta) {
@@ -655,7 +656,7 @@ HIDPacket.prototype.send = function(debug) {
 
     if(debug) {
 		var packet_string = "";
-        for (d in data) {
+        for (var d in data) {
             if (data[d] < 0x10) {
                 packet_string += "0";
             }
@@ -702,8 +703,8 @@ function HIDController () {
     this.initialized = false;
     this.activeDeck = undefined;
 
-    this.InputPackets = new Object();
-    this.OutputPackets = new Object();
+    this.InputPackets = {};
+    this.OutputPackets = {};
     // Default input control packet name: can be modified for controllers
     // which can swap modes (wiimote for example)
     this.defaultPacket = "control";
@@ -753,8 +754,8 @@ function HIDController () {
     this.OutputUpdateInterval = undefined;
 
     this.modifiers = new HIDModifierList();
-    this.scalers = new Object();
-    this.timers = new Object();
+    this.scalers = {};
+    this.timers = {};
 
     this.auto_repeat_interval = 100;
 }
