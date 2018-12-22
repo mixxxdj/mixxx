@@ -148,8 +148,7 @@ double BpmControl::getBpm() const {
     return m_pEngineBpm->get();
 }
 
-void BpmControl::slotFileBpmChanged(double bpm) {
-    Q_UNUSED(bpm);
+void BpmControl::slotFileBpmChanged(double file_bpm) {
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
     // set our BPM if the file BPM changes. See SyncControl::fileBpmChanged().
@@ -161,10 +160,10 @@ void BpmControl::slotFileBpmChanged(double bpm) {
         if (beats_bpm != -1) {
             m_pLocalBpm->set(beats_bpm);
         } else {
-            m_pLocalBpm->set(bpm);
+            m_pLocalBpm->set(file_bpm);
         }
     } else {
-        m_pLocalBpm->set(bpm);
+        m_pLocalBpm->set(file_bpm);
     }
     if (getSyncMode() == SYNC_NONE) {
         slotUpdateEngineBpm();
@@ -271,8 +270,8 @@ bool BpmControl::syncTempo() {
     double fOtherBpm = pOtherEngineBuffer->getBpm();
     double fOtherLocalBpm = pOtherEngineBuffer->getLocalBpm();
 
-    //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisFileBpm;
-    //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherFileBpm;
+    //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisLocalBpm;
+    //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherLocalBpm;
 
     ////////////////////////////////////////////////////////////////////////////
     // Rough proof of how syncing works -- rryan 3/2011

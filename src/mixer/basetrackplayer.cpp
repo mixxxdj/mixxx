@@ -104,7 +104,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 
     m_pPreGain = std::make_unique<ControlProxy>(group, "pregain", this);
     // BPM of the current song
-    m_pBPM = std::make_unique<ControlProxy>(group, "file_bpm", this);
+    m_pFileBPM = std::make_unique<ControlProxy>(group, "file_bpm", this);
     m_pKey = std::make_unique<ControlProxy>(group, "file_key", this);
 
     m_pReplayGain = std::make_unique<ControlProxy>(group, "replaygain", this);
@@ -130,7 +130,7 @@ TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
     if (m_pLoadedTrack) {
         // Listen for updates to the file's BPM
         connect(m_pLoadedTrack.get(), SIGNAL(bpmUpdated(double)),
-                m_pBPM.get(), SLOT(set(double)));
+                m_pFileBPM.get(), SLOT(set(double)));
 
         connect(m_pLoadedTrack.get(), SIGNAL(keyUpdated(double)),
                 m_pKey.get(), SLOT(set(double)));
@@ -228,7 +228,7 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
 
 void BaseTrackPlayerImpl::connectLoadedTrack() {
     connect(m_pLoadedTrack.get(), SIGNAL(bpmUpdated(double)),
-            m_pBPM.get(), SLOT(set(double)));
+            m_pFileBPM.get(), SLOT(set(double)));
     connect(m_pLoadedTrack.get(), SIGNAL(keyUpdated(double)),
             m_pKey.get(), SLOT(set(double)));
     connect(m_pLoadedTrack.get(), SIGNAL(ReplayGainUpdated(mixxx::ReplayGain)),
@@ -239,7 +239,7 @@ void BaseTrackPlayerImpl::disconnectLoadedTrack() {
     // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
     // relies on signals and slots to get tons of things done. Don't
     // randomly disconnect things.
-    disconnect(m_pLoadedTrack.get(), 0, m_pBPM.get(), 0);
+    disconnect(m_pLoadedTrack.get(), 0, m_pFileBPM.get(), 0);
     disconnect(m_pLoadedTrack.get(), 0, this, 0);
     disconnect(m_pLoadedTrack.get(), 0, m_pKey.get(), 0);
 }
@@ -296,7 +296,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         // for all the widgets to change the track and update themselves.
         emit(loadingTrack(pNewTrack, pOldTrack));
         m_pDuration->set(0);
-        m_pBPM->set(0);
+        m_pFileBPM->set(0);
         m_pKey->set(0);
         setReplayGain(0);
         m_pLoopInPoint->set(kNoTrigger);
@@ -314,7 +314,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
 
         // Update the BPM and duration values that are stored in ControlObjects
         m_pDuration->set(m_pLoadedTrack->getDuration());
-        m_pBPM->set(m_pLoadedTrack->getBpm());
+        m_pFileBPM->set(m_pLoadedTrack->getBpm());
         m_pKey->set(m_pLoadedTrack->getKey());
         setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
 

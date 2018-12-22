@@ -250,9 +250,9 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
     Q_UNUSED(scratching);
 }
 
-void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged) {
+void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fromFile) {
     //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm
-    //         << fileChanged;
+    //         << fromFile;
 
     SyncMode syncMode = pSyncable->getSyncMode();
     if (syncMode == SYNC_NONE) {
@@ -262,7 +262,7 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
     // EngineSyncTest.FollowerRateChange dictates this must not happen in general,
     // but it is required when the file BPM changes because it's not a true BPM
     // change, so we set the follower back to the master BPM.
-    if (syncMode == SYNC_FOLLOWER && fileChanged) {
+    if (syncMode == SYNC_FOLLOWER && fromFile) {
         double mbaseBpm = masterBaseBpm();
         double mbpm = masterBpm();
         // TODO(owilliams): Figure out why the master bpm is getting set to

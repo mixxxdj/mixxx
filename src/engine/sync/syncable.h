@@ -95,7 +95,7 @@ class SyncableListener {
     // A Syncable must never call notifyBpmChanged in response to a setMasterBpm()
     // call.
     virtual void notifyBpmChanged(Syncable* pSyncable, double bpm,
-                                  bool fileChanged) = 0;
+                                  bool fromFile) = 0;
 
     // Syncables notify EngineSync directly about various events. EngineSync
     // does not have a say in whether these succeed or not, they are simply
