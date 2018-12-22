@@ -438,6 +438,10 @@ HIDPacket.prototype.addOutput = function(group,name,offset,pack,bitmask,callback
         return;
     }
 
+    // Increase offset by 1 because the reportId was previously considered part of the payload
+	// but isn't anymore and we can't be bothered to adjust every single script manually
+	offset += 1
+
     // Check if we are adding a Output bit to existing bitvector
     field = this.getFieldByOffset(offset,pack);
     if (field!=undefined) {
