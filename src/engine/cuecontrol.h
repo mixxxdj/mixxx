@@ -116,6 +116,7 @@ class CueControl : public EngineControl {
     virtual void hintReader(HintVector* pHintList) override;
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
+    bool isTrackAtZeroPos();
     bool isTrackAtADJStart();
     void resetIndicators();
     bool isPlayingByPlayButton();
@@ -171,6 +172,8 @@ class CueControl : public EngineControl {
     void loadMainCue(double position, Cue::CueSource source);
     void loadStartCue(double position, Cue::CueSource source);
     void loadEndCue(double position, Cue::CueSource source);
+    void loadCuesFromTrack();
+    void reloadCuesFromTrack();
     TrackAt getTrackAt() const;
 
     bool m_bPreviewing;

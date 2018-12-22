@@ -277,7 +277,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     lock.unlock();
 
     // Update COs with cues from track.
-    trackCuesUpdated();
+    loadCuesFromTrack();
 
     // Seek track according to SeekOnLoadMode.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
@@ -312,7 +312,7 @@ void CueControl::cueUpdated() {
     // We should get a trackCuesUpdated call anyway, so do nothing.
 }
 
-void CueControl::trackCuesUpdated() {
+void CueControl::loadCuesFromTrack() {
     QMutexLocker lock(&m_mutex);
     QSet<int> active_hotcues;
     CuePointer pLoadCue, pStartCue, pEndCue;
@@ -386,23 +386,54 @@ void CueControl::trackCuesUpdated() {
     }
 }
 
-void CueControl::trackBeatsUpdated() {
+void CueControl::reloadCuesFromTrack() {
     if (!m_pLoadedTrack)
         return;
 
-    trackCuesUpdated();
+    // Determine current playing position of the track.
+    TrackAt trackAt = getTrackAt();
+    bool wasTrackAtZeroPos = isTrackAtZeroPos();
+    bool wasTrackAtStart = isTrackAtADJStart();
+
+    // Update COs with cues from track.
+    loadCuesFromTrack();
+
+    // Retrieve current position of cues from COs.
+    double cue = m_pCuePoint->get();
+    double start = m_pAutoDJStartPosition->get();
+
+    // Make track follow the updated cues.
+    SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
+    if (seekOnLoadMode == SEEK_ON_LOAD_DEFAULT) {
+        if ((trackAt == TrackAt::Cue || wasTrackAtZeroPos) && cue != -1.0 && isCueRecallEnabled()) {
+            seekExact(cue);
+        }
+    } else if (seekOnLoadMode == SEEK_ON_LOAD_MAIN_CUE) {
+        if ((trackAt == TrackAt::Cue || wasTrackAtZeroPos) && cue != -1.0) {
+            seekExact(cue);
+        }
+    } else if (seekOnLoadMode == SEEK_ON_LOAD_ADJ_START) {
+        if ((wasTrackAtStart || wasTrackAtZeroPos) && start != -1.0) {
+            seekExact(start);
+        }
+    }
+}
+
+void CueControl::trackCuesUpdated() {
+    reloadCuesFromTrack();
+}
+
+void CueControl::trackBeatsUpdated() {
+    reloadCuesFromTrack();
 }
 
 void CueControl::quantizeChanged(double v) {
     Q_UNUSED(v);
 
-    trackCuesUpdated();
+    reloadCuesFromTrack();
 }
 
 void CueControl::loadMainCue(double position, Cue::CueSource source) {
-    TrackAt trackAt = getTrackAt();
-    SampleOfTrack sampleOfTrack = getSampleOfTrack();
-
     // Snap automatically-placed cue point to nearest beat only if quantize is enabled
     if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
         BeatsPointer pBeats = m_pLoadedTrack->getBeats();
@@ -417,20 +448,9 @@ void CueControl::loadMainCue(double position, Cue::CueSource source) {
     // Update COs
     m_pCuePoint->set(position);
     m_pCueSource->set(source);
-
-    // Make track follow the cue point
-    if ((trackAt == TrackAt::Cue || sampleOfTrack.current == 0.0) && position != -1.0) {
-        SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
-        if ((seekOnLoadMode == SEEK_ON_LOAD_DEFAULT && isCueRecallEnabled()) ||
-                seekOnLoadMode == SEEK_ON_LOAD_MAIN_CUE) {
-            seekExact(position);
-        }
-    }
 }
 
 void CueControl::loadStartCue(double position, Cue::CueSource source) {
-    bool wasTrackAtStart = isTrackAtADJStart();
-
     // Snap automatically-placed start cue point to nearest previous beat, but
     // only of quantization is enabled.
     if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
@@ -449,11 +469,6 @@ void CueControl::loadStartCue(double position, Cue::CueSource source) {
     // Update COs.
     m_pAutoDJStartPosition->set(position);
     m_pAutoDJStartSource->set(source);
-
-    // If track was at AutoDJ start, move track along with it.
-    if (wasTrackAtStart && getSeekOnLoadMode() == SEEK_ON_LOAD_ADJ_START) {
-        seekExact(position);
-    }
 }
 
 void CueControl::loadEndCue(double position, Cue::CueSource source) {
@@ -1323,6 +1338,10 @@ CueControl::TrackAt CueControl::getTrackAt() const {
         return TrackAt::Cue;
     }
     return TrackAt::ElseWhere;
+}
+
+bool CueControl::isTrackAtZeroPos() {
+    return (fabs(getSampleOfTrack().current) < 1.0f);
 }
 
 bool CueControl::isTrackAtADJStart() {
