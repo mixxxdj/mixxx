@@ -160,10 +160,8 @@ WTime {
 }
 
 #SpinnyContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';/*
-  background: transparent;*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
-  border-right: 1px solid #585858;
 }
 
 WSpinny {/*

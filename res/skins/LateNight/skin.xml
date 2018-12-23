@@ -143,6 +143,42 @@
     </SingletonDefinition>
 
     <SingletonDefinition>
+      <ObjectName>SpinnyCoverart1</ObjectName>
+      <Children>
+        <Template src="skin:spinny_coverart.xml">
+          <SetVariable name="channum">1</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverart2</ObjectName>
+      <Children>
+        <Template src="skin:spinny_coverart.xml">
+          <SetVariable name="channum">2</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverart3</ObjectName>
+      <Children>
+        <Template src="skin:spinny_coverart.xml">
+          <SetVariable name="channum">3</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverart4</ObjectName>
+      <Children>
+        <Template src="skin:spinny_coverart.xml">
+          <SetVariable name="channum">4</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
       <ObjectName>LibrarySingleton</ObjectName>
       <Children>
         <Template src="skin:library.xml"/>
