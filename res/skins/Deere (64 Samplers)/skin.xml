@@ -190,6 +190,42 @@
     </SingletonDefinition>
 
     <SingletonDefinition>
+      <ObjectName>DeckCoverArt1</ObjectName>
+      <Children>
+        <Template src="skin:../Deere/coverart.xml">
+          <SetVariable name="group">[Channel1]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckCoverArt2</ObjectName>
+      <Children>
+        <Template src="skin:../Deere/coverart.xml">
+          <SetVariable name="group">[Channel2]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckCoverArt3</ObjectName>
+      <Children>
+        <Template src="skin:../Deere/coverart.xml">
+          <SetVariable name="group">[Channel3]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckCoverArt4</ObjectName>
+      <Children>
+        <Template src="skin:../Deere/coverart.xml">
+          <SetVariable name="group">[Channel4]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
       <ObjectName>Library</ObjectName>
       <Children>
         <Template src="skin:../Deere/library.xml"/>
@@ -280,9 +316,61 @@
         </Splitter><!-- /Visible when Library is not maximized -->
 
         <WidgetGroup><!-- Maximized Library -->
-          <Layout>horizontal</Layout>
+          <Layout>vertical</Layout>
           <SizePolicy>me,me</SizePolicy>
           <Children>
+
+            <!-- put invisble waveforms Singleton here to make end-of-track warning work
+                without actually showing scrolling waveforms -->
+            <WidgetGroup>
+              <Layout>horizontal</Layout>
+              <Size>0me,0f</Size>
+              <Children>
+
+                <WidgetGroup>
+                  <Connection>
+                    <ConfigKey>[Skin],show_4decks</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+                  <Layout>vertical</Layout>
+                  <Children>
+                    <SingletonContainer>
+                      <ObjectName>DeckVisualRow3</ObjectName>
+                    </SingletonContainer>
+                  </Children>
+                </WidgetGroup>
+
+                <SingletonContainer>
+                  <ObjectName>DeckVisualRow1</ObjectName>
+                </SingletonContainer>
+
+                <SingletonContainer>
+                  <ObjectName>DeckVisualRow2</ObjectName>
+                </SingletonContainer>
+
+                <WidgetGroup>
+                  <Connection>
+                    <ConfigKey>[Skin],show_4decks</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
+                  <Layout>vertical</Layout>
+                  <Children>
+                    <SingletonContainer>
+                      <ObjectName>DeckVisualRow4</ObjectName>
+                    </SingletonContainer>
+                  </Children>
+                </WidgetGroup>
+              </Children>
+            </WidgetGroup><!-- (Invisible) scrolling waveforms -->
+
+            <WidgetGroup>
+              <SizePolicy>me,max</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Template src="skin:../Deere/decks_small.xml"/>
+              </Children>
+            </WidgetGroup>
+
             <SingletonContainer>
               <ObjectName>Library</ObjectName>
             </SingletonContainer>
