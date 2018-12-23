@@ -487,43 +487,17 @@ class Ebur128Mit(Dependence):
 
 
 class SoundTouch(Dependence):
-    SOUNDTOUCH_INTERNAL_PATH = 'lib/soundtouch'
-    INTERNAL_LINK = True
-
     def sources(self, build):
-        if self.INTERNAL_LINK:
-            env = build.env.Clone()
-            soundtouch_dir = env.Dir(self.SOUNDTOUCH_INTERNAL_PATH)
-            SCons.Export('env')
-            SCons.Export('build')
-            env.SConscript(env.File('SConscript', soundtouch_dir))
-
-            build.env.Append(LIBPATH=self.SOUNDTOUCH_INTERNAL_PATH)
-            build.env.Append(LIBS=['soundtouch'])
         return ['src/engine/enginebufferscalest.cpp']
 
     def configure(self, build, conf, env=None):
         if env is None:
             env = build.env
+        if not conf.CheckForPKG('soundtouch', '2.0.0'):
+            raise Exception(
+                "Could not find libsoundtouch >= 2.0.0 or its development headers.")
+        build.env.ParseConfig('pkg-config soundtouch --silence-errors --cflags --libs')
 
-        if build.platform_is_linux:
-            # Try using system lib
-            if conf.CheckForPKG('soundtouch', '2.0.0'):
-                # System Lib found
-                build.env.ParseConfig('pkg-config soundtouch --silence-errors --cflags --libs')
-                self.INTERNAL_LINK = False
-
-        if self.INTERNAL_LINK:
-            env.Append(CPPPATH=['#' + self.SOUNDTOUCH_INTERNAL_PATH])
-
-            # Prevents circular import.
-            from .features import Optimize
-
-            # If we do not want optimizations then disable them.
-            optimize = (build.flags['optimize'] if 'optimize' in build.flags
-                        else Optimize.get_optimization_level(build))
-            if optimize == Optimize.LEVEL_OFF:
-                env.Append(CPPDEFINES='SOUNDTOUCH_DISABLE_X86_OPTIMIZATIONS')
 
 class RubberBand(Dependence):
     def sources(self, build):
