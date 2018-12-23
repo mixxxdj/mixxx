@@ -33,7 +33,10 @@ class used_ptr {
   public:
     explicit used_ptr(use_counting_ptr<T>* pUcp)
         : m_pUcp(pUcp),
-          m_p(pUcp->use()) {
+          m_p(nullptr) {
+        if(m_pUcp) {
+          m_p = pUcp->use();
+        }
     }
 
     ~used_ptr() {
