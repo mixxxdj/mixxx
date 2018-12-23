@@ -15,7 +15,7 @@ Variables:
   <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
 
   <SingletonDefinition>
-    <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
+    <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
     <Children>
       <Template src="skin:deck_row_overview_right.xml"/>
     </Children>
@@ -188,7 +188,7 @@ Variables:
             <Children>
 
               <SingletonContainer>
-                <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
+                <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
               </SingletonContainer>
 
               <Template src="skin:deck_row_comment_right.xml"/>
@@ -215,9 +215,16 @@ Variables:
 
               <Template src="skin:deck_row_comment_right.xml"/>
 
-              <SingletonContainer>
-                <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
-              </SingletonContainer>
+              <WidgetGroup><!--
+                <ObjectName>DeckOverviewBox<Variable name="chanNum"/></ObjectName> -->
+                <Layout>horizontal</Layout>
+                <Size>0me,50f</Size>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
 
             </Children>
             <Connection>

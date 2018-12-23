@@ -167,50 +167,9 @@ Variables:
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
-        <Layout>horizontal</Layout>
-        <Size>1me,40f</Size>
-        <Children>
-          <Overview>
-            <TooltipId>waveform_overview</TooltipId>
-            <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
-            <Channel><Variable name="chanNum"/></Channel>
-            <Size>1me,30me</Size>
-            <BgColor><Variable name="SignalBgColor"/></BgColor>
-            <SignalColor><Variable name="SignalColor"/></SignalColor>
-            <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
-            <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-            <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
-            <PlayPosColor>#FF4300</PlayPosColor>
-            <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
-            <EndOfTrackColor>#EA0085</EndOfTrackColor>
-            <DefaultMark>
-              <Align>bottom|right</Align>
-              <Color>#00FF00</Color>
-              <TextColor>#FFFFFF</TextColor>
-              <Text> %1 </Text>
-            </DefaultMark>
-            <MarkRange>
-              <StartControl>loop_start_position</StartControl>
-              <EndControl>loop_end_position</EndControl>
-              <EnabledControl>loop_enabled</EnabledControl>
-              <Color>#00FF00</Color>
-              <DisabledColor>#FFFFFF</DisabledColor>
-            </MarkRange>
-            <Mark>
-              <Control>cue_point</Control>
-              <Text>Q</Text>
-              <Align>top|right</Align>
-              <Color>#FF0080</Color>
-              <TextColor>#FFFFFF</TextColor>
-            </Mark>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
-            </Connection>
-          </Overview>
-        </Children>
-      </WidgetGroup>
+      <SingletonContainer>
+        <ObjectName>DeckOverviewSingleton<Variable name="chanNum"/></ObjectName>
+      </SingletonContainer>
 
     </Children>
   </WidgetGroup>

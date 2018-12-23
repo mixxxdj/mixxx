@@ -47,7 +47,7 @@ Variables:
               <NumberPos>
                 <ObjectName>PlayPosition</ObjectName>
                 <TooltipId>track_time</TooltipId>
-                <Size>-1min,22f</Size>
+                <Size>-1min,20f</Size>
                 <Alignment>right</Alignment>
                 <Channel><Variable name="chanNum"/></Channel>
                 <!-- Not respected, see

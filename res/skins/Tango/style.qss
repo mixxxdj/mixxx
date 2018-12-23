@@ -123,13 +123,12 @@ WWidgetGroup {
 /*	Define background-color here to make VinylToggler match
   the waveforms background-color.
   spinnyMini_Xmask.svg must match as well. */
-#DeckOverview1,
-#DeckOverview2,
-#DeckOverview1 WOverview {
+#DeckOverviewContainer1,
+#DeckOverviewContainer2 {
   background-color: #001D33;
 }
-#DeckOverview3,
-#DeckOverview4 {
+#DeckOverviewContainer3,
+#DeckOverviewContainer4 {
   background-color: #3A0440;
 }
 

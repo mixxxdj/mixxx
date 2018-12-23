@@ -12,57 +12,22 @@ Variables:
   SignalRGBLowColor   :
   SignalRGBMidColor   :
   SignalRGBHighColor  :
-  SignalBgColor_1     : for hidden scrolling waveform
-  SignalColor_1       :
 -->
 <Template>
   <WidgetGroup>
     <ObjectName>Spacer0f</ObjectName>
-    <Layout>stacked</Layout>
-    <SizePolicy>me,f</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Size>0me,50f</Size>
     <Children>
-      <WidgetGroup>
-        <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
+      <WidgetGroup><!-- -->
+        <ObjectName>DeckOverviewContainer<Variable name="chanNum"/></ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,f</SizePolicy>
+        <Size>0me,50f</Size>
         <Children>
 
-          <Overview>
-            <TooltipId>waveform_overview</TooltipId>
-            <Channel><Variable name="chanNum"/></Channel>
-            <Size>1me,50f</Size>
-            <BgColor><Variable name="SignalBgColor"/></BgColor>
-            <SignalColor><Variable name="SignalColor"/></SignalColor>
-            <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
-            <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-            <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
-            <PlayPosColor>#FF4300</PlayPosColor>
-            <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
-            <EndOfTrackColor>#EA0085</EndOfTrackColor>
-            <DefaultMark>
-              <Align>bottom|right</Align>
-              <Color>#00FF00</Color>
-              <TextColor>#FFFFFF</TextColor>
-              <Text> %1 </Text>
-            </DefaultMark>
-            <MarkRange>
-              <StartControl>loop_start_position</StartControl>
-              <EndControl>loop_end_position</EndControl>
-              <EnabledControl>loop_enabled</EnabledControl>
-              <Color>#00FF00</Color>
-              <DisabledColor>#FFFFFF</DisabledColor>
-            </MarkRange>
-            <Mark>
-              <Control>cue_point</Control>
-              <Text>Q</Text>
-              <Align>top|right</Align>
-              <Color>#FF0080</Color>
-              <TextColor>#FFFFFF</TextColor>
-            </Mark>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
-            </Connection>
-          </Overview><!-- /Overview -->
+          <SingletonContainer>
+            <ObjectName>DeckOverviewSingleton<Variable name="chanNum"/></ObjectName>
+          </SingletonContainer>
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
