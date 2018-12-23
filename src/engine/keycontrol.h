@@ -65,14 +65,13 @@ class KeyControl : public EngineControl {
     ControlPushButton* m_keylockMode;
     ControlPushButton* m_keyunlockMode;
 
-    /** The current loaded file's detected key */
+    // The current loaded file's detected key
     ControlObject* m_pFileKey;
 
-    /** The current effective key of the engine */
+    // The current effective key of the engine
     ControlObject* m_pEngineKey;
     ControlPotmeter* m_pEngineKeyDistance;
 
-    TrackPointer m_pTrack;
     struct PitchTempoRatio m_pitchRateInfo;
     QAtomicInt m_updatePitchRequest;
     QAtomicInt m_updatePitchAdjustRequest;

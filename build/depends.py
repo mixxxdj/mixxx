@@ -279,6 +279,9 @@ class Qt(Dependence):
             if not conf.CheckForPKG('Qt5Core', '5.0'):
                 raise Exception('Qt >= 5.0 not found')
 
+            if not conf.CheckLib('Qt5X11Extras'):
+                raise Exception('Could not find Qt5X11Extras or its development headers')
+
             qt_modules.extend(['QtDBus'])
             # This automatically converts QtXXX to Qt5XXX where appropriate.
             build.env.EnableQt5Modules(qt_modules, debug=False)

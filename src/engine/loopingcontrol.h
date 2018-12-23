@@ -36,7 +36,6 @@ class LoopingControl : public EngineControl {
     // the sample that should be seeked to. Otherwise it returns currentSample.
     void process(const double dRate,
                    const double currentSample,
-                   const double totalSamples,
                    const int iBufferSize) override;
 
     // nextTrigger returns the sample at which the engine will be triggered to
@@ -61,7 +60,7 @@ class LoopingControl : public EngineControl {
     void slotReloopAndStop(double);
     void slotLoopStartPos(double);
     void slotLoopEndPos(double);
-    virtual void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
+    void trackLoaded(TrackPointer pNewTrack) override;
     void slotUpdatedTrackBeats();
 
     // Generate a loop of 'beats' length. It can also do fractions for a
@@ -160,6 +159,7 @@ class LoopingControl : public EngineControl {
     ControlObject* m_pCOLoopMove;
     QList<LoopMoveControl*> m_loopMoves;
 
+    // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
 };

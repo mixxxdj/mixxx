@@ -44,14 +44,10 @@ Variables:
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-
-            <!-- Elapsed (may include '-' if position is before actual track beginning)
-                or Remaning -->
               <NumberPos>
                 <ObjectName>PlayPosition</ObjectName>
                 <TooltipId>track_time</TooltipId>
-                <Size>85min,22f</Size>
+                <Size>-1min,22f</Size>
                 <Alignment>right</Alignment>
                 <Channel><Variable name="chanNum"/></Channel>
                 <!-- Not respected, see
@@ -61,8 +57,6 @@ Variables:
                   <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                 </Connection>
               </NumberPos>
-
-              <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
             </Children>
           </WidgetGroup><!-- Time -->
         </Children>

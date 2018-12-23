@@ -26,7 +26,7 @@
   <String Id="NewerInstalled">Une version plus récente ou identique de ce produit est déjà installée.</String>
   <String Id="x64VersionRequired">Vous devez installer la version 64-bits de ce produit sur un Windows 64-bits.</String>
   <String Id="x86VersionRequired">Vous devez installer la version 32-bits de ce produit sur un Windows 32-bits.</String>
-  <String Id="x86VersionWarning">Vous installez une version 32 bits sur un système 64 bits.&#13;&#10;Nous vous recommandons d'utiliser une version 64 bits pour de meilleures performances.&#13;&#10;Vous pouvez télécharger l'installeur 64 bits ici : http://mixxx.org/download/</String>
+  <String Id="x86VersionWarning">Vous installez une version 32 bits sur un système 64 bits. Nous vous recommandons d'utiliser une version 64 bits pour de meilleures performances. Vous pouvez télécharger l'installeur 64 bits ici : http://mixxx.org/download/</String>
   <String Id="XPWarning">Vous installez Mixxx sur un système obsolète. Certaines fonctions pourraient ne pas fonctionner. Nous vous recommandons de mettre à jour votre système d'exploitation.</String>
   <String Id="bitWidthMismatch32">Vous installez une version 32 bits de Mixxx, mais il existe déjà une version 64 bits installée. Ceci peut conduire à un comportement imprévisible. SVP, désinstallez d'abord ou téléchargez l'installeur correspondant pour mettre à jour, à moins de savoir exactement ce que vous faites.</String>
   <String Id="bitWidthMismatch64">Vous installez une version 64 bits de Mixxx, mais il existe déjà une version 32 bits installée. Ceci peut conduire à un comportement imprévisible. SVP, désinstallez d'abord ou téléchargez l'installeur correspondant pour mettre à jour, à moins de savoir exactement ce que vous faites.</String>

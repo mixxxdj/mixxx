@@ -22,11 +22,11 @@
 
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
-  <String Id="OS2Old">Ten produkt wymaga Windowsa XP lub wyżsego</String>
+  <String Id="OS2Old">Ten produkt wymaga Windowsa 7 lub wyżsego</String>
   <String Id="NewerInstalled">Ta lub nowsza wersja tego produktu jest juź zainstalowana.</String>
   <String Id="x64VersionRequired">Musisz zainstalować 64-bitową wersję na 64-bitowym Windowsie.</String>
   <String Id="x86VersionRequired">Musisz zainstalować 32-bitową wersję na 32-bitowym Windowsie.</String>
-  <String Id="x86VersionWarning">Masz zamiar zainstalować wersję 32-bitową w 64-bitowym systemie operacyjnym.&#13;&#10;Zalecane jest użycie 64-bitowej wersji dla lepszej wydajności.&#13;&#10;Pakiet instalacji 64-bitowej można pobrać z http://mixxx.org/download/</String>
+  <String Id="x86VersionWarning">Masz zamiar zainstalować wersję 32-bitową w 64-bitowym systemie operacyjnym. Zalecane jest użycie 64-bitowej wersji dla lepszej wydajności. Pakiet instalacji 64-bitowej można pobrać z http://mixxx.org/download/</String>
   <String Id="XPWarning">Instalujesz Mixxx'a na przestarzałym systemie operacyjnym. Niektóre funkcje mogą nie działac prawidłowo lub wcale. Rekomendujemy zaktualizować swój system operacyjny.</String>
   <String Id="bitWidthMismatch32">Masz zamiar zainstalować 32-bitową wersje, ale już jest zainstalowana wersja 64-bitowa. Może to prowadzić do niepożądanego działania. Najpierw należy odinstalować istniejącego Mixxx'a, lub Pobrać pakiet instalacji 64-bitowej do uaktualnienia (chyba, że wiesz, co robisz.)</String>
   <String Id="bitWidthMismatch64">Masz zamiar zainstalować 64-bitową wersję, ale już jest zainstalowana wersja 32-bitowa. Może to prowadzić do niepożądanego działania. Najpierw należy odinstalować istniejącego Mixxx'a, lub Pobrać pakiet instalacji 32-bitowe do uaktualnienia (chyba, że wiesz, co robisz.)</String>

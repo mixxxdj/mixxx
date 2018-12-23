@@ -12,6 +12,11 @@
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "library/dlgtrackmetadataexport.h"
 #include "sources/soundsourceproxy.h"
+#include "widget/wsearchlineedit.h"
+
+namespace {
+    const ConfigKey kSearchDebouncingTimeoutMillisKey = ConfigKey("[Library]","SearchDebouncingTimeoutMillis");
+}
 
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
@@ -43,6 +48,16 @@ DlgPrefLibrary::DlgPrefLibrary(
     spinBoxRowHeight->setValue(rowHeight);
     connect(spinBoxRowHeight, SIGNAL(valueChanged(int)),
             this, SLOT(slotRowHeightValueChanged(int)));
+
+    searchDebouncingTimeoutSpinBox->setMinimum(WSearchLineEdit::kMinDebouncingTimeoutMillis);
+    searchDebouncingTimeoutSpinBox->setMaximum(WSearchLineEdit::kMaxDebouncingTimeoutMillis);
+    const auto searchDebouncingTimeoutMillis =
+            m_pConfig->getValue(
+                    ConfigKey("[Library]","SearchDebouncingTimeoutMillis"),
+                    WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
+    searchDebouncingTimeoutSpinBox->setValue(searchDebouncingTimeoutMillis);
+    connect(searchDebouncingTimeoutSpinBox, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSearchDebouncingTimeoutMillisChanged(int)));
 
     connect(libraryFontButton, SIGNAL(clicked()),
             this, SLOT(slotSelectFont()));
@@ -349,6 +364,13 @@ void DlgPrefLibrary::slotSelectFont() {
     if (ok) {
         setLibraryFont(font);
     }
+}
+
+void DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged(int searchDebouncingTimeoutMillis) {
+    m_pConfig->setValue(
+            kSearchDebouncingTimeoutMillisKey,
+            searchDebouncingTimeoutMillis);
+    WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
 }
 
 void DlgPrefLibrary::slotSyncTrackMetadataExportToggled() {

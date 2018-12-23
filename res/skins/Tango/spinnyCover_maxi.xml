@@ -95,8 +95,7 @@ Variables:
         <SizePolicy>i,i</SizePolicy>
         <Children>
           <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0me,3f</Size></WidgetGroup>
-          <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>0me,22f</Size></WidgetGroup>
-          <WidgetGroup><Size>0me,0me</Size></WidgetGroup>
+          <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>0me,22me</Size></WidgetGroup>
         </Children>
       </WidgetGroup>
 
