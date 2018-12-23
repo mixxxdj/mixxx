@@ -1,16 +1,18 @@
 # 
 # Translators:
-# Jorge Marcos (Jorgeelalto) <jormarchav@gmail.com>, 2016
-# Jorge Marcos (Jorgeelalto) <jormarchav@gmail.com>, 2016
+# Jorge Marcos (Jorgeelalto) <inactive+jormarchav@transifex.com>, 2016
+# Jorge Marcos (Jorgeelalto) <inactive+jormarchav@transifex.com>, 2016
+# Jose Manuel López <joselp@outlook.es>, 2018
 # Josep Maria Antolin <josepma@gmail.com>, 2016-2017
 # Josep Maria Antolin <josepma@gmail.com>, 2016
 # miguel angel <mig261166@gmail.com>, 2017
+# S.Brandt <s.brandt@mixxx.org>, 2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-10-24 17:56+0000\n"
+"PO-Revision-Date: 2018-12-23 09:36+0000\n"
 "Last-Translator: miguel angel <mig261166@gmail.com>\n"
 "Language-Team: Spanish (Spain) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/es_ES/)\n"
 "MIME-Version: 1.0\n"
