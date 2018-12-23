@@ -419,16 +419,6 @@ void SyncControl::setLocalBpm(double local_bpm) {
         return;
     }
 
-
-    if (local_bpm == 0 && m_pPlayButton->toBool()) {
-        // If the local bpm is suddenly zero and sync was active and we are playing,
-        // stick with the previous localbpm.
-        // I think this can only happen if the beatgrid is reset.
-        qWarning() << getGroup() << "Sync is already enabled on track with empty or zero bpm";
-        return;
-    }
-
-
     // FIXME: This recalculating of the rate is duplicated in bpmcontrol.
     const double rateRatio = calcRateRatio();
     double bpm = local_bpm * rateRatio;
