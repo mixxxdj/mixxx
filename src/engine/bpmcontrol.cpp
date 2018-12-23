@@ -152,6 +152,7 @@ void BpmControl::slotFileBpmChanged(double file_bpm) {
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
     // set our BPM if the file BPM changes. See SyncControl::fileBpmChanged().
+    //qDebug() << "BpmControl::slotFileBpmChanged" << file_bpm;
     BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         const double beats_bpm =
@@ -164,9 +165,6 @@ void BpmControl::slotFileBpmChanged(double file_bpm) {
         }
     } else {
         m_pLocalBpm->set(file_bpm);
-    }
-    if (getSyncMode() == SYNC_NONE) {
-        slotUpdateEngineBpm();
     }
     resetSyncAdjustment();
 }

@@ -28,7 +28,6 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
           m_masterBpmAdjustFactor(kBpmUnity),
           m_unmultipliedTargetBeatDistance(0.0),
           m_beatDistance(0.0),
-          m_prevLocalBpm(0.0),
           m_pBpm(NULL),
           m_pLocalBpm(NULL),
           m_pFileBpm(NULL),
@@ -411,12 +410,16 @@ void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
 }
 
 void SyncControl::setLocalBpm(double local_bpm) {
+    if (local_bpm == m_prevLocalBpm.getValue()) {
+        return;
+    }
+    m_prevLocalBpm.setValue(local_bpm);
+
     if (getSyncMode() == SYNC_NONE) {
         return;
     }
-    if (local_bpm == m_prevLocalBpm) {
-        return;
-    }
+
+
     if (local_bpm == 0 && m_pPlayButton->toBool()) {
         // If the local bpm is suddenly zero and sync was active and we are playing,
         // stick with the previous localbpm.
@@ -424,7 +427,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
         qWarning() << getGroup() << "Sync is already enabled on track with empty or zero bpm";
         return;
     }
-    m_prevLocalBpm = local_bpm;
+
 
     // FIXME: This recalculating of the rate is duplicated in bpmcontrol.
     const double rateRatio = calcRateRatio();
@@ -434,9 +437,20 @@ void SyncControl::setLocalBpm(double local_bpm) {
 }
 
 void SyncControl::slotFileBpmChanged() {
-    // This slot is fired by file_bpm changes.
-    double file_bpm = m_pFileBpm ? m_pFileBpm->get() : 0.0;
-    setLocalBpm(file_bpm);
+    // This slot is fired by a new file is loaded or if the user
+    // has adjusted the beatgrid.
+    //qDebug() << "SyncControl::slotFileBpmChanged";
+    
+    // Note: bpmcontrol has updated local_bpm just before
+    double local_bpm = m_pLocalBpm ? m_pLocalBpm->get() : 0.0;
+
+    if (getSyncMode() == SYNC_NONE) {
+        const double rateRatio = calcRateRatio();
+        double bpm = local_bpm * rateRatio;
+        m_pBpm->set(bpm);
+    } else {
+        setLocalBpm(local_bpm);
+    }
 }
 
 void SyncControl::slotRateChanged() {
