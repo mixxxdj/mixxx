@@ -19,7 +19,7 @@ class MpscFifo {
     bool enqueue(T value) {
         if (m_enqueueSize.fetchAndAddAcquire(1) >= capacity) {
             // Queue is full -> Restore size and abort
-            m_enqueueSize.fetchAndSubRelease(1);
+            m_enqueueSize.fetchAndAddRelease(-1);
             return false;
         } else {
             int headIndex = m_headIndex.fetchAndAddAcquire(1);
@@ -32,7 +32,7 @@ class MpscFifo {
     }
 
     bool dequeue(T* value) {
-        if (m_dequeueSize.fetchAndSubAcquire(1) <= 0) {
+        if (m_dequeueSize.fetchAndAddAcquire(-1) <= 0) {
             // Queue is empty -> Restore size and abort
             m_dequeueSize.fetchAndAddRelease(1);
             return false;
@@ -52,7 +52,7 @@ class MpscFifo {
                         !m_headIndex.testAndSetOrdered(headIndex, headIndex % capacity));
             }
             // Allow the writer to overwrite the dequeued value
-            m_enqueueSize.fetchAndSubRelease(1);
+            m_enqueueSize.fetchAndAddRelease(-1);
             return true;
         }
     }
