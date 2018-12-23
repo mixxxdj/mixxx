@@ -20,9 +20,6 @@
             <Size>5f,40f</Size>
             <BackPath>style/style_bg_deck_border.png</BackPath>
           </WidgetGroup>
-          <SingletonContainer>
-            <ObjectName>Waveform<Variable name="channum"/></ObjectName>
-          </SingletonContainer>
         </Children>
       </WidgetGroup>
 

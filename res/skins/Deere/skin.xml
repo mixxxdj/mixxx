@@ -309,56 +309,39 @@
           <SizePolicy>me,me</SizePolicy>
           <Children>
 
-            <!-- put invisble waveforms Singleton here to make end-of-track warning work
-                without actually showing scrolling waveforms -->
+        <!-- put invisble waveforms Singletons here to enable end-of-track warning
+            without actually showing scrolling waveforms -->
             <WidgetGroup>
               <Layout>horizontal</Layout>
               <Size>0me,0f</Size>
               <Children>
-
-                <WidgetGroup>
-                  <Connection>
-                    <ConfigKey>[Skin],show_4decks</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
-                  <Layout>vertical</Layout>
-                  <Children>
-                    <SingletonContainer>
-                      <ObjectName>DeckVisualRow3</ObjectName>
-                    </SingletonContainer>
-                  </Children>
-                </WidgetGroup>
-
                 <SingletonContainer>
                   <ObjectName>DeckVisualRow1</ObjectName>
                 </SingletonContainer>
-
                 <SingletonContainer>
                   <ObjectName>DeckVisualRow2</ObjectName>
                 </SingletonContainer>
 
                 <WidgetGroup>
-                  <Connection>
-                    <ConfigKey>[Skin],show_4decks</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
-                  <Layout>vertical</Layout>
+                  <Layout>horizontal</Layout>
                   <Children>
+                    <SingletonContainer>
+                      <ObjectName>DeckVisualRow3</ObjectName>
+                    </SingletonContainer>
                     <SingletonContainer>
                       <ObjectName>DeckVisualRow4</ObjectName>
                     </SingletonContainer>
                   </Children>
+                  <Connection>
+                    <ConfigKey>[Skin],show_4decks</ConfigKey>
+                    <BindProperty>visible</BindProperty>
+                  </Connection>
                 </WidgetGroup>
+
               </Children>
             </WidgetGroup><!-- (Invisible) scrolling waveforms -->
 
-            <WidgetGroup>
-              <SizePolicy>me,max</SizePolicy>
-              <Layout>horizontal</Layout>
-              <Children>
-                <Template src="skin:decks_small.xml"/>
-              </Children>
-            </WidgetGroup>
+            <Template src="skin:decks_small.xml"/>
 
             <SingletonContainer>
               <ObjectName>Library</ObjectName>

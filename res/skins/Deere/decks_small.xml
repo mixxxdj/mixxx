@@ -1,7 +1,7 @@
 <Template>
   <WidgetGroup>
     <ObjectName>DecksSizer</ObjectName>
-    <SizePolicy>me,me</SizePolicy>
+    <SizePolicy>me,max</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
       <WidgetGroup>

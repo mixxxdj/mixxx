@@ -138,7 +138,7 @@
     <SingletonDefinition>
       <ObjectName>WaveformsSingleton</ObjectName>
       <Children>
-        <Template src="skin:waveforms_singleton.xml"/>
+        <Template src="skin:waveforms_container.xml"/>
       </Children>
     </SingletonDefinition>
 
@@ -173,7 +173,9 @@
                   <Collapsible>1,0</Collapsible>
                   <Children>
 
-                    <Template src="skin:waveforms.xml"/>
+                    <SingletonContainer>
+                      <ObjectName>WaveformsSingleton</ObjectName>
+                    </SingletonContainer>
 
                     <WidgetGroup>
                       <Layout>vertical</Layout>
@@ -205,38 +207,33 @@
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
+                    <!-- put invisble waveforms Singletons here to enable end-of-track warning
+                        without actually showing scrolling waveforms -->
                     <WidgetGroup>
-                      <SizePolicy>me,max</SizePolicy>
-                      <Layout>stacked</Layout>
+                      <Layout>horizontal</Layout>
+                      <Size>0me,0f</Size>
                       <Children>
-
-                        <Template src="skin:decks_small.xml"/>
-                        <!-- put invisble waveforms Singleton here to make end-of-track warning work
-                           without actually showing scrolling waveforms -->
-                        <WidgetGroup>
-                          <Layout>horizontal</Layout>
-                          <!-- Size needs to be at least 1x1px for the hack to work -->
-                          <Size>1f,1f</Size>
-                          <Children>
-                            <SingletonContainer>
-                              <ObjectName>WaveformsSingleton</ObjectName>
-                            </SingletonContainer>
-                          </Children>
-                        </WidgetGroup>
-                        
+                        <SingletonContainer>
+                          <ObjectName>WaveformsSingleton</ObjectName>
+                        </SingletonContainer>
                       </Children>
                     </WidgetGroup>
+
+                    <Template src="skin:decks_small.xml"/>
+
                     <SingletonContainer>
                       <ObjectName>LibrarySingleton</ObjectName>
                     </SingletonContainer>
                   </Children>
-                </WidgetGroup>
+                </WidgetGroup><!-- Maximized Library -->
 
               </Children>
             </WidgetStack>
             <Template src="skin:skin_settings.xml"/>
+
           </Children>
         </WidgetGroup>
+
         <Template src="skin:toolbar.xml"/>
       </Children>
     </WidgetGroup>
