@@ -379,6 +379,51 @@
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
+
+                <!-- Load scrolling waveforms Singleton here if the waveforms
+                    in the waveforms/decks Splitter are collapsed.
+                    Otherwise the end-of-track warning would not show up
+                    in overview waveforms. -->
+                    <WidgetGroup>
+                      <Layout>vertical</Layout>
+                      <Size>0me,0f</Size>
+                      <Children>
+                        <SingletonContainer>
+                          <ObjectName>Waveforms_Singleton</ObjectName>
+                        </SingletonContainer>
+                      </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- Minimal decks 1/2 -->
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Children>
+                        <Template src="skin:../Tango/deck_left_mini.xml">
+                          <SetVariable name="chanNum">1</SetVariable>
+                        </Template>
+                        <Template src="skin:../Tango/deck_right_mini.xml">
+                          <SetVariable name="chanNum">2</SetVariable>
+                        </Template>
+                      </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- Minimal decks 3/4 -->
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Children>
+                        <Template src="skin:../Tango/deck_left_mini.xml">
+                          <SetVariable name="chanNum">3</SetVariable>
+                        </Template>
+                        <Template src="skin:../Tango/deck_right_mini.xml">
+                          <SetVariable name="chanNum">4</SetVariable>
+                        </Template>
+                      </Children>
+                      <Connection>
+                        <ConfigKey>[Skin],show_4decks</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                    </WidgetGroup>
+
                     <SingletonContainer>
                       <ObjectName>Library_Singleton</ObjectName>
                     </SingletonContainer>
