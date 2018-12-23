@@ -110,9 +110,16 @@ Variables:
         </Children>
       </WidgetGroup>
 
-      <Template src="skin:spinnyCover_mini.xml">
-        <SetVariable name="Size">40f,40f</SetVariable>
-      </Template>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <MaximumSize>40,40</MaximumSize>
+        <Children>
+          <SingletonContainer>
+            <ObjectName>SpinnyCoverMini_Singleton<Variable name="chanNum"/></ObjectName>
+          </SingletonContainer>
+        </Children>
+      </WidgetGroup>
 
       <Template src="skin:loop_indicator.xml"/>
 

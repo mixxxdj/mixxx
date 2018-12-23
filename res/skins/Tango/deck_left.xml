@@ -47,7 +47,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
-                  <Template src="skin:deck_row_artist_title_left.xml"/>
+                  <Template src="skin:deck_row_text_left.xml"/>
                   <Template src="skin:loop_indicator.xml"/>
                 </Children>
               </WidgetGroup>
@@ -87,7 +87,7 @@ Variables:
                 </Connection>
               </WidgetGroup>
 
-              <Template src="skin:spinnyCover_maxi.xml"/>
+              <Template src="skin:spinny_cover_maxi.xml"/>
 
             </Children>
             <Connection>

@@ -22,35 +22,40 @@ Variables:
     <SizePolicy>me,f</SizePolicy>
     <Children>
       <WidgetGroup>
-        <ObjectName>DeckOverviewContainer<Variable name="chanNum"/></ObjectName>
+        <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,f</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- show when Spinny/Cover ON & small selected -->
+          <!-- Small Cover/Spinny when explicitely set 'small' -->
+          <WidgetGroup>
             <Layout>horizontal</Layout>
-            <SizePolicy>min,me</SizePolicy>
+            <SizePolicy>min,min</SizePolicy>
+            <MaximumSize>50,50</MaximumSize>
             <Children>
-              <Template src="skin:spinnyCover_mini.xml">
-                <SetVariable name="deck"><Variable name="chanNum"/></SetVariable>
-              </Template>
+              <SingletonContainer>
+                <ObjectName>SpinnyCoverMini_Singleton<Variable name="chanNum"/></ObjectName>
+              </SingletonContainer>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
             </Connection>
-          </WidgetGroup><!-- Small Cover/Spinny -->
+          </WidgetGroup><!-- Small Cover/Spinny 1 -->
 
-          <WidgetGroup><!-- Small Cover/Spinny when it's actually BIG, but Channel Mixer is visible -->
+          <!-- Small Cover/Spinny when it's actually BIG, but Channel Mixer replaces big Cover/Spinny -->
+          <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
               <WidgetGroup>
                 <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <MaximumSize>50,50</MaximumSize>
                 <Children>
-                  <Template src="skin:spinnyCover_mini.xml">
-                    <SetVariable name="deck"><Variable name="chanNum"/></SetVariable>
-                  </Template>
+                  <SingletonContainer>
+                    <ObjectName>SpinnyCoverMini_Singleton<Variable name="chanNum"/></ObjectName>
+                  </SingletonContainer>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
@@ -62,7 +67,7 @@ Variables:
               <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- / Small Cover/Spinny when it's actually BIG, but Channel Mixer is visible -->
+          </WidgetGroup><!-- / Small Cover/Spinny 2 -->
 
           <WidgetGroup><!-- Vinyl Controls toggles -->
             <Size>15f,50f</Size>
