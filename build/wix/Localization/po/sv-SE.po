@@ -1,11 +1,12 @@
 # 
 # Translators:
 # Henrik Mattsson-Mårn <h@reglage.net>, 2017
+# S.Brandt <s.brandt@mixxx.org>, 2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-12-22 20:22+0000\n"
-"Last-Translator: Henrik Mattsson-Mårn <h@reglage.net>\n"
+"PO-Revision-Date: 2018-12-16 20:37+0000\n"
+"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: Swedish (Sweden) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/sv_SE/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -56,9 +57,9 @@ msgstr "Du behöver installera 32-bitars-versionen utav denna produkt på 32-bit
 
 msgctxt "x86VersionWarning"
 msgid ""
-"You are about to install the 32-bit version on a 64-bit operating system.\r\n"
-"We recommend using the 64-bit version for better performance.\r\n"
-"You can download the 64-bit installation package from http://mixxx.org/download/"
+"You are about to install the 32-bit version on a 64-bit operating system. We"
+" recommend using the 64-bit version for better performance. You can download"
+" the 64-bit installation package from http://mixxx.org/download/"
 msgstr ""
 
 msgctxt "XPWarning"

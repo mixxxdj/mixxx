@@ -26,7 +26,7 @@
   <String Id="NewerInstalled">Samma eller en nyare version av denna produkt är redan installerad.</String>
   <String Id="x64VersionRequired">Du behöver installera 64-bitars-versionen utav denna produkt på 64-bitars Windows.</String>
   <String Id="x86VersionRequired">Du behöver installera 32-bitars-versionen utav denna produkt på 32-bitars Windows.</String>
-  <String Id="x86VersionWarning">You are about to install the 32-bit version on a 64-bit operating system.&#13;&#10;We recommend using the 64-bit version for better performance.&#13;&#10;You can download the 64-bit installation package from http://mixxx.org/download/</String>
+  <String Id="x86VersionWarning">You are about to install the 32-bit version on a 64-bit operating system. We recommend using the 64-bit version for better performance. You can download the 64-bit installation package from http://mixxx.org/download/</String>
   <String Id="XPWarning">You are installing Mixxx on an outdated operating system. Some functions may not work well or at all. We recommend upgrading your operating system.</String>
   <String Id="bitWidthMismatch32">You are about to install the 32-bit version but a 64-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 64-bit installation package to upgrade (unless you know exactly what you are doing.)</String>
   <String Id="bitWidthMismatch64">You are about to install the 64-bit version but a 32-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 32-bit installation package to upgrade (unless you know exactly what you are doing.)</String>

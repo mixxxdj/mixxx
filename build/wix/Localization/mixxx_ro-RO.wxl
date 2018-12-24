@@ -26,7 +26,7 @@
   <String Id="NewerInstalled">Aceiaşi sau o versiune mai nouă a acestui produs este deja instalată.</String>
   <String Id="x64VersionRequired">Trebuie să instalaţi versiunea produsului pe 64-biţi pentru Windows.</String>
   <String Id="x86VersionRequired">Trebuie să instalaţi versiunea pe 32-biţi a acestui produs pentru Windows.</String>
-  <String Id="x86VersionWarning">You are about to install the 32-bit version on a 64-bit operating system.&#13;&#10;We recommend using the 64-bit version for better performance.&#13;&#10;You can download the 64-bit installation package from http://mixxx.org/download/</String>
+  <String Id="x86VersionWarning">You are about to install the 32-bit version on a 64-bit operating system. We recommend using the 64-bit version for better performance. You can download the 64-bit installation package from http://mixxx.org/download/</String>
   <String Id="XPWarning">Instalaţi Mixxx pe un sistem de operare expirat. Unele funcţii este posibil să nu funcţioneze corect sau deloc. Vă recomandăm să actualizaţi sistemul de operare.</String>
   <String Id="bitWidthMismatch32">You are about to install the 32-bit version but a 64-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 64-bit installation package to upgrade (unless you know exactly what you are doing.)</String>
   <String Id="bitWidthMismatch64">You are about to install the 64-bit version but a 32-bit one is already installed. This can lead to undesired behavior. Please un-install the existing Mixxx first, or download the 32-bit installation package to upgrade (unless you know exactly what you are doing.)</String>
