@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QAtomicInteger>
+#include <QAtomicInt>
 
 #include "util/assert.h"
 
@@ -59,8 +59,8 @@ class MpscFifo {
 
   private:
     T m_buffer[capacity];
-    QAtomicInteger<int> m_enqueueSize;
-    QAtomicInteger<int> m_dequeueSize;
-    QAtomicInteger<int> m_headIndex;
+    QAtomicInt m_enqueueSize;
+    QAtomicInt m_dequeueSize;
+    QAtomicInt m_headIndex;
     int m_tailIndex;
 };
