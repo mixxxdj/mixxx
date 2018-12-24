@@ -40,12 +40,11 @@ class ControlRingValue {
             *value = m_value;
             m_readerSlots.fetchAndAddRelease(1);
             return true;
-        } else {
-            // Otherwise a writer is active. The writer will reset
-            // the counter in m_readerSlots when releasing the lock
-            // and we must not re-add the substracted value here!
-            return false;
         }
+        // Otherwise a writer is active. The writer will reset
+        // the counter in m_readerSlots when releasing the lock
+        // and we must not re-add the substracted value here!
+        return false;
     }
 
     bool trySet(const T& value) {
@@ -54,9 +53,8 @@ class ControlRingValue {
             m_value = value;
             m_readerSlots.fetchAndAddRelease(kMaxReaderSlots);
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
   private:
