@@ -7,33 +7,33 @@
 class MixxxBpmDetection : public Vamp::Plugin {
   public:
     MixxxBpmDetection(float inputSampleRate);
-    virtual ~MixxxBpmDetection();
+    ~MixxxBpmDetection() override;
 
-    std::string getIdentifier() const;
-    std::string getName() const;
-    std::string getDescription() const;
-    std::string getMaker() const;
-    int getPluginVersion() const;
-    std::string getCopyright() const;
+    std::string getIdentifier() const override;
+    std::string getName() const override;
+    std::string getDescription() const override;
+    std::string getMaker() const override;
+    int getPluginVersion() const override;
+    std::string getCopyright() const override;
 
-    InputDomain getInputDomain() const;
-    size_t getPreferredBlockSize() const;
-    size_t getPreferredStepSize() const;
-    size_t getMinChannelCount() const;
-    size_t getMaxChannelCount() const;
+    InputDomain getInputDomain() const override;
+    size_t getPreferredBlockSize() const override;
+    size_t getPreferredStepSize() const override;
+    size_t getMinChannelCount() const override;
+    size_t getMaxChannelCount() const override;
 
-    ParameterList getParameterDescriptors() const;
-    float getParameter(std::string identifier) const;
-    void setParameter(std::string identifier, float value);
+    ParameterList getParameterDescriptors() const override;
+    float getParameter(std::string identifier) const override;
+    void setParameter(std::string identifier, float value) override;
 
-    ProgramList getPrograms() const;
-    std::string getCurrentProgram() const;
-    void selectProgram(std::string name);
+    ProgramList getPrograms() const override;
+    std::string getCurrentProgram() const override;
+    void selectProgram(std::string name) override;
 
-    OutputList getOutputDescriptors() const;
+    OutputList getOutputDescriptors() const override;
 
-    bool initialise(size_t channels, size_t stepSize, size_t blockSize);
-    void reset();
+    bool initialise(size_t channels, size_t stepSize, size_t blockSize) override;
+    void reset() override;
 
     FeatureSet process(const float *const *inputBuffers,
                        Vamp::RealTime timestamp);
