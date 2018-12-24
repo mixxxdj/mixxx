@@ -31,6 +31,9 @@ mixxx::Logger kLogger("AnalyzerThread");
 // has not been touched while transforming the code from single- to
 // multi-threaded processing! Feel free to adjust this if justified.
 
+/// TODO(XXX): Use the vsync timer for the purpose of sending updates
+// to the UI thread with a limited rate??
+
 // Analysis is done in blocks to avoid dynamic allocation of memory
 // depending on the track length. A block size of 4096 frames per block
 // seems to do fine. Signal processing during analysis uses the same,
