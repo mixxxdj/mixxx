@@ -41,6 +41,12 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
     }
 
     auto glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
+    if (glw == nullptr) {
+        // Not a QGLWidget. We can simply use QWidget::isVisible.
+        auto qwidget = dynamic_cast<QWidget*>(pWaveformWidget->getWidget());
+        return qwidget != nullptr && qwidget->isVisible();
+    }
+
     if (glw == nullptr || !glw->isValid() || !glw->isVisible()) {
         return false;
     }
