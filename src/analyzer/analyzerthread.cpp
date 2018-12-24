@@ -1,5 +1,7 @@
 #include "analyzer/analyzerthread.h"
 
+#include <mutex>
+
 #ifdef __VAMP__
 #include "analyzer/analyzerbeats.h"
 #include "analyzer/analyzerkey.h"
@@ -49,6 +51,15 @@ void deleteAnalyzerThread(AnalyzerThread* plainPtr) {
     }
 }
 
+std::once_flag registerMetaTypesOnceFlag;
+
+void registerMetaTypesOnce() {
+    qRegisterMetaType<AnalyzerThreadState>();
+    // AnalyzerProgress is just an alias/typedef and must be registered explicitly
+    // by name!
+    qRegisterMetaType<AnalyzerProgress>("AnalyzerProgress");
+}
+
 } // anonymous namespace
 
 AnalyzerThread::NullPointer::NullPointer()
@@ -81,12 +92,8 @@ AnalyzerThread::AnalyzerThread(
           m_mode(mode),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
           m_emittedState(AnalyzerThreadState::Void) {
+    std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
     m_lastBusyProgressEmittedTimer.start();
-    // The types are registered multiple times although once would be sufficient
-    qRegisterMetaType<AnalyzerThreadState>();
-    // AnalyzerProgress is just an alias/typedef and must be registered explicitly
-    // by name!
-    qRegisterMetaType<AnalyzerProgress>("AnalyzerProgress");
 }
 
 void AnalyzerThread::doRun() {
