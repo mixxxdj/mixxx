@@ -2,7 +2,7 @@
 #define _MIXXXBPMDETECTION_H_
 
 #include <vamp-sdk/Plugin.h>
-#include "BPMDetect.h"
+#include <BPMDetect.h>
 
 class MixxxBpmDetection : public Vamp::Plugin {
   public:
