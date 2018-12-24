@@ -175,7 +175,7 @@ std::string MixxxBpmDetection::getCurrentProgram() const {
     return ""; // no programs
 }
 
-void MixxxBpmDetection::selectProgram(std::string name) {
+void MixxxBpmDetection::selectProgram(std::string /*name*/) {
 }
 
 MixxxBpmDetection::OutputList MixxxBpmDetection::getOutputDescriptors() const {
@@ -198,7 +198,7 @@ MixxxBpmDetection::OutputList MixxxBpmDetection::getOutputDescriptors() const {
     return list;
 }
 
-bool MixxxBpmDetection::initialise(size_t channels, size_t stepSize, size_t blockSize) {
+bool MixxxBpmDetection::initialise(size_t channels, size_t /*stepSize*/, size_t blockSize) {
     if (channels < getMinChannelCount() ||
             channels > getMaxChannelCount()) return false;
 
@@ -212,7 +212,7 @@ void MixxxBpmDetection::reset() {
     // Clear buffers, reset stored values, etc
 }
 
-MixxxBpmDetection::FeatureSet MixxxBpmDetection::process(const float *const *inputBuffers, Vamp::RealTime timestamp) {
+MixxxBpmDetection::FeatureSet MixxxBpmDetection::process(const float *const *inputBuffers, Vamp::RealTime /*timestamp*/) {
     if(m_pDetector != NULL) {
         m_pDetector->inputSamples(inputBuffers[0], m_iBlockSize);
     }
