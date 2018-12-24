@@ -34,6 +34,7 @@ addons:
       - librubberband-dev
       - libshout3-dev
       - libsndfile1-dev
+      - libsoundtouch-dev
       - libsqlite3-dev
       - libtag1-dev
       - libupower-glib-dev
@@ -53,7 +54,7 @@ before_install:
   # Virtual X, needed for analyzer waveform tests
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0         ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv lame; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv lame sound-touch; fi
 
 install:
   ####
