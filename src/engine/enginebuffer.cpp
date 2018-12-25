@@ -1228,7 +1228,8 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
                 samplePositionToSeconds;
         m_timeRemaining->set(timeRemaining);
 
-        double remainingTimeTriggerSeconds = WaveformWidgetFactory::instance()->getEndOfTrackWarningTime();
+        auto pFactory = WaveformWidgetFactory::instance();
+        double remainingTimeTriggerSeconds = pFactory ? pFactory->getEndOfTrackWarningTime() : 0;
 
         if (!m_playButton->toBool() || // not playing
                 m_pLoopingControl->isLoopingEnabled() || // in loop
