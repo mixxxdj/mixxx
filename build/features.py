@@ -355,7 +355,7 @@ class Vamp(Feature):
         # If there is no system vamp-hostsdk is installed or if the version
         # of the installed vamp-hostsdk is less than the bundled version,
         # then we'll directly link the bundled vamp-hostsdk
-        # Note: We're adding -lvamp-hostsdk to LIBS in sources(), so
+        # Note: We're adding vamp-hostsdk to LIBS in sources(), so
         # don't add it now in order to prevent duplication.
         if not conf.CheckLib('vamp-hostsdk', autoadd=False) or not conf.CheckForPKG('vamp-plugin-sdk', '2.7.1'):
             self.INTERNAL_LINK = True
@@ -364,8 +364,8 @@ class Vamp(Feature):
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
             # Optionally link libdl Required for some distros.
-            # Note: We are adding -ldl to LIBS in sources(), so
-            # don't add it now in order to prevent duplication.
+            # Note: We can't add dl to LIBS here because it needs to be added after vamp-hostsdk.
+            # See: https://bugs.launchpad.net/mixxx/+bug/1804411
             conf.CheckLib(['dl', 'libdl'], autoadd=False)
 
         # FFTW3 support
@@ -388,9 +388,10 @@ class Vamp(Feature):
 
             build.env.Append(LIBPATH=self.INTERNAL_VAMP_PATH)
 
+        # Add this here unconditionally because we're not adding it in configure().
         build.env.Append(LIBS=['vamp-hostsdk'])
 
-        # Ubuntu requires -ldl to be specified after -lvamp-hostsdk.
+        # Ubuntu requires dl to be specified after vamp-hostsdk.
         if build.platform_is_linux:
             build.env.Append(LIBS=['dl'])
 
