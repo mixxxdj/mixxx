@@ -13,25 +13,21 @@
 
 #include "util/timer.h"
 
+namespace {
+
+constexpr int kBlinkingPeriodMillis = 1000;
+
+} // anonymous namespace
+
 WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
         WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererAbstract(waveformWidgetRenderer),
-      m_pEndOfTrackControl(NULL),
-      m_endOfTrackEnabled(false),
-      m_pTrackSampleRate(NULL),
-      m_pPlayControl(NULL),
-      m_pLoopControl(NULL),
-      m_pTimeRemainingControl(NULL),
-      m_color(200, 25, 20),
-      m_remainingTimeTriggerSeconds(30),
-      m_blinkingPeriodMillis(1000) {
+      m_pEndOfTrackControl(nullptr),
+      m_pTimeRemainingControl(nullptr) {
 }
 
 WaveformRendererEndOfTrack::~WaveformRendererEndOfTrack() {
     delete m_pEndOfTrackControl;
-    delete m_pTrackSampleRate;
-    delete m_pPlayControl;
-    delete m_pLoopControl;
     delete m_pTimeRemainingControl;
 }
 
@@ -40,14 +36,6 @@ bool WaveformRendererEndOfTrack::init() {
 
     m_pEndOfTrackControl = new ControlProxy(
             m_waveformRenderer->getGroup(), "end_of_track");
-    m_endOfTrackEnabled = false;
-
-    m_pTrackSampleRate = new ControlProxy(
-            m_waveformRenderer->getGroup(), "track_samplerate");
-    m_pPlayControl = new ControlProxy(
-            m_waveformRenderer->getGroup(), "play");
-    m_pLoopControl = new ControlProxy(
-            m_waveformRenderer->getGroup(), "loop_enabled");
     m_pTimeRemainingControl = new ControlProxy(
             m_waveformRenderer->getGroup(), "time_remaining");
     return true;
@@ -70,59 +58,21 @@ void WaveformRendererEndOfTrack::onResize() {
 
 void WaveformRendererEndOfTrack::draw(QPainter* painter,
                                       QPaintEvent* /*event*/) {
-
-    const double trackSamples = m_waveformRenderer->getTrackSamples();
-    const double sampleRate = m_pTrackSampleRate->get();
-    /*qDebug() << "WaveformRendererEndOfTrack :: "
-             << "trackSamples" << trackSamples
-             << "sampleRate" << sampleRate
-             << "m_playControl->get()" << m_playControl->get()
-             << "m_loopControl->get()" << m_loopControl->get();*/
-
-    m_endOfTrackEnabled = m_pEndOfTrackControl->toBool();
-    m_remainingTimeTriggerSeconds = WaveformWidgetFactory::instance()->getEndOfTrackWarningTime();
-    // special case of track not long enough
-    const double trackLength = 0.5 * trackSamples / sampleRate;
-
-    if (sampleRate < 0.1 //not ready
-            || trackSamples < 0.1 //not ready
-            || !m_pPlayControl->toBool() //not playing
-            || m_pLoopControl->toBool() //in loop
-            || trackLength <= m_remainingTimeTriggerSeconds //track too short
-            ) {
-        if (m_endOfTrackEnabled) {
-            m_pEndOfTrackControl->set(0.0);
-            m_endOfTrackEnabled = false;
-        }
+    if (!m_pEndOfTrackControl->toBool()) {
         return;
-    }
-
-    const double remainingTime = m_pTimeRemainingControl->get();
-
-    if (remainingTime > m_remainingTimeTriggerSeconds) {
-        if (m_endOfTrackEnabled) {
-            m_pEndOfTrackControl->set(0.);
-            m_endOfTrackEnabled = false;
-        }
-        return;
-    }
-
-    // end of track is on
-    if (!m_endOfTrackEnabled) {
-        m_pEndOfTrackControl->set(1.);
-        m_endOfTrackEnabled = true;
-
-        //qDebug() << "EndOfTrack ON";
     }
 
     //ScopedTimer t("WaveformRendererEndOfTrack::draw");
 
-    const int elapsed = m_timer.elapsed().toIntegerMillis() % m_blinkingPeriodMillis;
+    const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
-    const double blickIntensity = (double)(2 * abs(elapsed - m_blinkingPeriodMillis/2)) /
-            m_blinkingPeriodMillis;
-    const double criticalIntensity = (m_remainingTimeTriggerSeconds - remainingTime) /
-            m_remainingTimeTriggerSeconds;
+    const double blickIntensity = (double)(2 * abs(elapsed - kBlinkingPeriodMillis / 2)) /
+            kBlinkingPeriodMillis;
+
+    const double remainingTime = m_pTimeRemainingControl->get();
+    const double remainingTimeTriggerSeconds = WaveformWidgetFactory::instance()->getEndOfTrackWarningTime();
+    const double criticalIntensity = (remainingTimeTriggerSeconds - remainingTime) /
+            remainingTimeTriggerSeconds;
 
     painter->save();
     painter->resetTransform();

@@ -36,6 +36,7 @@
 #include "util/sample.h"
 #include "util/timer.h"
 #include "waveform/visualplayposition.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #ifdef __VINYLCONTROL__
 #include "engine/vinylcontrolcontrol.h"
@@ -553,6 +554,7 @@ void EngineBuffer::ejectTrack() {
     m_visualKey->set(0.0);
     m_timeElapsed->set(0);
     m_timeRemaining->set(0);
+    m_pEndOfTrack->set(0.0);
     m_playposSlider->set(0);
     m_pCueControl->resetIndicators();
     doSeekFractional(0.0, SEEK_EXACT);
@@ -716,7 +718,7 @@ void EngineBuffer::processTrackLocked(
 
     // Note: play is also active during cue preview
     bool paused = !m_playButton->toBool();
-        KeyControl::PitchTempoRatio pitchTempoRatio = m_pKeyControl->getPitchTempoRatio();
+    KeyControl::PitchTempoRatio pitchTempoRatio = m_pKeyControl->getPitchTempoRatio();
 
     // The pitch adjustment in Ratio (1.0 being normal
     // pitch. 2.0 is a full octave shift up).
@@ -1222,8 +1224,22 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
         const double samplePositionToSeconds = 1.0 / m_trackSampleRateOld
                 / kSamplesPerFrame / m_tempo_ratio_old;
         m_timeElapsed->set(m_filepos_play * samplePositionToSeconds);
-        m_timeRemaining->set(std::max(m_trackSamplesOld - m_filepos_play, 0.0) *
-                samplePositionToSeconds);
+        double timeRemaining = std::max(m_trackSamplesOld - m_filepos_play, 0.0) *
+                samplePositionToSeconds;
+        m_timeRemaining->set(timeRemaining);
+
+        double remainingTimeTriggerSeconds = WaveformWidgetFactory::instance()->getEndOfTrackWarningTime();
+
+        if (!m_playButton->toBool() || // not playing
+                m_pLoopingControl->isLoopingEnabled() || // in loop
+                m_trackSamplesOld * samplePositionToSeconds <= remainingTimeTriggerSeconds || // track too short
+                timeRemaining > remainingTimeTriggerSeconds // before the trigger
+                ) {
+            m_pEndOfTrack->set(0.0);
+        } else {
+            m_pEndOfTrack->set(1.0);
+        }
+
         m_playposSlider->set(fFractionalPlaypos);
         m_pCueControl->updateIndicators();
 
