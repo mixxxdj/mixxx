@@ -40,7 +40,6 @@ bool WaveformRendererEndOfTrack::init() {
 
     m_pEndOfTrackControl = new ControlProxy(
             m_waveformRenderer->getGroup(), "end_of_track");
-    m_pEndOfTrackControl->slotSet(0.);
     m_endOfTrackEnabled = false;
 
     m_pTrackSampleRate = new ControlProxy(

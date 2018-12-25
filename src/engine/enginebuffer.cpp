@@ -151,6 +151,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
 
     m_timeElapsed = new ControlObject(ConfigKey(m_group, "time_elapsed"));
     m_timeRemaining = new ControlObject(ConfigKey(m_group, "time_remaining"));
+    m_pEndOfTrack = std::make_unique<ControlObject>(ConfigKey(group, "end_of_track"));
 
     m_playposSlider = new ControlLinPotmeter(
         ConfigKey(m_group, "playposition"), 0.0, 1.0, 0, 0, true);

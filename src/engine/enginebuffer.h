@@ -343,6 +343,8 @@ class EngineBuffer : public EngineObject {
     ControlProxy* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
 
+    std::unique_ptr<ControlObject> m_pEndOfTrack;
+
     // This ControlProxys is created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating
     // thread, which is required to avoid segfaults.

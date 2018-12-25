@@ -110,7 +110,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlProxy> m_pLoopInPoint;
     std::unique_ptr<ControlProxy> m_pLoopOutPoint;
     std::unique_ptr<ControlObject> m_pDuration;
-    std::unique_ptr<ControlObject> m_pEndOfTrack;
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine

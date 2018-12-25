@@ -98,10 +98,6 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     connect(m_pWaveformZoomSetDefault.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotWaveformZoomSetDefault(double)));
 
-    m_pEndOfTrack = std::make_unique<ControlObject>(
-        ConfigKey(group, "end_of_track"));
-    m_pEndOfTrack->set(0.);
-
     m_pPreGain = std::make_unique<ControlProxy>(group, "pregain", this);
     // BPM of the current song
     m_pBPM = std::make_unique<ControlProxy>(group, "file_bpm", this);
