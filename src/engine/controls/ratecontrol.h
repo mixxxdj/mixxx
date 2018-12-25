@@ -81,7 +81,7 @@ public:
 
   public slots:
     void slotRateRangeChanged(double);
-    void slotRateSliderChanged(double);
+    void slotRateSliderChanged();
     void slotRateRatioChanged(double);
     void slotReverseRollActivate(double);
     void slotControlRatePermDown(double);

@@ -71,8 +71,8 @@ RateControl::RateControl(QString group,
     // adjustments are not capped.
     m_pRateUltraSlider = new ControlPotmeter(
             ConfigKey(group, "rate_ultra"), -1.0, 1.0, true);
-    connect(m_pRateUltraSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateSliderChanged(double)),
+    connect(m_pRateUltraSlider, &ControlObject::valueChanged,
+            this, &RateControl::slotRateSliderChanged,
             Qt::DirectConnection);
 
     // Search rate. Rate used when searching in sound. This overrules the
@@ -290,8 +290,11 @@ void RateControl::slotRateRangeChanged(double) {
     slotRateRatioChanged(m_pRateRatio->get());
 }
 
-void RateControl::slotRateSliderChanged(double v) {
-    double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() * v;
+void RateControl::slotRateSliderChanged() {
+    double rateRatio = 1.0 +
+            m_pRateDir->get() *
+                    (m_pRateSlider->get() * m_pRateRange->get() +
+                     m_pRateUltraSlider->get() * kRateUltraRange);
     m_pRateRatio->set(rateRatio);
 }
 
