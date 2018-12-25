@@ -51,7 +51,11 @@ class ControlRingValue {
         // try to lock this element entirely for reading
         if (m_readerSlots.testAndSetAcquire(kMaxReaderSlots, 0)) {
             m_value = value;
-            m_readerSlots.fetchAndAddRelease(kMaxReaderSlots);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
+            m_readerSlots.storeRelease(kMaxReaderSlots);
+#else
+            m_readerSlots.fetchAndSetRelease(kMaxReaderSlots);
+#endif
             return true;
         }
         return false;
