@@ -85,14 +85,15 @@ Variables:
       <WidgetGroup>
         <ObjectName>DeckMini_TitlePlayPosKeyBPM</ObjectName>
         <Layout>vertical</Layout>
-        <Size>200min,40f</Size>
-        <MaximumSize>250,40</MaximumSize>
+        <SizePolicy>me,f</SizePolicy>
+        <MinimumSize>200,40</MinimumSize>
+        <MaximumSize>280,40</MaximumSize>
         <Children>
 
           <TrackProperty>
             <TooltipId>track_title</TooltipId>
             <ObjectName>TrackTitleMini</ObjectName>
-            <Size>100min,20f</Size>
+            <Size>100me,20f</Size>
             <Property>title</Property>
             <Alignment>left</Alignment>
             <Elide>right</Elide>
@@ -149,8 +150,7 @@ Variables:
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
-              <!-- Elapsed & Remaining -->
-              <WidgetGroup>
+              <WidgetGroup><!-- Time -->
                 <ObjectName>PlayPositionHighlightContainer</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,me</SizePolicy>
@@ -159,7 +159,7 @@ Variables:
                     <TooltipId>track_time</TooltipId>
                     <ObjectName>PlayPositionMini</ObjectName>
                     <Size>60me,16f</Size>
-                    <Alignment>right</Alignment>
+                    <Alignment>left</Alignment>
                     <Channel><Variable name="chanNum"/></Channel>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
