@@ -54,7 +54,7 @@ class ControlRingValue {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
             m_readerSlots.storeRelease(kMaxReaderSlots);
 #else
-            m_readerSlots.fetchAndSetRelease(kMaxReaderSlots);
+            m_readerSlots.fetchAndStoreRelease(kMaxReaderSlots);
 #endif
             return true;
         }
