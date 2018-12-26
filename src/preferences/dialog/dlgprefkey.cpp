@@ -217,7 +217,9 @@ void DlgPrefKey::slotUpdate() {
     plugincombo->setEnabled(m_bAnalyzerEnabled);
     banalyzerenabled->setChecked(m_bAnalyzerEnabled);
     bfastAnalysisEnabled->setChecked(m_bFastAnalysisEnabled);
+    bfastAnalysisEnabled->setEnabled(m_bAnalyzerEnabled);
     breanalyzeEnabled->setChecked(m_bReanalyzeEnabled);
+    breanalyzeEnabled->setEnabled(m_bAnalyzerEnabled);
 
     if (!m_bAnalyzerEnabled) {
         return;
