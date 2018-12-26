@@ -48,8 +48,7 @@ DlgPrefBeats::~DlgPrefBeats() {
 }
 
 void DlgPrefBeats::loadSettings() {
-    QString beatPluginId = m_bpmSettings.getBeatPluginId();
-    m_selectedAnalyzerId = beatPluginId;
+    m_selectedAnalyzerId = m_bpmSettings.getBeatPluginId();
     m_banalyzerEnabled = m_bpmSettings.getBpmDetectionEnabled();
     m_bfixedtempoEnabled = m_bpmSettings.getFixedTempoAssumption();
     m_boffsetEnabled = m_bpmSettings.getFixedTempoOffsetCorrection();
@@ -116,7 +115,8 @@ void DlgPrefBeats::slotUpdate() {
     boffset->setEnabled((m_banalyzerEnabled && m_bfixedtempoEnabled));
     plugincombo->setEnabled(m_banalyzerEnabled);
     banalyzerenabled->setChecked(m_banalyzerEnabled);
-    bFastAnalysis->setEnabled(m_banalyzerEnabled);
+    // Fast analysis cannot be combined with non-constant tempo beatgrids.
+    bFastAnalysis->setEnabled(m_banalyzerEnabled && m_bfixedtempoEnabled);
     txtMaxBpm->setEnabled(m_banalyzerEnabled && m_bfixedtempoEnabled);
     txtMinBpm->setEnabled(m_banalyzerEnabled && m_bfixedtempoEnabled);
     bReanalyse->setEnabled(m_banalyzerEnabled);
@@ -132,7 +132,8 @@ void DlgPrefBeats::slotUpdate() {
 
     bfixedtempo->setChecked(m_bfixedtempoEnabled);
     boffset->setChecked(m_boffsetEnabled);
-    bFastAnalysis->setChecked(m_FastAnalysisEnabled);
+    // Fast analysis cannot be combined with non-constant tempo beatgrids.
+    bFastAnalysis->setChecked(m_FastAnalysisEnabled && m_bfixedtempoEnabled);
 
     for (int i = 0; i < m_availablePlugins.size(); ++i) {
         const auto& info = m_availablePlugins.at(i);
