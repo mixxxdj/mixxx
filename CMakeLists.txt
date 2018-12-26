@@ -309,6 +309,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/errordialoghandler.cpp
   src/library/analysisfeature.cpp
   src/library/analysislibrarytablemodel.cpp
+  src/library/trackloader.cpp
   src/library/autodj/autodjfeature.cpp
   src/library/autodj/autodjprocessor.cpp
   src/library/autodj/dlgautodj.cpp
