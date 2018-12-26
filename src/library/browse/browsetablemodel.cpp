@@ -13,7 +13,6 @@
 #include "mixer/playermanager.h"
 #include "control/controlobject.h"
 #include "library/dao/trackdao.h"
-#include "util/dnd.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
                                    TrackCollection* pTrackCollection,
@@ -243,7 +242,7 @@ QMimeData* BrowseTableModel::mimeData(const QModelIndexList &indexes) const {
         if (index.isValid()) {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
-                QUrl url = DragAndDropHelper::urlFromLocation(getTrackLocation(index));
+                QUrl url = TrackRef::locationUrl(getTrackLocation(index));
                 if (!url.isValid()) {
                     qDebug() << "ERROR invalid url" << url;
                     continue;
