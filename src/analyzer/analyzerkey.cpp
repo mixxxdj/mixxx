@@ -1,4 +1,4 @@
-#include "analyzerkey.h"
+#include "analyzer/analyzerkey.h"
 
 #include <QtDebug>
 #include <QVector>
@@ -6,6 +6,11 @@
 #include "analyzer/plugins/analyzerqueenmarykey.h"
 #include "proto/keys.pb.h"
 #include "track/keyfactory.h"
+
+// Only analyze the first minute in fast-analysis mode.
+static const int kFastAnalysisSecondsToAnalyze = 60;
+// All audio files are converted to stereo first before analysis.
+static const int kAnalyzerNumChannels = 2;
 
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
@@ -18,6 +23,7 @@ AnalyzerKey::AnalyzerKey(KeyDetectionSettings keySettings)
         : m_keySettings(keySettings),
           m_iSampleRate(0),
           m_iTotalSamples(0),
+          m_iCurrentSample(0),
           m_bPreferencesKeyDetectionEnabled(true),
           m_bPreferencesFastAnalysisEnabled(false),
           m_bPreferencesReanalyzeEnabled(false) {
@@ -38,8 +44,14 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     m_bPreferencesReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
     m_pluginId = m_keySettings.getKeyPluginId();
 
+    qDebug() << "AnalyzerKey preference settings:"
+             << "\nPlugin:" << m_pluginId
+             << "\nRe-analyze when settings change:" << m_bPreferencesReanalyzeEnabled
+             << "\nFast analysis:" << m_bPreferencesFastAnalysisEnabled;
+
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
+    m_iCurrentSample = 0;
 
     // if we can't load a stored track reanalyze it
     bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
@@ -99,6 +111,13 @@ bool AnalyzerKey::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 
 void AnalyzerKey::process(const CSAMPLE *pIn, const int iLen) {
     if (!m_pPlugin) {
+        return;
+    }
+    m_iCurrentSample += iLen;
+    // In fast analysis mode, skip processing after
+    // kFastAnalysisSecondsToAnalyze seconds are analyzed.
+    const int maxSamples = kFastAnalysisSecondsToAnalyze * m_iSampleRate * kAnalyzerNumChannels;
+    if (m_bPreferencesFastAnalysisEnabled && m_iCurrentSample > maxSamples) {
         return;
     }
     bool success = m_pPlugin->process(pIn, iLen);

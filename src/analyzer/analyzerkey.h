@@ -34,6 +34,7 @@ class AnalyzerKey : public Analyzer {
     QString m_pluginId;
     int m_iSampleRate;
     int m_iTotalSamples;
+    int m_iCurrentSample;
 
     bool m_bPreferencesKeyDetectionEnabled;
     bool m_bPreferencesFastAnalysisEnabled;

@@ -45,7 +45,11 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     QString m_selectedAnalyzerId;
     int m_minBpm;
     int m_maxBpm;
-    bool m_banalyzerEnabled, m_bfixedtempoEnabled, m_boffsetEnabled, m_FastAnalysisEnabled, m_bReanalyze;
+    bool m_banalyzerEnabled;
+    bool m_bfixedtempoEnabled;
+    bool m_boffsetEnabled;
+    bool m_FastAnalysisEnabled;
+    bool m_bReanalyze;
 };
 
 #endif // DLGPREFBEATS_H

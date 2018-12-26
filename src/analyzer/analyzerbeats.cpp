@@ -1,9 +1,3 @@
-/*
- * analyzerbeats.cpp
- *
- *  Created on: 16/mar/2011
- *      Author: vittorio
- */
 #include "analyzer/analyzerbeats.h"
 
 #include <QtDebug>
@@ -17,6 +11,11 @@
 #include "track/beatmap.h"
 #include "track/beatutils.h"
 #include "track/track.h"
+
+// Only analyze the first minute in fast-analysis mode.
+static const int kFastAnalysisSecondsToAnalyze = 60;
+// All audio files are converted to stereo first before analysis.
+static const int kAnalyzerNumChannels = 2;
 
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
@@ -35,6 +34,7 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
           m_bPreferencesFastAnalysis(false),
           m_iSampleRate(0),
           m_iTotalSamples(0),
+          m_iCurrentSample(0),
           m_iMinBpm(0),
           m_iMaxBpm(9999) {
 }
@@ -70,8 +70,18 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
     m_bPreferencesReanalyzeOldBpm = m_bpmSettings.getReanalyzeWhenSettingsChange();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
     m_pluginId = m_bpmSettings.getBeatPluginId();
+
+    qDebug() << "AnalyzerBeats preference settings:"
+             << "\nPlugin:" << m_pluginId
+             << "\nMin/Max BPM:" << m_iMinBpm << m_iMaxBpm
+             << "\nFixed tempo assumption:" << m_bPreferencesFixedTempo
+             << "\nOffset correction:" << m_bPreferencesOffsetCorrection
+             << "\nRe-analyze when settings change:" << m_bPreferencesReanalyzeOldBpm
+             << "\nFast analysis:" << m_bPreferencesFastAnalysis;
+
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
+    m_iCurrentSample = 0;
 
     // if we can load a stored track don't reanalyze it
     bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
@@ -159,6 +169,15 @@ void AnalyzerBeats::process(const CSAMPLE *pIn, const int iLen) {
     if (!m_pPlugin) {
         return;
     }
+
+    m_iCurrentSample += iLen;
+    // In fast analysis mode, skip processing after
+    // kFastAnalysisSecondsToAnalyze seconds are analyzed.
+    const int maxSamples = kFastAnalysisSecondsToAnalyze * m_iSampleRate * kAnalyzerNumChannels;
+    if (m_bPreferencesFastAnalysis && m_iCurrentSample > maxSamples) {
+        return;
+    }
+
     bool success = m_pPlugin->process(pIn, iLen);
     if (!success) {
         m_pPlugin.reset();
@@ -186,7 +205,6 @@ void AnalyzerBeats::finalize(TrackPointer tio) {
     BeatsPointer pBeats;
     if (m_pPlugin->supportsBeatTracking()) {
         QVector<double> beats = m_pPlugin->getBeats();
-        qDebug() << "AnalyzerBeats plugin detected" << beats.size() << "beats";
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
             m_pluginId, m_bPreferencesFastAnalysis);
         pBeats = BeatFactory::makePreferredBeats(
@@ -194,9 +212,11 @@ void AnalyzerBeats::finalize(TrackPointer tio) {
             m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
             m_iSampleRate, m_iTotalSamples,
             m_iMinBpm, m_iMaxBpm);
+        qDebug() << "AnalyzerBeats plugin detected" << beats.size()
+                 << "beats. Average BPM:" << (pBeats ? pBeats->getBpm() : 0.0);
     } else {
         float bpm = m_pPlugin->getBpm();
-        qDebug() << "AnalyzerBeats plugin detected bpm" << bpm;
+        qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;
         pBeats = BeatFactory::makeBeatGrid(*tio, bpm, 0.0f);
     }
     m_pPlugin.reset();

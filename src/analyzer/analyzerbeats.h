@@ -45,7 +45,9 @@ class AnalyzerBeats: public Analyzer {
     bool m_bPreferencesOffsetCorrection;
     bool m_bPreferencesFastAnalysis;
 
-    int m_iSampleRate, m_iTotalSamples;
+    int m_iSampleRate;
+    int m_iTotalSamples;
+    int m_iCurrentSample;
     int m_iMinBpm, m_iMaxBpm;
 };
 
