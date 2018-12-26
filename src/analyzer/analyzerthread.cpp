@@ -96,7 +96,6 @@ AnalyzerThread::AnalyzerThread(
           m_sampleBuffer(kAnalysisSamplesPerBlock),
           m_emittedState(AnalyzerThreadState::Void) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
-    m_lastBusyProgressEmittedTimer.start();
 }
 
 void AnalyzerThread::doRun() {
@@ -118,6 +117,8 @@ void AnalyzerThread::doRun() {
 #endif
     DEBUG_ASSERT(!m_analyzers.empty());
     kLogger.debug() << "Activated" << m_analyzers.size() << "analyzers";
+
+    m_lastBusyProgressEmittedTimer.start();
 
     // This thread-local database connection for pAnalysisDao
     // must not be closed before returning from this function.
