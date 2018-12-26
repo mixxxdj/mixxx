@@ -180,21 +180,21 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
     case AnalyzerThreadState::Void:
         break;
     case AnalyzerThreadState::Idle:
-        worker.receiveThreadIdle();
+        worker.onThreadIdle();
         submitNextTrack(&worker);
         break;
     case AnalyzerThreadState::Busy:
-        worker.receiveAnalyzerProgress(trackId, analyzerProgress);
+        worker.onAnalyzerProgress(trackId, analyzerProgress);
         emit trackProgress(trackId, analyzerProgress);
         break;
     case AnalyzerThreadState::Done:
-        worker.receiveAnalyzerProgress(trackId, analyzerProgress);
+        worker.onAnalyzerProgress(trackId, analyzerProgress);
         emit trackProgress(trackId, analyzerProgress);
         ++m_finishedTracksCount;
         DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
         break;
     case AnalyzerThreadState::Exit:
-        worker.receiveThreadExit();
+        worker.onThreadExit();
         DEBUG_ASSERT(!worker);
         break;
     default:

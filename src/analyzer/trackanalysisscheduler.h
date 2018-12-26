@@ -128,20 +128,20 @@ class TrackAnalysisScheduler : public QObject {
             }
         }
 
-        void receiveThreadIdle() {
+        void onThreadIdle() {
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(!m_threadIdle);
             m_threadIdle = true;
             m_analyzerProgress = kAnalyzerProgressUnknown;
         }
 
-        void receiveAnalyzerProgress(TrackId /*trackId*/, AnalyzerProgress analyzerProgress) {
+        void onAnalyzerProgress(TrackId /*trackId*/, AnalyzerProgress analyzerProgress) {
             DEBUG_ASSERT(m_thread);
             DEBUG_ASSERT(!m_threadIdle);
             m_analyzerProgress = analyzerProgress;
         }
 
-        void receiveThreadExit() {
+        void onThreadExit() {
             DEBUG_ASSERT(m_thread);
             m_thread.reset();
             m_threadIdle = false;
