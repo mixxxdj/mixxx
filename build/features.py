@@ -328,6 +328,7 @@ class VinylControl(Feature):
 
         return sources
 
+
 class ModPlug(Feature):
     def description(self):
         return "Modplug module decoder plugin"

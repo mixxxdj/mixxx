@@ -207,7 +207,7 @@
     <!--
       Launch conditions
 
-      1. Check minimum OS version (501  = Windows XP)
+      1. Check minimum OS version (601  = Windows 7)
          If not, the installation is aborted.
          By doing the (Installed OR ...) property means that this condition will only be evaluated if the app is being installed and not on uninstall or changing
 
@@ -218,11 +218,11 @@
     -->
 
     <!-- minimum OS version check disabled for now because we do not want to enforce installing mixxx on older systems.
-         Anyway, we display a warning message when installing on XP and below
+         Anyway, we display a warning message when installing on XP and below -->
     <Condition Message="!(loc.OS2Old)">
-       <![CDATA[Installed OR (VersionNT >= 501)]]>
+       <![CDATA[Installed OR (VersionNT >= 601)]]>
     </Condition>
-    -->
+
 
     <!--
       2. Check OS bitness

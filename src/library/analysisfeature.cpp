@@ -32,7 +32,8 @@ AnalysisFeature::AnalysisFeature(Library* parent,
         m_pAnalyzerQueue(nullptr),
         m_bOldBpmEnabled(false),
         m_analysisTitleName(tr("Analyze")),
-        m_pAnalysisView(nullptr) {
+        m_pAnalysisView(nullptr),
+        m_icon(":/images/library/ic_library_prepare.svg") {
     setTitleDefault();
 }
 
@@ -61,7 +62,7 @@ QVariant AnalysisFeature::title() {
 }
 
 QIcon AnalysisFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_prepare.svg");
+    return m_icon;
 }
 
 void AnalysisFeature::bindWidget(WLibrary* libraryWidget,

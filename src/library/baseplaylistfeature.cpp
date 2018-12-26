@@ -132,7 +132,7 @@ int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
 
 void BasePlaylistFeature::activate() {
     emit(switchToView(m_rootViewName));
-    emit(restoreSearch(QString())); // Null String disables search box
+    emit disableSearch();
     emit(enableCoverArtDisplay(true));
 }
 
@@ -623,8 +623,8 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     int selected_row = -1;
 
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
+    for (auto it = m_playlistList.constBegin();
+         it != m_playlistList.constEnd(); ++it, ++row) {
         int playlist_id = it->first;
         QString playlist_name = it->second;
 
@@ -654,8 +654,8 @@ void BasePlaylistFeature::updateChildModel(int selected_id) {
     buildPlaylistList();
 
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
+    for (auto it = m_playlistList.constBegin();
+         it != m_playlistList.constEnd(); ++it, ++row) {
         int playlist_id = it->first;
         QString playlist_name = it->second;
 
@@ -680,8 +680,8 @@ void BasePlaylistFeature::clearChildModel() {
 
 QModelIndex BasePlaylistFeature::indexFromPlaylistId(int playlistId) {
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
+    for (auto it = m_playlistList.constBegin();
+         it != m_playlistList.constEnd(); ++it, ++row) {
         int current_id = it->first;
         QString playlist_name = it->second;
 
@@ -708,8 +708,8 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     // Set all playlists the track is in bold (or if there is no track selected,
     // clear all the bolding).
     int row = 0;
-    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
+    for (auto it = m_playlistList.constBegin();
+         it != m_playlistList.constEnd(); ++it, ++row) {
         TreeItem* playlist = rootItem->child(row);
         if (playlist == nullptr) {
             continue;

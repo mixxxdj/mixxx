@@ -5,7 +5,10 @@
 #include "library/queryutil.h"
 #include "track/keyutils.h"
 #include "library/dao/trackschema.h"
+#include "library/crate/crateschema.h"
 #include "util/db/sqllikewildcards.h"
+#include "util/db/dbconnection.h"
+
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
@@ -141,6 +144,15 @@ QString NotNode::toSql() const {
     }
 }
 
+TextFilterNode::TextFilterNode(const QSqlDatabase& database,
+               const QStringList& sqlColumns,
+               const QString& argument)
+        : m_database(database),
+          m_sqlColumns(sqlColumns),
+          m_argument(argument) {
+    mixxx::DbConnection::makeStringLatinLow(&m_argument);
+}
+
 bool TextFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn: m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
@@ -148,7 +160,9 @@ bool TextFilterNode::match(const TrackPointer& pTrack) const {
             continue;
         }
 
-        if (value.toString().contains(m_argument, Qt::CaseInsensitive)) {
+        QString strValue = value.toString();
+        mixxx::DbConnection::makeStringLatinLow(&strValue);
+        if (strValue.contains(m_argument)) {
             return true;
         }
     }
@@ -157,13 +171,41 @@ bool TextFilterNode::match(const TrackPointer& pTrack) const {
 
 QString TextFilterNode::toSql() const {
     FieldEscaper escaper(m_database);
-    QString escapedArgument = escaper.escapeString(kSqlLikeMatchAll + m_argument + kSqlLikeMatchAll);
-
+    QString argument = m_argument;
+    if (argument.size() > 0) {
+        if (argument[argument.size() - 1].isSpace()) {
+            // LIKE eats a trailing space. This can be avoided by adding a '_'
+            // as a delimiter that matches any following character.
+            argument.append('_');
+        }
+    }
+    QString escapedArgument = escaper.escapeString(
+            kSqlLikeMatchAll + argument + kSqlLikeMatchAll);
     QStringList searchClauses;
     for (const auto& sqlColumn: m_sqlColumns) {
         searchClauses << QString("%1 LIKE %2").arg(sqlColumn, escapedArgument);
     }
     return concatSqlClauses(searchClauses, "OR");
+}
+
+bool NullOrEmptyTextFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_sqlColumns.isEmpty()) {
+        // only use the major column
+        QVariant value = getTrackValueForColumn(pTrack, m_sqlColumns.first());
+        if (!value.isValid() || !value.canConvert(QMetaType::QString)) {
+            return true;
+        }
+        return value.toString().isEmpty();
+    }
+    return false;
+}
+
+QString NullOrEmptyTextFilterNode::toSql() const {
+    if (!m_sqlColumns.isEmpty()) {
+        // only use the major column
+        return QString("%1 IS NULL OR %1 IS ''").arg(m_sqlColumns.first());
+    }
+    return QString();
 }
 
 CrateFilterNode::CrateFilterNode(const CrateStorage* pCrateStorage,
@@ -193,9 +235,37 @@ QString CrateFilterNode::toSql() const {
             m_pCrateStorage->formatQueryForTrackIdsByCrateNameLike(m_crateNameLike));
 }
 
+
+NoCrateFilterNode::NoCrateFilterNode(const CrateStorage* pCrateStorage)
+    : m_pCrateStorage(pCrateStorage),
+      m_matchInitialized(false) {
+}
+
+bool NoCrateFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_matchInitialized) {
+        TrackSelectResult tracks(
+                m_pCrateStorage->selectAllTracksSorted());
+
+        while (tracks.next()) {
+            m_matchingTrackIds.push_back(tracks.trackId());
+        }
+
+        m_matchInitialized = true;
+    }
+
+    return !std::binary_search(m_matchingTrackIds.begin(), m_matchingTrackIds.end(), pTrack->getId());
+}
+
+QString NoCrateFilterNode::toSql() const {
+    return QString("%1 NOT IN (%2)").arg(
+            CRATETABLE_ID,
+            CrateStorage::formatQueryForTrackIdsWithCrate());
+}
+
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
         : m_sqlColumns(sqlColumns),
           m_bOperatorQuery(false),
+          m_bNullQuery(false),
           m_operator("="),
           m_dOperatorArgument(0.0),
           m_bRangeQuery(false),
@@ -210,6 +280,11 @@ NumericFilterNode::NumericFilterNode(
 }
 
 void NumericFilterNode::init(QString argument) {
+    if (argument == kMissingFieldSearchTerm) {
+        m_bNullQuery = true;
+        return;
+    }
+
     QRegExp operatorMatcher("^(>|>=|=|<|<=)(.*)$");
     if (operatorMatcher.indexIn(argument) != -1) {
         m_operator = operatorMatcher.cap(1);
@@ -244,6 +319,9 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn: m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
         if (!value.isValid() || !value.canConvert(QMetaType::Double)) {
+            if (m_bNullQuery) {
+                return true;
+            }
             continue;
         }
 
@@ -265,6 +343,14 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
 }
 
 QString NumericFilterNode::toSql() const {
+    if (m_bNullQuery) {
+        for (const auto& sqlColumn: m_sqlColumns) {
+            // only use the major column
+            return QString("%1 IS NULL").arg(sqlColumn);
+        }
+        return QString();
+    }
+
     if (m_bOperatorQuery) {
         QStringList searchClauses;
         for (const auto& sqlColumn: m_sqlColumns) {
@@ -289,6 +375,30 @@ QString NumericFilterNode::toSql() const {
 
     return QString();
 }
+
+NullNumericFilterNode::NullNumericFilterNode(const QStringList& sqlColumns)
+        : m_sqlColumns(sqlColumns) {
+}
+
+bool NullNumericFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_sqlColumns.isEmpty()) {
+        // only use the major column
+        QVariant value = getTrackValueForColumn(pTrack, m_sqlColumns.first());
+        if (!value.isValid() || !value.canConvert(QMetaType::Double)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+QString NullNumericFilterNode::toSql() const {
+    if (!m_sqlColumns.isEmpty()) {
+        // only use the major column
+        return QString("%1 IS NULL").arg(m_sqlColumns.first());
+    }
+    return QString();
+}
+
 
 DurationFilterNode::DurationFilterNode(
         const QStringList& sqlColumns, const QString& argument)

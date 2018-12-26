@@ -56,6 +56,13 @@ Description:
                 </Connection>
               </PushButton>
 
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="ObjectName">MasterHeadMixerToggle</SetVariable>
+                <!-- Size needs to be changed in size_detector_stars.xml, too -->
+                <SetVariable name="Size">15f,28f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],master_mixer</SetVariable>
+              </Template>
+
               <WidgetGroup><!-- Master & Headphone mixer -->
                 <Size>22f,28f</Size>
                 <Layout>horizontal</Layout>
@@ -71,13 +78,6 @@ Description:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">MasterHeadMixerToggle</SetVariable>
-                <!-- Size needs to be changed in size_detector_stars.xml, too -->
-                <SetVariable name="Size">15f,28f</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],master_mixer</SetVariable>
-              </Template>
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
@@ -128,7 +128,7 @@ Description:
 		              </WidgetGroup>
 		            </Children>
 		            <Connection>
-		              <ConfigKey persist="true">[Master],show_xfader</ConfigKey>
+		              <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
 		              <BindProperty>visible</BindProperty>
 		            </Connection>
 		          </WidgetGroup>
@@ -157,7 +157,7 @@ Description:
           <WidgetGroup><!-- Skin toggles, hidden with maximized library -->
             <Layout>horizontal</Layout>
             <ObjectName>SkinControlsBar</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
 
               <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
@@ -219,7 +219,7 @@ Description:
                 <SetVariable name="Size">20f,20f</SetVariable>
                 <SetVariable name="state_0_icon">loop_beatjump_off.svg</SetVariable>
                 <SetVariable name="state_1_icon">loop_beatjump_on.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],loop_beatjump_controls</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_loop_beatjump_controls</SetVariable>
               </Template>
 
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
@@ -230,7 +230,7 @@ Description:
                 <SetVariable name="TooltipId">toggle_4decks</SetVariable>
                 <SetVariable name="state_0_icon">2decks.svg</SetVariable>
                 <SetVariable name="state_1_icon">4decks.svg</SetVariable>
-                <SetVariable name="ConfigKey">[Master],show_4decks</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_4decks</SetVariable>
               </Template>
             </Children>
             <Connection>
@@ -333,12 +333,24 @@ Description:
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">skin_settings</SetVariable>
-                <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
-                <SetVariable name="Size">24f,24f</SetVariable>
-                <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
-              </Template>
+              <PushButton>
+                <TooltipId>skin_settings</TooltipId>
+                <ObjectName>SkinSettingsToggler</ObjectName>
+                <Size>24f,24f</Size>
+                <!-- This is used to work around Bug 1795663 on OSX -->
+                <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Master],skin_settings</ConfigKey>

@@ -56,7 +56,7 @@ void BaseExternalLibraryFeature::slotAddToAutoDJTop() {
 }
 
 void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
-    // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+    //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     QList<TrackId> trackIds;
     QString playlist;
@@ -96,15 +96,14 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
 }
 
 // This is a common function for all external Librarys copied to Mixxx DB
-void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds, QString* pPlaylist) {
+void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(
+        QList<TrackId>* trackIds, QString* pPlaylist) {
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
 
-    // Qt::UserRole asks TreeItemModel for the TreeItem's data. We need to
-    // use the data because models with nested playlists need to use the
-    // full path/name of the playlist.
-    *pPlaylist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
+    DEBUG_ASSERT(pPlaylist);
+    *pPlaylist = m_lastRightClickedIndex.data().toString();
     QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
             getPlaylistModelForPlaylist(*pPlaylist));
 

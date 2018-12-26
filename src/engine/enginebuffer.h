@@ -75,9 +75,9 @@ const int audioBeatMarkLen = 40;
 const int kiTempLength = 200000;
 
 // Rate at which the playpos slider is updated
-const int kiPlaypositionUpdateRate = 10; // updates per second
+const int kiPlaypositionUpdateRate = 15; // updates per second
 // Number of kiUpdateRates that go by before we update BPM.
-const int kiBpmUpdateCnt = 4; // about 2.5 updates per sec
+const int kiBpmUpdateCnt = 4; // about 3.75 updates per sec
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
@@ -94,13 +94,13 @@ class EngineBuffer : public EngineObject {
         SEEK_PHASE = 0x01, // This is set to force an in-phase seek.
         SEEK_EXACT = 0x02, // This is used to seek to position regardless of
                            // if Quantize is enabled.
-        SEEK_EXACT_PHASE = SEEK_PHASE | SEEK_EXACT, 
+        SEEK_EXACT_PHASE = SEEK_PHASE | SEEK_EXACT,
 						   // This is an artificial state that happens if
                            // an exact seek and a phase seek are scheduled
                            // at the same time.
         SEEK_STANDARD = 0x04, // This seeks to the exact position if Quantize is
                               // disabled or performs an in-phase seek if it is enabled.
-        SEEK_STANDARD_PHASE = SEEK_STANDARD | SEEK_PHASE, 
+        SEEK_STANDARD_PHASE = SEEK_STANDARD | SEEK_PHASE,
                               // This is an artificial state that happens if
                               // a standard seek and a phase seek are scheduled
                               // at the same time.
@@ -185,7 +185,6 @@ class EngineBuffer : public EngineObject {
     void slotControlSeek(double);
     void slotControlSeekAbs(double);
     void slotControlSeekExact(double);
-    void slotControlSlip(double);
     void slotKeylockEngineChanged(double);
 
     void slotEjectTrack(double);
@@ -235,12 +234,14 @@ class EngineBuffer : public EngineObject {
 
     bool updateIndicatorsAndModifyPlay(bool newPlay);
     void verifyPlay();
+    void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void processTrackLocked(CSAMPLE* pOutput, const int iBufferSize, int sample_rate);
 
     // Holds the name of the control group
     QString m_group;
     UserSettingsPointer m_pConfig;
 
-    LoopingControl* m_pLoopingControl;
+    LoopingControl* m_pLoopingControl; // used for testes
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
@@ -303,7 +304,7 @@ class EngineBuffer : public EngineObject {
     int m_trackSamplesOld;
 
     // Copy of file sample rate
-    int m_trackSampleRateOld;
+    double m_trackSampleRateOld;
 
     // Mutex controlling whether the process function is in pause mode. This happens
     // during seek and loading of a new track
@@ -316,8 +317,6 @@ class EngineBuffer : public EngineObject {
     double m_dSlipPosition;
     // Saved value of rate for slip mode
     double m_dSlipRate;
-    // m_slipEnabled is a boolean accessed from multiple threads, so we use an atomic int.
-    QAtomicInt m_slipEnabled;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
     bool m_bSlipEnabledProcessing;
 

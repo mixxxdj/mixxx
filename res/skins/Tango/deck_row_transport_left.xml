@@ -55,7 +55,7 @@ Variables:
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <Template src="skin:deckbutton_2state_optional.xml">
+                  <Template src="skin:button_deck_control_2state_opt.xml">
                     <SetVariable name="Width">18f</SetVariable>
                     <SetVariable name="TooltipId">keylock</SetVariable>
                     <SetVariable name="state_0_icon">keylock_off.svg</SetVariable>
@@ -63,7 +63,7 @@ Variables:
                     <SetVariable name="Control">keylock</SetVariable>
                   </Template>
 
-                  <Template src="skin:deckbutton_1state_optional.xml">
+                  <Template src="skin:button_deck_control_1state_opt.xml">
                     <SetVariable name="Width">18f</SetVariable>
                     <SetVariable name="TooltipId">eject</SetVariable>
                     <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
@@ -71,7 +71,7 @@ Variables:
                     <SetVariable name="Control">eject</SetVariable>
                   </Template>
 
-                  <Template src="skin:deckbutton_2state_optional.xml">
+                  <Template src="skin:button_deck_control_2state_opt.xml">
                     <SetVariable name="Width">22f</SetVariable>
                     <SetVariable name="TooltipId">slip_mode</SetVariable>
                     <SetVariable name="state_0_icon">slipmode_off.svg</SetVariable>
@@ -79,7 +79,7 @@ Variables:
                     <SetVariable name="Control">slip_enabled</SetVariable>
                   </Template>
 
-                  <Template src="skin:deckbutton_2state_optional.xml">
+                  <Template src="skin:button_deck_control_2state_opt.xml">
                     <SetVariable name="Width">22f</SetVariable>
                     <SetVariable name="TooltipId">repeat</SetVariable>
                     <SetVariable name="state_0_icon">repeat_off.svg</SetVariable>
@@ -87,7 +87,7 @@ Variables:
                     <SetVariable name="Control">repeat</SetVariable>
                   </Template>
 
-                  <Template src="skin:deckbutton_3state_optional.xml">
+                  <Template src="skin:button_deck_control_3state_opt.xml">
                     <SetVariable name="Width">20f</SetVariable>
                     <SetVariable name="TooltipId">orientation</SetVariable>
                     <SetVariable name="state_0_icon">xfader_left.svg</SetVariable>
@@ -96,7 +96,7 @@ Variables:
                     <SetVariable name="Control">orientation</SetVariable>
                   </Template>
 
-                  <Template src="skin:deckbutton_2state_optional.xml">
+                  <Template src="skin:button_deck_control_2state_opt.xml">
                     <SetVariable name="Width">20f</SetVariable>
                     <SetVariable name="TooltipId">quantize</SetVariable>
                     <SetVariable name="state_0_icon">quantize_off.svg</SetVariable>
@@ -113,7 +113,7 @@ Variables:
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
               <!-- Deck Controls which are always visible -->
-              <Template src="skin:deckbutton_2state_permanent.xml">
+              <Template src="skin:button_deck_control_2state_perm.xml">
                 <SetVariable name="Width">18max</SetVariable>
                 <SetVariable name="TooltipId">keylock</SetVariable>
                 <SetVariable name="state_0_icon">keylock_off.svg</SetVariable>
@@ -121,7 +121,7 @@ Variables:
                 <SetVariable name="Control">keylock</SetVariable>
               </Template>
 
-              <Template src="skin:deckbutton_1state_permanent.xml">
+              <Template src="skin:button_deck_control_1state_perm.xml">
                 <SetVariable name="Width">18max</SetVariable>
                 <SetVariable name="TooltipId">eject</SetVariable>
                 <SetVariable name="state_0_pressed">eject_pressed.svg</SetVariable>
@@ -129,7 +129,7 @@ Variables:
                 <SetVariable name="Control">eject</SetVariable>
               </Template>
 
-              <Template src="skin:deckbutton_2state_permanent.xml">
+              <Template src="skin:button_deck_control_2state_perm.xml">
                 <SetVariable name="Width">22max</SetVariable>
                 <SetVariable name="TooltipId">slip_mode</SetVariable>
                 <SetVariable name="state_0_icon">slipmode_off.svg</SetVariable>
@@ -137,7 +137,7 @@ Variables:
                 <SetVariable name="Control">slip_enabled</SetVariable>
               </Template>
 
-              <Template src="skin:deckbutton_2state_permanent.xml">
+              <Template src="skin:button_deck_control_2state_perm.xml">
                 <SetVariable name="Width">22max</SetVariable>
                 <SetVariable name="TooltipId">repeat</SetVariable>
                 <SetVariable name="state_0_icon">repeat_off.svg</SetVariable>
@@ -145,7 +145,7 @@ Variables:
                 <SetVariable name="Control">repeat</SetVariable>
               </Template>
 
-              <Template src="skin:deckbutton_3state_permanent.xml">
+              <Template src="skin:button_deck_control_3state_perm.xml">
                 <SetVariable name="Width">20max</SetVariable>
                 <SetVariable name="TooltipId">orientation</SetVariable>
                 <SetVariable name="state_0_icon">xfader_left.svg</SetVariable>
@@ -154,7 +154,7 @@ Variables:
                 <SetVariable name="Control">orientation</SetVariable>
               </Template>
 
-              <Template src="skin:deckbutton_2state_permanent.xml">
+              <Template src="skin:button_deck_control_2state_perm.xml">
                 <SetVariable name="Width">20max</SetVariable>
                 <SetVariable name="TooltipId">quantize</SetVariable>
                 <SetVariable name="state_0_icon">quantize_off.svg</SetVariable>
@@ -182,13 +182,13 @@ Variables:
                       <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Tango],stars</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_starrating</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Tango],stars_fit</ConfigKey>
+                  <ConfigKey>[Tango],starrating_fits</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /Stars -->

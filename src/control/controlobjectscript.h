@@ -1,6 +1,8 @@
 #ifndef CONTROLOBJECTSCRIPT_H
 #define CONTROLOBJECTSCRIPT_H
 
+#include <QVector>
+
 #include "controllers/controllerengine.h"
 #include "controllers/controllerdebug.h"
 #include "control/controlproxy.h"

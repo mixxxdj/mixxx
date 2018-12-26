@@ -2,72 +2,138 @@
 version: '{branch}-{build}'
 skip_tags: true
 max_jobs: 1
-image: Visual Studio 2017
-init:
-  - git config --global core.autocrlf input
-# Uncomment the following line to show RDP info at beginning of job
-#  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-clone_folder: c:\projects\mixxx
+image:
+  - Visual Studio 2017
+  - Ubuntu1804
+
+configuration:
+  - release-fastbuild
+  - release
+#  - debug
+
+platform:
+# Disable x86 builds since we only get one concurrent build on AppVeyor and x86
+# failures will be caught by Jenkins.
+#  - x86
+  - x64
+
+
+matrix:
+  exclude:
+    # Ubuntu doesn't support "release-fastbuild".
+    - image: Ubuntu1804
+      configuration: release-fastbuild
+    # We only want "release-fastbuild" for Windows since "release" consumes too
+    # much memory due to link-time code generation / whole-program optimization.
+    - image: Visual Studio 2017
+      configuration: release
+
 skip_commits:
   files:
     - doc/
     - LICENCE
     - README
     - README.md
+    - CHANGELOG
     - COPYING
     - CODE_OF_CONDUCT.md
 
-configuration:
-  - release-fastbuild
-#  - release
-#  - debug
-environment:
-  ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/
-  ENVIRONMENTS_PATH: C:\mixxx-buildserver
+for:
+
+########## UBUNTU SPECIFIC CONFIGURATION ##########
+-
   matrix:
-    - platform: x64
-      distdir: dist64
-    - platform: x86
-      distdir: dist32
-matrix:
-  fast_finish: false     # set this flag to true to immediately finish build once one of the jobs fails.
-cache:
-  - C:\mixxx-buildserver
-install:
-  - set /P ENVIRONMENT_NAME=<build/windows/golden_environment
-  - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
-  - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
-  - cd %TEMP%
-  - echo *** Downloading precompiled build environment if not in build-cache
-  - cd %APPVEYOR_BUILD_FOLDER%
-  - build\windows\install_buildenv.bat %ENVIRONMENTS_URL% %ENVIRONMENT_NAME% %ENVIRONMENTS_PATH%
-before_build:
-  - cd %APPVEYOR_BUILD_FOLDER%
-build_script:
-  - build\appveyor\build_mixxx.bat %platform% %configuration% %ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%
-test_script:
-  - echo *** Testing
-  # Calling mixxx-test under bash to have standard output
-  # and use stdbuf to unbuffer standard & error output
-  - bash -c "stdbuf -oL -eL %distdir%/mixxx-test.exe --gtest_output=xml:test_results.xml 2>&1"
-  - timeout 5 > NUL
-  - bash -c "stdbuf -oL -eL %distdir%/mixxx-test.exe --benchmark 2>&1"
-  - timeout 5 > NUL
-after_test:
-  - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test_results.xml))
-artifacts:
-  - path: '*.exe'
-  - path: '*.msi'
+    only:
+      - image: Ubuntu1804
+
+  clone_folder: /home/appveyor/projects/mixxx
+
+  install:
+    - sudo apt-get update
+    - sudo apt-get -y install gdb libavformat-dev libchromaprint-dev libfaad-dev libfftw3-dev libflac-dev libid3tag0-dev libmad0-dev libmodplug-dev libmp3lame-dev libmp4v2-dev libopusfile-dev libportmidi-dev libprotobuf-dev libqt5opengl5-dev libqt5sql5-sqlite libqt5svg5-dev librubberband-dev libshout3-dev libsndfile1-dev libsqlite3-dev libtag1-dev libupower-glib-dev libusb-1.0-0-dev libwavpack-dev portaudio19-dev protobuf-compiler qt5-default qtscript5-dev libqt5x11extras5-dev scons vamp-plugin-sdk qtkeychain-dev liblilv-dev
+
+  build_script:
+    - scons -j4 test=1 mad=1 faad=1 ffmpeg=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0 localecompare=1
+
+  test_script:
+    - xvfb-run -- ./mixxx-test --gtest_output=xml:test_results.xml
+    - xvfb-run -- ./mixxx-test --benchmark
+
+  after_test:
+    - curl -F 'file=@test_results.xml' "https://ci.appveyor.com/api/testresults/junit/$APPVEYOR_JOB_ID"
+
+########## END UBUNTU SPECIFIC CONFIGURATION ##########
+
+########## WINDOWS SPECIFIC CONFIGURATION ##########
+-
+  matrix:
+    only:
+      - image: Visual Studio 2017
+    fast_finish: false     # set this flag to true to immediately finish build once one of the jobs fails.
+
+  init:
+    - git config --global core.autocrlf input
+# Uncomment the following line to show RDP info at beginning of job
+#    - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+  clone_folder: c:\projects\mixxx
+
+  cache:
+    - C:\mixxx-buildserver
+
+  environment:
+    ENVIRONMENTS_URL: https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/
+    ENVIRONMENTS_PATH: C:\mixxx-buildserver
+
+  install:
+    - set /P ENVIRONMENT_NAME=<build/windows/golden_environment
+    - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:PLATFORM=%platform%%%
+    - call set ENVIRONMENT_NAME=%%ENVIRONMENT_NAME:CONFIGURATION=%configuration%%%
+    - cd %TEMP%
+    - echo *** Downloading precompiled build environment if not in build-cache
+    - cd %APPVEYOR_BUILD_FOLDER%
+    - build\windows\install_buildenv.bat %ENVIRONMENTS_URL% %ENVIRONMENT_NAME% %ENVIRONMENTS_PATH%
+
+  before_build:
+    - cd %APPVEYOR_BUILD_FOLDER%
+
+  build_script:
+    - build\appveyor\build_mixxx.bat %platform% %configuration% %ENVIRONMENTS_PATH%\%ENVIRONMENT_NAME%
+
+  test_script:
+    - echo *** Testing
+    # Calling mixxx-test under bash to have standard output
+    # and use stdbuf to unbuffer standard & error output
+    - bash -c "stdbuf -oL -eL dist*/mixxx-test.exe --gtest_output=xml:test_results.xml 2>&1"
+    - timeout 5 > NUL
+    - bash -c "stdbuf -oL -eL dist*/mixxx-test.exe --benchmark 2>&1"
+    - timeout 5 > NUL
+
+  after_test:
+    - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\test_results.xml))
+
+  artifacts:
+    - path: '*.exe'
+    - path: '*.msi'
+
+  on_finish:
+    # Uncomment the following line if you don't want the build VM to be destroyed
+    # and be able to RDP on it until a special “lock” file on VM desktop is deleted
+    # The RDP session is limited by overall build time (60 min).
+    # - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+########## END WINDOWS SPECIFIC CONFIGURATION ##########
+
+
 on_success:
   - echo "*** SUCCESS ***"
+
 on_failure:
   - echo "*** FAILURE ***"
+
 on_finish:
-  # Uncomment the following line if you don't want the build VM to be destroyed
-  # and be able to RDP on it until a special “lock” file on VM desktop is deleted
-  # The RDP session is limited by overall build time (60 min).
-#  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
   - echo "*** DONE ***"
+
 deploy:
   - provider: Environment
     name: downloads.mixxx.org

@@ -59,7 +59,6 @@ QVariant ControlModel::data(const QModelIndex& index,
     }
 
     const ControlInfo& control = m_controls.at(row);
-    QString value;
     switch (column) {
         case CONTROL_COLUMN_GROUP:
             return control.key.group;

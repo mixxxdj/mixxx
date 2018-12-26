@@ -19,15 +19,17 @@ class ClockControl: public EngineControl {
     ~ClockControl() override;
 
     void process(const double dRate, const double currentSample,
-                   const double totalSamples, const int iBufferSize) override;
+            const int iBufferSize) override;
 
   public slots:
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
+    void trackLoaded(TrackPointer pNewTrack) override;
     void slotBeatsUpdated();
 
   private:
     ControlObject* m_pCOBeatActive;
     ControlProxy* m_pCOSampleRate;
+
+    // objects below are written from an engine worker thread
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
 };

@@ -1,62 +1,62 @@
 <Template>
   <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
-	<WidgetGroup>
+  <WidgetGroup>
     <ObjectName>Waveform</ObjectName>
-		<Layout>horizontal</Layout>
-		<SizePolicy>me,me</SizePolicy>
-		<Children>
-			<Visual>
-				<TooltipId>waveform_display</TooltipId>
-				<Channel><Variable name="channum"/></Channel>
-				<BgColor><Variable name="SignalBgColor"/></BgColor>
-				<SignalColor><Variable name="signal_color"/></SignalColor>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+      <Visual>
+        <TooltipId>waveform_display</TooltipId>
+        <Channel><Variable name="channum"/></Channel>
+        <BgColor><Variable name="SignalBgColor"/></BgColor>
+        <SignalColor><Variable name="signal_color"/></SignalColor>
         <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
         <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
         <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
-				<BeatColor>#ffffff</BeatColor>
-				<BeatHighlightColor></BeatHighlightColor>
-				<PlayPosColor>#00FF00</PlayPosColor>
-				<EndOfTrackColor>#EA0000</EndOfTrackColor>
-				<DefaultMark>
-					<Align>top</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-					<Text> %1 </Text>
-				</DefaultMark>
-				<MarkRange>
-					<StartControl>loop_start_position</StartControl>
-					<EndControl>loop_end_position</EndControl>
-					<EnabledControl>loop_enabled</EnabledControl>
-					<Color>#00FF00</Color>
-					<DisabledColor>#FFFFFF</DisabledColor>
-				</MarkRange>
-				<Mark>
-					<Control>loop_start_position</Control>
-					<Text>IN</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<Mark>
-					<Control>loop_end_position</Control>
-					<Text>OUT</Text>
-					<Align>bottom</Align>
-					<Color>#00FF00</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-				<!--
-				The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-					- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
-					- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-				-->
-				<Mark>
-					<Control>cue_point</Control>
-					<Text>CUE</Text>
-					<Align>top</Align>
-					<Color>#FF001C</Color>
-					<TextColor>#FFFFFF</TextColor>
-				</Mark>
-			</Visual>
+        <BeatColor>#ffffff</BeatColor>
+        <BeatHighlightColor></BeatHighlightColor>
+        <PlayPosColor>#00FF00</PlayPosColor>
+        <EndOfTrackColor>#EA0000</EndOfTrackColor>
+        <DefaultMark>
+          <Align>top</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <Text> %1 </Text>
+        </DefaultMark>
+        <MarkRange>
+          <StartControl>loop_start_position</StartControl>
+          <EndControl>loop_end_position</EndControl>
+          <EnabledControl>loop_enabled</EnabledControl>
+          <Color>#00FF00</Color>
+          <DisabledColor>#FFFFFF</DisabledColor>
+        </MarkRange>
+        <Mark>
+          <Control>loop_start_position</Control>
+          <Text>IN</Text>
+          <Align>bottom</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>loop_end_position</Control>
+          <Text>OUT</Text>
+          <Align>bottom</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <!--
+        The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+          - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+          - if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+        -->
+        <Mark>
+          <Control>cue_point</Control>
+          <Text>CUE</Text>
+          <Align>top</Align>
+          <Color>#FF001C</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+      </Visual>
 
       <WidgetGroup><!-- Transparent container for beatgrid buttons -->
         <ObjectName>BeatgridButtons</ObjectName>
@@ -75,8 +75,9 @@
               <Template src="skin:button_1state_right.xml">
                 <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
                 <SetVariable name="ObjectName">BeatCurpos</SetVariable>
-                <SetVariable name="Icon">beat_curpos_large</SetVariable>
-                <SetVariable name="Size">28f,56f</SetVariable>
+                <SetVariable name="state_0_pressed">beat_curpos_large_down</SetVariable>
+                <SetVariable name="state_0_unpressed">beat_curpos_large</SetVariable>
+                <SetVariable name="Size">26f,52f</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
                 <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
               </Template>
@@ -89,7 +90,7 @@
                     <SetVariable name="TooltipId">beats_translate_earlier</SetVariable>
                     <SetVariable name="ObjectName">FxAssignButton</SetVariable>
                     <SetVariable name="Icon">beats_earlier</SetVariable>
-                    <SetVariable name="Size">28f,28f</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_earlier</SetVariable>
                   </Template>
 
@@ -97,7 +98,7 @@
                     <SetVariable name="TooltipId">beats_adjust_faster</SetVariable>
                     <SetVariable name="ObjectName">FxAssignButton</SetVariable>
                     <SetVariable name="Icon">beats_faster</SetVariable>
-                    <SetVariable name="Size">28f,28f</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_faster</SetVariable>
                   </Template>
                 </Children>
@@ -111,7 +112,7 @@
                     <SetVariable name="TooltipId">beats_translate_later</SetVariable>
                     <SetVariable name="ObjectName">FxAssignButton</SetVariable>
                     <SetVariable name="Icon">beats_later</SetVariable>
-                    <SetVariable name="Size">28f,28f</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_later</SetVariable>
                   </Template>
 
@@ -119,7 +120,7 @@
                     <SetVariable name="TooltipId">beats_adjust_slower</SetVariable>
                     <SetVariable name="ObjectName">FxAssignButton</SetVariable>
                     <SetVariable name="Icon">beats_slower</SetVariable>
-                    <SetVariable name="Size">28f,28f</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,beats_adjust_slower</SetVariable>
                   </Template>
                 </Children>
@@ -134,6 +135,6 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- /Transparent container for beatgrid buttons -->
-		</Children>
-	</WidgetGroup>
+    </Children>
+  </WidgetGroup>
 </Template>

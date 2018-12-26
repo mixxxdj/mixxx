@@ -1800,7 +1800,7 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
                   "WHERE coverart_source IS NULL or coverart_source = 0 "
                   "ORDER BY track_locations.directory");
 
-    QList<TrackWithoutCover> tracksWithoutCover;
+    QVector<TrackWithoutCover> tracksWithoutCover;
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
@@ -1842,8 +1842,6 @@ void TrackDAO::detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,
         "WHERE id=:track_id");
 
 
-    QRegExp coverArtFilenames(CoverArtUtils::supportedCoverArtExtensionsRegex(),
-                              Qt::CaseInsensitive);
     QString currentDirectoryPath;
     MDir currentDirectory;
     QLinkedList<QFileInfo> possibleCovers;

@@ -110,9 +110,8 @@ void DlgPrefKey::loadSettings() {
         setNotationTraditional(true);
     } else if (notation == KEY_NOTATION_CUSTOM) {
         radioNotationCustom->setChecked(true);
-        for (QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*>::const_iterator it =
-                     m_keyLineEdits.begin();
-             it != m_keyLineEdits.end(); ++it) {
+        for (auto it = m_keyLineEdits.constBegin();
+             it != m_keyLineEdits.constEnd(); ++it) {
             it.value()->setText(m_keySettings.getCustomKeyNotation(it.key()));
         }
         setNotationCustom(true);
@@ -182,8 +181,7 @@ void DlgPrefKey::slotApply() {
     QMap<mixxx::track::io::key::ChromaticKey, QString> notation;
     if (radioNotationCustom->isChecked()) {
         m_keySettings.setKeyNotation(KEY_NOTATION_CUSTOM);
-        for (QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*>::const_iterator it =
-                     m_keyLineEdits.begin();
+        for (auto it = m_keyLineEdits.constBegin();
              it != m_keyLineEdits.end(); ++it) {
             notation[it.key()] = it.value()->text();
             m_keySettings.setCustomKeyNotation(it.key(), it.value()->text());
@@ -207,8 +205,7 @@ void DlgPrefKey::slotApply() {
 
         // This is just a handy way to iterate the keys. We don't use the
         // QLineEdits.
-        for (QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*>::const_iterator it =
-                     m_keyLineEdits.begin(); it != m_keyLineEdits.end(); ++it) {
+        for (auto it = m_keyLineEdits.constBegin(); it != m_keyLineEdits.constEnd(); ++it) {
             notation[it.key()] = KeyUtils::keyToString(it.key(), notation_type);
         }
     }
@@ -240,9 +237,8 @@ void DlgPrefKey::setNotationCustom(bool active) {
         return;
     }
 
-    for (QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*>::const_iterator it =
-                 m_keyLineEdits.begin();
-         it != m_keyLineEdits.end(); ++it) {
+    for (auto it = m_keyLineEdits.constBegin();
+         it != m_keyLineEdits.constEnd(); ++it) {
         it.value()->setEnabled(true);
     }
     m_pKeyNotation->set(KeyUtils::CUSTOM);
@@ -250,8 +246,8 @@ void DlgPrefKey::setNotationCustom(bool active) {
 }
 
 void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {
-    for (QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*>::const_iterator it =
-                 m_keyLineEdits.begin(); it != m_keyLineEdits.end(); ++it) {
+    for (auto it = m_keyLineEdits.constBegin();
+         it != m_keyLineEdits.constEnd(); ++it) {
         it.value()->setText(KeyUtils::keyToString(it.key(), notation));
         it.value()->setEnabled(false);
     }

@@ -2,14 +2,16 @@
 # Translators:
 # Damtux, 2016
 # Edoardo Codeglia <edocod@linuxmail.org>, 2016
+# Roberto Ekesi <r_ekesi@yahoo.com>, 2017
+# S.Brandt <s.brandt@mixxx.org>, 2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Damtux, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-07-15 15:06+0000\n"
-"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2018-12-16 20:44+0000\n"
+"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: Italian (Italy) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/it_IT/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -41,8 +43,8 @@ msgstr "Installa Mixxx"
 #.  Error messages
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE
 msgctxt "OS2Old"
-msgid "This product requires Windows XP or above."
-msgstr "Questo prodotto richiede Windows XP o superiori."
+msgid "This product requires Windows 7 or above."
+msgstr "Questo prodotto richiede Windows 7 o superiori."
 
 msgctxt "NewerInstalled"
 msgid "The same or a newer version of this product is already installed."
@@ -60,10 +62,10 @@ msgstr "Devi installare la versione a 32-bit di questo prodotto su Windows a 32-
 
 msgctxt "x86VersionWarning"
 msgid ""
-"You are about to install the 32-bit version on a 64-bit operating system.\r\n"
-"We recommend using the 64-bit version for better performance.\r\n"
-"You can download the 64-bit installation package from http://mixxx.org/download/"
-msgstr "Stai per installare la versione a 32-bit su un sistema operativo a 64-bit.\nRaccomandiamo di usare la versione a 64-bit per ottenere prestazioni migliori.\nPuoi scaricare il pacchetto di installazione a 64-bit da http://mixxx.org/download/"
+"You are about to install the 32-bit version on a 64-bit operating system. We"
+" recommend using the 64-bit version for better performance. You can download"
+" the 64-bit installation package from http://mixxx.org/download/"
+msgstr "Stai per installare la versione a 32-bit su un sistema operativo a 64-bit. Raccomandiamo di usare la versione a 64-bit per ottenere prestazioni migliori. Puoi scaricare il pacchetto di installazione a 64-bit da http://mixxx.org/download/"
 
 msgctxt "XPWarning"
 msgid ""
@@ -77,7 +79,7 @@ msgid ""
 "installed. This can lead to undesired behavior. Please un-install the "
 "existing Mixxx first, or download the 64-bit installation package to upgrade"
 " (unless you know exactly what you are doing.)"
-msgstr ""
+msgstr "Stai per installare la versione a 32-bit ma è già installata una versione a 64-bit. Ciò può portare a comportamenti indesiderati. Disinstallare prima l'esistente Mixxx per favore, oppure scaricare il pacchetto di installazione a 64-bit per eseguire l'aggiornamento (a meno che tu non conosca esattamente quello che stai facendo)."
 
 msgctxt "bitWidthMismatch64"
 msgid ""
@@ -85,21 +87,21 @@ msgid ""
 "installed. This can lead to undesired behavior. Please un-install the "
 "existing Mixxx first, or download the 32-bit installation package to upgrade"
 " (unless you know exactly what you are doing.)"
-msgstr ""
+msgstr "Stai per installare la versione a 64-bit ma è già installata una versione a 32-bit. Ciò può portare a comportamenti indesiderati. Disinstallare prima l'esistente Mixxx per favore, oppure scaricare il pacchetto di installazione a 32-bit per eseguire l'aggiornamento (a meno che tu non conosca esattamente quello che stai facendo)."
 
 msgctxt "OlderVersionFound"
 msgid ""
 "An older version of Mixxx has been detected. As we changed installer, we can"
 " not smoothly upgrade. Please uninstall older version before installing this"
 " one."
-msgstr ""
+msgstr "È stata rilevata una versione precedente di Mixxx. Si come abbiamo cambiato l'installatore, non possiamo aggiornare senza problemi. Disinstallare la versione precedente per favore, prima di installare questa."
 
 msgctxt "VCredistNotFound"
 msgid ""
 "Installer was not able to find Microsoft Visual C++ 2015 Redistributable on "
 "this system. This is likely an installer bug that should be reported to "
 "Mixxx developers."
-msgstr ""
+msgstr "Installer non è riuscito a trovare Microsoft Visual C ++ 2015 Redistributable in questo sistema. Questo è probabilmente un bug di installazione che dovrebbe essere segnalato agli sviluppatori Mixxx."
 
 #.  Custom Warning Dialog
 msgctxt "WarningDlgTitle"
@@ -109,7 +111,7 @@ msgstr "{\\WixUI_Font_Title}Attenzione"
 #.  Custom exit dialog
 msgctxt "StartOnExit"
 msgid "Launch Mixxx when setup exits."
-msgstr ""
+msgstr "Avvia Mixxx quando l'installazione esce."
 
 #.  Features translations
 msgctxt "FeatureCompleteDescription"
@@ -122,17 +124,17 @@ msgstr "Applicazione principale"
 
 msgctxt "FeatureMainProgramDescription"
 msgid "The core Mixxx application including controller presets."
-msgstr ""
+msgstr "L'applicazione Mixxx principale compreso i preset del controller."
 
 msgctxt "FeaturePDBTitle"
 msgid "PDB debug files"
-msgstr ""
+msgstr "PDB debug files"
 
 msgctxt "FeaturePDBDescription"
 msgid ""
 "Install Mixxx PDB files to use with a debugger. This is useful to debug "
 "Mixxx and provide readable backtraces to the development team."
-msgstr ""
+msgstr "Installare i file Mixxx PDB da utilizzare con un debugger. Questo è utile per eseguire il debug di Mixxx e fornire backtraces leggibili al team di sviluppo."
 
 msgctxt "FeatureDesktopShortcutTitle"
 msgid "Desktop Shortcut"
@@ -160,28 +162,28 @@ msgctxt "FeatureTranslationsDescription"
 msgid ""
 "Resource files that allow Mixxx to display in alternate languages, other "
 "than US english"
-msgstr ""
+msgstr "File di risorse che permettono a Mixxx di visualizzare in lingue alternate, oltre che l'inglese US"
 
 #.  Bootstrapper
 msgctxt "Caption"
 msgid "[WixBundleName] Setup"
-msgstr ""
+msgstr "[WixBundleName] Impostazione"
 
 msgctxt "Title"
 msgid "[WixBundleName]"
-msgstr ""
+msgstr "[WixBundleName]"
 
 msgctxt "ConfirmCancelMessage"
 msgid "Are you sure you want to cancel?"
-msgstr ""
+msgstr "È sicuro/a di voler annullare?"
 
 msgctxt "ExecuteUpgradeRelatedBundleMessage"
 msgid "Previous version"
-msgstr ""
+msgstr "Versione precedente"
 
 msgctxt "HelpHeader"
 msgid "Setup Help"
-msgstr ""
+msgstr "Guida di Installazione"
 
 msgctxt "HelpText"
 msgid ""
@@ -203,7 +205,7 @@ msgstr ""
 
 msgctxt "InstallHeader"
 msgid "Welcome"
-msgstr ""
+msgstr "Benvenuto"
 
 msgctxt "InstallMessage"
 msgid ""
@@ -214,7 +216,7 @@ msgstr ""
 
 msgctxt "InstallVersion"
 msgid "Version [WixBundleVersion]"
-msgstr ""
+msgstr "Versione [WixBundleVersion]"
 
 msgctxt "InstallOptionsButton"
 msgid "&Options"
@@ -230,7 +232,7 @@ msgstr ""
 
 msgctxt "OptionsHeader"
 msgid "Setup Options"
-msgstr ""
+msgstr "Opzioni di installazione"
 
 msgctxt "OptionsLocationLabel"
 msgid "Install location:"

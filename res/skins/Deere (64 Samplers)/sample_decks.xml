@@ -158,13 +158,13 @@
           Creating the border with fixed-size WidgetGroups solves this.
       <WidgetGroup><Size>-1me,2f</Size></WidgetGroup> -->
 
-      <WidgetStack currentpage="[Deere],sampler_row_current" persist="true">
+      <WidgetStack currentpage="[Skin],sampler_row_current" persist="true">
         <ObjectName>SampleDecksContainer</ObjectName>
-        <NextControl>[Deere],sampler_row_next</NextControl>
-        <PrevControl>[Deere],sampler_row_prev</PrevControl>
+        <NextControl>[Skin],sampler_row_next</NextControl>
+        <PrevControl>[Skin],sampler_row_prev</PrevControl>
         <Children>
 
-          <WidgetGroup trigger="[Deere],sampler_row_1">
+          <WidgetGroup trigger="[Skin],sampler_row_1">
             <ObjectName>SamplerRows</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
@@ -177,7 +177,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup trigger="[Deere],sampler_row_2">
+          <WidgetGroup trigger="[Skin],sampler_row_2">
             <ObjectName>SamplerRows</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
@@ -194,7 +194,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup trigger="[Deere],sampler_row_3">
+          <WidgetGroup trigger="[Skin],sampler_row_3">
             <ObjectName>SamplerRows</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
@@ -215,7 +215,7 @@
             </Children>
           </WidgetGroup>
 
-        <WidgetGroup trigger="[Deere],sampler_row_4">
+        <WidgetGroup trigger="[Skin],sampler_row_4">
             <ObjectName>SamplerRows</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
@@ -240,7 +240,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup trigger="[Deere],sampler_row_5">
+          <WidgetGroup trigger="[Skin],sampler_row_5">
             <ObjectName>SamplerRows</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
@@ -269,7 +269,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup trigger="[Deere],sampler_row_6">
+          <WidgetGroup trigger="[Skin],sampler_row_6">
             <ObjectName>SamplerRows</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
@@ -302,7 +302,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup trigger="[Deere],sampler_row_7">
+          <WidgetGroup trigger="[Skin],sampler_row_7">
             <ObjectName>SamplerRows</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
@@ -339,7 +339,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup trigger="[Deere],sampler_row_8">
+          <WidgetGroup trigger="[Skin],sampler_row_8">
             <ObjectName>SamplerRows</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
