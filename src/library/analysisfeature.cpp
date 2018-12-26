@@ -25,13 +25,18 @@ namespace {
 const int kNumberOfAnalyzerThreads = math_max(1, QThread::idealThreadCount());
 
 inline
-AnalyzerMode getAnalyzerMode(
+AnalyzerModeFlags getAnalyzerModeFlags(
         const UserSettingsPointer& pConfig) {
+    // Always enable at least BPM detection for batch analysis, even if disabled
+    // in the config for ad-hoc analysis of tracks.
+    // NOTE(uklotzde, 2018-12-26): The previous comment just states the status-quo
+    // of the existing code. We should rethink the configuration of analyzers when
+    // refactoring/redesigning the analyzer framework.
+    int modeFlags = AnalyzerModeFlags::WithBeats;
     if (pConfig->getValue<bool>(ConfigKey("[Library]", "EnableWaveformGenerationWithAnalysis"), true)) {
-        return AnalyzerMode::WithBeats;
-    } else {
-        return AnalyzerMode::WithBeatsWithoutWaveform;
+        modeFlags |= AnalyzerModeFlags::WithWaveform;
     }
+    return static_cast<AnalyzerModeFlags>(modeFlags);
 }
 
 } // anonymous namespace
@@ -128,7 +133,7 @@ void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
                 m_library,
                 kNumberOfAnalyzerThreads,
                 m_pConfig,
-                getAnalyzerMode(m_pConfig));
+                getAnalyzerModeFlags(m_pConfig));
 
         connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::progress,
                 m_pAnalysisView, &DlgAnalysis::onTrackAnalysisSchedulerProgress);

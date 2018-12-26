@@ -16,10 +16,11 @@
 #include "util/mpscfifo.h"
 
 
-enum class AnalyzerMode {
-    Default,
-    WithBeats,
-    WithBeatsWithoutWaveform,
+enum AnalyzerModeFlags {
+    None = 0x00,
+    WithBeats = 0x01,
+    WithWaveform = 0x02,
+    All = WithBeats | WithWaveform,
 };
 
 enum class AnalyzerThreadState {
@@ -56,13 +57,13 @@ class AnalyzerThread : public WorkerThread {
             int id,
             mixxx::DbConnectionPoolPtr dbConnectionPool,
             UserSettingsPointer pConfig,
-            AnalyzerMode mode = AnalyzerMode::Default);
+            AnalyzerModeFlags modeFlags);
 
     /*private*/ AnalyzerThread(
             int id,
             mixxx::DbConnectionPoolPtr dbConnectionPool,
             UserSettingsPointer pConfig,
-            AnalyzerMode mode);
+            AnalyzerModeFlags modeFlags);
     ~AnalyzerThread() override = default;
 
     int id() const {
@@ -96,7 +97,7 @@ class AnalyzerThread : public WorkerThread {
     const int m_id;
     const mixxx::DbConnectionPoolPtr m_dbConnectionPool;
     const UserSettingsPointer m_pConfig;
-    const AnalyzerMode m_mode;
+    const AnalyzerModeFlags m_modeFlags;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread-safe atomic values

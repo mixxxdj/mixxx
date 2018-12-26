@@ -119,7 +119,8 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     m_pTrackAnalysisScheduler = TrackAnalysisScheduler::createInstance(
             pLibrary,
             kNumberOfAnalyzerThreads,
-            m_pConfig);
+            m_pConfig,
+            AnalyzerModeFlags::WithWaveform);
 
     connect(m_pTrackAnalysisScheduler.get(), &TrackAnalysisScheduler::trackProgress,
             this, &PlayerManager::onTrackAnalysisProgress);

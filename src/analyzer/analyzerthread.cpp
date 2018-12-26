@@ -74,12 +74,12 @@ AnalyzerThread::Pointer AnalyzerThread::createInstance(
         int id,
         mixxx::DbConnectionPoolPtr dbConnectionPool,
         UserSettingsPointer pConfig,
-        AnalyzerMode mode) {
+        AnalyzerModeFlags modeFlags) {
     return Pointer(new AnalyzerThread(
             id,
             dbConnectionPool,
             pConfig,
-            mode),
+            modeFlags),
             deleteAnalyzerThread);
 }
 
@@ -87,12 +87,12 @@ AnalyzerThread::AnalyzerThread(
         int id,
         mixxx::DbConnectionPoolPtr dbConnectionPool,
         UserSettingsPointer pConfig,
-        AnalyzerMode mode)
+        AnalyzerModeFlags modeFlags)
         : WorkerThread(QString("AnalyzerThread %1").arg(id)),
           m_id(id),
           m_dbConnectionPool(std::move(dbConnectionPool)),
           m_pConfig(std::move(pConfig)),
-          m_mode(mode),
+          m_modeFlags(modeFlags),
           m_sampleBuffer(kAnalysisSamplesPerBlock),
           m_emittedState(AnalyzerThreadState::Void) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
@@ -100,7 +100,7 @@ AnalyzerThread::AnalyzerThread(
 
 void AnalyzerThread::doRun() {
     std::unique_ptr<AnalysisDao> pAnalysisDao;
-    if (m_mode != AnalyzerMode::WithBeatsWithoutWaveform) {
+    if (m_modeFlags & AnalyzerModeFlags::WithWaveform) {
         pAnalysisDao = std::make_unique<AnalysisDao>(m_pConfig);
         m_analyzers.push_back(std::make_unique<AnalyzerWaveform>(pAnalysisDao.get()));
     }
@@ -111,7 +111,9 @@ void AnalyzerThread::doRun() {
         m_analyzers.push_back(std::make_unique<AnalyzerEbur128>(m_pConfig));
     }
 #ifdef __VAMP__
-    const bool enforceBpmDetection = m_mode != AnalyzerMode::Default;
+    // BPM detection might be disabled in the config, but can be overriden
+    // and enabled by explicitly setting the mode flag.
+    const bool enforceBpmDetection = (m_modeFlags & AnalyzerModeFlags::WithBeats) != 0;
     m_analyzers.push_back(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection));
     m_analyzers.push_back(std::make_unique<AnalyzerKey>(m_pConfig));
 #endif

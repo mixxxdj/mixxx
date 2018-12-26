@@ -26,13 +26,13 @@ class TrackAnalysisScheduler : public QObject {
             Library* library,
             int numWorkerThreads,
             const UserSettingsPointer& pConfig,
-            AnalyzerMode mode = AnalyzerMode::Default);
+            AnalyzerModeFlags modeFlags);
 
     /*private*/ TrackAnalysisScheduler(
             Library* library,
             int numWorkerThreads,
             const UserSettingsPointer& pConfig,
-            AnalyzerMode mode);
+            AnalyzerModeFlags modeFlags);
     ~TrackAnalysisScheduler() override;
 
     // Stops a running analysis and discards all enqueued tracks.

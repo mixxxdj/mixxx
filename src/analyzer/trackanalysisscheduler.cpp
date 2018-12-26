@@ -35,12 +35,12 @@ TrackAnalysisScheduler::Pointer TrackAnalysisScheduler::createInstance(
         Library* library,
         int numWorkerThreads,
         const UserSettingsPointer& pConfig,
-        AnalyzerMode mode) {
+        AnalyzerModeFlags modeFlags) {
     return Pointer(new TrackAnalysisScheduler(
             library,
             numWorkerThreads,
             pConfig,
-            mode),
+            modeFlags),
             deleteTrackAnalysisScheduler);
 }
 
@@ -48,7 +48,7 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
         Library* library,
         int numWorkerThreads,
         const UserSettingsPointer& pConfig,
-        AnalyzerMode mode)
+        AnalyzerModeFlags modeFlags)
         : m_library(library),
           m_currentTrackProgress(kAnalyzerProgressUnknown),
           m_currentTrackNumber(0),
@@ -73,7 +73,7 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
                 threadId,
                 library->dbConnectionPool(),
                 pConfig,
-                mode));
+                modeFlags));
         connect(m_workers.back().thread(), &AnalyzerThread::progress,
             this, &TrackAnalysisScheduler::onWorkerThreadProgress);
     }
