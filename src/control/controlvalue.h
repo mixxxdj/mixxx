@@ -35,27 +35,25 @@ class ControlRingValue {
     // This operation can be repeated multiple times for the same
     // slot, because the stored value is preserved.
     bool tryGet(T* value) const {
+        bool result = false;
         // Read while consuming one readerSlot
         if (m_readerSlots.fetchAndAddAcquire(-1) > 0) {
+            // Reader slot has been acquired, no writer is active
             *value = m_value;
-            m_readerSlots.fetchAndAddRelease(1);
-            return true;
+            result = true;
         }
-        // Otherwise a writer is active. The writer will reset
-        // the counter in m_readerSlots when releasing the lock
-        // and we must not re-add the substracted value here!
-        return false;
+        m_readerSlots.fetchAndAddRelease(1);
+        return result;
     }
 
     bool trySet(const T& value) {
         // try to lock this element entirely for reading
         if (m_readerSlots.testAndSetAcquire(kMaxReaderSlots, 0)) {
             m_value = value;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 5, 0)
-            m_readerSlots.storeRelease(kMaxReaderSlots);
-#else
-            m_readerSlots.fetchAndStoreRelease(kMaxReaderSlots);
-#endif
+            // We need to re-add kMaxReaderSlots instead of storing it
+            // to keep the balance if readers have decreased the number
+            // of slots in the meantime!
+            m_readerSlots.fetchAndAddRelease(kMaxReaderSlots);
             return true;
         }
         return false;
