@@ -100,9 +100,19 @@ AnalyzerThread::AnalyzerThread(
 
 void AnalyzerThread::doRun() {
     std::unique_ptr<AnalysisDao> pAnalysisDao;
+    // The thread-local database connection  must not be closed
+    // before returning from this function.
+    mixxx::DbConnectionPooler dbConnectionPooler;
+
     if (m_modeFlags & AnalyzerModeFlags::WithWaveform) {
-        pAnalysisDao = std::make_unique<AnalysisDao>(m_pConfig);
-        m_analyzers.push_back(std::make_unique<AnalyzerWaveform>(pAnalysisDao.get()));
+        dbConnectionPooler = mixxx::DbConnectionPooler(m_dbConnectionPool); // move assignment
+        if (!dbConnectionPooler.isPooling()) {
+            kLogger.warning()
+                    << "Failed to obtain database connection for analyzer thread";
+            return;
+        }
+        QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_dbConnectionPool);
+        m_analyzers.push_back(std::make_unique<AnalyzerWaveform>(m_pConfig, dbConnection));
     }
     if (AnalyzerGain::isEnabled(ReplayGainSettings(m_pConfig))) {
         m_analyzers.push_back(std::make_unique<AnalyzerGain>(m_pConfig));
@@ -121,24 +131,6 @@ void AnalyzerThread::doRun() {
     kLogger.debug() << "Activated" << m_analyzers.size() << "analyzers";
 
     m_lastBusyProgressEmittedTimer.start();
-
-    // This thread-local database connection for pAnalysisDao
-    // must not be closed before returning from this function.
-    // Therefore the DbConnectionPooler is defined outside of
-    // the conditional if block.
-    mixxx::DbConnectionPooler dbConnectionPooler;
-    if (pAnalysisDao) {
-        dbConnectionPooler = mixxx::DbConnectionPooler(m_dbConnectionPool); // move assignment
-        if (!dbConnectionPooler.isPooling()) {
-            kLogger.warning()
-                    << "Failed to obtain database connection for analyzer queue thread";
-            return;
-        }
-        // Obtain and use the newly created database connection within this thread
-        QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_dbConnectionPool);
-        DEBUG_ASSERT(dbConnection.isOpen());
-        pAnalysisDao->initialize(dbConnection);
-    }
 
     mixxx::AudioSource::OpenParams openParams;
     openParams.setChannelCount(kAnalysisChannels);
