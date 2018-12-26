@@ -26,13 +26,13 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
+                  <SearchBox>
+                  </SearchBox>
                   <Template src="skin:hide_show_button.xml">
                     <SetVariable name="TooltipId">maximize_library</SetVariable>
                     <SetVariable name="object_name">LibraryToggle</SetVariable>
                     <SetVariable name="control">[Master],maximize_library</SetVariable>
                   </Template>
-                  <SearchBox>
-                  </SearchBox>
                 </Children>
               </WidgetGroup>
               <!-- QSplitter between LibrarySidebar and CoverArt -->
