@@ -29,7 +29,7 @@ Variables:
 
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

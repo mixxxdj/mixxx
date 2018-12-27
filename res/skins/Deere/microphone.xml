@@ -125,7 +125,7 @@
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_4effectunits</ConfigKey>
+              <ConfigKey>[Skin],show_4effectunits</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>

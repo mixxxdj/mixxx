@@ -13,7 +13,7 @@
           <Template src="skin:deck_coverArt_small.xml"/>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Skin],big_spinny</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
@@ -102,62 +102,28 @@
             <Layout>horizontal</Layout>
             <Children>
 
-              <PushButton>
-                <TooltipId>slip_mode</TooltipId>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_slip.svg</Pressed>
-                  <Unpressed>buttons/btn_slip.svg</Unpressed>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Pressed>buttons/btn_slip_over.svg</Pressed>
-                  <Unpressed>buttons/btn_slip_over.svg</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,slip_enabled</ConfigKey>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_2state_nohover.xml">
+                <SetVariable name="TooltipId">slip_mode</SetVariable>
+                <SetVariable name="icon">slip</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,slip_enabled</SetVariable>
+                <SetVariable name="Size">25,18</SetVariable>
+              </Template>
 
-              <PushButton>
-                <TooltipId>quantize</TooltipId>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_quantize.svg</Pressed>
-                  <Unpressed>buttons/btn_quantize.svg</Unpressed>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Pressed>buttons/btn_quantize_over.svg</Pressed>
-                  <Unpressed>buttons/btn_quantize_over.svg</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,quantize</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_2state_nohover.xml">
+                <SetVariable name="TooltipId">quantize</SetVariable>
+                <SetVariable name="icon">quantize</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,quantize</SetVariable>
+                <SetVariable name="Size">25,18</SetVariable>
+              </Template>
 
-              <PushButton>
-                <TooltipId>beats_translate_curpos</TooltipId>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_beat_curpos_over.svg</Pressed>
-                  <Unpressed>buttons/btn_beat_curpos.svg</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beats_translate_curpos</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beats_translate_match_alignment</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
+                <SetVariable name="state_0_unpressed">beat_curpos</SetVariable>
+                <SetVariable name="state_0_pressed">beat_curpos_over</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
+                <SetVariable name="Size">25,18</SetVariable>
+              </Template>
 
             </Children>
           </WidgetGroup><!-- Deck controls row 1 -->
@@ -166,55 +132,26 @@
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-              <PushButton>
-                <TooltipId>eject</TooltipId>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_eject_over.svg</Pressed>
-                  <Unpressed>buttons/btn_eject.svg</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,eject</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_2state_nohover.xml">
+                <SetVariable name="TooltipId">eject</SetVariable>
+                <SetVariable name="icon">eject</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
+                <SetVariable name="Size">25,18</SetVariable>
+              </Template>
 
-              <PushButton>
-                <TooltipId>repeat</TooltipId>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_repeat.svg</Pressed>
-                  <Unpressed>buttons/btn_repeat.svg</Unpressed>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Pressed>buttons/btn_repeat_over.svg</Pressed>
-                  <Unpressed>buttons/btn_repeat_over.svg</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_2state_nohover.xml">
+                <SetVariable name="TooltipId">repeat</SetVariable>
+                <SetVariable name="icon">repeat</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
+                <SetVariable name="Size">25,18</SetVariable>
+              </Template>
 
-              <PushButton>
-                <TooltipId>keylock</TooltipId>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_keylock.svg</Pressed>
-                  <Unpressed>buttons/btn_keylock.svg</Unpressed>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Pressed>buttons/btn_keylock_over.svg</Pressed>
-                  <Unpressed>buttons/btn_keylock_over.svg</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_2state_nohover.xml">
+                <SetVariable name="TooltipId">keylock</SetVariable>
+                <SetVariable name="icon">keylock</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
+                <SetVariable name="Size">25,18</SetVariable>
+              </Template>
 
             </Children>
           </WidgetGroup><!-- /Deck controls row 2 -->

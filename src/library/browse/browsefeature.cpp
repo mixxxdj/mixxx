@@ -6,7 +6,7 @@
 #include <QDirModel>
 #include <QStringList>
 #include <QFileInfo>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QAction>
 #include <QMenu>
 #include <QPushButton>
@@ -32,7 +32,8 @@ BrowseFeature::BrowseFeature(QObject* parent,
           m_browseModel(this, pTrackCollection, pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_pTrackCollection(pTrackCollection),
-          m_pLastRightClickedItem(NULL) {
+          m_pLastRightClickedItem(NULL),
+          m_icon(":/images/library/ic_library_computer.svg") {
     connect(this, SIGNAL(requestAddDir(QString)),
             parent, SLOT(slotRequestAddDir(QString)));
 
@@ -199,7 +200,7 @@ void BrowseFeature::slotRemoveQuickLink() {
 }
 
 QIcon BrowseFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_computer.svg");
+    return m_icon;
 }
 
 TreeItemModel* BrowseFeature::getChildModel() {
@@ -216,7 +217,7 @@ void BrowseFeature::bindWidget(WLibrary* libraryWidget,
 
 void BrowseFeature::activate() {
     emit(switchToView("BROWSEHOME"));
-    emit(restoreSearch(QString()));
+    emit disableSearch();
     emit(enableCoverArtDisplay(false));
 }
 
@@ -411,14 +412,14 @@ QString BrowseFeature::extractNameFromPath(QString spath) {
 QStringList BrowseFeature::getDefaultQuickLinks() const {
     // Default configuration
     QStringList mixxxMusicDirs = m_pTrackCollection->getDirectoryDAO().getDirs();
-    QDir osMusicDir(QDesktopServices::storageLocation(
-            QDesktopServices::MusicLocation));
-    QDir osDocumentsDir(QDesktopServices::storageLocation(
-            QDesktopServices::DocumentsLocation));
-    QDir osHomeDir(QDesktopServices::storageLocation(
-            QDesktopServices::HomeLocation));
-    QDir osDesktopDir(QDesktopServices::storageLocation(
-            QDesktopServices::DesktopLocation));
+    QDir osMusicDir(QStandardPaths::writableLocation(
+            QStandardPaths::MusicLocation));
+    QDir osDocumentsDir(QStandardPaths::writableLocation(
+            QStandardPaths::DocumentsLocation));
+    QDir osHomeDir(QStandardPaths::writableLocation(
+            QStandardPaths::HomeLocation));
+    QDir osDesktopDir(QStandardPaths::writableLocation(
+            QStandardPaths::DesktopLocation));
     QDir osDownloadsDir(osHomeDir);
     // TODO(XXX) i18n -- no good way to get the download path. We could tr() it
     // but the translator may not realize we want the usual name of the

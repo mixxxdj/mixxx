@@ -50,15 +50,14 @@ class KeyControl : public EngineControl {
     void updatePitchAdjust();
     void updateRate();
 
-    // ControlObjects that come from EngineBuffer
-    ControlObject* m_pRateSlider;
-    ControlObject* m_pRateRange;
-    ControlObject* m_pRateDir;
+    ControlProxy* m_pRateSlider;
+    ControlProxy* m_pRateRange;
+    ControlProxy* m_pRateDir;
 
-    ControlObject* m_pVCRate;
-    ControlObject* m_pVCEnabled;
+    ControlProxy* m_pVCRate;
+    ControlProxy* m_pVCEnabled;
 
-    ControlObject* m_pKeylock;
+    ControlProxy* m_pKeylock;
     ControlPotmeter* m_pPitch;
     ControlPotmeter* m_pPitchAdjust;
     ControlPushButton* m_pButtonSyncKey;
@@ -66,14 +65,13 @@ class KeyControl : public EngineControl {
     ControlPushButton* m_keylockMode;
     ControlPushButton* m_keyunlockMode;
 
-    /** The current loaded file's detected key */
+    // The current loaded file's detected key
     ControlObject* m_pFileKey;
 
-    /** The current effective key of the engine */
+    // The current effective key of the engine
     ControlObject* m_pEngineKey;
     ControlPotmeter* m_pEngineKeyDistance;
 
-    TrackPointer m_pTrack;
     struct PitchTempoRatio m_pitchRateInfo;
     QAtomicInt m_updatePitchRequest;
     QAtomicInt m_updatePitchAdjustRequest;

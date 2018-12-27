@@ -19,19 +19,18 @@
 #endif
 #endif
 
-VSyncThread::VSyncThread(QObject* pParent, GuiTick* pGuiTick)
+VSyncThread::VSyncThread(QObject* pParent)
         : QThread(pParent),
           m_bDoRendering(true),
           m_vSyncTypeChanged(false),
-          m_syncIntervalTimeMicros(33333),
+          m_syncIntervalTimeMicros(33333),  // 30 FPS
           m_waitToSwapMicros(0),
           m_vSyncMode(ST_TIMER),
           m_syncOk(false),
           m_droppedFrames(0),
           m_swapWait(0),
           m_displayFrameRate(60.0),
-          m_vSyncPerRendering(1),
-          m_pGuiTick(pGuiTick) {
+          m_vSyncPerRendering(1) {
 }
 
 VSyncThread::~VSyncThread() {
@@ -112,10 +111,6 @@ void VSyncThread::run() {
             m_waitToSwapMicros = m_syncIntervalTimeMicros +
                     ((m_waitToSwapMicros - lastSwapTime) % m_syncIntervalTimeMicros);
         }
-
-        // Qt timers are not that useful in our case, because they
-        // are handled with priority without respecting the callback
-        m_pGuiTick->process();
     }
 }
 

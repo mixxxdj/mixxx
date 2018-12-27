@@ -51,9 +51,8 @@ bool KeyboardEventFilter::eventFilter(QObject*, QEvent* e) {
             // Check if a shortcut is defined
             bool result = false;
             // using const_iterator here is faster than QMultiHash::values()
-            for (QMultiHash<ConfigValueKbd, ConfigKey>::const_iterator it =
-                         m_keySequenceToControlHash.find(ksv);
-                 it != m_keySequenceToControlHash.end() && it.key() == ksv; ++it) {
+            for (auto it = m_keySequenceToControlHash.constFind(ksv);
+                 it != m_keySequenceToControlHash.constEnd() && it.key() == ksv; ++it) {
                 const ConfigKey& configKey = it.value();
                 if (configKey.group != "[KeyboardShortcuts]") {
                     ControlObject* control = ControlObject::getControl(configKey);

@@ -245,8 +245,6 @@ void SyncControl::setMasterBpm(double bpm) {
                 ((bpm * m_masterBpmAdjustFactor / localBpm) - 1.0) /
                 rateRange;
         m_pRateSlider->set(newRate);
-    } else {
-        m_pRateSlider->set(0);
     }
 }
 
@@ -319,8 +317,7 @@ void SyncControl::reportTrackPosition(double fractionalPlaypos) {
     }
 }
 
-void SyncControl::trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) {
-    Q_UNUSED(pOldTrack);
+void SyncControl::trackLoaded(TrackPointer pNewTrack) {
     //qDebug() << getGroup() << "SyncControl::trackLoaded";
     if (getSyncMode() == SYNC_MASTER) {
         // If we change or remove a new track while master, hand off.

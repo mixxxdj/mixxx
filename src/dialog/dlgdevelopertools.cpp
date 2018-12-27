@@ -18,8 +18,8 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     QHash<ConfigKey, ConfigKey> controlAliases =
             ControlDoublePrivate::getControlAliases();
 
-    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
-            it != controlsList.end(); ++it) {
+    for (auto it = controlsList.constBegin();
+            it != controlsList.constEnd(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             m_controlModel.addControl(pControl->getKey(), pControl->name(),
@@ -60,8 +60,6 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     // Connect search box signals to the library
     connect(controlSearch, SIGNAL(search(const QString&)),
             this, SLOT(slotControlSearch(const QString&)));
-    connect(controlSearch, SIGNAL(searchCleared()),
-            this, SLOT(slotControlSearchClear()));
     connect(controlDump, SIGNAL(clicked()),
             this, SLOT(slotControlDump()));
 
@@ -122,10 +120,6 @@ void DlgDeveloperTools::slotControlSearch(const QString& search) {
     m_controlProxyModel.setFilterFixedString(search);
 }
 
-void DlgDeveloperTools::slotControlSearchClear() {
-    m_controlProxyModel.setFilterFixedString(QString());
-}
-
 void DlgDeveloperTools::slotControlDump() {
 
     QString timestamp = QDateTime::currentDateTime()
@@ -142,8 +136,7 @@ void DlgDeveloperTools::slotControlDump() {
 
     QList<QSharedPointer<ControlDoublePrivate> > controlsList;
     ControlDoublePrivate::getControls(&controlsList);
-    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it =
-            controlsList.begin(); it != controlsList.end(); ++it) {
+    for (auto it = controlsList.constBegin(); it != controlsList.constEnd(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             QString line = pControl->getKey().group + "," +

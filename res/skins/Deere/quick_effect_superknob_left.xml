@@ -39,17 +39,16 @@
           <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey>[Master],show_killswitches</ConfigKey>
+          <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </PushButton>
 
       <WidgetGroup><!-- Expanding spacer to push EQ knob to opposite side -->
-        <ObjectName>TEST1</ObjectName>
         <Size>0me,1min</Size>
         <Children/>
         <Connection>
-          <ConfigKey>[Master],show_killswitches</ConfigKey>
+          <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>

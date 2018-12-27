@@ -18,7 +18,8 @@ SetlogFeature::SetlogFeature(QObject* parent,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
           m_playlistId(-1),
-          m_libraryWidget(nullptr) {
+          m_libraryWidget(nullptr),
+          m_icon(":/images/library/ic_library_history.svg") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true); //show all tracks
@@ -54,7 +55,7 @@ QVariant SetlogFeature::title() {
 }
 
 QIcon SetlogFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_history.svg");
+    return m_icon;
 }
 
 void SetlogFeature::bindWidget(WLibrary* libraryWidget,
@@ -199,7 +200,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                 return;
             }
 
-            // Add every track from right klicked playlist to that with the next smaller ID
+            // Add every track from right-clicked playlist to that with the next smaller ID
             int previousPlaylistId = m_playlistDao.getPreviousPlaylist(currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
             if (previousPlaylistId >= 0) {
 

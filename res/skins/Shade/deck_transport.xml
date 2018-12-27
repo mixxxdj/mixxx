@@ -361,7 +361,7 @@
         </State>
         <Pos>149,0</Pos>
         <Connection>
-          <ConfigKey>[Shade],looping</ConfigKey>
+          <ConfigKey>[Skin],show_loop_beatjump_controls</ConfigKey>
         </Connection>
       </PushButton>
       <PushButton>
