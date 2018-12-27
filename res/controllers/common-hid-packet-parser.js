@@ -330,7 +330,7 @@ HIDPacket.prototype.removeControl = function(group,name) {
  * @param group     control group name
  * @param name      name of the field
  * @param offset    field offset inside packet (bytes)
- * @param pack      control packing format for unpack()
+ * @param pack      control packing format for unpack(), one of b/B, h/H, i/I
  * @param bitmask   bitmask size, undefined for byte(s) controls
  *           NOTE: Parsing bitmask with multiple bits is not supported yet.
  * @param isEncoder indicates if this is an encoder which should be wrapped and delta reported */
@@ -423,7 +423,11 @@ HIDPacket.prototype.addControl = function(group,name,offset,pack,bitmask,isEncod
  *    Output with with bitmask, controls Output with a single bit
  *
  * It is recommended to define callbacks after packet creation with
- * setCallback instead of adding it directly here. But you can do it. */
+ * setCallback instead of adding it directly here. But you can do it. 
+ *
+ * @param offset the offset of the byte(s) to use, starting at 1 
+ *          (0 is automatically populated with the reportId) 
+ * @param pack control packing format for pack(), one of b/B, h/H, i/I */
 HIDPacket.prototype.addOutput = function(group,name,offset,pack,bitmask,callback) {
     var control_group = this.getGroup(group,true);
     var field;
