@@ -250,19 +250,21 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
     Q_UNUSED(scratching);
 }
 
-void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fromFile) {
-    //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm
-    //         << fromFile;
+void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm) {
+    //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
 
-    SyncMode syncMode = pSyncable->getSyncMode();
-    if (syncMode == SYNC_NONE) {
-        return;
-    }
+    // Master Base BPM shouldn't be updated for every random deck that twiddles
+    // the rate.
+    setMasterBpm(pSyncable, bpm);
+}
+
+void EngineSync::notifyBpmChangedFromFile(Syncable* pSyncable, double bpm) {
+    //qDebug() << "EngineSync::notifyBpmChangedFromFile" << pSyncable->getGroup() << bpm;
 
     // EngineSyncTest.FollowerRateChange dictates this must not happen in general,
     // but it is required when the file BPM changes because it's not a true BPM
     // change, so we set the follower back to the master BPM.
-    if (syncMode == SYNC_FOLLOWER && fromFile) {
+    if (pSyncable->getSyncMode() == SYNC_FOLLOWER) {
         double mbaseBpm = masterBaseBpm();
         double mbpm = masterBpm();
         // TODO(owilliams): Figure out why the master bpm is getting set to

@@ -131,7 +131,10 @@ void InternalClock::setMasterParams(double beatDistance, double baseBpm, double 
 
 void InternalClock::slotBpmChanged(double bpm) {
     updateBeatLength(m_iOldSampleRate, bpm);
-    m_pEngineSync->notifyBpmChanged(this, bpm, false);
+    if (getSyncMode() == SYNC_NONE) {
+        return;
+    }
+    m_pEngineSync->notifyBpmChanged(this, bpm);
 }
 
 void InternalClock::slotBeatDistanceChanged(double beat_distance) {

@@ -423,7 +423,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
     const double rateRatio = calcRateRatio();
     double bpm = local_bpm * rateRatio;
     m_pBpm->set(bpm);
-    m_pEngineSync->notifyBpmChanged(this, bpm, true);
+    m_pEngineSync->notifyBpmChangedFromFile(this, bpm);
 }
 
 void SyncControl::slotFileBpmChanged() {
@@ -448,10 +448,10 @@ void SyncControl::slotRateChanged() {
     const double rateRatio = calcRateRatio();
     double bpm = m_pLocalBpm ? m_pLocalBpm->get() * rateRatio : 0.0;
     //qDebug() << getGroup() << "SyncControl::slotRateChanged" << rate << bpm;
-    if (bpm > 0) {
+    if (bpm > 0 && getSyncMode() != SYNC_NONE) {
         // When reporting our bpm, remove the multiplier so the masters all
         // think the followers have the same bpm.
-        m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor, false);
+        m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);
     }
 }
 
