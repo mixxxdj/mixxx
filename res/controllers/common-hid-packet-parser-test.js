@@ -14,16 +14,16 @@ print('FIELD ' + field.id + ' MIN ' + field.min + ' MAX ' + field.max)
 
 var out = { 'length': packet.length, 'data': [] }
 for (var i = 0; i < packet.header.length; i++) {
-	out.data[i] = i
+    out.data[i] = i
 }
 for (var group_name in packet.groups) {
-	var group = packet.groups[group_name]
-	for (var field_name in group) {
-		var field = group[field_name]
-		print('PACKING ' + field.id)
-		packet.pack(out, field)
-	}
+    var group = packet.groups[group_name]
+    for (var field_name in group) {
+        var field = group[field_name]
+        print('PACKING ' + field.id)
+        packet.pack(out, field)
+    }
 }
 for (var i = 0; i < out.length; i++) {
-	print('BYTE ' + i + ' VALUE ' + out.data[i])
+    print('BYTE ' + i + ' VALUE ' + out.data[i])
 }

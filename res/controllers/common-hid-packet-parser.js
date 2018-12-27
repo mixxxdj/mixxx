@@ -439,8 +439,8 @@ HIDPacket.prototype.addOutput = function(group,name,offset,pack,bitmask,callback
     }
 
     // Increase offset by 1 because the reportId was previously considered part of the payload
-	// but isn't anymore and we can't be bothered to adjust every single script manually
-	offset += 1
+    // but isn't anymore and we can't be bothered to adjust every single script manually
+    offset += 1
 
     // Check if we are adding a Output bit to existing bitvector
     field = this.getFieldByOffset(offset,pack);
@@ -609,7 +609,7 @@ HIDPacket.prototype.parse = function(data) {
                     field.value = value;
                     continue;
                 }
-				var change
+                var change
                 if (field.isEncoder) {
                     if (field.value==field.max && value==field.min) {
                         change = 1;
@@ -652,14 +652,14 @@ HIDPacket.prototype.send = function(debug) {
     }
 
     for (var group_name in this.groups) {
-		var group = this.groups[group_name]
+        var group = this.groups[group_name]
         for (var field_name in group) {
             this.pack(data, group[field_name])
         }
     }
 
     if(debug) {
-		var packet_string = "";
+        var packet_string = "";
         for (var d in data) {
             if (data[d] < 0x10) {
                 packet_string += "0";
