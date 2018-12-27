@@ -1,14 +1,14 @@
 # 
 # Translators:
-# Inpromtu <kmbredt@gmail.com>, 2016
-# Inpromtu <kmbredt@gmail.com>, 2016
+# Klaus Michael Bredt <kmbredt@gmail.com>, 2016
+# Klaus Michael Bredt <kmbredt@gmail.com>, 2016
 # S.Brandt <s.brandt@mixxx.org>, 2017-2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016-2017
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2018-03-22 21:11+0000\n"
+"PO-Revision-Date: 2018-12-23 09:36+0000\n"
 "Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: German (Germany) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/de_DE/)\n"
 "MIME-Version: 1.0\n"
@@ -286,7 +286,7 @@ msgstr "Initialisiere..."
 
 msgctxt "ProgressCancelButton"
 msgid "&Cancel"
-msgstr "&Cancel"
+msgstr "&Abbrechen"
 
 msgctxt "ModifyHeader"
 msgid "Modify Setup"

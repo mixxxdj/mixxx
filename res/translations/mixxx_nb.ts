@@ -361,7 +361,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="112"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>Avspillingsnivå</translation>
     </message>
 </context>
 <context>
@@ -377,12 +377,12 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="105"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Handling feilet</translation>
     </message>
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="106"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
-        <translation type="unfinished"/>
+        <translation>Vennligst aktivér minst en oppkobling for å bruke Live Broadcasting.</translation>
     </message>
 </context>
 <context>
@@ -400,12 +400,12 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="468"/>
         <source>Settings error</source>
-        <translation type="unfinished"/>
+        <translation>Feil i innstillingene</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="469"/>
         <source>&lt;b&gt;Error with settings for &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;b&gt;Feil i innstillingene for &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
 </context>
 <context>
@@ -418,32 +418,32 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="128"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Navn</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
         <source>Status</source>
-        <translation type="unfinished"/>
+        <translation>Status</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="176"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>Frakoblet</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
         <source>Connecting...</source>
-        <translation type="unfinished"/>
+        <translation>Kobler til...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
         <source>Connected</source>
-        <translation type="unfinished"/>
+        <translation>TIlkoblet</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
         <source>Failed</source>
-        <translation type="unfinished"/>
+        <translation>Feilet</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="185"/>
@@ -591,7 +591,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="42"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>Avspillingsnivå</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="43"/>
@@ -3612,7 +3612,7 @@ You tried to learn: %1,%2</source>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="500"/>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="534"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Handling feilet</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="178"/>
@@ -6643,7 +6643,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="674"/>
         <source>3/4 BPM</source>
-        <translation type="unfinished"/>
+        <translation>3/4 BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="687"/>
@@ -6735,12 +6735,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="658"/>
         <source>Double BPM</source>
-        <translation type="unfinished"/>
+        <translation>Dobbel BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="690"/>
         <source>Halve BPM</source>
-        <translation type="unfinished"/>
+        <translation>Halv BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="729"/>
@@ -6812,7 +6812,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="642"/>
         <source>2/3 BPM</source>
-        <translation type="unfinished"/>
+        <translation>2/3 BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="703"/>
@@ -7134,39 +7134,39 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>ITunesFeature</name>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="69"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="779"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="99"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="827"/>
         <source>iTunes</source>
         <translation>iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="143"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="208"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="183"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="247"/>
         <source>Select your iTunes library</source>
         <translation>Velg ditt ITunes-bibliotek</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="171"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="210"/>
         <source>(loading) iTunes</source>
         <translation>(laster) iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="196"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="235"/>
         <source>Use Default Library</source>
         <translation>Bruk standardbiblioteket</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="197"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="236"/>
         <source>Choose Library...</source>
         <translation>Velg bibliotek ...</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="774"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="822"/>
         <source>Error Loading iTunes Library</source>
         <translation>Feil ved lasting av iTunes-bibliotek</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="775"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="823"/>
         <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
         <translation>Det oppstod en feil under lasting av iTunes-biblioteket. Noen av sporene eller spillelistene har muligens ikke blitt lastet.</translation>
     </message>
@@ -7188,57 +7188,57 @@ support.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2165"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2163"/>
         <source>activate</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2170"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2168"/>
         <source>toggle</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2180"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2178"/>
         <source>right</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2185"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2183"/>
         <source>left</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2190"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2188"/>
         <source>right small</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2195"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2193"/>
         <source>left small</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2200"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2198"/>
         <source>up</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2205"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2203"/>
         <source>down</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2210"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2208"/>
         <source>up small</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2215"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2213"/>
         <source>down small</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2248"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2246"/>
         <source>Shortcut</source>
         <translation>Snarvei</translation>
     </message>
@@ -7246,12 +7246,12 @@ support.</source>
 <context>
     <name>Library</name>
     <message>
-        <location filename="../../src/library/library.cpp" line="361"/>
+        <location filename="../../src/library/library.cpp" line="363"/>
         <source>Add Directory to Library</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="362"/>
+        <location filename="../../src/library/library.cpp" line="364"/>
         <source>Could not add the directory to your library. Either this directory is already in your library or you are currently rescanning your library.</source>
         <translation type="unfinished"/>
     </message>
@@ -7552,39 +7552,39 @@ Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1337"/>
+        <location filename="../../src/mixxx.cpp" line="1340"/>
         <source>OpenGL Direct Rendering</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1338"/>
+        <location filename="../../src/mixxx.cpp" line="1341"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1372"/>
-        <location filename="../../src/mixxx.cpp" line="1380"/>
-        <location filename="../../src/mixxx.cpp" line="1389"/>
+        <location filename="../../src/mixxx.cpp" line="1375"/>
+        <location filename="../../src/mixxx.cpp" line="1383"/>
+        <location filename="../../src/mixxx.cpp" line="1392"/>
         <source>Confirm Exit</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1373"/>
+        <location filename="../../src/mixxx.cpp" line="1376"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1381"/>
+        <location filename="../../src/mixxx.cpp" line="1384"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1390"/>
+        <location filename="../../src/mixxx.cpp" line="1393"/>
         <source>The preferences window is still open.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1391"/>
+        <location filename="../../src/mixxx.cpp" line="1394"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation type="unfinished"/>
     </message>
@@ -8980,7 +8980,7 @@ Fully right: Sine wave</source>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="71"/>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="72"/>
         <source>Waveform</source>
-        <translation type="unfinished"/>
+        <translation>Bølgeform</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="87"/>
@@ -9364,7 +9364,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="9"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Navn</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="10"/>
@@ -11573,23 +11573,23 @@ Fully right: end of the effect period</source>
 <context>
     <name>TrackExportWorker</name>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="109"/>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="183"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="111"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="185"/>
         <source>Export process was canceled</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="124"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="126"/>
         <source>Error removing file %1: %2. Stopping.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="137"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="139"/>
         <source>Error exporting track %1 to %2: %3. Stopping.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="168"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="170"/>
         <source>Error exporting tracks</source>
         <translation type="unfinished"/>
     </message>
@@ -12227,63 +12227,63 @@ Text on waveform overview when file is cached from source</extracomment>
 <context>
     <name>WSearchLineEdit</name>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="19"/>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="38"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="154"/>
         <source>Clear input</source>
         <comment>Clear the search bar input field</comment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="28"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="44"/>
         <source>Ctrl+F</source>
         <comment>Search|Focus</comment>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="149"/>
         <source>Search...</source>
         <comment>noun</comment>
         <translation>Søk…</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="151"/>
         <source>Search</source>
         <comment>noun</comment>
         <translation>Søk</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="151"/>
         <source>Enter a string to search for</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="152"/>
         <source>Shortcut</source>
         <translation>Snarvei</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="152"/>
         <source>Ctrl+F</source>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="153"/>
         <source>Focus</source>
         <comment>Give search bar input focus</comment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="153"/>
         <source>Ctrl+Backspace</source>
         <translation>Ctrl+Backspace</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="154"/>
         <source>Esc</source>
         <translation>Esc</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="155"/>
         <source>Exit search</source>
         <comment>Exit search bar and leave focus</comment>
         <translation>Avslutt søk</translation>
@@ -12292,247 +12292,247 @@ Text on waveform overview when file is cached from source</extracomment>
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="82"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="83"/>
         <source>Add to Playlist</source>
         <translation>Legg til i spilleliste</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="101"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="102"/>
         <source>Cover Art</source>
         <translation>Omslagsbilde</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="129"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="130"/>
         <source>ESC</source>
         <comment>Focus</comment>
         <translation>ESC</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="423"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="424"/>
         <source>Remove</source>
         <translation>Fjern</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="426"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="427"/>
         <source>Hide from Library</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="429"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="430"/>
         <source>Unhide from Library</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="432"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="433"/>
         <source>Purge from Library</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="435"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="436"/>
         <source>Properties</source>
         <translation>Egenskaper</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="439"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="440"/>
         <source>Open in File Browser</source>
         <translation>Åpne i filutforsker</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="521"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="522"/>
         <source>4/3 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="522"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="523"/>
         <source>3/2 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1561"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1584"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1559"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1582"/>
         <source>Create New Playlist</source>
         <translation>Opprett ny spilleliste</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1673"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1671"/>
         <source>Create New Crate</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1585"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1583"/>
         <source>Enter name for new playlist:</source>
         <translation>Skriv inn nytt navn for spilleliste:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="75"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="76"/>
         <source>Load to</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="77"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="78"/>
         <source>Deck</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="79"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="80"/>
         <source>Sampler</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="86"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="87"/>
         <source>Crates</source>
         <translation>Kasser</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="94"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="95"/>
         <source>Change BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="98"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="99"/>
         <source>Clear</source>
         <extracomment>Clear metadata in right click track context menu in library</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="443"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="444"/>
         <source>Add to Auto DJ Queue (Bottom)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="447"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="448"/>
         <source>Add to Auto DJ Queue (Top)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="451"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="452"/>
         <source>Add to Auto DJ Queue (Replace)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="455"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="456"/>
         <source>Import From File Tags</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="459"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="460"/>
         <source>Import From MusicBrainz</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="463"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="464"/>
         <source>Export To File Tags</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="467"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="468"/>
         <source>Preview Deck</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="476"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="477"/>
         <source>BPM and Beatgrid</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="480"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="481"/>
         <source>Play Count</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="484"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="485"/>
         <source>Cue Point</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="488"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="489"/>
         <source>Hotcues</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="492"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="493"/>
         <source>Loop</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="496"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="497"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>Avspillingsnivå</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="500"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="501"/>
         <source>Waveform</source>
-        <translation type="unfinished"/>
+        <translation>Bølgeform</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="504"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="505"/>
         <source>All</source>
         <translation>Alle</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="842"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="843"/>
         <source>Deck %1</source>
         <translation>Spiller %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1587"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1585"/>
         <source>New Playlist</source>
         <translation>Ny spilleliste</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1594"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1598"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1607"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1592"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1596"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1605"/>
         <source>Playlist Creation Failed</source>
         <translation>Oppretting av spilleliste mislyktes</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1595"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1593"/>
         <source>A playlist by that name already exists.</source>
         <translation>Det finnes allerede en spilleliste med det navnet.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1599"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1597"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Spillelisten kan ikke ha en tomt navn.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1608"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1606"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Det oppstod en ukjent feil under oppretting av spilleliste: </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="509"/>
-        <source>Lock BPM</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="510"/>
-        <source>Unlock BPM</source>
-        <translation type="unfinished"/>
+        <source>Lock BPM</source>
+        <translation>Lås BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="517"/>
-        <source>Double BPM</source>
-        <translation type="unfinished"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="511"/>
+        <source>Unlock BPM</source>
+        <translation>Åpne BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="518"/>
-        <source>Halve BPM</source>
-        <translation type="unfinished"/>
+        <source>Double BPM</source>
+        <translation>Dobbel BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="519"/>
-        <source>2/3 BPM</source>
-        <translation type="unfinished"/>
+        <source>Halve BPM</source>
+        <translation>Halv BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="520"/>
-        <source>3/4 BPM</source>
-        <translation type="unfinished"/>
+        <source>2/3 BPM</source>
+        <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="862"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="521"/>
+        <source>3/4 BPM</source>
+        <translation>3/4 BPM</translation>
+    </message>
+    <message>
+        <location filename="../../src/widget/wtracktableview.cpp" line="863"/>
         <source>Sampler %1</source>
         <translation>Sampler %1</translation>
     </message>

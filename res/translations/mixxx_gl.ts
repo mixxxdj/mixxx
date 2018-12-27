@@ -7146,39 +7146,39 @@ Normalmente ofrece unhas grellas de ritmo de maior calidade, mais non funcionar�
 <context>
     <name>ITunesFeature</name>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="69"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="779"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="99"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="827"/>
         <source>iTunes</source>
         <translation>iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="143"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="208"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="183"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="247"/>
         <source>Select your iTunes library</source>
         <translation>Seleccione a súa fonoteca de iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="171"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="210"/>
         <source>(loading) iTunes</source>
         <translation>(cargando) iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="196"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="235"/>
         <source>Use Default Library</source>
         <translation>Usar a fonoteca predeterminada</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="197"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="236"/>
         <source>Choose Library...</source>
         <translation>Escoller unha fonoteca...</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="774"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="822"/>
         <source>Error Loading iTunes Library</source>
         <translation>Produciuse un erro ao cargar a fonoteca do iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="775"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="823"/>
         <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
         <translation>Produciuse un erro ao cargar a súa fonoteca de iTunes. Algunhas das súas pistas ou listas de reprodución de iTunes non foron cargadas.</translation>
     </message>
@@ -7201,57 +7201,57 @@ support.</source>
 OpenGL.</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2165"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2163"/>
         <source>activate</source>
         <translation>activar</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2170"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2168"/>
         <source>toggle</source>
         <translation>conmutar</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2180"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2178"/>
         <source>right</source>
         <translation>dereita</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2185"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2183"/>
         <source>left</source>
         <translation>esquerda</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2190"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2188"/>
         <source>right small</source>
         <translation>dereita pequeno</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2195"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2193"/>
         <source>left small</source>
         <translation>esquerda pequeno</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2200"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2198"/>
         <source>up</source>
         <translation>arriba</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2205"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2203"/>
         <source>down</source>
         <translation>abaixo</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2210"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2208"/>
         <source>up small</source>
         <translation>arriba pequeno</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2215"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2213"/>
         <source>down small</source>
         <translation>abaixo pequeno</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2248"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2246"/>
         <source>Shortcut</source>
         <translation>Atallo</translation>
     </message>
@@ -7259,12 +7259,12 @@ OpenGL.</translation>
 <context>
     <name>Library</name>
     <message>
-        <location filename="../../src/library/library.cpp" line="361"/>
+        <location filename="../../src/library/library.cpp" line="363"/>
         <source>Add Directory to Library</source>
         <translation>Engadir un directorio na fonoteca</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="362"/>
+        <location filename="../../src/library/library.cpp" line="364"/>
         <source>Could not add the directory to your library. Either this directory is already in your library or you are currently rescanning your library.</source>
         <translation>Non foi posíbel engadir o directorio á súa fonoteca. É probábel que o directorio xa estea nela ou que estea escaneando de novo a fonoteca.</translation>
     </message>
@@ -7566,39 +7566,39 @@ Please select an input device in the sound hardware preferences first.</source>
         <translation>Non foi posíbel cargar o tema seleccionado.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1337"/>
+        <location filename="../../src/mixxx.cpp" line="1340"/>
         <source>OpenGL Direct Rendering</source>
         <translation>Debuxado directo OpenGL</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1338"/>
+        <location filename="../../src/mixxx.cpp" line="1341"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
         <translation>Non está activado o debuxado directo no seu equipo.&lt;br&gt;&lt;br&gt;Isto quere dicir que as vistas da forma da onda serán moi&lt;br&gt;&lt;b&gt;lentas e poden sobrecargar en gran medida a CPU&lt;/b&gt;. Aínda así, pode actualizar&lt;br&gt;a configuración para activar o debuxado directo ou desactivar&lt;br&gt;as vistas da forma da onda nas preferencias do Mixxx seleccionando&lt;br&gt;«Baleiro» como a forma da onda na sección «Interface».&lt;br&gt;&lt;br&gt;NOTA: Se utiliza hardware de NVIDIA,&lt;br&gt;é probábel que non estea presente o debuxado directo, mais non debería experimentar un rendemento degradado.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1372"/>
-        <location filename="../../src/mixxx.cpp" line="1380"/>
-        <location filename="../../src/mixxx.cpp" line="1389"/>
+        <location filename="../../src/mixxx.cpp" line="1375"/>
+        <location filename="../../src/mixxx.cpp" line="1383"/>
+        <location filename="../../src/mixxx.cpp" line="1392"/>
         <source>Confirm Exit</source>
         <translation>Confirmar a saída</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1373"/>
+        <location filename="../../src/mixxx.cpp" line="1376"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>O prato está reproducindo. Saír do Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1381"/>
+        <location filename="../../src/mixxx.cpp" line="1384"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>Un mostreador está reproducindo actualmente. Saír dp Mixxx?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1390"/>
+        <location filename="../../src/mixxx.cpp" line="1393"/>
         <source>The preferences window is still open.</source>
         <translation>A xanela de preferencias segue aberta.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1391"/>
+        <location filename="../../src/mixxx.cpp" line="1394"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Desbotar calquera cambio e saír do Mixxx?</translation>
     </message>
@@ -11589,23 +11589,23 @@ Fully right: end of the effect period</source>
 <context>
     <name>TrackExportWorker</name>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="109"/>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="183"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="111"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="185"/>
         <source>Export process was canceled</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="124"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="126"/>
         <source>Error removing file %1: %2. Stopping.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="137"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="139"/>
         <source>Error exporting track %1 to %2: %3. Stopping.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="168"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="170"/>
         <source>Error exporting tracks</source>
         <translation type="unfinished"/>
     </message>
@@ -12243,63 +12243,63 @@ Text on waveform overview when file is cached from source</extracomment>
 <context>
     <name>WSearchLineEdit</name>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="19"/>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="38"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="154"/>
         <source>Clear input</source>
         <comment>Clear the search bar input field</comment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="28"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="44"/>
         <source>Ctrl+F</source>
         <comment>Search|Focus</comment>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="149"/>
         <source>Search...</source>
         <comment>noun</comment>
         <translation>Buscar...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="151"/>
         <source>Search</source>
         <comment>noun</comment>
         <translation>Buscar</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="151"/>
         <source>Enter a string to search for</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="152"/>
         <source>Shortcut</source>
         <translation>Atallo</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="152"/>
         <source>Ctrl+F</source>
         <translation>Ctrl+F</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="153"/>
         <source>Focus</source>
         <comment>Give search bar input focus</comment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="153"/>
         <source>Ctrl+Backspace</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="154"/>
         <source>Esc</source>
         <translation>Esc</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="155"/>
         <source>Exit search</source>
         <comment>Exit search bar and leave focus</comment>
         <translation type="unfinished"/>
@@ -12308,247 +12308,247 @@ Text on waveform overview when file is cached from source</extracomment>
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="82"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="83"/>
         <source>Add to Playlist</source>
         <translation>Engadir á lista de reprodución</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="101"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="102"/>
         <source>Cover Art</source>
         <translation>Deseño da portada</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="129"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="130"/>
         <source>ESC</source>
         <comment>Focus</comment>
         <translation>ESC</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="423"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="424"/>
         <source>Remove</source>
         <translation>Retirar</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="426"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="427"/>
         <source>Hide from Library</source>
         <translation>Agachar da fonoteca</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="429"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="430"/>
         <source>Unhide from Library</source>
         <translation>Amosar da fonoteca</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="432"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="433"/>
         <source>Purge from Library</source>
         <translation>Purgar da fonoteca</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="435"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="436"/>
         <source>Properties</source>
         <translation>Propiedades</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="439"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="440"/>
         <source>Open in File Browser</source>
         <translation>Abrir no navegador de ficheiros</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="521"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="522"/>
         <source>4/3 BPM</source>
         <translation>4/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="522"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="523"/>
         <source>3/2 BPM</source>
         <translation>3/2 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1561"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1584"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1559"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1582"/>
         <source>Create New Playlist</source>
         <translation>Crear unha nova lista de reprodución</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1673"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1671"/>
         <source>Create New Crate</source>
         <translation>Crear un novo caixón</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1585"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1583"/>
         <source>Enter name for new playlist:</source>
         <translation>Escriba o nome para a nova lista de reprodución</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="75"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="76"/>
         <source>Load to</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="77"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="78"/>
         <source>Deck</source>
         <translation>Prato</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="79"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="80"/>
         <source>Sampler</source>
         <translation>Mostras</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="86"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="87"/>
         <source>Crates</source>
         <translation>Caixóns</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="94"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="95"/>
         <source>Change BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="98"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="99"/>
         <source>Clear</source>
         <extracomment>Clear metadata in right click track context menu in library</extracomment>
         <translation>Limpar</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="443"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="444"/>
         <source>Add to Auto DJ Queue (Bottom)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="447"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="448"/>
         <source>Add to Auto DJ Queue (Top)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="451"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="452"/>
         <source>Add to Auto DJ Queue (Replace)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="455"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="456"/>
         <source>Import From File Tags</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="459"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="460"/>
         <source>Import From MusicBrainz</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="463"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="464"/>
         <source>Export To File Tags</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="467"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="468"/>
         <source>Preview Deck</source>
         <translation>Escoita previa do prato</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="476"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="477"/>
         <source>BPM and Beatgrid</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="480"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="481"/>
         <source>Play Count</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="484"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="485"/>
         <source>Cue Point</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="488"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="489"/>
         <source>Hotcues</source>
         <translation>Referencias activas</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="492"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="493"/>
         <source>Loop</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="496"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="497"/>
         <source>ReplayGain</source>
         <translation>ReplayGain</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="500"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="501"/>
         <source>Waveform</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="504"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="505"/>
         <source>All</source>
         <translation>Todas</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="842"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="843"/>
         <source>Deck %1</source>
         <translation>Prato %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1587"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1585"/>
         <source>New Playlist</source>
         <translation>Nova lista de reprodución</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1594"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1598"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1607"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1592"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1596"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1605"/>
         <source>Playlist Creation Failed</source>
         <translation>Non foi posíbel crear a lista de reprodución</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1595"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1593"/>
         <source>A playlist by that name already exists.</source>
         <translation>Xa existe unha lista de reprodución con ese nome.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1599"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1597"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Unha lista de reprodución non pode ter un nome baleiro.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1608"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1606"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Produciuse un erro descoñecido mentres se creaba a lista de reprodución: </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="509"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="510"/>
         <source>Lock BPM</source>
         <translation>Bloquear os BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="510"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="511"/>
         <source>Unlock BPM</source>
         <translation>Desbloquear os BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="517"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="518"/>
         <source>Double BPM</source>
         <translation>Duplicar os BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="518"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="519"/>
         <source>Halve BPM</source>
         <translation>Dividir ÷2 os BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="519"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="520"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="520"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="521"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="862"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="863"/>
         <source>Sampler %1</source>
         <translation>Mostreador %1</translation>
     </message>

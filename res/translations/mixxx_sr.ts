@@ -26,7 +26,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="86"/>
         <source>Remove Crate as Track Source</source>
-        <translation>Уклони сандук из извора</translation>
+        <translation>Уклони гајбицу из извора</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="97"/>
@@ -377,12 +377,13 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="105"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Операција неуспешна</translation>
     </message>
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="106"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
-        <translation type="unfinished"/>
+        <translation>Бар једна веза мора бити активна 
+за емитовање уживо.</translation>
     </message>
 </context>
 <context>
@@ -390,22 +391,24 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="427"/>
         <source>Can&apos;t use secure password storage: keychain access failed.</source>
-        <translation type="unfinished"/>
+        <translation>Немогућност коришћења складишта лозинки:
+приступ привеску није могућ.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="458"/>
         <source>Secure password retrieval unsuccessful: keychain access failed.</source>
-        <translation type="unfinished"/>
+        <translation>Немогуће је учитати лозинке
+из складишта: привезак није доступан.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="468"/>
         <source>Settings error</source>
-        <translation type="unfinished"/>
+        <translation>Подешавања нису ваљана</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="469"/>
         <source>&lt;b&gt;Error with settings for &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;b&gt;Погрешна поставка за &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
 </context>
 <context>
@@ -418,37 +421,37 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="128"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Назив</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
         <source>Status</source>
-        <translation type="unfinished"/>
+        <translation>Стање</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="176"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>Ван мреже</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
         <source>Connecting...</source>
-        <translation type="unfinished"/>
+        <translation>Повезивање...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
         <source>Connected</source>
-        <translation type="unfinished"/>
+        <translation>Умрежен</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
         <source>Failed</source>
-        <translation type="unfinished"/>
+        <translation>Неуспешно</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="185"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>Непознато</translation>
     </message>
 </context>
 <context>
@@ -647,7 +650,7 @@
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="51"/>
         <source>Script: %1(%2)</source>
-        <translation type="unfinished"/>
+        <translation>Скрипта: %1(%2)</translation>
     </message>
 </context>
 <context>
@@ -807,7 +810,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="63"/>
         <source>Jump to start of track and play</source>
-        <translation type="unfinished"/>
+        <translation>Скочи на почетак и пусти</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="67"/>
@@ -1180,7 +1183,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="35"/>
         <source>Master Balance</source>
-        <translation type="unfinished"/>
+        <translation>Панорама</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="36"/>
@@ -1400,42 +1403,42 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="86"/>
         <source>Adjust Beatgrid Faster +.01</source>
-        <translation type="unfinished"/>
+        <translation>Подеси Битгрид на брже +.01 </translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="86"/>
         <source>Increase track&apos;s average BPM by 0.01</source>
-        <translation type="unfinished"/>
+        <translation>Увећај просечни BPM за 0.01</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="87"/>
         <source>Adjust Beatgrid Slower -.01</source>
-        <translation type="unfinished"/>
+        <translation>Подеси Битгрид на спорије -.01</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="87"/>
         <source>Decrease track&apos;s average BPM by 0.01</source>
-        <translation type="unfinished"/>
+        <translation>Умањи просечни BPM за 0.01</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="88"/>
         <source>Move Beatgrid Earlier</source>
-        <translation type="unfinished"/>
+        <translation>Помери Битгрид да рани</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="88"/>
         <source>Adjust the beatgrid to the left</source>
-        <translation type="unfinished"/>
+        <translation>Намести Битгрид ка лево</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="89"/>
         <source>Move Beatgrid Later</source>
-        <translation type="unfinished"/>
+        <translation>Помери Битгрид да касни</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="89"/>
         <source>Adjust the beatgrid to the right</source>
-        <translation type="unfinished"/>
+        <translation>Намести Битгрид ка десно</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="90"/>
@@ -1445,139 +1448,141 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="91"/>
         <source>Align beatgrid to current position</source>
-        <translation type="unfinished"/>
+        <translation>Уклопи Битгрид са тренутном позицијом</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="92"/>
         <source>Adjust Beatgrid - Match Alignment</source>
-        <translation type="unfinished"/>
+        <translation>Намести Битгрид - усклади позицију</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="93"/>
         <source>Adjust beatgrid to match another playing deck.</source>
-        <translation type="unfinished"/>
+        <translation>Намести Битгрид да прати други дек</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="94"/>
         <source>Quantize Mode</source>
-        <translation type="unfinished"/>
+        <translation>Магнетни режим</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="96"/>
         <source>Sync</source>
-        <translation type="unfinished"/>
+        <translation>Синхро</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="97"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="114"/>
         <source>Sync Mode</source>
-        <translation type="unfinished"/>
+        <translation>Синхро режим</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="98"/>
         <source>Tap to sync, hold to enable sync mode</source>
-        <translation type="unfinished"/>
+        <translation>Кратко за синхронизацију, 
+дуго за синхро-режим</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="99"/>
         <source>Internal Sync Master</source>
-        <translation type="unfinished"/>
+        <translation>Унутарњи синхронизер</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="100"/>
         <source>Toggle Internal Sync Master</source>
-        <translation type="unfinished"/>
+        <translation>Унутарњи синхронизер активан</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="101"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="102"/>
         <source>Internal Master BPM</source>
-        <translation type="unfinished"/>
+        <translation>Унутарњи темпо</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="103"/>
         <source>Internal Master BPM +1</source>
-        <translation type="unfinished"/>
+        <translation>Унутарњи темпо +1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="106"/>
         <source>Internal Master BPM -1</source>
-        <translation type="unfinished"/>
+        <translation>Унутарњи темпо -1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="109"/>
         <source>Internal Master BPM +0.1</source>
-        <translation type="unfinished"/>
+        <translation>Унутарњи темпо +0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="111"/>
         <source>Internal Master BPM -0.1</source>
-        <translation type="unfinished"/>
+        <translation>Унутарњи темпо -0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="113"/>
         <source>Sync Master</source>
-        <translation type="unfinished"/>
+        <translation>Тип синхронизера</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="116"/>
         <source>Beat Sync One-Shot</source>
-        <translation type="unfinished"/>
+        <translation>Синхро. ритма моментално</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="119"/>
         <source>Sync Tempo One-Shot</source>
-        <translation type="unfinished"/>
+        <translation>Синхро. темпа моментално</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="121"/>
         <source>Sync Phase One-Shot</source>
-        <translation type="unfinished"/>
+        <translation>Синхро. фазе моментално</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="125"/>
         <source>Speed (Pitch/Tempo)</source>
-        <translation type="unfinished"/>
+        <translation>Брзина (фрекв./темпо)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="126"/>
         <source>Keylock Mode</source>
-        <translation type="unfinished"/>
+        <translation>Тонални режим</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="131"/>
         <source>Pitch control (does not affect tempo), center is original pitch</source>
-        <translation type="unfinished"/>
+        <translation>Контрола фреквенције (без темпа),
+центар = оригинал</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="132"/>
         <source>Pitch Adjust</source>
-        <translation type="unfinished"/>
+        <translation>Подеси фреквенцију</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="133"/>
         <source>Adjust pitch from speed slider pitch</source>
-        <translation type="unfinished"/>
+        <translation>Фреквенција по клизачу за брзину</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="134"/>
         <source>Match musical key</source>
-        <translation type="unfinished"/>
+        <translation>Паметно усклади тоналитет</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="134"/>
         <source>Match Key</source>
-        <translation type="unfinished"/>
+        <translation>Усклади тоналитет</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="135"/>
         <source>Reset Key</source>
-        <translation type="unfinished"/>
+        <translation>Основни тоналитет</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="135"/>
         <source>Resets key to original</source>
-        <translation type="unfinished"/>
+        <translation>= Оригинални тоналитет</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="165"/>
@@ -1597,12 +1602,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="191"/>
         <source>Toggle Vinyl Control</source>
-        <translation type="unfinished"/>
+        <translation>Активна аналогна контрола</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="192"/>
         <source>Toggle Vinyl Control (ON/OFF)</source>
-        <translation type="unfinished"/>
+        <translation>Прекидач аналогне контроле (укљ.-искљ.)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="193"/>
@@ -1612,22 +1617,23 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="195"/>
         <source>Vinyl Control Cueing Mode</source>
-        <translation type="unfinished"/>
+        <translation>Режим аналогне припреме</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="197"/>
         <source>Vinyl Control Passthrough</source>
-        <translation type="unfinished"/>
+        <translation>Бајпас аналогне контроле</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="199"/>
         <source>Vinyl Control Next Deck</source>
-        <translation type="unfinished"/>
+        <translation>Аналогна контрола сл. дек</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="200"/>
         <source>Single deck mode - Switch vinyl control to next deck</source>
-        <translation type="unfinished"/>
+        <translation>Јединствени дек - пребаци аналогну
+контролу на сл. дек</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="204"/>
@@ -1637,32 +1643,32 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="205"/>
         <source>Set Cue</source>
-        <translation type="unfinished"/>
+        <translation>Маркер припреме</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="206"/>
         <source>Go-To Cue</source>
-        <translation type="unfinished"/>
+        <translation>Иди на маркер</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="207"/>
         <source>Go-To Cue And Play</source>
-        <translation type="unfinished"/>
+        <translation>Иди на маркер и пусти</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="209"/>
         <source>Go-To Cue And Stop</source>
-        <translation type="unfinished"/>
+        <translation>Иди на маркер и стани</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="211"/>
         <source>Preview Cue</source>
-        <translation type="unfinished"/>
+        <translation>Провери маркер</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="213"/>
         <source>Cue (CDJ Mode)</source>
-        <translation type="unfinished"/>
+        <translation>Припрема (CDJ режим)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="215"/>
@@ -1672,47 +1678,47 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="218"/>
         <source>Go to cue point and play after release</source>
-        <translation type="unfinished"/>
+        <translation>Иди на маркер и пусти по отпуштању</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="223"/>
         <source>Clear Hotcue %1</source>
-        <translation type="unfinished"/>
+        <translation>Ослободи брзи маркер %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="224"/>
         <source>Set Hotcue %1</source>
-        <translation type="unfinished"/>
+        <translation>Постави брзи маркер %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="225"/>
         <source>Jump To Hotcue %1</source>
-        <translation type="unfinished"/>
+        <translation>Скочи на брзи маркер %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="226"/>
         <source>Jump To Hotcue %1 And Stop</source>
-        <translation type="unfinished"/>
+        <translation>Скочи на брзи маркер %1 и стани</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="227"/>
         <source>Jump To Hotcue %1 And Play</source>
-        <translation type="unfinished"/>
+        <translation>Скочи на брзи маркер %1 и пусти</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="228"/>
         <source>Preview Hotcue %1</source>
-        <translation type="unfinished"/>
+        <translation>Провери брзи маркер %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="277"/>
         <source>Loop In</source>
-        <translation type="unfinished"/>
+        <translation>Почетак понављања</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="278"/>
         <source>Loop Out</source>
-        <translation type="unfinished"/>
+        <translation>Крај понављања</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="279"/>
@@ -1722,7 +1728,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="280"/>
         <source>Reloop/Exit Loop</source>
-        <translation type="unfinished"/>
+        <translation>Понављај/Настави</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="282"/>
@@ -1737,42 +1743,42 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="290"/>
         <source>1/32</source>
-        <translation type="unfinished"/>
+        <translation>1/32</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="291"/>
         <source>1/16</source>
-        <translation type="unfinished"/>
+        <translation>1/16</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="292"/>
         <source>1/8</source>
-        <translation type="unfinished"/>
+        <translation>1/8</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="293"/>
         <source>1/4</source>
-        <translation type="unfinished"/>
+        <translation>1/4</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="304"/>
         <source>Move Loop +%1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Макни понављ. +%1 откуцај/а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="305"/>
         <source>Move Loop -%1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Макни понављ. -%1 откуцај/а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="325"/>
         <source>Loop %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Понављај %1 откуцај/а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="326"/>
         <source>Loop Roll %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Клизно понављ. %1 откуцај/а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="424"/>
@@ -1782,7 +1788,8 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="425"/>
         <source>Append the selected track to the Auto DJ Queue</source>
-        <translation type="unfinished"/>
+        <translation>Додај одабир на крај
+Ауто-Диџеј листе</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="428"/>
@@ -1792,12 +1799,13 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="429"/>
         <source>Prepend selected track to the Auto DJ Queue</source>
-        <translation type="unfinished"/>
+        <translation>Додај одабир на почетак Ауто-Диџеј
+листе</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="439"/>
         <source>Load Track</source>
-        <translation type="unfinished"/>
+        <translation>Учитај одабир</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="440"/>
@@ -1807,7 +1815,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="441"/>
         <source>Track Load and Play</source>
-        <translation type="unfinished"/>
+        <translation>Учитај и пусти</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="442"/>
@@ -1817,12 +1825,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="445"/>
         <source>Record Mix</source>
-        <translation type="unfinished"/>
+        <translation>Снимај микс</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="446"/>
         <source>Toggle mix recording</source>
-        <translation type="unfinished"/>
+        <translation>Снимање микса активно</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="450"/>
@@ -1832,73 +1840,76 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="453"/>
         <source>Quick Effects</source>
-        <translation type="unfinished"/>
+        <translation>Једноставни ефекти</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="457"/>
         <source>Deck %1 Quick Effect Super Knob</source>
-        <translation type="unfinished"/>
+        <translation>Дек %1 - гл. пот. за ефекте</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="458"/>
         <source>Quick Effect Super Knob (control linked effect parameters)</source>
-        <translation type="unfinished"/>
+        <translation>Главни потенциометар за ефекте
+(контрола повезаних параметара)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="459"/>
         <source>Quick Effect</source>
-        <translation type="unfinished"/>
+        <translation>Једноставан ефекат</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="471"/>
         <source>Clear effect rack</source>
-        <translation type="unfinished"/>
+        <translation>Ослободи модул ефекта</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="471"/>
         <source>Clear Effect Rack</source>
-        <translation type="unfinished"/>
+        <translation>Ослободи модул ефекта</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="488"/>
         <source>Clear Unit</source>
-        <translation type="unfinished"/>
+        <translation>Уклони процесор</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="489"/>
         <source>Clear effect unit</source>
-        <translation type="unfinished"/>
+        <translation>Уклони процесор из модула</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="492"/>
         <source>Toggle Unit</source>
-        <translation type="unfinished"/>
+        <translation>Процесор активан</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="496"/>
         <source>Dry/Wet</source>
-        <translation type="unfinished"/>
+        <translation>Суво-Ефекат</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="497"/>
         <source>Adjust the balance between the original (dry) and processed (wet) signal.</source>
-        <translation type="unfinished"/>
+        <translation>Постави однос јачине сувог 
+(чистог) сигнала и обрађеног
+сигнала (ефекта)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="500"/>
         <source>Super Knob</source>
-        <translation type="unfinished"/>
+        <translation>Гл. потенциометар</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="505"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="506"/>
         <source>Insert/Send Toggle</source>
-        <translation type="unfinished"/>
+        <translation>Ефекти активни</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="510"/>
         <source>Next Chain</source>
-        <translation type="unfinished"/>
+        <translation>Сл. ланац</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="552"/>
@@ -1910,74 +1921,75 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="596"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="597"/>
         <source>Assign </source>
-        <translation type="unfinished"/>
+        <translation>Додели</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="619"/>
         <source>Clear</source>
-        <translation type="unfinished"/>
+        <translation>Уклони</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="619"/>
         <source>Clear the current effect</source>
-        <translation type="unfinished"/>
+        <translation>Уклони одабрани ефекат</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="627"/>
         <source>Toggle</source>
-        <translation type="unfinished"/>
+        <translation>Активација</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="627"/>
         <source>Toggle the current effect</source>
-        <translation type="unfinished"/>
+        <translation>Прекидач за одабрани ефекат</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="631"/>
         <source>Next</source>
-        <translation type="unfinished"/>
+        <translation>Даље</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="631"/>
         <source>Switch to next effect</source>
-        <translation type="unfinished"/>
+        <translation>Одабери сл. ефекат у низу</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="635"/>
         <source>Previous</source>
-        <translation type="unfinished"/>
+        <translation>Претходно</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="635"/>
         <source>Switch to the previous effect</source>
-        <translation type="unfinished"/>
+        <translation>Одабери претх. ефекат у низу</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="639"/>
         <source>Next or Previous</source>
-        <translation type="unfinished"/>
+        <translation>Следећи/претходни</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="640"/>
         <source>Switch to either next or previous effect</source>
-        <translation type="unfinished"/>
+        <translation>Одабери или сл или претходни
+ефекат у низу</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="666"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="667"/>
         <source>Parameter Value</source>
-        <translation type="unfinished"/>
+        <translation>Вредност параметра</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="695"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="696"/>
         <source>Microphone Ducking Strength</source>
-        <translation type="unfinished"/>
+        <translation>Јачина компресије микрофона</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="699"/>
         <source>Microphone Ducking Mode</source>
-        <translation type="unfinished"/>
+        <translation>Режим компресије микрофона</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="708"/>
@@ -1992,501 +2004,520 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="753"/>
         <source>Shuffle the content of the Auto DJ queue</source>
-        <translation type="unfinished"/>
+        <translation>Промешај листу Ауто-Диџеј-а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="756"/>
         <source>Skip the next track in the Auto DJ queue</source>
-        <translation type="unfinished"/>
+        <translation>Прескочи следећу нумеру у Ауто-Диџеј
+листи</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="761"/>
         <source>Auto DJ Toggle</source>
-        <translation type="unfinished"/>
+        <translation>Ауто ДиЏеј активан</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="762"/>
         <source>Toggle Auto DJ On/Off</source>
-        <translation type="unfinished"/>
+        <translation>Прекидач Ауто-Диџеј-а, укљ./искљ.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="785"/>
         <source>Library Maximize/Restore</source>
-        <translation type="unfinished"/>
+        <translation>Увећај/смањи бирач нумера</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="786"/>
         <source>Maximize the track library to take up all the available screen space.</source>
-        <translation type="unfinished"/>
+        <translation>Користи цео екран за одабир нумера</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="779"/>
         <source>Effect Rack Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Приказ ланца ефеката</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="780"/>
         <source>Show/hide the effect rack</source>
-        <translation type="unfinished"/>
+        <translation>Прикажи или сакриј модул за ефекте</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="782"/>
         <source>Cover Art Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Приказ омота</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="783"/>
         <source>Show/hide cover art</source>
-        <translation type="unfinished"/>
+        <translation>Прикажи или сакриј омоте албума</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="799"/>
         <source>Waveform Zoom Out</source>
-        <translation type="unfinished"/>
+        <translation>Рашири осцилоскоп</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="526"/>
         <source>Toggle Effect Unit</source>
-        <translation type="unfinished"/>
+        <translation>Ефекат активан</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="34"/>
         <source>Master Gain</source>
-        <translation type="unfinished"/>
+        <translation>Појачање</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="34"/>
         <source>Master gain</source>
-        <translation type="unfinished"/>
+        <translation>Гл. јачина</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="37"/>
         <source>Headphone Gain</source>
-        <translation type="unfinished"/>
+        <translation>Појачање (слушалице)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="37"/>
         <source>Headphone gain</source>
-        <translation type="unfinished"/>
+        <translation>Појачање слушалица</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="128"/>
         <source>Playback Speed</source>
-        <translation type="unfinished"/>
+        <translation>Брзина репродукције</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="129"/>
         <source>Playback speed control (Vinyl &quot;Pitch&quot; slider)</source>
-        <translation type="unfinished"/>
+        <translation>Контрола брзине пуштања (аналогни
+&quot;Pitch&quot; клизач)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="130"/>
         <source>Pitch (Musical key)</source>
-        <translation type="unfinished"/>
+        <translation>Фрекв. (музикално)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="136"/>
         <source>Increase Speed</source>
-        <translation type="unfinished"/>
+        <translation>Увећај брзину</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="137"/>
         <source>Adjust speed faster (coarse)</source>
-        <translation type="unfinished"/>
+        <translation>Подеси на брже (грубо)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="138"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="142"/>
         <source>Increase Speed (Fine)</source>
-        <translation type="unfinished"/>
+        <translation>Убрзај (фино)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="139"/>
         <source>Adjust speed faster (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Подеси на брже (фино)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="140"/>
         <source>Decrease Speed</source>
-        <translation type="unfinished"/>
+        <translation>Смањи брзину</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="141"/>
         <source>Adjust speed slower (coarse)</source>
-        <translation type="unfinished"/>
+        <translation>Подеси на спорије (грубо)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="143"/>
         <source>Adjust speed slower (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Подеси на спорије (фино)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="144"/>
         <source>Temporarily Increase Speed</source>
-        <translation type="unfinished"/>
+        <translation>Моментално убрзање</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="145"/>
         <source>Temporarily increase speed (coarse)</source>
-        <translation type="unfinished"/>
+        <translation>Моментално убрзање (грубо)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="146"/>
         <source>Temporarily Increase Speed (Fine)</source>
-        <translation type="unfinished"/>
+        <translation>Моментално убрзање (фино)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="147"/>
         <source>Temporarily increase speed (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Моментално убрзање (фино)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="148"/>
         <source>Temporarily Decrease Speed</source>
-        <translation type="unfinished"/>
+        <translation>Моментално успорење</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="149"/>
         <source>Temporarily decrease speed (coarse)</source>
-        <translation type="unfinished"/>
+        <translation>Моментално успорење (грубо)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="150"/>
         <source>Temporarily Decrease Speed (Fine)</source>
-        <translation type="unfinished"/>
+        <translation>Моментално успорење (фино)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="151"/>
         <source>Temporarily decrease speed (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Моментално успорење (фино)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="174"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="175"/>
         <source>Adjust %1</source>
-        <translation type="unfinished"/>
+        <translation>Подеси %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="181"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="182"/>
         <source>Kill %1</source>
-        <translation type="unfinished"/>
+        <translation>Избаци %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="217"/>
         <source>CUP (Cue + Play)</source>
-        <translation type="unfinished"/>
+        <translation>CUP (Скочи и пусти)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="272"/>
         <source>Loop Selected Beats</source>
-        <translation type="unfinished"/>
+        <translation>Понављај одабране откуцаје</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="273"/>
         <source>Create a beat loop of selected beat size</source>
-        <translation type="unfinished"/>
+        <translation>Активирај понављање са одређеним
+бројем откуцаја</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="274"/>
         <source>Loop Roll Selected Beats</source>
-        <translation type="unfinished"/>
+        <translation>Клизно понављање одабраних откуцаја</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="275"/>
         <source>Create a rolling beat loop of selected beat size</source>
-        <translation type="unfinished"/>
+        <translation>Активирај клизно понављање са
+одређеним бројем откуцаја</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="280"/>
         <source>Toggle loop on/off and jump to Loop In point if loop is behind play position</source>
-        <translation type="unfinished"/>
+        <translation>Укљ./искљ. понављање и врати
+на почетак понављања ако је прошао</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="281"/>
         <source>Reloop And Stop</source>
-        <translation type="unfinished"/>
+        <translation>Понови па стани</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="281"/>
         <source>Enable loop, jump to Loop In point, and stop</source>
-        <translation type="unfinished"/>
+        <translation>Активирај понављање, скочи на почетак
+понављања и заустави</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="282"/>
         <source>Halve the loop length</source>
-        <translation type="unfinished"/>
+        <translation>Преполови дужину понављања</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="283"/>
         <source>Double the loop length</source>
-        <translation type="unfinished"/>
+        <translation>Удвостручи дужину понављања</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="347"/>
         <source>Beat Jump / Loop Move</source>
-        <translation type="unfinished"/>
+        <translation>Скок на откуцај / помак понављања</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="348"/>
         <source>Jump / Move Loop Forward %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Скочи / макни понављ. напред за %1 откуцај/а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="349"/>
         <source>Jump / Move Loop Backward %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Скочи / макни понављ. назад за %1 откуцај/а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="350"/>
         <source>Jump forward by %1 beats, or if a loop is enabled, move the loop forward %1 beats</source>
-        <translation type="unfinished"/>
+        <translation>Скочи унапред %1 откуцај/а, или у случају понављања, помакни унапред %1 откуцај/а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
         <source>Jump backward by %1 beats, or if a loop is enabled, move the loop backward %1 beats</source>
-        <translation type="unfinished"/>
+        <translation>Скочи уназад %1 откуцај/а, или у случају понављања, помакни уназад %1 откуцај/а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="352"/>
         <source>Beat Jump / Loop Move Forward Selected Beats</source>
-        <translation type="unfinished"/>
+        <translation>Прескочи откуцаје / помакни понављање
+одабиром</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="352"/>
         <source>Jump forward by the selected number of beats, or if a loop is enabled, move the loop forward by the selected number of beats</source>
-        <translation type="unfinished"/>
+        <translation>Прескочи број откуцаја у одабиру, или у случају понављања, помакни унапред исти број откуцаја</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="353"/>
         <source>Beat Jump / Loop Move Backward Selected Beats</source>
-        <translation type="unfinished"/>
+        <translation>Врати уназад / помакни понављање по одабиру</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="353"/>
         <source>Jump backward by the selected number of beats, or if a loop is enabled, move the loop backward by the selected number of beats</source>
-        <translation type="unfinished"/>
+        <translation>Скочи на откуцај, или у случају понављања, помакни уназад, по дужини одабира</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="372"/>
         <source>Move up</source>
-        <translation type="unfinished"/>
+        <translation>Нагоре</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="373"/>
         <source>Equivalent to pressing the UP key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Исто што и тастер стрелице на горе</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="376"/>
         <source>Move down</source>
-        <translation type="unfinished"/>
+        <translation>Надоле</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="377"/>
         <source>Equivalent to pressing the DOWN key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Исто што и тастер стрелице на доле</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="380"/>
         <source>Move up/down</source>
-        <translation type="unfinished"/>
+        <translation>Горе/доле</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="381"/>
         <source>Move vertically in either direction using a knob, as if pressing UP/DOWN keys</source>
-        <translation type="unfinished"/>
+        <translation>Вертикално померање потенциометра,
+као са тастерима стрелица</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="384"/>
         <source>Scroll Up</source>
-        <translation type="unfinished"/>
+        <translation>Претходна страна</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="385"/>
         <source>Equivalent to pressing the PAGE UP key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Исто што и тастер PAGE UP</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="388"/>
         <source>Scroll Down</source>
-        <translation type="unfinished"/>
+        <translation>Следећа страна</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="389"/>
         <source>Equivalent to pressing the PAGE DOWN key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Исто што и тастер PAGE DOWN</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="392"/>
         <source>Scroll up/down</source>
-        <translation type="unfinished"/>
+        <translation>Навигација по странама</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="393"/>
         <source>Scroll vertically in either direction using a knob, as if pressing PGUP/PGDOWN keys</source>
-        <translation type="unfinished"/>
+        <translation>Груба навигација горе/доле
+употребом пот-а, исто се постиже
+тастерима PG UP/PG DN</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="396"/>
         <source>Move left</source>
-        <translation type="unfinished"/>
+        <translation>Налево</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="397"/>
         <source>Equivalent to pressing the LEFT key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Исто што и тастер стрелице на лево</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="400"/>
         <source>Move right</source>
-        <translation type="unfinished"/>
+        <translation>Надесно</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="401"/>
         <source>Equivalent to pressing the RIGHT key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Исто што и тастер стрелице на десно</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="404"/>
         <source>Move left/right</source>
-        <translation type="unfinished"/>
+        <translation>Лево/десно</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="405"/>
         <source>Move horizontally in either direction using a knob, as if pressing LEFT/RIGHT keys</source>
-        <translation type="unfinished"/>
+        <translation>Померање лево/десно помоћу пот-а,
+исто се постиже тастерима стрелица
+лево/десно</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="408"/>
         <source>Move focus to right pane</source>
-        <translation type="unfinished"/>
+        <translation>Пребаци се на десни сегмент</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="409"/>
         <source>Equivalent to pressing the TAB key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Исто што и тастер TAB</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="412"/>
         <source>Move focus to left pane</source>
-        <translation type="unfinished"/>
+        <translation>Пребаци се на леви сегмент</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="413"/>
         <source>Equivalent to pressing the SHIFT+TAB key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Исто што и комбинација Shift+TAB</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="416"/>
         <source>Move focus to right/left pane</source>
-        <translation type="unfinished"/>
+        <translation>Навигација кроз сегменте</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="417"/>
         <source>Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys</source>
-        <translation type="unfinished"/>
+        <translation>Померање лево/десно кроз сегменте
+прозора помоћу пот-а, исто се постиже
+тастерима ТАВ/Shift+TAB</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="420"/>
         <source>Go to the currently selected item</source>
-        <translation type="unfinished"/>
+        <translation>Скочи на одабрану ставку</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="421"/>
         <source>Choose the currently selected item and advance forward one pane if appropriate</source>
-        <translation type="unfinished"/>
+        <translation>Маркирај одабрану ставку и
+пређи на одговарајући
+сегмент</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="432"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>Додај на Ауто-Диџеј листу (рокада)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="433"/>
         <source>Replace Auto DJ Queue with selected tracks</source>
-        <translation type="unfinished"/>
+        <translation>Нова Ауто-Диџеј листа од одабраних
+нумера</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="493"/>
         <source>Enable or disable effect processing</source>
-        <translation type="unfinished"/>
+        <translation>Укључи/искључи обраду сигнала</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="501"/>
         <source>Super Knob (control effects&apos; Meta Knobs)</source>
-        <translation type="unfinished"/>
+        <translation>Главни пот (контролише
+подесиве пот-е ефеката)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="511"/>
         <source>Next chain preset</source>
-        <translation type="unfinished"/>
+        <translation>Сл. меморисани ланац</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="514"/>
         <source>Previous Chain</source>
-        <translation type="unfinished"/>
+        <translation>Претходни ланац</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="515"/>
         <source>Previous chain preset</source>
-        <translation type="unfinished"/>
+        <translation>Претходни меморисани ланац</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="518"/>
         <source>Next/Previous Chain</source>
-        <translation type="unfinished"/>
+        <translation>Сл./претх. меморисани ланац</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="519"/>
         <source>Next or previous chain preset</source>
-        <translation type="unfinished"/>
+        <translation>Следећи или претходни меморисани ланац процесора</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="522"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="523"/>
         <source>Show Effect Parameters</source>
-        <translation type="unfinished"/>
+        <translation>Приказ параметара ефекта</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="623"/>
         <source>Meta Knob</source>
-        <translation type="unfinished"/>
+        <translation>Подесиви пот.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="623"/>
         <source>Effect Meta Knob (control linked effect parameters)</source>
-        <translation type="unfinished"/>
+        <translation>Подесиви пот. ефекта (за везивање
+параметара више ефеката)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="672"/>
         <source>Meta Knob Mode</source>
-        <translation type="unfinished"/>
+        <translation>Режим подесивог пот-а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="673"/>
         <source>Set how linked effect parameters change when turning the Meta Knob.</source>
-        <translation type="unfinished"/>
+        <translation>Подешавање реакције везаних пот-а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="677"/>
         <source>Meta Knob Mode Invert</source>
-        <translation type="unfinished"/>
+        <translation>Обрни ефекат подесивог пот-а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="678"/>
         <source>Invert how linked effect parameters change when turning the Meta Knob.</source>
-        <translation type="unfinished"/>
+        <translation>Наопако реаговање везаних пот-а</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="688"/>
         <source>Microphone / Auxiliary</source>
-        <translation type="unfinished"/>
+        <translation>Микрофон / Екстерно</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="691"/>
         <source>Microphone On/Off</source>
-        <translation type="unfinished"/>
+        <translation>Укљ/искљ микрофон</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="692"/>
@@ -2496,17 +2527,18 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="700"/>
         <source>Toggle microphone ducking mode (OFF, AUTO, MANUAL)</source>
-        <translation type="unfinished"/>
+        <translation>Одабир режима компресије микрофона
+(искљ., аутоматски, ручно)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="703"/>
         <source>Auxiliary On/Off</source>
-        <translation type="unfinished"/>
+        <translation>Укљ. искљ. екстерно</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="704"/>
         <source>Auxiliary on/off</source>
-        <translation type="unfinished"/>
+        <translation>Активација екстерног сигнала</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="750"/>
@@ -2516,17 +2548,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="752"/>
         <source>Auto DJ Shuffle</source>
-        <translation type="unfinished"/>
+        <translation>Ауто-Диџеј &quot;шафл&quot;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="755"/>
         <source>Auto DJ Skip Next</source>
-        <translation type="unfinished"/>
+        <translation>Ауто-Диџеј - прескочи следеће</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="758"/>
         <source>Auto DJ Fade To Next</source>
-        <translation type="unfinished"/>
+        <translation>Ауто-Диџеј - постепено пређи на сл.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="759"/>
@@ -2541,7 +2573,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="767"/>
         <source>Samplers Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Приказ семплера</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="768"/>
@@ -2551,7 +2583,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="770"/>
         <source>Microphone Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Приказ микрофона</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="771"/>
@@ -2561,7 +2593,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="773"/>
         <source>Vinyl Control Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Приказ аналогне контроле</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="774"/>
@@ -2571,7 +2603,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="776"/>
         <source>Preview Deck Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Приказ припремног дека</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="777"/>
@@ -2581,7 +2613,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="788"/>
         <source>Vinyl Spinner Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Приказ индикатора аналогне контроле</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="789"/>
@@ -2591,27 +2623,27 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="797"/>
         <source>Waveform zoom</source>
-        <translation type="unfinished"/>
+        <translation>Ширина осцилоскопа</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="797"/>
         <source>Waveform Zoom</source>
-        <translation type="unfinished"/>
+        <translation>Ширина приказа звука</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="798"/>
         <source>Zoom waveform in</source>
-        <translation type="unfinished"/>
+        <translation>Сузи осцилоскоп</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="798"/>
         <source>Waveform Zoom In</source>
-        <translation type="unfinished"/>
+        <translation>Фокусирај осцилоскоп на мањи сегмент</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="799"/>
         <source>Zoom waveform out</source>
-        <translation type="unfinished"/>
+        <translation>Фокусирај осцилоскоп на шири сегмент</translation>
     </message>
 </context>
 <context>
@@ -2639,17 +2671,19 @@
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="495"/>
         <source>The script code needs to be fixed.</source>
-        <translation type="unfinished"/>
+        <translation>Изворни код садржи грешке.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="496"/>
         <source>For now, you can: Ignore this error for this session but you may experience erratic behavior.</source>
-        <translation type="unfinished"/>
+        <translation>Ово је упозорење: можете да наставите, али може доћи до
+нелогичног понашања програма.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="497"/>
         <source>Try to recover by resetting your controller.</source>
-        <translation type="unfinished"/>
+        <translation>Покушајте да средите проблем
+ресетовањем контролера</translation>
     </message>
 </context>
 <context>
@@ -2657,27 +2691,27 @@
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="37"/>
         <source>Channel</source>
-        <translation type="unfinished"/>
+        <translation>Канал</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="38"/>
         <source>Opcode</source>
-        <translation type="unfinished"/>
+        <translation>Инструкција</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="39"/>
         <source>Control</source>
-        <translation type="unfinished"/>
+        <translation>Елемент</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="40"/>
         <source>Options</source>
-        <translation type="unfinished"/>
+        <translation>Параметри</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="41"/>
         <source>Action</source>
-        <translation type="unfinished"/>
+        <translation>Акција</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="42"/>
@@ -2690,42 +2724,42 @@
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="36"/>
         <source>Channel</source>
-        <translation type="unfinished"/>
+        <translation>Канал</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="37"/>
         <source>Opcode</source>
-        <translation type="unfinished"/>
+        <translation>Инструкција</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="38"/>
         <source>Control</source>
-        <translation type="unfinished"/>
+        <translation>Елемент</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="39"/>
         <source>On Value</source>
-        <translation type="unfinished"/>
+        <translation>Вредност &quot;On&quot;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="40"/>
         <source>Off Value</source>
-        <translation type="unfinished"/>
+        <translation>Вредност &quot;off&quot;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="41"/>
         <source>Action</source>
-        <translation type="unfinished"/>
+        <translation>Акција</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="42"/>
         <source>On Range Min</source>
-        <translation type="unfinished"/>
+        <translation>Опсег мин. &quot;On&quot;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="43"/>
         <source>On Range Max</source>
-        <translation type="unfinished"/>
+        <translation>Опсег макс. &quot;On&quot;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="44"/>
@@ -2744,7 +2778,7 @@
         <location filename="../../src/library/crate/cratefeature.cpp" line="65"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="146"/>
         <source>Create New Crate</source>
-        <translation type="unfinished"/>
+        <translation>Нова гајбица</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="73"/>
@@ -2770,17 +2804,17 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="101"/>
         <source>Analyze entire Crate</source>
-        <translation type="unfinished"/>
+        <translation>Анализирај целу гајбицу</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="105"/>
         <source>Auto DJ Track Source</source>
-        <translation type="unfinished"/>
+        <translation>Селекција за Ауто-Диџеј-а</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="386"/>
         <source>Enter new name for crate:</source>
-        <translation type="unfinished"/>
+        <translation>Унесите назив нове гајбице:</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="132"/>
@@ -2824,7 +2858,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="622"/>
         <source>Crate Creation Failed</source>
-        <translation type="unfinished"/>
+        <translation>Креирање гајбице неуспешно</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="668"/>
@@ -2867,13 +2901,13 @@
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="43"/>
         <source>Create New Crate</source>
-        <translation type="unfinished"/>
+        <translation>Нова гајбица</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="44"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="98"/>
         <source>Enter name for new crate:</source>
-        <translation type="unfinished"/>
+        <translation>Унесите назив нове гајбице:</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="54"/>
@@ -2904,7 +2938,7 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="90"/>
         <source>copy</source>
         <comment>[noun]</comment>
-        <translation type="unfinished"/>
+        <translation>умножи</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="97"/>
@@ -2916,7 +2950,7 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="115"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="149"/>
         <source>Duplicating Crate Failed</source>
-        <translation type="unfinished"/>
+        <translation>Креирање копије гајбице неуспешно</translation>
     </message>
 </context>
 <context>
@@ -2929,12 +2963,12 @@
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="104"/>
         <source>Credits</source>
-        <translation type="unfinished"/>
+        <translation>Заслуге</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="130"/>
         <source>License</source>
-        <translation type="unfinished"/>
+        <translation>Лиценца</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="152"/>
@@ -2989,7 +3023,10 @@
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="102"/>
         <source>Runs beatgrid, key, and ReplayGain detection on the selected tracks. Does not generate waveforms for the selected tracks to save disk space.</source>
-        <translation type="unfinished"/>
+        <translation>Врши поставку Битгрид-а, детекцију
+тоналитета и гласноће одабраних
+нумера. Приказ звука неће бити
+снимљен ради уштеде простора.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.cpp" line="156"/>
@@ -3007,12 +3044,14 @@
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="143"/>
         <source>One deck must be stopped to enable Auto DJ mode.</source>
-        <translation type="unfinished"/>
+        <translation>Један од декова мора бити заустављен
+да би се омогућио рад Ауто-Диџеј-а</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="151"/>
         <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
-        <translation type="unfinished"/>
+        <translation>Декови 3 и 4 морају бити заустављени
+да би се омогућио рад Ауто-Диџеј-а.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="179"/>
@@ -3023,7 +3062,8 @@
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="213"/>
         <source>Displays the duration and number of selected tracks.</source>
-        <translation type="unfinished"/>
+        <translation>Приказује укупну дужину и количину
+одабраних нумера.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="14"/>
@@ -3040,23 +3080,29 @@
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="69"/>
         <source>Add Random</source>
-        <translation type="unfinished"/>
+        <translation>Додај насумице</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="52"/>
         <source>Shuffle the content of the Auto DJ queue.</source>
-        <translation type="unfinished"/>
+        <translation>Промешај садржај Ауто-Диџеј
+листе.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="65"/>
         <source>Adds a random track from track sources (crates) to the Auto DJ queue.
 If no track sources are configured, the track is added from the library instead.</source>
-        <translation type="unfinished"/>
+        <translation>Додаје произвољну нумеру из
+селекције (гајбице) на крај
+Ауто-Диџеј листе. У недостатку
+селекције, нумера се вуче из
+главне дискотеке.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="76"/>
         <source>Skip the next track in the Auto DJ queue.</source>
-        <translation type="unfinished"/>
+        <translation>Прескочи следећу нумеру на Ауто-Диџеј
+листи.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="79"/>
@@ -3140,22 +3186,22 @@ by analyzing the beats to discard outliers.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="14"/>
         <source>Beat Detection Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори за детекцију откуцаја</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="158"/>
         <source>Choose Analyzer</source>
-        <translation type="unfinished"/>
+        <translation>Одабир детектора</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="179"/>
         <source>Beat Analyzer:</source>
-        <translation type="unfinished"/>
+        <translation>Детектор откуцаја:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="103"/>
         <source>Analyzer Settings</source>
-        <translation type="unfinished"/>
+        <translation>Параметри детектора</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="114"/>
@@ -3167,7 +3213,13 @@ by analyzing the beats to discard outliers.</source>
         <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid. 
 Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-        <translation type="unfinished"/>
+        <translation>Откуцаји који се детектују биће
+претворени у &quot;метар&quot; фиксног темпа.
+Овај избор је погодан ако углавном
+пуштате нумере са &quot;равним&quot; темпом
+(нпр. већина техно-музике). Постиже
+боље резултате, али не воли промене
+темпа.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="126"/>
@@ -3183,12 +3235,16 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="144"/>
         <source>e.g. from 3rd-party programs or Mixxx versions before 1.11.
 (Not checked: Analyze only, if no beats exist.)</source>
-        <translation type="unfinished"/>
+        <translation>нпр. програми 3-ћих лица, или 
+верзије Миксиксикса &lt; 1.11 (ако нема
+откуцаја, врши анализу)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="148"/>
         <source>Re-analyze beats when settings change or beat detection data is outdated</source>
-        <translation type="unfinished"/>
+        <translation>Изврши ре-анализу када се
+промене избори корисника или
+детекција више не одговара нумери</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="44"/>
@@ -3216,22 +3272,26 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="70"/>
         <source>Learn</source>
-        <translation type="unfinished"/>
+        <translation>Научи</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="80"/>
         <source>Close</source>
-        <translation type="unfinished"/>
+        <translation>Затвори</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="121"/>
         <source>Choose Control...</source>
-        <translation type="unfinished"/>
+        <translation>Одаберите елемент...</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="192"/>
         <source>Hints: If you&apos;re mapping a button or switch, only press or flip it once.  For knobs and sliders, move the control in both directions for best results. Make sure to touch one control at a time.</source>
-        <translation type="unfinished"/>
+        <translation>Савет: Када мапирате дугме или прекидач,
+померите/притисните га само једном.
+Код пот-а и клизача, најбоље је померити их
+у оба смера. Не дирајте више контрола 
+одједном.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="247"/>
@@ -3241,47 +3301,55 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="320"/>
         <source>Advanced MIDI Options</source>
-        <translation type="unfinished"/>
+        <translation>Додатни избори за MIDI</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="326"/>
         <source>Switch mode interprets all messages for the control as button presses.</source>
-        <translation type="unfinished"/>
+        <translation>Режим скретнице сматра све поруке
+прекидачима.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="329"/>
         <source>Switch Mode</source>
-        <translation type="unfinished"/>
+        <translation>Режим скретнице</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="336"/>
         <source>Ignores slider or knob movements until they are close to the internal value. This helps prevent unwanted extreme changes while mixing but can accidentally ignore intentional rapid movements.</source>
-        <translation type="unfinished"/>
+        <translation>Чека да се контрола приближи
+вредности у радној меморији, па
+тек онда реагује. Ово спречава
+неприродне скокове при миксовању,
+али понекад ће пропустити екстремне
+покрете.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="339"/>
         <source>Soft Takeover</source>
-        <translation type="unfinished"/>
+        <translation>Софтверска предност</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="346"/>
         <source>Reverses the direction of the control.</source>
-        <translation type="unfinished"/>
+        <translation>Обрће смер контролног елемента.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="349"/>
         <source>Invert</source>
-        <translation type="unfinished"/>
+        <translation>Наопачке</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="356"/>
         <source>For jog wheels or infinite-scroll knobs. Interprets incoming messages in two&apos;s complement.</source>
-        <translation type="unfinished"/>
+        <translation>За пот-е са федерима, или пот-е без
+граничника. Интерпретира поруке у
+режиму бинарног одузимања.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="359"/>
         <source>Jog Wheel / Select Knob</source>
-        <translation type="unfinished"/>
+        <translation>&quot;Jog&quot;-пот / изборни пот</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="387"/>
@@ -3291,7 +3359,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="407"/>
         <source>Learn Another</source>
-        <translation type="unfinished"/>
+        <translation>Научи још</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="414"/>
@@ -3301,57 +3369,72 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="36"/>
         <source>Click anywhere in Mixxx or choose a control to learn</source>
-        <translation type="unfinished"/>
+        <translation>Одаберите елемент мишем или
+наведите експлицитно</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="37"/>
         <source>You can click on any button, slider, or knob in Mixxx to teach it that control.  You can also type in the box to search for a control by name, or click the Choose Control button to select from a list.</source>
-        <translation type="unfinished"/>
+        <translation>Можете мишем одабрати било који
+елемент главног Микс прозора, да би
+мапирали контролу. Користите поље за
+претрагу да пронађете елемент по имену,
+или користите дугме Одабир Елемента да
+добијете листу свих елемената.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="48"/>
         <source>Now test it out!</source>
-        <translation type="unfinished"/>
+        <translation>Испробајте!</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="49"/>
         <source>If you manipulate the control, you should see the Mixxx user interface respond the way you expect.</source>
-        <translation type="unfinished"/>
+        <translation>Када померите управљач на хардверу,
+требало би да видите одговарајућу
+реакцију у програму.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="52"/>
         <source>Not quite right?</source>
-        <translation type="unfinished"/>
+        <translation>Нешто не ваља?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="53"/>
         <source>If the mapping is not working try enabling an advanced option below and then try the control again. Or click Retry to redetect the midi control.</source>
-        <translation type="unfinished"/>
+        <translation>Ако научена контрола не реагује,
+покушајте да активирате неки од 
+избора испод, па пробајте опет.
+Можете такође пробати поновну
+детекцију дугметом &quot;Покушај опет&quot;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="272"/>
         <source>Didn&apos;t get any midi messages.  Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>Нема порука на видику. Покушајте опет.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="288"/>
         <source>Unable to detect a mapping -- please try again. Be sure to only touch one control at once.</source>
-        <translation type="unfinished"/>
+        <translation>Не могу да препознам поруку - покушајте
+опет. Да ли можда дирате више контрола 
+одједном?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="333"/>
         <source>Successfully mapped control:</source>
-        <translation type="unfinished"/>
+        <translation>Успешно научена контрола:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="439"/>
         <source>&lt;i&gt;Ready to learn %1&lt;/i&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;i&gt;Позорност за %1&lt;/i&gt;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="440"/>
         <source>Learning: %1. Now move a control on your controller.</source>
-        <translation type="unfinished"/>
+        <translation>Учим: %1. Сада померите елемент 
+на хардверу.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="466"/>
@@ -3359,7 +3442,11 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 This could be because you are using an old skin and this control is no longer supported.
 
 You tried to learn: %1,%2</source>
-        <translation type="unfinished"/>
+        <translation>Овај елемент Микса нажалост није
+могуће мапирати. Ово је можда због
+тога што је тема застарела, а елемент
+је избачен из програма.
+Покушали сте да мапирате: %1, %2</translation>
     </message>
 </context>
 <context>
@@ -3367,7 +3454,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="14"/>
         <source>Developer Tools</source>
-        <translation type="unfinished"/>
+        <translation>Алатке за пројектанте</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="24"/>
@@ -3377,27 +3464,29 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="46"/>
         <source>Dumps all ControlObject values to a csv-file saved in the settings path (e.g. ~/.mixxx)</source>
-        <translation type="unfinished"/>
+        <translation>Избацује све вредности за &quot;ControlObject&quot;
+у csv фајл наведен у изборима путања.
+(обично ~/.mixxx)</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="49"/>
         <source>Dump to csv</source>
-        <translation type="unfinished"/>
+        <translation>Избаци у цсв</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="85"/>
         <source>Log</source>
-        <translation type="unfinished"/>
+        <translation>Записник</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="94"/>
         <source>Search</source>
-        <translation type="unfinished"/>
+        <translation>Нађи</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="135"/>
         <source>Stats</source>
-        <translation type="unfinished"/>
+        <translation>Статистика</translation>
     </message>
 </context>
 <context>
@@ -3491,37 +3580,41 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="22"/>
         <source>Re-queue tracks after playback</source>
-        <translation type="unfinished"/>
+        <translation>Рециклирај репродуковане нумере</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="79"/>
         <source>Duration after which a track is eligible for selection by Auto DJ again</source>
-        <translation type="unfinished"/>
+        <translation>Обавезни период пре рециклаже нумере
+- Ауто-Диџеј</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="82"/>
         <source>hh:mm</source>
-        <translation type="unfinished"/>
+        <translation>hh:mm</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="39"/>
         <source>Minimum available tracks in Track Source</source>
-        <translation type="unfinished"/>
+        <translation>Минимална селекција за Ауто-Диџеја</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="14"/>
         <source>Auto DJ Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори за Ауто-Диџеј-а</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="32"/>
         <source>Add a track to the end of the Auto DJ queue once it is played, instead of removing it.</source>
-        <translation type="unfinished"/>
+        <translation>Уместо уклањања, пребаци репродуковану
+нумеру на крај Ауто-Диџеј листе.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="46"/>
         <source>This percentage of tracks are always available for selecting, regardless of when they were last played.</source>
-        <translation type="unfinished"/>
+        <translation>Минимални проценат нумера у селекцији,
+без обзира на то кад су пуштене последњи
+пут.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="49"/>
@@ -3531,37 +3624,42 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="62"/>
         <source>Uncheck, to ignore all played tracks.</source>
-        <translation type="unfinished"/>
+        <translation>Укључно са пуштеним нумерама.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="65"/>
         <source>Suspend track in Track Source from re-queue</source>
-        <translation type="unfinished"/>
+        <translation>Спречи рециклажу одабране нумере.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="72"/>
         <source>Suspension period for track selection</source>
-        <translation type="unfinished"/>
+        <translation>Период суспензије рециклаже</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="92"/>
         <source>Enable random track addition to queue</source>
-        <translation type="unfinished"/>
+        <translation>Омогући додавање насумичних нумера
+на листу</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="102"/>
         <source>Add random tracks from Track Source if the specified minimum tracks remain</source>
-        <translation type="unfinished"/>
+        <translation>Додај нумере насумице из селекције
+када се приближи крај листе</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="109"/>
         <source>Minimum allowed tracks before addition</source>
-        <translation type="unfinished"/>
+        <translation>Минимум преосталих нумера пре
+додавања</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="119"/>
         <source>Minimum number of tracks after which random tracks may be added</source>
-        <translation type="unfinished"/>
+        <translation>Минимални број преосталих нумера 
+на листи испод којег се активира насумично
+додавање</translation>
     </message>
 </context>
 <context>
@@ -3574,7 +3672,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="72"/>
         <source>Shoutcast 1</source>
-        <translation type="unfinished"/>
+        <translation>Шауткест 1</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="73"/>
@@ -3594,12 +3692,12 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="100"/>
         <source>Automatic</source>
-        <translation type="unfinished"/>
+        <translation>Аутоматски</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="102"/>
         <source>Mono</source>
-        <translation type="unfinished"/>
+        <translation>Моно</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="104"/>
@@ -3612,59 +3710,64 @@ You tried to learn: %1,%2</source>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="500"/>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="534"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Операција неуспешна</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="178"/>
         <source>'%1' has the same Icecast mountpoint as '%2'.
 Two source connections to the same server can&apos;t have the same mountpoint.</source>
-        <translation type="unfinished"/>
+        <translation>Монтажни чвор &quot;%1&quot; се подудара са
+&quot;%2&quot;. Није могуће отворити више
+од једне везе по чвору.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="238"/>
         <source>You can&apos;t create more than %1 source connections.</source>
-        <translation type="unfinished"/>
+        <translation>Није дозвољено креирати више од
+%1 мрежних извора.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="251"/>
         <source>Source connection %1</source>
-        <translation type="unfinished"/>
+        <translation>Мрежни извор %1</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="501"/>
         <source>At least one source connection is required.</source>
-        <translation type="unfinished"/>
+        <translation>Треба да постоји бар један мрежни извор.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="545"/>
         <source>Are you sure you want to disconnect every active source connection?</source>
-        <translation type="unfinished"/>
+        <translation>Да ли заиста желите да развежете све
+активне мрежне изворе?</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="507"/>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="544"/>
         <source>Confirmation required</source>
-        <translation type="unfinished"/>
+        <translation>Потврдите још једном</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="508"/>
         <source>Are you sure you want to delete &apos;%1&apos;?</source>
-        <translation type="unfinished"/>
+        <translation>Да ли заиста желите да уклоните &quot;%1&quot;?</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="523"/>
         <source>Renaming &apos;%1&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Мењам назив &quot;%1&quot;</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="524"/>
         <source>New name for &apos;%1&apos;:</source>
-        <translation type="unfinished"/>
+        <translation>Нови назив за &quot;%1&quot;:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="535"/>
         <source>Can&apos;t rename &apos;%1&apos; to &apos;%2&apos;: name already in use</source>
-        <translation type="unfinished"/>
+        <translation>Покушали сте да преименујете &quot;%1&quot; у
+&quot;%2&quot;: то име је већ у употреби</translation>
     </message>
 </context>
 <context>
@@ -3672,7 +3775,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="14"/>
         <source>Live Broadcasting Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори за емитовање уживо</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="504"/>
@@ -3697,47 +3800,54 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="452"/>
         <source>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</source>
-        <translation type="unfinished"/>
+        <translation>Због пропуста у неким програмима за
+пријем емитовања, ажурирање мета-
+-података за Ог Ворбис у току 
+емитовања може довести до прекида
+у звуку или вези.
+Омогући уживо ажурирање мета-података</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="20"/>
         <source>Live Broadcasting source connections</source>
-        <translation type="unfinished"/>
+        <translation>Изворне мрежне везе за емитовање</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="65"/>
         <source>Delete selected</source>
-        <translation type="unfinished"/>
+        <translation>Уклони одабрано</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="92"/>
         <source>Create new connection</source>
-        <translation type="unfinished"/>
+        <translation>Креирај нову везу</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="115"/>
         <source>Rename selected</source>
-        <translation type="unfinished"/>
+        <translation>Промени назив одабира</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="72"/>
         <source>Disconnect all</source>
-        <translation type="unfinished"/>
+        <translation>Развежи све</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="124"/>
         <source>Turn on Live Broadcasting when applying these settings</source>
-        <translation type="unfinished"/>
+        <translation>Активирај емитовање уживо по 
+активацији изабраних параметара</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="153"/>
         <source>Settings for %1</source>
-        <translation type="unfinished"/>
+        <translation>Параметри за %1</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="455"/>
         <source>Dynamically update Ogg Vorbis metadata.</source>
-        <translation type="unfinished"/>
+        <translation>Уживо ажирурирање Ог Ворбис
+мета-података.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="533"/>
@@ -3752,22 +3862,23 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="646"/>
         <source>Select a source connection above to edit its settings here</source>
-        <translation type="unfinished"/>
+        <translation>Следећи параметри се односе на одабрану
+изворну тачку изнад</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="786"/>
         <source>Password storage</source>
-        <translation type="unfinished"/>
+        <translation>Складиште лозинки</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="793"/>
         <source>Plain text</source>
-        <translation type="unfinished"/>
+        <translation>Чист текст</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="803"/>
         <source>Secure storage (OS keychain)</source>
-        <translation type="unfinished"/>
+        <translation>Шифровано (системски привезак)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="611"/>
@@ -3843,78 +3954,80 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="490"/>
         <source>Stream info</source>
-        <translation type="unfinished"/>
+        <translation>Подаци емитовања</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="387"/>
         <source>Metadata</source>
-        <translation type="unfinished"/>
+        <translation>Мета-подаци</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="469"/>
         <source>Use static artist and title.</source>
-        <translation type="unfinished"/>
+        <translation>Користи ручно име и наслов.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="429"/>
         <source>Static title</source>
-        <translation type="unfinished"/>
+        <translation>Наслов - ручно:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="412"/>
         <source>Static artist</source>
-        <translation type="unfinished"/>
+        <translation>Име - ручно:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="159"/>
         <source>Automatic reconnect</source>
-        <translation type="unfinished"/>
+        <translation>Ауто-повезивање</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="250"/>
         <source>Time to wait before the first reconnection attempt is made.</source>
-        <translation type="unfinished"/>
+        <translation>Период чекања пре поновног
+повезивања.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="204"/>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="253"/>
         <source> seconds</source>
-        <translation type="unfinished"/>
+        <translation>сек.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="263"/>
         <source>Wait until first attempt</source>
-        <translation type="unfinished"/>
+        <translation>Сачекај - први пут.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="194"/>
         <source>Reconnect period</source>
-        <translation type="unfinished"/>
+        <translation>Период ауто-повезивања</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="201"/>
         <source>Time to wait between two reconnection attempts.</source>
-        <translation type="unfinished"/>
+        <translation>Период чекања између два аутоматска
+повезивања.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="243"/>
         <source>Limit number of reconnection attempts</source>
-        <translation type="unfinished"/>
+        <translation>Граница броја покушаја повезивања</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="233"/>
         <source>Maximum retries</source>
-        <translation type="unfinished"/>
+        <translation>Макс. покушаја</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="167"/>
         <source>Reconnect if the connection to the streaming server is lost.</source>
-        <translation type="unfinished"/>
+        <translation>Сам успостави изгубљену везу.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="170"/>
         <source>Enable automatic reconnect</source>
-        <translation type="unfinished"/>
+        <translation>Укључи аутоматско повезивање</translation>
     </message>
 </context>
 <context>
@@ -3944,7 +4057,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="187"/>
         <source>No Name</source>
-        <translation type="unfinished"/>
+        <translation>Без назива</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="196"/>
@@ -3954,12 +4067,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="205"/>
         <source>No Author</source>
-        <translation type="unfinished"/>
+        <translation>Непознати аутор</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="442"/>
         <source>Troubleshooting</source>
-        <translation type="unfinished"/>
+        <translation>Решавање проблема</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="512"/>
@@ -3969,7 +4082,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="514"/>
         <source>Function Prefix</source>
-        <translation type="unfinished"/>
+        <translation>Префикс функције</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="516"/>
@@ -3979,43 +4092,46 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="592"/>
         <source>Clear Input Mappings</source>
-        <translation type="unfinished"/>
+        <translation>Уклони мапиране контроле</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="593"/>
         <source>Are you sure you want to clear all input mappings?</source>
-        <translation type="unfinished"/>
+        <translation>Да ли заиста желите да уклоните
+све мапиране контроле?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="633"/>
         <source>Clear Output Mappings</source>
-        <translation type="unfinished"/>
+        <translation>Обриши мапиране контроле</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="634"/>
         <source>Are you sure you want to clear all output mappings?</source>
-        <translation type="unfinished"/>
+        <translation>Да ли заисте желите да обришете
+све мапиране контроле?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="646"/>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="656"/>
         <source>Add Script</source>
-        <translation type="unfinished"/>
+        <translation>Додај код</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="648"/>
         <source>Controller Script Files (*.js)</source>
-        <translation type="unfinished"/>
+        <translation>Фајлови са кодом за контролер (*.js)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="657"/>
         <source>Could not add script file: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Неуспешно убацивање кода: &quot;%s&quot;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="727"/>
         <source>Please select a script from the list to open.</source>
-        <translation type="unfinished"/>
+        <translation>Одаберите скрипту из листе да бисте
+учитали код.</translation>
     </message>
 </context>
 <context>
@@ -4023,7 +4139,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="257"/>
         <source>(device category goes here)</source>
-        <translation type="unfinished"/>
+        <translation>(категорија хардвера иде овде)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="238"/>
@@ -4053,12 +4169,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="52"/>
         <source>Preset Info</source>
-        <translation type="unfinished"/>
+        <translation>Подаци конфигурације</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="332"/>
         <source>Input Mappings</source>
-        <translation type="unfinished"/>
+        <translation>Мапирање улаза</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="360"/>
@@ -4082,22 +4198,22 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="20"/>
         <source>Controller Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори за контролере</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="30"/>
         <source>Controller Setup</source>
-        <translation type="unfinished"/>
+        <translation>Поставке контролера</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="193"/>
         <source>Author:</source>
-        <translation type="unfinished"/>
+        <translation>Аутор:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="209"/>
         <source>Name:</source>
-        <translation type="unfinished"/>
+        <translation>Назив:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="318"/>
@@ -4113,17 +4229,17 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="407"/>
         <source>Output Mappings</source>
-        <translation type="unfinished"/>
+        <translation>Мапирање излаза</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="470"/>
         <source>Scripts</source>
-        <translation type="unfinished"/>
+        <translation>Скрипта</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="512"/>
         <source>Open Selected File</source>
-        <translation type="unfinished"/>
+        <translation>Учитај изабрани фајл</translation>
     </message>
 </context>
 <context>
@@ -4131,7 +4247,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="14"/>
         <source>Controller Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори за контролере</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="20"/>
@@ -4141,57 +4257,81 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="66"/>
         <source>Mixxx did not detect any controllers. If you connected the controller while Mixxx was running you must restart Mixxx first.</source>
-        <translation type="unfinished"/>
+        <translation>Микс није детектовао контролни хардвер.
+Ако сте повезали уређај док је Микс радио,
+пробајте да ре-стартујете Микс.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="79"/>
         <source>Presets</source>
-        <translation type="unfinished"/>
+        <translation>Колекције</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="110"/>
         <source>Open User Preset Folder</source>
-        <translation type="unfinished"/>
+        <translation>Отвори фолдер колекција</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="136"/>
         <source>Resources</source>
-        <translation type="unfinished"/>
+        <translation>Ресурси</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="32"/>
         <source>Controllers are physical devices that send MIDI or HID signals to your computer over a USB connection. These allow you to control Mixxx in a more hands-on way than a keyboard and mouse. Attached controllers that Mixxx recognizes are shown in the &quot;Controllers&quot; section in the sidebar.</source>
-        <translation type="unfinished"/>
+        <translation>&quot;Контролери&quot; су физички уређаји који
+одашиљу MIDI или HID сигнале вашем
+рачунару преко УСБ везе. На овај начин
+можете управљати Миксиксиксом много
+&quot;природније&quot; него са мишем и тастатуром.
+Повезани контролери које Микс препозна
+појавиће се у листи &quot;Контролери&quot; са стране.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="91"/>
         <source>Mixxx uses &quot;presets&quot; to connect messages from your controller to controls in Mixxx. If you do not see a preset for your controller in the &quot;Load Preset&quot; menu when you click on your controller on the left sidebar, you may be able to download one online from the &lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Mixxx Forum&lt;/a&gt;. Place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Preset Folder&quot; then restart Mixxx. If you download a mapping in a ZIP file, extract the XML and Javascript file(s) from the ZIP file to your &quot;User Preset Folder&quot; then restart Mixxx:</source>
-        <translation type="unfinished"/>
+        <translation>Миксиксикс може учитати меморисане
+колекције мапирања између уређаја
+и програма. Ако не видите снимљену
+мапу у листи &quot;Учитај мапу&quot; са леве стране,
+можда можете наћи неку на Интернету,
+тј. на &lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt; Mixxx Forum&lt;/a&gt;-у. Сместите
+Икс-ем-ел(.xml) и ЈаваСкрипт(.js) фајл(ове) у
+фолдер &quot;Корисничке колекције&quot; па поново
+покрените Микс. Ако сте преузели ZIP фајл,
+распакујте фајл(ове) у исти фолдер, па покрените
+Микс поново.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="123"/>
         <source>You can create your own mapping by using the MIDI Learning Wizard when you select your controller in the sidebar. You can edit mappings by selecting the &quot;Input Mappings&quot; and &quot;Output Mappings&quot; tabs in the preference page for your controller. See the Resources below for more details on making mappings.</source>
-        <translation type="unfinished"/>
+        <translation>Можете креирати сопствену мапу
+контрола помоћу Чаробњака за
+MIDI учење, за одабрани контролер.
+Можете преуредити мапирање одабиром
+језичка &quot;Мапирање улаза&quot; или &quot;Мапирање излаза&quot;
+у конфигурационом окну за ваш контролер.
+Види Ресурсе / литературу за детаље.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="142"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="152"/>
         <source>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Mixxx Controller Forums&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;http://www.mixxx.org/forums/viewforum.php?f=7&quot;&gt;Mixxx Controller Forums&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="162"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;MIDI Preset File Format&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;MIDI Preset File Format&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="172"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;MIDI Scripting with Javascript&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;MIDI Scripting with Javascript&lt;/a&gt;</translation>
     </message>
 </context>
 <context>
@@ -4209,17 +4349,19 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="91"/>
         <source>Select from different color schemes of a skin if available.</source>
-        <translation type="unfinished"/>
+        <translation>Одабир из селекције боја за ваш стил,
+ако постоји</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="236"/>
         <source>Color scheme</source>
-        <translation type="unfinished"/>
+        <translation>Палета боја</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="108"/>
         <source>Locales determine country and language specific settings.</source>
-        <translation type="unfinished"/>
+        <translation>Регија одређује вашу земљу и
+скуп језичких својствености.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="98"/>
@@ -4229,67 +4371,68 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="14"/>
         <source>Interface Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори управљачке апаратуре</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="20"/>
         <source>Interface options</source>
-        <translation type="unfinished"/>
+        <translation>Избори</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="185"/>
         <source>HiDPI / Retina scaling</source>
-        <translation type="unfinished"/>
+        <translation>Увећање за високе резолуције</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="195"/>
         <source>Change the size of text, buttons, and other items.</source>
-        <translation type="unfinished"/>
+        <translation>Мења величину текста, дугмади и осталих
+елемената.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="217"/>
         <source>Adopt scale factor from the operating system</source>
-        <translation type="unfinished"/>
+        <translation>Користи системско увећање.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="220"/>
         <source>Auto Scaling</source>
-        <translation type="unfinished"/>
+        <translation>Аутоматско увећање</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="252"/>
         <source>Effect options</source>
-        <translation type="unfinished"/>
+        <translation>Избори за ефекте</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="258"/>
         <source>Load behavior</source>
-        <translation type="unfinished"/>
+        <translation>Режим учитавања</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="267"/>
         <source>Keep metaknob position</source>
-        <translation type="unfinished"/>
+        <translation>Памти вредност подесивог пот-а</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="277"/>
         <source>Reset metaknob to effect default</source>
-        <translation type="unfinished"/>
+        <translation>Врати подесиви пот. на основну вредност</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="33"/>
         <source>Screen saver</source>
-        <translation type="unfinished"/>
+        <translation>Штедња екрана</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="125"/>
         <source>Start in full-screen mode</source>
-        <translation type="unfinished"/>
+        <translation>Лансирај у режиму испуњеног екрана</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="115"/>
         <source>Full-screen mode</source>
-        <translation type="unfinished"/>
+        <translation>Режим испуњеног екрана</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="153"/>
@@ -4299,12 +4442,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="163"/>
         <source>Library only</source>
-        <translation type="unfinished"/>
+        <translation>Само у бирачу нумера</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="173"/>
         <source>Library and Skin</source>
-        <translation type="unfinished"/>
+        <translation>Бирач нумера и главна апаратура</translation>
     </message>
 </context>
 <context>
@@ -4312,7 +4455,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="20"/>
         <source>Crossfader Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори за унакрсни клизач</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="26"/>
@@ -4352,7 +4495,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="199"/>
         <source>Reverse crossfader (Hamster Style)</source>
-        <translation type="unfinished"/>
+        <translation>Обрни смер (&quot;Хемстер&quot; режим)</translation>
     </message>
 </context>
 <context>
@@ -4360,42 +4503,42 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="62"/>
         <source>Mixxx mode</source>
-        <translation type="unfinished"/>
+        <translation>Режим Миксиксикса</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="63"/>
         <source>Mixxx mode (no blinking)</source>
-        <translation type="unfinished"/>
+        <translation>Режим Миксиксикса (без блинкања)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="64"/>
         <source>Pioneer mode</source>
-        <translation type="unfinished"/>
+        <translation>Пионир</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="65"/>
         <source>Denon mode</source>
-        <translation type="unfinished"/>
+        <translation>Денон</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="66"/>
         <source>Numark mode</source>
-        <translation type="unfinished"/>
+        <translation>Нумарк</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="67"/>
         <source>CUP mode</source>
-        <translation type="unfinished"/>
+        <translation>CUP</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="131"/>
         <source>4%</source>
-        <translation type="unfinished"/>
+        <translation>4%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="132"/>
         <source>6% (semitone)</source>
-        <translation type="unfinished"/>
+        <translation>6% (полустепен)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="133"/>
@@ -4410,12 +4553,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="135"/>
         <source>16%</source>
-        <translation type="unfinished"/>
+        <translation>16%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="136"/>
         <source>24%</source>
-        <translation type="unfinished"/>
+        <translation>24%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="137"/>
@@ -4433,17 +4576,17 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="14"/>
         <source>Deck Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори за декове</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="20"/>
         <source>Deck options</source>
-        <translation type="unfinished"/>
+        <translation>Избори</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="26"/>
         <source>Cue mode</source>
-        <translation type="unfinished"/>
+        <translation>Режим припреме</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="39"/>
@@ -4466,17 +4609,35 @@ CUP mode:
 - Cue button while pause not at cue point = set cue point and play after release
 - Cue button while playing = go to cue point and play after release
 </source>
-        <translation type="unfinished"/>
+        <translation>Миксиксикс: 
+- притисак на паузи на маркеру = провера
+- притисак на паузи ван маркера = постави маркер
+- притисак при репродукцији = паузирај код маркера
+Миксиксикс (без блинкања):
+- Исто као Миксиксикс режим, али без индикатора
+Пионир:
+- Исто као Миксиксикс режим, али &quot;Плеј&quot; трепће
+Денон:
+- притисак на маркеру = провера
+- притисак ван маркера = паузирај на маркеру
+- &quot;Плеј&quot; = постави маркер
+Нумарк
+- Исто као Денон, али &quot;Плеј&quot; не трепће
+CUP
+- притисак на паузи на маркеру = пусти након отпуштања
+- притисак на паузи ван маркера = постави маркер и пусти након отпуштања
+- притисак при репродукцији = скочи на маркер и пусти након отпуштања
+</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="70"/>
         <source>Track time display</source>
-        <translation type="unfinished"/>
+        <translation>Приказ времена нумере</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="85"/>
         <source>Elapsed</source>
-        <translation type="unfinished"/>
+        <translation>Од почетка</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="95"/>
@@ -4486,38 +4647,40 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="105"/>
         <source>Elapsed and Remaining</source>
-        <translation type="unfinished"/>
+        <translation>Од почетка и до краја</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="117"/>
         <source>Auto cue</source>
-        <translation type="unfinished"/>
+        <translation>Ауто-припрема</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="127"/>
         <source>Automatically seeks to the first saved cue point on track load.
             If none exists, seeks to the beginning of the track.</source>
-        <translation type="unfinished"/>
+        <translation>Аутоматски скаче на први снимљени маркер при учитавању.
+Ако нема маркера, скаче на почетак нумере.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="131"/>
         <source>Jump to main cue point on track load</source>
-        <translation type="unfinished"/>
+        <translation>Скочи на главни маркер при учитавању</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="138"/>
         <source>Playing track protection</source>
-        <translation type="unfinished"/>
+        <translation>Заштита од случајног пуштања</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="148"/>
         <source>Do not load tracks into playing decks</source>
-        <translation type="unfinished"/>
+        <translation>Не учитавај нумере у декове који репродукују</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="158"/>
         <source>Speed (Tempo) and Key (Pitch) options</source>
-        <translation type="unfinished"/>
+        <translation>Избори за Темпо (брзину) и Тоналитет
+(фреквенцију)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="166"/>
@@ -4540,12 +4703,12 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="222"/>
         <source>Reset on track load</source>
-        <translation type="unfinished"/>
+        <translation>Поништи при учитавању</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="232"/>
         <source>Current key</source>
-        <translation type="unfinished"/>
+        <translation>Текућа фрекв.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="245"/>
@@ -4555,7 +4718,7 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="273"/>
         <source>Permanent</source>
-        <translation type="unfinished"/>
+        <translation>Запамти</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="310"/>
@@ -4565,27 +4728,27 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="334"/>
         <source>Temporary</source>
-        <translation type="unfinished"/>
+        <translation>Привремено</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="344"/>
         <source>Keylock mode</source>
-        <translation type="unfinished"/>
+        <translation>Режим односа</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="357"/>
         <source>Ramping sensitivity</source>
-        <translation type="unfinished"/>
+        <translation>Осетљивост ублажавања</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="367"/>
         <source>Pitch bend behavior</source>
-        <translation type="unfinished"/>
+        <translation>Режим клизача фрекв-е</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="377"/>
         <source>Original key</source>
-        <translation type="unfinished"/>
+        <translation>Основни тоналитет</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="390"/>
@@ -4595,77 +4758,81 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="418"/>
         <source>Speed/Tempo</source>
-        <translation type="unfinished"/>
+        <translation>Брзина/темпо</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="428"/>
         <source>Key/Pitch</source>
-        <translation type="unfinished"/>
+        <translation>Тоналитет/Фрекв.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="438"/>
         <source>Adjustment buttons:</source>
-        <translation type="unfinished"/>
+        <translation>Моментална дугмад:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="454"/>
         <source>Coarse</source>
-        <translation type="unfinished"/>
+        <translation>Грубо</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="479"/>
         <source>Fine</source>
-        <translation type="unfinished"/>
+        <translation>Фино</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="495"/>
         <source>Make the speed sliders work like those on DJ turntables and CDJs where moving downward increases the speed</source>
-        <translation type="unfinished"/>
+        <translation>Обрни логику клизача, као
+на професионалним уређајима
+(на доле повећава)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="498"/>
         <source>Down increases speed</source>
-        <translation type="unfinished"/>
+        <translation>Обрни клизач темпа</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="511"/>
         <source>Slider range</source>
-        <translation type="unfinished"/>
+        <translation>Опсег клизача</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="527"/>
         <source>Adjusts the range of the speed (Vinyl &quot;Pitch&quot;) slider.</source>
-        <translation type="unfinished"/>
+        <translation>Подешава опсег клизача (аналогне
+контроле) фреквенције.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="534"/>
         <source>Abrupt jump</source>
-        <translation type="unfinished"/>
+        <translation>Режим скока</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="544"/>
         <source>Smoothly adjusts deck speed when temporary change buttons are held down</source>
-        <translation type="unfinished"/>
+        <translation>Прави градацију промене када
+се моментална дугмад држи притиснуто</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="547"/>
         <source>Smooth ramping</source>
-        <translation type="unfinished"/>
+        <translation>Градациони режим</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="557"/>
         <source>Keyunlock mode</source>
-        <translation type="unfinished"/>
+        <translation>Режим откључавања тоналитета</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="564"/>
         <source>Reset key</source>
-        <translation type="unfinished"/>
+        <translation>Врати на основни тон-тет</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="574"/>
         <source>Keep key</source>
-        <translation type="unfinished"/>
+        <translation>Задржи тон-тет</translation>
     </message>
 </context>
 <context>
@@ -4688,52 +4855,56 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="14"/>
         <source>Equalizer Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори за еквилајзер</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="370"/>
         <source>Reset equalizers on track load</source>
-        <translation type="unfinished"/>
+        <translation>Поништи поставке при учитавању нумере</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="367"/>
         <source>Resets the equalizers to their default values when loading a track.</source>
-        <translation type="unfinished"/>
+        <translation>Враћа параметре еквилајзера на основне
+вредности кад учитавате нумеру.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="20"/>
         <source>Equalizer Rack</source>
-        <translation type="unfinished"/>
+        <translation>Модул са еквилајзером</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="26"/>
         <source>Only allow EQ knobs to control EQ-specific effects</source>
-        <translation type="unfinished"/>
+        <translation>Пот-и еквилајзера имају ефекат само
+на параметре филтара.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="32"/>
         <source>Uncheck to allow any effect to be loaded into the EQ knobs.</source>
-        <translation type="unfinished"/>
+        <translation>Скините штиклић да би дозволили
+да било који ефекат замени еквилајзер.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="39"/>
         <source>Use the same EQ filter for all decks</source>
-        <translation type="unfinished"/>
+        <translation>Користи један еквилајзер за све декове.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="45"/>
         <source>Uncheck to allow different decks to use different EQ effects.</source>
-        <translation type="unfinished"/>
+        <translation>Скините штиклић да би дозволили
+посебан еквилајзер за сваки дек.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="77"/>
         <source>Equalizer Plugin</source>
-        <translation type="unfinished"/>
+        <translation>Екстерни еквилајзер</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="90"/>
         <source>Quick Effect</source>
-        <translation type="unfinished"/>
+        <translation>Једноставан ефекат</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="103"/>
@@ -4749,12 +4920,12 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="305"/>
         <source>Master EQ</source>
-        <translation type="unfinished"/>
+        <translation>Главни еквилајзер</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="316"/>
         <source>Reset Parameter</source>
-        <translation type="unfinished"/>
+        <translation>Поништи вредност</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="361"/>
@@ -4764,22 +4935,25 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="377"/>
         <source>Resets the deck gain to unity when loading a track.</source>
-        <translation type="unfinished"/>
+        <translation>Враћа главно појачање на нулу
+при учитавању нумере.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="380"/>
         <source>Reset gain on track load</source>
-        <translation type="unfinished"/>
+        <translation>Поништи појачање при учитавању нумере</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="387"/>
         <source>Bypass EQ effect processing</source>
-        <translation type="unfinished"/>
+        <translation>Заобиђи еквилајзер</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="390"/>
         <source>When checked, EQs are not processed, improving performance on slower computers.</source>
-        <translation type="unfinished"/>
+        <translation>Кад је активно, еквилајзери немају
+ефекта, што је погодно за слабије
+рачунаре.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="176"/>
@@ -4798,22 +4972,22 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="20"/>
         <source>Effects Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Поставке за ефекте</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="42"/>
         <source>Available Effects</source>
-        <translation type="unfinished"/>
+        <translation>Селекција ефеката</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="79"/>
         <source>Effect Info</source>
-        <translation type="unfinished"/>
+        <translation>Детаљи ефекта</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="123"/>
         <source>Version:</source>
-        <translation type="unfinished"/>
+        <translation>Верзија:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="171"/>
@@ -4823,17 +4997,17 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="187"/>
         <source>Author:</source>
-        <translation type="unfinished"/>
+        <translation>Аутор:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="216"/>
         <source>Name:</source>
-        <translation type="unfinished"/>
+        <translation>Назив:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeffectsdlg.ui" line="232"/>
         <source>Type:</source>
-        <translation type="unfinished"/>
+        <translation>Класа:</translation>
     </message>
 </context>
 <context>
@@ -4841,27 +5015,29 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="69"/>
         <source>The minimum size of the selected skin is bigger than your screen resolution.</source>
-        <translation type="unfinished"/>
+        <translation>Овај дизајн захтева резолуцију
+екрана која је већа од тренутне.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="157"/>
         <source>Allow screensaver to run</source>
-        <translation type="unfinished"/>
+        <translation>Дозволи штедњу екрана при раду</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="159"/>
         <source>Prevent screensaver from running</source>
-        <translation type="unfinished"/>
+        <translation>Спречи штедњу екрана</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="161"/>
         <source>Prevent screensaver while playing</source>
-        <translation type="unfinished"/>
+        <translation>Спречи гашење екрана при репродукцији</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="192"/>
         <source>This skin does not support color schemes</source>
-        <translation type="unfinished"/>
+        <translation>Овај дизајн не подржава промену палете
+боја</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="304"/>
@@ -4871,7 +5047,8 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="305"/>
         <source>Mixxx must be restarted before the new locale setting will take effect.</source>
-        <translation type="unfinished"/>
+        <translation>Миксиксикс ће активирати регионалне
+поставке тек након следећег покретања.</translation>
     </message>
 </context>
 <context>
@@ -4879,38 +5056,42 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="14"/>
         <source>Key Notation Format Settings</source>
-        <translation type="unfinished"/>
+        <translation>Поставке индикатора тоналитета</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="20"/>
         <source>When key detection is enabled, Mixxx detects the musical key of your tracks 
 and allows you to pitch adjust them for harmonic mixing.</source>
-        <translation type="unfinished"/>
+        <translation>Када је детекција тоналитета активна,
+Миксиксикс ће препознати музички
+тоналитет нумера, а ви га можете дотерати 
+када желите да миксујете тонално.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="24"/>
         <source>Enable Key Detection</source>
-        <translation type="unfinished"/>
+        <translation>Активирај препознавање тоналитета</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="31"/>
         <source>Choose Analyzer</source>
-        <translation type="unfinished"/>
+        <translation>Одабир детектора</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="52"/>
         <source>Key Analyzer:</source>
-        <translation type="unfinished"/>
+        <translation>Детектор тоналитета:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="71"/>
         <source>Choose between different algorithms to detect keys.</source>
-        <translation type="unfinished"/>
+        <translation>Постоји неколико алгоритама за
+препознавање тоналитета.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="84"/>
         <source>Analyzer Settings</source>
-        <translation type="unfinished"/>
+        <translation>Параметри детектора</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="90"/>
@@ -4920,152 +5101,154 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="97"/>
         <source>Re-analyze keys when settings change or 3rd-party keys are present</source>
-        <translation type="unfinished"/>
+        <translation>Поново анализирај тоналитете када
+се избори промене или су подаци убачени
+од стране 3-ег лица</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="113"/>
         <source>Key Notation</source>
-        <translation type="unfinished"/>
+        <translation>Нотација тоналитета</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="121"/>
         <source>Lancelot</source>
-        <translation type="unfinished"/>
+        <translation>Ланселот</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="128"/>
         <source>OpenKey</source>
-        <translation type="unfinished"/>
+        <translation>ОупенКи</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="135"/>
         <source>Traditional</source>
-        <translation type="unfinished"/>
+        <translation>Школски</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="142"/>
         <source>Custom</source>
-        <translation type="unfinished"/>
+        <translation>Прилагођено</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="153"/>
         <source>A</source>
-        <translation type="unfinished"/>
+        <translation>А-dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="176"/>
         <source>Bb</source>
-        <translation type="unfinished"/>
+        <translation>B-dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="199"/>
         <source>B</source>
-        <translation type="unfinished"/>
+        <translation>H-dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="222"/>
         <source>C</source>
-        <translation type="unfinished"/>
+        <translation>C-dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="245"/>
         <source>Db</source>
-        <translation type="unfinished"/>
+        <translation>Des-dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="268"/>
         <source>D</source>
-        <translation type="unfinished"/>
+        <translation>D-dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="291"/>
         <source>Eb</source>
-        <translation type="unfinished"/>
+        <translation>Es-dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="314"/>
         <source>E</source>
-        <translation type="unfinished"/>
+        <translation>E-dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="337"/>
         <source>F</source>
-        <translation type="unfinished"/>
+        <translation>F-dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="360"/>
         <source>F#</source>
-        <translation type="unfinished"/>
+        <translation>Fis-dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="383"/>
         <source>G</source>
-        <translation type="unfinished"/>
+        <translation>G-dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="406"/>
         <source>Ab</source>
-        <translation type="unfinished"/>
+        <translation>As-dur</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="429"/>
         <source>Am</source>
-        <translation type="unfinished"/>
+        <translation>A-mol</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="452"/>
         <source>Bbm</source>
-        <translation type="unfinished"/>
+        <translation>B-mol</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="475"/>
         <source>Bm</source>
-        <translation type="unfinished"/>
+        <translation>H-mol</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="498"/>
         <source>Cm</source>
-        <translation type="unfinished"/>
+        <translation>C-mol</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="521"/>
         <source>C#m</source>
-        <translation type="unfinished"/>
+        <translation>Cis-mol</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="544"/>
         <source>Dm</source>
-        <translation type="unfinished"/>
+        <translation>D-mol</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="567"/>
         <source>Ebm</source>
-        <translation type="unfinished"/>
+        <translation>Es-mol</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="590"/>
         <source>Em</source>
-        <translation type="unfinished"/>
+        <translation>E-mol</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="613"/>
         <source>Fm</source>
-        <translation type="unfinished"/>
+        <translation>F-mol</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="636"/>
         <source>F#m</source>
-        <translation type="unfinished"/>
+        <translation>Fis-mol</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="659"/>
         <source>Gm</source>
-        <translation type="unfinished"/>
+        <translation>G-mol</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="682"/>
         <source>G#m</source>
-        <translation type="unfinished"/>
+        <translation>Gis-mol</translation>
     </message>
 </context>
 <context>
@@ -5088,47 +5271,63 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="199"/>
         <source>Choose a music directory</source>
-        <translation type="unfinished"/>
+        <translation>Одаберите фолдер са музиком</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="214"/>
         <source>Confirm Directory Removal</source>
-        <translation type="unfinished"/>
+        <translation>Потврди уклањање фолдера</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="216"/>
         <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
-        <translation type="unfinished"/>
+        <translation>Миксиксикс више неће пратити овај
+фолдер и његове измене. Шта тачно
+желите да урадите у вези са нумерама
+из овог фолдера и његових подфолдера?&lt;ul&gt;
+&lt;li&gt;Сакриј све нумере из фолдера.&lt;/li&gt;&lt;li&gt;Уклони
+мета-податке ових нумера неповратно.&lt;/li&gt;&lt;li&gt;Задржи
+ове нумере у дискотеци.&lt;/li&gt;&lt;/ul&gt;Сакривање
+нумера ће сачувати мета-податке за када их поново
+будете уврстили у дискотеку.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="227"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
-        <translation type="unfinished"/>
+        <translation>Мета-подаци се односе на све
+детаље о нумери (извођач, назив,
+број пуштања, итд.) као и на
+детектоване откуцаје, брзе маркере
+и сегменте који се понављају. Овај
+избор се односи само на Микс-ову
+дискотеку. Сами фајлови се неће
+мењати или брисати.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="235"/>
         <source>Hide Tracks</source>
-        <translation type="unfinished"/>
+        <translation>Сакриј нумере</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="237"/>
         <source>Delete Track Metadata</source>
-        <translation type="unfinished"/>
+        <translation>Уклони мета-податке нумере</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="239"/>
         <source>Leave Tracks Unchanged</source>
-        <translation type="unfinished"/>
+        <translation>Не мењај ништа</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="281"/>
         <source>Relink music directory to new location</source>
-        <translation type="unfinished"/>
+        <translation>Пребаците извор Микс-ове дискотеке
+на неки други фолдер</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="358"/>
         <source>Select Library Font</source>
-        <translation type="unfinished"/>
+        <translation>Стила текста бирача нумера</translation>
     </message>
 </context>
 <context>
@@ -5141,12 +5340,13 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="38"/>
         <source>Music Directories:</source>
-        <translation type="unfinished"/>
+        <translation>Фолдери с музиком:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="54"/>
         <source>If removed, Mixxx will no longer watch this directory and its subdirectories for new tracks.</source>
-        <translation type="unfinished"/>
+        <translation>Када уклоните овај фолдер, Микс више неће
+пратити додавање нових нумера у исти.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="57"/>
@@ -5156,7 +5356,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="83"/>
         <source>Add a directory where your music is stored. Mixxx will watch this directory and its subdirectories for new tracks.</source>
-        <translation type="unfinished"/>
+        <translation>Додајте локацију у којој држите музику. Микс ће пратити додавање нових нумера у овај фолдер и подфолдере </translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="86"/>
@@ -5166,13 +5366,19 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="93"/>
         <source>If an existing music directory is moved, Mixxx doesn&apos;t know where to find the audio files in it. Choose Relink to select the music directory in its new location. &lt;br/&gt; This will re-establish the links to the audio files in the Mixxx library.</source>
-        <translation type="unfinished"/>
+        <translation>Када се промени локација датотека и фолдера
+на фајл систему, Микс више није сигуран
+где да пронађе нумере. Изаберите &quot;Поновно
+везивање&quot; да би назначили нову локацију
+већ додатог извора музике.&lt;br/&gt;Ово ће
+отклонити забуну, и Микс ће бити у могућности
+да пронађе све нумере.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="96"/>
         <source>Relink</source>
         <extracomment>This will re-establish the links to the audio files in the Mixxx database if you move an music directory to a new location.</extracomment>
-        <translation type="unfinished"/>
+        <translation>Поновно везивање</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="106"/>
@@ -5207,12 +5413,13 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="166"/>
         <source>Track Metadata Synchronization</source>
-        <translation type="unfinished"/>
+        <translation>Синхронизуј мета-податке нумера</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="172"/>
         <source>Export: Write modified track metadata from the library into file tags</source>
-        <translation type="unfinished"/>
+        <translation>Извоз: Испиши кориговане мета-податке
+нумера из дискотеке у звучни фајл</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="182"/>
@@ -5222,12 +5429,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="231"/>
         <source>Library Font:</source>
-        <translation type="unfinished"/>
+        <translation>Стил текста бирача:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="205"/>
         <source>Library Row Height:</source>
-        <translation type="unfinished"/>
+        <translation>&quot;Проред&quot; бирача нумера:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="188"/>
@@ -5237,12 +5444,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="291"/>
         <source>Add track to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Стави на Ауто-Диџеј листу (прво)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="284"/>
         <source>Add track to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Стави на Ауто-Диџеј листу (последње)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="198"/>
@@ -5252,38 +5459,40 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="248"/>
         <source>...</source>
-        <translation type="unfinished"/>
+        <translation>...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="215"/>
         <source> px</source>
-        <translation type="unfinished"/>
+        <translation>px</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="255"/>
         <source>Edit metadata after clicking selected track</source>
-        <translation type="unfinished"/>
+        <translation>Коригуј мета-податке након одабира
+нумере</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="268"/>
         <source>Track Load Action</source>
         <extracomment>Sets default action when double-clicking a track in the library.</extracomment>
-        <translation type="unfinished"/>
+        <translation>Операција одабира нумере</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="274"/>
         <source>Load track to next available deck</source>
-        <translation type="unfinished"/>
+        <translation>Учитај нумеру у први слободни дек</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="301"/>
         <source>External Libraries</source>
-        <translation type="unfinished"/>
+        <translation>Спољашње дискотеке</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="307"/>
         <source>You will need to restart Mixxx for these settings to take effect.</source>
-        <translation type="unfinished"/>
+        <translation>Ове поставке ступају на снагу тек
+након поновног покретања Микс-а.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="314"/>
@@ -5293,7 +5502,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="324"/>
         <source>Show Banshee Library</source>
-        <translation type="unfinished"/>
+        <translation>Приказ Бенши дискотеке</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="334"/>
@@ -5308,7 +5517,8 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="354"/>
         <source>All external libraries shown are write protected.</source>
-        <translation type="unfinished"/>
+        <translation>Све спољашње дискотеке које видите
+су заштићене од измена.</translation>
     </message>
 </context>
 <context>
@@ -5316,22 +5526,22 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="14"/>
         <source>Modplug Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори за Modplug</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="403"/>
         <source>All settings take effect on next track load. Currently loaded tracks are not affected. For an explanation of these settings, see the &lt;a href=&quot;http://wiki.openmpt.org/Manual:_Setup/Player&quot;&gt;OpenMPT manual&lt;/a&gt;.</source>
-        <translation type="unfinished"/>
+        <translation>Поставке ступају на снагу код учитавања нове нумере. Већ учитане нумере не подлежу изменама. За детаљније објашњење поставки, видите &lt;a href=&quot;http://wiki.openmpt.org/Manual:_Setup/Player&quot;&gt;OpenMPT manual&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="156"/>
         <source>Maximum Number of Mixing Channels:</source>
-        <translation type="unfinished"/>
+        <translation>Макс. број сабирних шина:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="23"/>
         <source>Show Advanced Settings</source>
-        <translation type="unfinished"/>
+        <translation>Прикажи додатне изборе</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="176"/>
@@ -5343,7 +5553,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="183"/>
         <source>Reverb Delay:</source>
-        <translation type="unfinished"/>
+        <translation>Одјек и ехо:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="197"/>
@@ -5360,12 +5570,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="227"/>
         <source>Bass Expansion</source>
-        <translation type="unfinished"/>
+        <translation>Широки басови</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="250"/>
         <source>Bass Range:</source>
-        <translation type="unfinished"/>
+        <translation>Опсег басова:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="257"/>
@@ -5375,122 +5585,127 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="264"/>
         <source>Front/Rear Delay:</source>
-        <translation type="unfinished"/>
+        <translation>Синхро. предњих/задњих канала:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="278"/>
         <source>Pro-Logic Surround</source>
-        <translation type="unfinished"/>
+        <translation>Вишеканални режим Про-Лоџик</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="285"/>
         <source>Full</source>
-        <translation type="unfinished"/>
+        <translation>Макс</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="299"/>
         <source>Reverb</source>
-        <translation type="unfinished"/>
+        <translation>Одјек</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="306"/>
         <source>Stereo separation</source>
-        <translation type="unfinished"/>
+        <translation>Стерео ширина</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="320"/>
         <source>10Hz</source>
-        <translation type="unfinished"/>
+        <translation>10Hz</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="327"/>
         <source>10ms</source>
-        <translation type="unfinished"/>
+        <translation>10ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="334"/>
         <source>256</source>
-        <translation type="unfinished"/>
+        <translation>256</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="341"/>
         <source>5ms</source>
-        <translation type="unfinished"/>
+        <translation>5ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="348"/>
         <source>100Hz</source>
-        <translation type="unfinished"/>
+        <translation>100Hz</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="355"/>
         <source>250ms</source>
-        <translation type="unfinished"/>
+        <translation>250ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="362"/>
         <source>50ms</source>
-        <translation type="unfinished"/>
+        <translation>50ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="369"/>
         <source>Noise reduction</source>
-        <translation type="unfinished"/>
+        <translation>Одстрањивање шума</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="387"/>
         <source>Hints</source>
-        <translation type="unfinished"/>
+        <translation>Савети</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="393"/>
         <source>Module files are decoded at once and kept in RAM to allow for seeking and smooth operation in Mixxx. About 10MB of RAM are required for 1 minute of audio.</source>
-        <translation type="unfinished"/>
+        <translation>МОД фајлови се одмах декодирају и
+чувају у радној меморији за брже скакање.
+Отприлике 10 мегабајта меморије је потребно
+за минут звука.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="425"/>
         <source>Decoding options for libmodplug, a software library for loading and rendering module files (MOD music, tracker music).</source>
-        <translation type="unfinished"/>
+        <translation>Избори за декодер libmodplug, софтверска
+библиотека за учитавања и репродукцију
+&quot;модул&quot; фајлова (MOD музика, трекер музика).</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="428"/>
         <source>Decoding Options</source>
-        <translation type="unfinished"/>
+        <translation>Избори за декодер</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="485"/>
         <source>Resampling mode (interpolation)</source>
-        <translation type="unfinished"/>
+        <translation>Интерполација (resampling)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="512"/>
         <source>Enable oversampling</source>
-        <translation type="unfinished"/>
+        <translation>Омогући над-узорковање</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="462"/>
         <source>Nearest (very fast, extremely bad quality)</source>
-        <translation type="unfinished"/>
+        <translation>Најближе (брзо, лоше звучи)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="467"/>
         <source>Linear (fast, good quality)</source>
-        <translation type="unfinished"/>
+        <translation>Линеарно (брзо, добро звучи)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="472"/>
         <source>Cubic Spline (high quality)</source>
-        <translation type="unfinished"/>
+        <translation>Кривуља трећег степена (квалитетно)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="477"/>
         <source>8-tap FIR (extremely high quality)</source>
-        <translation type="unfinished"/>
+        <translation>8-каналлни FIR (висококвалитетно)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="505"/>
         <source>Memory limit for single track (MB)</source>
-        <translation type="unfinished"/>
+        <translation>Макс. меморија по нумери (у МБ)</translation>
     </message>
 </context>
 <context>
@@ -5499,7 +5714,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <location filename="../../src/preferences/dialog/dlgprefnovinyldlg.ui" line="14"/>
         <source>Vinyl Control (Disabled) Preferences</source>
         <extracomment>Using a version with the Vinyl Control feature disabled, an alternative preferences window is displayed.</extracomment>
-        <translation type="unfinished"/>
+        <translation>Избори аналогне контроле (онемогућено)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefnovinyldlg.ui" line="26"/>
@@ -5520,7 +5735,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="14"/>
         <source>Recording Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори за снимање</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="33"/>
@@ -5571,27 +5786,27 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="90"/>
         <source>Output File Format</source>
-        <translation type="unfinished"/>
+        <translation>Формат крајњег фајла</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="148"/>
         <source>Compression</source>
-        <translation type="unfinished"/>
+        <translation>Компресија</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="161"/>
         <source>Lossy</source>
-        <translation type="unfinished"/>
+        <translation>Деструктивна</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="168"/>
         <source>Compression Level</source>
-        <translation type="unfinished"/>
+        <translation>Ниво компресије</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="178"/>
         <source>Lossless</source>
-        <translation type="unfinished"/>
+        <translation>Реверзибилна</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="239"/>
@@ -5614,7 +5829,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygain.cpp" line="137"/>
         <source>%1 LUFS (adjust by %2 dB)</source>
-        <translation type="unfinished"/>
+        <translation>%1 LUFS-а (резол. %2 dB)</translation>
     </message>
 </context>
 <context>
@@ -5622,104 +5837,124 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="14"/>
         <source>Normalization Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори за уједначавање</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="20"/>
         <source>ReplayGain Loudness Normalization</source>
-        <translation type="unfinished"/>
+        <translation>РиплејГејн уједначавање гласноће</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="26"/>
         <source>Apply loudness normalization to loaded tracks.</source>
-        <translation type="unfinished"/>
+        <translation>Изврши уједначавање гласноће над
+учитаним нумерама</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="29"/>
         <source>Apply ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>Примени РиплејГејн</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="91"/>
         <source>-30 LUFS</source>
-        <translation type="unfinished"/>
+        <translation>-30 LUFS</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="131"/>
         <source>-6 LUFS</source>
-        <translation type="unfinished"/>
+        <translation>-6 LUFS</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="140"/>
         <source>When ReplayGain is enabled, adjust tracks lacking ReplayGain information by this amount.</source>
-        <translation type="unfinished"/>
+        <translation>Када је активан РиплејГејн, нумере
+које немају информацију о гласноћи
+ће бити појачане за оволико јединица.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="143"/>
         <source>Initial boost without ReplayGain data</source>
-        <translation type="unfinished"/>
+        <translation>Претпојачање без РиплејГејн података</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="36"/>
         <source>For tracks with ReplayGain, adjust the target loudness to this LUFS value (Loudness Units relative to Full Scale).</source>
-        <translation type="unfinished"/>
+        <translation>За нумере које имају РиплејГејн податак,
+подеси циљну гласноћу на одабрану LUFS
+вредност (&quot;јединица гласноће - пун опсег&quot;) </translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="39"/>
         <source>Target loudness</source>
-        <translation type="unfinished"/>
+        <translation>Циљна гласноћа</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="174"/>
         <source>-12 dB</source>
-        <translation type="unfinished"/>
+        <translation>-12 dB</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="226"/>
         <source>Analysis</source>
-        <translation type="unfinished"/>
+        <translation>Анализа</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="232"/>
         <source>ReplayGain 2.0 (ITU-R BS.1770)</source>
-        <translation type="unfinished"/>
+        <translation>РиплејГејн 2.0 (ITU-R BS.1770)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="239"/>
         <source>ReplayGain 1.0</source>
-        <translation type="unfinished"/>
+        <translation>РиплејГејн 1.0</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="246"/>
         <source>Disabled</source>
-        <translation type="unfinished"/>
+        <translation>Неактивно</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="253"/>
         <source>Re-analyze and override an existing value </source>
-        <translation type="unfinished"/>
+        <translation>Увек анализирај и прегази постојећу
+вредност</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="269"/>
         <source>ReplayGain targets a reference loudness of -18 LUFS (Loudness Units relative to Full Scale). You may increase it if you find Mixxx is too quiet or reduce it if you find that your tracks are clipping. You may also want to decrease the volume of unanalyzed tracks if you find they are often louder than ReplayGained tracks. For podcasting a loudness of -16 LUFS is recommended.
 
 The loudness target is approximate and assumes track pregain and master output level are unchanged.</source>
-        <translation type="unfinished"/>
+        <translation>&quot;РиплејГејн&quot; циља референтну гласноћу
+од -18 LUFS-a (&quot;jeдиница гласноће - пун опсег&quot;).
+Можете је повећати ако вам сам Миксиксикс звучи
+превише тихо, или смањити ако вам мерачи иду
+у црвено. Такође можете утишати нумере које
+нису анализиране, ако чујете да су претежно
+гласније од анализираних. За
+емитовање подкастова, препоручено је
+-16 LUFS-а.
+Циљна гласноћа није апсолутна вредност, и подразумева
+нула претпојачања и главног појачања.
+</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="284"/>
         <source>When an unanalyzed track is playing, Mixxx will avoid an abrupt volume change by not applying a newly calculated ReplayGain value.</source>
-        <translation type="unfinished"/>
+        <translation>Када се репродукује нумера без познате гласноће,
+Микс ће избећи наглу промену гласноће
+тако што ће игнорисати новосрачунату 
+вредност &quot;РиплејГејн&quot;-а.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="214"/>
         <source>+12 dB</source>
-        <translation type="unfinished"/>
+        <translation>+12 dB</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="263"/>
         <source>Hints</source>
-        <translation type="unfinished"/>
+        <translation>Савети</translation>
     </message>
 </context>
 <context>
@@ -5737,47 +5972,48 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="69"/>
         <source>Default (long delay)</source>
-        <translation type="unfinished"/>
+        <translation>Основно (дуги ехо)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="70"/>
         <source>Experimental (no delay)</source>
-        <translation type="unfinished"/>
+        <translation>Експериментално (без еха)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="71"/>
         <source>Disabled (short delay)</source>
-        <translation type="unfinished"/>
+        <translation>Угашено (кратак ехо)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="77"/>
         <source>Soundcard Clock</source>
-        <translation type="unfinished"/>
+        <translation>Клок звучног адаптера</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="78"/>
         <source>Network Clock</source>
-        <translation type="unfinished"/>
+        <translation>Мрежни клок</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="111"/>
         <source>Master output only</source>
-        <translation type="unfinished"/>
+        <translation>Само стерео шина</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="113"/>
         <source>Master and booth outputs</source>
-        <translation type="unfinished"/>
+        <translation>Стерео шина и оба излаза</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="115"/>
         <source>Direct monitor (recording and broadcasting only)</source>
-        <translation type="unfinished"/>
+        <translation>Директни мониторинг (за
+снимање и емитовање)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="163"/>
         <source>Disabled</source>
-        <translation type="unfinished"/>
+        <translation>Неактивно</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="164"/>
@@ -5792,38 +6028,47 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="172"/>
         <source>Mono</source>
-        <translation type="unfinished"/>
+        <translation>Моно</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="700"/>
         <source>Microphone inputs are out of time in the record &amp; broadcast signal compared to what you hear.</source>
-        <translation type="unfinished"/>
+        <translation>Микрофонски сигнал у емисији
+и снимку није усаглашен са оним
+што чујете.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="701"/>
         <source>Measure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
-        <translation type="unfinished"/>
+        <translation>Измери мрежно кашњење и унеси га
+заједно са Микрофонском компензацијом
+да би усагласили микрофон.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="702"/>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="709"/>
         <source>Refer to the Mixxx User Manual for details.</source>
-        <translation type="unfinished"/>
+        <translation>Консултујте Миксиксикс приручник за
+више информација.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="707"/>
         <source>Configured latency has changed.</source>
-        <translation type="unfinished"/>
+        <translation>Поставка компензације кашњења
+захтева корекцију.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="708"/>
         <source>Remeasure round trip latency and enter it above for Microphone Latency Compensation to align microphone timing.</source>
-        <translation type="unfinished"/>
+        <translation>Поново измери мрежно кашњење и
+унеси га заједно са Микрофонском
+компензацијом да би усагласили
+микрофонски сигнал.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="186"/>
         <source>Realtime scheduling is enabled.</source>
-        <translation type="unfinished"/>
+        <translation>Активно је мерење у реалном времену.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="533"/>
@@ -5841,7 +6086,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="14"/>
         <source>Sound Hardware Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Избори за звучне адаптере</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="22"/>
@@ -5851,32 +6096,33 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="35"/>
         <source>Sample Rate</source>
-        <translation type="unfinished"/>
+        <translation>Фрекв. узорковања</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="48"/>
         <source>Audio Buffer</source>
-        <translation type="unfinished"/>
+        <translation>Звучна међу-меморија</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="71"/>
         <source>Engine Clock</source>
-        <translation type="unfinished"/>
+        <translation>Референтни клок</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="78"/>
         <source>Use soundcard clock for live audience setups and lowest latency.&lt;br&gt;Use network clock for broadcasting without a live audience.</source>
-        <translation type="unfinished"/>
+        <translation>Користите клок звучног адаптера
+за живе ситуације и смањено кашњење.&lt;br&gt;Користите мрежни клок за емитовање без активне публике.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="121"/>
         <source>Microphone Monitor Mode</source>
-        <translation type="unfinished"/>
+        <translation>Мониторинг микрофона</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="128"/>
         <source>Microphone Latency Compensation</source>
-        <translation type="unfinished"/>
+        <translation>Микрофонска компензација</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="174"/>
@@ -5894,27 +6140,27 @@ The loudness target is approximate and assumes track pregain and master output l
 milliseconds
 ----------
 milliseconds</extracomment>
-        <translation type="unfinished"/>
+        <translation>ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="197"/>
         <source>Booth Delay</source>
-        <translation type="unfinished"/>
+        <translation>Компензација вокалог канала</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="345"/>
         <source>Enable Realtime scheduling (currently disabled), see the &lt;a href=&quot;http://mixxx.org/wiki/doku.php/adjusting_audio_latency&quot;&gt;Mixxx Wiki&lt;/a&gt;.</source>
-        <translation type="unfinished"/>
+        <translation>Укључи мерење у реалном времену (искључено), погледајте &lt;a href=&quot;http://mixxx.org/wiki/doku.php/adjusting_audio_latency&quot;&gt;Mixxx Wiki&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="388"/>
         <source>20 ms</source>
-        <translation type="unfinished"/>
+        <translation>20 ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="395"/>
         <source>Buffer Underflow Count</source>
-        <translation type="unfinished"/>
+        <translation>Број пражњења међу-меморије</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="405"/>
@@ -5929,22 +6175,22 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="85"/>
         <source>Keylock/Pitch-Bending Engine</source>
-        <translation type="unfinished"/>
+        <translation>Систем променљиве фреквенције</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="61"/>
         <source>Multi-Soundcard Synchronization</source>
-        <translation type="unfinished"/>
+        <translation>Мулти-адаптерска синхронизација</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="98"/>
         <source>Master Mix</source>
-        <translation type="unfinished"/>
+        <translation>Главни микс</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="111"/>
         <source>Master Output Mode</source>
-        <translation type="unfinished"/>
+        <translation>Режим стерео шине</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="270"/>
@@ -5959,27 +6205,30 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="358"/>
         <source>The &lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt; lists sound cards and controllers you may want to consider for using Mixxx.</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt; садржи листу звучних адаптера и контролера које препоручујемо уз Миксиксикс.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="378"/>
         <source>System Reported Latency</source>
-        <translation type="unfinished"/>
+        <translation>Системско кашњење</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="325"/>
         <source>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</source>
-        <translation type="unfinished"/>
+        <translation>Увећајте звучну међу-меморију ако
+се бројач пражњења стално увећава,
+или чујете &quot;пуцкетање&quot; у репродукцији.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="319"/>
         <source>Hints and Diagnostics</source>
-        <translation type="unfinished"/>
+        <translation>Савети и дијагностика</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="335"/>
         <source>Downsize your audio buffer to improve Mixxx&apos;s responsiveness.</source>
-        <translation type="unfinished"/>
+        <translation>Смањите звучну међу-меморију за
+бржи одзив Микс-ове апаратуре.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="238"/>
@@ -6107,7 +6356,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="731"/>
         <source>Hints</source>
-        <translation type="unfinished"/>
+        <translation>Савети</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="747"/>
@@ -6214,7 +6463,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="83"/>
         <source> seconds</source>
-        <translation type="unfinished"/>
+        <translation>сек.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="268"/>
@@ -6725,7 +6974,13 @@ Select from different types of displays for the waveform, which differ primarily
         <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid. 
 Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-        <translation type="unfinished"/>
+        <translation>Откуцаји који се детектују биће
+претворени у &quot;метар&quot; фиксног темпа.
+Овај избор је погодан ако углавном
+пуштате нумере са &quot;равним&quot; темпом
+(нпр. већина техно-музике). Постиже
+боље резултате, али не воли промене
+темпа.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="655"/>
@@ -6950,7 +7205,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/effects/effectsmanager.cpp" line="351"/>
         <source>Reverb</source>
-        <translation type="unfinished"/>
+        <translation>Одјек</translation>
     </message>
     <message>
         <location filename="../../src/effects/effectsmanager.cpp" line="359"/>
@@ -7134,39 +7389,39 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>ITunesFeature</name>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="69"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="779"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="99"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="827"/>
         <source>iTunes</source>
         <translation>ајТјунс</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="143"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="208"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="183"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="247"/>
         <source>Select your iTunes library</source>
         <translation>Изаберите вашу ајТјунс библиотеку</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="171"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="210"/>
         <source>(loading) iTunes</source>
         <translation>(учитавам) ајТјунс</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="196"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="235"/>
         <source>Use Default Library</source>
         <translation>Користи основну библиотеку</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="197"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="236"/>
         <source>Choose Library...</source>
         <translation>Изабери библиотеку...</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="774"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="822"/>
         <source>Error Loading iTunes Library</source>
         <translation>Грешка учитавања ајТјунс библиотеке</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="775"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="823"/>
         <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
         <translation>Дошло је до грешке учитавања ваше библиотеке ајТјунса. Неке од ваших нумера ајТјунса или спискови нумера можда нису учитани.</translation>
     </message>
@@ -7188,57 +7443,57 @@ support.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2165"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2163"/>
         <source>activate</source>
         <translation>покрени</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2170"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2168"/>
         <source>toggle</source>
         <translation>окини</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2180"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2178"/>
         <source>right</source>
         <translation>десно</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2185"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2183"/>
         <source>left</source>
         <translation>лево</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2190"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2188"/>
         <source>right small</source>
         <translation>мали десни</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2195"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2193"/>
         <source>left small</source>
         <translation>мали леви</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2200"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2198"/>
         <source>up</source>
         <translation>горе</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2205"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2203"/>
         <source>down</source>
         <translation>доле</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2210"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2208"/>
         <source>up small</source>
         <translation>мало горе</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2215"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2213"/>
         <source>down small</source>
         <translation>мало доле</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2248"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2246"/>
         <source>Shortcut</source>
         <translation>Пречица</translation>
     </message>
@@ -7246,12 +7501,12 @@ support.</source>
 <context>
     <name>Library</name>
     <message>
-        <location filename="../../src/library/library.cpp" line="361"/>
+        <location filename="../../src/library/library.cpp" line="363"/>
         <source>Add Directory to Library</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="362"/>
+        <location filename="../../src/library/library.cpp" line="364"/>
         <source>Could not add the directory to your library. Either this directory is already in your library or you are currently rescanning your library.</source>
         <translation type="unfinished"/>
     </message>
@@ -7555,39 +7810,39 @@ Please select an input device in the sound hardware preferences first.</source>
         <translation>Изабрана маска не може бити учитана.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1337"/>
+        <location filename="../../src/mixxx.cpp" line="1340"/>
         <source>OpenGL Direct Rendering</source>
         <translation>Посредно исцртавање ОпенГЛ-а</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1338"/>
+        <location filename="../../src/mixxx.cpp" line="1341"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
         <translation>Непосредно исцртавање није укључено на вашем рачунару.&lt;br&gt;&lt;br&gt;Ово значи да ће приказивање таласног облика бити врло&lt;br&gt;&lt;b&gt;споро и да ће преоптеретити ваш процесор&lt;/b&gt;. Или ажурирајте ваше&lt;br&gt;подешавање да укључите непосредно исцртавање, или искључите&lt;br&gt;приказивање таласног облика у поставкама Миксикса тако што ћете&lt;br&gt;изабрати „Празно“ као приказ таласног облика у одељку „Сучеље“.&lt;br&gt;&lt;br&gt;НАПОМЕНА: Ако користите НВИДИА хардвер,&lt;br&gt;непосредно исцртавање можда није присутно, али ви не бисте требали&lt;br&gt;да искусите умањене перформансе.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1372"/>
-        <location filename="../../src/mixxx.cpp" line="1380"/>
-        <location filename="../../src/mixxx.cpp" line="1389"/>
+        <location filename="../../src/mixxx.cpp" line="1375"/>
+        <location filename="../../src/mixxx.cpp" line="1383"/>
+        <location filename="../../src/mixxx.cpp" line="1392"/>
         <source>Confirm Exit</source>
         <translation>Потврди излаз</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1373"/>
+        <location filename="../../src/mixxx.cpp" line="1376"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>Носач тренутно пушта. Да изађем из Миксикса?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1381"/>
+        <location filename="../../src/mixxx.cpp" line="1384"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>Узорчник тренутно пушта. Да изађем из Миксикса?</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1390"/>
+        <location filename="../../src/mixxx.cpp" line="1393"/>
         <source>The preferences window is still open.</source>
         <translation>Прозор поставки је још увек отворен.</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1391"/>
+        <location filename="../../src/mixxx.cpp" line="1394"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>Да одбацим могуће измене и да напустим Миксикс?</translation>
     </message>
@@ -7810,7 +8065,7 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="36"/>
         <source>Invert</source>
-        <translation type="unfinished"/>
+        <translation>Наопачке</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="38"/>
@@ -8277,7 +8532,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
     <message>
         <location filename="../../src/effects/native/metronomeeffect.cpp" line="43"/>
         <source>Sync</source>
-        <translation type="unfinished"/>
+        <translation>Синхро</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/metronomeeffect.cpp" line="44"/>
@@ -8333,7 +8588,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
     <message>
         <location filename="../../src/effects/native/reverbeffect.cpp" line="16"/>
         <source>Reverb</source>
-        <translation type="unfinished"/>
+        <translation>Одјек</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/reverbeffect.cpp" line="19"/>
@@ -9369,7 +9624,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="9"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Назив</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="10"/>
@@ -9510,17 +9765,17 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="53"/>
         <source>Waveform Zoom Out</source>
-        <translation type="unfinished"/>
+        <translation>Рашири осцилоскоп</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="56"/>
         <source>Waveform Zoom In</source>
-        <translation type="unfinished"/>
+        <translation>Фокусирај осцилоскоп на мањи сегмент</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="59"/>
         <source>Waveform Zoom</source>
-        <translation type="unfinished"/>
+        <translation>Ширина приказа звука</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="63"/>
@@ -9621,7 +9876,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="165"/>
         <source>Master Gain</source>
-        <translation type="unfinished"/>
+        <translation>Појачање</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="166"/>
@@ -9671,7 +9926,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="192"/>
         <source>Headphone Gain</source>
-        <translation type="unfinished"/>
+        <translation>Појачање (слушалице)</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="193"/>
@@ -10324,7 +10579,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="733"/>
         <source>Show Effect Parameters</source>
-        <translation type="unfinished"/>
+        <translation>Приказ параметара ефекта</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="816"/>
@@ -10354,38 +10609,38 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="740"/>
         <source>Dry/Wet</source>
-        <translation type="unfinished"/>
+        <translation>Проценат</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="745"/>
         <source>Super Knob</source>
-        <translation type="unfinished"/>
+        <translation>Гл. потенциометар</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="750"/>
         <location filename="../../src/skin/tooltips.cpp" line="751"/>
         <source>Insert/Send Toggle</source>
-        <translation type="unfinished"/>
+        <translation>Ефекти активни</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="754"/>
         <source>Next Chain</source>
-        <translation type="unfinished"/>
+        <translation>Сл. ланац</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="758"/>
         <source>Previous Chain</source>
-        <translation type="unfinished"/>
+        <translation>Претходни ланац</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="762"/>
         <source>Next/Previous Chain</source>
-        <translation type="unfinished"/>
+        <translation>Сл./претх. меморисани ланац</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="812"/>
         <source>Clear</source>
-        <translation type="unfinished"/>
+        <translation>Уклони</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="813"/>
@@ -10395,7 +10650,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="873"/>
         <source>Toggle</source>
-        <translation type="unfinished"/>
+        <translation>Прекидач</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="874"/>
@@ -10405,12 +10660,12 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="820"/>
         <source>Next</source>
-        <translation type="unfinished"/>
+        <translation>Даље</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="729"/>
         <source>Clear Unit</source>
-        <translation type="unfinished"/>
+        <translation>Уклони процесор</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="730"/>
@@ -10425,7 +10680,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="737"/>
         <source>Toggle Unit</source>
-        <translation type="unfinished"/>
+        <translation>Процесор активан</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="738"/>
@@ -10518,7 +10773,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="824"/>
         <source>Previous</source>
-        <translation type="unfinished"/>
+        <translation>Претходно</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="825"/>
@@ -10528,7 +10783,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="828"/>
         <source>Next or Previous</source>
-        <translation type="unfinished"/>
+        <translation>Следећи/претходни</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="829"/>
@@ -10538,7 +10793,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="832"/>
         <source>Meta Knob</source>
-        <translation type="unfinished"/>
+        <translation>Подесиви пот.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="833"/>
@@ -10652,7 +10907,7 @@ Fully right: end of the effect period</source>
         <location filename="../../src/skin/tooltips.cpp" line="370"/>
         <location filename="../../src/skin/tooltips.cpp" line="374"/>
         <source>Adjust beatgrid to match another playing deck.</source>
-        <translation type="unfinished"/>
+        <translation>Намести Битгрид да прати други дек</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="392"/>
@@ -10903,7 +11158,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="247"/>
         <source>Maximize the track library to take up all the available screen space.</source>
-        <translation type="unfinished"/>
+        <translation>Користи цео екран за одабир нумера</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="275"/>
@@ -11045,7 +11300,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="512"/>
         <source>Pitch Adjust</source>
-        <translation type="unfinished"/>
+        <translation>Подеси фреквенцију</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="513"/>
@@ -11055,7 +11310,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="538"/>
         <source>Record Mix</source>
-        <translation type="unfinished"/>
+        <translation>Снимај микс</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="539"/>
@@ -11578,23 +11833,23 @@ Fully right: end of the effect period</source>
 <context>
     <name>TrackExportWorker</name>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="109"/>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="183"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="111"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="185"/>
         <source>Export process was canceled</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="124"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="126"/>
         <source>Error removing file %1: %2. Stopping.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="137"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="139"/>
         <source>Error exporting track %1 to %2: %3. Stopping.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="168"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="170"/>
         <source>Error exporting tracks</source>
         <translation type="unfinished"/>
     </message>
@@ -11966,7 +12221,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="237"/>
         <source>Maximize the track library to take up all the available screen space.</source>
-        <translation type="unfinished"/>
+        <translation>Користи цео екран за одабир нумера</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="244"/>
@@ -12232,63 +12487,63 @@ Text on waveform overview when file is cached from source</extracomment>
 <context>
     <name>WSearchLineEdit</name>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="19"/>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="38"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="154"/>
         <source>Clear input</source>
         <comment>Clear the search bar input field</comment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="28"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="44"/>
         <source>Ctrl+F</source>
         <comment>Search|Focus</comment>
         <translation>Ктрл+Ф</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="149"/>
         <source>Search...</source>
         <comment>noun</comment>
         <translation>Потражи...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="151"/>
         <source>Search</source>
         <comment>noun</comment>
-        <translation type="unfinished"/>
+        <translation>Нађи</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="151"/>
         <source>Enter a string to search for</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="152"/>
         <source>Shortcut</source>
         <translation>Пречица</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="152"/>
         <source>Ctrl+F</source>
         <translation>Ктрл+Ф</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="153"/>
         <source>Focus</source>
         <comment>Give search bar input focus</comment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="153"/>
         <source>Ctrl+Backspace</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="154"/>
         <source>Esc</source>
         <translation>Изађи</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="155"/>
         <source>Exit search</source>
         <comment>Exit search bar and leave focus</comment>
         <translation type="unfinished"/>
@@ -12297,247 +12552,247 @@ Text on waveform overview when file is cached from source</extracomment>
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="82"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="83"/>
         <source>Add to Playlist</source>
         <translation>Додај на списак нумера</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="101"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="102"/>
         <source>Cover Art</source>
         <translation>Омот</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="129"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="130"/>
         <source>ESC</source>
         <comment>Focus</comment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="423"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="424"/>
         <source>Remove</source>
         <translation>Уклони</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="426"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="427"/>
         <source>Hide from Library</source>
         <translation>Сакриј у библиотеци</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="429"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="430"/>
         <source>Unhide from Library</source>
         <translation>Прикажи у библиотеци</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="432"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="433"/>
         <source>Purge from Library</source>
         <translation>Избаци из библиотеке</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="435"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="436"/>
         <source>Properties</source>
         <translation>Својства</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="439"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="440"/>
         <source>Open in File Browser</source>
         <translation>Отвори у прегледнику датотека</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="521"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="522"/>
         <source>4/3 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="522"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="523"/>
         <source>3/2 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1561"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1584"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1559"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1582"/>
         <source>Create New Playlist</source>
         <translation>Састави листу песама</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1673"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1671"/>
         <source>Create New Crate</source>
-        <translation type="unfinished"/>
+        <translation>Нова гајбица</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1585"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1583"/>
         <source>Enter name for new playlist:</source>
         <translation>Ново име за листу песама:</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="75"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="76"/>
         <source>Load to</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="77"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="78"/>
         <source>Deck</source>
         <translation>Носач</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="79"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="80"/>
         <source>Sampler</source>
         <translation>Узорчник</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="86"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="87"/>
         <source>Crates</source>
         <translation>Гајбице</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="94"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="95"/>
         <source>Change BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="98"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="99"/>
         <source>Clear</source>
         <extracomment>Clear metadata in right click track context menu in library</extracomment>
-        <translation type="unfinished"/>
+        <translation>Уклони</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="443"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="444"/>
         <source>Add to Auto DJ Queue (Bottom)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="447"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="448"/>
         <source>Add to Auto DJ Queue (Top)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="451"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="452"/>
         <source>Add to Auto DJ Queue (Replace)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="455"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="456"/>
         <source>Import From File Tags</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="459"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="460"/>
         <source>Import From MusicBrainz</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="463"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="464"/>
         <source>Export To File Tags</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="467"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="468"/>
         <source>Preview Deck</source>
         <translation>Носач прегледа</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="476"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="477"/>
         <source>BPM and Beatgrid</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="480"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="481"/>
         <source>Play Count</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="484"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="485"/>
         <source>Cue Point</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="488"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="489"/>
         <source>Hotcues</source>
         <translation>Битни наговештаји</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="492"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="493"/>
         <source>Loop</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="496"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="497"/>
         <source>ReplayGain</source>
         <translation>Ауто-ниво</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="500"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="501"/>
         <source>Waveform</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="504"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="505"/>
         <source>All</source>
         <translation>Све</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="842"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="843"/>
         <source>Deck %1</source>
         <translation>Палуба %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1587"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1585"/>
         <source>New Playlist</source>
         <translation>Нови списак нумера</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1594"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1598"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1607"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1592"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1596"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1605"/>
         <source>Playlist Creation Failed</source>
         <translation>Стварање списка нумера није успело</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1595"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1593"/>
         <source>A playlist by that name already exists.</source>
         <translation>Већ постоји списак нумера са овим називом.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1599"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1597"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>Назив списка нумера не може бити празан.</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1608"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1606"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>Дошло је до непознате грешке приликом стварања списка нумера: </translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="509"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="510"/>
         <source>Lock BPM</source>
         <translation>Закључај ТУМ</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="510"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="511"/>
         <source>Unlock BPM</source>
         <translation>Откључај ТУМ</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="517"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="518"/>
         <source>Double BPM</source>
         <translation>Удвостручи ТУМ</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="518"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="519"/>
         <source>Halve BPM</source>
         <translation>Преполови ТУМ</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="519"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="520"/>
         <source>2/3 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="520"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="521"/>
         <source>3/4 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="862"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="863"/>
         <source>Sampler %1</source>
         <translation>Узорник %1</translation>
     </message>
