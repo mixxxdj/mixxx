@@ -377,6 +377,7 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'userenv')  # qt5core
                 build.env.Append(LIBS = 'uxtheme')  # ?
                 build.env.Append(LIBS = 'version')  # ?
+                build.env.Append(LIBS = 'wtsapi32') # ?
 
                 build.env.Append(LIBS = 'qtfreetype')
                 build.env.Append(LIBS = 'qtharfbuzz')
