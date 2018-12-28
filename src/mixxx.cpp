@@ -728,6 +728,10 @@ void MixxxMainWindow::finalize() {
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
     StatsManager::destroy();
+
+    // NOTE(uklotzde, 2018-12-28): Finally destroy the singleton instance
+    // to prevent a when while exiting the main() function!
+    GlobalTrackCache::destroyInstance();
 }
 
 bool MixxxMainWindow::initializeDatabase() {
