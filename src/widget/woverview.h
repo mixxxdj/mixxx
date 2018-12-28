@@ -95,6 +95,7 @@ class WOverview : public WWidget {
     // Append the waveform overview pixmap according to available data in waveform
     virtual bool drawNextPixmapPart() = 0;
     void paintText(const QString &text, QPainter *painter);
+    void setupCueColorsRepresentation(const QDomNode& node, const SkinContext& context);
     inline int valueToPosition(double value) const {
         return static_cast<int>(m_a * value - m_b);
     }
@@ -127,6 +128,7 @@ class WOverview : public WWidget {
     QColor m_qColorBackground;
     QColor m_endOfTrackColor;
 
+    std::unique_ptr<ColorsRepresentation> m_pPredefinedColorsRepresentation;
     WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;
 

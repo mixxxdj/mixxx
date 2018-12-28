@@ -23,7 +23,7 @@ WaveformRenderMark::WaveformRenderMark(
 }
 
 void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
-    setupColorsRepresentation(node, context);
+    setupCueColorsRepresentation(node, context);
     m_marks.setup(m_waveformRenderer->getGroup(), node, context,
                   *m_waveformRenderer->getWaveformSignalColors());
 }
@@ -373,7 +373,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
     }
 }
 
-void WaveformRenderMark::setupColorsRepresentation(const QDomNode& node, const SkinContext& context) {
+void WaveformRenderMark::setupCueColorsRepresentation(const QDomNode& node, const SkinContext& context) {
     m_pPredefinedColorsRepresentation = Color::makeDefaultRepresentation();
 
     for (QLatin1String colorName : Color::predefinedColorsNames()) {

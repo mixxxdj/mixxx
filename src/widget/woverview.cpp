@@ -26,6 +26,7 @@
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
 #include "track/track.h"
+#include "util/color.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"
@@ -84,6 +85,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     }
 
     // setup hotcues and cue and loop(s)
+    setupCueColorsRepresentation(node, context);
     m_marks.setup(m_group, node, context, m_signalColors);
 
     for (const auto& pMark: m_marks) {
@@ -265,7 +267,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
 
         if (currentMark && currentMark->isValid()) {
             WaveformMarkProperties markProperties = currentMark->getProperties();
-            const QColor newColor = currentCue->getColor();
+            const QColor newColor = m_pPredefinedColorsRepresentation->map(currentCue->getColor());
 
             if (newColor != markProperties.m_color || newColor != markProperties.m_textColor) {
                 markProperties.m_color = newColor;
@@ -631,4 +633,16 @@ void WOverview::dropEvent(QDropEvent* event) {
         }
     }
     event->ignore();
+}
+
+void WOverview::setupCueColorsRepresentation(const QDomNode& node, const SkinContext& context) {
+    m_pPredefinedColorsRepresentation = Color::makeDefaultRepresentation();
+
+    for (QLatin1String colorName : Color::predefinedColorsNames()) {
+        QColor representation = context.selectColor(node, colorName);
+        if (representation.isValid()) {
+            QColor originalColor = Color::predefinedColorFromName(colorName);
+            m_pPredefinedColorsRepresentation->setRepresentation(originalColor, representation);
+        }
+    }
 }
