@@ -380,7 +380,7 @@ void ControllerEngine::scriptErrorDialog(const QString& detailedError) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
     props->setTitle(tr("Controller script error"));
-    props->setText(tr("The %1 controller is not working properly.").arg(m_pController->getName()));
+    props->setText(tr("The mapping for the %1 controller is not working properly.").arg(m_pController->getName()));
     props->setInfoText("<html>"+tr("The script code needs to be fixed.")+
         "<p>"+tr("For now, you can: Ignore this error for this session but you may experience erratic behavior.")+
         "<br>"+tr("Try to recover by resetting your controller.")+"</p>"+"</html>");
