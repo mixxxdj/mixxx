@@ -735,7 +735,7 @@ QJSValue ControllerEngine::connectControl(
         actualCallbackFunction = evaluateCodeString(passedCallback.toString());
 
         if (!actualCallbackFunction.isCallable()) {
-            m_pScriptEngine->throwError("Invalid connection callback provided to connectControl.");
+            m_pScriptEngine->throwError("Invalid connection callback provided to engine.connectControl.");
             return QJSValue(false);
         }
 
@@ -882,7 +882,7 @@ int ControllerEngine::beginTimer(int interval, QJSValue timerCallback,
     }
 
     if (!timerCallback.isCallable()) {
-        m_pScriptEngine->throwError("Invalid timer callback provided to beginTimer. Valid callbacks are strings and functions.");
+        m_pScriptEngine->throwError("Invalid timer callback provided to engine.beginTimer. Valid callbacks are strings and functions.");
         return 0;
     }
 
