@@ -52,7 +52,7 @@ Syncable* BaseSyncableListener::getSyncableForGroup(const QString& group) {
 
 bool BaseSyncableListener::syncDeckExists() const {
     foreach (const Syncable* pSyncable, m_syncables) {
-        if (pSyncable->getSyncMode() != SYNC_NONE && pSyncable->getBaseBpm() > 0) {
+        if (pSyncable->getSyncMode() > SYNC_NONE && pSyncable->getBaseBpm() > 0) {
             return true;
         }
     }
@@ -64,7 +64,7 @@ int BaseSyncableListener::playingSyncDeckCount() const {
 
     foreach (const Syncable* pSyncable, m_syncables) {
         SyncMode sync_mode = pSyncable->getSyncMode();
-        if (sync_mode == SYNC_NONE) {
+        if (sync_mode <= SYNC_NONE) {
             continue;
         }
 
@@ -98,12 +98,13 @@ double BaseSyncableListener::masterBaseBpm() const {
 }
 
 void BaseSyncableListener::setMasterBpm(Syncable* pSource, double bpm) {
+    qDebug() << "BaseSyncableListener::setMasterBpm" << pSource << bpm;
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setMasterBpm(bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
-                pSyncable->getSyncMode() == SYNC_NONE) {
+                pSyncable->getSyncMode() <= SYNC_NONE) {
             continue;
         }
         pSyncable->setMasterBpm(bpm);
@@ -116,7 +117,7 @@ void BaseSyncableListener::setMasterInstantaneousBpm(Syncable* pSource, double b
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
-                pSyncable->getSyncMode() == SYNC_NONE) {
+                pSyncable->getSyncMode() <= SYNC_NONE) {
             continue;
         }
         pSyncable->setInstantaneousBpm(bpm);
@@ -129,7 +130,7 @@ void BaseSyncableListener::setMasterBaseBpm(Syncable* pSource, double bpm) {
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
-                pSyncable->getSyncMode() == SYNC_NONE) {
+                pSyncable->getSyncMode() <= SYNC_NONE) {
             continue;
         }
         pSyncable->setMasterBaseBpm(bpm);
@@ -142,7 +143,7 @@ void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beat_
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
-                pSyncable->getSyncMode() == SYNC_NONE) {
+                pSyncable->getSyncMode() <= SYNC_NONE) {
             continue;
         }
         pSyncable->setMasterBeatDistance(beat_distance);
@@ -156,7 +157,7 @@ void BaseSyncableListener::setMasterParams(Syncable* pSource, double beat_distan
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
-                pSyncable->getSyncMode() == SYNC_NONE) {
+                pSyncable->getSyncMode() <= SYNC_NONE) {
             continue;
         }
         pSyncable->setMasterParams(beat_distance, base_bpm, bpm);
@@ -168,7 +169,7 @@ void BaseSyncableListener::checkUniquePlayingSyncable() {
     Syncable* unique_syncable = NULL;
     foreach (Syncable* pSyncable, m_syncables) {
         SyncMode sync_mode = pSyncable->getSyncMode();
-        if (sync_mode == SYNC_NONE) {
+        if (sync_mode <= SYNC_NONE) {
             continue;
         }
 

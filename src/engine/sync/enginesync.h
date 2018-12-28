@@ -41,7 +41,7 @@ class EngineSync : public BaseSyncableListener {
     // does not have a say in whether these succeed or not, they are simply
     // notifications.
     void notifyBpmChanged(Syncable* pSyncable, double bpm) override;
-    void notifyBpmChangedFromFile(Syncable* pSyncable, double bpm) override;
+    void requestBpmUpdate(Syncable* pSyncable, double bpm) override;
     void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) override;
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) override;
     void notifyPlaying(Syncable* pSyncable, bool playing) override;

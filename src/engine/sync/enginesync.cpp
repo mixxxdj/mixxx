@@ -96,7 +96,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     //qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
     if (bEnabled) {
         // Already enabled?  Do nothing.
-        if (pSyncable->getSyncMode() != SYNC_NONE) {
+        if (pSyncable->getSyncMode() > SYNC_NONE) {
             return;
         }
         bool foundPlayingDeck = false;
@@ -170,7 +170,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
         }
     } else {
         // Already disabled?  Do nothing.
-        if (pSyncable->getSyncMode() == SYNC_NONE) {
+        if (pSyncable->getSyncMode() <= SYNC_NONE) {
             return;
         }
         deactivateSync(pSyncable);
@@ -182,7 +182,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Q_UNUSED(playing);
     //qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
     // For now we don't care if the deck is now playing or stopping.
-    if (pSyncable->getSyncMode() == SYNC_NONE) {
+    if (pSyncable->getSyncMode() <= SYNC_NONE) {
         return;
     }
 
@@ -196,7 +196,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
         int playing_nonsync_decks = 0;
         foreach (Syncable* pOtherSyncable, m_syncables) {
             if (pOtherSyncable->isPlaying()) {
-                if (pOtherSyncable->getSyncMode() != SYNC_NONE) {
+                if (pOtherSyncable->getSyncMode() > SYNC_NONE) {
                     uniqueSyncEnabled = pOtherSyncable;
                     ++playing_sync_decks;
                 } else {
@@ -231,7 +231,7 @@ void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
         if (pOtherSyncable == pSyncable) {
             continue;
         }
-        if (pOtherSyncable->getSyncMode() != SYNC_NONE && pOtherSyncable->getBpm() != 0) {
+        if (pOtherSyncable->getSyncMode() > SYNC_NONE && pOtherSyncable->getBpm() != 0) {
             sync_deck_exists = true;
             break;
         }
@@ -251,35 +251,27 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
 }
 
 void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm) {
-    //qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
+    qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
 
     // Master Base BPM shouldn't be updated for every random deck that twiddles
     // the rate.
     setMasterBpm(pSyncable, bpm);
 }
 
-void EngineSync::notifyBpmChangedFromFile(Syncable* pSyncable, double bpm) {
-    //qDebug() << "EngineSync::notifyBpmChangedFromFile" << pSyncable->getGroup() << bpm;
+void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
+    qDebug() << "EngineSync::requestBpmUpdate" << pSyncable->getGroup() << bpm;
 
-    // EngineSyncTest.FollowerRateChange dictates this must not happen in general,
-    // but it is required when the file BPM changes because it's not a true BPM
-    // change, so we set the follower back to the master BPM.
-    if (pSyncable->getSyncMode() == SYNC_FOLLOWER) {
-        double mbaseBpm = masterBaseBpm();
-        double mbpm = masterBpm();
-        // TODO(owilliams): Figure out why the master bpm is getting set to
-        // zero in the first place, that's the real bug that's being worked
-        // around.
-        if (mbaseBpm != 0.0 && mbpm != 0.0) {
-            pSyncable->setMasterBaseBpm(mbaseBpm);
-            pSyncable->setMasterBpm(mbpm);
-            return;
-        }
+    double mbaseBpm = masterBaseBpm();
+    double mbpm = masterBpm();
+    if (mbaseBpm != 0.0 && mbpm != 0.0) {
+        // resync to current master
+        qDebug() << mbaseBpm << mbpm;
+        pSyncable->setMasterBaseBpm(mbaseBpm);
+        pSyncable->setMasterBpm(mbpm);
+    } else {
+        // There is no other master, adopt this bpm as master
+        setMasterBpm(pSyncable, bpm);
     }
-
-    // Master Base BPM shouldn't be updated for every random deck that twiddles
-    // the rate.
-    setMasterBpm(pSyncable, bpm);
 }
 
 void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) {
@@ -403,12 +395,12 @@ bool EngineSync::otherSyncedPlaying(const QString& group) {
     bool othersInSync = false;
     for (Syncable* theSyncable : m_syncables) {
         if (theSyncable->getGroup() == group) {
-            if (theSyncable->getSyncMode() == SYNC_NONE) {
+            if (theSyncable->getSyncMode() <= SYNC_NONE) {
                 return false;
             }
             continue;
         }
-        if (theSyncable->isPlaying() && (theSyncable->getSyncMode() != SYNC_NONE)) {
+        if (theSyncable->isPlaying() && (theSyncable->getSyncMode() > SYNC_NONE)) {
             othersInSync = true;
         }
     }

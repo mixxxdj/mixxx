@@ -415,7 +415,8 @@ void SyncControl::setLocalBpm(double local_bpm) {
     }
     m_prevLocalBpm.setValue(local_bpm);
 
-    if (getSyncMode() == SYNC_NONE) {
+    SyncMode syncMode = getSyncMode();
+    if (syncMode <= SYNC_NONE) {
         return;
     }
 
@@ -423,7 +424,16 @@ void SyncControl::setLocalBpm(double local_bpm) {
     const double rateRatio = calcRateRatio();
     double bpm = local_bpm * rateRatio;
     m_pBpm->set(bpm);
-    m_pEngineSync->notifyBpmChangedFromFile(this, bpm);
+
+    if (syncMode == SYNC_FOLLOWER) {
+        // In this case we need an update from the current master to adjust
+        // the rate that we continue with the master BPM. If there is no
+        // master bpm, our bpm value is adopted.
+        m_pEngineSync->requestBpmUpdate(this, bpm);
+    } else {
+        // SYNC_MASTER
+        m_pEngineSync->notifyBpmChanged(this, bpm);
+    }
 }
 
 void SyncControl::slotFileBpmChanged() {
@@ -434,7 +444,7 @@ void SyncControl::slotFileBpmChanged() {
     // Note: bpmcontrol has updated local_bpm just before
     double local_bpm = m_pLocalBpm ? m_pLocalBpm->get() : 0.0;
 
-    if (getSyncMode() == SYNC_NONE) {
+    if (getSyncMode() <= SYNC_NONE) {
         const double rateRatio = calcRateRatio();
         double bpm = local_bpm * rateRatio;
         m_pBpm->set(bpm);
