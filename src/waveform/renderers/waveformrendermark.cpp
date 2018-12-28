@@ -374,7 +374,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
 }
 
 void WaveformRenderMark::setupColorsRepresentation(const QDomNode& node, const SkinContext& context) {
-    m_pPredefinedColorsRepresentation = Color::defaultRepresentation();
+    m_pPredefinedColorsRepresentation = Color::makeDefaultRepresentation();
 
     for (QLatin1String colorName : Color::predefinedColorsNames()) {
         QColor representation = context.selectColor(node, colorName);

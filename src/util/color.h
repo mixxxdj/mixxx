@@ -213,7 +213,7 @@ namespace Color {
 
     // Returns a new default colors representation, i.e. maps each default color to itself.
     // Stores the color's name() property, e.g. "#A9A9A9"
-    static std::unique_ptr<ColorsRepresentation> defaultRepresentation() {
+    static std::unique_ptr<ColorsRepresentation> makeDefaultRepresentation() {
         std::unique_ptr<ColorsRepresentation> representation = std::make_unique<ColorsRepresentation>();
         for (QColor color : predefinedColors()) {
             representation->setRepresentation(color, color);
