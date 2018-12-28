@@ -1,5 +1,4 @@
 var NovationLaunchpad = (function () {
-'use strict';
 
 /* global engine, midi, script */
 var engine_1 = engine;
