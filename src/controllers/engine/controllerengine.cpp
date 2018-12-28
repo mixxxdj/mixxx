@@ -602,13 +602,13 @@ QJSValue ControllerEngine::makeConnection(QString group, QString name,
     if (coScript == nullptr) {
         m_pScriptEngine->throwError("ControllerEngine: script tried to connect to ControlObject (" +
                 group + ", " + name +
-                ") which is non-existent, ignoring.");
+                ") which is non-existent.");
         return QJSValue();
     }
 
     if (!callback.isCallable()) {
-        qWarning() << "Tried to connect (" + group + ", " + name + ")"
-                   << "to an invalid callback, ignoring.";
+        m_pScriptEngine->throwError("Tried to connect (" + group + ", " + name + ")"
+                   << "to an invalid callback.");
         return QJSValue();
     }
 
