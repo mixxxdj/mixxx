@@ -608,7 +608,7 @@ QJSValue ControllerEngine::makeConnection(QString group, QString name,
 
     if (!callback.isCallable()) {
         m_pScriptEngine->throwError("Tried to connect (" + group + ", " + name + ")"
-                   << "to an invalid callback.");
+                   + "to an invalid callback.");
         return QJSValue();
     }
 
