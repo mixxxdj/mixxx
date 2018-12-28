@@ -376,11 +376,11 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
 void WaveformRenderMark::setupColorsRepresentation(const QDomNode& node, const SkinContext& context) {
     m_pPredefinedColorsRepresentation = Color::defaultRepresentation();
 
-    for (QString colorName : Color::predefinedColorsNames()) {
+    for (QLatin1String colorName : Color::predefinedColorsNames()) {
         QColor representation = context.selectColor(node, colorName);
         if (representation.isValid()) {
-            QString colorCode = Color::predefinedColorFromName(colorName);
-            m_pPredefinedColorsRepresentation->setRepresentation(colorCode, representation);
+            QColor originalColor = Color::predefinedColorFromName(colorName);
+            m_pPredefinedColorsRepresentation->setRepresentation(originalColor, representation);
         }
     }
 }
