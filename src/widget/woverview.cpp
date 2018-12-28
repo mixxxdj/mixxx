@@ -639,7 +639,7 @@ void WOverview::setupCueColorsRepresentation(const QDomNode& node, const SkinCon
     m_pPredefinedColorsRepresentation = Color::makeDefaultRepresentation();
 
     for (QLatin1String colorName : Color::predefinedColorsNames()) {
-        QColor representation = context.selectColor(node, colorName);
+        QColor representation = context.selectColor(node, "Cue" + colorName);
         if (representation.isValid()) {
             QColor originalColor = Color::predefinedColorFromName(colorName);
             m_pPredefinedColorsRepresentation->setRepresentation(originalColor, representation);
