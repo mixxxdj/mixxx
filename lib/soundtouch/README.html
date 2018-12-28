@@ -8,13 +8,14 @@
   <meta name="author" content="Olli Parviainen">
   <meta name="description"
  content="Readme file for SoundTouch audio processing library">
-  <style> <!-- .normal { font-family: Arial }
-    --></style>
+ <style>
+   body {font-family: Arial, Helvetica; }
+ </style>
 </head>
 <body class="normal">
 <hr>
-<h1>SoundTouch audio processing library v2.1</h1>
-<p class="normal">SoundTouch library Copyright &copy Olli Parviainen 2001-2018</p>
+<h1>SoundTouch audio processing library v2.1.1</h1>
+<p class="normal">SoundTouch library Copyright &copy; Olli Parviainen 2001-2018</p>
 <hr>
 <h2>1. Introduction </h2>
 <p>SoundTouch is an open-source audio processing library that allows
@@ -574,6 +575,13 @@ this corresponds to lowering the pitch by -0.318 semitones:</p>
 <hr>
 <h2>5. Change History</h2>
 <h3>5.1. SoundTouch library Change History </h3>
+    <p><b>2.1.1:</b></p>
+    <ul>
+      <li>Bugfixes: Fixed potential buffer overwrite bugs in WavFile routines. Replaced asserts with runtime exceptions.</li>
+      <li>Android: Migrated the SoundTouch Android example to new Android Studio</li>
+      <li>Automake: unset ACLOCAL in bootstrap script in case earlier build script has set it</li>
+
+    </ul>
     <p><b>2.1:</b></p>
     <ul>
       <li>Refactored C# interface example</li>
@@ -864,6 +872,7 @@ submitted bugfixes:</p>
   <li> Miquel Colon</li>
   <li> Jim Credland</li>
   <li> Sandro Cumerlato</li>
+  <li> Gerry Fan</li>
   <li> Justin Frankel</li>
   <li> Masa H.</li>
   <li> Jason Garland</li>
@@ -909,6 +918,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA</p>
 <p>---</p>
 <p>commercial license alternative also available, contact author for details.</p>
 <hr>
-<p><i>README.html file updated in May-2018</i></p>
+<p><i>README.html file updated in November-2018</i></p>
 </body>
 </html>

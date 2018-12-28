@@ -21,9 +21,9 @@ class VSyncThread;
 
 class WaveformWidgetRenderer {
   public:
-    static const int s_waveformMinZoom;
-    static const int s_waveformMaxZoom;
-    static const int s_waveformDefaultZoom;
+    static const double s_waveformMinZoom;
+    static const double s_waveformMaxZoom;
+    static const double s_waveformDefaultZoom;
     static const double s_defaultPlayMarkerPosition;
 
   public:
@@ -43,7 +43,7 @@ class WaveformWidgetRenderer {
     double getFirstDisplayedPosition() const { return m_firstDisplayedPosition;}
     double getLastDisplayedPosition() const { return m_lastDisplayedPosition;}
 
-    void setZoom(int zoom);
+    void setZoom(double zoom);
 
     void setDisplayBeatGrid(bool set);
     void setDisplayBeatGridAlpha(int alpha);

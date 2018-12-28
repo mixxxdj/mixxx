@@ -37,7 +37,7 @@ Variables:
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
                 <SetVariable name="ObjectName">VinylControlButton</SetVariable>
-                <SetVariable name="Size">40f,24f</SetVariable>
+                <SetVariable name="Size">40f,27f</SetVariable>
                 <SetVariable name="state_0_text">VINYL</SetVariable>
                 <SetVariable name="state_1_text">VINYL</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
@@ -46,7 +46,7 @@ Variables:
 
               <Template src="skin:statuslight_4state.xml">
                 <SetVariable name="ObjectName">VinylControlStatus</SetVariable>
-                <SetVariable name="Size">40f,24f</SetVariable>
+                <SetVariable name="Size">40f,27f</SetVariable>
                 <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,vinylcontrol_status</SetVariable>
               </Template>
             </Children>
@@ -57,7 +57,7 @@ Variables:
           <Template src="skin:button_2state.xml">
             <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
             <SetVariable name="ObjectName">PassthroughButton</SetVariable>
-            <SetVariable name="Size">40f,24f</SetVariable>
+            <SetVariable name="Size">40f,27f</SetVariable>
             <SetVariable name="state_0_text">PASS</SetVariable>
             <SetVariable name="state_1_text">PASS</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,passthrough</SetVariable>
@@ -79,7 +79,7 @@ Variables:
           <Template src="skin:button_3state_persist.xml">
             <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
             <SetVariable name="ObjectName">VinylModeButton</SetVariable>
-            <SetVariable name="Size">40f,23me</SetVariable>
+            <SetVariable name="Size">40f,21f</SetVariable>
             <SetVariable name="state_0_text">ABS</SetVariable>
             <SetVariable name="state_1_text">REL</SetVariable>
             <SetVariable name="state_2_text">CONST</SetVariable>
@@ -90,16 +90,17 @@ Variables:
 
           <WidgetGroup><!-- Cue mode button with translucent cover -->
             <Layout>stacked</Layout>
-            <Size>40f,24f</Size>
+            <Size>40f,21f</Size>
             <Children>
               <!-- index 0 due to bug -->
               <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
               <!-- Block mouse when Vinyl control is not in RELATIVE mode -->
               <WidgetGroup>
+                <TooltipId>vinylcontrol_cueing</TooltipId>
                 <ObjectName>SubmenuCover</ObjectName>
                 <Layout>vertical</Layout>
-                <Size>40f,24f</Size>
+                <Size>40f,21f</Size>
                 <Connection>
                   <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
                   <Transform><IsEqual>1</IsEqual><Not/></Transform>
@@ -110,7 +111,7 @@ Variables:
               <Template src="skin:button_3state_persist.xml">
                 <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
                 <SetVariable name="ObjectName">VinylModeButton</SetVariable>
-                <SetVariable name="Size">40f,24f</SetVariable>
+                <SetVariable name="Size">40f,21f</SetVariable>
                 <SetVariable name="state_0_text">CUE</SetVariable>
                 <SetVariable name="state_1_text">CUE</SetVariable>
                 <SetVariable name="state_2_text">HOT</SetVariable>

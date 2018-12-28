@@ -82,9 +82,40 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 
+#if defined(Q_OS_LINUX)
+#include <QtX11Extras/QX11Info>
+#include <X11/Xlib.h>
+#include <X11/Xlibint.h>
+// Xlibint.h predates C++ and defines macros which conflict
+// with references to std::max and std::min
+#undef max
+#undef min
+#endif
+
 namespace {
 
 const mixxx::Logger kLogger("MixxxMainWindow");
+
+// hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
+// https://bugs.launchpad.net/mixxx/+bug/1805559
+#if defined(Q_OS_LINUX)
+typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
+
+const int NUM_HANDLERS = 256;
+WireToErrorType __oldHandlers[NUM_HANDLERS] = {0};
+
+Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
+    // Call any previous handler first in case it needs to do real work.
+    auto code = static_cast<int>(event->error_code);
+    if (__oldHandlers[code] != NULL) {
+        __oldHandlers[code](display, event, error);
+    }
+
+    // Always return false so the error does not get passed to the normal
+    // application defined handler.
+    return False;
+}
+#endif
 
 } // anonymous namespace
 
@@ -151,12 +182,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     setCentralWidget(m_pWidgetParent);
 
     show();
-#if defined(Q_WS_X11)
-    // In asynchronous X11, the window will be mapped to screen
-    // some time after being asked to show itself on the screen.
-    extern void qt_x11_wait_for_window_manager(QWidget *mainWin);
-    qt_x11_wait_for_window_manager(this);
-#endif
     pApp->processEvents();
 
     initialize(pApp, args);
@@ -169,6 +194,15 @@ MixxxMainWindow::~MixxxMainWindow() {
 
 void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     ScopedTimer t("MixxxMainWindow::initialize");
+
+#if defined(Q_OS_LINUX)
+    // XESetWireToError will segfault if running as a Wayland client
+    if (pApp->platformName() == QStringLiteral("xcb")) {
+        for (auto i = 0; i < NUM_HANDLERS; ++i) {
+            XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
+        }
+    }
+#endif
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 

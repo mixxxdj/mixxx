@@ -4,14 +4,15 @@
 # liushuyu011 <liushuyu011@gmail.com>, 2017
 # liushuyu011 <liushuyu011@gmail.com>, 2017
 # Nya Chan (喵酱) <dlj2013@gmail.com>, 2016
+# S.Brandt <s.brandt@mixxx.org>, 2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # zwpwjwtz <zwpwjwtz@126.com>, 2017
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-10-22 14:24+0000\n"
-"Last-Translator: zwpwjwtz <zwpwjwtz@126.com>\n"
+"PO-Revision-Date: 2018-12-16 20:35+0000\n"
+"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -62,10 +63,10 @@ msgstr "您需要在32位Windows上安装本产品的32位版本。"
 
 msgctxt "x86VersionWarning"
 msgid ""
-"You are about to install the 32-bit version on a 64-bit operating system.\r\n"
-"We recommend using the 64-bit version for better performance.\r\n"
-"You can download the 64-bit installation package from http://mixxx.org/download/"
-msgstr "您将要在64位操作系统上安装32位版本的Mixxx。\n我们建议使用64位版本以获取更好的性能。\n您可以从http://mixxx.org/download/ 下载64位的安装包。"
+"You are about to install the 32-bit version on a 64-bit operating system. We"
+" recommend using the 64-bit version for better performance. You can download"
+" the 64-bit installation package from http://mixxx.org/download/"
+msgstr "您将要在64位操作系统上安装32位版本的Mixxx。我们建议使用64位版本以获取更好的性能。您可以从http://mixxx.org/download/ 下载64位的安装包。"
 
 msgctxt "XPWarning"
 msgid ""

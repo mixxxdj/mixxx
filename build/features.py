@@ -355,14 +355,18 @@ class Vamp(Feature):
         # If there is no system vamp-hostsdk is installed or if the version
         # of the installed vamp-hostsdk is less than the bundled version,
         # then we'll directly link the bundled vamp-hostsdk
-        if not conf.CheckLib('vamp-hostsdk') or not conf.CheckForPKG('vamp-plugin-sdk', '2.7.1'):
+        # Note: We're adding vamp-hostsdk to LIBS in sources(), so
+        # don't add it now in order to prevent duplication.
+        if not conf.CheckLib('vamp-hostsdk', autoadd=False) or not conf.CheckForPKG('vamp-plugin-sdk', '2.7.1'):
             self.INTERNAL_LINK = True
             build.env.Append(CPPPATH=['#' + self.INTERNAL_VAMP_PATH])
 
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
             # Optionally link libdl Required for some distros.
-            conf.CheckLib(['dl', 'libdl'])
+            # Note: We can't add dl to LIBS here because it needs to be added after vamp-hostsdk.
+            # See: https://bugs.launchpad.net/mixxx/+bug/1804411
+            conf.CheckLib(['dl', 'libdl'], autoadd=False)
 
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
@@ -383,7 +387,13 @@ class Vamp(Feature):
             env.SConscript(env.File('SConscript', vamp_dir))
 
             build.env.Append(LIBPATH=self.INTERNAL_VAMP_PATH)
-            build.env.Append(LIBS=['vamp-hostsdk'])
+
+        # Add this here unconditionally because we're not adding it in configure().
+        build.env.Append(LIBS=['vamp-hostsdk'])
+
+        # Ubuntu requires dl to be specified after vamp-hostsdk.
+        if build.platform_is_linux:
+            build.env.Append(LIBS=['dl'])
 
         return ['src/analyzer/vamp/vampanalyzer.cpp',
                 'src/analyzer/vamp/vamppluginadapter.cpp',

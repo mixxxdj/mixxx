@@ -22,11 +22,11 @@
 
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
-  <String Id="OS2Old">Este producto requiere Windows 7 o una versión superior.</String>
+  <String Id="OS2Old">Este producto requiere Windows 7 o superior.</String>
   <String Id="NewerInstalled">La misma versión o una más reciente de este producto está ya instalada.</String>
   <String Id="x64VersionRequired">Necesita instalar la versión de 64 bits de este producto en una versión de Windows de 64 bits.</String>
   <String Id="x86VersionRequired">Necesita instalar la versión de 32 bits de este producto en una versión de Windows de 32 bits.</String>
-  <String Id="x86VersionWarning">Está a punto de instalar la versión de 32 bits en un sistema operativo de 64 bits.&#13;&#10;Recomendamos usar la versión de 64 bits para un mejor rendimiento.&#13;&#10;Puede descargar el instalador de la versión de 64 bits desde  http://mixxx.org/download/</String>
+  <String Id="x86VersionWarning">Está a punto de instalar la versión de 32 bits en un sistema operativo de 64 bits. Recomendamos utilizar la versión de 64 bits para un mejor rendimiento. Puede descargar el paquete de instalación de 64 bits desde http://mixxx.org/download/</String>
   <String Id="XPWarning">Está instalando Mixxx en un sistema operativo obsoleto. Algunas funciones pueden no funcionar correctamente. Recomendamos actualizar su sistema operativo.</String>
   <String Id="bitWidthMismatch32">Está a punto de instalar la versión de 32 bits pero la versión de 64 bits está instalada. Esto puede llevar a un comportamiento indeseado del programa. Por favor, desinstale primero la versión existente, o descargue el instalador de 64 bits (a no ser que sepa exactamente lo que está haciendo).</String>
   <String Id="bitWidthMismatch64">Está a punto de instalar la versión de 64 bits pero la versión de 32 bits está instalada. Esto puede llevar a un comportamiento indeseado del programa. Por favor, desinstale primero la versión existente, o descargue el instalador de 32 bits (a no ser que sepa exactamente lo que está haciendo).</String>

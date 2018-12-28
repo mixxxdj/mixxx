@@ -18,10 +18,10 @@ class VinylControlControl : public EngineControl {
     void notifySeekQueued();
     bool isEnabled();
     bool isScratching();
+    void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
     void slotControlVinylSeek(double fractionalPos);
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
 
   private:
     ControlObject* m_pControlVinylRate;
@@ -35,7 +35,9 @@ class VinylControlControl : public EngineControl {
     ControlPushButton* m_pControlVinylCueing;
     ControlPushButton* m_pControlVinylSignalEnabled;
     ControlProxy* m_pPlayEnabled;
-    TrackPointer m_pCurrentTrack;
+
+    TrackPointer m_pTrack; // is written from an engine worker thread
+
     bool m_bSeekRequested;
 };
 

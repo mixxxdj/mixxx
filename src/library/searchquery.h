@@ -16,6 +16,8 @@
 #include "util/memory.h"
 #include "library/crate/cratestorage.h"
 
+const QString kMissingFieldSearchTerm = "\"\""; // "" searches for an empty string
+
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column);
 
 class QueryNode {
@@ -87,10 +89,41 @@ class TextFilterNode : public QueryNode {
     QString m_argument;
 };
 
+class NullOrEmptyTextFilterNode : public QueryNode {
+  public:
+    NullOrEmptyTextFilterNode(const QSqlDatabase& database,
+                   const QStringList& sqlColumns)
+            : m_database(database),
+              m_sqlColumns(sqlColumns) {
+    }
+
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
+
+  private:
+    QSqlDatabase m_database;
+    QStringList m_sqlColumns;
+};
+
+
 class CrateFilterNode : public QueryNode {
   public:
     CrateFilterNode(const CrateStorage* pCrateStorage,
                     const QString& crateNameLike);
+
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
+
+  private:
+    const CrateStorage* m_pCrateStorage;
+    QString m_crateNameLike;
+    mutable bool m_matchInitialized;
+    mutable std::vector<TrackId> m_matchingTrackIds;
+};
+
+class NoCrateFilterNode : public QueryNode {
+  public:
+    explicit NoCrateFilterNode(const CrateStorage* pCrateStorage);
 
     bool match(const TrackPointer& pTrack) const override;
     QString toSql() const override;
@@ -124,11 +157,22 @@ class NumericFilterNode : public QueryNode {
 
     QStringList m_sqlColumns;
     bool m_bOperatorQuery;
+    bool m_bNullQuery;
     QString m_operator;
     double m_dOperatorArgument;
     bool m_bRangeQuery;
     double m_dRangeLow;
     double m_dRangeHigh;
+};
+
+class NullNumericFilterNode : public QueryNode {
+  public:
+    explicit NullNumericFilterNode(const QStringList& sqlColumns);
+
+    bool match(const TrackPointer& pTrack) const override;
+    QString toSql() const override;
+
+    QStringList m_sqlColumns;
 };
 
 class DurationFilterNode : public NumericFilterNode {
