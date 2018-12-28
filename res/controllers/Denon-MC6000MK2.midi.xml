@@ -8,7 +8,6 @@
     </info>
     <controller id="MC6000MK2">
         <scriptfiles>
-            <file functionprefix="" filename="lodash.mixxx.js"/>
             <file functionprefix="" filename="midi-components-0.0.js"/>
             <file functionprefix="DenonMC6000MK2" filename="Denon-MC6000MK2-scripts.js"/>
         </scriptfiles>
