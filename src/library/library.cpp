@@ -211,6 +211,14 @@ Library::~Library() {
     delete m_pTrackCollection;
 }
 
+void Library::stopFeatures() {
+    if (m_pAnalysisFeature) {
+        m_pAnalysisFeature->stop();
+        m_pAnalysisFeature = nullptr;
+    }
+    m_scanner.slotCancel();
+}
+
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
 

@@ -103,7 +103,10 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumMicrophones;
     delete m_pCONumAuxiliaries;
 
-    m_pTrackAnalysisScheduler.reset();
+    if (m_pTrackAnalysisScheduler) {
+        m_pTrackAnalysisScheduler->stop();
+        m_pTrackAnalysisScheduler.reset();
+    }
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {

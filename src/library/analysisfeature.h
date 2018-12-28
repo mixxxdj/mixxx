@@ -26,7 +26,9 @@ class AnalysisFeature : public LibraryFeature {
   public:
     AnalysisFeature(Library* parent,
                     UserSettingsPointer pConfig);
-    virtual ~AnalysisFeature();
+    ~AnalysisFeature() override = default;
+
+    void stop();
 
     QVariant title();
     QIcon getIcon();

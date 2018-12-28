@@ -54,9 +54,10 @@ AnalysisFeature::AnalysisFeature(
     setTitleDefault();
 }
 
-AnalysisFeature::~AnalysisFeature() {
-    // TODO(XXX) delete these
-    //delete m_pLibraryTableModel;
+void AnalysisFeature::stop() {
+    if (m_pTrackAnalysisScheduler) {
+        m_pTrackAnalysisScheduler->stop();
+    }
 }
 
 void AnalysisFeature::setTitleDefault() {

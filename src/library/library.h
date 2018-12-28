@@ -51,6 +51,8 @@ class Library: public QObject,
             RecordingManager* pRecordingManager);
     ~Library() override;
 
+    void stopFeatures();
+
     mixxx::DbConnectionPoolPtr dbConnectionPool() const {
         return m_pDbConnectionPool;
     }

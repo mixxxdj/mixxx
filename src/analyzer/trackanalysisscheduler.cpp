@@ -264,9 +264,11 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
 
 void TrackAnalysisScheduler::stop() {
     kLogger.debug() << "Stopping";
+    m_queuedTrackIds.clear();
     for (auto& worker: m_workers) {
         worker.stopThread();
     }
+    m_workers.clear();
 }
 
 TrackPointer TrackAnalysisScheduler::loadTrackById(TrackId trackId) {
