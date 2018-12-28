@@ -78,7 +78,7 @@ void WorkerThread::resume() {
     if (m_suspend.compare_exchange_strong(suspended, false)) {
         logTrace(m_logger, "Resuming");
         // The thread might just be preparing to suspend after
-        // reading detecting that m_suspend was true. To avoid
+        // loading and detecting that m_suspend was true. To avoid
         // a race condition we need to acquire the mutex that
         // is associated with the wait condition, before
         // signalling the condition. Otherwise the signal

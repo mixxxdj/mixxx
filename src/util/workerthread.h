@@ -12,7 +12,7 @@
 // A worker thread without an event loop.
 //
 // This object lives in the creating thread of the host, i.e. does not
-// run its own event loop. It does not does not use slots for communication
+// run its own event loop. It does not use slots for communication
 // with its host which would otherwise still be executed in the host's
 // thread.
 //

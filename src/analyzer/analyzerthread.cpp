@@ -189,10 +189,12 @@ void AnalyzerThread::doRun() {
             emitDoneProgress(kAnalyzerProgressDone);
         }
     }
+    DEBUG_ASSERT(!m_currentTrack);
     DEBUG_ASSERT(isStopping());
 
     m_analyzers.clear();
 
+    kLogger.debug() << "Exiting worker thread";
     emitProgress(AnalyzerThreadState::Exit);
 }
 
