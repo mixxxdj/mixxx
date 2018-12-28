@@ -600,9 +600,9 @@ QJSValue ControllerEngine::makeConnection(QString group, QString name,
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        qWarning() << "ControllerEngine: script tried to connect to ControlObject (" +
-                      group + ", " + name +
-                      ") which is non-existent, ignoring.";
+        m_pScriptEngine->throwError("ControllerEngine: script tried to connect to ControlObject (" +
+                group + ", " + name +
+                ") which is non-existent, ignoring.");
         return QJSValue();
     }
 
