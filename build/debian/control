@@ -23,6 +23,7 @@ Build-Depends: debhelper (>= 9),
                libqt5svg5-dev,
 # Only needed for running tests that use SQLite.
                libqt5sql5-sqlite,
+               libqt5x11extras5-dev,
                scons,
                libjack-dev,
                portaudio19-dev,

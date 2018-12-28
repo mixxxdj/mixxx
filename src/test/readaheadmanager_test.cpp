@@ -61,10 +61,8 @@ class StubLoopControl : public LoopingControl {
         Q_UNUSED(adjustingPhase);
     }
 
-  public slots:
-    void trackLoaded(TrackPointer pTrack, TrackPointer pOldTrack) override {
+    void trackLoaded(TrackPointer pTrack) override {
         Q_UNUSED(pTrack);
-        Q_UNUSED(pOldTrack);
     }
 
   protected:

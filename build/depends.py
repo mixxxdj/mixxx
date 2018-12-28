@@ -280,6 +280,9 @@ class Qt(Dependence):
             if not conf.CheckForPKG('Qt5Core', '5.0'):
                 raise Exception('Qt >= 5.0 not found')
 
+            if not conf.CheckLib('Qt5X11Extras'):
+                raise Exception('Could not find Qt5X11Extras or its development headers')
+
             qt_modules.extend(['QtDBus'])
             # This automatically converts QtXXX to Qt5XXX where appropriate.
             build.env.EnableQt5Modules(qt_modules, debug=False)
@@ -375,6 +378,7 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'userenv')  # qt5core
                 build.env.Append(LIBS = 'uxtheme')  # ?
                 build.env.Append(LIBS = 'version')  # ?
+                build.env.Append(LIBS = 'wtsapi32') # ?
 
                 build.env.Append(LIBS = 'qtfreetype')
                 build.env.Append(LIBS = 'qtharfbuzz')
