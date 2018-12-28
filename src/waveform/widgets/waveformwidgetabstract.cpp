@@ -7,8 +7,8 @@
 
 WaveformWidgetAbstract::WaveformWidgetAbstract(const char* group)
     : WaveformWidgetRenderer(group),
+      m_widget(nullptr),
       m_initSuccess(false) {
-    m_widget = NULL;
 }
 
 WaveformWidgetAbstract::~WaveformWidgetAbstract() {
