@@ -882,9 +882,7 @@ int ControllerEngine::beginTimer(int interval, QJSValue timerCallback,
     }
 
     if (!timerCallback.isCallable()) {
-        qWarning() << "Invalid timer callback provided to beginTimer."
-                   << "Valid callbacks are strings and functions.";
-        m_pScriptEngine->throwError("Invalid timer callback provided to beginTimer.");
+        m_pScriptEngine->throwError("Invalid timer callback provided to beginTimer. Valid callbacks are strings and functions.");
         return 0;
     }
 
