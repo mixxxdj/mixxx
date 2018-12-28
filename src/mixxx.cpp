@@ -730,7 +730,8 @@ void MixxxMainWindow::finalize() {
     StatsManager::destroy();
 
     // NOTE(uklotzde, 2018-12-28): Finally destroy the singleton instance
-    // to prevent a when while exiting the main() function!
+    // to prevent a deadlock when exiting the main() function! The actual
+    // cause of the deadlock is still unclear.
     GlobalTrackCache::destroyInstance();
 }
 
