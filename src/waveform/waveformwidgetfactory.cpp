@@ -42,9 +42,9 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
         return false;
     }
 
-    auto glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
+    auto glw = dynamic_cast<QOpenGLWidget*>(pWaveformWidget->getWidget());
     if (glw == nullptr) {
-        // Not a QGLWidget. We can simply use QWidget::isVisible.
+        // Not a QOpenGLWidget. We can simply use QWidget::isVisible.
         auto qwidget = dynamic_cast<QWidget*>(pWaveformWidget->getWidget());
         return qwidget != nullptr && qwidget->isVisible();
     }
@@ -579,8 +579,8 @@ void WaveformWidgetFactory::render() {
             }
         }
 
-        // WSpinnys are also double-buffered QGLWidgets, like all the waveform
-        // renderers. Render all the WSpinny widgets now.
+        // WSpinnys are also double-buffered QOpenGLWidgets, like all the
+        // waveform renderers. Render all the WSpinny widgets now.
         emit(renderSpinnies());
 
         // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
@@ -631,8 +631,8 @@ void WaveformWidgetFactory::swap() {
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();
             }
         }
-        // WSpinnys are also double-buffered QGLWidgets, like all the waveform
-        // renderers. Swap all the WSpinny widgets now.
+        // WSpinnys are also double-buffered QOpenGLWidgets, like all the
+        // waveform renderers. Swap all the WSpinny widgets now.
         emit(swapSpinnies());
     }
     //qDebug() << "swap end" << m_vsyncThread->elapsed();
