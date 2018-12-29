@@ -203,6 +203,9 @@ void WOverview::slotAnalyzerProgress(int progress) {
 void WOverview::slotTrackLoaded(TrackPointer pTrack) {
     DEBUG_ASSERT(m_pCurrentTrack == pTrack);
     m_trackLoaded = true;
+    if (m_pCurrentTrack) {
+        updateCues(m_pCurrentTrack->getCuePoints());
+    }
     update();
 }
 
