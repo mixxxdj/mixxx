@@ -18,8 +18,8 @@ EffectKnobParameterSlot::EffectKnobParameterSlot(const QString& group, const uns
 
     m_pControlValue = new ControlEffectKnob(
             ConfigKey(m_group, itemPrefix));
-    connect(m_pControlValue, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueChanged(double)));
+    connect(m_pControlValue, &ControlObject::valueChanged,
+            this, &EffectKnobParameterSlot::slotValueChanged);
 
     m_pControlLoaded = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_loaded")));
@@ -40,8 +40,8 @@ EffectKnobParameterSlot::EffectKnobParameterSlot(const QString& group, const uns
     m_pControlLinkInverse = new ControlPushButton(
             ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
     m_pControlLinkInverse->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pControlLinkInverse, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLinkInverseChanged(double)));
+    connect(m_pControlLinkInverse, &ControlObject::valueChanged,
+            this, &EffectKnobParameterSlot::slotLinkInverseChanged);
 
     m_pMetaknobSoftTakeover = new SoftTakeover();
 
@@ -97,8 +97,8 @@ void EffectKnobParameterSlot::loadParameter(EffectParameter* pEffectParameter) {
         m_pControlLinkInverse->set(
             static_cast<double>(m_pManifestParameter->defaultLinkInversion()));
 
-        connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
-                this, SLOT(slotParameterValueChanged(double)));
+        connect(m_pEffectParameter, &EffectParameter::valueChanged,
+                this, &EffectKnobParameterSlot::slotParameterValueChanged);
     }
 
     emit(updated());

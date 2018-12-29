@@ -49,25 +49,25 @@ EffectSlot::EffectSlot(const QString& group,
     // at the beginning of a set.
     m_pControlEnabled = new ControlPushButton(ConfigKey(m_group, "enabled"));
     m_pControlEnabled->setButtonMode(ControlPushButton::POWERWINDOW);
-    connect(m_pControlEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(updateEngineState()));
+    connect(m_pControlEnabled, &ControlObject::valueChanged,
+            this, &EffectSlot::updateEngineState);
 
     m_pControlNextEffect = new ControlPushButton(ConfigKey(m_group, "next_effect"));
-    connect(m_pControlNextEffect, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNextEffect(double)));
+    connect(m_pControlNextEffect, &ControlObject::valueChanged,
+            this, &EffectSlot::slotNextEffect);
 
     m_pControlPrevEffect = new ControlPushButton(ConfigKey(m_group, "prev_effect"));
-    connect(m_pControlPrevEffect, SIGNAL(valueChanged(double)),
-            this, SLOT(slotPrevEffect(double)));
+    connect(m_pControlPrevEffect, &ControlObject::valueChanged,
+            this, &EffectSlot::slotPrevEffect);
 
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pControlEffectSelector = new ControlEncoder(ConfigKey(m_group, "effect_selector"), false);
-    connect(m_pControlEffectSelector, SIGNAL(valueChanged(double)),
-            this, SLOT(slotEffectSelector(double)));
+    connect(m_pControlEffectSelector, &ControlObject::valueChanged,
+            this, &EffectSlot::slotEffectSelector);
 
     m_pControlClear = new ControlPushButton(ConfigKey(m_group, "clear"));
-    connect(m_pControlClear, SIGNAL(valueChanged(double)),
-            this, SLOT(slotClear(double)));
+    connect(m_pControlClear, &ControlObject::valueChanged,
+            this, &EffectSlot::slotClear);
 
     for (unsigned int i = 0; i < kDefaultMaxParameters; ++i) {
         addEffectParameterSlot(EffectManifestParameter::ParameterType::KNOB);
@@ -75,8 +75,11 @@ EffectSlot::EffectSlot(const QString& group,
     }
 
     m_pControlMetaParameter = new ControlPotmeter(ConfigKey(m_group, "meta"), 0.0, 1.0);
-    connect(m_pControlMetaParameter, SIGNAL(valueChanged(double)),
-            this, SLOT(slotEffectMetaParameter(double)));
+    // QObject::connect cannot connect to slots with optional parameters using function
+    // pointer syntax if the slot has more parameters than the signal, so use a lambda
+    // to hack around this limitation.
+    connect(m_pControlMetaParameter, &ControlObject::valueChanged,
+            this, [=](double value){slotEffectMetaParameter(value);} );
     m_pControlMetaParameter->set(0.0);
     m_pControlMetaParameter->setDefaultValue(0.0);
 
