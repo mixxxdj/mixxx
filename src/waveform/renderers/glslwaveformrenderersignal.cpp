@@ -1,4 +1,4 @@
-#include <QGLFramebufferObject>
+#include <QOpenGLFramebufferObject>
 
 #include "waveform/renderers/glslwaveformrenderersignal.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -13,7 +13,6 @@ GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* w
           m_textureId(0),
           m_textureRenderedWaveformCompletion(0),
           m_bDumpPng(false),
-          m_shadersValid(false),
           m_rgbShader(rgbShader) {
 }
 
@@ -33,43 +32,35 @@ void GLSLWaveformRendererSignal::debugClick() {
 }
 
 bool GLSLWaveformRendererSignal::loadShaders() {
-    qDebug() << "GLWaveformRendererSignalShader::loadShaders";
-    m_shadersValid = false;
-
-    if (m_frameShaderProgram->isLinked()) {
-        m_frameShaderProgram->release();
+    if (m_frameShaderProgram) {
+        return true;
     }
+    qDebug() << "GLWaveformRendererSignalShader::loadShaders";
+    auto frameShaderProgram = std::make_unique<QOpenGLShaderProgram>();
 
-    m_frameShaderProgram->removeAllShaders();
-
-    if (!m_frameShaderProgram->addShaderFromSourceFile(
-            QGLShader::Vertex, ":shaders/passthrough.vert")) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
-                 << m_frameShaderProgram->log();
+    if (!frameShaderProgram->addShaderFromSourceFile(
+            QOpenGLShader::Vertex, ":shaders/passthrough.vert")) {
+        qDebug() << "GLWaveformRendererSignalShader::loadShaders addShaderFromSourceFile failed for passthrough.vert"
+                 << frameShaderProgram->log();
         return false;
     }
     QString fragmentShader = m_rgbShader ?
             ":/shaders/rgbsignal.frag" :
             ":/shaders/filteredsignal.frag";
-    if (!m_frameShaderProgram->addShaderFromSourceFile(
-            QGLShader::Fragment, fragmentShader)) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
-                 << m_frameShaderProgram->log();
+    if (!frameShaderProgram->addShaderFromSourceFile(
+            QOpenGLShader::Fragment, fragmentShader)) {
+        qDebug() << "GLWaveformRendererSignalShader::loadShaders addShaderFromSourceFile failed for" << fragmentShader
+                 << frameShaderProgram->log();
         return false;
     }
 
-    if (!m_frameShaderProgram->link()) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
-                 << m_frameShaderProgram->log();
+    if (!frameShaderProgram->link()) {
+        qDebug() << "GLWaveformRendererSignalShader::loadShaders link failed "
+                 << frameShaderProgram->log();
         return false;
     }
 
-    if (!m_frameShaderProgram->bind()) {
-        qDebug() << "GLWaveformRendererSignalShader::loadShaders - shaders binding failed";
-        return false;
-    }
-
-    m_shadersValid = true;
+    m_frameShaderProgram = std::move(frameShaderProgram);
     return true;
 }
 
@@ -171,6 +162,9 @@ void GLSLWaveformRendererSignal::createGeometry() {
 }
 
 void GLSLWaveformRendererSignal::createFrameBuffers() {
+    if (m_framebuffer) {
+        return;
+    }
     const float devicePixelRatio = m_waveformRenderer->getDevicePixelRatio();
     // We create a frame buffer that is 4x the size of the renderer itself to
     // "oversample" the texture relative to the surface we're drawing on.
@@ -178,29 +172,19 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
     const int bufferWidth = oversamplingFactor * m_waveformRenderer->getWidth() * devicePixelRatio;
     const int bufferHeight = oversamplingFactor * m_waveformRenderer->getHeight() * devicePixelRatio;
 
-    m_framebuffer = std::make_unique<QGLFramebufferObject>(bufferWidth,
-                                                           bufferHeight);
+    auto framebuffer = std::make_unique<QOpenGLFramebufferObject>(bufferWidth,
+                                                                  bufferHeight);
 
-    if (!m_framebuffer->isValid()) {
+    if (!framebuffer->isValid()) {
         qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
+        return;
     }
+    m_framebuffer = std::move(framebuffer);
 }
 
 bool GLSLWaveformRendererSignal::onInit() {
     m_textureRenderedWaveformCompletion = 0;
-
-    if (!m_frameShaderProgram) {
-        m_frameShaderProgram = std::make_unique<QGLShaderProgram>();
-    }
-
-    if (!loadShaders()) {
-        return false;
-    }
     createGeometry();
-    if (!loadTexture()) {
-        return false;
-    }
-
     return true;
 }
 
@@ -231,7 +215,7 @@ void GLSLWaveformRendererSignal::onSetTrack() {
 }
 
 void GLSLWaveformRendererSignal::onResize() {
-    createFrameBuffers();
+    m_framebuffer.reset();
 }
 
 void GLSLWaveformRendererSignal::slotWaveformUpdated() {
@@ -240,7 +224,9 @@ void GLSLWaveformRendererSignal::slotWaveformUpdated() {
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    if (!m_framebuffer || !m_framebuffer->isValid() || !m_shadersValid) {
+    loadShaders();
+    createFrameBuffers();
+    if (!m_framebuffer || !m_framebuffer->isValid() || !m_frameShaderProgram) {
         return;
     }
 

@@ -1,8 +1,8 @@
 #ifndef GLWAVEFORMRENDERERSIGNALSHADER_H
 #define GLWAVEFORMRENDERERSIGNALSHADER_H
 
-#include <QGLFramebufferObject>
-#include <QGLShaderProgram>
+#include <QOpenGLFramebufferObject>
+#include <QOpenGLShaderProgram>
 #include <QtOpenGL>
 
 #include "track/track.h"
@@ -41,14 +41,13 @@ class GLSLWaveformRendererSignal : public QObject, public WaveformRendererSignal
     int m_textureRenderedWaveformCompletion;
 
     // Frame buffer for two pass rendering.
-    std::unique_ptr<QGLFramebufferObject> m_framebuffer;
+    std::unique_ptr<QOpenGLFramebufferObject> m_framebuffer;
 
     bool m_bDumpPng;
 
     // shaders
-    bool m_shadersValid;
-    bool m_rgbShader;
-    std::unique_ptr<QGLShaderProgram> m_frameShaderProgram;
+    const bool m_rgbShader;
+    std::unique_ptr<QOpenGLShaderProgram> m_frameShaderProgram;
 };
 
 class GLSLWaveformRendererFilteredSignal : public GLSLWaveformRendererSignal {
