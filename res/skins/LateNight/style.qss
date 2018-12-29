@@ -49,6 +49,7 @@ WPushButton, QPushButton {
 #Deck3 #KeyText, #Deck4 #KeyText,
 WSearchLineEdit:focus,
 #LatencyLabel,
+biglibraryknoblabel,
 WTime {
   color: #eece33;
   font-weight: bold;
@@ -189,7 +190,8 @@ WTime {
   font-size: 13px/13px;
 }
 
-#LatencyLabel {
+#LatencyLabel,
+#biglibraryknoblabel {
   padding-bottom: 2px;
   font-size: 10px/10px;
 }
