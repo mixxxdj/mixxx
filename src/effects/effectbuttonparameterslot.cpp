@@ -143,9 +143,3 @@ void EffectButtonParameterSlot::loadParameterSlotFromXml(const QDomElement&
     //     // If the conversion failed, the default value is kept.
     // }
 }
-
-void EffectButtonParameterSlot::syncSofttakeover() {
-}
-
-void EffectButtonParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
-}

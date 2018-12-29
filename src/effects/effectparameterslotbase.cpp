@@ -59,3 +59,9 @@ EffectManifestParameterPointer EffectParameterSlotBase::getManifest() {
     }
     return EffectManifestParameterPointer();
 }
+
+void EffectParameterSlotBase::syncSofttakeover() {
+}
+
+void EffectParameterSlotBase::onEffectMetaParameterChanged(double parameter, bool force) {
+}

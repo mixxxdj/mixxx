@@ -30,9 +30,9 @@ class EffectParameterSlotBase : public QObject {
     // Clear the currently loaded effect
     virtual void clear() = 0;
 
-    virtual void syncSofttakeover() = 0;
+    virtual void syncSofttakeover();
 
-    virtual void onEffectMetaParameterChanged(double parameter, bool force=false) = 0;
+    virtual void onEffectMetaParameterChanged(double parameter, bool force=false);
 
     QString name() const;
     QString shortName() const;

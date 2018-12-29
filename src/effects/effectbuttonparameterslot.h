@@ -30,10 +30,6 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     // Clear the currently loaded effect
     void clear();
 
-    void syncSofttakeover();
-
-    void onEffectMetaParameterChanged(double parameter, bool force=false);
-
     QDomElement toXml(QDomDocument* doc) const override;
     void loadParameterSlotFromXml(const QDomElement& parameterElement) override;
 
