@@ -60,6 +60,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     //TODO merge this enum with the waveform analyzer one
     enum FilterIndex { All = 0, Low = 1, Mid = 2, High = 3, FilterCount = 4};
 
+    static void setDefaultSurfaceFormat();
+
     bool setConfig(UserSettingsPointer config);
 
     //creates the waveform widget and bind it to the viewer

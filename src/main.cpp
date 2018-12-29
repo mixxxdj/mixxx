@@ -31,6 +31,7 @@
 #include "util/console.h"
 #include "util/logging.h"
 #include "util/version.h"
+#include "waveform/waveformwidgetfactory.h"
 
 #ifdef Q_OS_LINUX
 #include <X11/Xlib.h>
@@ -72,6 +73,7 @@ int main(int argc, char * argv[]) {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
+    WaveformWidgetFactory::setDefaultSurfaceFormat();
 
     // Setting the organization name results in a QDesktopStorage::DataLocation
     // of "$HOME/Library/Application Support/Mixxx/Mixxx" on OS X. Leave the

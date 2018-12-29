@@ -110,29 +110,6 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
     m_visualGain[High] = 1.0;
 
     if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
-        QGLFormat glFormat;
-        glFormat.setDirectRendering(true);
-        glFormat.setDoubleBuffer(true);
-        glFormat.setDepth(false);
-        // Disable waiting for vertical Sync
-        // This can be enabled when using a single Threads for each QGLContext
-        // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
-#if defined(__APPLE__)
-        // On OS X, syncing to vsync has good performance FPS-wise and
-        // eliminates tearing.
-        glFormat.setSwapInterval(1);
-#else
-        // Otherwise, turn VSync off because it could cause horrible FPS on
-        // Linux.
-        // TODO(XXX): Make this configurable.
-        // TODO(XXX): What should we do on Windows?
-        glFormat.setSwapInterval(0);
-#endif
-
-
-        glFormat.setRgba(true);
-        QGLFormat::setDefaultFormat(glFormat);
-
         QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
 
         int majorVersion = 0;
@@ -856,4 +833,15 @@ float WaveformWidgetFactory::getDevicePixelRatio() {
         devicePixelRatio = pWindow->devicePixelRatio();
     }
     return devicePixelRatio;
+}
+
+void WaveformWidgetFactory::setDefaultSurfaceFormat() {
+    QCoreApplication::setAttribute(Qt::AA_ShareOpenGLContexts);
+    QSurfaceFormat defaultFormat;
+    defaultFormat.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+    defaultFormat.setSwapInterval(1);
+    defaultFormat.setProfile(QSurfaceFormat::CompatibilityProfile);
+    defaultFormat.setRenderableType(QSurfaceFormat::OpenGL);
+    defaultFormat.setVersion(2, 1);
+    QSurfaceFormat::setDefaultFormat(defaultFormat);
 }
