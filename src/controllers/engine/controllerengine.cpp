@@ -95,7 +95,10 @@ void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefix
             continue;
         }
         controllerDebug("ControllerEngine: Executing" << prefixName << "." << function);
-        init.callWithInstance(prefix, args);
+        QJSValue result = init.callWithInstance(prefix, args);
+        if (result.isError()) {
+            showScriptExceptionDialog(result);
+        }
     }
 }
 
@@ -106,7 +109,11 @@ QJSValue ControllerEngine::byteArrayToScriptValue(const QByteArray byteArray) {
     // with the [] operator.
     QJSValueList args;
     args << arrayBuffer;
-    return m_byteArrayToScriptValueJSFunction.call(args);
+    QJSValue result = m_byteArrayToScriptValueJSFunction.call(args);
+    if (result.isError()) {
+        showScriptExceptionDialog(result);
+    }
+    return result;
 }
 
 /* ------------------------------------------------------------------
@@ -136,6 +143,9 @@ QJSValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
                                 codeSnippet + ")(" + wrapperArgs + "); })";
 
         wrappedFunction = evaluateCodeString(wrappedCode);
+        if (wrappedFunction.isError()) {
+            showScriptExceptionDialog(wrappedFunction);
+        }
         m_scriptWrappedFunctionCache[codeSnippet] = wrappedFunction;
     }
     return wrappedFunction;
@@ -311,7 +321,6 @@ bool ControllerEngine::executeFunction(QJSValue functionObject, QJSValueList arg
 
     // If it does happen to be a function, call it.
     QJSValue returnValue = functionObject.call(args);
-
     if (returnValue.isError()) {
         showScriptExceptionDialog(returnValue);
         return false;
@@ -334,11 +343,7 @@ QJSValue ControllerEngine::evaluateCodeString(const QString& program, const QStr
     VERIFY_OR_DEBUG_ASSERT(!(m_pScriptEngine == nullptr)) {
         return QJSValue::UndefinedValue;
     }
-
     QJSValue returnValue = m_pScriptEngine->evaluate(program, fileName, lineNumber);
-    if (returnValue.isError()) {
-        showScriptExceptionDialog(returnValue);
-    }
     return returnValue;
 }
 
@@ -608,7 +613,7 @@ QJSValue ControllerEngine::makeConnection(QString group, QString name,
 
     if (!callback.isCallable()) {
         m_pScriptEngine->throwError("Tried to connect (" + group + ", " + name + ")"
-                   + "to an invalid callback.");
+                   + " to an invalid callback.");
         return QJSValue();
     }
 
@@ -735,7 +740,11 @@ QJSValue ControllerEngine::connectControl(
         actualCallbackFunction = evaluateCodeString(passedCallback.toString());
 
         if (!actualCallbackFunction.isCallable()) {
-            m_pScriptEngine->throwError("Invalid connection callback provided to engine.connectControl.");
+            QString sErrorMessage("Invalid connection callback provided to engine.connectControl.");
+            if (actualCallbackFunction.isError()) {
+                sErrorMessage.append("\n" + actualCallbackFunction.toString());
+            }
+            m_pScriptEngine->throwError(sErrorMessage);
             return QJSValue(false);
         }
 
@@ -862,6 +871,7 @@ bool ControllerEngine::evaluateScriptFile(const QString& scriptName, QList<QStri
     // Evaluate the code
     QJSValue scriptFunction = evaluateCodeString(scriptCode, filename);
     if (scriptFunction.isError()) {
+        showScriptExceptionDialog(scriptFunction);
         return false;
     }
 
@@ -882,7 +892,11 @@ int ControllerEngine::beginTimer(int interval, QJSValue timerCallback,
     }
 
     if (!timerCallback.isCallable()) {
-        m_pScriptEngine->throwError("Invalid timer callback provided to engine.beginTimer. Valid callbacks are strings and functions.");
+        QString sErrorMessage("Invalid timer callback provided to engine.beginTimer. Valid callbacks are strings and functions.");
+        if (timerCallback.isError()) {
+            sErrorMessage.append("\n" + timerCallback.toString());
+        }
+        m_pScriptEngine->throwError(sErrorMessage);
         return 0;
     }
 
