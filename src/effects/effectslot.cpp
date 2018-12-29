@@ -304,6 +304,9 @@ void EffectSlot::unloadEffect() {
     }
     m_parameters.clear();
     m_pManifest.clear();
+    for (auto& parameterMapping : m_mapForParameterType) {
+        parameterMapping.clear();
+    }
 
     removeFromEngine();
 }
