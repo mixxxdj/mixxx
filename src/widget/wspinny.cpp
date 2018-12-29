@@ -299,11 +299,6 @@ void WSpinny::render() {
         return;
     }
 
-    auto window = windowHandle();
-    if (window == nullptr || !window->isExposed()) {
-        return;
-    }
-
     if (!m_pVisualPlayPos.isNull()) {
         m_pVisualPlayPos->getPlaySlipAt(0,
                                         &m_dAngleCurrentPlaypos,
@@ -381,10 +376,6 @@ void WSpinny::render() {
 
 void WSpinny::swap() {
     if (!isValid() || !isVisible()) {
-        return;
-    }
-    auto window = windowHandle();
-    if (window == nullptr || !window->isExposed()) {
         return;
     }
     VSyncThread::swapGl(this, 0);
