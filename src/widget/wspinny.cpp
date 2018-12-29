@@ -89,9 +89,7 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
-
     setAutoFillBackground(false);
-    setAutoBufferSwap(false);
 }
 
 WSpinny::~WSpinny() {
