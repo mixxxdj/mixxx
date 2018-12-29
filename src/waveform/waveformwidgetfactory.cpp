@@ -109,79 +109,23 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
 
-    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
-        QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
+    const bool safeMode = CmdlineArgs::Instance().getSafeMode();
+    QWindow* pWindow = QGuiApplication::focusWindow();
 
-        int majorVersion = 0;
-        int minorVersion = 0;
-        if (version == QGLFormat::OpenGL_Version_None) {
-            m_openGLVersion = "None";
-// Flags introduced in Qt 5.2.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
-        } else if (version & QGLFormat::OpenGL_Version_4_3) {
-            majorVersion = 4;
-            minorVersion = 3;
-        } else if (version & QGLFormat::OpenGL_Version_4_2) {
-            majorVersion = 4;
-            minorVersion = 2;
-        } else if (version & QGLFormat::OpenGL_Version_4_1) {
-            majorVersion = 4;
-            minorVersion = 1;
-#endif
-// Flags introduced in Qt 4.7.
-#if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
-        } else if (version & QGLFormat::OpenGL_Version_4_0) {
-            majorVersion = 4;
-            minorVersion = 0;
-        } else if (version & QGLFormat::OpenGL_Version_3_3) {
-            majorVersion = 3;
-            minorVersion = 3;
-        } else if (version & QGLFormat::OpenGL_Version_3_2) {
-            majorVersion = 3;
-            minorVersion = 2;
-        } else if (version & QGLFormat::OpenGL_Version_3_1) {
-            majorVersion = 3;
-            minorVersion = 1;
-#endif
-        } else if (version & QGLFormat::OpenGL_Version_3_0) {
-            majorVersion = 3;
-        } else if (version & QGLFormat::OpenGL_Version_2_1) {
-            majorVersion = 2;
-            minorVersion = 1;
-        } else if (version & QGLFormat::OpenGL_Version_2_0) {
-            majorVersion = 2;
-            minorVersion = 0;
-        } else if (version & QGLFormat::OpenGL_Version_1_5) {
-            majorVersion = 1;
-            minorVersion = 5;
-        } else if (version & QGLFormat::OpenGL_Version_1_4) {
-            majorVersion = 1;
-            minorVersion = 4;
-        } else if (version & QGLFormat::OpenGL_Version_1_3) {
-            majorVersion = 1;
-            minorVersion = 3;
-        } else if (version & QGLFormat::OpenGL_Version_1_2) {
-            majorVersion = 1;
-            minorVersion = 2;
-        } else if (version & QGLFormat::OpenGL_Version_1_1) {
-            majorVersion = 1;
-            minorVersion = 1;
-        }
-
-        if (majorVersion != 0) {
-            m_openGLVersion = QString::number(majorVersion) + "." +
-                    QString::number(minorVersion);
-        }
-
+    if (safeMode) {
+        m_openGLVersion = tr("Safe Mode");
+    } else if (pWindow && pWindow->supportsOpenGL()) {
         m_openGLAvailable = true;
-
-        QOpenGLWidget* glWidget = new QOpenGLWidget(); // create paint device
-        // QGLShaderProgram::hasOpenGLShaderPrograms(); valgind error
-        // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
-        glWidget->makeCurrent();
-        m_openGLShaderAvailable =
-                QOpenGLShaderProgram::hasOpenGLShaderPrograms(glWidget->context());
-        delete glWidget;
+        const auto format = pWindow->format();
+        const auto major_minor = format.version();
+        m_openGLVersion = QString("%1 %2.%3").arg(
+            format.renderableType() == QSurfaceFormat::OpenGL ? "OpenGL" : "OpenGLES",
+            QString::number(major_minor.first),
+            QString::number(major_minor.second));
+        // Mixxx requires GLSL 1.20, which corresponds to OpenGL version 2.1.
+        m_openGLShaderAvailable = major_minor.first > 2 || (major_minor.first == 2 && major_minor.second >= 1);
+    } else {
+        m_openGLVersion = tr("None");
     }
 
     evaluateWidgets();
