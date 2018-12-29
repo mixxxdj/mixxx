@@ -387,6 +387,7 @@ void EffectSlot::slotNextEffect(double v) {
 }
 
 void EffectSlot::slotEffectSelector(double v) {
+    // TODO: reimplement
     // if (v > 0) {
     //     emit(nextEffect(m_iChainNumber, m_iEffectNumber, m_pEffect));
     // } else if (v < 0) {
