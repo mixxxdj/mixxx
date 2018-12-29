@@ -316,33 +316,36 @@ void EffectSlot::loadParameters() {
 
         m_pControlNumParameters[parameterType]->forceSet(numParameters(parameterType));
 
-        unsigned int iParameter = 0;
+        unsigned int parameterSlotIndex = 0;
         unsigned int numParameterSlots = m_iNumParameterSlots[parameterType];
         for (int i=0 ; i<m_mapForParameterType[parameterType].size() ; ++i) {
-            const int iParameterPosition = m_mapForParameterType[parameterType].value(i, -1);
+            const int manifestIndex = m_mapForParameterType[parameterType].value(i, -1);
 
-            auto pParameter = m_parameters.value(iParameterPosition, nullptr);
+            auto pParameter = m_parameters.value(manifestIndex, nullptr);
 
             VERIFY_OR_DEBUG_ASSERT(pParameter != nullptr) {
                 continue;
             }
 
-            if (iParameter < numParameterSlots) {
-                auto pParameterSlot = getEffectParameterSlot(parameterType, iParameter);
+            while (parameterSlotIndex < numParameterSlots) {
+                auto pParameterSlot = getEffectParameterSlot(parameterType, parameterSlotIndex);
                 VERIFY_OR_DEBUG_ASSERT(pParameterSlot != nullptr) {
-                    break;
+                    ++parameterSlotIndex;
+                    continue;
                 }
                 pParameterSlot->loadParameter(pParameter);
-                ++iParameter;
-            }
-        }
-        while (iParameter < numParameterSlots) {
-            auto pParameterSlot = getEffectParameterSlot(parameterType, iParameter);
-            VERIFY_OR_DEBUG_ASSERT(pParameterSlot != nullptr) {
+                ++parameterSlotIndex;
                 break;
             }
+        }
+        while (parameterSlotIndex < numParameterSlots) {
+            auto pParameterSlot = getEffectParameterSlot(parameterType, parameterSlotIndex);
+            VERIFY_OR_DEBUG_ASSERT(pParameterSlot != nullptr) {
+                ++parameterSlotIndex;
+                continue;
+            }
             pParameterSlot->clear();
-            ++iParameter;
+            ++parameterSlotIndex;
         }
     }
 }
