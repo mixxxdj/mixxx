@@ -67,11 +67,114 @@
 
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">125f,24f</SetVariable>
-            <SetVariable name="state_0_text">Cover Art Library</SetVariable>
-            <SetVariable name="state_1_text">Cover Art Library</SetVariable>
+            <SetVariable name="Size">95f,24f</SetVariable>
+            <SetVariable name="state_0_text">Cover Art Lib</SetVariable>
+            <SetVariable name="state_1_text">Cover Art Lib</SetVariable>
             <SetVariable name="ConfigKey">[Library],show_coverart</SetVariable>
           </Template>
+
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Alignment>center</Alignment>
+            <Children>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="Size">28f,24f</SetVariable>
+                    <SetVariable name="Color">green</SetVariable>
+                    <SetVariable name="TooltipId">headMix</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">headMix</SetVariable>
+                  </Template>
+
+                  <Label>
+                    <SizePolicy>min,min</SizePolicy>
+                     <ObjectName>biglibraryknoblabel</ObjectName>
+                    <Text>head mix</Text>
+                  </Label>
+
+                  <!-- Spacer -->
+                  <WidgetGroup>
+                    <Size>5,5</Size>
+                    <Children/>
+                  </WidgetGroup>
+
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="Size">28f,24f</SetVariable>
+                    <SetVariable name="Color">orange</SetVariable>
+                    <SetVariable name="TooltipId">headphone_gain</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">headGain</SetVariable>
+                  </Template>
+
+                  <Label>
+                    <SizePolicy>min,min</SizePolicy>
+                     <ObjectName>biglibraryknoblabel</ObjectName>
+                    <Text>head</Text>
+                  </Label>
+
+                  <!-- Spacer -->
+                  <WidgetGroup>
+                    <Size>5,5</Size>
+                    <Children/>
+                  </WidgetGroup>
+
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">headSplit</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Size">64f,20f</SetVariable>
+                    <SetVariable name="state_0_text">Split Cue</SetVariable>
+                    <SetVariable name="state_1_text">Split Cue</SetVariable>
+                    <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
+                  </Template>
+
+                  <!-- Spacer -->
+                  <WidgetGroup>
+                    <Size>5,5</Size>
+                    <Children/>
+                  </WidgetGroup>
+
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="Size">28f,24f</SetVariable>
+                    <SetVariable name="Color">red</SetVariable>
+                    <SetVariable name="TooltipId">balance</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">balance</SetVariable>
+                  </Template>
+
+                  <Label>
+                    <SizePolicy>min,min</SizePolicy>
+                     <ObjectName>biglibraryknoblabel</ObjectName>
+                    <Text>balance</Text>
+                  </Label>
+
+                  <!-- Spacer -->
+                  <WidgetGroup>
+                    <Size>5,5</Size>
+                    <Children/>
+                  </WidgetGroup>
+
+                  <Template src="skin:knob_textless.xml">
+                    <SetVariable name="Size">28f,24f</SetVariable>
+                    <SetVariable name="Color">orange</SetVariable>
+                    <SetVariable name="TooltipId">master_gain</SetVariable>
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">gain</SetVariable>
+                  </Template>
+
+                  <Label>
+                    <SizePolicy>min,min</SizePolicy>
+                    <ObjectName>biglibraryknoblabel</ObjectName>
+                    <Text>master</Text>
+                  </Label>
+
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
 
         </Children>
         <Connection>
@@ -128,19 +231,19 @@
             <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
           </Template>
 
+          <!-- Spacer -->
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <Size>me,min</Size>
+            <Children/>
+          </WidgetGroup>
+
         </Children>
         <Connection>
           <ConfigKey>[Master],maximize_library</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
-
-      <!-- Spacer -->
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <Size>me,min</Size>
-        <Children/>
       </WidgetGroup>
 
       <WidgetGroup><!-- Recording button & recording duration label -->
