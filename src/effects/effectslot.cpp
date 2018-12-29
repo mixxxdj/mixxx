@@ -177,10 +177,10 @@ EffectManifestPointer EffectSlot::getManifest() const {
 void EffectSlot::addEffectParameterSlot(EffectManifestParameter::ParameterType parameterType) {
     EffectParameterSlotBasePointer pParameterSlot = EffectParameterSlotBasePointer();
     if (parameterType == EffectManifestParameter::ParameterType::KNOB) {
-        pParameterSlot = static_cast<EffectParameterSlotBasePointer> (
+        pParameterSlot = static_cast<EffectParameterSlotBasePointer>(
                 new EffectKnobParameterSlot(m_group, m_iNumParameterSlots[parameterType]));
     } else if (parameterType == EffectManifestParameter::ParameterType::BUTTON) {
-        pParameterSlot = static_cast<EffectParameterSlotBasePointer> (
+        pParameterSlot = static_cast<EffectParameterSlotBasePointer>(
                 new EffectButtonParameterSlot(m_group, m_iNumParameterSlots[parameterType]));
     }
     ++m_iNumParameterSlots[parameterType];
@@ -309,10 +309,10 @@ void EffectSlot::unloadEffect() {
 }
 
 void EffectSlot::loadParameters() {
-    int numTypes = static_cast<int> (EffectManifestParameter::ParameterType::NUM_TYPES);
+    int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NUM_TYPES);
     for (int parameterTypeId=0 ; parameterTypeId<numTypes ; ++parameterTypeId) {
         const EffectManifestParameter::ParameterType parameterType =
-                static_cast<EffectManifestParameter::ParameterType> (parameterTypeId);
+                static_cast<EffectManifestParameter::ParameterType>(parameterTypeId);
 
         m_pControlNumParameters[parameterType]->forceSet(numParameters(parameterType));
 
