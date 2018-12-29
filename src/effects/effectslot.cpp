@@ -107,7 +107,7 @@ EffectSlot::~EffectSlot() {
 
 void EffectSlot::addToEngine(std::unique_ptr<EffectProcessor> pProcessor,
         const QSet<ChannelHandleAndGroup>& activeInputChannels) {
-    VERIFY_OR_DEBUG_ASSERT(m_pManifest != nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(!isLoaded()) {
         return;
     }
 
@@ -147,21 +147,16 @@ void EffectSlot::updateEngineState() {
     if (!m_pEngineEffect) {
         return;
     }
-    sendParameterUpdate();
-    for (auto const& pParameter : m_parameters) {
-        pParameter->updateEngineState();
-    }
-}
 
-void EffectSlot::sendParameterUpdate() {
-    if (!m_pEngineEffect) {
-        return;
-    }
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_PARAMETERS;
     pRequest->pTargetEffect = m_pEngineEffect;
     pRequest->SetEffectParameters.enabled = m_pControlEnabled->get();
     m_pEffectsManager->writeRequest(pRequest);
+
+    for (auto const& pParameter : m_parameters) {
+        pParameter->updateEngineState();
+    }
 }
 
 EffectState* EffectSlot::createState(const mixxx::EngineParameters& bufferParameters) {
@@ -224,10 +219,6 @@ EffectParameter* EffectSlot::getParameterForSlot(EffectManifestParameter::Parame
     return nullptr;
 }
 
-double EffectSlot::getMetaknobDefault() {
-    return m_pManifest->metaknobDefault();
-}
-
 void EffectSlot::setEnabled(bool enabled) {
     m_pControlEnabled->set(enabled);
 }
@@ -284,12 +275,37 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
     if (m_pEffectsManager->isAdoptMetaknobValueEnabled()) {
         slotEffectMetaParameter(m_pControlMetaParameter->get(), true);
     } else {
-        m_pControlMetaParameter->set(getMetaknobDefault());
-        slotEffectMetaParameter(getMetaknobDefault(), true);
+        m_pControlMetaParameter->set(m_pManifest->metaknobDefault());
+        slotEffectMetaParameter(m_pManifest->metaknobDefault(), true);
     }
 
     emit(effectChanged());
     updateEngineState();
+}
+
+void EffectSlot::unloadEffect() {
+    if (!isLoaded()) {
+        return;
+    }
+
+    m_pControlLoaded->forceSet(0.0);
+    for (const auto& pControlNumParameters : m_pControlNumParameters) {
+        pControlNumParameters->forceSet(0.0);
+    }
+
+    for (const auto& pParameterSlot : m_parameterSlots) {
+        pParameterSlot->clear();
+    }
+
+    for (int i = 0; i < m_parameters.size(); ++i) {
+        EffectParameter* pParameter = m_parameters.at(i);
+        m_parameters[i] = nullptr;
+        delete pParameter;
+    }
+    m_parameters.clear();
+    m_pManifest.clear();
+
+    removeFromEngine();
 }
 
 void EffectSlot::loadParameters() {
@@ -329,31 +345,6 @@ void EffectSlot::loadParameters() {
             ++iParameter;
         }
     }
-}
-
-void EffectSlot::unloadEffect() {
-    if (!isLoaded()) {
-        return;
-    }
-
-    m_pControlLoaded->forceSet(0.0);
-    for (const auto& pControlNumParameters : m_pControlNumParameters) {
-        pControlNumParameters->forceSet(0.0);
-    }
-
-    for (const auto& pParameterSlot : m_parameterSlots) {
-        pParameterSlot->clear();
-    }
-
-    for (int i = 0; i < m_parameters.size(); ++i) {
-        EffectParameter* pParameter = m_parameters.at(i);
-        m_parameters[i] = nullptr;
-        delete pParameter;
-    }
-    m_parameters.clear();
-    m_pManifest.clear();
-
-    removeFromEngine();
 }
 
 void EffectSlot::hideEffectParameter(const unsigned int parameterId) {

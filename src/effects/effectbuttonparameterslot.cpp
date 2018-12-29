@@ -11,9 +11,8 @@
 
 EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
                                                      const unsigned int iParameterSlotNumber)
-        : EffectParameterSlotBase(group, iParameterSlotNumber) {
-    m_parameterType = EffectManifestParameter::ParameterType::BUTTON;
-
+        : EffectParameterSlotBase(group, iParameterSlotNumber,
+                EffectManifestParameter::ParameterType::BUTTON) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
     m_pControlLoaded = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_loaded")));

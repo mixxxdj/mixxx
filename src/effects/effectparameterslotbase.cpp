@@ -7,8 +7,10 @@
 #include "control/controlpushbutton.h"
 
 EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
-                                                 const unsigned int iParameterSlotNumber)
+                                                 const unsigned int iParameterSlotNumber,
+                                                 const EffectManifestParameter::ParameterType parameterType)
         : m_iParameterSlotNumber(iParameterSlotNumber),
+          m_parameterType(parameterType),
           m_group(group),
           m_pEffectParameter(nullptr),
           m_pManifestParameter(nullptr),

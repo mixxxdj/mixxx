@@ -20,10 +20,11 @@ class EffectSlot;
 class EffectParameterSlotBase : public QObject {
     Q_OBJECT
   public:
-    EffectParameterSlotBase(const QString& group, const unsigned int iParameterSlotNumber);
+    EffectParameterSlotBase(const QString& group, const unsigned int iParameterSlotNumber,
+            const EffectManifestParameter::ParameterType parameterType);
+
     virtual ~EffectParameterSlotBase();
 
-    // Load the parameter of the given effect into this EffectButtonParameterSlot
     virtual void loadParameter(EffectParameter* pEffectParameter) = 0;
 
     // Clear the currently loaded effect

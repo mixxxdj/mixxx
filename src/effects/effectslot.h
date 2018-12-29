@@ -87,8 +87,6 @@ class EffectSlot : public QObject {
             const QSet<ChannelHandleAndGroup>& activeInputChannels);
     void removeFromEngine();
 
-    double getMetaknobDefault();
-
     void hideEffectParameter(const unsigned int parameterId);
     void setEffectParameterPosition(const unsigned int parameterId,
             const unsigned int position);
@@ -114,7 +112,6 @@ class EffectSlot : public QObject {
     }
 
     void loadParameters();
-    void sendParameterUpdate();
     void unloadEffect();
 
     const unsigned int m_iEffectNumber;
@@ -123,9 +120,9 @@ class EffectSlot : public QObject {
     UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
     EffectManifestPointer m_pManifest;
+    EngineEffectChain* m_pEngineEffectChain;
     EngineEffect* m_pEngineEffect;
     QList<EffectParameter*> m_parameters;
-    EngineEffectChain* m_pEngineEffectChain;
     QList<EffectParameterSlotBasePointer> m_parameterSlots;
     QHash<EffectManifestParameter::ParameterType, QList<int>> m_parameterSlotPositionToManifestIndex;
 

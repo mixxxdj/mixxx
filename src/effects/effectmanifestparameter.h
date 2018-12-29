@@ -103,7 +103,7 @@ class EffectManifestParameter {
               m_showInParametertSlot(true) {
     }
 
-    virtual ~EffectManifestParameter() {
+    ~EffectManifestParameter() {
         //qDebug() << debugString() << "destroyed";
     }
 
@@ -111,31 +111,31 @@ class EffectManifestParameter {
     // Parameter Information
     ////////////////////////////////////////////////////////////////////////////////
 
-    virtual const QString& id() const {
+    const QString& id() const {
         return m_id;
     }
-    virtual void setId(const QString& id) {
+    void setId(const QString& id) {
         m_id = id;
     }
 
-    virtual const QString& name() const {
+    const QString& name() const {
         return m_name;
     }
-    virtual void setName(const QString& name) {
+    void setName(const QString& name) {
         m_name = name;
     }
 
-    virtual const QString& shortName() const {
+    const QString& shortName() const {
         return m_shortName;
     }
-    virtual void setShortName(const QString& shortName) {
+    void setShortName(const QString& shortName) {
         m_shortName = shortName;
     }
 
-    virtual const QString& description() const {
+    const QString& description() const {
         return m_description;
     }
-    virtual void setDescription(const QString& description) {
+    void setDescription(const QString& description) {
         m_description = description;
     }
 
@@ -143,18 +143,18 @@ class EffectManifestParameter {
     // Usage hints
     ////////////////////////////////////////////////////////////////////////////////
 
-    virtual const ParameterType& parameterType() const {
+    const ParameterType& parameterType() const {
         return m_parameterType;
     }
 
-    virtual void setParameterType(const ParameterType parameterType) {
+    void setParameterType(const ParameterType parameterType) {
         m_parameterType = parameterType;
     }
 
-    virtual ValueScaler valueScaler() const {
+    ValueScaler valueScaler() const {
         return m_valueScaler;
     }
-    virtual void setValueScaler(ValueScaler valueScaler) {
+    void setValueScaler(ValueScaler valueScaler) {
         m_valueScaler = valueScaler;
         if (valueScaler == ValueScaler::TOGGLE) {
             setParameterType(ParameterType::BUTTON);
@@ -163,31 +163,31 @@ class EffectManifestParameter {
         }
     }
 
-    virtual SemanticHint semanticHint() const {
+    SemanticHint semanticHint() const {
         return m_semanticHint;
     }
-    virtual void setSemanticHint(SemanticHint semanticHint) {
+    void setSemanticHint(SemanticHint semanticHint) {
         m_semanticHint = semanticHint;
     }
 
-    virtual UnitsHint unitsHint() const {
+    UnitsHint unitsHint() const {
         return m_unitsHint;
     }
-    virtual void setUnitsHint(UnitsHint unitsHint) {
+    void setUnitsHint(UnitsHint unitsHint) {
         m_unitsHint = unitsHint;
     }
 
-    virtual LinkType defaultLinkType() const {
+    LinkType defaultLinkType() const {
         return m_defaultLinkType;
     }
-    virtual void setDefaultLinkType(const LinkType linkType) {
+    void setDefaultLinkType(const LinkType linkType) {
         m_defaultLinkType = linkType;
     }
 
-    virtual LinkInversion defaultLinkInversion() const {
+    LinkInversion defaultLinkInversion() const {
         return m_defaultLinkInversion;
     }
-    virtual void setDefaultLinkInversion(const LinkInversion linkInversion) {
+    void setDefaultLinkInversion(const LinkInversion linkInversion) {
         m_defaultLinkInversion = linkInversion;
     }
 
@@ -200,10 +200,10 @@ class EffectManifestParameter {
     // A EQ Gain has usually a neutral point of 0.5 (0 dB) while a delay knob
     // has a neutral point of 0.0 (no delay)
     // A EQ Gain knob cannot be used on a split meta knob.
-    virtual double neutralPointOnScale() const {
+    double neutralPointOnScale() const {
         return m_neutralPointOnScale;
     }
-    virtual void setNeutralPointOnScale(double neutralPoint) {
+    void setNeutralPointOnScale(double neutralPoint) {
         m_neutralPointOnScale = neutralPoint;
     }
 
@@ -212,10 +212,10 @@ class EffectManifestParameter {
     // the effective parameter which is loaded onto the slot.
     // This is required because we have only 8 parameter slots, but
     // LV2 or VST effects can have more then 8.
-    virtual bool showInParameterSlot() const {
+    bool showInParameterSlot() const {
         return m_showInParametertSlot;
     }
-    virtual void setShowInParameterSlot(double show) {
+    void setShowInParameterSlot(double show) {
         m_showInParametertSlot = show;
     }
 
@@ -223,19 +223,19 @@ class EffectManifestParameter {
     // Value Settings
     ////////////////////////////////////////////////////////////////////////////////
 
-    virtual const double& getDefault() const {
+    const double& getDefault() const {
         return m_default;
     }
 
-    virtual const double& getMinimum() const {
+    const double& getMinimum() const {
         return m_minimum;
     }
 
-    virtual const double& getMaximum() const {
+    const double& getMaximum() const {
         return m_maximum;
     }
 
-    virtual void setRange(const double& minimum, const double& defaultValue, const double& maximum) {
+    void setRange(const double& minimum, const double& defaultValue, const double& maximum) {
         VERIFY_OR_DEBUG_ASSERT(minimum <= defaultValue && defaultValue <= maximum) {
             qWarning() << "Invalid Parameter Range: " << minimum << ' ' << defaultValue << ' ' << maximum;
             return;
@@ -245,10 +245,10 @@ class EffectManifestParameter {
         m_maximum = maximum;
     }
 
-    virtual void appendStep(const QPair<QString, double>& step) {
+    void appendStep(const QPair<QString, double>& step) {
         m_steps.append(step);
     }
-    virtual const QList<QPair<QString, double> >& getSteps() const {
+    const QList<QPair<QString, double> >& getSteps() const {
         return m_steps;
     }
 
