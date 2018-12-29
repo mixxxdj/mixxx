@@ -124,7 +124,7 @@ class EffectSlot : public QObject {
     EngineEffect* m_pEngineEffect;
     QList<EffectParameter*> m_parameters;
     QList<EffectParameterSlotBasePointer> m_parameterSlots;
-    QHash<EffectManifestParameter::ParameterType, QList<int>> m_parameterSlotPositionToManifestIndex;
+    QHash<EffectManifestParameter::ParameterType, QList<int>> m_mapForParameterType;
 
     ControlObject* m_pControlLoaded;
     QHash<EffectManifestParameter::ParameterType, ControlObject*> m_pControlNumParameters;

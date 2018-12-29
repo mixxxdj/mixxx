@@ -252,7 +252,7 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
         return;
     }
 
-    for (auto& parameterMapping : m_parameterSlotPositionToManifestIndex) {
+    for (auto& parameterMapping : m_mapForParameterType) {
         parameterMapping.clear();
     }
 
@@ -262,7 +262,7 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
                 this, m_pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
 
-        m_parameterSlotPositionToManifestIndex[pManifestParameter->parameterType()].push_back(index);
+        m_mapForParameterType[pManifestParameter->parameterType()].push_back(index);
         ++index;
     }
 
@@ -318,8 +318,8 @@ void EffectSlot::loadParameters() {
 
         unsigned int iParameter = 0;
         unsigned int numParameterSlots = m_iNumParameterSlots[parameterType];
-        for (int i=0 ; i<m_parameterSlotPositionToManifestIndex[parameterType].size() ; ++i) {
-            const int iParameterPosition = m_parameterSlotPositionToManifestIndex[parameterType].value(i, -1);
+        for (int i=0 ; i<m_mapForParameterType[parameterType].size() ; ++i) {
+            const int iParameterPosition = m_mapForParameterType[parameterType].value(i, -1);
 
             auto pParameter = m_parameters.value(iParameterPosition, nullptr);
 
@@ -348,7 +348,7 @@ void EffectSlot::loadParameters() {
 }
 
 void EffectSlot::hideEffectParameter(const unsigned int parameterId) {
-    for (auto& parameterMapping : m_parameterSlotPositionToManifestIndex) {
+    for (auto& parameterMapping : m_mapForParameterType) {
         parameterMapping.removeAll(parameterId);
     }
 
@@ -357,13 +357,13 @@ void EffectSlot::hideEffectParameter(const unsigned int parameterId) {
 
 void EffectSlot::setEffectParameterPosition(const unsigned int parameterId,
         const unsigned int position) {
-    for (auto& parameterMapping : m_parameterSlotPositionToManifestIndex) {
+    for (auto& parameterMapping : m_mapForParameterType) {
         parameterMapping.removeAll(parameterId);
     }
 
     auto pParameter = m_parameters.at(parameterId);
     if (pParameter) {
-        m_parameterSlotPositionToManifestIndex[pParameter->manifest()->parameterType()].insert(position, parameterId);
+        m_mapForParameterType[pParameter->manifest()->parameterType()].insert(position, parameterId);
         loadParameters();
     }
 }
