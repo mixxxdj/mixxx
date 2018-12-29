@@ -268,7 +268,8 @@ void TrackAnalysisScheduler::stop() {
     for (auto& worker: m_workers) {
         worker.stopThread();
     }
-    m_workers.clear();
+    // The worker threads are still running at this point
+    // and m_workers must not be modified!
 }
 
 TrackPointer TrackAnalysisScheduler::loadTrackById(TrackId trackId) {
