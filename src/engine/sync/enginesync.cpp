@@ -96,7 +96,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     //qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
     if (bEnabled) {
         // Already enabled?  Do nothing.
-        if (pSyncable->getSyncMode() > SYNC_NONE) {
+        if (pSyncable->isSynchronized()) {
             return;
         }
         bool foundPlayingDeck = false;
@@ -170,7 +170,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
         }
     } else {
         // Already disabled?  Do nothing.
-        if (pSyncable->getSyncMode() <= SYNC_NONE) {
+        if (!pSyncable->isSynchronized()) {
             return;
         }
         deactivateSync(pSyncable);
@@ -182,7 +182,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     Q_UNUSED(playing);
     //qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
     // For now we don't care if the deck is now playing or stopping.
-    if (pSyncable->getSyncMode() <= SYNC_NONE) {
+    if (!pSyncable->isSynchronized()) {
         return;
     }
 
@@ -196,7 +196,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
         int playing_nonsync_decks = 0;
         foreach (Syncable* pOtherSyncable, m_syncables) {
             if (pOtherSyncable->isPlaying()) {
-                if (pOtherSyncable->getSyncMode() > SYNC_NONE) {
+                if (pOtherSyncable->isSynchronized()) {
                     uniqueSyncEnabled = pOtherSyncable;
                     ++playing_sync_decks;
                 } else {
@@ -231,7 +231,7 @@ void EngineSync::notifyTrackLoaded(Syncable* pSyncable, double suggested_bpm) {
         if (pOtherSyncable == pSyncable) {
             continue;
         }
-        if (pOtherSyncable->getSyncMode() > SYNC_NONE && pOtherSyncable->getBpm() != 0) {
+        if (pOtherSyncable->isSynchronized() && pOtherSyncable->getBpm() != 0) {
             sync_deck_exists = true;
             break;
         }
@@ -394,13 +394,14 @@ EngineChannel* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const
 bool EngineSync::otherSyncedPlaying(const QString& group) {
     bool othersInSync = false;
     for (Syncable* theSyncable : m_syncables) {
+        bool isSynchonized = theSyncable->isSynchronized();
         if (theSyncable->getGroup() == group) {
-            if (theSyncable->getSyncMode() <= SYNC_NONE) {
+            if (!isSynchonized) {
                 return false;
             }
             continue;
         }
-        if (theSyncable->isPlaying() && (theSyncable->getSyncMode() > SYNC_NONE)) {
+        if (theSyncable->isPlaying() && (isSynchonized)) {
             othersInSync = true;
         }
     }

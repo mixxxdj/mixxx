@@ -227,7 +227,7 @@ void SyncControl::setMasterBaseBpm(double bpm) {
 void SyncControl::setMasterBpm(double bpm) {
     //qDebug() << "SyncControl::setMasterBpm" << getGroup() << bpm;
 
-    if (getSyncMode() == SYNC_NONE) {
+    if (!isSynchronized()) {
         qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
         return;
     }
@@ -324,7 +324,7 @@ void SyncControl::trackLoaded(TrackPointer pNewTrack) {
     }
     if (pNewTrack) {
         m_masterBpmAdjustFactor = kBpmUnity;
-        if (getSyncMode() != SYNC_NONE) {
+        if (isSynchronized()) {
             // Because of the order signals get processed, the file/local_bpm COs and
             // rate slider are not updated as soon as we need them, so do that now.
             m_pFileBpm->set(pNewTrack->getBpm());
@@ -351,7 +351,7 @@ void SyncControl::slotVinylControlChanged(double enabled) {
 }
 
 void SyncControl::slotPassthroughChanged(double enabled) {
-    if (enabled && getSyncMode() != SYNC_NONE) {
+    if (enabled && isSynchronized()) {
         // If passthrough was enabled and sync was on, disable it.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
@@ -458,7 +458,7 @@ void SyncControl::slotRateChanged() {
     const double rateRatio = calcRateRatio();
     double bpm = m_pLocalBpm ? m_pLocalBpm->get() * rateRatio : 0.0;
     //qDebug() << getGroup() << "SyncControl::slotRateChanged" << rate << bpm;
-    if (bpm > 0 && getSyncMode() != SYNC_NONE) {
+    if (bpm > 0 && isSynchronized()) {
         // When reporting our bpm, remove the multiplier so the masters all
         // think the followers have the same bpm.
         m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);

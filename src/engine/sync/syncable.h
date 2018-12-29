@@ -43,6 +43,10 @@ class Syncable {
     // notifySyncModeChanged.
     virtual SyncMode getSyncMode() const = 0;
 
+    inline bool isSynchronized() const {
+        return getSyncMode() > SYNC_NONE;
+    }
+
     // Only relevant for player Syncables.
     virtual bool isPlaying() const = 0;
 

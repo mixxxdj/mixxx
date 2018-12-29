@@ -584,8 +584,11 @@ double BpmControl::getNearestPositionInPhase(
     if (!pBeats) {
         return dThisPosition;
     }
+
+    SyncMode syncMode = getSyncMode();
+
     // Master buffer is always in sync!
-    if (getSyncMode() == SYNC_MASTER) {
+    if (syncMode == SYNC_MASTER) {
         return dThisPosition;
     }
 
@@ -611,7 +614,7 @@ double BpmControl::getNearestPositionInPhase(
     }
 
     double dOtherBeatFraction;
-    if (getSyncMode() == SYNC_FOLLOWER) {
+    if (syncMode == SYNC_FOLLOWER) {
         // If we're a follower, it's easy to get the other beat fraction
         dOtherBeatFraction = m_dSyncTargetBeatDistance.getValue();
     } else {
