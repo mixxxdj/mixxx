@@ -43,7 +43,7 @@ EffectKnobParameterSlot::EffectKnobParameterSlot(const QString& group, const uns
     connect(m_pControlLinkInverse, SIGNAL(valueChanged(double)),
             this, SLOT(slotLinkInverseChanged(double)));
 
-    m_pSoftTakeover = new SoftTakeover();
+    m_pMetaknobSoftTakeover = new SoftTakeover();
 
     clear();
 }
@@ -54,7 +54,7 @@ EffectKnobParameterSlot::~EffectKnobParameterSlot() {
     // m_pControlLoaded and m_pControlType are deleted by ~EffectParameterSlotBase
     delete m_pControlLinkType;
     delete m_pControlLinkInverse;
-    delete m_pSoftTakeover;
+    delete m_pMetaknobSoftTakeover;
 }
 
 void EffectKnobParameterSlot::loadParameter(EffectParameter* pEffectParameter) {
@@ -78,11 +78,6 @@ void EffectKnobParameterSlot::loadParameter(EffectParameter* pEffectParameter) {
         double dMaximum = m_pManifestParameter->getMaximum();
         double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
         double dDefault = m_pManifestParameter->getDefault();
-
-        if (dValue > dMaximum || dValue < dMinimum ||
-            dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
-            qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
-        }
 
         // qDebug() << debugString()
         //          << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
@@ -123,7 +118,7 @@ void EffectKnobParameterSlot::clear() {
     m_pControlType->forceSet(0.0);
     m_pControlLinkType->setAndConfirm(
         static_cast<double>(EffectManifestParameter::LinkType::NONE));
-    m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
+    m_pMetaknobSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     m_pControlLinkInverse->set(0.0);
     emit(updated());
 }
@@ -134,7 +129,7 @@ void EffectKnobParameterSlot::slotParameterValueChanged(double value) {
 }
 
 void EffectKnobParameterSlot::slotLinkTypeChanging(double v) {
-    m_pSoftTakeover->ignoreNext();
+    m_pMetaknobSoftTakeover->ignoreNext();
     EffectManifestParameter::LinkType newType =
         static_cast<EffectManifestParameter::LinkType>(
             static_cast<int>(v));
@@ -152,17 +147,17 @@ void EffectKnobParameterSlot::slotLinkTypeChanging(double v) {
     }
     if (newType == EffectManifestParameter::LinkType::LINKED_LEFT ||
         newType == EffectManifestParameter::LinkType::LINKED_RIGHT) {
-        m_pSoftTakeover->setThreshold(
+        m_pMetaknobSoftTakeover->setThreshold(
                 SoftTakeover::kDefaultTakeoverThreshold * 2.0);
     } else {
-        m_pSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
+        m_pMetaknobSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     }
     m_pControlLinkType->setAndConfirm(static_cast<double>(newType));
 }
 
 void EffectKnobParameterSlot::slotLinkInverseChanged(double v) {
     Q_UNUSED(v);
-    m_pSoftTakeover->ignoreNext();
+    m_pMetaknobSoftTakeover->ignoreNext();
 }
 
 void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, bool force) {
@@ -244,8 +239,8 @@ void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, boo
         if (force) {
             m_pControlValue->setParameterFrom(parameter, NULL);
             // This ensures that softtakover is in sync for following updates
-            m_pSoftTakeover->ignore(m_pControlValue, parameter);
-        } else if (!m_pSoftTakeover->ignore(m_pControlValue, parameter)) {
+            m_pMetaknobSoftTakeover->ignore(m_pControlValue, parameter);
+        } else if (!m_pMetaknobSoftTakeover->ignore(m_pControlValue, parameter)) {
             m_pControlValue->setParameterFrom(parameter, NULL);
         }
     }
@@ -253,7 +248,7 @@ void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, boo
 
 void EffectKnobParameterSlot::syncSofttakeover() {
     double parameter = m_pControlValue->getParameter();
-    m_pSoftTakeover->ignore(m_pControlValue, parameter);
+    m_pMetaknobSoftTakeover->ignore(m_pControlValue, parameter);
 }
 
 double EffectKnobParameterSlot::getValueParameter() const {

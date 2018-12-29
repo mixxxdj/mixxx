@@ -65,11 +65,6 @@ void EffectButtonParameterSlot::loadParameter(EffectParameter* pEffectParameter)
         double dMaximumLimit = dMaximum; // TODO(rryan) expose limit from EffectParameter
         double dDefault = m_pManifestParameter->getDefault();
 
-        if (dValue > dMaximum || dValue < dMinimum ||
-            dMinimum < dMinimumLimit || dMaximum > dMaximumLimit) {
-            qWarning() << debugString() << "WARNING: EffectParameter does not satisfy basic sanity checks.";
-        }
-
         // qDebug() << debugString()
         //         << QString("Val: %1 Min: %2 MinLimit: %3 Max: %4 MaxLimit: %5 Default: %6")
         //         .arg(dValue).arg(dMinimum).arg(dMinimumLimit).arg(dMaximum).arg(dMaximumLimit).arg(dDefault);

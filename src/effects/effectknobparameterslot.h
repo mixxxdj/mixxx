@@ -57,7 +57,7 @@ class EffectKnobParameterSlot : public EffectParameterSlotBase {
         return QString("EffectKnobParameterSlot(%1,%2)").arg(m_group).arg(m_iParameterSlotNumber);
     }
 
-    SoftTakeover* m_pSoftTakeover;
+    SoftTakeover* m_pMetaknobSoftTakeover;
 
     // Control exposed to the rest of Mixxx
     ControlEffectKnob* m_pControlValue;
