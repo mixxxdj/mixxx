@@ -42,11 +42,13 @@ void DlgCoverArtFullSize::init(TrackPointer pTrack) {
     if (pTrack == nullptr) {
         return;
     }
-    slotLoadTrack(pTrack);
-
     show();
     raise();
     activateWindow();
+
+    // This must be called after show() to set the window title. Refer to the
+    // comment in slotLoadTrack for details.
+    slotLoadTrack(pTrack);
 }
 
 void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
@@ -56,34 +58,45 @@ void DlgCoverArtFullSize::slotLoadTrack(TrackPointer pTrack) {
     }
     m_pLoadedTrack = pTrack;
     if (m_pLoadedTrack != nullptr) {
-        QString windowTitle;
-        const QString albumArtist = m_pLoadedTrack->getAlbumArtist();
-        const QString artist = m_pLoadedTrack->getArtist();
-        const QString album = m_pLoadedTrack->getAlbum();
-        const QString year = m_pLoadedTrack->getYear();
-        if (!albumArtist.isEmpty()) {
-            windowTitle = albumArtist;
-        } else if (!artist.isEmpty()) {
-            windowTitle += artist;
-        }
-        if (!album.isEmpty()) {
-            if (!windowTitle.isEmpty()) {
-                windowTitle += " - ";
-            }
-            windowTitle += album;
-        }
-        if (!year.isEmpty()) {
-            if (!windowTitle.isEmpty()) {
-                windowTitle += " ";
-            }
-            windowTitle += QString("(%1)").arg(year);
-        }
-        setWindowTitle(windowTitle);
-
         connect(m_pLoadedTrack.get(), SIGNAL(coverArtUpdated()),
                 this, SLOT(slotTrackCoverArtUpdated()));
-    }
 
+        // Somehow setting the widow title triggered a bug in Xlib that resulted
+        // in a deadlock before the check for isVisible() was added.
+        // Unfortunately the original bug was difficult to reproduce, so I am
+        // not sure if checking isVisible() before setting the window title
+        // actually works around the Xlib bug or merely makes it much less
+        // likely to be triggered. Before the isVisible() check was added,
+        // the window title was getting set on DlgCoverArtFullSize instances
+        // that had never been shown whenever a track was loaded.
+        // https://bugs.launchpad.net/mixxx/+bug/1789059
+        // https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25#note_50985
+        if (isVisible()) {
+            QString windowTitle;
+            const QString albumArtist = m_pLoadedTrack->getAlbumArtist();
+            const QString artist = m_pLoadedTrack->getArtist();
+            const QString album = m_pLoadedTrack->getAlbum();
+            const QString year = m_pLoadedTrack->getYear();
+            if (!albumArtist.isEmpty()) {
+                windowTitle = albumArtist;
+            } else if (!artist.isEmpty()) {
+                windowTitle += artist;
+            }
+            if (!album.isEmpty()) {
+                if (!windowTitle.isEmpty()) {
+                    windowTitle += " - ";
+                }
+                windowTitle += album;
+            }
+            if (!year.isEmpty()) {
+                if (!windowTitle.isEmpty()) {
+                    windowTitle += " ";
+                }
+                windowTitle += QString("(%1)").arg(year);
+            }
+            setWindowTitle(windowTitle);
+        }
+    }
     slotTrackCoverArtUpdated();
 }
 

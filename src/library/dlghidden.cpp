@@ -69,6 +69,10 @@ void DlgHidden::onSearch(const QString& text) {
     m_pHiddenTableModel->search(text);
 }
 
+QString DlgHidden::currentSearch() {
+    return m_pHiddenTableModel->currentSearch();
+}
+
 void DlgHidden::clicked() {
     // all marked tracks are gone now anyway
     onShow();

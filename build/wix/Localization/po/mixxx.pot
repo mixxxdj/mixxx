@@ -29,7 +29,7 @@ msgstr ""
 #.  Error messages 
 #.  DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE 
 msgctxt "OS2Old"
-msgid "This product requires Windows XP or above."
+msgid "This product requires Windows 7 or above."
 msgstr ""
 
 msgctxt "NewerInstalled"
@@ -45,10 +45,7 @@ msgid "You need to install the 32-bit version of this product on 32-bit Windows.
 msgstr ""
 
 msgctxt "x86VersionWarning"
-msgid ""
-"You are about to install the 32-bit version on a 64-bit operating system.\r\n"
-"We recommend using the 64-bit version for better performance.\r\n"
-"You can download the 64-bit installation package from http://mixxx.org/download/"
+msgid "You are about to install the 32-bit version on a 64-bit operating system. We recommend using the 64-bit version for better performance. You can download the 64-bit installation package from http://mixxx.org/download/"
 msgstr ""
 
 msgctxt "XPWarning"

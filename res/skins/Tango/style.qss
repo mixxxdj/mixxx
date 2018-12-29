@@ -632,6 +632,9 @@ WWidgetGroup {
   #VinylCueModeButton,
   #PassthroughButton {
     }
+  #PassthroughButton {
+    margin: 0px 0px 1px 1px;
+    }
   #VinylControlButton[displayValue="0"],
   #VinylModeButton,
   #VinylCueModeButton,
@@ -652,9 +655,9 @@ WWidgetGroup {
   #VinylControlButton[displayValue="1"] {
     color: #eeeeee;
     font-weight: bold;
-    }
+    } /*
   #VinylModeButton[displayValue="1"],
-  #VinylModeButton[displayValue="2"],
+  #VinylModeButton[displayValue="2"], */
   #VinylControlStatus[displayValue="0"] {
     background-color: #666;
     }
@@ -950,6 +953,10 @@ WWidgetGroup {
  #######  Loop Controls  ########################################
 ##############################################################*/
 
+#LoopBeatJumpContainer {
+  background-color: #1e1e1e;
+}
+
 #LoopBeatJumpButton,
 #LoopSizeButton {
   font-weight: bold;
@@ -1028,9 +1035,6 @@ WBeatSpinBox,
     Individual padding/margin in AutoDJ feature */
     padding: -1px 3px -1px 3px;
     margin: 0px 17px 3px 7px;
-  }
-  #DlgAutoDJ QLabel {
-    margin: 0px 0px 3px 2px;
   }
   WBeatSpinBox:hover,
   #DlgAutoDJ QSpinBox:hover {
@@ -2205,15 +2209,18 @@ QHeaderView {
       }
 
 /* Scroll bars */
+QScrollBar {
+  padding: 1px;
+}
 QScrollBar:horizontal {
   min-width: 12px;
-  height: 8px;
+  height: 10px;
   background: #000;
   border-radius: 2px;
   }
   QScrollBar:vertical {
     min-height: 12px;
-    width: 8px;
+    width: 10px;
     background: #000;
     border-radius: 2px;
     }
@@ -2222,7 +2229,7 @@ QScrollBar:horizontal {
   QScrollBar::sub-page {
     min-width: 15px;
     min-height: 15px;
-    background-color: #0f0f0f;
+    background-color: #000;
     }
   QScrollBar::handle:horizontal {
     min-width: 25px;
@@ -2250,6 +2257,11 @@ QScrollBar:horizontal {
   QScrollBar::sub-line:vertical {
     width: 0px;
     height: 0px;
+  }
+  /* Corner in between two scrollbars */
+  QAbstractScrollArea::corner {
+    background-color: #0f0f0f;
+    border: 0px;
   }
 
 /* Pushbuttons, a lot of them...
@@ -2295,7 +2307,8 @@ WLibrary QPushButton {
   height: 22px;	*/
   color: #ccc;
   border-radius: 2px;
-  margin: 1px 2px 5px 1px;
+  border: 1px solid #333;
+  margin: 1px 2px 4px 1px;
   padding: 3px 6px 3px 6px;
   background-color: #333;
   background-position: center;
@@ -2312,23 +2325,39 @@ WLibrary QPushButton {
     }
   WLibrary QPushButton:checked {
     color: #000;
-    font-weight: bold;
     background-color: #ff7b00;
     }
   WLibrary QPushButton:checked:hover {
     border: 1px solid #ff3f00;
     }
-  /* 'Enable AutoDJ' button	*/
+  /* make library action buttons bold */
+  QPushButton#pushButtonAutoDJ,
+  QPushButton#pushButtonRecording,
+  QPushButton#pushButtonAnalyze,
+  QPushButton#btnPurge,
+  QPushButton#btnUnhide {
+    font-weight: bold;
+  }
+
+  /* Colored highlight for action buttons:
+  - Purge
+  - Unhide buttons
+  - Enable AutoDJ
+  - Analyze	*/
+  QPushButton#btnPurge:hover,
+  QPushButton#btnUnhide:hover,
   QPushButton#pushButtonAutoDJ:hover,
-  QPushButton#pushButtonRecording:hover,
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #ff6600;
   }
-  /* Push 'Start/Stop Recording' button and
-    'Enable AutoDJ' button away from skin border	*/
+  
+  /* Increased margin for action buttons */
   QPushButton#pushButtonAutoDJ,
   QPushButton#pushButtonRecording {
-    margin: 1px 9px 5px 1px;
+    margin: 1px 5px 4px 1px;
+  }
+  QPushButton#btnPurge {
+    margin: 1px 1px 4px 5px;
   }
   QPushButton#pushButtonRecording:unchecked {
     color: #888;
@@ -2338,9 +2367,22 @@ WLibrary QPushButton {
   QPushButton#pushButtonRecording:unchecked:hover,
   QPushButton#pushButtonRecording:checked {
     color: #dddddd;
-    font-weight: bold;
     background-color: #a90000;
     border: 1px solid #ca0000;
+  }
+
+  /* align/center AutoDJ transition label vertically with spinbox */
+  QLabel#labelTransitionAppendix {
+    margin: 0px 0px 5px 2px;
+  }
+  /* Push labels away from buttons at the right */
+  /* AutoDJ selction info */
+  QLabel#labelSelectionInfo,
+  /* Recording info */
+  #DlgRecording QLabel,
+  /* Analysis progress info */
+  QLabel#labelProgress {
+    margin: 0px 4px 5px 2px;
   }
 
   /* Entire BPM cell */

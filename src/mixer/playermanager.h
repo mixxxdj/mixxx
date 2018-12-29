@@ -64,6 +64,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager
+    // (currently unused, keept for consistency with other types)
     void addDeck();
 
     // Add number of decks according to configuration.
@@ -87,7 +88,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Return the number of players. Thread-safe.
     static unsigned int numDecks();
 
-    unsigned int numberOfDecks() const {
+    unsigned int numberOfDecks() const override {
         return numDecks();
     }
 
@@ -106,28 +107,28 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Return the number of samplers. Thread-safe.
     static unsigned int numSamplers();
 
-    unsigned int numberOfSamplers() const {
+    unsigned int numberOfSamplers() const override {
         return numSamplers();
     }
 
     // Return the number of preview decks. Thread-safe.
     static unsigned int numPreviewDecks();
 
-    unsigned int numberOfPreviewDecks() const {
+    unsigned int numberOfPreviewDecks() const override {
         return numPreviewDecks();
     }
 
     // Get a BaseTrackPlayer (i.e. a Deck, Sampler or PreviewDeck) by its
     // group. Auxiliaries and microphones are not players.
-    BaseTrackPlayer* getPlayer(QString group) const;
+    BaseTrackPlayer* getPlayer(QString group) const override;
 
     // Get the deck by its deck number. Decks are numbered starting with 1.
-    Deck* getDeck(unsigned int player) const;
+    Deck* getDeck(unsigned int player) const override;
 
-    PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const;
+    PreviewDeck* getPreviewDeck(unsigned int libPreviewPlayer) const override;
 
     // Get the sampler by its number. Samplers are numbered starting with 1.
-    Sampler* getSampler(unsigned int sampler) const;
+    Sampler* getSampler(unsigned int sampler) const override;
 
     // Get the microphone by its number. Microphones are numbered starting with 1.
     Microphone* getMicrophone(unsigned int microphone) const;
@@ -192,11 +193,11 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Loads the location to the sampler. samplerNumber is 1-indexed
     void slotLoadToSampler(QString location, int samplerNumber);
 
-    void slotNumDecksControlChanged(double v);
-    void slotNumSamplersControlChanged(double v);
-    void slotNumPreviewDecksControlChanged(double v);
-    void slotNumMicrophonesControlChanged(double v);
-    void slotNumAuxiliariesControlChanged(double v);
+    void slotChangeNumDecks(double v);
+    void slotChangeNumSamplers(double v);
+    void slotChangeNumPreviewDecks(double v);
+    void slotChangeNumMicrophones(double v);
+    void slotChangeNumAuxiliaries(double v);
 
   signals:
     void loadLocationToPlayer(QString location, QString group);

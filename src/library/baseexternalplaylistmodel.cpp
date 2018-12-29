@@ -65,6 +65,15 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
     return pTrack;
 }
 
+TrackId BaseExternalPlaylistModel::getTrackId(const QModelIndex& index) const {
+    const auto track = getTrack(index);
+    if (track) {
+        return track->getId();
+    } else {
+        return TrackId();
+    }
+}
+
 bool BaseExternalPlaylistModel::isColumnInternal(int column) {
     if (column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TRACKID) ||
             (PlayerManager::numPreviewDecks() == 0 &&

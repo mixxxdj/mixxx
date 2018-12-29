@@ -25,6 +25,7 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     void setPlaylist(QString path_name);
 
     TrackPointer getTrack(const QModelIndex& index) const override;
+    TrackId getTrackId(const QModelIndex& index) const override;
     bool isColumnInternal(int column) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     void trackLoaded(QString group, TrackPointer pTrack) override;

@@ -59,13 +59,13 @@ class HSS1394(Feature):
             conf.CheckLib('user32')
 
     def sources(self, build):
-        return ['controllers/midi/hss1394controller.cpp',
-                'controllers/midi/hss1394enumerator.cpp']
+        return ['src/controllers/midi/hss1394controller.cpp',
+                'src/controllers/midi/hss1394enumerator.cpp']
 
 
 class HID(Feature):
     INTERNAL_LINK = False
-    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-rc1'
+    HIDAPI_INTERNAL_PATH = 'lib/hidapi-0.8.0-rc1'
 
     def description(self):
         return "HID controller support"
@@ -116,12 +116,12 @@ class HID(Feature):
         build.env.Append(CPPDEFINES='__HID__')
         if self.INTERNAL_LINK:
             build.env.Append(
-                 CPPPATH=[os.path.join(self.HIDAPI_INTERNAL_PATH, 'hidapi')])
+                 CPPPATH=[os.path.join('#' + self.HIDAPI_INTERNAL_PATH, 'hidapi')])
 
     def sources(self, build):
-        sources = ['controllers/hid/hidcontroller.cpp',
-                   'controllers/hid/hidenumerator.cpp',
-                   'controllers/hid/hidcontrollerpresetfilehandler.cpp']
+        sources = ['src/controllers/hid/hidcontroller.cpp',
+                   'src/controllers/hid/hidenumerator.cpp',
+                   'src/controllers/hid/hidcontrollerpresetfilehandler.cpp']
 
         if self.INTERNAL_LINK:
             if build.platform_is_windows:
@@ -172,8 +172,8 @@ class Bulk(Feature):
         build.env.Append(CPPDEFINES='__BULK__')
 
     def sources(self, build):
-        sources = ['controllers/bulk/bulkcontroller.cpp',
-                   'controllers/bulk/bulkenumerator.cpp']
+        sources = ['src/controllers/bulk/bulkcontroller.cpp',
+                   'src/controllers/bulk/bulkenumerator.cpp']
         if not int(build.flags['hid']):
             sources.append(
                 'controllers/hid/hidcontrollerpresetfilehandler.cpp')
@@ -210,7 +210,7 @@ class Mad(Feature):
         build.env.Append(CPPDEFINES='__MAD__')
 
     def sources(self, build):
-        return ['sources/soundsourcemp3.cpp']
+        return ['src/sources/soundsourcemp3.cpp']
 
 
 class CoreAudio(Feature):
@@ -245,9 +245,9 @@ class CoreAudio(Feature):
         build.env.Append(CPPDEFINES='__COREAUDIO__')
 
     def sources(self, build):
-        return ['sources/soundsourcecoreaudio.cpp',
-                'sources/v1/legacyaudiosourceadapter.cpp',
-                '#lib/apple/CAStreamBasicDescription.cpp']
+        return ['src/sources/soundsourcecoreaudio.cpp',
+                'src/sources/v1/legacyaudiosourceadapter.cpp',
+                'lib/apple/CAStreamBasicDescription.cpp']
 
 
 class MediaFoundation(Feature):
@@ -283,50 +283,7 @@ class MediaFoundation(Feature):
         build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
 
     def sources(self, build):
-        return ['sources/soundsourcemediafoundation.cpp']
-
-
-class IPod(Feature):
-    def description(self):
-        return "NOT-WORKING iPod Support"
-
-    def enabled(self, build):
-        build.flags['ipod'] = util.get_flags(build.env, 'ipod', 0)
-        if int(build.flags['ipod']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('ipod', 'Set to 1 to enable iPod support through libgpod', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-
-        build.env.Append(CPPDEFINES='__IPOD__')
-        if build.platform_is_windows:
-            build.env.Append(LIBS='gpod')
-            # You must check v-this-v directory out from
-            # http://publicsvn.songbirdnest.com/vendor-
-            # binaries/trunk/windows-i686-msvc8/libgpod/
-            build.env.Append(
-                LIBPATH='../../../windows-i686-msvc8/libgpod/release/lib')
-            # Following building the following must be added to the dist folder in order for mixxx to run with ipod support on Windows
-            # \windows-i686-msvc8\libgpod\release\lib\libgpod.dll
-            # \windows-i686-msvc8\glib\release\bin\libgobject-2.0-0.dll
-            # \windows-i686-msvc8\glib\release\bin\libglib-2.0-0.dll
-            # \windows-i686-msvc8\libiconv\release\bin\iconv.dll
-            # \windows-i686-msvc8\gettext\release\binintl.dll
-        if build.platform_is_linux or build.platform_is_osx:
-            # env.Append(LIBS = 'libgpod-1.0')
-            # env.Append(LIBS = 'glib-2.0')
-            build.env.ParseConfig(
-                'pkg-config libgpod-1.0 --silence-errors --cflags --libs')
-            build.env.ParseConfig(
-                'pkg-config glib-2.0 --silence-errors --cflags --libs')
-
-    def sources(self, build):
-        return ['wipodtracksmodel.cpp']
+        return ['src/sources/soundsourcemediafoundation.cpp']
 
 
 class VinylControl(Feature):
@@ -352,30 +309,29 @@ class VinylControl(Feature):
             return
         build.env.Append(CPPDEFINES='__VINYLCONTROL__')
         build.env.Append(CPPPATH='#lib/xwax')
-        build.env.Append(CPPPATH='#lib/scratchlib')
 
     def sources(self, build):
-        sources = ['vinylcontrol/vinylcontrol.cpp',
-                   'vinylcontrol/vinylcontrolxwax.cpp',
-                   'preferences/dialog/dlgprefvinyl.cpp',
-                   'vinylcontrol/vinylcontrolsignalwidget.cpp',
-                   'vinylcontrol/vinylcontrolmanager.cpp',
-                   'vinylcontrol/vinylcontrolprocessor.cpp',
-                   'vinylcontrol/steadypitch.cpp',
-                   'engine/vinylcontrolcontrol.cpp', ]
+        sources = ['src/vinylcontrol/vinylcontrol.cpp',
+                   'src/vinylcontrol/vinylcontrolxwax.cpp',
+                   'src/preferences/dialog/dlgprefvinyl.cpp',
+                   'src/vinylcontrol/vinylcontrolsignalwidget.cpp',
+                   'src/vinylcontrol/vinylcontrolmanager.cpp',
+                   'src/vinylcontrol/vinylcontrolprocessor.cpp',
+                   'src/vinylcontrol/steadypitch.cpp',
+                   'src/engine/vinylcontrolcontrol.cpp', ]
         if build.platform_is_windows:
-            sources.append("#lib/xwax/timecoder_win32.cpp")
-            sources.append("#lib/xwax/lut_win32.cpp")
+            sources.append("lib/xwax/timecoder_win32.cpp")
+            sources.append("lib/xwax/lut_win32.cpp")
         else:
-            sources.append("#lib/xwax/timecoder.c")
-            sources.append("#lib/xwax/lut.c")
+            sources.append("lib/xwax/timecoder.c")
+            sources.append("lib/xwax/lut.c")
 
         return sources
 
 
 class Vamp(Feature):
     INTERNAL_LINK = False
-    INTERNAL_VAMP_PATH = '#lib/vamp'
+    INTERNAL_VAMP_PATH = 'lib/vamp'
 
     def description(self):
         return "Vamp Analyzer support"
@@ -399,15 +355,18 @@ class Vamp(Feature):
         # If there is no system vamp-hostsdk is installed or if the version
         # of the installed vamp-hostsdk is less than the bundled version,
         # then we'll directly link the bundled vamp-hostsdk
-        if not conf.CheckLib('vamp-hostsdk') or not conf.CheckForPKG('vamp-plugin-sdk', '2.7.1'):
-            # For header includes
-            build.env.Append(CPPPATH=[self.INTERNAL_VAMP_PATH])
+        # Note: We're adding vamp-hostsdk to LIBS in sources(), so
+        # don't add it now in order to prevent duplication.
+        if not conf.CheckLib('vamp-hostsdk', autoadd=False) or not conf.CheckForPKG('vamp-plugin-sdk', '2.7.1'):
             self.INTERNAL_LINK = True
+            build.env.Append(CPPPATH=['#' + self.INTERNAL_VAMP_PATH])
 
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
             # Optionally link libdl Required for some distros.
-            conf.CheckLib(['dl', 'libdl'])
+            # Note: We can't add dl to LIBS here because it needs to be added after vamp-hostsdk.
+            # See: https://bugs.launchpad.net/mixxx/+bug/1804411
+            conf.CheckLib(['dl', 'libdl'], autoadd=False)
 
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
@@ -418,26 +377,30 @@ class Vamp(Feature):
                 'pkg-config fftw3 --silence-errors --cflags --libs')
 
     def sources(self, build):
-        sources = ['analyzer/vamp/vampanalyzer.cpp',
-                   'analyzer/vamp/vamppluginadapter.cpp',
-                   'analyzer/analyzerbeats.cpp',
-                   'analyzer/analyzerkey.cpp',
-                   'preferences/dialog/dlgprefbeats.cpp',
-                   'preferences/dialog/dlgprefkey.cpp']
-
         if self.INTERNAL_LINK:
-            hostsdk_src_path = '%s/src/vamp-hostsdk' % self.INTERNAL_VAMP_PATH
-            sources.extend(path % hostsdk_src_path for path in
-                           ['%s/Files.cpp',
-                            '%s/PluginBufferingAdapter.cpp',
-                            '%s/PluginChannelAdapter.cpp',
-                            '%s/PluginHostAdapter.cpp',
-                            '%s/PluginInputDomainAdapter.cpp',
-                            '%s/PluginLoader.cpp',
-                            '%s/PluginSummarisingAdapter.cpp',
-                            '%s/PluginWrapper.cpp',
-                            '%s/RealTime.cpp'])
-        return sources
+            # Clone our main environment so we don't change any settings in the
+            # Mixxx environment.
+            env = build.env.Clone()
+            vamp_dir = env.Dir(self.INTERNAL_VAMP_PATH)
+            SCons.Export('env')
+            SCons.Export('build')
+            env.SConscript(env.File('SConscript', vamp_dir))
+
+            build.env.Append(LIBPATH=self.INTERNAL_VAMP_PATH)
+
+        # Add this here unconditionally because we're not adding it in configure().
+        build.env.Append(LIBS=['vamp-hostsdk'])
+
+        # Ubuntu requires dl to be specified after vamp-hostsdk.
+        if build.platform_is_linux:
+            build.env.Append(LIBS=['dl'])
+
+        return ['src/analyzer/vamp/vampanalyzer.cpp',
+                'src/analyzer/vamp/vamppluginadapter.cpp',
+                'src/analyzer/analyzerbeats.cpp',
+                'src/analyzer/analyzerkey.cpp',
+                'src/preferences/dialog/dlgprefbeats.cpp',
+                'src/preferences/dialog/dlgprefkey.cpp']
 
 
 class ModPlug(Feature):
@@ -470,8 +433,9 @@ class ModPlug(Feature):
             raise Exception('Could not find libmodplug shared library.')
 
     def sources(self, build):
-        depends.Qt.uic(build)('preferences/dialog/dlgprefmodplugdlg.ui')
-        return ['sources/soundsourcemodplug.cpp', 'preferences/dialog/dlgprefmodplug.cpp']
+        depends.Qt.uic(build)('src/preferences/dialog/dlgprefmodplugdlg.ui')
+        return ['src/sources/soundsourcemodplug.cpp',
+                'src/preferences/dialog/dlgprefmodplug.cpp']
 
 
 class FAAD(Feature):
@@ -509,7 +473,7 @@ class FAAD(Feature):
                 'Could not find libfaad or the libfaad development headers.')
 
     def sources(self, build):
-        return ['sources/soundsourcem4a.cpp']
+        return ['src/sources/soundsourcem4a.cpp']
 
 
 class WavPack(Feature):
@@ -536,7 +500,7 @@ class WavPack(Feature):
                 'Could not find libwavpack, libwv or its development headers.')
 
     def sources(self, build):
-        return ['sources/soundsourcewv.cpp']
+        return ['src/sources/soundsourcewv.cpp']
 
 
 class ColorDiagnostics(Feature):
@@ -648,7 +612,7 @@ class AsmLib(Feature):
         if not self.enabled(build):
             return
 
-        build.env.Append(LIBPATH='#/../asmlib')
+        build.env.Append(LIBPATH='lib/asmlib')
         if build.platform_is_linux:
             #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='-fno-builtin')
@@ -775,11 +739,7 @@ class TestSuite(Feature):
             test_env.Append(LINKFLAGS='-pthread')
 
         test_env.Append(CPPPATH="#lib/gtest-1.7.0/include")
-        gtest_dir = test_env.Dir("#lib/gtest-1.7.0")
-        # gtest_dir.addRepository(build.env.Dir('#lib/gtest-1.5.0'))
-        # build.env['EXE_OUTPUT'] = '#/lib/gtest-1.3.0/bin'  # example,
-        # optional
-        test_env['LIB_OUTPUT'] = '#/lib/gtest-1.7.0/lib'
+        gtest_dir = test_env.Dir("lib/gtest-1.7.0")
 
         env = test_env
         SCons.Export('env')
@@ -788,16 +748,12 @@ class TestSuite(Feature):
 
         # build and configure gmock
         test_env.Append(CPPPATH="#lib/gmock-1.7.0/include")
-        gmock_dir = test_env.Dir("#lib/gmock-1.7.0")
-        # gmock_dir.addRepository(build.env.Dir('#lib/gmock-1.5.0'))
-        test_env['LIB_OUTPUT'] = '#/lib/gmock-1.7.0/lib'
-
+        gmock_dir = test_env.Dir("lib/gmock-1.7.0")
         env.SConscript(env.File('SConscript', gmock_dir))
 
         # Build the benchmark library
         test_env.Append(CPPPATH="#lib/benchmark/include")
-        benchmark_dir = test_env.Dir("#lib/benchmark")
-        test_env['LIB_OUTPUT'] = '#/lib/benchmark/lib'
+        benchmark_dir = test_env.Dir("lib/benchmark")
         env.SConscript(env.File('SConscript', benchmark_dir))
 
         return []
@@ -832,10 +788,10 @@ class LiveBroadcasting(Feature):
             conf.CheckLib('gdi32')
 
     def sources(self, build):
-        depends.Qt.uic(build)('preferences/dialog/dlgprefbroadcastdlg.ui')
-        return ['preferences/dialog/dlgprefbroadcast.cpp',
-                'broadcast/broadcastmanager.cpp',
-                'engine/sidechain/shoutconnection.cpp']
+        depends.Qt.uic(build)('src/preferences/dialog/dlgprefbroadcastdlg.ui')
+        return ['src/preferences/dialog/dlgprefbroadcast.cpp',
+                'src/broadcast/broadcastmanager.cpp',
+                'src/engine/sidechain/shoutconnection.cpp']
 
 
 class Opus(Feature):
@@ -878,7 +834,7 @@ class Opus(Feature):
             build.env.ParseConfig('pkg-config opusfile opus --silence-errors --cflags --libs')
 
     def sources(self, build):
-        return ['sources/soundsourceopus.cpp']
+        return ['src/sources/soundsourceopus.cpp']
 
 
 class FFMPEG(Feature):
@@ -965,11 +921,11 @@ class FFMPEG(Feature):
                                                   'include', 'ffmpeg'))
 
     def sources(self, build):
-        return ['sources/soundsourceffmpeg.cpp',
-                'encoder/encoderffmpegresample.cpp',
-                'encoder/encoderffmpegcore.cpp',
-                'encoder/encoderffmpegmp3.cpp',
-                'encoder/encoderffmpegvorbis.cpp']
+        return ['src/sources/soundsourceffmpeg.cpp',
+                'src/encoder/encoderffmpegresample.cpp',
+                'src/encoder/encoderffmpegcore.cpp',
+                'src/encoder/encoderffmpegmp3.cpp',
+                'src/encoder/encoderffmpegvorbis.cpp']
 
 
 class Optimize(Feature):
@@ -1283,10 +1239,10 @@ class Lilv(Feature):
             build.env.Append(CPPDEFINES='__LILV__')
 
     def sources(self, build):
-        return ['effects/lv2/lv2backend.cpp',
-                'effects/lv2/lv2effectprocessor.cpp',
-                'effects/lv2/lv2manifest.cpp',
-                'preferences/dialog/dlgpreflv2.cpp']
+        return ['src/effects/lv2/lv2backend.cpp',
+                'src/effects/lv2/lv2effectprocessor.cpp',
+                'src/effects/lv2/lv2manifest.cpp',
+                'src/preferences/dialog/dlgpreflv2.cpp']
 
 class Battery(Feature):
     def description(self):
@@ -1310,11 +1266,11 @@ class Battery(Feature):
 
     def sources(self, build):
         if build.platform_is_windows:
-            return ["util/battery/batterywindows.cpp"]
+            return ["src/util/battery/batterywindows.cpp"]
         elif build.platform_is_osx:
-            return ["util/battery/batterymac.cpp"]
+            return ["src/util/battery/batterymac.cpp"]
         elif build.platform_is_linux:
-            return ["util/battery/batterylinux.cpp"]
+            return ["src/util/battery/batterylinux.cpp"]
         else:
             raise Exception('Battery support is not implemented for the target platform.')
 

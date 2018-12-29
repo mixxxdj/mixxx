@@ -17,7 +17,7 @@ Variables:
   <SingletonDefinition>
     <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
     <Children>
-      <Template src="skin:deck_overview_right.xml"/>
+      <Template src="skin:deck_row_overview_right.xml"/>
     </Children>
   </SingletonDefinition>
 
@@ -31,7 +31,7 @@ Variables:
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:loop_indicator.xml"/>
-              <Template src="skin:deck_artist_title_right.xml"/>
+              <Template src="skin:deck_row_artist_title_right.xml"/>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
@@ -43,7 +43,7 @@ Variables:
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:loop_indicator.xml"/>
-              <Template src="skin:deck_artist_title_left.xml"/>
+              <Template src="skin:deck_row_artist_title_left.xml"/>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
@@ -98,7 +98,7 @@ Variables:
       <WidgetGroup>
         <Size>3f,1min</Size>
         <Connection>
-          <ConfigKey persist="true">[Master],show_rate_control</ConfigKey>
+          <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
@@ -128,7 +128,7 @@ Variables:
 
             </Children>
             <Connection>
-              <ConfigKey persist="true">[Tango],show_BIG_spinny_cover</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- /Spinny/Cover if BIG spinny is enabled -->
@@ -152,7 +152,14 @@ Variables:
             <SizePolicy>me,i</SizePolicy>
             <Children>
               <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>1me,3f</Size></WidgetGroup>
-              <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,i</SizePolicy>
+                <Children>
+                  <WidgetGroup><ObjectName>RoundFiller25</ObjectName><Size>1me,22me</Size></WidgetGroup>
+                  <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>3f,1me</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup>
             </Children>
           </WidgetGroup>
         </Children>
@@ -184,7 +191,7 @@ Variables:
                 <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
               </SingletonContainer>
 
-              <Template src="skin:deck_comment_right.xml"/>
+              <Template src="skin:deck_row_comment_right.xml"/>
 
               <SingletonContainer>
                 <ObjectName>DeckArtistTitleTime<Variable name="chanNum"/></ObjectName>
@@ -206,7 +213,7 @@ Variables:
                 <ObjectName>DeckArtistTitleTime<Variable name="chanNum"/></ObjectName>
               </SingletonContainer>
 
-              <Template src="skin:deck_comment_right.xml"/>
+              <Template src="skin:deck_row_comment_right.xml"/>
 
               <SingletonContainer>
                 <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
@@ -222,9 +229,12 @@ Variables:
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1min,1f</Size></WidgetGroup>
 
-          <Template src="skin:deck_buttons_right.xml" />
+          <Template src="skin:deck_row_transport_right.xml" />
 
-          <Template src="skin:loop_jump_controls_right.xml"/>
+          <Template src="skin:deck_row_loop_jump.xml">
+            <SetVariable name="SpaceLeft">70</SetVariable>
+            <SetVariable name="SpaceRight">-1</SetVariable>
+          </Template>
 
         </Children>
       </WidgetGroup><!-- / [Overview, Comment, ArtistTitle] + [Loop/Beatjump, DeckButtons] -->

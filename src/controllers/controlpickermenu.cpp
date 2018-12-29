@@ -1062,10 +1062,6 @@ void ControlPickerMenu::addAvailableControl(ConfigKey key,
 }
 
 bool ControlPickerMenu::controlExists(ConfigKey key) const {
-    qDebug() << "LOOKING FOR KEY " << key;
-    foreach(const ConfigKey& key, m_titlesByKey.keys()) {
-        qDebug() << "key: " << key;
-    }
     return m_titlesByKey.contains(key);
 }
 
