@@ -13,9 +13,6 @@
 #include "track/beatutils.h"
 #include "track/track.h"
 
-// Only analyze the first minute in fast-analysis mode.
-static const int kFastAnalysisSecondsToAnalyze = 60;
-
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
     QList<mixxx::AnalyzerPluginInfo> plugins;

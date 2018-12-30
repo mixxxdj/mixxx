@@ -37,7 +37,6 @@ AnalyzerQueenMaryBeats::~AnalyzerQueenMaryBeats() {
 }
 
 bool AnalyzerQueenMaryBeats::initialize(int samplerate) {
-    qDebug() << "AnalyzerQueenMaryBeats::initialize" << samplerate;
     m_detectionResults.clear();
     m_iSampleRate = samplerate;
     m_pDetectionFunction = std::make_unique<DetectionFunction>(
@@ -72,8 +71,6 @@ bool AnalyzerQueenMaryBeats::finalize() {
         --nonZeroCount;
     }
 
-    qDebug() << "AnalyzerQueenMaryBeats::finalize nonZeroCount" << nonZeroCount;
-
     std::vector<double> df;
     std::vector<double> beatPeriod;
     std::vector<double> tempi;
@@ -98,20 +95,12 @@ bool AnalyzerQueenMaryBeats::finalize() {
     std::vector<double> beats;
     tt.calculateBeats(df, beatPeriod, beats);
 
-    qDebug() << "AnalyzerQueenMaryBeats::finalize beats" << beats.size();
-
-    // TODO(rryan) better copy
     m_resultBeats.resize(beats.size());
     double* result = (double*)&m_resultBeats.at(0);
     for (size_t i = 0; i < beats.size(); ++i) {
         result[i] = beats[i] * kStepSize;
-
-        if (i % 10 == 0) {
-            qDebug() << "AQMB::finalize beat" << i << beats[i] << result[i];
-        }
     }
 
-    qDebug() << "AnalyzerQueenMaryBeats::finalize resultBeats" << m_resultBeats.size();
     m_pDetectionFunction.reset();
     return true;
 }
