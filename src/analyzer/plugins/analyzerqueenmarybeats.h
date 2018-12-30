@@ -45,8 +45,7 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
   private:
     std::unique_ptr<DetectionFunction> m_pDetectionFunction;
     DownmixAndOverlapHelper m_helper;
-    size_t m_stepSize = 0;
-    int m_iSampleRate = 0;
+    int m_iSampleRate;
     std::vector<double> m_detectionResults;
     QVector<double> m_resultBeats;
 };

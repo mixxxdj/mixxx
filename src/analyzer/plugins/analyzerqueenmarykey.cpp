@@ -4,6 +4,7 @@
 // definitions interfere with qm-dsp's headers.
 #include "analyzer/plugins/analyzerqueenmarykey.h"
 
+#include "analyzer/constants.h"
 #include "util/math.h"
 
 using mixxx::track::io::key::ChromaticKey;
@@ -12,10 +13,10 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 namespace mixxx {
 namespace {
 // Window length in chroma frames. Default value from VAMP plugin.
-int kChromaWindowLength = 10;
+constexpr int kChromaWindowLength = 10;
 
 // Tuning frequency of concert A in Hertz. Default value from VAMP plugin.
-int kTuningFrequencyHertz = 440;
+constexpr int kTuningFrequencyHertz = 440;
 
 }  // namespace
 
@@ -56,12 +57,14 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
 }
 
 bool AnalyzerQueenMaryKey::process(const CSAMPLE* pIn, const int iLen) {
-    DEBUG_ASSERT(iLen % 2 == 0);
+    DEBUG_ASSERT(iLen == kAnalysisSamplesPerBlock);
+    DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
+
     if (!m_pKeyMode) {
         return false;
     }
 
-    const size_t numInputFrames = iLen / 2;
+    const size_t numInputFrames = iLen / kAnalysisChannels;
     bool result = m_helper.processStereoSamples(pIn, iLen);
 
     m_currentFrame += numInputFrames;

@@ -41,7 +41,7 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
   private:
     std::unique_ptr<GetKeyMode> m_pKeyMode;
     DownmixAndOverlapHelper m_helper;
-    size_t m_currentFrame = 0;
+    size_t m_currentFrame;
     KeyChangeList m_resultKeys;
     mixxx::track::io::key::ChromaticKey m_prevKey;
 };

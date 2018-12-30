@@ -2,12 +2,14 @@
 
 #include <BPMDetect.h>
 
+#include "analyzer/constants.h"
 #include "util/sample.h"
 
 namespace mixxx {
 
 AnalyzerSoundTouchBeats::AnalyzerSoundTouchBeats() :
-        m_downmixBuffer(4096) { // TODO(rryan) get this from somewhere
+        m_downmixBuffer(kAnalysisFramesPerBlock),
+        m_fResultBpm(0.0f) {
 }
 
 AnalyzerSoundTouchBeats::~AnalyzerSoundTouchBeats() { }
@@ -22,8 +24,8 @@ bool AnalyzerSoundTouchBeats::process(const CSAMPLE* pIn, const int iLen) {
     if (!m_pSoundTouch) {
         return false;
     }
-    DEBUG_ASSERT(iLen == 4096 * 2); // TODO(rryan)
-    DEBUG_ASSERT(iLen % 2 == 0);
+    DEBUG_ASSERT(iLen == kAnalysisSamplesPerBlock);
+    DEBUG_ASSERT(iLen % kAnalysisChannels == 0);
     // We analyze a mono mixdown of the signal since we don't think stereo does
     // us any good.
 

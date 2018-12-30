@@ -44,7 +44,7 @@ class AnalyzerSoundTouchBeats : public AnalyzerBeatsPlugin {
   private:
     std::unique_ptr<soundtouch::BPMDetect> m_pSoundTouch;
     SampleBuffer m_downmixBuffer;
-    float m_fResultBpm = 0.0f;
+    float m_fResultBpm;
 };
 
 }  // namespace mixxx
