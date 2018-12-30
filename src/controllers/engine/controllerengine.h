@@ -74,6 +74,13 @@ class ControllerEngine : public QObject {
     ControllerEngine(Controller* controller);
     virtual ~ControllerEngine();
 
+    // The controller engine version is used to check compatibility of presets.
+  #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0) && !defined(Q_OS_LINUX)
+    static const int version = 2;
+  #else
+    static const int version = 1;
+  #endif
+
     // Execute a JS function in the engine
     bool executeFunction(QJSValue functionObject, QJSValueList arguments);
     bool executeFunction(QJSValue functionObject, const QByteArray data);

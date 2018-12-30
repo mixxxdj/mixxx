@@ -78,6 +78,8 @@ void ControllerPresetFileHandler::parsePresetInfo(const QDomElement& root,
         return;
     }
 
+    int iControllerEngineVersion = root.attribute("controllerEngineVersion", 0).toInt();
+    preset->setControllerEngineVersion(iControllerEngineVersion);
     QString mixxxVersion = root.attribute("mixxxVersion", "");
     preset->setMixxxVersion(mixxxVersion);
     QString schemaVersion = root.attribute("schemaVersion", "");
@@ -175,6 +177,7 @@ QDomDocument ControllerPresetFileHandler::buildRootWithScripts(const ControllerP
     QDomElement rootNode = doc.documentElement();
     rootNode.setAttribute("schemaVersion", XML_SCHEMA_VERSION);
     rootNode.setAttribute("mixxxVersion", preset.mixxxVersion());
+    rootNode.setAttribute("controllerEngineVersion", preset.controllerEngineVersion());
 
     QDomElement info = doc.createElement("info");
     rootNode.appendChild(info);

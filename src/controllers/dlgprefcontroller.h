@@ -83,6 +83,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetDescription(const ControllerPresetPointer pPreset) const;
     QString presetForumLink(const ControllerPresetPointer pPreset) const;
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;
+    void setupWarningLabel(ControllerPresetPointer preset);
     void savePreset(QString path);
     void initTableView(QTableView* pTable);
 
@@ -91,6 +92,8 @@ class DlgPrefController : public DlgPreferencePage {
 
     void enableDevice();
     void disableDevice();
+
+    inline bool presetIsSupported(ControllerPresetPointer preset);
 
     Ui::DlgPrefControllerDlg m_ui;
     UserSettingsPointer m_pConfig;
