@@ -376,7 +376,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
 void WaveformRenderMark::setupCueColorsRepresentation(const QDomNode& node, const SkinContext& context) {
     m_pPredefinedColorsRepresentation = Color::makeDefaultRepresentation();
 
-    for (QLatin1String colorName : Color::predefinedColorsNames()) {
+    for (QLatin1String colorName : Color::predefinedColorsNames) {
         QColor representation = context.selectColor(node, "Cue" + colorName);
         if (representation.isValid()) {
             QColor originalColor = Color::predefinedColorFromName(colorName);

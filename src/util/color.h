@@ -29,6 +29,7 @@ class ColorsRepresentation final {
     QHash<QString, QString> colorNameMap;
 };
 
+// These methods and properties are not thread-safe, use them only on the GUI thread
 namespace Color {
     static const QColor Red      = QColor("#E6194B");
     static const QColor Green    = QColor("#3CB44B");
@@ -54,63 +55,58 @@ namespace Color {
     static const QColor Black    = QColor("#000000");
 
     // Return a list with the predefined colors.
-    static QList<QColor> predefinedColors() {
-        return QList<QColor> {
-            Red,
-            Green,
-            Yellow,
-            Blue,
-            Orange,
-            Purple,
-            Cyan,
-            Magenta,
-            Lime,
-            Pink,
-            Teal,
-            Lavender,
-            Brown,
-            Beige,
-            Maroon,
-            Mint,
-            Olive,
-            Apricot,
-            Navy,
-            Grey,
-            White,
-            Black,
-        };
+    static const QList<QColor> predefinedColors {
+        Red,
+        Green,
+        Yellow,
+        Blue,
+        Orange,
+        Purple,
+        Cyan,
+        Magenta,
+        Lime,
+        Pink,
+        Teal,
+        Lavender,
+        Brown,
+        Beige,
+        Maroon,
+        Mint,
+        Olive,
+        Apricot,
+        Navy,
+        Grey,
+        White,
+        Black,
     };
 
     // Return a list with the internal names of the predefined colors.
-    static QList<QLatin1String> predefinedColorsNames() {
-        return QList<QLatin1String> {
-            QLatin1String("Red"),
-            QLatin1String("Green"),
-            QLatin1String("Yellow"),
-            QLatin1String("Blue"),
-            QLatin1String("Orange"),
-            QLatin1String("Purple"),
-            QLatin1String("Cyan"),
-            QLatin1String("Magenta"),
-            QLatin1String("Lime"),
-            QLatin1String("Pink"),
-            QLatin1String("Teal"),
-            QLatin1String("Lavender"),
-            QLatin1String("Brown"),
-            QLatin1String("Beige"),
-            QLatin1String("Maroon"),
-            QLatin1String("Mint"),
-            QLatin1String("Olive"),
-            QLatin1String("Apricot"),
-            QLatin1String("Navy"),
-            QLatin1String("Grey"),
-            QLatin1String("White"),
-            QLatin1String("Black"),
-        };
+    static const QList<QLatin1String> predefinedColorsNames {
+        QLatin1String("Red"),
+        QLatin1String("Green"),
+        QLatin1String("Yellow"),
+        QLatin1String("Blue"),
+        QLatin1String("Orange"),
+        QLatin1String("Purple"),
+        QLatin1String("Cyan"),
+        QLatin1String("Magenta"),
+        QLatin1String("Lime"),
+        QLatin1String("Pink"),
+        QLatin1String("Teal"),
+        QLatin1String("Lavender"),
+        QLatin1String("Brown"),
+        QLatin1String("Beige"),
+        QLatin1String("Maroon"),
+        QLatin1String("Mint"),
+        QLatin1String("Olive"),
+        QLatin1String("Apricot"),
+        QLatin1String("Navy"),
+        QLatin1String("Grey"),
+        QLatin1String("White"),
+        QLatin1String("Black"),
     };
 
     // Return a predefined color code from its internal name.
-    // TODO: use literals here
     static QColor predefinedColorFromName(QLatin1String name) {
         if (name == QLatin1String("Red")) {
             return Red;
@@ -215,7 +211,7 @@ namespace Color {
     // Stores the color's name() property, e.g. "#A9A9A9"
     static std::unique_ptr<ColorsRepresentation> makeDefaultRepresentation() {
         std::unique_ptr<ColorsRepresentation> representation = std::make_unique<ColorsRepresentation>();
-        for (QColor color : predefinedColors()) {
+        for (QColor color : predefinedColors) {
             representation->setRepresentation(color, color);
         }
         return representation;

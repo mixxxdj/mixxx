@@ -337,7 +337,7 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
 
 
         QComboBox* colorComboBox = new QComboBox();
-        QList<QColor> predefinedColors = Color::predefinedColors();
+        const QList<QColor>& predefinedColors = Color::predefinedColors;
         for (int i = 0; i < predefinedColors.count(); i++) {
             QColor color = predefinedColors.at(i);
             colorComboBox->addItem(Color::displayName(color), color);
@@ -430,8 +430,7 @@ void DlgTrackInfo::saveTrack() {
 
         auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
         if (colorComboBox) {
-            QList<QColor> predefinedColors = Color::predefinedColors();
-            QColor color = predefinedColors.at(colorComboBox->currentIndex());
+            QColor color = Color::predefinedColors.at(colorComboBox->currentIndex());
             if (color.isValid()) {
                 pCue->setColor(color);
             }
