@@ -18,7 +18,6 @@ addons:
       - libavformat-dev
       - libchromaprint-dev
       - libfaad-dev
-      - libfftw3-dev
       - libflac-dev
       - libid3tag0-dev
       - libmad0-dev
