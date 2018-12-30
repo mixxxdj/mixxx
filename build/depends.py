@@ -776,7 +776,8 @@ class MixxxCore(Feature):
                    "src/engine/cachingreaderchunk.cpp",
                    "src/engine/cachingreaderworker.cpp",
 
-                   "src/analyzer/analyzerqueue.cpp",
+                   "src/analyzer/trackanalysisscheduler.cpp",
+                   "src/analyzer/analyzerthread.cpp",
                    "src/analyzer/analyzerwaveform.cpp",
                    "src/analyzer/analyzergain.cpp",
                    "src/analyzer/analyzerebur128.cpp",
@@ -986,7 +987,7 @@ class MixxxCore(Feature):
                    "src/library/bpmdelegate.cpp",
                    "src/library/previewbuttondelegate.cpp",
                    "src/library/coverartdelegate.cpp",
-				   "src/library/tableitemdelegate.cpp",
+                   "src/library/tableitemdelegate.cpp",
 
                    "src/library/treeitemmodel.cpp",
                    "src/library/treeitem.cpp",
@@ -1157,6 +1158,8 @@ class MixxxCore(Feature):
                    "src/util/indexrange.cpp",
                    "src/util/desktophelper.cpp",
                    "src/util/widgetrendertimer.cpp",
+                   "src/util/workerthread.cpp",
+                   "src/util/workerthreadscheduler.cpp",
                    ]
 
         proto_args = {
