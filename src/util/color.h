@@ -2,7 +2,6 @@
 #define COLOR_H
 
 #include "util/math.h"
-#include "util/memory.h"
 
 #include <QColor>
 #include <QMap>
@@ -10,23 +9,26 @@
 #define BRIGHTNESS_TRESHOLD 130
 
 // Map the predefined colors to another color representation of them.
+//
+// Since QHash has copy-on-write, making a copy of ColorsRepresentation is fast.
+// A deep copy of the QHash will be made when the copy is modified.
 class ColorsRepresentation final {
   public:
     // Set a color representation for a given color
     void setRepresentation(QColor color, QColor representation) {
-        colorNameMap[color.name()] = representation.name();
+        m_colorNameMap[color.name()] = representation.name();
     }
 
     // Returns the representation of a color
     QColor map(QColor color) const {
-        if (colorNameMap.contains(color.name())) {
-            return QColor(colorNameMap[color.name()]);
+        if (m_colorNameMap.contains(color.name())) {
+            return QColor(m_colorNameMap[color.name()]);
         }
         return color;
     }
 
   private:
-    QHash<QString, QString> colorNameMap;
+    QHash<QString, QString> m_colorNameMap;
 };
 
 // These methods and properties are not thread-safe, use them only on the GUI thread
@@ -207,15 +209,17 @@ namespace Color {
         return QObject::tr("Undefined Color");
     };
 
-    // Returns a new default colors representation, i.e. maps each default color to itself.
+    // The default colors representation, i.e. maps each default color to itself.
     // Stores the color's name() property, e.g. "#A9A9A9"
-    static std::unique_ptr<ColorsRepresentation> makeDefaultRepresentation() {
-        std::unique_ptr<ColorsRepresentation> representation = std::make_unique<ColorsRepresentation>();
+    //
+    // It's fast to copy the default representation. See comment on ColorsRepresentation.
+    static const ColorsRepresentation defaultRepresentation = [](){
+        ColorsRepresentation representation = ColorsRepresentation();
         for (QColor color : predefinedColors) {
-            representation->setRepresentation(color, color);
+            representation.setRepresentation(color, color);
         }
         return representation;
-    }
+    }();
 
 
     // algorithm by http://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx

@@ -270,7 +270,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
 
         if (currentMark && currentMark->isValid()) {
             WaveformMarkProperties markProperties = currentMark->getProperties();
-            const QColor newColor = m_pPredefinedColorsRepresentation->map(currentCue->getColor());
+            const QColor newColor = m_predefinedColorsRepresentation.map(currentCue->getColor());
 
             if (newColor != markProperties.m_color || newColor != markProperties.m_textColor) {
                 markProperties.m_color = newColor;
@@ -639,13 +639,13 @@ void WOverview::dropEvent(QDropEvent* event) {
 }
 
 void WOverview::setupCueColorsRepresentation(const QDomNode& node, const SkinContext& context) {
-    m_pPredefinedColorsRepresentation = Color::makeDefaultRepresentation();
+    m_predefinedColorsRepresentation = Color::defaultRepresentation;
 
     for (QLatin1String colorName : Color::predefinedColorsNames) {
         QColor representation = context.selectColor(node, "Cue" + colorName);
         if (representation.isValid()) {
             QColor originalColor = Color::predefinedColorFromName(colorName);
-            m_pPredefinedColorsRepresentation->setRepresentation(originalColor, representation);
+            m_predefinedColorsRepresentation.setRepresentation(originalColor, representation);
         }
     }
 }

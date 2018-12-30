@@ -110,7 +110,7 @@ void WaveformRenderMark::slotCuesUpdated() {
         }
 
         QString newLabel = pCue->getLabel();
-        QColor newColor = m_pPredefinedColorsRepresentation->map(pCue->getColor());
+        QColor newColor = m_predefinedColorsRepresentation.map(pCue->getColor());
 
         // Here we assume no two cues can have the same hotcue assigned,
         // because WaveformMarkSet stores one mark for each hotcue.
@@ -374,13 +374,13 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
 }
 
 void WaveformRenderMark::setupCueColorsRepresentation(const QDomNode& node, const SkinContext& context) {
-    m_pPredefinedColorsRepresentation = Color::makeDefaultRepresentation();
+    m_predefinedColorsRepresentation = Color::defaultRepresentation;
 
     for (QLatin1String colorName : Color::predefinedColorsNames) {
         QColor representation = context.selectColor(node, "Cue" + colorName);
         if (representation.isValid()) {
             QColor originalColor = Color::predefinedColorFromName(colorName);
-            m_pPredefinedColorsRepresentation->setRepresentation(originalColor, representation);
+            m_predefinedColorsRepresentation.setRepresentation(originalColor, representation);
         }
     }
 }
