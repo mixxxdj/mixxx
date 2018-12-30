@@ -10,7 +10,7 @@
 namespace mixxx {
 namespace {
 // These are the preferred window/step sizes from the BeatTrack VAMP plugin.
-constexpr int kWindowSize = 1024;
+constexpr size_t kWindowSize = 1024;
 constexpr size_t kStepSize = 512;
 
 DFConfig makeDetectionFunctionConfig() {
