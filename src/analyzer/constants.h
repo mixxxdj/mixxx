@@ -14,4 +14,7 @@ constexpr SINT kAnalysisFramesPerBlock = 4096;
 const SINT kAnalysisSamplesPerBlock =
         kAnalysisFramesPerBlock * kAnalysisChannels;
 
+// Only analyze the first minute in fast-analysis mode.
+constexpr int kFastAnalysisSecondsToAnalyze = 60;
+
 }  // namespace mixxx
