@@ -93,12 +93,6 @@ build.env.Alias("compiledb", build.env.CompilationDatabase('compile_commands.jso
 # Build compile_commands.json by default.
 build.env.Default("compile_commands.json")
 
-# Build VAMP plugins.
-mixxxminimal_plugins = SConscript(
-    'vamp-plugins/SConscript',
-    variant_dir=build.build_dir + "/vamp-plugins",
-    duplicate=0, exports=['build'])
-
 # Setup and build the "mixxx" executable target. Also sets up our install
 # targets for each platform.
 SConscript('SConscript', variant_dir=build.build_dir, duplicate=0,
