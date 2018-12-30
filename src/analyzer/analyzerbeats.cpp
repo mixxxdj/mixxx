@@ -5,6 +5,7 @@
 #include <QHash>
 #include <QString>
 
+#include "analyzer/constants.h"
 #include "analyzer/plugins/analyzersoundtouchbeats.h"
 #include "analyzer/plugins/analyzerqueenmarybeats.h"
 #include "track/beatfactory.h"
@@ -14,8 +15,6 @@
 
 // Only analyze the first minute in fast-analysis mode.
 static const int kFastAnalysisSecondsToAnalyze = 60;
-// All audio files are converted to stereo first before analysis.
-static const int kAnalyzerNumChannels = 2;
 
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerBeats::availablePlugins() {
@@ -34,6 +33,7 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
           m_bPreferencesFastAnalysis(false),
           m_iSampleRate(0),
           m_iTotalSamples(0),
+          m_iMaxSamplesToProcess(0),
           m_iCurrentSample(0),
           m_iMinBpm(0),
           m_iMaxBpm(9999) {
@@ -81,6 +81,13 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
 
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
+    // In fast analysis mode, skip processing after
+    // kFastAnalysisSecondsToAnalyze seconds are analyzed.
+    if (m_bPreferencesFastAnalysis) {
+        m_iMaxSamplesToProcess = mixxx::kFastAnalysisSecondsToAnalyze * m_iSampleRate * mixxx::kAnalysisChannels;
+    } else {
+        m_iMaxSamplesToProcess = m_iTotalSamples;
+    }
     m_iCurrentSample = 0;
 
     // if we can load a stored track don't reanalyze it
@@ -171,10 +178,7 @@ void AnalyzerBeats::process(const CSAMPLE *pIn, const int iLen) {
     }
 
     m_iCurrentSample += iLen;
-    // In fast analysis mode, skip processing after
-    // kFastAnalysisSecondsToAnalyze seconds are analyzed.
-    const int maxSamples = kFastAnalysisSecondsToAnalyze * m_iSampleRate * kAnalyzerNumChannels;
-    if (m_bPreferencesFastAnalysis && m_iCurrentSample > maxSamples) {
+    if (m_iCurrentSample > m_iMaxSamplesToProcess) {
         return;
     }
 

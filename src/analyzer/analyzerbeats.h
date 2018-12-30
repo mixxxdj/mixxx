@@ -47,6 +47,7 @@ class AnalyzerBeats: public Analyzer {
 
     int m_iSampleRate;
     int m_iTotalSamples;
+    int m_iMaxSamplesToProcess;
     int m_iCurrentSample;
     int m_iMinBpm, m_iMaxBpm;
 };

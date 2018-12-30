@@ -3,14 +3,10 @@
 #include <QtDebug>
 #include <QVector>
 
+#include "analyzer/constants.h"
 #include "analyzer/plugins/analyzerqueenmarykey.h"
 #include "proto/keys.pb.h"
 #include "track/keyfactory.h"
-
-// Only analyze the first minute in fast-analysis mode.
-static const int kFastAnalysisSecondsToAnalyze = 60;
-// All audio files are converted to stereo first before analysis.
-static const int kAnalyzerNumChannels = 2;
 
 // static
 QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
@@ -23,6 +19,7 @@ AnalyzerKey::AnalyzerKey(KeyDetectionSettings keySettings)
         : m_keySettings(keySettings),
           m_iSampleRate(0),
           m_iTotalSamples(0),
+          m_iMaxSamplesToProcess(0),
           m_iCurrentSample(0),
           m_bPreferencesKeyDetectionEnabled(true),
           m_bPreferencesFastAnalysisEnabled(false),
@@ -51,6 +48,13 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
 
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
+    // In fast analysis mode, skip processing after
+    // kFastAnalysisSecondsToAnalyze seconds are analyzed.
+    if (m_bPreferencesFastAnalysisEnabled) {
+        m_iMaxSamplesToProcess = mixxx::kFastAnalysisSecondsToAnalyze * m_iSampleRate * mixxx::kAnalysisChannels;
+    } else {
+        m_iMaxSamplesToProcess = m_iTotalSamples;
+    }
     m_iCurrentSample = 0;
 
     // if we can't load a stored track reanalyze it
@@ -113,13 +117,12 @@ void AnalyzerKey::process(const CSAMPLE *pIn, const int iLen) {
     if (!m_pPlugin) {
         return;
     }
+
     m_iCurrentSample += iLen;
-    // In fast analysis mode, skip processing after
-    // kFastAnalysisSecondsToAnalyze seconds are analyzed.
-    const int maxSamples = kFastAnalysisSecondsToAnalyze * m_iSampleRate * kAnalyzerNumChannels;
-    if (m_bPreferencesFastAnalysisEnabled && m_iCurrentSample > maxSamples) {
+    if (m_iCurrentSample > m_iMaxSamplesToProcess) {
         return;
     }
+
     bool success = m_pPlugin->process(pIn, iLen);
     if (!success) {
         m_pPlugin.reset();
