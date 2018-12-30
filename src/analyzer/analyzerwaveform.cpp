@@ -4,7 +4,6 @@
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilterbessel4.h"
 #include "library/trackcollection.h"
-#include "library/dao/analysisdao.h"
 #include "track/track.h"
 #include "waveform/waveformfactory.h"
 #include "util/logger.h"
@@ -16,18 +15,19 @@ mixxx::Logger kLogger("AnalyzerWaveform");
 } // anonymous
 
 AnalyzerWaveform::AnalyzerWaveform(
-        AnalysisDao* pAnalysisDao) :
-        m_pAnalysisDao(pAnalysisDao),
-        m_skipProcessing(false),
-        m_waveformData(nullptr),
-        m_waveformSummaryData(nullptr),
-        m_stride(0, 0),
-        m_currentStride(0),
-        m_currentSummaryStride(0) {
-    DEBUG_ASSERT(m_pAnalysisDao); // mandatory
+        UserSettingsPointer pConfig,
+        QSqlDatabase dbConnection)
+        : m_analysisDao(pConfig),
+          m_skipProcessing(false),
+          m_waveformData(nullptr),
+          m_waveformSummaryData(nullptr),
+          m_stride(0, 0),
+          m_currentStride(0),
+          m_currentSummaryStride(0) {
     m_filter[0] = 0;
     m_filter[1] = 0;
     m_filter[2] = 0;
+    m_analysisDao.initialize(dbConnection);
 }
 
 AnalyzerWaveform::~AnalyzerWaveform() {
@@ -103,7 +103,7 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 
     if (trackId.isValid() && (missingWaveform || missingWavesummary)) {
         QList<AnalysisDao::AnalysisInfo> analyses =
-                m_pAnalysisDao->getAnalysesForTrack(trackId);
+                m_analysisDao.getAnalysesForTrack(trackId);
 
         QListIterator<AnalysisDao::AnalysisInfo> it(analyses);
         while (it.hasNext()) {
@@ -118,7 +118,7 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
                     missingWaveform = false;
                 } else if (vc != WaveformFactory::VC_KEEP) {
                     // remove all other Analysis except that one we should keep
-                    m_pAnalysisDao->deleteAnalysis(analysis.analysisId);
+                    m_analysisDao.deleteAnalysis(analysis.analysisId);
                 }
             } if (analysis.type == AnalysisDao::TYPE_WAVESUMMARY) {
                 vc = WaveformFactory::waveformSummaryVersionToVersionClass(analysis.version);
@@ -128,7 +128,7 @@ bool AnalyzerWaveform::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
                     missingWavesummary = false;
                 } else if (vc != WaveformFactory::VC_KEEP) {
                     // remove all other Analysis except that one we should keep
-                    m_pAnalysisDao->deleteAnalysis(analysis.analysisId);
+                    m_analysisDao.deleteAnalysis(analysis.analysisId);
                 }
             }
         }
@@ -310,7 +310,7 @@ void AnalyzerWaveform::finalize(TrackPointer tio) {
     // waveforms (i.e. if the config setting was disabled in a previous scan)
     // and then it is not called. The other analyzers have signals which control
     // the update of their data.
-    m_pAnalysisDao->saveTrackAnalyses(
+    m_analysisDao.saveTrackAnalyses(
             tio->getId(),
             tio->getWaveform(),
             tio->getWaveformSummary());

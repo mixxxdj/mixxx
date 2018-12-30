@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QAtomicInt>
 #include <QFileInfo>
 #include <QList>
 #include <QMutex>
@@ -308,7 +307,6 @@ class Track : public QObject {
     void waveformUpdated();
     void waveformSummaryUpdated();
     void coverArtUpdated();
-    void analyzerProgress(int progress);
     void bpmUpdated(double bpm);
     void beatsUpdated();
     void keyUpdated(double key);
@@ -383,8 +381,6 @@ class Track : public QObject {
     //Visual waveform data
     ConstWaveformPointer m_waveform;
     ConstWaveformPointer m_waveformSummary;
-
-    QAtomicInt m_analyzerProgress; // in 0.1%
 
     friend class TrackDAO;
     friend class GlobalTrackCache;
