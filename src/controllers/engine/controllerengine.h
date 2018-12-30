@@ -75,7 +75,7 @@ class ControllerEngine : public QObject {
     virtual ~ControllerEngine();
 
     // The controller engine version is used to check compatibility of presets.
-  #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0) && !defined(Q_OS_LINUX)
+  #if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     static const int version = 2;
   #else
     static const int version = 1;
