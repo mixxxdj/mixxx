@@ -347,6 +347,18 @@ QJSValue ControllerEngine::evaluateCodeString(const QString& program, const QStr
     return returnValue;
 }
 
+void ControllerEngine::throwJSError(const QString& message) {
+  #if QT_VERSION < QT_VERSION_CHECK(5, 12, 0)
+    QString errorText = tr("Uncaught exception: %1").arg(message);
+    qWarning() << "ControllerEngine:" << errorText;
+    if (!m_bDisplayingExceptionDialog) {
+        scriptErrorDialog(errorText);
+    }
+  #else
+    m_pScriptEngine->throwError(message);
+  #endif
+}
+
 void ControllerEngine::showScriptExceptionDialog(QJSValue evaluationResult) {
     VERIFY_OR_DEBUG_ASSERT(evaluationResult.isError()) {
         return;
@@ -603,15 +615,15 @@ QJSValue ControllerEngine::makeConnection(QString group, QString name,
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        m_pScriptEngine->throwError("ControllerEngine: script tried to connect to ControlObject (" +
+        throwJSError("ControllerEngine: script tried to connect to ControlObject (" +
                 group + ", " + name +
                 ") which is non-existent.");
         return QJSValue();
     }
 
     if (!callback.isCallable()) {
-        m_pScriptEngine->throwError("Tried to connect (" + group + ", " + name + ")"
-                   + " to an invalid callback.");
+        throwJSError("Tried to connect (" + group + ", " + name + ")"
+                + " to an invalid callback.");
         return QJSValue();
     }
 
@@ -742,7 +754,7 @@ QJSValue ControllerEngine::connectControl(
             if (actualCallbackFunction.isError()) {
                 sErrorMessage.append("\n" + actualCallbackFunction.toString());
             }
-            m_pScriptEngine->throwError(sErrorMessage);
+            throwJSError(sErrorMessage);
             return QJSValue(false);
         }
 
@@ -894,7 +906,7 @@ int ControllerEngine::beginTimer(int interval, QJSValue timerCallback,
         if (timerCallback.isError()) {
             sErrorMessage.append("\n" + timerCallback.toString());
         }
-        m_pScriptEngine->throwError(sErrorMessage);
+        throwJSError(sErrorMessage);
         return 0;
     }
 

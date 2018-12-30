@@ -153,6 +153,8 @@ class ControllerEngine : public QObject {
     QJSValue evaluateCodeString(const QString& program, const QString& fileName = QString(),
             int lineNumber = 1);
 
+    void throwJSError(const QString& message);
+
     // Shows a UI dialog notifying of a script evaluation error.
     // Precondition: QJSValue.isError() == true
     void showScriptExceptionDialog(QJSValue evaluationResult);
