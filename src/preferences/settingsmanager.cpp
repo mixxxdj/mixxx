@@ -43,20 +43,4 @@ void SettingsManager::initializeDefaults() {
     // Store the last resource path in the config database.
     // TODO(rryan): this looks unused.
     m_pSettings->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
-
-    // Initialize default BPM system values.
-    // NOTE(rryan): These should be in a better place but they've always been in
-    // MixxxMainWindow.
-    if (!m_pSettings->exists(ConfigKey("[BPM]", "BPMRangeStart"))) {
-        m_pSettings->set(ConfigKey("[BPM]", "BPMRangeStart"),ConfigValue(65));
-    }
-
-    if (!m_pSettings->exists(ConfigKey("[BPM]", "BPMRangeEnd"))) {
-        m_pSettings->set(ConfigKey("[BPM]", "BPMRangeEnd"),ConfigValue(135));
-    }
-
-    if (!m_pSettings->exists(ConfigKey("[BPM]", "AnalyzeEntireSong"))) {
-        m_pSettings->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
-    }
-
 }

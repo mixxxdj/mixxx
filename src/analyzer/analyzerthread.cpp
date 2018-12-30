@@ -2,10 +2,9 @@
 
 #include <mutex>
 
-#ifdef __VAMP__
 #include "analyzer/analyzerbeats.h"
+#include "analyzer/constants.h"
 #include "analyzer/analyzerkey.h"
-#endif
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzerwaveform.h"
@@ -34,14 +33,7 @@ mixxx::Logger kLogger("AnalyzerThread");
 /// TODO(XXX): Use the vsync timer for the purpose of sending updates
 // to the UI thread with a limited rate??
 
-// Analysis is done in blocks to avoid dynamic allocation of memory
-// depending on the track length. A block size of 4096 frames per block
-// seems to do fine. Signal processing during analysis uses the same,
-// fixed number of channels like the engine does, usually 2 = stereo.
-constexpr mixxx::AudioSignal::ChannelCount kAnalysisChannels = mixxx::kEngineChannelCount;
-constexpr SINT kAnalysisFramesPerBlock = 4096;
-const SINT kAnalysisSamplesPerBlock =
-        kAnalysisFramesPerBlock * kAnalysisChannels;
+
 
 // Maximum frequency of progress updates while busy. A value of 60 ms
 // results in ~17 progress updates per second which is sufficient for
@@ -93,7 +85,7 @@ AnalyzerThread::AnalyzerThread(
           m_dbConnectionPool(std::move(dbConnectionPool)),
           m_pConfig(std::move(pConfig)),
           m_modeFlags(modeFlags),
-          m_sampleBuffer(kAnalysisSamplesPerBlock),
+          m_sampleBuffer(mixxx::kAnalysisSamplesPerBlock),
           m_emittedState(AnalyzerThreadState::Void) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
 }
@@ -120,20 +112,18 @@ void AnalyzerThread::doRun() {
     if (AnalyzerEbur128::isEnabled(ReplayGainSettings(m_pConfig))) {
         m_analyzers.push_back(std::make_unique<AnalyzerEbur128>(m_pConfig));
     }
-#ifdef __VAMP__
     // BPM detection might be disabled in the config, but can be overriden
     // and enabled by explicitly setting the mode flag.
     const bool enforceBpmDetection = (m_modeFlags & AnalyzerModeFlags::WithBeats) != 0;
     m_analyzers.push_back(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection));
     m_analyzers.push_back(std::make_unique<AnalyzerKey>(m_pConfig));
-#endif
     DEBUG_ASSERT(!m_analyzers.empty());
     kLogger.debug() << "Activated" << m_analyzers.size() << "analyzers";
 
     m_lastBusyProgressEmittedTimer.start();
 
     mixxx::AudioSource::OpenParams openParams;
-    openParams.setChannelCount(kAnalysisChannels);
+    openParams.setChannelCount(mixxx::kAnalysisChannels);
 
     while (waitUntilWorkItemsFetched()) {
         DEBUG_ASSERT(m_currentTrack);
@@ -156,7 +146,7 @@ void AnalyzerThread::doRun() {
             if (analyzer->initialize(
                     m_currentTrack,
                     audioSource->sampleRate(),
-                    audioSource->frameLength() * kAnalysisChannels)) {
+                    audioSource->frameLength() * mixxx::kAnalysisChannels)) {
                 processTrack = true;
             }
         }
@@ -224,8 +214,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
 
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             audioSource,
-            kAnalysisFramesPerBlock);
-    DEBUG_ASSERT(audioSourceProxy.channelCount() == kAnalysisChannels);
+            mixxx::kAnalysisFramesPerBlock);
+    DEBUG_ASSERT(audioSourceProxy.channelCount() == mixxx::kAnalysisChannels);
 
     // Analysis starts now
     emitBusyProgress(kAnalyzerProgressNone);
@@ -241,7 +231,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         // 1st step: Decode next chunk of audio data
         const auto inputFrameIndexRange =
                 remainingFrames.splitAndShrinkFront(
-                        math_min(kAnalysisFramesPerBlock, remainingFrames.length()));
+                        math_min(mixxx::kAnalysisFramesPerBlock, remainingFrames.length()));
         DEBUG_ASSERT(!inputFrameIndexRange.empty());
         const auto readableSampleFrames =
                 audioSourceProxy.readSampleFrames(
@@ -255,7 +245,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         }
 
         // 2nd: step: Analyze chunk of decoded audio data
-        if (readableSampleFrames.frameLength() == kAnalysisFramesPerBlock) {
+        if (readableSampleFrames.frameLength() == mixxx::kAnalysisFramesPerBlock) {
             // Complete chunk of audio samples has been read for analysis
             for (auto const& analyzer: m_analyzers) {
                 analyzer->process(
