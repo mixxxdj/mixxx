@@ -9,9 +9,9 @@
 #include "util/math.h"
 #include "util/performancetimer.h"
 
-const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
-const int WaveformWidgetRenderer::s_waveformMaxZoom = 10;
-const int WaveformWidgetRenderer::s_waveformDefaultZoom = 3;
+const double WaveformWidgetRenderer::s_waveformMinZoom = 1.0;
+const double WaveformWidgetRenderer::s_waveformMaxZoom = 10.0;
+const double WaveformWidgetRenderer::s_waveformDefaultZoom = 3.0;
 const double WaveformWidgetRenderer::s_defaultPlayMarkerPosition = 0.5;
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const char* group)
@@ -288,7 +288,7 @@ void WaveformWidgetRenderer::setup(
     }
 }
 
-void WaveformWidgetRenderer::setZoom(int zoom) {
+void WaveformWidgetRenderer::setZoom(double zoom) {
     //qDebug() << "WaveformWidgetRenderer::setZoom" << zoom;
     m_zoomFactor = math_clamp<double>(zoom, s_waveformMinZoom, s_waveformMaxZoom);
 }

@@ -1772,11 +1772,6 @@ WLibrary QLabel {
   margin: 6px 3px 9px 3px;
 }
 
-/* Additional space for the first QRadionButton in the row */
-WLibrary QRadioButton#radioButtonRecentlyAdded {
-  margin: 9px 3px 6px 12px;
-}
-
 WLibrary QRadioButton::indicator:checked {
   background: url(skin:/buttons/btn_lib_radio_button_on.svg) center center;
 }
@@ -1816,18 +1811,14 @@ WLibrary QPushButton:!enabled {
   color: #666;
 }
 
-/* Additional space for the first QPushButton in the row */
-#DlgAutoDJ > QPushButton#pushButtonShuffle {
-  margin: 5px 3px 5px 12px;
+/* Space in between 'Enable AutoDJ' and transition time spinbox */
+QPushButton#pushButtonAutoDJ {
+  margin: 5px 17px 5px 3px;
 }
 
-/* Additional space for the last QPushButton in the row */
-#DlgMissing > QPushButton#btnPurge,
-#DlgHidden > QPushButton#btnUnhide,
-#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
-#DlgRecording > QPushButton#pushButtonRecording,
-#DlgAnalysis > QPushButton#pushButtonAnalyze {
-  margin: 5px 17px 5px 3px;
+/* Space in between 'All' radio button and 'Select All' button */
+QPushButton#pushButtonSelectAll {
+  margin: 5px 3px 5px 12px;
 }
 
 #DlgAutoDJ > QPushButton:checked {

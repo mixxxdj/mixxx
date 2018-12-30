@@ -11,41 +11,20 @@ Variables:
   <WidgetGroup>
     <ObjectName>EffectUnitControlRow</ObjectName>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,min</SizePolicy>
+    <SizePolicy>me,me</SizePolicy>
     <Children>
       <WidgetGroup>
         <ObjectName>EffectUnitParameters</ObjectName>
-        <SizePolicy>me,max</SizePolicy>
+        <SizePolicy>me,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
 
           <WidgetGroup>
-            <ObjectName>EffectSingleControls</ObjectName>
+            <ObjectName>EffectButtonContainer</ObjectName>
             <Layout>horizontal</Layout>
             <Children>
-              <WidgetGroup>
-                <ObjectName>EffectButtonContainer</ObjectName>
-                <Layout>horizontal</Layout>
-                <Children>
-
-                  <Template src="skin:effect_buttons.xml"/>
-
-                  <WidgetGroup>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <Template src="skin:effect_meta_knob.xml"/>
-
-                      <Label>
-                        <Size>40f,11f</Size>
-                        <ObjectName>KnobLabel</ObjectName>
-                        <Text>Meta</Text>
-                      </Label>
-                    </Children>
-                  </WidgetGroup>
-
-                </Children>
-              </WidgetGroup>
-
+              <Template src="skin:effect_buttons.xml"/>
+              <Template src="skin:effect_meta_knob.xml"/>
             </Children>
           </WidgetGroup>
 
