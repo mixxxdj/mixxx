@@ -59,27 +59,91 @@ Description:
                 <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
               </Template>
 
-              <!-- 4/8 Hotcues toggle -->
+              <!-- Small Decks toggle -->
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">hotcue_toggle</SetVariable>
-                <SetVariable name="text">8 Hotcues</SetVariable>
-                <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
+                <SetVariable name="TooltipId">small_decks</SetVariable>
+                <SetVariable name="text">Small Decks</SetVariable>
+                <SetVariable name="Setting">[Skin],small_decks</SetVariable>
               </Template>
 
-              <!-- Rate Control toggle -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">rate_toggle</SetVariable>
-                <SetVariable name="text">Rate Control</SetVariable>
-                <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
-              </Template>
+              <WidgetGroup><!-- 4/8 Hotcues toggle -->
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
-              <!-- Vinyl Control toggle -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
-                <SetVariable name="text">Vinyl Control</SetVariable>
-                <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
-              </Template>
+                  <WidgetGroup><!-- translucent cover with Small Decks -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],small_decks</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
 
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">hotcue_toggle</SetVariable>
+                    <SetVariable name="text">8 Hotcues</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- 4/8 Hotcues toggle -->
+
+              <WidgetGroup><!-- Rate Control toggle -->
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover with Small Decks -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],small_decks</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">rate_toggle</SetVariable>
+                    <SetVariable name="text">Rate Control</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- Rate Control toggle -->
+
+              <WidgetGroup><!-- Vinyl Control toggle -->
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover with Small Decks -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],small_decks</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
+                    <SetVariable name="text">Vinyl Control</SetVariable>
+                    <SetVariable name="Setting">[VinylControl],show_vinylcontrol</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup><!-- Vinyl Control toggle -->
+              
               <!-- Spinny -->
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">show_spinny</SetVariable>
@@ -89,17 +153,36 @@ Description:
 
               <!-- Cover Art -->
               <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">show_spinny</SetVariable>
+                <SetVariable name="TooltipId">coverart</SetVariable>
                 <SetVariable name="text">Cover Art</SetVariable>
                 <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
               </Template>
 
-              <!-- Big Spinny -->
-              <Template src="skin:skin_settings_button_2state.xml">
-                <SetVariable name="TooltipId">show_spinny</SetVariable>
-                <SetVariable name="text">Big Spinny/Cover Art</SetVariable>
-                <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
-              </Template>
+              <WidgetGroup> <!-- Big Spinny -->>
+                <Layout>stacked</Layout>
+                <Size>190f,17f</Size>
+                <Children>
+                  <!-- index 0 due to bug -->
+                  <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover with Small Decks -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],small_decks</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                  <Template src="skin:skin_settings_button_2state.xml">
+                    <SetVariable name="TooltipId">show_spinny</SetVariable>
+                    <SetVariable name="text">Big Spinny/Cover Art</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
+                  </Template>
+
+                </Children>
+              </WidgetGroup> <!-- Big Spinny -->             
 
             </Children>
           </WidgetGroup><!-- /Deck / General -->
