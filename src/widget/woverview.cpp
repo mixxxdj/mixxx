@@ -85,7 +85,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     }
 
     // setup hotcues and cue and loop(s)
-    setupCueColorsRepresentation(node, context);
+    m_predefinedColorsRepresentation = context.getCueColorsRepresentation(node);
     m_marks.setup(m_group, node, context, m_signalColors);
 
     for (const auto& pMark: m_marks) {
@@ -636,16 +636,4 @@ void WOverview::dropEvent(QDropEvent* event) {
         }
     }
     event->ignore();
-}
-
-void WOverview::setupCueColorsRepresentation(const QDomNode& node, const SkinContext& context) {
-    m_predefinedColorsRepresentation = Color::defaultRepresentation;
-
-    for (QLatin1String colorName : Color::predefinedColorsNames) {
-        QColor representation = context.selectColor(node, "Cue" + colorName);
-        if (representation.isValid()) {
-            QColor originalColor = Color::predefinedColorFromName(colorName);
-            m_predefinedColorsRepresentation.setRepresentation(originalColor, representation);
-        }
-    }
 }

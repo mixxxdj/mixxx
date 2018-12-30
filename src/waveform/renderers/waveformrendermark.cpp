@@ -23,7 +23,7 @@ WaveformRenderMark::WaveformRenderMark(
 }
 
 void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
-    setupCueColorsRepresentation(node, context);
+    m_predefinedColorsRepresentation = context.getCueColorsRepresentation(node);
     m_marks.setup(m_waveformRenderer->getGroup(), node, context,
                   *m_waveformRenderer->getWaveformSignalColors());
 }
@@ -370,17 +370,5 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
         painter.setPen(QColor(0,0,0,100));
         painter.drawLine(middle - 1, lineTop, middle - 1, lineBottom);
         painter.drawLine(middle + 1, lineTop, middle + 1, lineBottom);
-    }
-}
-
-void WaveformRenderMark::setupCueColorsRepresentation(const QDomNode& node, const SkinContext& context) {
-    m_predefinedColorsRepresentation = Color::defaultRepresentation;
-
-    for (QLatin1String colorName : Color::predefinedColorsNames) {
-        QColor representation = context.selectColor(node, "Cue" + colorName);
-        if (representation.isValid()) {
-            QColor originalColor = Color::predefinedColorFromName(colorName);
-            m_predefinedColorsRepresentation.setRepresentation(originalColor, representation);
-        }
     }
 }

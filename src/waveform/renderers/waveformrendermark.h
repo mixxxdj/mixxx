@@ -33,7 +33,6 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
 
   private:
     void generateMarkImage(WaveformMark* pMark);
-    void setupCueColorsRepresentation(const QDomNode& node, const SkinContext& context);
 
     ColorsRepresentation m_predefinedColorsRepresentation;
 
