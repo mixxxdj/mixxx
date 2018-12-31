@@ -1070,7 +1070,8 @@ void CueControl::autoDJStartSet(double v) {
     }
 
     // Make sure user is not trying to place start cue on or after end cue.
-    if (position >= m_pAutoDJEndPosition->get()) {
+    double end = m_pAutoDJEndPosition->get();
+    if (end != -1.0 && position >= end) {
         qWarning() << "Trying to place start cue on or after end cue.";
         return;
     }
@@ -1137,7 +1138,8 @@ void CueControl::autoDJEndSet(double v) {
     }
 
     // Make sure user is not trying to place end cue on or before start cue.
-    if (position <= m_pAutoDJStartPosition->get()) {
+    double start = m_pAutoDJStartPosition->get();
+    if (start != -1.0 && position <= start) {
         qWarning() << "Trying to place end cue on or before start cue.";
         return;
     }
