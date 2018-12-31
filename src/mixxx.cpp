@@ -25,7 +25,6 @@
 #include <QUrl>
 #include <QtDebug>
 
-#include "analyzer/analyzerqueue.h"
 #include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgprefeq.h"
@@ -604,6 +603,9 @@ void MixxxMainWindow::finalize() {
         qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
     }
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";
+    m_pLibrary->stopFeatures();
+
     // SoundManager depend on Engine and Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SoundManager";
     delete m_pSoundManager;
@@ -726,6 +728,11 @@ void MixxxMainWindow::finalize() {
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
     StatsManager::destroy();
+
+    // NOTE(uklotzde, 2018-12-28): Finally destroy the singleton instance
+    // to prevent a deadlock when exiting the main() function! The actual
+    // cause of the deadlock is still unclear.
+    GlobalTrackCache::destroyInstance();
 }
 
 bool MixxxMainWindow::initializeDatabase() {

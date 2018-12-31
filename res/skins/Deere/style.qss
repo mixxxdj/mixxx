@@ -468,14 +468,9 @@ WLibrary QLabel, WLibrary QRadioButton {
 }
 
 WLibrary QRadioButton::indicator {
-  margin: 0px 5px 0px 2px;
+  margin: 0px 0px 0px 2px;
   width: 18px;
   height: 18px;
-}
-
-/* Additional space for the first QRadionButton in the row */
-WLibrary QRadioButton#radioButtonRecentlyAdded {
-  margin: 9px 10px 6px 14px;
 }
 
 WLibrary QRadioButton::indicator:checked {
@@ -571,12 +566,8 @@ WLibrary QRadioButton::indicator:unchecked {
   outline: none;
 }
 
-/* Additional space for the first and the last QPushButton in the row */
-#DlgMissing > QPushButton#btnPurge,
-#DlgHidden > QPushButton#btnUnhide,
-#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
-#DlgRecording > QPushButton#pushButtonRecording,
-#DlgAnalysis > QPushButton#pushButtonAnalyze {
+/* Space in between 'Enable AutoDJ' and transition time spinbox */
+#DlgAutoDJ > QPushButton#pushButtonAutoDJ {
   margin: 9px 12px 6px 3px;
 }
 

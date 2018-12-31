@@ -18,7 +18,6 @@ addons:
       - libavformat-dev
       - libchromaprint-dev
       - libfaad-dev
-      - libfftw3-dev
       - libflac-dev
       - libid3tag0-dev
       - libmad0-dev
@@ -39,7 +38,6 @@ addons:
       - libtag1-dev
       - libupower-glib-dev
       - libusb-1.0-0-dev
-      - libvamp-hostsdk3
       - libwavpack-dev
       - portaudio19-dev
       - protobuf-compiler
@@ -48,7 +46,6 @@ addons:
       - qtscript5-dev
       - libqt5x11extras5-dev
       - scons
-      - vamp-plugin-sdk
       - qtkeychain-dev
       - liblilv-dev
 before_install:

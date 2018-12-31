@@ -7,9 +7,12 @@
 #include "util/math.h"
 #include "waveform/waveform.h"
 
-WOverviewHSV::WOverviewHSV(const char* pGroup,
-                           UserSettingsPointer pConfig, QWidget* parent)
-        : WOverview(pGroup, pConfig, parent)  {
+WOverviewHSV::WOverviewHSV(
+        const char* group,
+        PlayerManager* pPlayerManager,
+        UserSettingsPointer pConfig,
+        QWidget* parent)
+        : WOverview(group, pPlayerManager, pConfig, parent)  {
 }
 
 bool WOverviewHSV::drawNextPixmapPart() {

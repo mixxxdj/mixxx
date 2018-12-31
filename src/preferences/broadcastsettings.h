@@ -18,7 +18,6 @@ class BroadcastSettings : public QObject {
 
     bool saveProfile(BroadcastProfilePtr profile);
     void saveAll();
-    BroadcastProfilePtr createProfile(const QString& profileName);
     QList<BroadcastProfilePtr> profiles();
     BroadcastProfilePtr profileAt(int index);
 
@@ -37,12 +36,10 @@ class BroadcastSettings : public QObject {
   private:
     void loadProfiles();
     bool addProfile(BroadcastProfilePtr profile);
-    void deleteProfile(BroadcastProfilePtr profile);
 
     QString filePathForProfile(BroadcastProfilePtr profile);
     QString filePathForProfile(const QString& profileName);
     bool deleteFileForProfile(BroadcastProfilePtr profile);
-    bool deleteFileForProfile(const QString& profileName);
     QString getProfilesFolder();
 
     void loadLegacySettings(BroadcastProfilePtr profile);
