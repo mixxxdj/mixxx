@@ -9,6 +9,7 @@
     </info>
     <controller id="DDJ-SX">
         <scriptfiles>
+            <file filename="lodash.mixxx.js"/>
             <file filename="midi-components-0.0.js"/>
             <file functionprefix="PioneerDDJSX" filename="Pioneer-DDJ-SX-scripts.js"/>
         </scriptfiles>

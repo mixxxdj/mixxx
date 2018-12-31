@@ -7,6 +7,8 @@
   </info>
   <controller id="N4 MIDI 1">
     <scriptfiles>
+      <file filename="common-controller-scripts.js"/>
+      <file filename="lodash.mixxx.js"/>
       <file filename="midi-components-0.0.js"/>
       <file functionprefix="NumarkN4" filename="Numark-N4-scripts.js"/>
     </scriptfiles>

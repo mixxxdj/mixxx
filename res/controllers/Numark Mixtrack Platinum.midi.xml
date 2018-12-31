@@ -9,6 +9,7 @@
     </info>
     <controller id="MixTrack">
         <scriptfiles>
+            <file filename="lodash.mixxx.js"/>
             <file filename="midi-components-0.0.js"/>
             <file functionprefix="MixtrackPlatinum" filename="Numark-Mixtrack-Platinum-scripts.js"/>
         </scriptfiles>

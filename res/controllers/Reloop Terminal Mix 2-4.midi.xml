@@ -10,6 +10,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
   </info>
   <controller id="TerminalMix">
     <scriptfiles>
+      <file functionprefix="" filename="lodash.mixxx.js"/>
       <file functionprefix="" filename="midi-components-0.0.js"/>
       <file filename="Reloop Terminal Mix 2-4.js" functionprefix="TerminalMix"/>
     </scriptfiles>

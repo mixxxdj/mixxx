@@ -94,11 +94,11 @@ NumarkN4.init = function (id) {
     NumarkN4.Decks[i] = new NumarkN4.Deck(i);
   }
   // create xFader callbacks and trigger them to fill NumarkN4.storedCrossfaderParams
-  for (const control in NumarkN4.scratchXFader) {
+  _.forEach(NumarkN4.scratchXFader, function (value,control) {
     var connectionObject = engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback);
     connectionObject.trigger();
     NumarkN4.crossfaderCallbackConnections.push(connectionObject);
-  }
+  });
 
   NumarkN4.Mixer = new NumarkN4.MixerTemplate();
 
@@ -316,20 +316,25 @@ NumarkN4.MixerTemplate = function () {
     midi: [0x90,0x4B],
     state: false,
     input: function (channel, control, value, status, group) {
-      NumarkN4.crossfaderCallbackConnections.forEach(connection => {connection.disconnect()});
+      _.forEach(NumarkN4.crossfaderCallbackConnections, function (callbackObject) {
+        callbackObject.disconnect();
+      });
       NumarkN4.crossfaderCallbackConnections = [];
-      const setParamsAndConnectCallbacks = (xfaderParameters) => {
-        for (const control in xfaderParameters) {
-          engine.setValue("[Mixer Profile]", control, xfaderParameters[control]);
+      this.state=this.isPress(channel, control, value, status);
+      if (this.state) {
+        _.forEach(NumarkN4.scratchXFader, function (value, control){
+          engine.setValue("[Mixer Profile]", control, value);
           NumarkN4.crossfaderCallbackConnections.push(
             engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback)
           );
-        }
-      };
-      if (this.isPress(channel, control, value, status)) {
-        setParamsAndConnectCallbacks(NumarkN4.scratchXFader);
+        });
       } else {
-        setParamsAndConnectCallbacks(NumarkN4.storedCrossfaderParams);
+        _.forEach(NumarkN4.storedCrossfaderParams, function (value, control) {
+          engine.setValue("[Mixer Profile]", control, value);
+          NumarkN4.crossfaderCallbackConnections.push(
+            engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback)
+          );
+        });
       }
     }
   });
@@ -701,9 +706,9 @@ NumarkN4.shutdown = function () {
   // revert the crossfader parameters only if they haven't been changed by the
   // user and if they are currently set to scratch
   if (!NumarkN4.CrossfaderChangeCallback.changed || NumarkN4.changeCrossfaderContour.state) {
-    for (const control in NumarkN4.storedCrossfaderParams) {
-      engine.setValue("[Mixer Profile]", control, NumarkN4.storedCrossfaderParams[control]);
-    }
+    _.forEach(NumarkN4.storedCrossfaderParams, function (value, control) {
+      engine.setValue("[Mixer Profile]", control, value);
+    })
   }
   // midi.sendSysexMsg(NumarkN4.ShutoffSequence,NumarkN4.ShutoffSequence.length);
 };
