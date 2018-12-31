@@ -30,6 +30,7 @@
 #include "waveform/vsyncthread.h"
 #include "util/cmdlineargs.h"
 #include "util/performancetimer.h"
+#include "util/time.h"
 #include "util/timer.h"
 #include "util/math.h"
 
@@ -465,19 +466,6 @@ void WaveformWidgetFactory::render() {
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform
             // next rendered frame is displayed after next buffer swap and than after VSync
-            QVarLengthArray<bool, 10> shouldRenderWaveforms(m_waveformWidgetHolders.size());
-            for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
-                WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
-                // Don't bother doing the pre-render work if we aren't going to
-                // render this widget.
-                bool shouldRender = shouldRenderWaveform(pWaveformWidget);
-                shouldRenderWaveforms[i] = shouldRender;
-                if (!shouldRender) {
-                    continue;
-                }
-                // Calculate play position for the new Frame in following run
-                pWaveformWidget->preRender(m_vsyncThread);
-            }
             //qDebug() << "prerender" << m_vsyncThread->elapsed();
 
             // It may happen that there is an artificially delayed due to
@@ -485,10 +473,10 @@ void WaveformWidgetFactory::render() {
             // all render commands are delayed until the swap from the previous run is executed
             for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
-                if (!shouldRenderWaveforms[i]) {
+                if (!shouldRenderWaveform(pWaveformWidget)) {
                     continue;
                 }
-                pWaveformWidget->render();
+                pWaveformWidget->renderOnNextTick();
                 //qDebug() << "render" << i << m_vsyncThread->elapsed();
             }
         }
@@ -517,39 +505,6 @@ void WaveformWidgetFactory::render() {
     m_pGuiTick->process();
 
     //qDebug() << "refresh end" << m_vsyncThread->elapsed();
-    m_vsyncThread->vsyncSlotFinished();
-}
-
-void WaveformWidgetFactory::swap() {
-    ScopedTimer t("WaveformWidgetFactory::swap() %1waveforms", m_waveformWidgetHolders.size());
-
-    // Do this in an extra slot to be sure to hit the desired interval
-    if (!m_skipRender) {
-        if (m_type) {   // no regular updates for an empty waveform
-            // Show rendered buffer from last render() run
-            //qDebug() << "swap() start" << m_vsyncThread->elapsed();
-            for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
-                WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
-
-                // Don't swap invalid / invisible widgets or widgets with an
-                // unexposed window. Prevents continuous log spew of
-                // "QOpenGLContext::swapBuffers() called with non-exposed
-                // window, behavior is undefined" on Qt5. See Bug #1779487.
-                if (!shouldRenderWaveform(pWaveformWidget)) {
-                    continue;
-                }
-                auto glw = dynamic_cast<QOpenGLWidget*>(pWaveformWidget->getWidget());
-                if (glw != nullptr) {
-                    VSyncThread::swapGl(glw, i);
-                }
-                //qDebug() << "swap x" << m_vsyncThread->elapsed();
-            }
-        }
-        // WSpinnys are also double-buffered QOpenGLWidgets, like all the
-        // waveform renderers. Swap all the WSpinny widgets now.
-        emit(swapSpinnies());
-    }
-    //qDebug() << "swap end" << m_vsyncThread->elapsed();
     m_vsyncThread->vsyncSlotFinished();
 }
 
@@ -761,8 +716,6 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
 
     connect(m_vsyncThread, SIGNAL(vsyncRender()),
             this, SLOT(render()));
-    connect(m_vsyncThread, SIGNAL(vsyncSwap()),
-            this, SLOT(swap()));
 }
 
 void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString > >* pList) {

@@ -1,14 +1,15 @@
 #include <QThread>
-#include <QGLFormat>
 #include <QTime>
 #include <QtDebug>
 #include <QTime>
+#include <QOpenGLContext>
 
 #include "vsyncthread.h"
 #include "util/performancetimer.h"
 #include "util/event.h"
 #include "util/counter.h"
 #include "util/math.h"
+#include "util/time.h"
 #include "waveform/guitick.h"
 
 #if defined(__APPLE__)
@@ -62,15 +63,11 @@ void VSyncThread::run() {
             m_semaVsyncSlot.acquire();
             Event::end("VsyncThread vsync render");
 
-            Event::start("VsyncThread vsync swap");
-            emit(vsyncSwap()); // swaps the new waveform to front
-            m_semaVsyncSlot.acquire();
-            Event::end("VsyncThread vsync swap");
-
             m_timer.restart();
             m_waitToSwapMicros = 1000;
             usleep(1000);
         } else { // if (m_vSyncMode == ST_TIMER) {
+            m_timer.restart();
 
             Event::start("VsyncThread vsync render");
             emit(vsyncRender()); // renders the new waveform.
@@ -80,45 +77,16 @@ void VSyncThread::run() {
             m_semaVsyncSlot.acquire();
             Event::end("VsyncThread vsync render");
 
-            // qDebug() << "ST_TIMER                      " << lastMicros << restMicros;
-            int remainingForSwap = m_waitToSwapMicros - static_cast<int>(
-                m_timer.elapsed().toIntegerMicros());
-            // waiting for interval by sleep
-            if (remainingForSwap > 100) {
-                Event::start("VsyncThread usleep for VSync");
-                usleep(remainingForSwap);
-                Event::end("VsyncThread usleep for VSync");
+            int elapsed = m_timer.restart().toIntegerMicros();
+            int sleepTimeMicros = m_syncIntervalTimeMicros - elapsed;
+            //qDebug() << "VsyncThread sleepTimeMicros" << sleepTimeMicros;
+            if (sleepTimeMicros > 100) {
+                usleep(sleepTimeMicros);
+            } else if (sleepTimeMicros < 0) {
+                m_droppedFrames++;
             }
-
-            Event::start("VsyncThread vsync swap");
-            // swaps the new waveform to front in case of gl-wf
-            emit(vsyncSwap());
-
-            // wait until swap occurred. It might be delayed due to driver vSync
-            // settings.
-            m_semaVsyncSlot.acquire();
-            Event::end("VsyncThread vsync swap");
-
-            // <- Assume we are VSynced here ->
-            int lastSwapTime = static_cast<int>(m_timer.restart().toIntegerMicros());
-            if (remainingForSwap < 0) {
-                // Our swapping call was already delayed
-                // The real swap might happens on the following VSync, depending on driver settings
-                m_droppedFrames++; // Count as Real Time Error
-                droppedFrames.increment();
-            }
-            // try to stay in right intervals
-            m_waitToSwapMicros = m_syncIntervalTimeMicros +
-                    ((m_waitToSwapMicros - lastSwapTime) % m_syncIntervalTimeMicros);
         }
     }
-}
-
-
-// static
-void VSyncThread::swapGl(QOpenGLWidget* glw, int index) {
-    Q_UNUSED(index);
-    // TODO: glw->swapBuffers() used to be called here, but it is not offered by the QOpenGLWidget
 }
 
 int VSyncThread::elapsed() {

@@ -14,6 +14,7 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 
 #include "util/performancetimer.h"
+#include "util/time.h"
 
 GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(const char* group,
                                                        QWidget* parent)
@@ -26,8 +27,7 @@ GLSLRGBWaveformWidget::GLSLRGBWaveformWidget(const char* group, QWidget* parent)
 
 GLSLWaveformWidget::GLSLWaveformWidget(const char* group, QWidget* parent,
                                        bool rgbRenderer)
-        : QOpenGLWidget(parent),
-          WaveformWidgetAbstract(group) {
+        : BaseQOpenGLWidget(group, parent) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();

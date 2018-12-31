@@ -10,6 +10,7 @@
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "waveform/renderers/waveformsignalcolors.h"
+#include "util/duration.h"
 #include "util/performancetimer.h"
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
@@ -17,7 +18,6 @@
 class Track;
 class ControlProxy;
 class VisualPlayPosition;
-class VSyncThread;
 
 class WaveformWidgetRenderer {
   public:
@@ -34,7 +34,7 @@ class WaveformWidgetRenderer {
     virtual bool onInit() {return true;}
 
     void setup(const QDomNode& node, const SkinContext& context);
-    void onPreRender(VSyncThread* vsyncThread);
+    void onPreRender(mixxx::Duration estimatedTimeUntilSwap);
     void draw(QPainter* painter, QPaintEvent* event);
 
     inline const char* getGroup() const { return m_group;}

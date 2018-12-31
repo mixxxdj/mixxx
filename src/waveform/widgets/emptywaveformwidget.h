@@ -23,7 +23,9 @@ class EmptyWaveformWidget : public QWidget, public WaveformWidgetAbstract {
   protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
-    virtual mixxx::Duration render();
+
+  protected slots:
+    mixxx::Duration render() override;
 
   private:
     EmptyWaveformWidget(const char* group, QWidget* parent);

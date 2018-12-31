@@ -6,11 +6,11 @@
 #include <QMap>
 #include <QAtomicPointer>
 
+#include "util/duration.h"
 #include "util/performancetimer.h"
 #include "control/controlvalue.h"
 
 class ControlProxy;
-class VSyncThread;
 
 // This class is for synchronizing the sound device DAC time with the waveforms, displayed on the
 // graphic device, using the CPU time
@@ -23,7 +23,7 @@ class VSyncThread;
 //            ^Start m_timeInfoTime                      |
 //                                                       |
 // GPU: ---------|----------------------------------- |--|-------------------------------
-//               ^Render Waveform sample X            |  ^VSync (New waveform is displayed
+//               ^Render Waveform sample X            |  ^Swap (New waveform is displayed
 //                by use usFromTimerToNextSync        ^swap Buffer
 
 class VisualPlayPositionData {
@@ -46,10 +46,10 @@ class VisualPlayPosition : public QObject {
 
     // WARNING: Not thread safe. This function must be called only from the
     // engine thread.
-    void set(double playPos, double rate, double positionStep,
-            double slipPosition, double tempoTrackSeconds);
-    double getAtNextVSync(VSyncThread* vsyncThread);
-    void getPlaySlipAt(int usFromNow, double* playPosition, double* slipPosition);
+    void set(double playPos, double rate, double positionStep, double pSlipPosition, double tempoTrackSeconds);
+    double getAtNextSwap(mixxx::Duration estimatedTimeUntilSwap);
+    void getPlaySlipAt(mixxx::Duration estimatedTimeUntilSwap,
+                       double* playPosition, double* slipPosition);
     double getEnginePlayPos();
     void getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds);
 

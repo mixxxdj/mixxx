@@ -1185,9 +1185,7 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 
     auto waveformWidgetFactory = WaveformWidgetFactory::instance();
     connect(waveformWidgetFactory, SIGNAL(renderSpinnies()),
-            spinny, SLOT(render()));
-    connect(waveformWidgetFactory, SIGNAL(swapSpinnies()),
-            spinny, SLOT(swap()));
+            spinny, SLOT(slotShouldRenderOnNextTick()));
     connect(spinny, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
     connect(spinny, &WSpinny::cloneDeck,

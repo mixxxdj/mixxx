@@ -8,7 +8,8 @@
 WaveformWidgetAbstract::WaveformWidgetAbstract(const char* group)
     : WaveformWidgetRenderer(group),
       m_widget(nullptr),
-      m_initSuccess(false) {
+      m_initSuccess(false),
+      m_shouldRenderOnNextTick(false) {
 }
 
 WaveformWidgetAbstract::~WaveformWidgetAbstract() {
@@ -26,8 +27,8 @@ void WaveformWidgetAbstract::release() {
     }
 }
 
-void WaveformWidgetAbstract::preRender(VSyncThread* vsyncThread) {
-    WaveformWidgetRenderer::onPreRender(vsyncThread);
+void WaveformWidgetAbstract::preRender(mixxx::Duration estimatedTimeUntilSwap) {
+    WaveformWidgetRenderer::onPreRender(estimatedTimeUntilSwap);
 }
 
 mixxx::Duration WaveformWidgetAbstract::render() {

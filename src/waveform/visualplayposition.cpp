@@ -50,39 +50,54 @@ void VisualPlayPosition::set(double playPos, double rate, double positionStep,
     m_valid = true;
 }
 
-double VisualPlayPosition::getAtNextVSync(VSyncThread* vsyncThread) {
+double VisualPlayPosition::getAtNextSwap(mixxx::Duration estimatedTimeUntilSwap) {
     //static double testPos = 0;
     //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
     //return testPos;
 
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-        int refToVSync = vsyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
-        int offset = refToVSync - data.m_callbackEntrytoDac;
-        offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
+        int microsUntilSwap = estimatedTimeUntilSwap.toIntegerMicros();
+        int microsUntilDac = data.m_callbackEntrytoDac - data.m_referenceTime.elapsed().toIntegerMicros();
+
+        // playPos will be played in microsUntilDac seconds. If swap comes
+        // first, offset will be negative so that playpos goes backward.
+        int offsetMicros = microsUntilSwap - microsUntilDac;
+        offsetMicros = math_clamp(offsetMicros,
+                                      -m_audioBufferMicros * kMaxOffsetBufferCnt,
+                                      m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         // add the offset for the position of the sample that will be transferred to the DAC
         // When the next display frame is displayed
-        playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferMicros;
         //qDebug() << "playPos" << playPos << offset;
+        // TODO(rryan): m_audioBufferMicros is not accurate for this purpose. We
+        // should use the PortAudio reported actual latency instead of Mixxx's
+        // configured audio buffer size.
+        playPos += data.m_positionStep * offsetMicros * data.m_rate / m_audioBufferMicros;
         return playPos;
     }
     return -1;
 }
 
-void VisualPlayPosition::getPlaySlipAt(int fromNowMicros, double* pPlayPosition, double* pSlipPosition) {
+void VisualPlayPosition::getPlaySlipAt(mixxx::Duration estimatedTimeUntilSwap,
+                                       double* pPlayPosition, double* pSlipPosition) {
     //static double testPos = 0;
     //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
     //return testPos;
 
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-        int elapsed = data.m_referenceTime.elapsed().toIntegerMicros();
-        int dacFromNow = elapsed - data.m_callbackEntrytoDac;
-        int offset = dacFromNow - fromNowMicros;
-        offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
+        int microsUntilSwap = estimatedTimeUntilSwap.toIntegerMicros();
+        int microsUntilDac = data.m_callbackEntrytoDac - data.m_referenceTime.elapsed().toIntegerMicros();
+        int offsetMicros = microsUntilSwap - microsUntilDac;
+        offsetMicros = math_clamp(offsetMicros,
+                                  -m_audioBufferMicros * kMaxOffsetBufferCnt,
+                                  m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
-        playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferMicros;
+        // TODO(rryan): m_audioBufferMicros is not accurate for this purpose. We
+        // should use the PortAudio reported actual latency instead of Mixxx's
+        // configured audio buffer size.
+        playPos += data.m_positionStep * offsetMicros * data.m_rate / m_audioBufferMicros;
         *pPlayPosition = playPos;
         *pSlipPosition = data.m_slipPosition;
     }

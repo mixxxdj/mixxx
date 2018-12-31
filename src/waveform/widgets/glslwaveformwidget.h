@@ -1,13 +1,12 @@
 #ifndef GLWAVEFORMWIDGETSHADER_H
 #define GLWAVEFORMWIDGETSHADER_H
 
-#include <QOpenGLWidget>
-
-#include "waveformwidgetabstract.h"
+#include "waveform/widgets/baseqopenglwidget.h"
+#include "util/duration.h"
 
 class GLSLWaveformRendererSignal;
 
-class GLSLWaveformWidget : public QOpenGLWidget, public WaveformWidgetAbstract {
+class GLSLWaveformWidget : public BaseQOpenGLWidget {
     Q_OBJECT
   public:
     GLSLWaveformWidget(const char* group, QWidget* parent,
@@ -20,11 +19,12 @@ class GLSLWaveformWidget : public QOpenGLWidget, public WaveformWidgetAbstract {
     void castToQWidget() override;
     void paintEvent(QPaintEvent* event) override;
     void mouseDoubleClickEvent(QMouseEvent *) override;
+
+  protected slots:
     mixxx::Duration render() override;
 
   private:
     GLSLWaveformRendererSignal* signalRenderer_;
-
     friend class WaveformWidgetFactory;
 };
 

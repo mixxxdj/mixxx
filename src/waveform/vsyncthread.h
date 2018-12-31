@@ -28,6 +28,8 @@
 
 #include "util/performancetimer.h"
 
+// TODO(rryan): Rename to RenderThread or something, or possibly replace with a
+// generic BlockingThreadTimer class.
 class VSyncThread : public QThread {
     Q_OBJECT
   public:
@@ -39,8 +41,6 @@ class VSyncThread : public QThread {
         ST_FREE,
         ST_COUNT // Dummy Type at last, counting possible types
     };
-
-    static void swapGl(QOpenGLWidget* glw, int index);
 
     VSyncThread(QObject* pParent);
     ~VSyncThread();
@@ -59,7 +59,6 @@ class VSyncThread : public QThread {
 
   signals:
     void vsyncRender();
-    void vsyncSwap();
 
   private:
     bool m_bDoRendering;

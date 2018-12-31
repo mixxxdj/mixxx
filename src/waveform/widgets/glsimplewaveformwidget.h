@@ -1,11 +1,9 @@
 #ifndef GLSIMPLEWAVEFORMWIDGET_H
 #define GLSIMPLEWAVEFORMWIDGET_H
 
-#include <QOpenGLWidget>
+#include "waveform/widgets/baseqopenglwidget.h"
 
-#include "waveformwidgetabstract.h"
-
-class GLSimpleWaveformWidget : public QOpenGLWidget, public WaveformWidgetAbstract {
+class GLSimpleWaveformWidget : public BaseQOpenGLWidget {
     Q_OBJECT
   public:
     GLSimpleWaveformWidget(const char* group, QWidget* parent);
@@ -21,7 +19,9 @@ class GLSimpleWaveformWidget : public QOpenGLWidget, public WaveformWidgetAbstra
   protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
-    virtual mixxx::Duration render();
+
+  protected slots:
+    mixxx::Duration render() override;
 
   private:
     friend class WaveformWidgetFactory;

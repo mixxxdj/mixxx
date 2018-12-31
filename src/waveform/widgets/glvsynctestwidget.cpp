@@ -16,9 +16,7 @@
 #include "util/performancetimer.h"
 
 GLVSyncTestWidget::GLVSyncTestWidget(const char* group, QWidget* parent)
-    : QOpenGLWidget(parent),
-      WaveformWidgetAbstract(group) {
-
+        : BaseQOpenGLWidget(group, parent) {
 //    addRenderer<WaveformRenderBackground>(); // 172 µs
 //    addRenderer<WaveformRendererEndOfTrack>(); // 677 µs 1145 µs (active)
 //    addRenderer<WaveformRendererPreroll>(); // 652 µs 2034 µs (active)
