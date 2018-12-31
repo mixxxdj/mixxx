@@ -755,7 +755,7 @@ class Opus(Feature):
             return
 
         if build.platform_is_windows and build.static_dependencies:
-            for opus_lib in ['celt', 'silk_common']:
+            for opus_lib in ['celt', 'silk_common', 'silk_float']:
                 if not conf.CheckLib(opus_lib):
                     raise Exception('Missing opus static library %s -- exiting' % opus_lib)
 
