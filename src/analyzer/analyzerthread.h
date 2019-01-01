@@ -105,7 +105,7 @@ class AnalyzerThread : public WorkerThread {
     // There is only one consumer (namely the worker thread) and one producer
     // (the host thread) for this value. A single value is written and read
     // in turn so the minimum capacity is sufficient.
-    MpscFifo<TrackPointer, 2> m_nextTrack;
+    MpscFifo<TrackPointer, 1> m_nextTrack;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local: Only used in the constructor/destructor and within

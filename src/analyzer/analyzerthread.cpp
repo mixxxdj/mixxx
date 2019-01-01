@@ -85,6 +85,7 @@ AnalyzerThread::AnalyzerThread(
           m_dbConnectionPool(std::move(dbConnectionPool)),
           m_pConfig(std::move(pConfig)),
           m_modeFlags(modeFlags),
+          m_nextTrack(MpscFifoConcurrency::SingleProducer),
           m_sampleBuffer(mixxx::kAnalysisSamplesPerBlock),
           m_emittedState(AnalyzerThreadState::Void) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);

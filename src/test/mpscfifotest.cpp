@@ -10,7 +10,7 @@
 namespace {
 
 TEST(MpscFifoTest, CapacityOne) {
-    MpscFifo<int, 2> fifo;
+    MpscFifo<int, 1> fifo;
     int dequeued = -1;
 
     EXPECT_TRUE(fifo.enqueue(1));
@@ -39,7 +39,7 @@ TEST(MpscFifoTest, CapacityOne) {
 }
 
 TEST(MpscFifoTest, CapacityTwo) {
-    MpscFifo<int, 3> fifo;
+    MpscFifo<int, 2> fifo;
     int dequeued = -1;
 
     EXPECT_TRUE(fifo.enqueue(1));
