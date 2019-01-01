@@ -40,7 +40,7 @@ class MpscFifo {
             DEBUG_ASSERT(m_writeIndex >= 0);
             DEBUG_ASSERT(m_writeIndex <= capacity);
             m_buffer[m_writeIndex] = std::move(value);
-            m_writeIndex = nextIndex(m_writeIndex + 1);
+            m_writeIndex = nextIndex(m_writeIndex);
         }
         // Finally allow the reader to access the enqueued buffer slot
         m_readTokens.fetchAndAddRelease(-1);
@@ -58,7 +58,7 @@ class MpscFifo {
         DEBUG_ASSERT(m_readIndex >= 0);
         DEBUG_ASSERT(m_readIndex <= capacity);
         *value = std::move(m_buffer[m_readIndex]);
-        m_readIndex = nextIndex(m_readIndex + 1);
+        m_readIndex = nextIndex(m_readIndex);
         // Finally allow writers to overwrite the dequeued buffer slot
         m_writeTokens.fetchAndAddRelease(-1);
         return true;
@@ -66,7 +66,7 @@ class MpscFifo {
 
   private:
     static int nextIndex(int index) {
-        return index % (capacity + 1);
+        return (index + 1) % (capacity + 1);
     }
 
     // One additional slot is needed to decouple writers from the single reader
