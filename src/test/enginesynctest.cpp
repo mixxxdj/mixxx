@@ -1320,26 +1320,40 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     EXPECT_LT(0.8, ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                        "beat_distance"))->get());
 
-    // But if there is a third deck that is sync-enabled, we match that.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(0.0);
+    pButtonSyncEnabled1->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(0.0);
+    pButtonSyncEnabled2->set(0.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
+
+    // But if there is a third deck that is sync-enabled, we match that.
     auto pButtonSyncEnabled3 = std::make_unique<ControlProxy>(m_sGroup3, "sync_enabled");
     auto pFileBpm3 = std::make_unique<ControlProxy>(m_sGroup3, "file_bpm");
     ControlObject::getControl(ConfigKey(m_sGroup3, "beat_distance"))->set(0.6);
-    ControlObject::getControl(ConfigKey(m_sGroup3, "rate"))->set(getRateSliderValue(1.0));
     BeatsPointer pBeats3 = BeatFactory::makeBeatGrid(*m_pTrack3, 140, 0.0);
     m_pTrack3->setBeats(pBeats3);
     pFileBpm3->set(140.0);
-    pButtonSyncEnabled1->set(0.0);
-    ProcessBuffer();
-    pButtonSyncEnabled1->set(1.0);
+    // This will sync to the first deck here and not the second (lp1784185)
     pButtonSyncEnabled3->set(1.0);
+    ProcessBuffer();
+    EXPECT_FLOAT_EQ(130.0, ControlObject::getControl(ConfigKey(m_sGroup3, "bpm"))->get());
+    // revert that
+    ControlObject::getControl(ConfigKey(m_sGroup3, "rate"))->set(getRateSliderValue(1.0));
+    ProcessBuffer();
+    EXPECT_FLOAT_EQ(140.0, ControlObject::getControl(ConfigKey(m_sGroup3, "bpm"))->get());
+    // now we have Deck 3 with 140 bpm and sync enabled
+
+    pButtonSyncEnabled1->set(1.0);
+    ProcessBuffer();
 
     ControlObject::getControl(ConfigKey(m_sGroup3, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
 
+    // We expect Deck 1 is Deck 3 bpm
     EXPECT_FLOAT_EQ(140.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     EXPECT_FLOAT_EQ(140.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
