@@ -22,14 +22,10 @@ class ControlProxy : public QObject {
             const QString& i,
             QObject* pParent = nullptr,
             ControlFlags flags = ControlFlag::None);
-    ControlProxy(const char* g,
-            const char* i,
-            QObject* pParent = nullptr,
-            ControlFlags flags = ControlFlag::None);
     ControlProxy(const ConfigKey& key,
             QObject* pParent = nullptr,
             ControlFlags flags = ControlFlag::None);
-    virtual ~ControlProxy();
+    ~ControlProxy() override;
 
     void initialize(const ConfigKey& key, ControlFlags flags = ControlFlag::None);
 

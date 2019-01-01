@@ -13,10 +13,6 @@ ControlProxy::ControlProxy(const QString& g, const QString& i, QObject* pParent,
         : ControlProxy(ConfigKey(g, i), pParent, flags) {
 }
 
-ControlProxy::ControlProxy(const char* g, const char* i, QObject* pParent, ControlFlags flags)
-        : ControlProxy(ConfigKey(g, i), pParent, flags) {
-}
-
 ControlProxy::ControlProxy(const ConfigKey& key, QObject* pParent, ControlFlags flags)
         : QObject(pParent),
           m_pControl(nullptr) {
