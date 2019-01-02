@@ -21,11 +21,13 @@ class MpscFifo {
             MpscFifoConcurrency concurrency = MpscFifoConcurrency::MultipleProducers)
           : m_writeTokens(0),
             m_readTokens(capacity),
-            m_writeMutex((concurrency == MpscFifoConcurrency::MultipleProducers) ? new QMutex : nullptr),
             m_writeIndex(0),
             m_readIndex(0) {
         static_assert(capacity >= 1, "capacity too low");
         static_assert((capacity + 1) > 0, "capacity too high");
+        if (concurrency == MpscFifoConcurrency::MultipleProducers) {
+            m_writeMutex = std::make_unique<QMutex>();
+        }
     }
 
     // Writers from multiple threads may enqueue items concurrently.
