@@ -191,7 +191,7 @@
             <SetVariable name="state_1_pressed">sync_overdown.svg</SetVariable>
             <SetVariable name="state_1_unpressed">sync_over.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
-            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_phase</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
