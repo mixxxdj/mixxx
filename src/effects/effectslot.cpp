@@ -326,6 +326,7 @@ void EffectSlot::loadParameters() {
 
             auto pParameter = m_parameters.value(manifestIndex, nullptr);
 
+            // Try loading the next parameter in the current parameter slot
             VERIFY_OR_DEBUG_ASSERT(pParameter != nullptr) {
                 continue;
             }
