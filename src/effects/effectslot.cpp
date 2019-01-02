@@ -332,16 +332,17 @@ void EffectSlot::loadParameters() {
                 continue;
             }
 
-            while (parameterSlotIndex < numParameterSlots) {
-                auto pParameterSlot = getEffectParameterSlot(parameterType, parameterSlotIndex);
-                VERIFY_OR_DEBUG_ASSERT(pParameterSlot != nullptr) {
-                    ++parameterSlotIndex;
-                    continue;
-                }
-                pParameterSlot->loadParameter(pParameter);
-                ++parameterSlotIndex;
+            VERIFY_OR_DEBUG_ASSERT(parameterSlotIndex < numParameterSlots) {
                 break;
             }
+
+            auto pParameterSlot = getEffectParameterSlot(parameterType, parameterSlotIndex);
+            VERIFY_OR_DEBUG_ASSERT(pParameterSlot != nullptr) {
+                ++parameterSlotIndex;
+                continue;
+            }
+            pParameterSlot->loadParameter(pParameter);
+            ++parameterSlotIndex;
         }
 
         // Clear any EffectParameterSlots that still have a loaded parameter from before
