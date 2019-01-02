@@ -169,30 +169,28 @@ void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, boo
                         static_cast<int>(m_pControlLinkType->get()));
 
         bool inverse = m_pControlLinkInverse->toBool();
+        double neutral = m_pManifestParameter->neutralPointOnScale();
 
         switch (type) {
             case EffectManifestParameter::LinkType::LINKED:
                 if (parameter < 0.0 || parameter > 1.0) {
                     return;
                 }
-                {
-                    double neutral = m_pManifestParameter->neutralPointOnScale();
-                    if (neutral > 0.0 && neutral < 1.0) {
-                        if (inverse) {
-                            // the neutral position must stick where it is
-                            neutral = 1.0 - neutral;
-                        }
-                        // Knob is already a split knob
-                        // Match to center position of meta knob
-                        if (parameter <= 0.5) {
-                            parameter /= 0.5;
-                            parameter *= neutral;
-                        } else {
-                            parameter -= 0.5;
-                            parameter /= 0.5;
-                            parameter *= 1 - neutral;
-                            parameter += neutral;
-                        }
+                if (neutral > 0.0 && neutral < 1.0) {
+                    if (inverse) {
+                        // the neutral position must stick where it is
+                        neutral = 1.0 - neutral;
+                    }
+                    // Knob is already a split knob
+                    // Match to center position of meta knob
+                    if (parameter <= 0.5) {
+                        parameter /= 0.5;
+                        parameter *= neutral;
+                    } else {
+                        parameter -= 0.5;
+                        parameter /= 0.5;
+                        parameter *= 1 - neutral;
+                        parameter += neutral;
                     }
                 }
                 break;
