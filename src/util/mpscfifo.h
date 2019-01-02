@@ -31,6 +31,10 @@ class MpscFifo {
     }
 
     // Writers from multiple threads may enqueue items concurrently.
+    // The argument is passed by value, because it is consumed by
+    // this operation on success. The situation that the queue is
+    // full and the operation fails by returning false is not expected
+    // to happen frequently.
     bool enqueue(T value) {
         if (m_writeTokens.fetchAndAddAcquire(1) >= capacity) {
             // No slots available for writing -> Undo changes and abort
