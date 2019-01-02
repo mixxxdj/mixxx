@@ -1,5 +1,7 @@
 #include "analyzer/trackanalysisscheduler.h"
 
+#include <QCoreApplication>
+
 #include "library/library.h"
 #include "library/trackcollection.h"
 
@@ -19,8 +21,11 @@ void deleteTrackAnalysisScheduler(TrackAnalysisScheduler* plainPtr) {
     if (plainPtr) {
         // Trigger stop
         plainPtr->stop();
-        // Release ownership and let Qt delete the queue later
-        plainPtr->deleteLater();
+        if (QCoreApplication::instance()->thread()->loopLevel() > 0) {
+            plainPtr->deleteLater();
+        } else {
+            delete plainPtr;
+        }
     }
 }
 

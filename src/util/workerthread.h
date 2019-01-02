@@ -31,13 +31,11 @@ class WorkerThread : public QThread {
   public:
     explicit WorkerThread(
             const QString& name = QString());
-    // The destructor must be triggered by calling deleteLater() to
-    // ensure that the thread has already finished and is not running
-    // while destroyed! Connect finished() to deleteAfter() and then
-    // call stop() on the running worker thread explicitly to trigger
-    // the destruction. Use deleteAfterFinished() for this purpose.
     ~WorkerThread() override;
 
+    // Use this function to safely delete instances of this class
+    // to ensure that the worker thread has been finished before
+    // actually deleting it.
     void deleteAfterFinished();
 
     const QString& name() const {

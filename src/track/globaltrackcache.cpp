@@ -74,7 +74,11 @@ void deleteTrack(Track* plainPtr) {
                 << "Deleting"
                 << plainPtr;
     }
-    plainPtr->deleteLater();
+    if (QCoreApplication::instance()->thread()->loopLevel() > 0) {
+        plainPtr->deleteLater();
+    } else {
+        delete plainPtr;
+    }
 }
 
 } // anonymous namespace
@@ -216,7 +220,11 @@ void GlobalTrackCache::destroyInstance() {
     // Reset the static/global pointer before entering the destructor
     s_pInstance = nullptr;
     // Delete the singular instance
-    pInstance->deleteLater();
+    if (QCoreApplication::instance()->thread()->loopLevel() > 0) {
+        pInstance->deleteLater();
+    } else {
+        delete pInstance;
+    }
 }
 
 //static

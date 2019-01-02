@@ -1,5 +1,7 @@
 #include "util/workerthread.h"
 
+#include <QCoreApplication>
+
 
 namespace {
 
@@ -38,13 +40,23 @@ WorkerThread::~WorkerThread() {
 }
 
 void WorkerThread::deleteAfterFinished() {
-    if (!isFinished()) {
-        connect(this, &WorkerThread::finished, this, &WorkerThread::deleteLater);
-    }
-    if (isFinished()) {
-        // Already finished or just finished in the meantime. Calling
-        // deleteLater() twice is safe, though.
-        deleteLater();
+    DEBUG_ASSERT(loopLevel() == 0); // no own event loop
+    if (QCoreApplication::instance()->thread()->loopLevel() > 0) {
+        if (!isFinished()) {
+            connect(this, &WorkerThread::finished, this, &WorkerThread::deleteLater);
+        }
+        if (isFinished()) {
+            // Thread already finished or just finished while connecting the
+            // finished() signal to deleteLater(). Calling deleteLater() twice
+            // is safe if the signal is emitted after return from this function.
+            deleteLater();
+        }
+    } else {
+        if (!isFinished()) {
+            m_logger.warning() << "Deleting unfinished thread";
+        }
+        m_logger.debug() << "Committing suicide";
+        delete this;
     }
 }
 
