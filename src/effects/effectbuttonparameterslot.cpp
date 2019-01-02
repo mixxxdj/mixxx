@@ -22,8 +22,8 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
     m_pControlType = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_type")));
 
-    connect(m_pControlValue, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueChanged(double)));
+    connect(m_pControlValue, &ControlObject::valueChanged,
+            this, &EffectButtonParameterSlot::slotValueChanged);
 
     // Read-only controls.
     m_pControlType->setReadOnly();
@@ -77,8 +77,8 @@ void EffectButtonParameterSlot::loadParameter(EffectParameter* pEffectParameter)
         // Default loaded parameters to loaded and unlinked
         m_pControlLoaded->forceSet(1.0);
 
-        connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
-                this, SLOT(slotParameterValueChanged(double)));
+        connect(m_pEffectParameter, &EffectParameter::valueChanged,
+                this, &EffectButtonParameterSlot::slotParameterValueChanged);
     }
 
     emit(updated());

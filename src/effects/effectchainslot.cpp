@@ -34,8 +34,8 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     // qDebug() << "EffectChainSlot::EffectChainSlot " << group << ' ' << iChainNumber;
 
     m_pControlClear = new ControlPushButton(ConfigKey(m_group, "clear"));
-    connect(m_pControlClear, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlClear(double)));
+    connect(m_pControlClear, &ControlObject::valueChanged,
+            this, &EffectChainSlot::slotControlClear);
 
     m_pControlNumEffects = new ControlObject(ConfigKey(m_group, "num_effects"));
     m_pControlNumEffects->setReadOnly();
@@ -54,41 +54,44 @@ EffectChainSlot::EffectChainSlot(const QString& group,
     // Default to enabled. The skin might not show these buttons.
     m_pControlChainEnabled->setDefaultValue(true);
     m_pControlChainEnabled->set(true);
-    connect(m_pControlChainEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(sendParameterUpdate()));
+    connect(m_pControlChainEnabled, &ControlObject::valueChanged,
+            this, &EffectChainSlot::sendParameterUpdate);
 
     m_pControlChainMix = new ControlPotmeter(ConfigKey(m_group, "mix"), 0.0, 1.0,
                                              false, true, false, true, 1.0);
-    connect(m_pControlChainMix, SIGNAL(valueChanged(double)),
-            this, SLOT(sendParameterUpdate()));
+    connect(m_pControlChainMix, &ControlObject::valueChanged,
+            this, &EffectChainSlot::sendParameterUpdate);
 
     m_pControlChainSuperParameter = new ControlPotmeter(ConfigKey(m_group, "super1"), 0.0, 1.0);
-    connect(m_pControlChainSuperParameter, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlChainSuperParameter(double)));
+    // QObject::connect cannot connect to slots with optional parameters using function
+    // pointer syntax if the slot has more parameters than the signal, so use a lambda
+    // to hack around this limitation.
+    connect(m_pControlChainSuperParameter, &ControlObject::valueChanged,
+            this, [=](double value){slotControlChainSuperParameter(value);} );
     m_pControlChainSuperParameter->set(0.0);
     m_pControlChainSuperParameter->setDefaultValue(0.0);
 
     m_pControlChainMixMode = new ControlPushButton(ConfigKey(m_group, "mix_mode"));
     m_pControlChainMixMode->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlChainMixMode->setStates(static_cast<int>(EffectChainMixMode::NumMixModes));
-    connect(m_pControlChainMixMode, SIGNAL(valueChanged(double)),
-            this, SLOT(sendParameterUpdate()));
+    connect(m_pControlChainMixMode, &ControlObject::valueChanged,
+            this, &EffectChainSlot::sendParameterUpdate);
 
     m_pControlChainNextPreset = new ControlPushButton(ConfigKey(m_group, "next_chain"));
-    connect(m_pControlChainNextPreset, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlChainNextPreset(double)));
+    connect(m_pControlChainNextPreset, &ControlObject::valueChanged,
+            this, &EffectChainSlot::slotControlChainNextPreset);
 
     m_pControlChainPrevPreset = new ControlPushButton(ConfigKey(m_group, "prev_chain"));
-    connect(m_pControlChainPrevPreset, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlChainPrevPreset(double)));
+    connect(m_pControlChainPrevPreset, &ControlObject::valueChanged,
+            this, &EffectChainSlot::slotControlChainPrevPreset);
 
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pControlChainSelector = new ControlEncoder(ConfigKey(m_group, "chain_selector"), false);
-    connect(m_pControlChainSelector, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlChainSelector(double)));
+    connect(m_pControlChainSelector, &ControlObject::valueChanged,
+            this, &EffectChainSlot::slotControlChainSelector);
 
-    connect(&m_channelStatusMapper, SIGNAL(mapped(const QString&)),
-            this, SLOT(slotChannelStatusChanged(const QString&)));
+    connect(&m_channelStatusMapper, QOverload<const QString &>::of(&QSignalMapper::mapped),
+            this, &EffectChainSlot::slotChannelStatusChanged);
 
     // ControlObjects for skin <-> controller mapping interaction.
     // Refer to comment in header for full explanation.
@@ -274,8 +277,8 @@ void EffectChainSlot::registerInputChannel(const ChannelHandleAndGroup& handle_g
     // m_channelStatusMapper will emit a mapped(handle_group.name()) signal whenever
     // the valueChanged(double) signal is emitted by pEnableControl
     m_channelStatusMapper.setMapping(pEnableControl, handle_group.name());
-    connect(pEnableControl, SIGNAL(valueChanged(double)),
-            &m_channelStatusMapper, SLOT(map()));
+    connect(pEnableControl, &ControlObject::valueChanged,
+            &m_channelStatusMapper,  static_cast<void (QSignalMapper::*)()>(&QSignalMapper::map));
 }
 
 EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
