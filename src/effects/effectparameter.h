@@ -14,7 +14,10 @@ class EngineEffect;
 
 // An EffectParameter is a wrapper around EffectManifestParameter that tracks a
 // mutable value state and communicates that state to the engine. This class is
-// NOT thread-safe and must only be used from the main thread.
+// NOT thread-safe and must only be used from the main thread. Separating this
+// from the parameterX ControlObjects in EffectParameterSlot allows for decoupling
+// the state of the parameters from the ControlObject states, which is required for
+// parameter hiding and rearrangement.
 class EffectParameter : public QObject {
     Q_OBJECT
   public:
