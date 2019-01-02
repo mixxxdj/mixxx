@@ -117,9 +117,12 @@ class FifoWriter: public QThread {
     const int m_maxValue;
 };
 
+// Using 500k values/rounds this test should take no longer
+// than 200 ms. If the test doesn't finish at all this will
+// also indicate a bug.
 TEST(MpscFifoTest, ConcurrentWriters) {
     const int kCapacity = 20;
-    const int kMaxValue = 2000000;
+    const int kMaxValue = 500000;
 
     MpscFifo<int, kCapacity> fifo;
 
