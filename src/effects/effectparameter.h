@@ -10,6 +10,7 @@
 
 class Effect;
 class EffectsManager;
+class EngineEffect;
 
 // An EffectParameter is a wrapper around EffectManifestParameter that tracks a
 // mutable value state and communicates that state to the engine. This class is
@@ -17,7 +18,7 @@ class EffectsManager;
 class EffectParameter : public QObject {
     Q_OBJECT
   public:
-    EffectParameter(EffectSlot* pEffectSlot, EffectsManager* pEffectsManager,
+    EffectParameter(EngineEffect* pEngineEffect, EffectsManager* pEffectsManager,
                     int iParameterNumber, EffectManifestParameterPointer pParameter);
     virtual ~EffectParameter();
 
@@ -40,7 +41,7 @@ class EffectParameter : public QObject {
                            const double& minimum, const double& maximum);
     bool clampValue();
 
-    EffectSlot* m_pEffectSlot;
+    EngineEffect* m_pEngineEffect;
     EffectsManager* m_pEffectsManager;
     int m_iParameterNumber;
     EffectManifestParameterPointer m_pParameter;

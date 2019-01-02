@@ -4,10 +4,10 @@
 #include "effects/effectsmanager.h"
 #include "util/assert.h"
 
-EffectParameter::EffectParameter(EffectSlot* pEffectSlot, EffectsManager* pEffectsManager,
+EffectParameter::EffectParameter(EngineEffect* pEngineEffect, EffectsManager* pEffectsManager,
                                  int iParameterNumber, EffectManifestParameterPointer pParameter)
         : QObject(), // no parent
-          m_pEffectSlot(pEffectSlot),
+          m_pEngineEffect(pEngineEffect),
           m_pEffectsManager(pEffectsManager),
           m_iParameterNumber(iParameterNumber),
           m_pParameter(pParameter) {
@@ -60,13 +60,12 @@ void EffectParameter::setValue(double value) {
 }
 
 void EffectParameter::updateEngineState() {
-    EngineEffect* pEngineEffect = m_pEffectSlot->getEngineEffect();
-    if (!pEngineEffect) {
+    if (!m_pEngineEffect) {
         return;
     }
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_PARAMETER_PARAMETERS;
-    pRequest->pTargetEffect = pEngineEffect;
+    pRequest->pTargetEffect = m_pEngineEffect;
     pRequest->SetParameterParameters.iParameter = m_iParameterNumber;
     pRequest->value = m_value;
     pRequest->minimum = m_pParameter->getMinimum();

@@ -166,10 +166,6 @@ EffectState* EffectSlot::createState(const mixxx::EngineParameters& bufferParame
     return m_pEngineEffect->createState(bufferParameters);
 }
 
-EngineEffect* EffectSlot::getEngineEffect() {
-    return m_pEngineEffect;
-}
-
 EffectManifestPointer EffectSlot::getManifest() const {
     return m_pManifest;
 }
@@ -256,17 +252,17 @@ void EffectSlot::loadEffect(const EffectManifestPointer pManifest,
         parameterMapping.clear();
     }
 
+    addToEngine(std::move(pProcessor), activeChannels);
+
     int index = 0;
     for (const auto& pManifestParameter: m_pManifest->parameters()) {
         EffectParameter* pParameter = new EffectParameter(
-                this, m_pEffectsManager, m_parameters.size(), pManifestParameter);
+                m_pEngineEffect, m_pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
 
         m_mapForParameterType[pManifestParameter->parameterType()].push_back(index);
         ++index;
     }
-
-    addToEngine(std::move(pProcessor), activeChannels);
 
     m_pControlLoaded->forceSet(1.0);
 
@@ -321,6 +317,8 @@ void EffectSlot::loadParameters() {
 
         unsigned int parameterSlotIndex = 0;
         unsigned int numParameterSlots = m_iNumParameterSlots[parameterType];
+
+        // Load EffectParameters into the slot indicated by m_mapForParameterType
         for (int i=0 ; i<m_mapForParameterType[parameterType].size() ; ++i) {
             const int manifestIndex = m_mapForParameterType[parameterType].value(i, -1);
 
@@ -342,6 +340,9 @@ void EffectSlot::loadParameters() {
                 break;
             }
         }
+
+        // Clear any EffectParameterSlots that still have a loaded parameter from before
+        // but the loop above did not load a new parameter into them
         while (parameterSlotIndex < numParameterSlots) {
             auto pParameterSlot = getEffectParameterSlot(parameterType, parameterSlotIndex);
             VERIFY_OR_DEBUG_ASSERT(pParameterSlot != nullptr) {

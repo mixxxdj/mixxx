@@ -79,8 +79,6 @@ class EffectSlot : public QObject {
 
     void setEnabled(bool enabled);
 
-    EngineEffect* getEngineEffect();
-
     // static EffectPointer createFromXml(EffectsManager* pEffectsManager,
     //                              const QDomElement& element);
     void addToEngine(std::unique_ptr<EffectProcessor>,
