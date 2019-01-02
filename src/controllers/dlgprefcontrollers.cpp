@@ -110,19 +110,6 @@ void DlgPrefControllers::setupControllerWidgets() {
     qSort(controllerList.begin(), controllerList.end(), controllerCompare);
 
     foreach (Controller* pController, controllerList) {
-        DlgPrefController* controllerDlg = new DlgPrefController(
-            this, pController, m_pControllerManager, m_pConfig);
-        connect(controllerDlg, SIGNAL(mappingStarted()),
-                m_pDlgPreferences, SLOT(hide()));
-        connect(controllerDlg, SIGNAL(mappingEnded()),
-                m_pDlgPreferences, SLOT(show()));
-
-        m_controllerWindows.append(controllerDlg);
-        m_pDlgPreferences->addPageWidget(controllerDlg);
-
-        connect(controllerDlg, SIGNAL(controllerEnabled(DlgPrefController*, bool)),
-                this, SLOT(slotHighlightDevice(DlgPrefController*, bool)));
-
         QTreeWidgetItem * controllerWindowLink = new QTreeWidgetItem(QTreeWidgetItem::Type);
         controllerWindowLink->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
         QString curDeviceName = pController->getName();
@@ -136,6 +123,19 @@ void DlgPrefControllers::setupControllerWidgets() {
         QFont temp = controllerWindowLink->font(0);
         temp.setBold(pController->isOpen());
         controllerWindowLink->setFont(0, temp);
+
+        DlgPrefController* controllerDlg = new DlgPrefController(
+            this, pController, m_pControllerManager, m_pConfig);
+        connect(controllerDlg, SIGNAL(mappingStarted()),
+                m_pDlgPreferences, SLOT(hide()));
+        connect(controllerDlg, SIGNAL(mappingEnded()),
+                m_pDlgPreferences, SLOT(show()));
+
+        m_controllerWindows.append(controllerDlg);
+        m_pDlgPreferences->addPageWidget(DlgPreferences::PreferencesPage(controllerDlg, controllerWindowLink));
+
+        connect(controllerDlg, SIGNAL(controllerEnabled(DlgPrefController*, bool)),
+                this, SLOT(slotHighlightDevice(DlgPrefController*, bool)));
     }
 
     // If no controllers are available, show the "No controllers available"

@@ -32,6 +32,8 @@ class DlgPrefController : public DlgPreferencePage {
                       UserSettingsPointer pConfig);
     virtual ~DlgPrefController();
 
+    DlgPreferencePage::State state() override;
+
   public slots:
     // Called when we should apply / save our changes.
     void slotApply();
@@ -83,7 +85,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetDescription(const ControllerPresetPointer pPreset) const;
     QString presetForumLink(const ControllerPresetPointer pPreset) const;
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;
-    void setupWarningLabel(ControllerPresetPointer preset);
+    void checkPresetCompatibility(ControllerPresetPointer preset);
     void savePreset(QString path);
     void initTableView(QTableView* pTable);
 
@@ -106,6 +108,7 @@ class DlgPrefController : public DlgPreferencePage {
     ControllerOutputMappingTableModel* m_pOutputTableModel;
     QSortFilterProxyModel* m_pOutputProxyModel;
     bool m_bDirty;
+    State m_bState;
 };
 
 #endif /*DLGPREFCONTROLLER_H*/

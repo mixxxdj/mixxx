@@ -34,7 +34,8 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
           m_pInputProxyModel(NULL),
           m_pOutputTableModel(NULL),
           m_pOutputProxyModel(NULL),
-          m_bDirty(false) {
+          m_bDirty(false),
+          m_bState(State::valid) {
     m_ui.setupUi(this);
 
     initTableView(m_ui.m_pInputMappingTableView);
@@ -60,6 +61,17 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     }
 
     m_ui.groupBoxWarning->hide();
+    m_ui.labelWarning->setText(tr("<font color='#BB0000'><b>If you use this preset your controller may not work correctly. "
+            "Please select another preset.</b></font><br><br>"
+            "This preset was designed for a newer Mixxx Controller Engine "
+            "and cannot be used on your current Mixxx installation.<br>"
+            "Your Mixxx installation has Controller Engine version %1. "
+            "This preset requires a Controller Engine version >= %2.<br><br>"
+            "For more information visit the wiki page on "
+            "<a href='https://mixxx.org/wiki/doku.php/controller_engine_versions'>Controller Engine Versions</a>.")
+            .arg("2","1"));
+    QIcon icon = style()->standardIcon(QStyle::SP_MessageBoxWarning);
+    m_ui.labelWarningIcon->setPixmap(icon.pixmap(50));
 
     // When the user picks a preset, load it.
     connect(m_ui.comboBoxPreset, SIGNAL(activated(int)),
@@ -226,6 +238,10 @@ QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset)
             url = "<a href=\"" + link + "\">Mixxx Wiki</a>";
     }
     return url;
+}
+
+DlgPreferencePage::State DlgPrefController::state() {
+    return m_bState;
 }
 
 void DlgPrefController::slotDirty() {
@@ -426,7 +442,7 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.labelLoadedPreset->setText(presetName(preset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
     m_ui.labelLoadedPresetAuthor->setText(presetAuthor(preset));
-    setupWarningLabel(preset);
+    checkPresetCompatibility(preset);
     QStringList supportLinks;
 
     QString forumLink = presetForumLink(preset);
@@ -546,22 +562,36 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     }
 }
 
-void DlgPrefController::setupWarningLabel(ControllerPresetPointer preset) {
+void DlgPrefController::checkPresetCompatibility(ControllerPresetPointer preset) {
+    State bPreviousState = m_bState;
     if (presetIsSupported(preset)) {
+        m_bState = State::valid;
         m_ui.groupBoxWarning->hide();
+        bool isMappable = m_pController->isMappable();
+        m_ui.btnLearningWizard->setEnabled(isMappable);
+        m_ui.btnAddInputMapping->setEnabled(true);
+        m_ui.btnRemoveInputMappings->setEnabled(true);
+        m_ui.btnClearAllInputMappings->setEnabled(true);
+        m_ui.btnAddOutputMapping->setEnabled(true);
+        m_ui.btnRemoveOutputMappings->setEnabled(true);
+        m_ui.btnClearAllOutputMappings->setEnabled(true);
+        m_ui.btnAddScript->setEnabled(true);
+        m_ui.btnRemoveScript->setEnabled(true);
     } else {
+        m_bState = State::invalid;
         m_ui.groupBoxWarning->show();
-        m_ui.labelWarning->setText(tr("<font color='#BB0000'><b>If you use this preset your controller may not work correctly. "
-                "Please select another preset.</b></font><br><br>"
-                "This preset was designed for a newer Mixxx Controller Engine "
-                "and cannot be used on your current Mixxx installation.<br>"
-                "Your Mixxx installation has Controller Engine version %1. "
-                "This preset requires a Controller Engine version >= %2.<br><br>"
-                "For more information visit the wiki page on "
-                "<a href='https://mixxx.org/wiki/doku.php/controller_engine_versions'>Controller Engine Versions</a>.")
-                .arg("2","1"));
-        QIcon icon = style()->standardIcon(QStyle::SP_MessageBoxWarning);
-        m_ui.labelWarningIcon->setPixmap(icon.pixmap(50));
+        m_ui.btnLearningWizard->setEnabled(false);
+        m_ui.btnAddInputMapping->setEnabled(false);
+        m_ui.btnRemoveInputMappings->setEnabled(false);
+        m_ui.btnClearAllInputMappings->setEnabled(false);
+        m_ui.btnAddOutputMapping->setEnabled(false);
+        m_ui.btnRemoveOutputMappings->setEnabled(false);
+        m_ui.btnClearAllOutputMappings->setEnabled(false);
+        m_ui.btnAddScript->setEnabled(false);
+        m_ui.btnRemoveScript->setEnabled(false);
+    }
+    if (bPreviousState != m_bState) {
+        emit(stateChanged());
     }
 }
 

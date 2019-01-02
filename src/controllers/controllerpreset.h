@@ -21,7 +21,7 @@ class ConstControllerPresetVisitor;
 
 class ControllerPreset {
   public:
-    ControllerPreset() {}
+    ControllerPreset(): m_iControllerEngineVersion(0) {}
     virtual ~ControllerPreset() {}
 
     struct ScriptFileInfo {
