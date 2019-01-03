@@ -103,60 +103,56 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
     }
     m_lastProgressEmittedAt = now;
 
-    if (allTracksFinished()) {
-        m_currentTrackProgress = kAnalyzerProgressDone;
-    } else {
-        AnalyzerProgress workerProgressSum = 0;
-        int workerProgressCount = 0;
-        for (const auto& worker: m_workers) {
-            const AnalyzerProgress workerProgress = worker.analyzerProgress();
-            if (workerProgress >= kAnalyzerProgressNone) {
-                workerProgressSum += workerProgress;
-                ++workerProgressCount;
+    AnalyzerProgress workerProgressSum = 0;
+    int workerProgressCount = 0;
+    for (const auto& worker: m_workers) {
+        const AnalyzerProgress workerProgress = worker.analyzerProgress();
+        if (workerProgress >= kAnalyzerProgressNone) {
+            workerProgressSum += workerProgress;
+            ++workerProgressCount;
+        }
+    }
+    // The following algorithm/heuristic is used for calculating the
+    // amortized analysis progress (current track number + current
+    // track progress) across all worker threads. It results in a
+    // simple and almost linear progress display when multiple threads
+    // are running in parallel. It also covers the expected behavior
+    // for the single-threaded case. The receiver of progress updates
+    // should not need to know how many threads are actually processing
+    // tracks concurrently behind the scenes.
+    if (workerProgressCount > 0) {
+        DEBUG_ASSERT(kAnalyzerProgressNone == 0);
+        DEBUG_ASSERT(kAnalyzerProgressDone == 1);
+        const int inProgressCount =
+                math_max(1, int(std::ceil(workerProgressSum)));
+        const AnalyzerProgress currentTrackProgress =
+                workerProgressSum - std::floor(workerProgressSum);
+        // The calculation of inProgressCount is only an approximation.
+        // In some situations the calculated virtual current track number
+        // = m_finishedTracksCount + inProgressCount exceeds the upper
+        // bound m_dequeuedTracksCount. Using the minimum of both values
+        // is an appropriate choice for reporting continuous progress.
+        const int currentTrackNumber =
+                math_min(m_finishedTracksCount + inProgressCount, m_dequeuedTracksCount);
+        // The combination of the values current count (primary) and current
+        // progress (secondary) should never decrease to avoid confusion
+        if (m_currentTrackNumber < currentTrackNumber) {
+            m_currentTrackNumber = currentTrackNumber;
+            // Unconditional progress update
+            m_currentTrackProgress = currentTrackProgress;
+        } else if (m_currentTrackNumber == currentTrackNumber) {
+            // Conditional progress update if current count didn't change
+            if (m_currentTrackProgress >= kAnalyzerProgressNone) {
+                // Current progress should not decrease while the count is constant
+                m_currentTrackProgress = math_max(m_currentTrackProgress, currentTrackProgress);
+            } else {
+                // Initialize current progress
+                m_currentTrackProgress = currentTrackProgress;
             }
         }
-        // The following algorithm/heuristic is used for calculating the
-        // amortized analysis progress (current track number + current
-        // track progress) across all worker threads. It results in a
-        // simple and almost linear progress display when multiple threads
-        // are running in parallel. It also covers the expected behavior
-        // for the single-threaded case. The receiver of progress updates
-        // should not need to know how many threads are actually processing
-        // tracks concurrently behind the scenes.
-        if (workerProgressCount > 0) {
-            DEBUG_ASSERT(kAnalyzerProgressNone == 0);
-            DEBUG_ASSERT(kAnalyzerProgressDone == 1);
-            const int inProgressCount =
-                    math_max(1, int(std::ceil(workerProgressSum)));
-            const AnalyzerProgress currentTrackProgress =
-                    workerProgressSum - std::floor(workerProgressSum);
-            // The calculation of inProgressCount is only an approximation.
-            // In some situations the calculated virtual current track number
-            // = m_finishedTracksCount + inProgressCount exceeds the upper
-            // bound m_dequeuedTracksCount. Using the minimum of both values
-            // is an appropriate choice for reporting continuous progress.
-            const int currentTrackNumber =
-                    math_min(m_finishedTracksCount + inProgressCount, m_dequeuedTracksCount);
-            // The combination of the values current count (primary) and current
-            // progress (secondary) should never decrease to avoid confusion
-            if (m_currentTrackNumber < currentTrackNumber) {
-                m_currentTrackNumber = currentTrackNumber;
-                // Unconditional progress update
-                m_currentTrackProgress = currentTrackProgress;
-            } else if (m_currentTrackNumber == currentTrackNumber) {
-                // Conditional progress update if current count didn't change
-                if (m_currentTrackProgress >= kAnalyzerProgressNone) {
-                    // Current progress should not decrease while the count is constant
-                    m_currentTrackProgress = math_max(m_currentTrackProgress, currentTrackProgress);
-                } else {
-                    // Initialize current progress
-                    m_currentTrackProgress = currentTrackProgress;
-                }
-            }
-        } else {
-            if (m_currentTrackNumber < m_finishedTracksCount) {
-                m_currentTrackNumber = m_finishedTracksCount;
-            }
+    } else {
+        if (m_currentTrackNumber < m_finishedTracksCount) {
+            m_currentTrackNumber = m_finishedTracksCount;
         }
     }
     const int totalTracksCount =
