@@ -42,7 +42,7 @@
   padding: 0px;
 }
 
-#PosKeyBpmGutter {
+#ArtistKeyBpmGutter {
   qproperty-layoutAlignment: 'AlignVCenter';
   border-top: 1px solid #222;
 }
@@ -899,8 +899,12 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 2px;
 }
-#TitleGutterSmall{
-  padding: 0px 0px 0px 2px;
+#TitleGutterSmall {
+  padding: 0px;
+}
+
+#ArtistKeyBpmGutterSmall {
+  border-top: 1px solid #222;
 }
 
 #BPMGutter, #PositionGutter {
@@ -920,7 +924,7 @@ WBeatSpinBox,
 #BpmKeyEditRowCollapsed:hover,
 #BpmKeyEditRowExpanded:hover,
 #PositionGutter:hover,
-#PositionGutterSmall:hover,
+#PlayPositionTextSmall:hover,
 #StarratingGutter:hover {
   /* emphasize editable widgets on hover */
   border: 1px solid #FF6600;
@@ -969,17 +973,32 @@ WBeatSpinBox,
 
 #DeckTextRow #ArtistGutter WLabel,
 #DeckTextRow #BPMGutter WLabel,
-#DeckTextRow #PositionGutter WLabel, #PosKeyBpmGutter WLabel {
+#DeckTextRow #PositionGutter WLabel,
+#PlayPositionTextSmall,
+#ArtistTextSmall,
+#BpmKeyTextSmall {
   font-weight: bold;
   font-size: 15px;
   text-transform: none;
 }
 
-#BPMGutter WLabel, #PositionGutter WLabel {
+#BpmKeyTextSmall,
+#PlayPositionTextSmall {
   qproperty-alignment: 'AlignRight | AlignVCenter';
 }
 
-#DeckTextRow #TitleGutter WLabel, #TitleGutterSmall WLabel,
+#PlayPositionTextSmall {
+  padding: 0px 1px;
+  border: 1px solid transparent;
+}
+
+#TitleTextSmall,
+#ArtistTextSmall {
+  padding: 0px 1px 0px 1px;
+}
+
+#DeckTextRow #TitleGutter WLabel,
+#TitleTextSmall,
 #EffectRackExpanded #EffectUnitNameContainer WLabel {
   font-weight: bold;
   font-size: 17px;
@@ -987,7 +1006,7 @@ WBeatSpinBox,
   text-align: left;
 }
 
-#BpmKeyGutterSmall {
+#BpmKeyTextSmall {
   border: 1px solid #222;
   border-width: 0px 0px 0px 1px;
   padding: 0px 2px 0px 2px;

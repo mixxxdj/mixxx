@@ -79,28 +79,6 @@
             <Style>
             </Style>
             <Children>
-              <!-- Title -->
-              <TrackProperty>
-                <TooltipId>track_title</TooltipId>
-                <Style>QLabel {
-                  font: bold 13px sans-serif;
-                  font-family: "Open Sans";
-                  background-color: transparent;
-                  color: #191F24;
-                  text-align: left;
-                  padding: 0px 2px;
-                }
-                </Style>
-                <Property>title</Property>
-                <Channel><Variable name="channum"/></Channel>
-                <SizePolicy>i,f</SizePolicy>
-                <MinimumSize>50,15</MinimumSize>
-                <MaximumSize>,15</MaximumSize>
-                <Alignment>left</Alignment>
-                <Elide>right</Elide>
-              </TrackProperty>
-
-              <!-- Time / Key /BPM -->
               <WidgetGroup>
                 <Size>10me,15f</Size>
                 <Layout>horizontal</Layout>
@@ -113,22 +91,80 @@
                     color: #191F24;
                   }
                 </Style>
-                <Layout>vertical</Layout>
+                <Layout>horizontal</Layout>
                 <Children>
+                  <!-- Title -->
+                  <TrackProperty>
+                    <TooltipId>track_title</TooltipId>
+                    <Style>QLabel {
+                      font: bold 13px sans-serif;
+                      font-family: "Open Sans";
+                      background-color: transparent;
+                      color: #191F24;
+                      text-align: left;
+                      padding: 0px 2px;
+                    }
+                    </Style>
+                    <Property>title</Property>
+                    <Channel><Variable name="channum"/></Channel>
+                    <SizePolicy>min,f</SizePolicy>
+                    <MinimumSize>50,15</MinimumSize>
+                    <MaximumSize>,15</MaximumSize>
+                    <Alignment>left</Alignment>
+                    <Elide>right</Elide>
+                  </TrackProperty>
                   <NumberPos>
                     <TooltipId>track_time</TooltipId>
-                    <Size>90me,15f</Size>
+                    <Size>55min,15f</Size>
                     <Style>QLabel {
                       font: bold 13px sans-serif;
                       font-family: Open Sans;
                       color: #191F24;
-                      text-align: left;
+                      text-align: right;
                       padding: 1px 0px 0px 1px;
                     }
                     </Style>
                     <Group><Variable name="group"/></Group>
-                    <Alignment>left</Alignment>
+                    <Alignment>right</Alignment>
                   </NumberPos>
+                </Children>
+              </WidgetGroup>
+
+              <!-- Time / Key /BPM -->
+              <WidgetGroup>
+                <Size>100me,15f</Size>
+                <Layout>horizontal</Layout>
+                <Style>
+                  QWidget { margin: 0px; padding: 0; }
+                  QLabel {
+                    font: bold 9px sans-serif;
+                    font-family: "Open Sans";
+                    background-color: transparent;
+                    color: #191F24;
+                  }
+                </Style>
+                <Layout>vertical</Layout>
+                <Children>
+                  <!-- Artist -->
+                  <TrackProperty>
+                    <TooltipId>track_title</TooltipId>
+                    <Style>QLabel {
+                      font: bold 13px sans-serif;
+                      font-family: "Open Sans";
+                      background-color: transparent;
+                      color: #191F24;
+                      text-align: left;
+                      padding: 0px 2px;
+                    }
+                    </Style>
+                    <Property>artist</Property>
+                    <Channel><Variable name="channum"/></Channel>
+                    <SizePolicy>me,f</SizePolicy>
+                    <MinimumSize>50,15</MinimumSize>
+                    <MaximumSize>,15</MaximumSize>
+                    <Alignment>left</Alignment>
+                    <Elide>right</Elide>
+                  </TrackProperty>
                   <Key>
                     <TooltipId>visual_key</TooltipId>
                     <Size>25f,14f</Size>

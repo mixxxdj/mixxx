@@ -605,10 +605,13 @@ WWidgetGroup {
 }
 
 #DeckMini_TitlePlayPosKeyBPM {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  qproperty-layoutAlignment: 'AlignRight | AlignTop'; /* 
   background-color: #333;
+  padding: 1px 0px 1px 1px; */
   margin: 0px 1px 0px 1px;
-  padding: 1px 0px 1px 1px;
+}
+#DeckMini_TitlePlayPosKeyBPM WLabel {
+  background-color: #333;
 }
 
 #DeckOverview {
@@ -742,29 +745,31 @@ WWidgetGroup {
   #PlayPosition, #TrackTitle {
     font-size: 18px/18px;
     font-weight: bold;
-    }
-  #TrackTitleMini {
-    padding: 0px 0px 0px 1px;
-  }
-  #PlayPositionMini {
-    padding: 0px 1px 0px 0px;
   }
   #Duration, #TrackBy, #TrackArtist, #TrackTitleMini, #PlayPositionMini {
     font-size: 16px/16px;
     font-weight: bold;
   }
+  #PlayPosition, #PlayPositionMini {
+    /* Draw a border to emphasize that play position display can be changed
+    to show both elapsed and remaining time */
+    border: 1px solid transparent;
+    }
+  #PlayPosition {
+    padding: 0px 0px 0px 1px;
+    }
+  #PlayPositionMini {
+    padding: 0px 1px 0px 0px;
+    }
+    #PlayPosition:hover, #PlayPositionMini:hover {
+      border: 1px solid #ccc;
+    }
+  #TrackTitleMini {
+    padding: 0px 0px 0px 1px;
+  }
   #TrackArtist {
     padding-top: 2px;
   }
-  #PlayPositionHighlightContainer {
-    /* Draw a border to emphasize that play position display can be changed
-    to show both elapsed and remaining time */
-    padding: 0px 2px 0px 2px;
-    border: 1px solid transparent;
-    }
-    #PlayPositionHighlightContainer:hover {
-      border: 1px solid #ccc;
-    }
   WLabel#TrackBy, WLabel#TrackByMini {
     color: #888;
   }
@@ -1186,6 +1191,7 @@ WBeatSpinBox,
   font-size: 16px/16px;
   font-weight: bold;
   padding: 1px 0px 0px 0px;
+  border-top: 1px solid #000;
   }
   #SyncButtonOverlay[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
@@ -1237,7 +1243,8 @@ WBeatSpinBox,
     padding: 0px;
   }
   #KeyDisplayMini {
-    padding: 0px 2px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    border-top: 1px solid #000;
   }
   #KeyMatch {
     border: 1px solid #444;

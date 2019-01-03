@@ -39,35 +39,44 @@
                 <Children>
                   <TrackProperty>
                     <TooltipId>track_title</TooltipId>
-                    <ObjectName>TitleTextMini</ObjectName>
+                    <ObjectName>TitleTextSmall</ObjectName>
                     <Size>100me,20f</Size>
                     <Property>title</Property>
                     <Alignment>left</Alignment>
                     <Elide>right</Elide>
                     <Channel><Variable name="channum"/></Channel>
                   </TrackProperty>
-                </Children>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- Key / BPM / PlayPos -->
-                <Layout>horizontal</Layout>
-                <Size>200min,20f</Size>
-                <Children>
                   
                   <NumberPos>
                     <TooltipId>track_time</TooltipId>
-                    <ObjectName>PlayPositionTextMini</ObjectName>
-                    <Size>60me,20f</Size>
-                    <Alignment>left</Alignment>
+                    <ObjectName>PlayPositionTextSmall</ObjectName>
+                    <Size>50min,20f</Size>
+                    <Alignment>center</Alignment>
                     <Channel><Variable name="channum"/></Channel>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
                     </Connection>
                   </NumberPos>
+                </Children>
+              </WidgetGroup><!-- Title / PlayPos -->
+
+              <WidgetGroup><!-- Artist / Key / BPM -->
+                <Layout>horizontal</Layout>
+                <Size>200min,20f</Size>
+                <Children>
+                  <TrackProperty>
+                    <TooltipId>track_title</TooltipId>
+                    <ObjectName>ArtistTextSmall</ObjectName>
+                    <Size>100me,20f</Size>
+                    <Property>artist</Property>
+                    <Alignment>left</Alignment>
+                    <Elide>right</Elide>
+                    <Channel><Variable name="channum"/></Channel>
+                  </TrackProperty>
 
                   <Key>
                     <TooltipId>visual_key</TooltipId>
-                    <ObjectName>KeyTextMini</ObjectName>
+                    <ObjectName>KeyTextSmall</ObjectName>
                     <Channel><Variable name="channum"/></Channel>
                     <Size>44min,20f</Size>
                     <Alignment>center</Alignment>
@@ -77,25 +86,26 @@
                     </Connection>
                   </Key>
 
-                <NumberBpm>
-                  <ObjectName>BpmTextMini</ObjectName>
-                  <TooltipId>visual_bpm</TooltipId>
-                  <Size>60f,20f</Size>
-                  <Channel><Variable name="channum" /></Channel>
-                  <NumberOfDigits>2</NumberOfDigits>
-                  <Connection>
-                    <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-                  </Connection>
-                </NumberBpm>
+                  <NumberBpm>
+                    <ObjectName>BpmTextSmall</ObjectName>
+                    <TooltipId>visual_bpm</TooltipId>
+                    <Size>60f,20f</Size>
+                    <Alignment>center</Alignment>
+                    <Channel><Variable name="channum" /></Channel>
+                    <NumberOfDigits>2</NumberOfDigits>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                    </Connection>
+                  </NumberBpm>
 
                 </Children>
               </WidgetGroup><!-- Key / BPM / PlayPos -->
 
             </Children>
-          </WidgetGroup><!-- DeckMini_TitlePlayPosKeyBPM -->
+          </WidgetGroup><!-- DeckSmall_TitlePlayPosKeyBPM -->
 
           <WidgetGroup><!-- Time -->
-            <ObjectName>PlayContainerMini</ObjectName>
+            <ObjectName>PlayContainerSmall</ObjectName>
             <BackPath>style/background_tile.png</BackPath>
             <Layout>horizontal</Layout>
             <Children>

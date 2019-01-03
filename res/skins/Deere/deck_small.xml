@@ -29,6 +29,7 @@
           <WidgetGroup>
             <ObjectName>OverviewGutterSmall</ObjectName>
             <Layout>horizontal</Layout>
+            <Size>200me,40f</Size>
             <Children>
               <Overview>
                 <TooltipId>waveform_overview</TooltipId>
@@ -78,18 +79,72 @@
             <Size>200min,40f</Size>
             <Children>
 
-              <WidgetGroup>
-                <ObjectName>TitleGutterSmall</ObjectName>
+              <WidgetGroup><!-- Title/*** / PlayPos -->
                 <Layout>horizontal</Layout>
-                <Size>100me,22f</Size>
+                <Size>100me,21f</Size>
+                <Children>
+
+                  <WidgetGroup>
+                    <ObjectName>TitleGutterSmall</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Size>100me,20f</Size>
+                    <Children>
+                      <!-- We allow to hide track/artist info (aka AM-Mode) in the skin settings,
+                          display just a label with asterixes instead. -->
+                      <TrackProperty>
+                        <TooltipId>track_title</TooltipId>
+                        <ObjectName>TitleTextSmall</ObjectName>
+                        <Size>100me,20f</Size>
+                        <Property>title</Property>
+                        <Group><Variable name="group"/></Group>
+                        <Elide>right</Elide>
+                        <Connection>
+                          <ConfigKey>[Deere],show_track_info</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </TrackProperty>
+
+                      <Label>
+                        <TooltipId>track_title</TooltipId>
+                        <Size>me,min</Size>
+                        <ObjectName>TitleTextSmall</ObjectName>
+                        <Text>***</Text>
+                        <Connection>
+                          <ConfigKey>[Deere],show_track_info</ConfigKey>
+                          <BindProperty>visible</BindProperty>
+                          <Transform>
+                            <Not/>
+                          </Transform>
+                        </Connection>
+                      </Label>
+                    </Children>
+                  </WidgetGroup><!-- TitleGutter -->
+                  
+                  <NumberPos>
+                    <TooltipId>track_time</TooltipId>
+                    <ObjectName>PlayPositionTextSmall</ObjectName>
+                    <Size>55min,20f</Size>
+                    <Alignment>center</Alignment>
+                    <Channel><Variable name="channum"/></Channel>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                    </Connection>
+                  </NumberPos>
+                </Children>
+              </WidgetGroup><!-- Title/*** / PlayPos -->
+
+              <WidgetGroup><!-- Artist / Key / BPM -->
+                <ObjectName>ArtistKeyBpmGutterSmall</ObjectName>
+                <Layout>horizontal</Layout>
+                <Size>200min,19f</Size>
                 <Children>
                   <!-- We allow to hide track/artist info (aka AM-Mode) in the skin settings,
                       display just a label with asterixes instead. -->
                   <TrackProperty>
-                    <TooltipId>track_title</TooltipId>
-                    <ObjectName>TitleTextSmall</ObjectName>
+                    <TooltipId>track_artist</TooltipId>
+                    <ObjectName>ArtistTextSmall</ObjectName>
                     <SizePolicy>me,me</SizePolicy>
-                    <Property>title</Property>
+                    <Property>artist</Property>
                     <Group><Variable name="group"/></Group>
                     <Elide>right</Elide>
                     <Connection>
@@ -99,9 +154,9 @@
                   </TrackProperty>
 
                   <Label>
-                    <TooltipId>track_title</TooltipId>
+                    <TooltipId>track_artist</TooltipId>
                     <Size>me,min</Size>
-                    <ObjectName>HiddenTrackTitleInfo</ObjectName>
+                    <ObjectName>ArtistTextSmall</ObjectName>
                     <Text>***</Text>
                     <Connection>
                       <ConfigKey>[Deere],show_track_info</ConfigKey>
@@ -111,65 +166,30 @@
                       </Transform>
                     </Connection>
                   </Label>
-                </Children>
-              </WidgetGroup><!-- TitleGutter -->
 
-              <WidgetGroup><!-- Key / BPM / PlayPos -->
-                <ObjectName>PosKeyBpmGutter</ObjectName>
-                <Layout>horizontal</Layout>
-                <Size>100me,17me</Size>
-                <Children>
+                  <Key>
+                    <TooltipId>visual_key</TooltipId>
+                    <ObjectName>BpmKeyTextSmall</ObjectName>
+                    <Alignment>center</Alignment>
+                    <Size>30min,19f</Size>
+                    <Alignment>center</Alignment>
+                    <Elide>right</Elide>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                    </Connection>
+                  </Key>
 
-                  <WidgetGroup>
-                    <ObjectName>PositionGutterSmall</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>min,me</SizePolicy>
-                    <Children>
-                      <NumberPos>
-                        <SizePolicy>me,me</SizePolicy>
-                        <TooltipId>track_time</TooltipId>
-                        <Group><Variable name="group"/></Group>
-                        <Alignment>left</Alignment>
-                      </NumberPos>
-                    </Children>
-                  </WidgetGroup>
-
-                  <WidgetGroup>
-                    <ObjectName>BpmKeyGutterSmall</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>min,me</SizePolicy>
-                    <Children>
-                      <Key>
-                        <TooltipId>visual_key</TooltipId>
-                        <ObjectName>BpmKeyLabelSmall</ObjectName>
-                        <Size>30me,16f</Size>
-                        <Alignment>center</Alignment>
-                        <Elide>right</Elide>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
-                        </Connection>
-                      </Key>
-                    </Children>
-                  </WidgetGroup>
-
-                  <WidgetGroup>
-                    <ObjectName>BpmKeyGutterSmall</ObjectName>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>min,me</SizePolicy>
-                    <Children>
-                      <NumberBpm>
-                        <TooltipId>visual_bpm</TooltipId>
-                        <ObjectName>BpmKeyLabelSmall</ObjectName>
-                        <Size>60f,16f</Size>
-                        <Alignment>center</Alignment>
-                        <NumberOfDigits>2</NumberOfDigits>
-                        <Group><Variable name="group"/></Group>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-                        </Connection>
-                      </NumberBpm>
-                    </Children>
-                  </WidgetGroup>
+                  <NumberBpm>
+                    <TooltipId>visual_bpm</TooltipId>
+                    <ObjectName>BpmKeyTextSmall</ObjectName>
+                    <Size>55min,19f</Size>
+                    <Alignment>right</Alignment>
+                    <NumberOfDigits>2</NumberOfDigits>
+                    <Group><Variable name="group"/></Group>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                    </Connection>
+                  </NumberBpm>
 
                 </Children>
               </WidgetGroup><!-- PositionKeyBpmGutter -->
