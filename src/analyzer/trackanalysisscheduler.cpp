@@ -188,10 +188,13 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
         emit trackProgress(trackId, analyzerProgress);
         break;
     case AnalyzerThreadState::Done:
-        worker.onAnalyzerProgress(trackId, analyzerProgress);
-        emit trackProgress(trackId, analyzerProgress);
+        // The finished track count needs to be increased before
+        // emitting progress! Otherwise we may not detect that the
+        // analysis has finished completely.
         ++m_finishedTracksCount;
         DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
+        worker.onAnalyzerProgress(trackId, analyzerProgress);
+        emit trackProgress(trackId, analyzerProgress);
         break;
     case AnalyzerThreadState::Exit:
         worker.onThreadExit();
