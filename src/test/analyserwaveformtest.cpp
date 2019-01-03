@@ -18,8 +18,7 @@ namespace {
 class AnalyzerWaveformTest: public MixxxTest {
   protected:
     AnalyzerWaveformTest()
-      : analysisDao(config()),
-        aw(&analysisDao),
+      : aw(config(), QSqlDatabase()),
         bigbuf(nullptr),
         canaryBigBuf(nullptr) {
     }
@@ -50,7 +49,6 @@ class AnalyzerWaveformTest: public MixxxTest {
     }
 
   protected:
-    AnalysisDao analysisDao;
     AnalyzerWaveform aw;
     TrackPointer tio;
     CSAMPLE* bigbuf;

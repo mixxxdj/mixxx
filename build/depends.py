@@ -539,6 +539,59 @@ class RubberBand(Dependence):
                 "Could not find librubberband or its development headers.")
 
 
+class QueenMaryDsp(Dependence):
+    def sources(self, build):
+        return [
+            #"#lib/qm-dsp/base/KaiserWindow.cpp",
+            "#lib/qm-dsp/base/Pitch.cpp",
+            #"#lib/qm-dsp/base/SincWindow.cpp",
+            "#lib/qm-dsp/dsp/chromagram/CQprecalc.cpp",
+            "#lib/qm-dsp/dsp/chromagram/Chromagram.cpp",
+            "#lib/qm-dsp/dsp/chromagram/ConstantQ.cpp",
+            "#lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp",
+            #"#lib/qm-dsp/dsp/mfcc/MFCC.cpp",
+            "#lib/qm-dsp/dsp/onsets/DetectionFunction.cpp",
+            "#lib/qm-dsp/dsp/onsets/PeakPicking.cpp",
+            "#lib/qm-dsp/dsp/phasevocoder/PhaseVocoder.cpp",
+            "#lib/qm-dsp/dsp/rateconversion/Decimator.cpp",
+            #"#lib/qm-dsp/dsp/rateconversion/DecimatorB.cpp",
+            #"#lib/qm-dsp/dsp/rateconversion/Resampler.cpp",
+            #"#lib/qm-dsp/dsp/rhythm/BeatSpectrum.cpp",
+            #"#lib/qm-dsp/dsp/segmentation/ClusterMeltSegmenter.cpp",
+            #"#lib/qm-dsp/dsp/segmentation/Segmenter.cpp",
+            #"#lib/qm-dsp/dsp/segmentation/cluster_melt.c",
+            #"#lib/qm-dsp/dsp/segmentation/cluster_segmenter.c",
+            "#lib/qm-dsp/dsp/signalconditioning/DFProcess.cpp",
+            "#lib/qm-dsp/dsp/signalconditioning/FiltFilt.cpp",
+            "#lib/qm-dsp/dsp/signalconditioning/Filter.cpp",
+            "#lib/qm-dsp/dsp/signalconditioning/Framer.cpp",
+            "#lib/qm-dsp/dsp/tempotracking/DownBeat.cpp",
+            "#lib/qm-dsp/dsp/tempotracking/TempoTrack.cpp",
+            "#lib/qm-dsp/dsp/tempotracking/TempoTrackV2.cpp",
+            "#lib/qm-dsp/dsp/tonal/ChangeDetectionFunction.cpp",
+            "#lib/qm-dsp/dsp/tonal/TCSgram.cpp",
+            "#lib/qm-dsp/dsp/tonal/TonalEstimator.cpp",
+            "#lib/qm-dsp/dsp/transforms/FFT.cpp",
+            #"#lib/qm-dsp/dsp/wavelet/Wavelet.cpp",
+            "#lib/qm-dsp/ext/kissfft/kiss_fft.c",
+            "#lib/qm-dsp/ext/kissfft/kiss_fftr.c",
+            #"#lib/qm-dsp/hmm/hmm.c",
+            "#lib/qm-dsp/maths/Correlation.cpp",
+            #"#lib/qm-dsp/maths/CosineDistance.cpp",
+            "#lib/qm-dsp/maths/KLDivergence.cpp",
+            "#lib/qm-dsp/maths/MathUtilities.cpp",
+            #"#lib/qm-dsp/maths/pca/pca.c",
+            #"#lib/qm-dsp/thread/Thread.cpp"
+        ]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH="#lib/qm-dsp")
+        build.env.Append(CPPPATH="#lib/qm-dsp/include")
+        build.env.Append(CPPDEFINES='kiss_fft_scalar=double')
+        if not build.platform_is_windows:
+            build.env.Append(CPPDEFINES='USE_PTHREADS')
+
+
 class TagLib(Dependence):
     def configure(self, build, conf):
         libs = ['tag']
@@ -672,6 +725,8 @@ class MixxxCore(Feature):
                    "src/preferences/dialog/dlgprefsound.cpp",
                    "src/preferences/dialog/dlgprefsounditem.cpp",
                    "src/preferences/dialog/dlgprefwaveform.cpp",
+                   "src/preferences/dialog/dlgprefbeats.cpp",
+                   "src/preferences/dialog/dlgprefkey.cpp",
                    "src/preferences/settingsmanager.cpp",
                    "src/preferences/replaygainsettings.cpp",
                    "src/preferences/broadcastsettings.cpp",
@@ -776,10 +831,16 @@ class MixxxCore(Feature):
                    "src/engine/cachingreaderchunk.cpp",
                    "src/engine/cachingreaderworker.cpp",
 
-                   "src/analyzer/analyzerqueue.cpp",
+                   "src/analyzer/trackanalysisscheduler.cpp",
+                   "src/analyzer/analyzerthread.cpp",
                    "src/analyzer/analyzerwaveform.cpp",
                    "src/analyzer/analyzergain.cpp",
+                   "src/analyzer/analyzerbeats.cpp",
+                   "src/analyzer/analyzerkey.cpp",
                    "src/analyzer/analyzerebur128.cpp",
+                   "src/analyzer/plugins/analyzersoundtouchbeats.cpp",
+                   "src/analyzer/plugins/analyzerqueenmarybeats.cpp",
+                   "src/analyzer/plugins/analyzerqueenmarykey.cpp",
 
                    "src/controllers/controller.cpp",
                    "src/controllers/controllerdebug.cpp",
@@ -986,7 +1047,7 @@ class MixxxCore(Feature):
                    "src/library/bpmdelegate.cpp",
                    "src/library/previewbuttondelegate.cpp",
                    "src/library/coverartdelegate.cpp",
-				   "src/library/tableitemdelegate.cpp",
+                   "src/library/tableitemdelegate.cpp",
 
                    "src/library/treeitemmodel.cpp",
                    "src/library/treeitem.cpp",
@@ -1156,6 +1217,8 @@ class MixxxCore(Feature):
                    "src/util/indexrange.cpp",
                    "src/util/desktophelper.cpp",
                    "src/util/widgetrendertimer.cpp",
+                   "src/util/workerthread.cpp",
+                   "src/util/workerthreadscheduler.cpp",
                    ]
 
         proto_args = {
@@ -1438,7 +1501,8 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
-                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME]
+                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
+                QueenMaryDsp]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
