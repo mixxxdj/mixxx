@@ -178,22 +178,29 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
     auto& worker = m_workers.at(threadId);
     switch (threadState) {
     case AnalyzerThreadState::Void:
+        DEBUG_ASSERT(analyzerProgress == kAnalyzerProgressUnknown);
         break;
     case AnalyzerThreadState::Idle:
+        DEBUG_ASSERT(analyzerProgress == kAnalyzerProgressUnknown);
         worker.onThreadIdle();
         submitNextTrack(&worker);
         break;
     case AnalyzerThreadState::Busy:
+        DEBUG_ASSERT(analyzerProgress != kAnalyzerProgressUnknown);
+        DEBUG_ASSERT(analyzerProgress < kAnalyzerProgressDone);
         worker.onAnalyzerProgress(trackId, analyzerProgress);
         emit trackProgress(trackId, analyzerProgress);
         break;
     case AnalyzerThreadState::Done:
+        DEBUG_ASSERT((analyzerProgress == kAnalyzerProgressDone) // success
+                || (analyzerProgress == kAnalyzerProgressUnknown)); // failure
         worker.onAnalyzerProgress(trackId, analyzerProgress);
         emit trackProgress(trackId, analyzerProgress);
         ++m_finishedTracksCount;
         DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
         break;
     case AnalyzerThreadState::Exit:
+        DEBUG_ASSERT(analyzerProgress == kAnalyzerProgressUnknown);
         worker.onThreadExit();
         DEBUG_ASSERT(!worker);
         break;
