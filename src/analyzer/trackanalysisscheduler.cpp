@@ -92,6 +92,10 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
     // The finished() signal is emitted regardless of when the last
     // signal has been emitted
     if (allTracksFinished()) {
+        m_currentTrackProgress = kAnalyzerProgressUnknown;
+        m_currentTrackNumber = 0;
+        m_finishedTracksCount = 0;
+        m_dequeuedTracksCount = 0;
         emit finished();
         return;
     }
