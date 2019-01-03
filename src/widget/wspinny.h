@@ -66,7 +66,7 @@ class WSpinny : public QOpenGLWidget, public WBaseWidget, public VinylSignalQual
     void mouseMoveEvent(QMouseEvent * e) override;
     void mousePressEvent(QMouseEvent * e) override;
     void mouseReleaseEvent(QMouseEvent * e) override;
-    void resizeEvent(QResizeEvent* /*unused*/) override;
+    void resizeEvent(QResizeEvent* event) override;
     void showEvent(QShowEvent* event) override;
     void hideEvent(QHideEvent* event) override;
     bool event(QEvent* pEvent) override;
