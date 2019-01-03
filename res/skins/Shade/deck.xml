@@ -186,17 +186,17 @@
                           <TextColor>#FFFFFF</TextColor>
                         </Mark>
                         <Mark>
-                          <Control>autodj_start_position</Control>
-                          <Source>autodj_start_source</Source>
-                          <Text>START</Text>
+                          <Control>intro_position</Control>
+                          <Source>intro_source</Source>
+                          <Text>INTRO</Text>
                           <Align>bottom</Align>
                           <Color>#0000FF</Color>
                           <TextColor>#FFFFFF</TextColor>
                         </Mark>
                         <Mark>
-                          <Control>autodj_end_position</Control>
-                          <Source>autodj_end_source</Source>
-                          <Text>END</Text>
+                          <Control>outro_position</Control>
+                          <Source>outro_source</Source>
+                          <Text>OUTRO</Text>
                           <Align>bottom</Align>
                           <Color>#0000FF</Color>
                           <TextColor>#FFFFFF</TextColor>
@@ -299,15 +299,15 @@
                       <DisabledColor>#FFFFFF</DisabledColor>
                     </MarkRange>
                     <Mark>
-                      <Control>autodj_start_position</Control>
-                      <Text>S</Text>
+                      <Control>intro_position</Control>
+                      <Text>I</Text>
                       <Align>bottom|right</Align>
                       <Color>#0000FF</Color>
                       <TextColor>#FFFFFF</TextColor>
                     </Mark>
                     <Mark>
-                      <Control>autodj_end_position</Control>
-                      <Text>E</Text>
+                      <Control>outro_position</Control>
+                      <Text>O</Text>
                       <Align>bottom|left</Align>
                       <Color>#0000FF</Color>
                       <TextColor>#FFFFFF</TextColor>

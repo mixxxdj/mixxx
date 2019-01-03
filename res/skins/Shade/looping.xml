@@ -467,11 +467,11 @@
             </State>
             <Pos>99,10</Pos>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],autodj_start_set</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],intro_set</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],autodj_start_clear</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],intro_clear</ConfigKey>
               <ButtonState>RightButton</ButtonState>
             </Connection>
           </PushButton>
@@ -486,11 +486,11 @@
             </State>
             <Pos>120,10</Pos>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],autodj_end_set</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],outro_set</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],autodj_end_clear</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],outro_clear</ConfigKey>
               <ButtonState>RightButton</ButtonState>
             </Connection>
           </PushButton>

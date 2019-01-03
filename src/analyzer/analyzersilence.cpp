@@ -29,20 +29,20 @@ bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamp
 
     m_pTrack = tio;
 
-    m_pStartCue = tio->findCueByType(Cue::START);
-    if (!m_pStartCue) {
-        m_pStartCue = tio->createAndAddCue();
-        m_pStartCue->setType(Cue::START);
-        m_pStartCue->setSource(Cue::AUTOMATIC);
-        m_pStartCue->setPosition(-1.0);
+    m_pIntroCue = tio->findCueByType(Cue::INTRO);
+    if (!m_pIntroCue) {
+        m_pIntroCue = tio->createAndAddCue();
+        m_pIntroCue->setType(Cue::INTRO);
+        m_pIntroCue->setSource(Cue::AUTOMATIC);
+        m_pIntroCue->setPosition(-1.0);
     }
 
-    m_pEndCue = tio->findCueByType(Cue::END);
-    if (!m_pEndCue) {
-        m_pEndCue = tio->createAndAddCue();
-        m_pEndCue->setType(Cue::END);
-        m_pEndCue->setSource(Cue::AUTOMATIC);
-        m_pEndCue->setPosition(-1.0);
+    m_pOutroCue = tio->findCueByType(Cue::OUTRO);
+    if (!m_pOutroCue) {
+        m_pOutroCue = tio->createAndAddCue();
+        m_pOutroCue->setType(Cue::OUTRO);
+        m_pOutroCue->setSource(Cue::AUTOMATIC);
+        m_pOutroCue->setPosition(-1.0);
     }
 
     return !isDisabledOrLoadStoredSuccess(tio);
@@ -50,8 +50,8 @@ bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamp
 
 bool AnalyzerSilence::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
     return tio->getCuePoint().getSource() == Cue::MANUAL &&
-            m_pStartCue->getSource() == Cue::MANUAL &&
-            m_pEndCue->getSource() == Cue::MANUAL;
+            m_pIntroCue->getSource() == Cue::MANUAL &&
+            m_pOutroCue->getSource() == Cue::MANUAL;
 }
 
 void AnalyzerSilence::process(const CSAMPLE* pIn, const int iLen) {
@@ -104,11 +104,11 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
         m_iSignalEnd = m_iFramesProcessed;
     }
 
-    if (m_pStartCue->getSource() != Cue::MANUAL) {
-        m_pStartCue->setPosition(kChannelCount * m_iSignalStart);
+    if (m_pIntroCue->getSource() != Cue::MANUAL) {
+        m_pIntroCue->setPosition(kChannelCount * m_iSignalStart);
     }
 
-    if (m_pEndCue->getSource() != Cue::MANUAL) {
-        m_pEndCue->setPosition(kChannelCount * m_iSignalEnd);
+    if (m_pOutroCue->getSource() != Cue::MANUAL) {
+        m_pOutroCue->setPosition(kChannelCount * m_iSignalEnd);
     }
 }

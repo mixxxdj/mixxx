@@ -158,18 +158,18 @@
           <DisabledColor>#FFFFFF</DisabledColor>
         </MarkRange>
         <Mark>
-          <Control>autodj_start_position</Control>
+          <Control>intro_position</Control>
           <Align>bottom|right</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
-          <Text>S</Text>
+          <Text>I</Text>
         </Mark>
         <Mark>
-          <Control>autodj_end_position</Control>
+          <Control>outro_position</Control>
           <Align>bottom|left</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
-          <Text>E</Text>
+          <Text>O</Text>
         </Mark>
         <Mark>
           <Control>cue_point</Control>

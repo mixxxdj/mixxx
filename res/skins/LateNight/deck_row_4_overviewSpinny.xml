@@ -64,15 +64,15 @@
         </Mark>
         -->
         <Mark>
-          <Control>autodj_start_position</Control>
-          <Text> S </Text>
+          <Control>intro_position</Control>
+          <Text> I </Text>
           <Align>bottom|right</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
         <Mark>
-          <Control>autodj_end_position</Control>
-          <Text> E </Text>
+          <Control>outro_position</Control>
+          <Text> O </Text>
           <Align>bottom|left</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>

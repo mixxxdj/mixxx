@@ -28,8 +28,8 @@ DeckAttributes::DeckAttributes(int index,
           m_play(group, "play"),
           m_repeat(group, "repeat"),
           m_seekOnLoadMode(group, "seekonload_mode"),
-          m_startPos(group, "autodj_start_position"),
-          m_endPos(group, "autodj_end_position"),
+          m_introPos(group, "intro_position"),
+          m_outroPos(group, "outro_position"),
           m_sampleRate(group, "track_samplerate"),
           m_duration(group, "duration"),
           m_pPlayer(pPlayer) {
@@ -41,8 +41,8 @@ DeckAttributes::DeckAttributes(int index,
             this, SLOT(slotPlayerEmpty()));
     m_playPos.connectValueChanged(this, SLOT(slotPlayPosChanged(double)));
     m_play.connectValueChanged(this, SLOT(slotPlayChanged(double)));
-    m_startPos.connectValueChanged(this, SLOT(slotStartPositionChanged(double)));
-    m_endPos.connectValueChanged(this, SLOT(slotEndPositionChanged(double)));
+    m_introPos.connectValueChanged(this, SLOT(slotIntroPositionChanged(double)));
+    m_outroPos.connectValueChanged(this, SLOT(slotOutroPositionChanged(double)));
 }
 
 DeckAttributes::~DeckAttributes() {
@@ -56,12 +56,12 @@ void DeckAttributes::slotPlayPosChanged(double v) {
     emit(playPositionChanged(this, v));
 }
 
-void DeckAttributes::slotStartPositionChanged(double v) {
-    emit(startPositionChanged(this, v));
+void DeckAttributes::slotIntroPositionChanged(double v) {
+    emit(introPositionChanged(this, v));
 }
 
-void DeckAttributes::slotEndPositionChanged(double v) {
-    emit(endPositionChanged(this, v));
+void DeckAttributes::slotOutroPositionChanged(double v) {
+    emit(outroPositionChanged(this, v));
 }
 
 void DeckAttributes::slotTrackLoaded(TrackPointer pTrack) {
@@ -315,8 +315,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         qDebug() << "Auto DJ enabled";
 
-        deck1.setSeekOnLoadMode(SEEK_ON_LOAD_ADJ_START);
-        deck2.setSeekOnLoadMode(SEEK_ON_LOAD_ADJ_START);
+        deck1.setSeekOnLoadMode(SEEK_ON_LOAD_INTRO_CUE);
+        deck2.setSeekOnLoadMode(SEEK_ON_LOAD_INTRO_CUE);
 
         connect(&deck1, SIGNAL(playPositionChanged(DeckAttributes*, double)),
                 this, SLOT(playerPositionChanged(DeckAttributes*, double)));
@@ -328,15 +328,15 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         connect(&deck2, SIGNAL(playChanged(DeckAttributes*, bool)),
                 this, SLOT(playerPlayChanged(DeckAttributes*, bool)));
 
-        connect(&deck1, SIGNAL(startPositionChanged(DeckAttributes*, double)),
-                this, SLOT(playerStartChanged(DeckAttributes*, double)));
-        connect(&deck2, SIGNAL(startPositionChanged(DeckAttributes*, double)),
-                this, SLOT(playerStartChanged(DeckAttributes*, double)));
+        connect(&deck1, SIGNAL(introPositionChanged(DeckAttributes*, double)),
+                this, SLOT(playerIntroChanged(DeckAttributes*, double)));
+        connect(&deck2, SIGNAL(introPositionChanged(DeckAttributes*, double)),
+                this, SLOT(playerIntroChanged(DeckAttributes*, double)));
 
-        connect(&deck1, SIGNAL(endPositionChanged(DeckAttributes*, double)),
-                this, SLOT(playerEndChanged(DeckAttributes*, double)));
-        connect(&deck2, SIGNAL(endPositionChanged(DeckAttributes*, double)),
-                this, SLOT(playerEndChanged(DeckAttributes*, double)));
+        connect(&deck1, SIGNAL(outroPositionChanged(DeckAttributes*, double)),
+                this, SLOT(playerOutroChanged(DeckAttributes*, double)));
+        connect(&deck2, SIGNAL(outroPositionChanged(DeckAttributes*, double)),
+                this, SLOT(playerOutroChanged(DeckAttributes*, double)));
 
         connect(&deck1, SIGNAL(trackLoaded(DeckAttributes*, TrackPointer)),
                 this, SLOT(playerTrackLoaded(DeckAttributes*, TrackPointer)));
@@ -728,7 +728,7 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes, bool playin
     }
 }
 
-void AutoDJProcessor::playerStartChanged(DeckAttributes* pAttributes,
+void AutoDJProcessor::playerIntroChanged(DeckAttributes* pAttributes,
                                          double position) {
     if (sDebug) {
         qDebug() << this << "playerStartChanged" << pAttributes->group << position;
@@ -739,7 +739,7 @@ void AutoDJProcessor::playerStartChanged(DeckAttributes* pAttributes,
     }
 }
 
-void AutoDJProcessor::playerEndChanged(DeckAttributes* pAttributes,
+void AutoDJProcessor::playerOutroChanged(DeckAttributes* pAttributes,
                                        double position) {
     if (sDebug) {
         qDebug() << this << "playerEndChanged" << pAttributes->group << position;

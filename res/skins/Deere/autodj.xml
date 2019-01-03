@@ -19,8 +19,8 @@
         <SetVariable name="SizePolicy"><Variable name="VerticalStretchButtonSizePolicy"/></SetVariable>
         <SetVariable name="state_0_pressed">icon/ic_autodj_start_48px.svg</SetVariable>
         <SetVariable name="state_0_unpressed">icon/ic_autodj_start_48px.svg</SetVariable>
-        <SetVariable name="left_connection_control"><Variable name="group"/>,autodj_start_set</SetVariable>
-        <SetVariable name="right_connection_control"><Variable name="group"/>,autodj_start_clear</SetVariable>
+        <SetVariable name="left_connection_control"><Variable name="group"/>,intro_set</SetVariable>
+        <SetVariable name="right_connection_control"><Variable name="group"/>,intro_clear</SetVariable>
       </Template>
 
       <!-- Workaround for layout spacing -->
@@ -34,8 +34,8 @@
         <SetVariable name="SizePolicy"><Variable name="VerticalStretchButtonSizePolicy"/></SetVariable>
         <SetVariable name="state_0_pressed">icon/ic_autodj_end_48px.svg</SetVariable>
         <SetVariable name="state_0_unpressed">icon/ic_autodj_end_48px.svg</SetVariable>
-        <SetVariable name="left_connection_control"><Variable name="group"/>,autodj_end_set</SetVariable>
-        <SetVariable name="right_connection_control"><Variable name="group"/>,autodj_end_clear</SetVariable>
+        <SetVariable name="left_connection_control"><Variable name="group"/>,outro_set</SetVariable>
+        <SetVariable name="right_connection_control"><Variable name="group"/>,outro_clear</SetVariable>
       </Template>
 
     </Children>

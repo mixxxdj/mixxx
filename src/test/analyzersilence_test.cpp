@@ -54,13 +54,13 @@ TEST_F(AnalyzerSilenceTest, SilenceTrack) {
     EXPECT_DOUBLE_EQ(0.0, cue.getPosition());
     EXPECT_EQ(Cue::UNKNOWN, cue.getSource());
 
-    CuePointer pStartCue = pTrack->findCueByType(Cue::START);
-    EXPECT_DOUBLE_EQ(0.0, pStartCue->getPosition());
-    EXPECT_EQ(Cue::AUTOMATIC, pStartCue->getSource());
+    CuePointer pIntroCue = pTrack->findCueByType(Cue::INTRO);
+    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pIntroCue->getSource());
 
-    CuePointer pEndCue = pTrack->findCueByType(Cue::END);
-    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pEndCue->getPosition());
-    EXPECT_EQ(Cue::AUTOMATIC, pEndCue->getSource());
+    CuePointer pOutroCue = pTrack->findCueByType(Cue::OUTRO);
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pOutroCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pOutroCue->getSource());
 }
 
 TEST_F(AnalyzerSilenceTest, EndToEndToneTrack) {
@@ -76,13 +76,13 @@ TEST_F(AnalyzerSilenceTest, EndToEndToneTrack) {
     EXPECT_DOUBLE_EQ(0.0, cue.getPosition());
     EXPECT_EQ(Cue::UNKNOWN, cue.getSource());
 
-    CuePointer pStartCue = pTrack->findCueByType(Cue::START);
-    EXPECT_DOUBLE_EQ(0.0, pStartCue->getPosition());
-    EXPECT_EQ(Cue::AUTOMATIC, pStartCue->getSource());
+    CuePointer pIntroCue = pTrack->findCueByType(Cue::INTRO);
+    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pIntroCue->getSource());
 
-    CuePointer pEndCue = pTrack->findCueByType(Cue::END);
-    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pEndCue->getPosition());
-    EXPECT_EQ(Cue::AUTOMATIC, pEndCue->getSource());
+    CuePointer pOutroCue = pTrack->findCueByType(Cue::OUTRO);
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pOutroCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pOutroCue->getSource());
 }
 
 TEST_F(AnalyzerSilenceTest, ToneTrackWithSilence) {
@@ -108,13 +108,13 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilence) {
     EXPECT_DOUBLE_EQ(nTrackSampleDataLength / 4, cue.getPosition());
     EXPECT_EQ(Cue::AUTOMATIC, cue.getSource());
 
-    CuePointer pStartCue = pTrack->findCueByType(Cue::START);
-    EXPECT_DOUBLE_EQ(nTrackSampleDataLength / 4, pStartCue->getPosition());
-    EXPECT_EQ(Cue::AUTOMATIC, pStartCue->getSource());
+    CuePointer pIntroCue = pTrack->findCueByType(Cue::INTRO);
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength / 4, pIntroCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pIntroCue->getSource());
 
-    CuePointer pEndCue = pTrack->findCueByType(Cue::END);
-    EXPECT_DOUBLE_EQ(3 * nTrackSampleDataLength / 4, pEndCue->getPosition());
-    EXPECT_EQ(Cue::AUTOMATIC, pEndCue->getSource());
+    CuePointer pOutroCue = pTrack->findCueByType(Cue::OUTRO);
+    EXPECT_DOUBLE_EQ(3 * nTrackSampleDataLength / 4, pOutroCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pOutroCue->getSource());
 }
 
 TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
@@ -152,13 +152,13 @@ TEST_F(AnalyzerSilenceTest, ToneTrackWithSilenceInTheMiddle) {
     EXPECT_DOUBLE_EQ(oneFifthOfTrackLength, cue.getPosition());
     EXPECT_EQ(Cue::AUTOMATIC, cue.getSource());
 
-    CuePointer pStartCue = pTrack->findCueByType(Cue::START);
-    EXPECT_DOUBLE_EQ(oneFifthOfTrackLength, pStartCue->getPosition());
-    EXPECT_EQ(Cue::AUTOMATIC, pStartCue->getSource());
+    CuePointer pIntroCue = pTrack->findCueByType(Cue::INTRO);
+    EXPECT_DOUBLE_EQ(oneFifthOfTrackLength, pIntroCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pIntroCue->getSource());
 
-    CuePointer pEndCue = pTrack->findCueByType(Cue::END);
-    EXPECT_DOUBLE_EQ(4 * oneFifthOfTrackLength, pEndCue->getPosition());
-    EXPECT_EQ(Cue::AUTOMATIC, pEndCue->getSource());
+    CuePointer pOutroCue = pTrack->findCueByType(Cue::OUTRO);
+    EXPECT_DOUBLE_EQ(4 * oneFifthOfTrackLength, pOutroCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pOutroCue->getSource());
 }
 
 TEST_F(AnalyzerSilenceTest, UpdateNonUserAdjustedCues) {
@@ -166,15 +166,15 @@ TEST_F(AnalyzerSilenceTest, UpdateNonUserAdjustedCues) {
 
     pTrack->setCuePoint(CuePosition(100, Cue::AUTOMATIC));  // Arbitrary value
 
-    CuePointer pStartCue = pTrack->createAndAddCue();
-    pStartCue->setType(Cue::START);
-    pStartCue->setSource(Cue::AUTOMATIC);
-    pStartCue->setPosition(1000);  // Arbitrary value
+    CuePointer pIntroCue = pTrack->createAndAddCue();
+    pIntroCue->setType(Cue::INTRO);
+    pIntroCue->setSource(Cue::AUTOMATIC);
+    pIntroCue->setPosition(1000);  // Arbitrary value
 
-    CuePointer pEndCue = pTrack->createAndAddCue();
-    pEndCue->setType(Cue::END);
-    pEndCue->setSource(Cue::AUTOMATIC);
-    pEndCue->setPosition(9000);  // Arbitrary value
+    CuePointer pOutroCue = pTrack->createAndAddCue();
+    pOutroCue->setType(Cue::OUTRO);
+    pOutroCue->setSource(Cue::AUTOMATIC);
+    pOutroCue->setPosition(9000);  // Arbitrary value
 
     // Fill the first half with silence
     for (int i = 0; i < halfTrackLength; i++) {
@@ -193,30 +193,30 @@ TEST_F(AnalyzerSilenceTest, UpdateNonUserAdjustedCues) {
     EXPECT_DOUBLE_EQ(halfTrackLength, cue.getPosition());
     EXPECT_EQ(Cue::AUTOMATIC, cue.getSource());
 
-    EXPECT_DOUBLE_EQ(halfTrackLength, pStartCue->getPosition());
-    EXPECT_EQ(Cue::AUTOMATIC, pStartCue->getSource());
+    EXPECT_DOUBLE_EQ(halfTrackLength, pIntroCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pIntroCue->getSource());
 
-    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pEndCue->getPosition());
-    EXPECT_EQ(Cue::AUTOMATIC, pEndCue->getSource());
+    EXPECT_DOUBLE_EQ(nTrackSampleDataLength, pOutroCue->getPosition());
+    EXPECT_EQ(Cue::AUTOMATIC, pOutroCue->getSource());
 }
 
 TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
     // Arbitrary values
     const double kManualCuePosition = 0.2 * nTrackSampleDataLength;
-    const double kManualStartPosition = 0.1 * nTrackSampleDataLength;
-    const double kManualEndPosition = 0.9 * nTrackSampleDataLength;
+    const double kManualIntroPosition = 0.1 * nTrackSampleDataLength;
+    const double kManualOutroPosition = 0.9 * nTrackSampleDataLength;
 
     pTrack->setCuePoint(CuePosition(kManualCuePosition, Cue::MANUAL));
 
-    CuePointer pStartCue = pTrack->createAndAddCue();
-    pStartCue->setType(Cue::START);
-    pStartCue->setSource(Cue::MANUAL);
-    pStartCue->setPosition(kManualStartPosition);
+    CuePointer pIntroCue = pTrack->createAndAddCue();
+    pIntroCue->setType(Cue::INTRO);
+    pIntroCue->setSource(Cue::MANUAL);
+    pIntroCue->setPosition(kManualIntroPosition);
 
-    CuePointer pEndCue = pTrack->createAndAddCue();
-    pEndCue->setType(Cue::END);
-    pEndCue->setSource(Cue::MANUAL);
-    pEndCue->setPosition(kManualEndPosition);
+    CuePointer pOutroCue = pTrack->createAndAddCue();
+    pOutroCue->setType(Cue::OUTRO);
+    pOutroCue->setSource(Cue::MANUAL);
+    pOutroCue->setPosition(kManualOutroPosition);
 
     // Fill the first half with silence
     for (int i = 0; i < nTrackSampleDataLength / 2; i++) {
@@ -235,11 +235,11 @@ TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
     EXPECT_DOUBLE_EQ(kManualCuePosition, cue.getPosition());
     EXPECT_EQ(Cue::MANUAL, cue.getSource());
 
-    EXPECT_DOUBLE_EQ(kManualStartPosition, pStartCue->getPosition());
-    EXPECT_EQ(Cue::MANUAL, pStartCue->getSource());
+    EXPECT_DOUBLE_EQ(kManualIntroPosition, pIntroCue->getPosition());
+    EXPECT_EQ(Cue::MANUAL, pIntroCue->getSource());
 
-    EXPECT_DOUBLE_EQ(kManualEndPosition, pEndCue->getPosition());
-    EXPECT_EQ(Cue::MANUAL, pEndCue->getSource());
+    EXPECT_DOUBLE_EQ(kManualOutroPosition, pOutroCue->getPosition());
+    EXPECT_EQ(Cue::MANUAL, pOutroCue->getSource());
 }
 
 }

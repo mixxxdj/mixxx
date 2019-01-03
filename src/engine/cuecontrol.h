@@ -22,7 +22,7 @@ enum SeekOnLoadMode {
     SEEK_ON_LOAD_DEFAULT = 0,  // Use CueRecall preference setting
     SEEK_ON_LOAD_ZERO_POS = 1,  // Use 0:00.000
     SEEK_ON_LOAD_MAIN_CUE = 2,  // Use main cue point
-    SEEK_ON_LOAD_ADJ_START = 3,  // Use AutoDJ start point
+    SEEK_ON_LOAD_INTRO_CUE = 3,  // Use intro cue point
     SEEK_ON_LOAD_NUM_MODES
 };
 
@@ -117,7 +117,7 @@ class CueControl : public EngineControl {
     bool updateIndicatorsAndModifyPlay(bool newPlay, bool playPossible);
     void updateIndicators();
     bool isTrackAtZeroPos();
-    bool isTrackAtADJStart();
+    bool isTrackAtIntroCue();
     void resetIndicators();
     bool isPlayingByPlayButton();
     bool getPlayFlashingAtPause();
@@ -153,10 +153,10 @@ class CueControl : public EngineControl {
     void pause(double v);
     void playStutter(double v);
 
-    void autoDJStartSet(double v);
-    void autoDJStartClear(double v);
-    void autoDJEndSet(double v);
-    void autoDJEndClear(double v);
+    void introSet(double v);
+    void introClear(double v);
+    void outroSet(double v);
+    void outroClear(double v);
 
   private:
     enum class TrackAt {
@@ -170,8 +170,8 @@ class CueControl : public EngineControl {
     void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
     void loadMainCue(double position, Cue::CueSource source);
-    void loadStartCue(double position, Cue::CueSource source);
-    void loadEndCue(double position, Cue::CueSource source);
+    void loadIntroCue(double position, Cue::CueSource source);
+    void loadOutroCue(double position, Cue::CueSource source);
     void loadCuesFromTrack();
     void reloadCuesFromTrack();
     TrackAt getTrackAt() const;
@@ -207,15 +207,15 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
 
-    ControlObject* m_pAutoDJStartPosition;
-    ControlObject* m_pAutoDJStartSource;
-    ControlPushButton* m_pAutoDJStartSet;
-    ControlPushButton* m_pAutoDJStartClear;
+    ControlObject* m_pIntroPosition;
+    ControlObject* m_pIntroSource;
+    ControlPushButton* m_pIntroSet;
+    ControlPushButton* m_pIntroClear;
 
-    ControlObject* m_pAutoDJEndPosition;
-    ControlObject* m_pAutoDJEndSource;
-    ControlPushButton* m_pAutoDJEndSet;
-    ControlPushButton* m_pAutoDJEndClear;
+    ControlObject* m_pOutroPosition;
+    ControlObject* m_pOutroSource;
+    ControlPushButton* m_pOutroSet;
+    ControlPushButton* m_pOutroClear;
 
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;

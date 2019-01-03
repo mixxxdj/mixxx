@@ -117,34 +117,34 @@ CueControl::CueControl(QString group,
     m_pCueIndicator = new ControlIndicator(ConfigKey(group, "cue_indicator"));
     m_pPlayIndicator = new ControlIndicator(ConfigKey(group, "play_indicator"));
 
-    m_pAutoDJStartPosition = new ControlObject(ConfigKey(group, "autodj_start_position"));
-    m_pAutoDJStartPosition->set(-1.0);
+    m_pIntroPosition = new ControlObject(ConfigKey(group, "intro_position"));
+    m_pIntroPosition->set(-1.0);
 
-    m_pAutoDJStartSource = new ControlObject(ConfigKey(group, "autodj_start_source"));
+    m_pIntroSource = new ControlObject(ConfigKey(group, "intro_source"));
 
-    m_pAutoDJStartSet = new ControlPushButton(ConfigKey(group, "autodj_start_set"));
-    connect(m_pAutoDJStartSet, SIGNAL(valueChanged(double)),
-            this, SLOT(autoDJStartSet(double)),
+    m_pIntroSet = new ControlPushButton(ConfigKey(group, "intro_set"));
+    connect(m_pIntroSet, SIGNAL(valueChanged(double)),
+            this, SLOT(introSet(double)),
             Qt::DirectConnection);
 
-    m_pAutoDJStartClear = new ControlPushButton(ConfigKey(group, "autodj_start_clear"));
-    connect(m_pAutoDJStartClear, SIGNAL(valueChanged(double)),
-            this, SLOT(autoDJStartClear(double)),
+    m_pIntroClear = new ControlPushButton(ConfigKey(group, "intro_clear"));
+    connect(m_pIntroClear, SIGNAL(valueChanged(double)),
+            this, SLOT(introClear(double)),
             Qt::DirectConnection);
 
-    m_pAutoDJEndPosition = new ControlObject(ConfigKey(group, "autodj_end_position"));
-    m_pAutoDJEndPosition->set(-1.0);
+    m_pOutroPosition = new ControlObject(ConfigKey(group, "outro_position"));
+    m_pOutroPosition->set(-1.0);
 
-    m_pAutoDJEndSource = new ControlObject(ConfigKey(group, "autodj_end_source"));
+    m_pOutroSource = new ControlObject(ConfigKey(group, "outro_source"));
 
-    m_pAutoDJEndSet = new ControlPushButton(ConfigKey(group, "autodj_end_set"));
-    connect(m_pAutoDJEndSet, SIGNAL(valueChanged(double)),
-            this, SLOT(autoDJEndSet(double)),
+    m_pOutroSet = new ControlPushButton(ConfigKey(group, "outro_set"));
+    connect(m_pOutroSet, SIGNAL(valueChanged(double)),
+            this, SLOT(outroSet(double)),
             Qt::DirectConnection);
 
-    m_pAutoDJEndClear = new ControlPushButton(ConfigKey(group, "autodj_end_clear"));
-    connect(m_pAutoDJEndClear, SIGNAL(valueChanged(double)),
-            this, SLOT(autoDJEndClear(double)),
+    m_pOutroClear = new ControlPushButton(ConfigKey(group, "outro_clear"));
+    connect(m_pOutroClear, SIGNAL(valueChanged(double)),
+            this, SLOT(outroClear(double)),
             Qt::DirectConnection);
 
     m_pVinylControlEnabled = new ControlProxy(group, "vinylcontrol_enabled");
@@ -168,14 +168,14 @@ CueControl::~CueControl() {
     delete m_pPlayStutter;
     delete m_pCueIndicator;
     delete m_pPlayIndicator;
-    delete m_pAutoDJStartPosition;
-    delete m_pAutoDJStartSource;
-    delete m_pAutoDJStartSet;
-    delete m_pAutoDJStartClear;
-    delete m_pAutoDJEndPosition;
-    delete m_pAutoDJEndSource;
-    delete m_pAutoDJEndSet;
-    delete m_pAutoDJEndClear;
+    delete m_pIntroPosition;
+    delete m_pIntroSource;
+    delete m_pIntroSet;
+    delete m_pIntroClear;
+    delete m_pOutroPosition;
+    delete m_pOutroSource;
+    delete m_pOutroSet;
+    delete m_pOutroClear;
     delete m_pVinylControlEnabled;
     delete m_pVinylControlMode;
     qDeleteAll(m_hotcueControls);
@@ -253,10 +253,10 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
         m_pCuePoint->set(-1.0);
         m_pCueSource->set(Cue::UNKNOWN);
-        m_pAutoDJStartPosition->set(-1.0);
-        m_pAutoDJStartSource->set(Cue::UNKNOWN);
-        m_pAutoDJEndPosition->set(-1.0);
-        m_pAutoDJEndSource->set(Cue::UNKNOWN);
+        m_pIntroPosition->set(-1.0);
+        m_pIntroSource->set(Cue::UNKNOWN);
+        m_pOutroPosition->set(-1.0);
+        m_pOutroSource->set(Cue::UNKNOWN);
         m_pLoadedTrack.reset();
     }
 
@@ -288,8 +288,8 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     case SEEK_ON_LOAD_MAIN_CUE:
         seekExact(m_pCuePoint->get());
         break;
-    case SEEK_ON_LOAD_ADJ_START:
-        seekExact(m_pAutoDJStartPosition->get());
+    case SEEK_ON_LOAD_INTRO_CUE:
+        seekExact(m_pIntroPosition->get());
         break;
     default:
         // Respect cue recall preference option.
@@ -315,7 +315,7 @@ void CueControl::cueUpdated() {
 void CueControl::loadCuesFromTrack() {
     QMutexLocker lock(&m_mutex);
     QSet<int> active_hotcues;
-    CuePointer pLoadCue, pStartCue, pEndCue;
+    CuePointer pLoadCue, pIntroCue, pOutroCue;
 
     if (!m_pLoadedTrack)
         return;
@@ -324,12 +324,12 @@ void CueControl::loadCuesFromTrack() {
         if (pCue->getType() == Cue::LOAD) {
             DEBUG_ASSERT(!pLoadCue);  // There should be only one LOAD cue
             pLoadCue = pCue;
-        } else if (pCue->getType() == Cue::START) {
-            DEBUG_ASSERT(!pStartCue);  // There should be only one START cue
-            pStartCue = pCue;
-        } else if (pCue->getType() == Cue::END) {
-            DEBUG_ASSERT(!pEndCue);  // There should be only one END cue
-            pEndCue = pCue;
+        } else if (pCue->getType() == Cue::INTRO) {
+            DEBUG_ASSERT(!pIntroCue);  // There should be only one INTRO cue
+            pIntroCue = pCue;
+        } else if (pCue->getType() == Cue::OUTRO) {
+            DEBUG_ASSERT(!pOutroCue);  // There should be only one OUTRO cue
+            pOutroCue = pCue;
         } else if (pCue->getType() == Cue::CUE && pCue->getHotCue() != -1) {
             int hotcue = pCue->getHotCue();
             HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
@@ -364,18 +364,18 @@ void CueControl::loadCuesFromTrack() {
         m_pCueSource->set(Cue::UNKNOWN);
     }
 
-    if (pStartCue) {
-        loadStartCue(pStartCue->getPosition(), pStartCue->getSource());
+    if (pIntroCue) {
+        loadIntroCue(pIntroCue->getPosition(), pIntroCue->getSource());
     } else {
-        m_pAutoDJStartPosition->set(-1.0);
-        m_pAutoDJStartSource->set(Cue::UNKNOWN);
+        m_pIntroPosition->set(-1.0);
+        m_pIntroSource->set(Cue::UNKNOWN);
     }
 
-    if (pEndCue) {
-        loadEndCue(pEndCue->getPosition(), pEndCue->getSource());
+    if (pOutroCue) {
+        loadOutroCue(pOutroCue->getPosition(), pOutroCue->getSource());
     } else {
-        m_pAutoDJEndPosition->set(-1.0);
-        m_pAutoDJEndSource->set(Cue::UNKNOWN);
+        m_pOutroPosition->set(-1.0);
+        m_pOutroSource->set(Cue::UNKNOWN);
     }
 
     // Detach all hotcues that are no longer present
@@ -393,14 +393,14 @@ void CueControl::reloadCuesFromTrack() {
     // Determine current playing position of the track.
     TrackAt trackAt = getTrackAt();
     bool wasTrackAtZeroPos = isTrackAtZeroPos();
-    bool wasTrackAtStart = isTrackAtADJStart();
+    bool wasTrackAtIntroCue = isTrackAtIntroCue();
 
     // Update COs with cues from track.
     loadCuesFromTrack();
 
     // Retrieve current position of cues from COs.
     double cue = m_pCuePoint->get();
-    double start = m_pAutoDJStartPosition->get();
+    double intro = m_pIntroPosition->get();
 
     // Make track follow the updated cues.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
@@ -412,9 +412,9 @@ void CueControl::reloadCuesFromTrack() {
         if ((trackAt == TrackAt::Cue || wasTrackAtZeroPos) && cue != -1.0) {
             seekExact(cue);
         }
-    } else if (seekOnLoadMode == SEEK_ON_LOAD_ADJ_START) {
-        if ((wasTrackAtStart || wasTrackAtZeroPos) && start != -1.0) {
-            seekExact(start);
+    } else if (seekOnLoadMode == SEEK_ON_LOAD_INTRO_CUE) {
+        if ((wasTrackAtIntroCue || wasTrackAtZeroPos) && intro != -1.0) {
+            seekExact(intro);
         }
     }
 }
@@ -450,9 +450,9 @@ void CueControl::loadMainCue(double position, Cue::CueSource source) {
     m_pCueSource->set(source);
 }
 
-void CueControl::loadStartCue(double position, Cue::CueSource source) {
-    // Snap automatically-placed start cue point to nearest previous beat, but
-    // only of quantization is enabled.
+void CueControl::loadIntroCue(double position, Cue::CueSource source) {
+    // Snap automatically-placed intro cue point to nearest previous beat, but
+    // only if quantization is enabled.
     if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
         BeatsPointer pBeats = m_pLoadedTrack->getBeats();
         if (pBeats) {
@@ -467,12 +467,12 @@ void CueControl::loadStartCue(double position, Cue::CueSource source) {
     }
 
     // Update COs.
-    m_pAutoDJStartPosition->set(position);
-    m_pAutoDJStartSource->set(source);
+    m_pIntroPosition->set(position);
+    m_pIntroSource->set(source);
 }
 
-void CueControl::loadEndCue(double position, Cue::CueSource source) {
-    // Snap automatically-placed end cue point to nearest following beat, but
+void CueControl::loadOutroCue(double position, Cue::CueSource source) {
+    // Snap automatically-placed outro cue point to nearest following beat, but
     // only if quantization is enabled.
     if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
         BeatsPointer pBeats = m_pLoadedTrack->getBeats();
@@ -488,8 +488,8 @@ void CueControl::loadEndCue(double position, Cue::CueSource source) {
     }
 
     // Update COs.
-    m_pAutoDJEndPosition->set(position);
-    m_pAutoDJEndSource->set(source);
+    m_pOutroPosition->set(position);
+    m_pOutroSource->set(source);
 }
 
 void CueControl::hotcueSet(HotcueControl* pControl, double v) {
@@ -1044,7 +1044,7 @@ void CueControl::playStutter(double v) {
     }
 }
 
-void CueControl::autoDJStartSet(double v) {
+void CueControl::introSet(double v) {
     if (!v) {
         return;
     }
@@ -1070,49 +1070,49 @@ void CueControl::autoDJStartSet(double v) {
     }
 
     // Make sure user is not trying to place start cue on or after end cue.
-    double end = m_pAutoDJEndPosition->get();
-    if (end != -1.0 && position >= end) {
-        qWarning() << "Trying to place start cue on or after end cue.";
+    double outro = m_pOutroPosition->get();
+    if (outro != -1.0 && position >= outro) {
+        qWarning() << "Trying to place intro cue on or after outro cue.";
         return;
     }
 
-    m_pAutoDJStartPosition->set(position);
-    m_pAutoDJStartSource->set(Cue::MANUAL);
+    m_pIntroPosition->set(position);
+    m_pIntroSource->set(Cue::MANUAL);
 
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::START);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::INTRO);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::START);
+            pCue->setType(Cue::INTRO);
         }
         pCue->setSource(Cue::MANUAL);
         pCue->setPosition(position);
     }
 }
 
-void CueControl::autoDJStartClear(double v) {
+void CueControl::introClear(double v) {
     if (!v) {
         return;
     }
 
     QMutexLocker lock(&m_mutex);
-    m_pAutoDJStartPosition->set(-1.0);
-    m_pAutoDJStartSource->set(Cue::UNKNOWN);
+    m_pIntroPosition->set(-1.0);
+    m_pIntroSource->set(Cue::UNKNOWN);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::START);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::INTRO);
         if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
     }
 }
 
-void CueControl::autoDJEndSet(double v) {
+void CueControl::outroSet(double v) {
     if (!v) {
         return;
     }
@@ -1138,42 +1138,42 @@ void CueControl::autoDJEndSet(double v) {
     }
 
     // Make sure user is not trying to place end cue on or before start cue.
-    double start = m_pAutoDJStartPosition->get();
-    if (start != -1.0 && position <= start) {
-        qWarning() << "Trying to place end cue on or before start cue.";
+    double intro = m_pIntroPosition->get();
+    if (intro != -1.0 && position <= intro) {
+        qWarning() << "Trying to place outro cue on or before intro cue.";
         return;
     }
 
-    m_pAutoDJEndPosition->set(position);
-    m_pAutoDJEndSource->set(Cue::MANUAL);
+    m_pOutroPosition->set(position);
+    m_pOutroSource->set(Cue::MANUAL);
 
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::END);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::OUTRO);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::END);
+            pCue->setType(Cue::OUTRO);
         }
         pCue->setSource(Cue::MANUAL);
         pCue->setPosition(position);
     }
 }
 
-void CueControl::autoDJEndClear(double v) {
+void CueControl::outroClear(double v) {
     if (!v) {
         return;
     }
 
     QMutexLocker lock(&m_mutex);
-    m_pAutoDJEndPosition->set(-1.0);
-    m_pAutoDJEndSource->set(Cue::UNKNOWN);
+    m_pOutroPosition->set(-1.0);
+    m_pOutroSource->set(Cue::UNKNOWN);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::END);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::OUTRO);
         if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
@@ -1346,8 +1346,8 @@ bool CueControl::isTrackAtZeroPos() {
     return (fabs(getSampleOfTrack().current) < 1.0f);
 }
 
-bool CueControl::isTrackAtADJStart() {
-    return (fabs(getSampleOfTrack().current - m_pAutoDJStartPosition->get()) < 1.0f);
+bool CueControl::isTrackAtIntroCue() {
+    return (fabs(getSampleOfTrack().current - m_pIntroPosition->get()) < 1.0f);
 }
 
 bool CueControl::isPlayingByPlayButton() {

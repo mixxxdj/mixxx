@@ -71,11 +71,11 @@ class DeckAttributes : public QObject {
     }
 
     double startPosition() const {
-        return m_startPos.get();
+        return m_introPos.get();
     }
 
     double endPosition() const {
-        return m_endPos.get();
+        return m_outroPos.get();
     }
 
     int sampleRate() const {
@@ -91,8 +91,8 @@ class DeckAttributes : public QObject {
   signals:
     void playChanged(DeckAttributes* pDeck, bool playing);
     void playPositionChanged(DeckAttributes* pDeck, double playPosition);
-    void startPositionChanged(DeckAttributes* pDeck, double startPosition);
-    void endPositionChanged(DeckAttributes* pDeck, double endPosition);
+    void introPositionChanged(DeckAttributes* pDeck, double introPosition);
+    void outroPositionChanged(DeckAttributes* pDeck, double outroPosition);
     void trackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void loadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
@@ -100,8 +100,8 @@ class DeckAttributes : public QObject {
   private slots:
     void slotPlayPosChanged(double v);
     void slotPlayChanged(double v);
-    void slotStartPositionChanged(double v);
-    void slotEndPositionChanged(double v);
+    void slotIntroPositionChanged(double v);
+    void slotOutroPositionChanged(double v);
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotPlayerEmpty();
@@ -119,8 +119,8 @@ class DeckAttributes : public QObject {
     ControlProxy m_play;
     ControlProxy m_repeat;
     ControlProxy m_seekOnLoadMode;
-    ControlProxy m_startPos;
-    ControlProxy m_endPos;
+    ControlProxy m_introPos;
+    ControlProxy m_outroPos;
     ControlProxy m_sampleRate;
     ControlProxy m_duration;
     BaseTrackPlayer* m_pPlayer;
@@ -195,8 +195,8 @@ class AutoDJProcessor : public QObject {
   private slots:
     void playerPositionChanged(DeckAttributes* pDeck, double position);
     void playerPlayChanged(DeckAttributes* pDeck, bool playing);
-    void playerStartChanged(DeckAttributes* pDeck, double position);
-    void playerEndChanged(DeckAttributes* pDeck, double position);
+    void playerIntroChanged(DeckAttributes* pDeck, double position);
+    void playerOutroChanged(DeckAttributes* pDeck, double position);
     void playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
     void playerEmpty(DeckAttributes* pDeck);
