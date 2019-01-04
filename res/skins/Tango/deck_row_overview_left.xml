@@ -19,7 +19,7 @@ Variables:
     <Layout>horizontal</Layout>
     <Size>0me,50f</Size>
     <Children>
-      <WidgetGroup><!-- -->
+      <WidgetGroup>
         <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>me,me</SizePolicy>
