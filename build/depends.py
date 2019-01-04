@@ -511,6 +511,9 @@ class SoundTouch(Dependence):
             # Try using system lib
             if conf.CheckForPKG('soundtouch', '2.0.0'):
                 # System Lib found
+                if not conf.CheckLib(['soundtouch', 'libsoundtouch', 'libSoundTouch']):
+                    raise Exception(
+                        "Could not find libSoundTouch or its development headers.")
                 build.env.ParseConfig('pkg-config soundtouch --silence-errors --cflags --libs')
                 self.INTERNAL_LINK = False
 
