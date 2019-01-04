@@ -401,7 +401,7 @@ bool EngineSync::otherSyncedPlaying(const QString& group) {
             }
             continue;
         }
-        if (theSyncable->isPlaying() && (isSynchonized)) {
+        if (theSyncable->isPlaying() && isSynchonized) {
             othersInSync = true;
         }
     }

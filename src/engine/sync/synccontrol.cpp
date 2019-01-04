@@ -444,7 +444,7 @@ void SyncControl::slotFileBpmChanged() {
     // Note: bpmcontrol has updated local_bpm just before
     double local_bpm = m_pLocalBpm ? m_pLocalBpm->get() : 0.0;
 
-    if (getSyncMode() <= SYNC_NONE) {
+    if (!isSynchronized()) {
         const double rateRatio = calcRateRatio();
         double bpm = local_bpm * rateRatio;
         m_pBpm->set(bpm);
