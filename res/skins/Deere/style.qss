@@ -109,8 +109,6 @@
   background-color: #222;
 }
 
-/* Rounded corners to split things up */
-
 #Deck1, #Deck3 {
   border-width: 0px 2.5px 5px 0px;
   border-style: solid;

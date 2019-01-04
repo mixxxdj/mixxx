@@ -189,7 +189,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverview1</ObjectName>
       <Children>
-        <Template src="skin:waveform_overview.xml">
+        <Template src="skin:deck_overview.xml">
           <SetVariable name="channum">1</SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
         </Template>
@@ -199,7 +199,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverview2</ObjectName>
       <Children>
-        <Template src="skin:waveform_overview.xml">
+        <Template src="skin:deck_overview.xml">
           <SetVariable name="channum">2</SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
         </Template>
@@ -209,7 +209,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverview3</ObjectName>
       <Children>
-        <Template src="skin:waveform_overview.xml">
+        <Template src="skin:deck_overview.xml">
           <SetVariable name="channum">3</SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
         </Template>
@@ -219,7 +219,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverview4</ObjectName>
       <Children>
-        <Template src="skin:waveform_overview.xml">
+        <Template src="skin:deck_overview.xml">
           <SetVariable name="channum">4</SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
         </Template>

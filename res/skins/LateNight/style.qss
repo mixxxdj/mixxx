@@ -21,8 +21,10 @@ QToolTip {/*
 
 #KeyText,
 #PlayPositionText,
+#PlayPositionTextSmall,
 #DurationText,
 #BpmText,
+#BpmTextSmall,
 #RateText,
 WBeatSpinBox,
 QSpinBox,
@@ -371,8 +373,11 @@ WTime {
   #PlayPositionTextSmall,
   #BpmTextSmall {
     font-size: 16px/16px;
-    font-weight: bold;
     text-transform: none;
+  }
+  #TitleTextSmall,
+  #ArtistTextSmall {
+    font-weight: bold;
   }
   #TitleTextSmall,
   #ArtistTextSmall,
@@ -383,9 +388,11 @@ WTime {
   }
   #TitleTextSmall {
     margin: 0px 1px 1px 1px;
+    padding: 0px 2px 0px 0px;
   }
   #ArtistTextSmall {
     margin: 0px 1px 0px 1px;
+    padding: 0px 2px 0px 0px;
   }
   #PlayPositionTextSmall {
     margin: 0px 1px 1px 0px;
@@ -404,6 +411,7 @@ WTime {
 #ArtistText,
 #TitleText,
 #PlayPositionText,
+#PlayPositionTextSmall,
 #KeyText,
 #PreviewTitle {
   text-transform: none;

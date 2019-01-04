@@ -593,7 +593,6 @@ WWidgetGroup {
   margin: 0px 4px 5px 0px;
   border-top-right-radius: 2px;
   border-bottom-right-radius: 2px;
-    background-color: #0f0f0f;
 }
 
 #DeckMini2,
@@ -605,9 +604,8 @@ WWidgetGroup {
 }
 
 #DeckMini_TitlePlayPosKeyBPM {
-  qproperty-layoutAlignment: 'AlignRight | AlignTop'; /* 
-  background-color: #333;
-  padding: 1px 0px 1px 1px; */
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  background-color: #1e1e1e;
   margin: 0px 1px 0px 1px;
 }
 #DeckMini_TitlePlayPosKeyBPM WLabel {
@@ -1191,7 +1189,7 @@ WBeatSpinBox,
   font-size: 16px/16px;
   font-weight: bold;
   padding: 1px 0px 0px 0px;
-  border-top: 1px solid #000;
+  border-top: 1px solid #1e1e1e;
   }
   #SyncButtonOverlay[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
@@ -1244,7 +1242,7 @@ WBeatSpinBox,
   }
   #KeyDisplayMini {
     padding: 0px 0px 0px 0px;
-    border-top: 1px solid #000;
+    border-top: 1px solid #1e1e1e;
   }
   #KeyMatch {
     border: 1px solid #444;

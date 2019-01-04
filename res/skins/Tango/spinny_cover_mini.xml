@@ -21,7 +21,7 @@ Variables:
           <!-- no Cover on Spinny -->
           <Spinny>
             <TooltipId>spinny</TooltipId>
-            <SizePolicy>me,me</SizePolicy>
+            <Size>40me,40me</Size>
             <Group><Variable name="group"/></Group>
             <PathBackground scalemode="STRETCH_ASPECT">graphics/spinny_mini_bg.svg</PathBackground>
             <PathForeground scalemode="STRETCH_ASPECT">graphics/spinny_mini_indicator.svg</PathForeground>
@@ -37,7 +37,7 @@ Variables:
           <!-- Cover on Spinny -->
           <Spinny>
             <TooltipId>spinny</TooltipId>
-            <SizePolicy>me,me</SizePolicy>
+            <Size>40me,40me</Size>
             <Group><Variable name="group"/></Group>
             <PathBackground scalemode="STRETCH_ASPECT">graphics/spinny_mini_bg.svg</PathBackground>
             <PathForeground scalemode="STRETCH_ASPECT">graphics/spinny_mini_indicator.svg</PathForeground>
@@ -64,7 +64,7 @@ Variables:
         <Children>
           <CoverArt>
             <TooltipId>coverart</TooltipId>
-            <SizePolicy>me,me</SizePolicy>
+            <Size>40me,40me</Size>
             <Group><Variable name="group"/></Group>
             <DefaultCover>skin:/graphics/cover_default_mini_<Variable name="chanNum"/>.svg</DefaultCover>
             <Connection>
