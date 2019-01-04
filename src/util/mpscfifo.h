@@ -19,8 +19,10 @@ class MpscFifo {
   public:
     explicit MpscFifo(
             MpscFifoConcurrency concurrency = MpscFifoConcurrency::MultipleProducers)
-          : m_writeTokens(0),
-            m_readTokens(capacity),
+          : m_writeCount(0),
+            // Initially no items have been written, so all (= capacity)
+            // available items have been read and none are available.
+            m_readCount(capacity),
             m_writeIndex(0),
             m_readIndex(0) {
         static_assert(capacity >= 1, "capacity too low");
@@ -36,9 +38,9 @@ class MpscFifo {
     // full and the operation fails by returning false is not expected
     // to happen frequently.
     bool enqueue(T value) {
-        if (m_writeTokens.fetchAndAddAcquire(1) >= capacity) {
+        if (m_writeCount.fetchAndAddAcquire(1) >= capacity) {
             // No slots available for writing -> Undo changes and abort
-            m_writeTokens.fetchAndAddRelease(-1);
+            m_writeCount.fetchAndAddRelease(-1);
             return false;
         }
         {
@@ -49,16 +51,16 @@ class MpscFifo {
             m_writeIndex = nextIndex(m_writeIndex);
         }
         // Finally allow the reader to access the enqueued buffer slot
-        m_readTokens.fetchAndAddRelease(-1);
+        m_readCount.fetchAndAddRelease(-1);
         return true;
     }
 
     // Only a single reader at a time is allowed to dequeue items.
     // TODO(C++17): Use std::optional<T> as the return value
     bool dequeue(T* value) {
-        if (m_readTokens.fetchAndAddAcquire(1) >= capacity) {
+        if (m_readCount.fetchAndAddAcquire(1) >= capacity) {
             // No slots available for reading -> Undo changes and abort
-            m_readTokens.fetchAndAddRelease(-1);
+            m_readCount.fetchAndAddRelease(-1);
             return false;
         }
         DEBUG_ASSERT(m_readIndex >= 0);
@@ -66,7 +68,7 @@ class MpscFifo {
         *value = std::move(m_buffer[m_readIndex]);
         m_readIndex = nextIndex(m_readIndex);
         // Finally allow writers to overwrite the dequeued buffer slot
-        m_writeTokens.fetchAndAddRelease(-1);
+        m_writeCount.fetchAndAddRelease(-1);
         return true;
     }
 
@@ -82,8 +84,8 @@ class MpscFifo {
     // the queue. The writers and readers respectively use acquire or release
     // memory ordering semantics according to their role for lock-free
     // coordination.
-    QAtomicInt m_writeTokens;
-    QAtomicInt m_readTokens;
+    QAtomicInt m_writeCount;
+    QAtomicInt m_readCount;
 
     // Only a single writer is allowed at a time. Otherwise stale reads may
     // occur if a writer is delayed while accessing m_buffer!
