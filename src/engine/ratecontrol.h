@@ -48,23 +48,8 @@ public:
         Linear = 1 // pitch moves up/down in a progresively linear fashion
     };
 
-    // This defines how the rate returns to normal. Currently unused.
-    // Rate ramp back mode:
-    //  RATERAMP_RAMPBACK_NONE: returns back to normal all at once.
-    //  RATERAMP_RAMPBACK_SPEED: moves back in a linearly progresive manner.
-    //  RATERAMP_RAMPBACK_PERIOD: returns to normal within a period of time.
-    enum RATERAMP_RAMPBACK_MODE {
-        RATERAMP_RAMPBACK_NONE,
-        RATERAMP_RAMPBACK_SPEED,
-        RATERAMP_RAMPBACK_PERIOD
-    };
-
     void setBpmControl(BpmControl* bpmcontrol);
-    // Must be called during each callback of the audio thread so that
-    // RateControl has a chance to update itself.
-    void process(const double dRate,
-                 const double currentSample,
-                 const int bufferSamples) override;
+
     // Returns the current engine rate.  "reportScratching" is used to tell
     // the caller that the user is currently scratching, and this is used to
     // disable keylock.
@@ -107,6 +92,7 @@ public:
     void slotControlFastBack(double);
 
   private:
+    void processTempRate(const int bufferSamples);
     double getJogFactor() const;
     double getWheelFactor() const;
     SyncMode getSyncMode() const;
@@ -128,18 +114,18 @@ public:
     static ControlValueAtomic<double> m_dPermanentRateChangeCoarse;
     static ControlValueAtomic<double> m_dPermanentRateChangeFine;
 
-    ControlPushButton *buttonRateTempDown;
-    ControlPushButton *buttonRateTempDownSmall;
-    ControlPushButton *buttonRateTempUp;
-    ControlPushButton *buttonRateTempUpSmall;
+    ControlPushButton* m_pButtonRateTempDown;
+    ControlPushButton* m_pButtonRateTempDownSmall;
+    ControlPushButton* m_pButtonRateTempUp;
+    ControlPushButton* m_pButtonRateTempUpSmall;
 
-    ControlPushButton *buttonRatePermDown;
-    ControlPushButton *buttonRatePermDownSmall;
-    ControlPushButton *buttonRatePermUp;
-    ControlPushButton *buttonRatePermUpSmall;
+    ControlPushButton* m_pButtonRatePermDown;
+    ControlPushButton* m_pButtonRatePermDownSmall;
+    ControlPushButton* m_pButtonRatePermUp;
+    ControlPushButton* m_pButtonRatePermUpSmall;
 
-    ControlObject *m_pRateDir;
-    ControlObject *m_pRateRange;
+    ControlObject* m_pRateDir;
+    ControlObject* m_pRateRange;
     ControlPotmeter* m_pRateSlider;
     ControlPotmeter* m_pRateSearch;
     ControlPushButton* m_pReverseButton;
@@ -183,10 +169,9 @@ public:
     // Factor applied to jogwheels when the track is paused to speed up seeking.
     static const double kPausedJogMultiplier;
     // Temporary pitchrate, added to the permanent rate for calculateRate
-    double m_dRateTemp;
-    enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
-    // Return speed for temporary rate change
-    double m_dRateTempRampbackChange;
+    double m_tempRateRatio;
+    // Speed for temporary rate change
+    double m_dRateTempRampChange;
 };
 
 #endif /* RATECONTROL_H */
