@@ -431,7 +431,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
         // master bpm, our bpm value is adopted.
         m_pEngineSync->requestBpmUpdate(this, bpm);
     } else {
-        // SYNC_MASTER
+        DEBUG_ASSERT(syncMode == SYNC_MASTER);
         m_pEngineSync->notifyBpmChanged(this, bpm);
     }
 }
