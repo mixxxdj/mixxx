@@ -236,27 +236,42 @@ void TrackAnalysisScheduler::resume() {
 
 bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
     DEBUG_ASSERT(worker);
+    DEBUG_ASSERT(worker->threadIdle());
     while (!m_queuedTrackIds.empty()) {
         TrackId nextTrackId = m_queuedTrackIds.front();
         DEBUG_ASSERT(nextTrackId.isValid());
-        TrackPointer nextTrack = loadTrackById(nextTrackId);
-        if (!nextTrack) {
-            // Skip unloadable track
-            m_queuedTrackIds.pop_front();
-            ++m_dequeuedTracksCount;
-            ++m_finishedTracksCount;
-            continue;
+        if (nextTrackId.isValid()) {
+            TrackPointer nextTrack =
+                    m_library->trackCollection().getTrackDAO().getTrack(nextTrackId);
+            if (nextTrack) {
+                VERIFY_OR_DEBUG_ASSERT(worker->submitNextTrack(std::move(nextTrack))) {
+                    // This will and must never happen! We will only submit the next
+                    // track only after the worker has signaled that it is idle. In
+                    // this case the lock-free FIFO for passing data between threads
+                    // is empty and enqueueing is expected to succeed.
+                    kLogger.critical()
+                            << "Failed to submit next track ...retrying...";
+                    // Retry to avoid skipping this track
+                    continue;
+                }
+                m_queuedTrackIds.pop_front();
+                ++m_dequeuedTracksCount;
+                worker->wakeThread();
+                return true;
+            } else {
+                kLogger.warning()
+                        << "Failed to load track by id"
+                        << nextTrackId;
+            }
+        } else {
+            kLogger.warning()
+                    << "Invalid track id"
+                    << nextTrackId;
         }
-        VERIFY_OR_DEBUG_ASSERT(worker->submitNextTrack(std::move(nextTrack))) {
-            // This should never happen
-            kLogger.warning() << "Failed to submit next track";
-            // Retry to avoid skipping the track
-            continue;
-        }
+        // Skip this track
         m_queuedTrackIds.pop_front();
         ++m_dequeuedTracksCount;
-        worker->wakeThread();
-        return true;
+        ++m_finishedTracksCount;
     }
     DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
     return false;
@@ -270,18 +285,4 @@ void TrackAnalysisScheduler::stop() {
     }
     // The worker threads are still running at this point
     // and m_workers must not be modified!
-}
-
-TrackPointer TrackAnalysisScheduler::loadTrackById(TrackId trackId) {
-    VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
-        return TrackPointer();
-    }
-    TrackPointer track =
-            m_library->trackCollection().getTrackDAO().getTrack(trackId);
-    if (!track) {
-        kLogger.warning()
-                << "Failed to load track with id"
-                << trackId;
-    }
-    return track;
 }
