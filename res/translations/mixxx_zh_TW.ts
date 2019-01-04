@@ -81,7 +81,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="19"/>
         <source>Import Playlist</source>
-        <translation>導入播放清單</translation>
+        <translation>匯入播放清單</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="92"/>
@@ -125,7 +125,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="48"/>
         <source>Rename</source>
-        <translation>重命名</translation>
+        <translation>重新命名</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="52"/>
@@ -141,7 +141,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="60"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="64"/>
         <source>Import Playlist</source>
-        <translation>導入播放清單</translation>
+        <translation>匯入播放清單</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="72"/>
@@ -178,13 +178,13 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="181"/>
         <source>Rename Playlist</source>
-        <translation>重命名播放清單</translation>
+        <translation>重新命名播放清單</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="194"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="198"/>
         <source>Renaming Playlist Failed</source>
-        <translation>重命名播放清單失敗</translation>
+        <translation>重新命名播放清單失敗</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="195"/>
@@ -279,7 +279,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="80"/>
         <source>Year</source>
-        <translation>一年</translation>
+        <translation>年份</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="82"/>
@@ -319,7 +319,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="96"/>
         <source>Track #</source>
-        <translation>跟蹤 #</translation>
+        <translation>曲目 #</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="98"/>
@@ -367,7 +367,7 @@
     <message>
         <location filename="../../src/mixer/basetrackplayer.cpp" line="283"/>
         <source>Couldn&apos;t load track.</source>
-        <translation>無法載入追蹤記錄。</translation>
+        <translation>無法載入音軌</translation>
     </message>
 </context>
 <context>
@@ -375,12 +375,12 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="105"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>行動失敗</translation>
     </message>
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="106"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
-        <translation type="unfinished"/>
+        <translation>請啟用至少一個連線以啟用LIVE廣播。</translation>
     </message>
 </context>
 <context>
@@ -398,12 +398,12 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="468"/>
         <source>Settings error</source>
-        <translation type="unfinished"/>
+        <translation>設定錯誤</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="469"/>
         <source>&lt;b&gt;Error with settings for &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;b&gt;設定 &apos;%1&apos; 失敗:&lt;/b&gt;&lt;br&gt;</translation>
     </message>
 </context>
 <context>
@@ -421,32 +421,32 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
         <source>Status</source>
-        <translation type="unfinished"/>
+        <translation>狀態</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="176"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>未連線</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="178"/>
         <source>Connecting...</source>
-        <translation type="unfinished"/>
+        <translation>正在連線...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="180"/>
         <source>Connected</source>
-        <translation type="unfinished"/>
+        <translation>已連線</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
         <source>Failed</source>
-        <translation type="unfinished"/>
+        <translation>失敗</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="185"/>
         <source>Unknown</source>
-        <translation type="unfinished"/>
+        <translation>未知</translation>
     </message>
 </context>
 <context>
@@ -480,7 +480,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="92"/>
         <source>Removable Devices</source>
-        <translation>可行動裝置</translation>
+        <translation>可移除裝置</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="126"/>
@@ -519,7 +519,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="28"/>
         <source>Filename</source>
-        <translation>檔案名</translation>
+        <translation>檔案名稱</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="29"/>
@@ -539,12 +539,12 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="32"/>
         <source>Track #</source>
-        <translation>跟蹤 #</translation>
+        <translation>曲目 #</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="33"/>
         <source>Year</source>
-        <translation>一年</translation>
+        <translation>年份</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="34"/>
@@ -748,12 +748,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="35"/>
         <source>Master balance</source>
-        <translation>掌握平衡</translation>
+        <translation>主輸出平衡</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="36"/>
         <source>Master delay</source>
-        <translation>掌握這個延遲</translation>
+        <translation>主輸出延遲</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="38"/>
@@ -805,12 +805,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="63"/>
         <source>Jump to start of track and play</source>
-        <translation>跳轉到開始的軌道和玩</translation>
+        <translation>跳轉到音軌前端並播放</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="67"/>
         <source>Jump to end of track</source>
-        <translation>跳轉到年底軌道</translation>
+        <translation>跳轉到音軌末端</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="60"/>
@@ -820,7 +820,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="746"/>
         <source>Headphone listen button</source>
-        <translation>耳機聽著按鈕</translation>
+        <translation>耳機監聽按鈕</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="72"/>
@@ -836,7 +836,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="73"/>
         <source>Eject track</source>
-        <translation>彈出的軌道</translation>
+        <translation>退出軌道</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="42"/>
@@ -848,19 +848,19 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="44"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="733"/>
         <source>Set mix orientation to left</source>
-        <translation>設置的混合方向向左</translation>
+        <translation>設置混合方向向左</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="46"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="738"/>
         <source>Set mix orientation to center</source>
-        <translation>設置的混合定位中心</translation>
+        <translation>設置混合方向向中央</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="48"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="742"/>
         <source>Set mix orientation to right</source>
-        <translation>設置的混合定位到右</translation>
+        <translation>設置混合方向向右</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="76"/>
@@ -916,22 +916,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="110"/>
         <source>Increase internal master BPM by 0.1</source>
-        <translation>內部的主 BPM 增加 0.1</translation>
+        <translation>增加內部的主 BPM 0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="112"/>
         <source>Decrease internal master BPM by 0.1</source>
-        <translation>內部的主 BPM 減少 0.1</translation>
+        <translation>減少內部的主 BPM 0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="113"/>
         <source>Toggle sync master</source>
-        <translation>切換同步大師</translation>
+        <translation>切換主同步</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="115"/>
         <source>Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)</source>
-        <translation>同步模式 3 狀態切換 (OFF，追隨者，碩士)</translation>
+        <translation>同步模式 3 狀態切換 (關閉，跟隨，主要)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="117"/>
@@ -961,12 +961,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="190"/>
         <source>Vinyl Control</source>
-        <translation>乙烯基控制</translation>
+        <translation>唱片控制</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="196"/>
         <source>Toggle vinyl-control cueing mode (OFF/ONE/HOT)</source>
-        <translation>切換控制乙烯基線索模式 （OFF/一/熱）</translation>
+        <translation>切換唱片控制線索模式 （OFF/一/熱）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="194"/>
@@ -981,7 +981,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="203"/>
         <source>Cues</source>
-        <translation>線索</translation>
+        <translation>提示</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="204"/>
@@ -996,17 +996,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="206"/>
         <source>Go to cue point</source>
-        <translation>去提示點</translation>
+        <translation>前往提示點</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="208"/>
         <source>Go to cue point and play</source>
-        <translation>去提示點和玩</translation>
+        <translation>前往提示點並播放</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="210"/>
         <source>Go to cue point and stop</source>
-        <translation>去提示點和停止</translation>
+        <translation>前往提示點並停止</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="212"/>
@@ -1036,7 +1036,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="230"/>
         <source>Clear hotcue %1</source>
-        <translation>明確 hotcue %1</translation>
+        <translation>刪除 hotcue %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="231"/>
@@ -1051,12 +1051,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="233"/>
         <source>Jump to hotcue %1 and stop</source>
-        <translation>跳轉到 hotcue %1 和停止</translation>
+        <translation>跳轉到 hotcue %1 並停止</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="234"/>
         <source>Jump to hotcue %1 and play</source>
-        <translation>跳轉到 hotcue %1 和玩</translation>
+        <translation>跳轉到 hotcue %1 並播放</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="235"/>
@@ -1077,17 +1077,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="277"/>
         <source>Loop In button</source>
-        <translation>迴圈中的按鈕</translation>
+        <translation>循環起點</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="278"/>
         <source>Loop Out button</source>
-        <translation>迴圈退出按鈕</translation>
+        <translation>循環終點</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="279"/>
         <source>Loop Exit button</source>
-        <translation>迴圈退出按鈕</translation>
+        <translation>循環關閉</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="294"/>
@@ -1132,33 +1132,33 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="306"/>
         <source>Move loop forward by %1 beats</source>
-        <translation>移動向前迴圈由 %1 跳動</translation>
+        <translation>循環向前移動 %1 拍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="307"/>
         <source>Move loop backward by %1 beats</source>
-        <translation>由 %1 節拍移動環落後</translation>
+        <translation>循環向後移動 %1 拍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="324"/>
         <source>Beat-Looping</source>
-        <translation>節拍迴圈</translation>
+        <translation>節拍循環</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="327"/>
         <source>Create %1-beat loop</source>
-        <translation>創建 %1 節拍迴圈</translation>
+        <translation>建立 %1 節拍循環</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="328"/>
         <source>Create temporary %1-beat loop roll</source>
-        <translation>創建臨時的 %1 節拍迴圈卷</translation>
+        <translation>創建臨時的 %1 節拍循環</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="29"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="370"/>
         <source>Library</source>
-        <translation>圖書館</translation>
+        <translation>音樂庫</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="26"/>
@@ -1173,22 +1173,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="33"/>
         <source>Master crossfader</source>
-        <translation>大師的交叉推子</translation>
+        <translation>主要推杆</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="35"/>
         <source>Master Balance</source>
-        <translation>掌握平衡</translation>
+        <translation>主輸出平衡</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="36"/>
         <source>Master Delay</source>
-        <translation>大師延遲</translation>
+        <translation>主輸出延遲</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="38"/>
         <source>Headphone Mix</source>
-        <translation>耳機組合</translation>
+        <translation>耳機混音器</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="39"/>
@@ -1203,7 +1203,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="52"/>
         <source>Play</source>
-        <translation>戲劇</translation>
+        <translation>播放</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="54"/>
@@ -1213,7 +1213,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="54"/>
         <source>Fast Rewind button</source>
-        <translation>快速倒帶按鈕</translation>
+        <translation>快退按鈕</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="55"/>
@@ -1233,12 +1233,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="58"/>
         <source>Play Reverse</source>
-        <translation>發揮反向</translation>
+        <translation>反向播放</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="58"/>
         <source>Play Reverse button</source>
-        <translation>播放反向按鈕</translation>
+        <translation>反向播放按鈕</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="59"/>
@@ -1253,12 +1253,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="61"/>
         <source>Jumps to start of track</source>
-        <translation>跳轉到開始的軌道</translation>
+        <translation>跳到音軌前端</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="62"/>
         <source>Play From Start</source>
-        <translation>從開始玩</translation>
+        <translation>從開始處播放</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="64"/>
@@ -1268,12 +1268,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="65"/>
         <source>Stop And Jump To Start</source>
-        <translation>停止並跳轉到開始</translation>
+        <translation>停止並跳至前端</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="66"/>
         <source>Stop playback and jump to start of track</source>
-        <translation>停止播放和跳的軌跡球開始</translation>
+        <translation>停止播放並跳至音軌前端</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="67"/>
@@ -1283,36 +1283,36 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="68"/>
         <source>Volume</source>
-        <translation>卷</translation>
+        <translation>音量</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="68"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="712"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="713"/>
         <source>Volume Fader</source>
-        <translation>音量推子</translation>
+        <translation>音量推桿</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="69"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="716"/>
         <source>Full Volume</source>
-        <translation>完整卷</translation>
+        <translation>音量全滿</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="70"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="720"/>
         <source>Zero Volume</source>
-        <translation>零卷</translation>
+        <translation>零音量</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="71"/>
         <source>Track Gain</source>
-        <translation>跟蹤增益</translation>
+        <translation>音軌增益</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="71"/>
         <source>Track Gain knob</source>
-        <translation>軌道增益旋鈕</translation>
+        <translation>音軌增益旋鈕</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="72"/>
@@ -1329,12 +1329,12 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="74"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="745"/>
         <source>Headphone Listen</source>
-        <translation>耳機聽</translation>
+        <translation>耳機監聽</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="74"/>
         <source>Headphone listen (pfl) button</source>
-        <translation>耳機聽 (pfl) 按鈕</translation>
+        <translation>耳機監聽(pfi)按鈕</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="75"/>
@@ -1362,7 +1362,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="45"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="737"/>
         <source>Orient Center</source>
-        <translation>東方中心</translation>
+        <translation>中心</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="47"/>
@@ -1373,27 +1373,27 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="81"/>
         <source>BPM +1</source>
-        <translation>BPM + 1</translation>
+        <translation>BPM +1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="82"/>
         <source>BPM -1</source>
-        <translation>BPM-1</translation>
+        <translation>BPM -1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="83"/>
         <source>BPM +0.1</source>
-        <translation>BPM 0.1</translation>
+        <translation>BPM +0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="84"/>
         <source>BPM -0.1</source>
-        <translation>BPM-0.1</translation>
+        <translation>BPM -0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="85"/>
         <source>BPM Tap</source>
-        <translation>BPM 水龍頭</translation>
+        <translation>BPM 偵測</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="86"/>
@@ -1403,7 +1403,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="86"/>
         <source>Increase track&apos;s average BPM by 0.01</source>
-        <translation>軌道的平均 BPM 增加 0.01</translation>
+        <translation>增加軌道的平均 BPM 0.01</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="87"/>
@@ -1413,27 +1413,27 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="87"/>
         <source>Decrease track&apos;s average BPM by 0.01</source>
-        <translation>軌道的平均 BPM 減少 0.01</translation>
+        <translation>減少軌道的平均 BPM 0.01</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="88"/>
         <source>Move Beatgrid Earlier</source>
-        <translation>早些時候移動 Beatgrid</translation>
+        <translation>提早 Beatgrid</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="88"/>
         <source>Adjust the beatgrid to the left</source>
-        <translation>調整到左邊 beatgrid</translation>
+        <translation>調整 Beatgrid 到左邊</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="89"/>
         <source>Move Beatgrid Later</source>
-        <translation>後來移動 Beatgrid</translation>
+        <translation>延後 Beatgrid</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="89"/>
         <source>Adjust the beatgrid to the right</source>
-        <translation>調整到右 beatgrid</translation>
+        <translation>調整 Beatgrid 到右</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="90"/>
@@ -1443,7 +1443,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="91"/>
         <source>Align beatgrid to current position</source>
-        <translation>對齊到當前位置 beatgrid</translation>
+        <translation>對齊 Beatgrid 到當前位置</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="92"/>
@@ -1474,7 +1474,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="98"/>
         <source>Tap to sync, hold to enable sync mode</source>
-        <translation>點擊同步舉行啟用同步模式</translation>
+        <translation>點擊以同步，長按以啟用同步模式</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="99"/>
@@ -1490,32 +1490,32 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="101"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="102"/>
         <source>Internal Master BPM</source>
-        <translation>內部的大師 BPM</translation>
+        <translation>內部主 BPM</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="103"/>
         <source>Internal Master BPM +1</source>
-        <translation>內部大師 BPM + 1</translation>
+        <translation>內部主 BPM +1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="106"/>
         <source>Internal Master BPM -1</source>
-        <translation>內部大師 BPM-1</translation>
+        <translation>內部主 BPM -1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="109"/>
         <source>Internal Master BPM +0.1</source>
-        <translation>內部大師 BPM 0.1</translation>
+        <translation>內部主 BPM +0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="111"/>
         <source>Internal Master BPM -0.1</source>
-        <translation>內部大師 BPM-0.1</translation>
+        <translation>內部主 BPM -0.1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="113"/>
         <source>Sync Master</source>
-        <translation>同步大師</translation>
+        <translation>同步主要</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="116"/>
@@ -1535,7 +1535,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="125"/>
         <source>Speed (Pitch/Tempo)</source>
-        <translation>速度 （音高節奏）</translation>
+        <translation>速度 （音高/節奏）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="126"/>
@@ -1550,82 +1550,82 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="132"/>
         <source>Pitch Adjust</source>
-        <translation>間距調整</translation>
+        <translation>音高調整</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="133"/>
         <source>Adjust pitch from speed slider pitch</source>
-        <translation>調整速度滑塊瀝青</translation>
+        <translation>從速度滑桿調整音高</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="134"/>
         <source>Match musical key</source>
-        <translation>比賽音樂鍵</translation>
+        <translation>配對音樂音調</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="134"/>
         <source>Match Key</source>
-        <translation>與鍵匹配</translation>
+        <translation>與音調匹配</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="135"/>
         <source>Reset Key</source>
-        <translation>重置金鑰</translation>
+        <translation>重置音調</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="135"/>
         <source>Resets key to original</source>
-        <translation>重置金鑰組原始</translation>
+        <translation>重置至原始音調</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="165"/>
         <source>High EQ</source>
-        <translation>高情商</translation>
+        <translation>高頻等化器</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="164"/>
         <source>Mid EQ</source>
-        <translation>中期的情商</translation>
+        <translation>中頻等化器</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="163"/>
         <source>Low EQ</source>
-        <translation>較低的情商</translation>
+        <translation>低頻等化器</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="191"/>
         <source>Toggle Vinyl Control</source>
-        <translation>切換乙烯基控制項</translation>
+        <translation>切換黑膠盤控制項</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="192"/>
         <source>Toggle Vinyl Control (ON/OFF)</source>
-        <translation>切換乙烯控制 （開/關）</translation>
+        <translation>切換黑膠盤控制 （開/關）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="193"/>
         <source>Vinyl Control Mode</source>
-        <translation>乙烯基控制模式</translation>
+        <translation>黑膠盤控制模式</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="195"/>
         <source>Vinyl Control Cueing Mode</source>
-        <translation>乙烯基控制線索模式</translation>
+        <translation>黑膠盤控制提示模式</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="197"/>
         <source>Vinyl Control Passthrough</source>
-        <translation>乙烯基控制直通</translation>
+        <translation>黑膠盤直通</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="199"/>
         <source>Vinyl Control Next Deck</source>
-        <translation>乙烯基控制下甲板</translation>
+        <translation>黑膠盤控制下甲板</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="200"/>
         <source>Single deck mode - Switch vinyl control to next deck</source>
-        <translation>單甲板模式-開關乙烯控制到下一個甲板</translation>
+        <translation>單甲板模式-切換唱片控制到下一個甲板</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="204"/>
@@ -1640,17 +1640,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="206"/>
         <source>Go-To Cue</source>
-        <translation>走到提示</translation>
+        <translation>前往提示</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="207"/>
         <source>Go-To Cue And Play</source>
-        <translation>走到球杆和戲劇</translation>
+        <translation>前往提示並播放</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="209"/>
         <source>Go-To Cue And Stop</source>
-        <translation>走到球杆和停止</translation>
+        <translation>前往提示並停止</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="211"/>
@@ -1670,12 +1670,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="218"/>
         <source>Go to cue point and play after release</source>
-        <translation>去提示點和發揮後釋放</translation>
+        <translation>前往提示點並在放開後播放</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="223"/>
         <source>Clear Hotcue %1</source>
-        <translation>明確 Hotcue %1</translation>
+        <translation>刪除 Hotcue %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="224"/>
@@ -1690,12 +1690,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="226"/>
         <source>Jump To Hotcue %1 And Stop</source>
-        <translation>跳轉到 Hotcue %1 和停止</translation>
+        <translation>跳轉到 Hotcue %1 並停止</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="227"/>
         <source>Jump To Hotcue %1 And Play</source>
-        <translation>跳轉到 Hotcue %1 和戲劇</translation>
+        <translation>跳轉到 Hotcue %1 並播放</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="228"/>
@@ -1705,32 +1705,32 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="277"/>
         <source>Loop In</source>
-        <translation>在迴圈</translation>
+        <translation>循環起點</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="278"/>
         <source>Loop Out</source>
-        <translation>圈出</translation>
+        <translation>循環終點</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="279"/>
         <source>Loop Exit</source>
-        <translation>迴圈退出</translation>
+        <translation>循環關閉</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="280"/>
         <source>Reloop/Exit Loop</source>
-        <translation>Reloop/退出迴圈</translation>
+        <translation>循環開關</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="282"/>
         <source>Loop Halve</source>
-        <translation>回路減半</translation>
+        <translation>循環減半</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="283"/>
         <source>Loop Double</source>
-        <translation>雙迴圈</translation>
+        <translation>循環雙倍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="290"/>
@@ -1755,22 +1755,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="304"/>
         <source>Move Loop +%1 Beats</source>
-        <translation>移動迴圈 + %1 跳動</translation>
+        <translation>移動循環 +%1 拍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="305"/>
         <source>Move Loop -%1 Beats</source>
-        <translation>移動迴圈-%1 節拍</translation>
+        <translation>移動循環 -%1 拍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="325"/>
         <source>Loop %1 Beats</source>
-        <translation>%1 迴圈節拍</translation>
+        <translation>循環 %1 拍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="326"/>
         <source>Loop Roll %1 Beats</source>
-        <translation>迴圈卷 %1 的節拍</translation>
+        <translation>循環卷 %1 拍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="424"/>
@@ -1780,7 +1780,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="425"/>
         <source>Append the selected track to the Auto DJ Queue</source>
-        <translation>將選定的軌道追加到汽車 DJ 佇列</translation>
+        <translation>將選定的軌道加到自動 DJ 佇列</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="428"/>
@@ -1795,42 +1795,42 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="439"/>
         <source>Load Track</source>
-        <translation>負荷跟蹤</translation>
+        <translation>載入音軌</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="440"/>
         <source>Load selected track</source>
-        <translation>載入選定的軌道</translation>
+        <translation>載入選定的音軌</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="441"/>
         <source>Track Load and Play</source>
-        <translation>跟蹤負載和戲劇</translation>
+        <translation>載入音軌並播放</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="442"/>
         <source>Load selected track and play</source>
-        <translation>載入選定的軌道和戲劇</translation>
+        <translation>載入選定的音軌並播放</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="445"/>
         <source>Record Mix</source>
-        <translation>記錄的組合</translation>
+        <translation>錄製混音</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="446"/>
         <source>Toggle mix recording</source>
-        <translation>切換混合錄製</translation>
+        <translation>切換錄製混音</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="450"/>
         <source>Effects</source>
-        <translation>影響</translation>
+        <translation>效果</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="453"/>
         <source>Quick Effects</source>
-        <translation>快速的影響</translation>
+        <translation>快速效果</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="457"/>
@@ -1845,17 +1845,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="459"/>
         <source>Quick Effect</source>
-        <translation>見效快</translation>
+        <translation>快速效果</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="471"/>
         <source>Clear effect rack</source>
-        <translation>明確影響機架</translation>
+        <translation>清除效果架</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="471"/>
         <source>Clear Effect Rack</source>
-        <translation>明確影響機架</translation>
+        <translation>清除效果架</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="488"/>
@@ -1865,7 +1865,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="489"/>
         <source>Clear effect unit</source>
-        <translation>明確影響單位</translation>
+        <translation>清除效果架單位</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="492"/>
@@ -1875,12 +1875,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="496"/>
         <source>Dry/Wet</source>
-        <translation>幹/濕</translation>
+        <translation>乾/濕</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="497"/>
         <source>Adjust the balance between the original (dry) and processed (wet) signal.</source>
-        <translation>調整原 （幹） 之間的平衡和處理 （濕法） 信號。</translation>
+        <translation>調整原(乾)和處理(濕)之間的平衡。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="500"/>
@@ -1913,12 +1913,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="619"/>
         <source>Clear</source>
-        <translation>明確</translation>
+        <translation>清除</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="619"/>
         <source>Clear the current effect</source>
-        <translation>清除當前的效果</translation>
+        <translation>清除當前效果</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="627"/>
@@ -1943,7 +1943,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="635"/>
         <source>Previous</source>
-        <translation>上一頁</translation>
+        <translation>上一個</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="635"/>
@@ -1958,7 +1958,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="640"/>
         <source>Switch to either next or previous effect</source>
-        <translation>切換到下一頁或上一頁的影響</translation>
+        <translation>切換到下一個或上一個的效果</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="666"/>
@@ -1970,12 +1970,12 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="695"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="696"/>
         <source>Microphone Ducking Strength</source>
-        <translation>麥克風回避強度</translation>
+        <translation>麥克風迴避強度</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="699"/>
         <source>Microphone Ducking Mode</source>
-        <translation>麥克風閃避模式</translation>
+        <translation>麥克風迴避模式</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="708"/>
@@ -1990,47 +1990,47 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="753"/>
         <source>Shuffle the content of the Auto DJ queue</source>
-        <translation type="unfinished"/>
+        <translation>拖曳自動 DJ 柱列中的內容</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="756"/>
         <source>Skip the next track in the Auto DJ queue</source>
-        <translation type="unfinished"/>
+        <translation>跳過自動 DJ 柱列中的下一曲目</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="761"/>
         <source>Auto DJ Toggle</source>
-        <translation>汽車 DJ 切換</translation>
+        <translation>自動 DJ 切換</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="762"/>
         <source>Toggle Auto DJ On/Off</source>
-        <translation>打開關閉的自動切換 DJ</translation>
+        <translation>切換自動 DJ 開啟/關閉</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="785"/>
         <source>Library Maximize/Restore</source>
-        <translation>圖書館最大化/還原</translation>
+        <translation>音樂庫最大化/還原</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="786"/>
         <source>Maximize the track library to take up all the available screen space.</source>
-        <translation>最大限度地跟蹤庫佔用所有可用的螢幕空間。</translation>
+        <translation>最大化音樂庫以佔用所有可用的螢幕空間。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="779"/>
         <source>Effect Rack Show/Hide</source>
-        <translation>影響機架顯示/隱藏</translation>
+        <translation>效果架顯示/隱藏</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="780"/>
         <source>Show/hide the effect rack</source>
-        <translation>顯示/隱藏效果機架</translation>
+        <translation>顯示/隱藏效果架</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="782"/>
         <source>Cover Art Show/Hide</source>
-        <translation>封面藝術顯示/隱藏</translation>
+        <translation>封面顯示/隱藏</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="783"/>
@@ -2045,7 +2045,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="526"/>
         <source>Toggle Effect Unit</source>
-        <translation>單位切換效果</translation>
+        <translation>切換效果單元</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="34"/>
@@ -2075,12 +2075,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="129"/>
         <source>Playback speed control (Vinyl &quot;Pitch&quot; slider)</source>
-        <translation>播放速度控制 （乙烯基&quot;投擲&quot;滑塊）</translation>
+        <translation>播放速度控制 (黑膠盤&quot;音調&quot;推桿)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="130"/>
         <source>Pitch (Musical key)</source>
-        <translation>瀝青 （音樂鍵）</translation>
+        <translation>音調 （音樂音高）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="136"/>
@@ -2096,12 +2096,12 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="138"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="142"/>
         <source>Increase Speed (Fine)</source>
-        <translation>增長速度 （罰款）</translation>
+        <translation>增加速度 （精細）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="139"/>
         <source>Adjust speed faster (fine)</source>
-        <translation>調整的速度更快 （罰款）</translation>
+        <translation>調整速度更快 （精細）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="140"/>
@@ -2116,7 +2116,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="143"/>
         <source>Adjust speed slower (fine)</source>
-        <translation>調整速度較慢 （罰款）</translation>
+        <translation>調整速度較慢 （精細）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="144"/>
@@ -2131,12 +2131,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="146"/>
         <source>Temporarily Increase Speed (Fine)</source>
-        <translation>暫時增加速度 （罰款）</translation>
+        <translation>暫時增加速度 （精細）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="147"/>
         <source>Temporarily increase speed (fine)</source>
-        <translation>暫時增加速度 （罰款）</translation>
+        <translation>暫時增加速度 （精細）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="148"/>
@@ -2151,12 +2151,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="150"/>
         <source>Temporarily Decrease Speed (Fine)</source>
-        <translation>暫時降低速度 （罰款）</translation>
+        <translation>暫時降低速度 （精細）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="151"/>
         <source>Temporarily decrease speed (fine)</source>
-        <translation>暫時降低速度 （罰款）</translation>
+        <translation>暫時降低速度 （精細）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="174"/>
@@ -2168,22 +2168,22 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="181"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="182"/>
         <source>Kill %1</source>
-        <translation>Kill %1</translation>
+        <translation>關閉 %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="217"/>
         <source>CUP (Cue + Play)</source>
-        <translation>杯 （提示 + 玩）</translation>
+        <translation>CUP (提示 + 播放)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="272"/>
         <source>Loop Selected Beats</source>
-        <translation>反覆播放選定的節拍</translation>
+        <translation>循環播放選定的節拍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="273"/>
         <source>Create a beat loop of selected beat size</source>
-        <translation>在一個選定的節拍長度內，新增一個循環節奏</translation>
+        <translation>在選定的節拍長度內新增循環節奏</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="274"/>
@@ -2203,22 +2203,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="281"/>
         <source>Reloop And Stop</source>
-        <translation type="unfinished"/>
+        <translation>重複循環並停止</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="281"/>
         <source>Enable loop, jump to Loop In point, and stop</source>
-        <translation>啟動反覆播放，在這點跳到反覆播放，然後停止</translation>
+        <translation>啟動循環播放，跳至循環播放，並停止</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="282"/>
         <source>Halve the loop length</source>
-        <translation>把反覆播放的時間長度減半</translation>
+        <translation>把循環播放的時間長度減半</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="283"/>
         <source>Double the loop length</source>
-        <translation>把反覆播放的時間長度加倍</translation>
+        <translation>把循環播放的時間長度加倍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="347"/>
@@ -2228,12 +2228,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="348"/>
         <source>Jump / Move Loop Forward %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>向前跳躍/移動循環 %1 拍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="349"/>
         <source>Jump / Move Loop Backward %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>向後跳躍/移動循環 %1 拍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="350"/>
@@ -2388,7 +2388,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="420"/>
         <source>Go to the currently selected item</source>
-        <translation type="unfinished"/>
+        <translation>前往目前選擇的項目</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="421"/>
@@ -2398,12 +2398,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="432"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>加入自動 DJ 柱列 (取代)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="433"/>
         <source>Replace Auto DJ Queue with selected tracks</source>
-        <translation type="unfinished"/>
+        <translation>以選擇的曲目取代自動 DJ 柱列</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="493"/>
@@ -2494,7 +2494,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="700"/>
         <source>Toggle microphone ducking mode (OFF, AUTO, MANUAL)</source>
-        <translation>切換麥克風閃避模式 （關閉、 自動、 手動）</translation>
+        <translation>切換麥克風迴避模式 （關閉、 自動、 手動）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="703"/>
@@ -2509,22 +2509,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="750"/>
         <source>Auto DJ</source>
-        <translation>汽車 DJ</translation>
+        <translation>自動 DJ</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="752"/>
         <source>Auto DJ Shuffle</source>
-        <translation>汽車 DJ 洗牌</translation>
+        <translation>自動 DJ 拖曳</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="755"/>
         <source>Auto DJ Skip Next</source>
-        <translation>汽車 DJ 跳過下一步</translation>
+        <translation>自動 DJ 跳過下一個</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="758"/>
         <source>Auto DJ Fade To Next</source>
-        <translation>汽車 DJ 褪色的下一步</translation>
+        <translation>自動 DJ 淡入至下一個</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="759"/>
@@ -2763,40 +2763,40 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="97"/>
         <source>Duplicate</source>
-        <translation>重複</translation>
+        <translation>複製</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="101"/>
         <source>Analyze entire Crate</source>
-        <translation>分析整個箱子</translation>
+        <translation>分析整個收集箱</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="105"/>
         <source>Auto DJ Track Source</source>
-        <translation>汽車 DJ 跟蹤源</translation>
+        <translation>自動 DJ 音軌來源</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="386"/>
         <source>Enter new name for crate:</source>
-        <translation>輸入新的名稱為板條箱︰</translation>
+        <translation>輸入收集箱的新名稱︰</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="132"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="140"/>
         <source>Crates</source>
-        <translation>板條箱</translation>
+        <translation>音樂箱</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="81"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="85"/>
         <source>Import Crate</source>
-        <translation>導入箱</translation>
+        <translation>匯入箱</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="89"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="666"/>
         <source>Export Crate</source>
-        <translation>出口箱</translation>
+        <translation>匯出音樂箱</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="330"/>
@@ -2806,53 +2806,53 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="623"/>
         <source>An unknown error occurred while creating crate: </source>
-        <translation>創建箱時發生未知的錯誤︰</translation>
+        <translation>創建音樂箱時發生未知的錯誤︰</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="385"/>
         <source>Rename Crate</source>
-        <translation>重命名箱</translation>
+        <translation>重新命名音樂箱</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="396"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="403"/>
         <source>Renaming Crate Failed</source>
-        <translation>重命名失敗的板條箱</translation>
+        <translation>音樂箱重新命名失敗</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="622"/>
         <source>Crate Creation Failed</source>
-        <translation>板條箱創建失敗</translation>
+        <translation>建立音樂箱失敗</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="668"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>M3U 播放清單 (*.m3u);M3U8 播放清單 (*.m3u8);請播放清單 (*.pls);CSV (*.csv); 文本;可讀的文本 (*.txt)</translation>
+        <translation>M3U 播放清單 (*.m3u);M3U8 播放清單 (*.m3u8);PLS播放清單 (*.pls);文字 CSV (*.csv);;可讀的文本 (*.txt)</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="141"/>
         <source>Crates are a great way to help organize the music you want to DJ with.</source>
-        <translation>板條箱是一個偉大的方式來説明組織要與 DJ 的音樂。</translation>
+        <translation>音樂箱是一個強大的方式來幫助組織您要 DJ 的音樂。</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="142"/>
         <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.</source>
-        <translation>使一箱您接下來的演出，你最喜歡的 electrohouse 的蹤跡，或你最高的歌曲。</translation>
+        <translation>製作一個音樂箱為您接下來的演出、你最喜歡的電子浩室曲目，或你最想要的歌曲。</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="143"/>
         <source>Crates let you organize your music however you&apos;d like!</source>
-        <translation>板條箱讓你組織你的音樂，但是你會喜歡 ！</translation>
+        <translation>音樂箱讓你組織你的音樂，你會喜歡 ！</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="397"/>
         <source>A crate cannot have a blank name.</source>
-        <translation>一箱不能有空白的名稱。</translation>
+        <translation>一音樂箱不能有空白的名稱。</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="404"/>
         <source>A crate by that name already exists.</source>
-        <translation>一箱由該名稱已存在。</translation>
+        <translation>已存在該名稱的音樂箱。</translation>
     </message>
 </context>
 <context>
@@ -2860,37 +2860,37 @@
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="36"/>
         <source>New Crate</source>
-        <translation>新的板條箱</translation>
+        <translation>新音樂箱</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="43"/>
         <source>Create New Crate</source>
-        <translation>創建新的板條箱</translation>
+        <translation>建立新的音樂箱</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="44"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="98"/>
         <source>Enter name for new crate:</source>
-        <translation>輸入新的板條箱的名稱︰</translation>
+        <translation>輸入新的音樂箱的名稱︰</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="54"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="62"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="80"/>
         <source>Creating Crate Failed</source>
-        <translation>創建失敗的板條箱</translation>
+        <translation>音樂箱建立失敗</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="55"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="109"/>
         <source>A crate cannot have a blank name.</source>
-        <translation>一箱不能有空白的名稱。</translation>
+        <translation>音樂箱名稱不得空白。</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="63"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="116"/>
         <source>A crate by that name already exists.</source>
-        <translation>一箱由該名稱已存在。</translation>
+        <translation>已經有相同名稱的音樂箱。</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="81"/>
@@ -2902,19 +2902,19 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="90"/>
         <source>copy</source>
         <comment>[noun]</comment>
-        <translation>副本</translation>
+        <translation>複製</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="97"/>
         <source>Duplicate Crate</source>
-        <translation>重複的板條箱</translation>
+        <translation>複製音樂箱</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="108"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="115"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="149"/>
         <source>Duplicating Crate Failed</source>
-        <translation>複製失敗的板條箱</translation>
+        <translation>複製音樂箱失敗</translation>
     </message>
 </context>
 <context>
@@ -2932,7 +2932,7 @@
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="130"/>
         <source>License</source>
-        <translation type="unfinished"/>
+        <translation>使用許可</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="152"/>
@@ -2962,32 +2962,32 @@
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="62"/>
         <source>Shows all tracks in the library.</source>
-        <translation>在庫中顯示的所有軌道。</translation>
+        <translation>在庫中顯示的所有曲目。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="65"/>
         <source>All</source>
-        <translation>所有</translation>
+        <translation>全部</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="85"/>
         <source>Progress</source>
-        <translation>進展</translation>
+        <translation>進度</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="92"/>
         <source>Selects all tracks in the table below.</source>
-        <translation>在下表中選擇所有軌道。</translation>
+        <translation>在下表中選擇所有曲目。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="95"/>
         <source>Select All</source>
-        <translation>選擇所有</translation>
+        <translation>選擇全部</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="102"/>
         <source>Runs beatgrid, key, and ReplayGain detection on the selected tracks. Does not generate waveforms for the selected tracks to save disk space.</source>
-        <translation>在選定的曲目上運行 beatgrid、 鍵和重播增益檢測。不會生成波形為選定的曲目，以節省磁碟空間。</translation>
+        <translation>在選定的曲目上運行節拍、音調和增益檢測。選定的曲目不會生成波形，以節省磁碟空間。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.cpp" line="156"/>
@@ -2997,7 +2997,7 @@
     <message>
         <location filename="../../src/library/dlganalysis.cpp" line="176"/>
         <source>Analyzing %1/%2 %3%</source>
-        <translation>分析 %1 / %2%3%</translation>
+        <translation>分析 %1/%2 %3%</translation>
     </message>
 </context>
 <context>
@@ -3028,12 +3028,12 @@
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="142"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="150"/>
         <source>Auto DJ</source>
-        <translation>汽車 DJ</translation>
+        <translation>自動 DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="55"/>
         <source>Shuffle</source>
-        <translation>洗牌</translation>
+        <translation>拖曳</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="69"/>
@@ -3043,18 +3043,19 @@
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="52"/>
         <source>Shuffle the content of the Auto DJ queue.</source>
-        <translation type="unfinished"/>
+        <translation>拖曳自動 DJ 柱列中的內容</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="65"/>
         <source>Adds a random track from track sources (crates) to the Auto DJ queue.
 If no track sources are configured, the track is added from the library instead.</source>
-        <translation type="unfinished"/>
+        <translation>從軌道來源(音樂箱)添加隨機軌道新增到自動 DJ 柱列。
+如果軌道來源已被設置，則由音樂庫新增。</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="76"/>
         <source>Skip the next track in the Auto DJ queue.</source>
-        <translation type="unfinished"/>
+        <translation>跳過自動 DJ 庫中的下一曲目</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="79"/>
@@ -3069,12 +3070,12 @@ If no track sources are configured, the track is added from the library instead.
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="92"/>
         <source>Fade Now</source>
-        <translation>現在淡入淡出</translation>
+        <translation>現在淡出</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="105"/>
         <source>Determines the duration of the transition.</source>
-        <translation>確定過渡的持續時間。</translation>
+        <translation>決定過渡的持續時間。</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="121"/>
@@ -3085,7 +3086,7 @@ If no track sources are configured, the track is added from the library instead.
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="124"/>
         <source>sec.</source>
-        <translation>美國證券交易委員會。</translation>
+        <translation>秒</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="151"/>
@@ -3106,12 +3107,13 @@ If no track sources are configured, the track is added from the library instead.
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="20"/>
         <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
 automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
-        <translation>啟用跳動檢測後，Mixxx 檢測每分鐘心跳跳動的你的蹤跡，自動顯示節拍網格對他們來說，和允許您同步軌道使用他們打敗的資訊。</translation>
+        <translation>啟用節拍檢測後，Mixxx 檢測你的音軌每分鐘節拍數，
+自動顯示節拍網格，並允許您使用其節拍資訊同步音軌。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="24"/>
         <source>Enable BPM and Beat Detection</source>
-        <translation>啟用 BPM 和擊敗檢測</translation>
+        <translation>啟用 BPM 和節拍檢測</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="198"/>
@@ -3123,20 +3125,21 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
         <source>Enable fast beat detection. 
 If activated Mixxx only analyzes the first minute of a track for beat information. 
 This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
-        <translation>啟用快速跳動檢測。
-如果啟動 Mixxx 僅分析軌道打資訊的第一分鐘。
-這可以加快跳動檢測在較慢的電腦上，但可能會導致低品質 beatgrids。</translation>
+        <translation>啟用快速節拍檢測。
+如果啟動 Mixxx 僅分析軌道的第一分鐘。
+這可以加快節拍檢測在較慢的電腦上，但可能會導致低品質 的節拍網格。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="133"/>
         <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids 
 by analyzing the beats to discard outliers.</source>
-        <translation>嘗試糾正階段 （第一次打敗） 的固定節奏 beatgrids 通過分析的節拍放棄離群值。</translation>
+        <translation>嘗試更正固定節奏的節奏網格階段(第一拍)
+藉由分析的節拍放棄離群值。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="14"/>
         <source>Beat Detection Preferences</source>
-        <translation>擊敗檢測首選項</translation>
+        <translation>節拍檢測選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="158"/>
@@ -3146,7 +3149,7 @@ by analyzing the beats to discard outliers.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="179"/>
         <source>Beat Analyzer:</source>
-        <translation>擊敗分析器︰</translation>
+        <translation>節拍分析儀:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="103"/>
@@ -3197,12 +3200,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="50"/>
         <source>Min:</source>
-        <translation>敏︰</translation>
+        <translation>最小︰</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="70"/>
         <source>Max:</source>
-        <translation>麥克斯︰</translation>
+        <translation>最大︰</translation>
     </message>
 </context>
 <context>
@@ -3210,7 +3213,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="32"/>
         <source>Controller Learning Wizard</source>
-        <translation>控制器學習嚮導</translation>
+        <translation>控制器學習精靈</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="70"/>
@@ -3240,7 +3243,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="320"/>
         <source>Advanced MIDI Options</source>
-        <translation>先進的 MIDI 選項</translation>
+        <translation>進階 MIDI 選項</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="326"/>
@@ -3255,7 +3258,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="336"/>
         <source>Ignores slider or knob movements until they are close to the internal value. This helps prevent unwanted extreme changes while mixing but can accidentally ignore intentional rapid movements.</source>
-        <translation>忽略滑塊或旋鈕動作，直到他們相近的內在價值。這可以説明防止不需要極大的變化，同時混合，但可以不小心忽略有意圖的快速運動。</translation>
+        <translation>忽略滑桿或旋鈕的動作，直到他們的數值接近。這在混音時可防止不需要的極大變化，但可能不小心忽略有意圖的快速變化。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="339"/>
@@ -3295,17 +3298,17 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="414"/>
         <source>Done</source>
-        <translation>做</translation>
+        <translation>完成</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="36"/>
         <source>Click anywhere in Mixxx or choose a control to learn</source>
-        <translation>在 Mixxx 中任意位置按一下或選擇控制學會</translation>
+        <translation>在 Mixxx 中任意位置按一下或選擇一個控制以學習</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="37"/>
         <source>You can click on any button, slider, or knob in Mixxx to teach it that control.  You can also type in the box to search for a control by name, or click the Choose Control button to select from a list.</source>
-        <translation>您可以按一下任何按鈕、 滑塊或在 Mixxx 教它的旋鈕控制。 你還可以在框中搜索控制項的名稱，或按一下選擇控制按鈕從清單中選擇鍵入。</translation>
+        <translation>您可以按一下任何按鈕、 滑塊或在 Mixxx 教它的旋鈕控制。 你還可以在框中輸入以搜尋控制項的名稱，或按一下選擇控制按鈕從清單中選擇。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="48"/>
@@ -3614,7 +3617,7 @@ You tried to learn: %1,%2</source>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="500"/>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="534"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>行動失敗</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="178"/>
@@ -5139,7 +5142,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="20"/>
         <source>Library</source>
-        <translation>圖書館</translation>
+        <translation>音樂庫</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="38"/>
@@ -6340,7 +6343,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="180"/>
         <source>Library</source>
-        <translation>圖書館</translation>
+        <translation>音樂庫</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="210"/>
@@ -6355,7 +6358,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="247"/>
         <source>Auto DJ</source>
-        <translation>汽車 DJ</translation>
+        <translation>自動 DJ</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="228"/>
@@ -7141,39 +7144,39 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
 <context>
     <name>ITunesFeature</name>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="69"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="779"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="99"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="827"/>
         <source>iTunes</source>
         <translation>iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="143"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="208"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="183"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="247"/>
         <source>Select your iTunes library</source>
         <translation>選擇您的 iTunes 圖書館</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="171"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="210"/>
         <source>(loading) iTunes</source>
         <translation>（載入） iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="196"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="235"/>
         <source>Use Default Library</source>
         <translation>使用預設庫</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="197"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="236"/>
         <source>Choose Library...</source>
         <translation>選擇庫...</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="774"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="822"/>
         <source>Error Loading iTunes Library</source>
         <translation>錯誤載入 iTunes 庫</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="775"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="823"/>
         <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
         <translation>載入您的 iTunes 庫時出錯。一些你的 iTunes 曲目或播放清單可能不載入。</translation>
     </message>
@@ -7195,57 +7198,57 @@ support.</source>
         <translation>沒有 OpenGL 支援。</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2165"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2163"/>
         <source>activate</source>
         <translation>啟動</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2170"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2168"/>
         <source>toggle</source>
         <translation>切換</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2180"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2178"/>
         <source>right</source>
         <translation>權利</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2185"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2183"/>
         <source>left</source>
         <translation>左</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2190"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2188"/>
         <source>right small</source>
         <translation>右小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2195"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2193"/>
         <source>left small</source>
         <translation>左小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2200"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2198"/>
         <source>up</source>
         <translation>向上</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2205"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2203"/>
         <source>down</source>
         <translation>向下</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2210"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2208"/>
         <source>up small</source>
         <translation>小了</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2215"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2213"/>
         <source>down small</source>
         <translation>下小</translation>
     </message>
     <message>
-        <location filename="../../src/skin/legacyskinparser.cpp" line="2248"/>
+        <location filename="../../src/skin/legacyskinparser.cpp" line="2246"/>
         <source>Shortcut</source>
         <translation>快捷方式</translation>
     </message>
@@ -7253,12 +7256,12 @@ support.</source>
 <context>
     <name>Library</name>
     <message>
-        <location filename="../../src/library/library.cpp" line="361"/>
+        <location filename="../../src/library/library.cpp" line="363"/>
         <source>Add Directory to Library</source>
         <translation>將目錄添加到庫</translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="362"/>
+        <location filename="../../src/library/library.cpp" line="364"/>
         <source>Could not add the directory to your library. Either this directory is already in your library or you are currently rescanning your library.</source>
         <translation>無法將該目錄添加到您的庫。此目錄是已經在你的圖書館，或者你目前正在掃描您的庫。</translation>
     </message>
@@ -7565,39 +7568,39 @@ Please select an input device in the sound hardware preferences first.</source>
         <translation>無法載入所選的外觀。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1337"/>
+        <location filename="../../src/mixxx.cpp" line="1340"/>
         <source>OpenGL Direct Rendering</source>
         <translation>OpenGL 直接繪製</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1338"/>
+        <location filename="../../src/mixxx.cpp" line="1341"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
         <translation>您的電腦上未啟用直接呈現。這意味著 &lt;br&gt;&lt;br&gt;波形顯示將會非常 &lt;br&gt;&lt;b&gt;慢和可能徵收重稅的你的 CPU&lt;/b&gt;。更新您的 &lt;br&gt;配置，使直接渲染，或通過選擇 &lt;br&gt;&quot;空&quot;作為波形顯示在介面一節中禁用 &lt;br&gt;波形顯示 Mixxx 首選項中的。 &lt;br&gt;&lt;br&gt;注意︰ 如果您使用 NVIDIA 硬體，&lt;br&gt;直接渲染可能不存在，但你應該不經驗 &lt;br&gt;降解性能。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1372"/>
-        <location filename="../../src/mixxx.cpp" line="1380"/>
-        <location filename="../../src/mixxx.cpp" line="1389"/>
+        <location filename="../../src/mixxx.cpp" line="1375"/>
+        <location filename="../../src/mixxx.cpp" line="1383"/>
+        <location filename="../../src/mixxx.cpp" line="1392"/>
         <source>Confirm Exit</source>
         <translation>確認退出</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1373"/>
+        <location filename="../../src/mixxx.cpp" line="1376"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation>當前現正播放的甲板。退出 Mixxx 嗎？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1381"/>
+        <location filename="../../src/mixxx.cpp" line="1384"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation>當前現正播放採樣器。退出 Mixxx 嗎？</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1390"/>
+        <location filename="../../src/mixxx.cpp" line="1393"/>
         <source>The preferences window is still open.</source>
         <translation>首選項視窗是仍處於打開狀態。</translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1391"/>
+        <location filename="../../src/mixxx.cpp" line="1394"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation>放棄所有更改並退出 Mixxx？</translation>
     </message>
@@ -8996,7 +8999,7 @@ Fully right: Sine wave</source>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="71"/>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="72"/>
         <source>Waveform</source>
-        <translation type="unfinished"/>
+        <translation>波形</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="87"/>
@@ -10396,7 +10399,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="812"/>
         <source>Clear</source>
-        <translation>明確</translation>
+        <translation>清除</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="813"/>
@@ -11589,23 +11592,23 @@ Fully right: end of the effect period</source>
 <context>
     <name>TrackExportWorker</name>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="109"/>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="183"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="111"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="185"/>
         <source>Export process was canceled</source>
         <translation>匯出過程被取消</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="124"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="126"/>
         <source>Error removing file %1: %2. Stopping.</source>
         <translation>錯誤刪除檔 %1: %2。停止。</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="137"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="139"/>
         <source>Error exporting track %1 to %2: %3. Stopping.</source>
         <translation>錯誤輸出跟蹤到 %2 的 %1: %3。停止。</translation>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="168"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="170"/>
         <source>Error exporting tracks</source>
         <translation>匯出跟蹤時出錯</translation>
     </message>
@@ -11853,7 +11856,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="125"/>
         <source>&amp;Library</source>
-        <translation>與圖書館</translation>
+        <translation>音樂庫</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="127"/>
@@ -12243,63 +12246,63 @@ Text on waveform overview when file is cached from source</extracomment>
 <context>
     <name>WSearchLineEdit</name>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="19"/>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="38"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="154"/>
         <source>Clear input</source>
         <comment>Clear the search bar input field</comment>
         <translation>清除輸入</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="28"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="44"/>
         <source>Ctrl+F</source>
         <comment>Search|Focus</comment>
         <translation>Ctrl + F</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="175"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="149"/>
         <source>Search...</source>
         <comment>noun</comment>
         <translation>搜索...</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="151"/>
         <source>Search</source>
         <comment>noun</comment>
         <translation>搜索</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="176"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="151"/>
         <source>Enter a string to search for</source>
         <translation>輸入要搜索的字串</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="177"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="152"/>
         <source>Shortcut</source>
         <translation>快捷方式</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="152"/>
         <source>Ctrl+F</source>
         <translation>Ctrl + F</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="178"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="153"/>
         <source>Focus</source>
         <comment>Give search bar input focus</comment>
         <translation>焦點</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="179"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="153"/>
         <source>Ctrl+Backspace</source>
         <translation>Ctrl + 倒退鍵</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="154"/>
         <source>Esc</source>
         <translation>按 esc 鍵</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wsearchlineedit.cpp" line="180"/>
+        <location filename="../../src/widget/wsearchlineedit.cpp" line="155"/>
         <source>Exit search</source>
         <comment>Exit search bar and leave focus</comment>
         <translation>退出搜索</translation>
@@ -12308,247 +12311,247 @@ Text on waveform overview when file is cached from source</extracomment>
 <context>
     <name>WTrackTableView</name>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="82"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="83"/>
         <source>Add to Playlist</source>
         <translation>添加到播放清單</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="101"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="102"/>
         <source>Cover Art</source>
         <translation>封面</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="129"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="130"/>
         <source>ESC</source>
         <comment>Focus</comment>
         <translation>按 ESC 鍵</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="423"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="424"/>
         <source>Remove</source>
         <translation>刪除</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="426"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="427"/>
         <source>Hide from Library</source>
         <translation>隱藏從庫</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="429"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="430"/>
         <source>Unhide from Library</source>
         <translation>從圖書館取消隱藏</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="432"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="433"/>
         <source>Purge from Library</source>
         <translation>從庫中清除</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="435"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="436"/>
         <source>Properties</source>
         <translation>屬性</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="439"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="440"/>
         <source>Open in File Browser</source>
         <translation>在檔瀏覽器中打開</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="521"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="522"/>
         <source>4/3 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="522"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="523"/>
         <source>3/2 BPM</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1561"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1584"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1559"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1582"/>
         <source>Create New Playlist</source>
         <translation>創建新的播放清單</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1673"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1671"/>
         <source>Create New Crate</source>
         <translation>創建新的板條箱</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1585"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1583"/>
         <source>Enter name for new playlist:</source>
         <translation>輸入新播放清單名稱︰</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="75"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="76"/>
         <source>Load to</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="77"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="78"/>
         <source>Deck</source>
         <translation>甲板上</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="79"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="80"/>
         <source>Sampler</source>
         <translation>取樣器</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="86"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="87"/>
         <source>Crates</source>
-        <translation>板條箱</translation>
+        <translation>音樂箱</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="94"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="95"/>
         <source>Change BPM</source>
-        <translation type="unfinished"/>
+        <translation>更改 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="98"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="99"/>
         <source>Clear</source>
         <extracomment>Clear metadata in right click track context menu in library</extracomment>
-        <translation>明確</translation>
+        <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="443"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="444"/>
         <source>Add to Auto DJ Queue (Bottom)</source>
-        <translation type="unfinished"/>
+        <translation>添加到自動 DJ 佇列 （底部）</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="447"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="448"/>
         <source>Add to Auto DJ Queue (Top)</source>
-        <translation type="unfinished"/>
+        <translation>添加到自動 DJ 佇列 （頂部）</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="451"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="452"/>
         <source>Add to Auto DJ Queue (Replace)</source>
-        <translation type="unfinished"/>
+        <translation>添加到自動 DJ 佇列 （底部）</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="455"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="456"/>
         <source>Import From File Tags</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="459"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="460"/>
         <source>Import From MusicBrainz</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="463"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="464"/>
         <source>Export To File Tags</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="467"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="468"/>
         <source>Preview Deck</source>
         <translation>預覽甲板</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="476"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="477"/>
         <source>BPM and Beatgrid</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="480"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="481"/>
         <source>Play Count</source>
-        <translation type="unfinished"/>
+        <translation>播放計數</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="484"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="485"/>
         <source>Cue Point</source>
         <translation>播放點</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="488"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="489"/>
         <source>Hotcues</source>
         <translation>Hotcues</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="492"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="493"/>
         <source>Loop</source>
-        <translation type="unfinished"/>
+        <translation>循環</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="496"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="497"/>
         <source>ReplayGain</source>
         <translation>重播增益</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="500"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="501"/>
         <source>Waveform</source>
-        <translation type="unfinished"/>
+        <translation>波形</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="504"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="505"/>
         <source>All</source>
         <translation>所有</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="842"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="843"/>
         <source>Deck %1</source>
         <translation>甲板 %1</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1587"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1585"/>
         <source>New Playlist</source>
-        <translation>新的播放清單</translation>
+        <translation>新增播放清單</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1594"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1598"/>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1607"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1592"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1596"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1605"/>
         <source>Playlist Creation Failed</source>
         <translation>播放清單創建失敗</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1595"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1593"/>
         <source>A playlist by that name already exists.</source>
         <translation>已存在該名稱的播放清單。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1599"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1597"/>
         <source>A playlist cannot have a blank name.</source>
         <translation>播放清單不能有空白的名稱。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="1608"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="1606"/>
         <source>An unknown error occurred while creating playlist: </source>
         <translation>創建播放清單時發生未知的錯誤︰</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="509"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="510"/>
         <source>Lock BPM</source>
         <translation>BPM 鎖</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="510"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="511"/>
         <source>Unlock BPM</source>
         <translation>解鎖 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="517"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="518"/>
         <source>Double BPM</source>
         <translation>雙 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="518"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="519"/>
         <source>Halve BPM</source>
         <translation>減半 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="519"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="520"/>
         <source>2/3 BPM</source>
         <translation>2/3 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="520"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="521"/>
         <source>3/4 BPM</source>
         <translation>3/4 BPM</translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="862"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="863"/>
         <source>Sampler %1</source>
         <translation>採樣器 %1</translation>
     </message>

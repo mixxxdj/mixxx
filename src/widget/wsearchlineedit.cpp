@@ -207,8 +207,11 @@ bool WSearchLineEdit::event(QEvent* pEvent) {
 void WSearchLineEdit::clearSearch() {
     DEBUG_ASSERT(m_state == State::Active);
     setText(kEmptySearch);
-    // Enforce immediate update of track table
-    triggerSearch();
+    // Clearing the edit field will engage the debouncing timer
+    // and gives the user the chance for entering a new search
+    // before returning the whole (and probably huge) library.
+    // No need to manually trigger a search at this point!
+    // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
 }
 
 // slot

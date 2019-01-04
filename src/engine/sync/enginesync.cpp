@@ -110,32 +110,34 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             double targetBeatDistance = 0.0;
             double targetBaseBpm = 0.0;
 
-            foreach (const Syncable* other_deck, m_syncables) {
-                if (other_deck == pSyncable) {
+            for (const auto& pOtherSyncable: m_syncables) {
+                if (pOtherSyncable == pSyncable) {
                     // skip this deck
                     continue;
                 }
-                if (!other_deck->getChannel()->isMasterEnabled()) {
+                if (!pOtherSyncable->getChannel()->isMasterEnabled()) {
                     // skip non-master decks, like preview decks.
                     continue;
                 }
 
-                double otherDeckBpm = other_deck->getBpm();
-                if (otherDeckBpm > 0.0) {
-                    // If the requesting deck is playing, but the other deck
-                    // is not, do not sync.
-                    if (pSyncable->isPlaying() && !other_deck->isPlaying()) {
+                double otherBpm = pOtherSyncable->getBpm();
+                bool otherIsPlaying = pOtherSyncable->isPlaying();
+                if (otherBpm > 0.0) {
+                    // If the requesting deck is playing, or we have already a
+                    // non playing deck found, only watch out for playing decks.
+                    if ((foundTargetBpm || pSyncable->isPlaying())
+                            && !otherIsPlaying) {
                         continue;
                     }
                     foundTargetBpm = true;
-                    targetBpm = otherDeckBpm;
-                    targetBaseBpm = other_deck->getBaseBpm();
-                    targetBeatDistance = other_deck->getBeatDistance();
+                    targetBpm = otherBpm;
+                    targetBaseBpm = pOtherSyncable->getBaseBpm();
+                    targetBeatDistance = pOtherSyncable->getBeatDistance();
 
                     // If the other deck is playing we stop looking
                     // immediately. Otherwise continue looking for a playing
                     // deck with bpm > 0.0.
-                    if (other_deck->isPlaying()) {
+                    if (otherIsPlaying) {
                         foundPlayingDeck = true;
                         break;
                     }
