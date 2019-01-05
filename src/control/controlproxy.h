@@ -31,7 +31,14 @@ class ControlProxy : public QObject {
     }
 
     bool connectValueChanged(const QObject* receiver,
+            std::function<void(double)> method, Qt::ConnectionType type = Qt::AutoConnection);
+    // for legacy SLOT syntax from Qt < 5. TODO: replace all uses with Qt 5 functor syntax
+    bool connectValueChanged(const QObject* receiver,
             const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+
+    bool connectValueChanged(
+            std::function<void(double)> method, Qt::ConnectionType type = Qt::AutoConnection);
+    // for legacy SLOT syntax from Qt < 5. TODO: replace all uses with Qt 5 functor syntax
     bool connectValueChanged(
             const char* method, Qt::ConnectionType type = Qt::AutoConnection);
 
