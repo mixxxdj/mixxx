@@ -182,19 +182,19 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
         break;
     case AnalyzerThreadState::Idle:
         DEBUG_ASSERT(analyzerProgress == kAnalyzerProgressUnknown);
-        worker.onThreadIdle();
+        worker.onAnalyzerProgress(analyzerProgress);
         submitNextTrack(&worker);
         break;
     case AnalyzerThreadState::Busy:
         DEBUG_ASSERT(analyzerProgress != kAnalyzerProgressUnknown);
         DEBUG_ASSERT(analyzerProgress < kAnalyzerProgressDone);
-        worker.onAnalyzerProgress(trackId, analyzerProgress);
+        worker.onAnalyzerProgress(analyzerProgress);
         emit trackProgress(trackId, analyzerProgress);
         break;
     case AnalyzerThreadState::Done:
         DEBUG_ASSERT((analyzerProgress == kAnalyzerProgressDone) // success
                 || (analyzerProgress == kAnalyzerProgressUnknown)); // failure
-        worker.onAnalyzerProgress(trackId, analyzerProgress);
+        worker.onAnalyzerProgress(analyzerProgress);
         emit trackProgress(trackId, analyzerProgress);
         ++m_finishedTracksCount;
         DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
@@ -234,16 +234,12 @@ void TrackAnalysisScheduler::suspend() {
 void TrackAnalysisScheduler::resume() {
     kLogger.debug() << "Resuming";
     for (auto& worker: m_workers) {
-        if (worker.threadIdle()) {
-            submitNextTrack(&worker);
-        }
         worker.resumeThread();
     }
 }
 
 bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
     DEBUG_ASSERT(worker);
-    DEBUG_ASSERT(worker->threadIdle());
     while (!m_queuedTrackIds.empty()) {
         TrackId nextTrackId = m_queuedTrackIds.front();
         DEBUG_ASSERT(nextTrackId.isValid());

@@ -191,6 +191,9 @@ void AnalyzerThread::doRun() {
 
 bool AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
     DEBUG_ASSERT(nextTrack);
+    kLogger.debug()
+            << "Enqueueing next track"
+            << nextTrack->getId();
     if (m_nextTrack.enqueue(std::move(nextTrack))) {
         // Ensure that the submitted track gets processed
         // eventually by waking the worker thread up!
@@ -204,13 +207,12 @@ WorkerThread::FetchWorkResult AnalyzerThread::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_currentTrack);
     if (m_nextTrack.dequeue(&m_currentTrack)) {
         DEBUG_ASSERT(m_currentTrack);
+        kLogger.debug()
+                << "Dequeued next track"
+                << m_currentTrack->getId();
         return FetchWorkResult::Ready;
     } else {
-        if (m_emittedState != AnalyzerThreadState::Idle) {
-            // Only send the idle signal once when entering the
-            // idle state from another state.
-            emitProgress(AnalyzerThreadState::Idle);
-        }
+        emitProgress(AnalyzerThreadState::Idle);
         return FetchWorkResult::Idle;
     }
 }

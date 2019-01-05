@@ -68,7 +68,6 @@ class TrackAnalysisScheduler : public QObject {
       public:
         explicit Worker(AnalyzerThread::Pointer thread = AnalyzerThread::NullPointer())
             : m_thread(std::move(thread)),
-              m_threadIdle(false),
               m_analyzerProgress(kAnalyzerProgressUnknown) {
         }
         Worker(const Worker&) = delete;
@@ -83,11 +82,6 @@ class TrackAnalysisScheduler : public QObject {
             return m_thread.get();
         }
 
-        bool threadIdle() const {
-            DEBUG_ASSERT(m_thread);
-            return m_threadIdle;
-        }
-
         AnalyzerProgress analyzerProgress() const {
             return m_analyzerProgress;
         }
@@ -95,13 +89,7 @@ class TrackAnalysisScheduler : public QObject {
         bool submitNextTrack(TrackPointer track) {
             DEBUG_ASSERT(track);
             DEBUG_ASSERT(m_thread);
-            DEBUG_ASSERT(m_threadIdle);
-            if (m_thread->submitNextTrack(std::move(track))) {
-                m_threadIdle = false;
-                return true;
-            } else {
-                return false;
-            }
+            return m_thread->submitNextTrack(std::move(track));
         }
 
         void suspendThread() {
@@ -122,29 +110,19 @@ class TrackAnalysisScheduler : public QObject {
             }
         }
 
-        void onThreadIdle() {
+        void onAnalyzerProgress(AnalyzerProgress analyzerProgress) {
             DEBUG_ASSERT(m_thread);
-            DEBUG_ASSERT(!m_threadIdle);
-            m_threadIdle = true;
-            m_analyzerProgress = kAnalyzerProgressUnknown;
-        }
-
-        void onAnalyzerProgress(TrackId /*trackId*/, AnalyzerProgress analyzerProgress) {
-            DEBUG_ASSERT(m_thread);
-            DEBUG_ASSERT(!m_threadIdle);
             m_analyzerProgress = analyzerProgress;
         }
 
         void onThreadExit() {
             DEBUG_ASSERT(m_thread);
             m_thread.reset();
-            m_threadIdle = false;
             m_analyzerProgress = kAnalyzerProgressUnknown;
         }
 
       private:
         AnalyzerThread::Pointer m_thread;
-        bool m_threadIdle;
         AnalyzerProgress m_analyzerProgress;
     };
 
