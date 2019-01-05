@@ -24,14 +24,14 @@ void ClockControl::trackLoaded(TrackPointer pNewTrack) {
 
     // Disconnect any previously loaded track/beats
     if (m_pTrack) {
-        disconnect(m_pTrack.get(), SIGNAL(beatsUpdated()),
-                   this, SLOT(slotBeatsUpdated()));
+        disconnect(m_pTrack.get(), &Track::beatsUpdated,
+                   this, &ClockControl::slotBeatsUpdated);
     }
     if (pNewTrack) {
         m_pTrack = pNewTrack;
         m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.get(), SIGNAL(beatsUpdated()),
-                this, SLOT(slotBeatsUpdated()));
+        connect(m_pTrack.get(), &Track::beatsUpdated,
+                this, &ClockControl::slotBeatsUpdated);
     } else {
         m_pBeats.clear();
         m_pTrack.reset();
