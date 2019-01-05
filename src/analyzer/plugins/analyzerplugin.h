@@ -41,7 +41,7 @@ class AnalyzerPlugin {
 
 class AnalyzerBeatsPlugin : public AnalyzerPlugin {
   public:
-    virtual ~AnalyzerBeatsPlugin() = default;
+    ~AnalyzerBeatsPlugin() override = default;
 
     virtual bool supportsBeatTracking() const = 0;
     virtual float getBpm() const {
@@ -54,7 +54,7 @@ class AnalyzerBeatsPlugin : public AnalyzerPlugin {
 
 class AnalyzerKeyPlugin : public AnalyzerPlugin {
   public:
-    virtual ~AnalyzerKeyPlugin() = default;
+    ~AnalyzerKeyPlugin() override = default;
 
     virtual KeyChangeList getKeyChanges() const = 0;
 };
