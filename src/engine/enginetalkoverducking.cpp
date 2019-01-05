@@ -9,7 +9,7 @@ EngineTalkoverDucking::EngineTalkoverDucking(
       m_pConfig(pConfig),
       m_group(group) {
     m_pMasterSampleRate = new ControlProxy(m_group, "samplerate", this);
-    m_pMasterSampleRate->connectValueChanged(SLOT(slotSampleRateChanged(double)),
+    m_pMasterSampleRate->connectValueChanged(this, &EngineTalkoverDucking::slotSampleRateChanged,
                                              Qt::DirectConnection);
 
     m_pDuckStrength = new ControlPotmeter(ConfigKey(m_group, "duckStrength"), 0.0, 1.0);

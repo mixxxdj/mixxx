@@ -28,8 +28,8 @@ KeyControl::KeyControl(QString group,
     m_pPitch->setStepCount(12);
     // Fine adjust with semitone / 10 = 10 ct;.
     m_pPitch->setSmallStepCount(120);
-    connect(m_pPitch, SIGNAL(valueChanged(double)),
-            this, SLOT(slotPitchChanged(double)),
+    connect(m_pPitch, &ControlObject::valueChanged,
+            this, &KeyControl::slotPitchChanged,
             Qt::DirectConnection);
 
     // pitch_adjust is the distance to the linear pitch in semitones
@@ -40,34 +40,34 @@ KeyControl::KeyControl(QString group,
     m_pPitchAdjust->setStepCount(6);
     // Fine adjust with semitone / 10 = 10 ct;.
     m_pPitchAdjust->setSmallStepCount(60);
-    connect(m_pPitchAdjust, SIGNAL(valueChanged(double)),
-            this, SLOT(slotPitchAdjustChanged(double)),
+    connect(m_pPitchAdjust, &ControlObject::valueChanged,
+            this, &KeyControl::slotPitchAdjustChanged,
             Qt::DirectConnection);
 
     m_pButtonSyncKey = new ControlPushButton(ConfigKey(group, "sync_key"));
-    connect(m_pButtonSyncKey, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSyncKey(double)),
+    connect(m_pButtonSyncKey, &ControlObject::valueChanged,
+            this, &KeyControl::slotSyncKey,
             Qt::DirectConnection);
 
     m_pButtonResetKey = new ControlPushButton(ConfigKey(group, "reset_key"));
-    connect(m_pButtonResetKey, SIGNAL(valueChanged(double)),
-            this, SLOT(slotResetKey(double)),
+    connect(m_pButtonResetKey, &ControlObject::valueChanged,
+            this, &KeyControl::slotResetKey,
             Qt::DirectConnection);
 
     m_pFileKey = new ControlObject(ConfigKey(group, "file_key"));
-    connect(m_pFileKey, SIGNAL(valueChanged(double)),
-            this, SLOT(slotFileKeyChanged(double)),
+    connect(m_pFileKey, &ControlObject::valueChanged,
+            this, &KeyControl::slotFileKeyChanged,
             Qt::DirectConnection);
 
     m_pEngineKey = new ControlObject(ConfigKey(group, "key"));
-    connect(m_pEngineKey, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetEngineKey(double)),
+    connect(m_pEngineKey, &ControlObject::valueChanged,
+            this, &KeyControl::slotSetEngineKey,
             Qt::DirectConnection);
 
     m_pEngineKeyDistance = new ControlPotmeter(ConfigKey(group, "visual_key_distance"),
                                                -0.5, 0.5);
-    connect(m_pEngineKeyDistance, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetEngineKeyDistance(double)),
+    connect(m_pEngineKeyDistance, &ControlObject::valueChanged,
+            this, &KeyControl::slotSetEngineKeyDistance,
             Qt::DirectConnection);
 
     m_keylockMode = new ControlPushButton(ConfigKey(group, "keylockMode"));
@@ -78,27 +78,27 @@ KeyControl::KeyControl(QString group,
 
     // In case of vinyl control "rate" is a filtered mean value for display
     m_pRateSlider = new ControlProxy(group, "rate", this);
-    m_pRateSlider->connectValueChanged(SLOT(slotRateChanged()),
+    m_pRateSlider->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
 
     m_pRateRange = new ControlProxy(group, "rateRange", this);
-    m_pRateRange->connectValueChanged(SLOT(slotRateChanged()),
+    m_pRateRange->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
 
     m_pRateDir = new ControlProxy(group, "rate_dir", this);
-    m_pRateDir->connectValueChanged(SLOT(slotRateChanged()),
+    m_pRateDir->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
 
     m_pVCEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
-    m_pVCEnabled->connectValueChanged(SLOT(slotRateChanged()),
+    m_pVCEnabled->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
 
     m_pVCRate = new ControlProxy(group, "vinylcontrol_rate", this);
-    m_pVCRate->connectValueChanged(SLOT(slotRateChanged()),
+    m_pVCRate->connectValueChanged(this, &KeyControl::slotRateChanged,
                 Qt::DirectConnection);
 
     m_pKeylock = new ControlProxy(group, "keylock", this);
-    m_pKeylock->connectValueChanged(SLOT(slotRateChanged()),
+    m_pKeylock->connectValueChanged(this, &KeyControl::slotRateChanged,
             Qt::DirectConnection);
 }
 

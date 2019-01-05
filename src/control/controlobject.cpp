@@ -117,18 +117,8 @@ void ControlObject::set(const ConfigKey& key, const double& value) {
     }
 }
 
-bool ControlObject::connectValueChangeRequest(const QObject* receiver,
-                                              std::function<void(double)> method,
-                                              Qt::ConnectionType type) {
-    bool ret = false;
-    if (m_pControl) {
-        ret = m_pControl->connectValueChangeRequest(receiver, method, type);
-    }
-    return ret;
-}
-
 void ControlObject::setReadOnly() {
-    connectValueChangeRequest(this, [=](double value){readOnlyHandler(value);},
+    connectValueChangeRequest(this, &ControlObject::readOnlyHandler,
                               Qt::DirectConnection);
 }
 

@@ -39,7 +39,7 @@ EngineDelay::EngineDelay(const char* group, ConfigKey delayControl, bool bPersis
             SLOT(slotDelayChanged()), Qt::DirectConnection);
 
     m_pSampleRate = new ControlProxy(group, "samplerate", this);
-    m_pSampleRate->connectValueChanged(SLOT(slotDelayChanged()), Qt::DirectConnection);
+    m_pSampleRate->connectValueChanged(this, &EngineDelay::slotDelayChanged, Qt::DirectConnection);
 }
 
 EngineDelay::~EngineDelay() {

@@ -38,14 +38,14 @@ BpmControl::BpmControl(QString group,
     m_pPlayButton = new ControlProxy(group, "play", this);
     m_pReverseButton = new ControlProxy(group, "reverse", this);
     m_pRateSlider = new ControlProxy(group, "rate", this);
-    m_pRateSlider->connectValueChanged([=](double value){slotUpdateEngineBpm();},
+    m_pRateSlider->connectValueChanged(this, &BpmControl::slotUpdateEngineBpm,
                                        Qt::DirectConnection);
     m_pQuantize = ControlObject::getControl(group, "quantize");
     m_pRateRange = new ControlProxy(group, "rateRange", this);
-    m_pRateRange->connectValueChanged([=](double value){slotUpdateRateSlider();},
+    m_pRateRange->connectValueChanged(this, &BpmControl::slotUpdateRateSlider,
                                       Qt::DirectConnection);
     m_pRateDir = new ControlProxy(group, "rate_dir", this);
-    m_pRateDir->connectValueChanged([=](double value){slotUpdateEngineBpm();},
+    m_pRateDir->connectValueChanged(this, &BpmControl::slotUpdateEngineBpm,
                                     Qt::DirectConnection);
 
     m_pPrevBeat.reset(new ControlProxy(group, "beat_prev"));
@@ -733,13 +733,15 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     return dNewPlaypos - dThisPosition;
 }
 
-void BpmControl::slotUpdateEngineBpm() {
+void BpmControl::slotUpdateEngineBpm(double value) {
+    Q_UNUSED(value);
     // Adjust playback bpm in response to a change in the rate slider.
     double dRate = calcRateRatio();
     m_pEngineBpm->set(m_pLocalBpm->get() * dRate);
 }
 
-void BpmControl::slotUpdateRateSlider() {
+void BpmControl::slotUpdateRateSlider(double value) {
+    Q_UNUSED(value);
     // Adjust rate slider position to reflect change in rate range.
     double localBpm = m_pLocalBpm->get();
     double rateScale = m_pRateDir->get() * m_pRateRange->get();

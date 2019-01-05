@@ -128,7 +128,7 @@ LoopingControl::LoopingControl(QString group,
     m_pCOBeatLoopSize = new ControlObject(ConfigKey(group, "beatloop_size"),
                                           true, false, false, 4.0);
     m_pCOBeatLoopSize->connectValueChangeRequest(this,
-            [=](double value){slotBeatLoopSizeChangeRequest(value);}, Qt::DirectConnection);
+            &LoopingControl::slotBeatLoopSizeChangeRequest, Qt::DirectConnection);
     m_pCOBeatLoopActivate = new ControlPushButton(ConfigKey(group, "beatloop_activate"));
     connect(m_pCOBeatLoopActivate, &ControlObject::valueChanged,
             this, &LoopingControl::slotBeatLoopToggle);

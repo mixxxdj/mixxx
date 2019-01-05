@@ -83,8 +83,8 @@ class BpmControl : public EngineControl {
     void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
-    void slotUpdateRateSlider();
-    void slotUpdateEngineBpm();
+    void slotUpdateRateSlider(double v = 0.0);
+    void slotUpdateEngineBpm(double v = 0.0);
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotBeatsTranslateMatchAlignment(double);

@@ -89,8 +89,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
 
     m_pBroadcastEnabled = new ControlProxy(
             BROADCAST_PREF_KEY, "enabled", this);
-    m_pBroadcastEnabled->connectValueChanged(
-            SLOT(broadcastEnabledChanged(double)));
+    m_pBroadcastEnabled->connectValueChanged(this,
+            &DlgPrefBroadcast::broadcastEnabledChanged);
 
     //Server type combobox
     comboBoxServerType->addItem(tr("Icecast 2"), BROADCAST_SERVER_ICECAST2);

@@ -108,7 +108,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
     m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
     m_playButton->setButtonMode(ControlPushButton::TOGGLE);
     m_playButton->connectValueChangeRequest(
-            this, [=](double value){slotControlPlayRequest(value);},
+            this, &EngineBuffer::slotControlPlayRequest,
             Qt::DirectConnection);
 
     //Play from Start Button (for sampler)
@@ -167,7 +167,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
     m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
 
     m_pKeylockEngine = new ControlProxy("[Master]", "keylock_engine", this);
-    m_pKeylockEngine->connectValueChanged(SLOT(slotKeylockEngineChanged(double)),
+    m_pKeylockEngine->connectValueChanged(this, &EngineBuffer::slotKeylockEngineChanged,
                                           Qt::DirectConnection);
 
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
@@ -252,7 +252,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
     m_bScalerChanged = true;
 
     m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
-    m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughChanged(double)),
+    m_pPassthroughEnabled->connectValueChanged(this, &EngineBuffer::slotPassthroughChanged,
                                                Qt::DirectConnection);
 
 #ifdef __SCALER_DEBUG__

@@ -43,11 +43,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     setupUi(this);
 
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
-    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
+    m_pNumDecks->connectValueChanged(this, [=](double value){slotNumDecksChanged(value);});
     slotNumDecksChanged(m_pNumDecks->get(), true);
 
     m_pNumSamplers = new ControlProxy("[Master]", "num_samplers", this);
-    m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)));
+    m_pNumSamplers->connectValueChanged(this, [=](double value){slotNumSamplersChanged(value);});
     slotNumSamplersChanged(m_pNumSamplers->get(), true);
 
     // Set default value in config file and control objects, if not present
