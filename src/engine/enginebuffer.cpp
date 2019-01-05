@@ -1230,19 +1230,17 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
     if (m_iSamplesSinceLastIndicatorUpdate > (kSamplesPerFrame * m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
-        const double samplePositionToSeconds = 1.0 / m_trackSampleRateOld
-                / kSamplesPerFrame / m_tempo_ratio_old;
-        m_timeElapsed->set(m_filepos_play * samplePositionToSeconds);
-        double timeRemaining = std::max(m_trackSamplesOld - m_filepos_play, 0.0) *
-                samplePositionToSeconds;
+        const double tempoTrackSeconds = m_trackSamplesOld / kSamplesPerFrame / m_trackSampleRateOld / m_tempo_ratio_old;
+        double timeRemaining = (1.0 - fFractionalPlaypos) * tempoTrackSeconds;
         m_timeRemaining->set(timeRemaining);
+        m_timeElapsed->set(tempoTrackSeconds - timeRemaining);
 
         auto pFactory = WaveformWidgetFactory::instance();
         double remainingTimeTriggerSeconds = pFactory ? pFactory->getEndOfTrackWarningTime() : 0;
 
         if (!m_playButton->toBool() || // not playing
                 m_pLoopingControl->isLoopingEnabled() || // in loop
-                m_trackSamplesOld * samplePositionToSeconds <= remainingTimeTriggerSeconds || // track too short
+                tempoTrackSeconds <= remainingTimeTriggerSeconds || // track too short
                 timeRemaining > remainingTimeTriggerSeconds // before the trigger
                 ) {
             m_pEndOfTrack->set(0.0);
