@@ -191,7 +191,13 @@ void AnalyzerThread::doRun() {
 
 bool AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
     DEBUG_ASSERT(nextTrack);
-    return m_nextTrack.enqueue(std::move(nextTrack));
+    if (m_nextTrack.enqueue(std::move(nextTrack))) {
+        // Ensure that the submitted track gets processed
+        // eventually by waking the worker thread up!
+        wake();
+        return true;
+    }
+    return false;
 }
 
 WorkerThread::FetchWorkResult AnalyzerThread::tryFetchWorkItems() {

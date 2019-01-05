@@ -104,12 +104,6 @@ class TrackAnalysisScheduler : public QObject {
             }
         }
 
-        void wakeThread() {
-            if (m_thread) {
-                m_thread->wake();
-            }
-        }
-
         void suspendThread() {
             if (m_thread) {
                 m_thread->suspend();

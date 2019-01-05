@@ -263,7 +263,6 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
                 }
                 m_queuedTrackIds.pop_front();
                 ++m_dequeuedTracksCount;
-                worker->wakeThread();
                 return true;
             } else {
                 kLogger.warning()
