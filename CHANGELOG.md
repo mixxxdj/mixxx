@@ -1,13 +1,15 @@
-==== 2.3.0 (Unreleased) ====
+# Changelog
 
-* Add support for multi-threaded track analysis. lp:1641153
-* Add built-in support for MP3 encoding. LAME is now a required dependency. lp:1294128
-* Add support for searching for empty fields. (e.g. crate:""). lp:1788086
-* Unify skin controls for better consistency of settings across skins. lp:1740513
+## [2.3.0](https://launchpad.net/mixxx/+milestone/2.3.0) (Unreleased)
+
+* Add support for multi-threaded track analysis. [lp:1641153](https://bugs.launchpad.net/mixxx/+bug/1641153)
+* Add built-in support for MP3 encoding. LAME is now a required dependency. [lp:1294128](https://bugs.launchpad.net/mixxx/+bug/1294128)
+* Add support for searching for empty fields. (e.g. crate:""). [lp:1788086](https://bugs.launchpad.net/mixxx/+bug/1788086)
+* Unify skin controls for better consistency of settings across skins. [lp:1740513](https://bugs.launchpad.net/mixxx/+bug/1740513)
 * Remove VAMP plugin support. vamp-plugin-sdk and vamp-hostsdk are no longer required dependencies.
-* Remove SoundSource plugin support. lp:1792747
+* Remove SoundSource plugin support. [lp:1792747](https://bugs.launchpad.net/mixxx/+bug/1792747)
 
-==== 2.2.0 2018-12-17 ====
+## [2.2.0](https://launchpad.net/mixxx/+milestone/2.2.0) (2018-12-17)
 
 General
 * Update from Qt4 to Qt5.
@@ -39,68 +41,72 @@ Miscellaneous
   scrolling waveforms.
 * Support IRC/AIM/ICQ broadcast metadata.
 
-==== 2.1.5 2018-10-28 ====
+## [2.1.5](https://launchpad.net/mixxx/+milestone/2.1.5) (2018-10-28)
 
-* Code signing for Windows builds. lp:1517823
-* Fix crash on exit when preferences is open. lp:1793185
-* Fix crash when analyzing corrupt MP3s. lp:1793387
-* Fix crash when importing metadata from MusicBrainz. lp:1794993
-* Library search fixes when single quotes are used. lp:1784090 lp:1789728
-* Fix scrolling waveform on Windows with WDM-KS sound API. lp:1729345
-* Fix right clicking on beatgrid alignment button in Tango and LateNight skins. lp:1798237
-* Improve speed of importing iTunes library. lp:1785545
+* Code signing for Windows builds. [lp:1517823](https://bugs.launchpad.net/mixxx/+bug/1517823)
+* Fix crash on exit when preferences is open. [lp:1793185](https://bugs.launchpad.net/mixxx/+bug/1793185)
+* Fix crash when analyzing corrupt MP3s. [lp:1793387](https://bugs.launchpad.net/mixxx/+bug/1793387)
+* Fix crash when importing metadata from MusicBrainz. [lp:1794993](https://bugs.launchpad.net/mixxx/+bug/1794993)
+* Library search fixes when single quotes are used. [lp:1784090](https://bugs.launchpad.net/mixxx/+bug/1784090) [lp:1789728](https://bugs.launchpad.net/mixxx/+bug/1789728)
+* Fix scrolling waveform on Windows with WDM-KS sound API. [lp:1729345](https://bugs.launchpad.net/mixxx/+bug/1729345)
+* Fix right clicking on beatgrid alignment button in Tango and LateNight skins. [lp:1798237](https://bugs.launchpad.net/mixxx/+bug/1798237)
+* Improve speed of importing iTunes library. [lp:1785545](https://bugs.launchpad.net/mixxx/+bug/1785545)
 * Add 2 deck mapping for DJTechTools MIDI Fighter Twister.
 
-==== 2.1.4 2018-08-29 ====
+## [2.1.4](https://launchpad.net/mixxx/+milestone/2.1.4) (2018-08-29)
+
 Fix track selection not getting shown in the track
 table on Windows. There are no changes to the
 source code, but the Jenkins build configuration
 was changed to delete the Jenkins workspace before
-each build.
-https://bugs.launchpad.net/mixxx/+bug/1751482
+each build. [lp:1751482](https://bugs.launchpad.net/mixxx/+bug/1751482)
 
-==== 2.1.3 2018-08-20 ====
+## [2.1.3](https://launchpad.net/mixxx/+milestone/2.1.3) (2018-08-20)
+
 Fix a severe performance regression on Windows:
 https://mixxx.org/forums/viewtopic.php?f=3&t=12082
 
-==== 2.1.2 2018-08-10 ====
-Yet an other bugfix release of Mixxx 2.1.
+## [2.1.2](https://launchpad.net/mixxx/+milestone/2.1.2) (2018-08-10)
+
+Yet another bugfix release of Mixxx 2.1.
 Here is a quick summary of what is new in Mixxx 2.1.2:
 
-* Allow maximum deck speed of 4x normal
-* Don't always quantize hotcues, a 2.1.1 regression lp1777429
-* Fix artifacts using more than 32 samplers lp1779559
-* store No EQ and Filter persistently lp1780479
-* Pad unreadable samples with silence on cache miss lp1777480
-* Fixing painting of preview column for Qt5 builds lp1776555
-* LateNight: Fix play button right click lp1781829
-* LateNight: Added missing sort up/down buttons
-* Fix sampler play button tooltips lp1779468
-* Shade: remove superfluid margins and padding in sampler.xml lp1773588
-* Deere: Fix background-color code
-* ITunes: Don't stop import in case of duplicated Playlists lp1783493
+* Allow maximum deck speed of 4x normal.
+* Don't always quantize hotcues, a 2.1.1 regression. [lp:1777429](https://bugs.launchpad.net/mixxx/+bug/1777429)
+* Fix artifacts using more than 32 samplers. [lp:1779559](https://bugs.launchpad.net/mixxx/+bug/1779559)
+* store No EQ and Filter persistently. [lp:1780479](https://bugs.launchpad.net/mixxx/+bug/1780479)
+* Pad unreadable samples with silence on cache miss. [lp:1777480](https://bugs.launchpad.net/mixxx/+bug/1777480)
+* Fixing painting of preview column for Qt5 builds. [lp:1776555](https://bugs.launchpad.net/mixxx/+bug/1776555)
+* LateNight: Fix play button right click. [lp:1781829](https://bugs.launchpad.net/mixxx/+bug/1781829)
+* LateNight: Added missing sort up/down buttons.
+* Fix sampler play button tooltips. [lp:1779468](https://bugs.launchpad.net/mixxx/+bug/1779468)
+* Shade: remove superfluid margins and padding in sampler.xml. [lp:1773588](https://bugs.launchpad.net/mixxx/+bug/1773588)
+* Deere: Fix background-color code.
+* ITunes: Don't stop import in case of duplicated Playlists. [lp:1783493](https://bugs.launchpad.net/mixxx/+bug/1783493)
 
-==== 2.1.1 2018-06-13 ====
-After two month it is time to do a bugfix release of Mixxx 2.1.
+## [2.1.1](https://launchpad.net/mixxx/+milestone/2.1.1) (2018-06-13)
+
+After two months it is time to do a bugfix release of Mixxx 2.1.
 Here is a quick summary of what is new in Mixxx 2.1.1:
 
-* Require Soundtouch 2.0 to avoid segfault lp1577042
-* Imrpoved Skins including library view fix lp1773709 lp1772202 lp1763953
-* Fix crash when importing ID3v2 APIC frames lp1774790
-* Synchronize execution of Vamp analyzers lp1743256
-* DlgTrackInfo: Mismatching signal/slot connection
-* Detect M4A decoding errors on Windows lp1766834
-* Fix spinback inertia effect
-* Fix decoding fixes and upgrade DB schema lp1766042 lp1769717
-* Fix integration of external track libraries lp1766360
-* Fix memory leak when loading cover art lp1767068
-* Fix clearing of ReplayGain gain/ratio in file tags lp1766094
-* Fix crash when removing a quick link lp1510068
-* Fidlib: Thread-safe and reentrant generation of filters lp1765210
-* Fix unresponsive scrolling through crates & playlists using encoder lp1719474
-* Swap default values for temp/perm rate changes lp1764254
+* Require Soundtouch 2.0 to avoid segfault. [lp:1577042](https://bugs.launchpad.net/mixxx/+bug/1577042)
+* Improved skins including library view fix. [lp:1773709](https://bugs.launchpad.net/mixxx/+bug/1773709) [lp:1772202](https://bugs.launchpad.net/mixxx/+bug/1772202) [lp:1763953](https://bugs.launchpad.net/mixxx/+bug/1763953)
+* Fix crash when importing ID3v2 APIC frames. [lp:1774790](https://bugs.launchpad.net/mixxx/+bug/1774790)
+* Synchronize execution of Vamp analyzers. [lp:1743256](https://bugs.launchpad.net/mixxx/+bug/1743256)
+* DlgTrackInfo: Mismatching signal/slot connection.
+* Detect M4A decoding errors on Windows. [lp:1766834](https://bugs.launchpad.net/mixxx/+bug/1766834)
+* Fix spinback inertia effect.
+* Fix decoding fixes and upgrade DB schema. [lp:1766042](https://bugs.launchpad.net/mixxx/+bug/1766042) [lp:1769717](https://bugs.launchpad.net/mixxx/+bug/1769717)
+* Fix integration of external track libraries. [lp:1766360](https://bugs.launchpad.net/mixxx/+bug/1766360)
+* Fix memory leak when loading cover art. [lp:1767068](https://bugs.launchpad.net/mixxx/+bug/1767068)
+* Fix clearing of ReplayGain gain/ratio in file tags. [lp:1766094](https://bugs.launchpad.net/mixxx/+bug/1766094)
+* Fix crash when removing a quick link. [lp:1510068](https://bugs.launchpad.net/mixxx/+bug/1510068)
+* Fidlib: Thread-safe and reentrant generation of filters. [lp:1765210](https://bugs.launchpad.net/mixxx/+bug/1765210)
+* Fix unresponsive scrolling through crates & playlists using encoder. [lp:1719474](https://bugs.launchpad.net/mixxx/+bug/1719474)
+* Swap default values for temp/perm rate changes. [lp:1764254](https://bugs.launchpad.net/mixxx/+bug/1764254)
 
-==== 2.1.0 2018-04-15 ====
+## [2.1.0](https://launchpad.net/mixxx/+milestone/2.1.0) (2018-04-15)
+
 After two years of hard work, we are pleased to announce Mixxx 2.1. We
 have overhauled the effects system, redesigned the skins, added and improved
 lots of controller mappings, rewrote the audio file decoders twice, and of
@@ -185,11 +191,9 @@ announcements. First, if you are using Windows, you will have to uninstall any
 old versions of Mixxx before you can install 2.1. How to uninstall Mixxx
 varies on different versions of Windows:
   * Windows Vista, 7, and 8: Start > Control Panel > Programs > Uninstall a
-Program https://support.microsoft.com/en-us/help/2601726
+Program [Guide](https://support.microsoft.com/en-us/help/2601726)
   * Windows 10: Start > Control Panel > Programs > Programs And Features > look
-for Mixxx > Uninstall
-https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-
-programs-in-windows-10
+for Mixxx > Uninstall [Guide](https://support.microsoft.com/en-gb/help/4028054/windows-repair-or-remove-programs-in-windows-10)
 
 If you are upgrading from an older version of Mixxx and have MP3 files in
 your library, we have another important announcement. The good news is that we
