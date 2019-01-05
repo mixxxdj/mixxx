@@ -1,0 +1,14 @@
+# TODO
+# Execute the following command in your local project
+# directory to enable automatic merge resolution:
+#
+# $ git config --global merge.ours.driver true
+#
+# Otherwise the settings in this file are ignored!
+
+# Exclude Transifex files from merging
+/res/translations/*.ts merge=ours
+/res/translations/*.qm merge=ours
+
+# Exclude WiX translations from merging
+/build/wix/Localization/po/*.po merge=ours
