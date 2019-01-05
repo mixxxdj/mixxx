@@ -52,7 +52,6 @@ TrackAnalysisScheduler::TrackAnalysisScheduler(
         : m_library(library),
           m_currentTrackProgress(kAnalyzerProgressUnknown),
           m_currentTrackNumber(0),
-          m_finishedTracksCount(0),
           m_dequeuedTracksCount(0),
           // The first signal should always be emitted
           m_lastProgressEmittedAt(Clock::now() - kProgressInhibitDuration) {
@@ -94,7 +93,6 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
     if (allTracksFinished()) {
         m_currentTrackProgress = kAnalyzerProgressUnknown;
         m_currentTrackNumber = 0;
-        m_finishedTracksCount = 0;
         m_dequeuedTracksCount = 0;
         emit finished();
         return;
@@ -106,6 +104,11 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
         return;
     }
     m_lastProgressEmittedAt = now;
+
+    DEBUG_ASSERT(m_pendingTrackIds.size() <=
+            static_cast<size_t>(m_dequeuedTracksCount));
+    const int finishedTracksCount =
+            m_dequeuedTracksCount - m_pendingTrackIds.size();
 
     AnalyzerProgress workerProgressSum = 0;
     int workerProgressCount = 0;
@@ -133,11 +136,11 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
                 workerProgressSum - std::floor(workerProgressSum);
         // The calculation of inProgressCount is only an approximation.
         // In some situations the calculated virtual current track number
-        // = m_finishedTracksCount + inProgressCount exceeds the upper
+        // = finishedTracksCount + inProgressCount exceeds the upper
         // bound m_dequeuedTracksCount. Using the minimum of both values
         // is an appropriate choice for reporting continuous progress.
         const int currentTrackNumber =
-                math_min(m_finishedTracksCount + inProgressCount, m_dequeuedTracksCount);
+                math_min(finishedTracksCount + inProgressCount, m_dequeuedTracksCount);
         // The combination of the values current count (primary) and current
         // progress (secondary) should never decrease to avoid confusion
         if (m_currentTrackNumber < currentTrackNumber) {
@@ -155,13 +158,12 @@ void TrackAnalysisScheduler::emitProgressOrFinished() {
             }
         }
     } else {
-        if (m_currentTrackNumber < m_finishedTracksCount) {
-            m_currentTrackNumber = m_finishedTracksCount;
+        if (m_currentTrackNumber < finishedTracksCount) {
+            m_currentTrackNumber = finishedTracksCount;
         }
     }
     const int totalTracksCount =
             m_dequeuedTracksCount + m_queuedTrackIds.size();
-    DEBUG_ASSERT(m_finishedTracksCount <= m_currentTrackNumber);
     DEBUG_ASSERT(m_currentTrackNumber <= m_dequeuedTracksCount);
     DEBUG_ASSERT(m_dequeuedTracksCount <= totalTracksCount);
     emit progress(
@@ -178,28 +180,34 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
     auto& worker = m_workers.at(threadId);
     switch (threadState) {
     case AnalyzerThreadState::Void:
+        DEBUG_ASSERT(!trackId.isValid());
         DEBUG_ASSERT(analyzerProgress == kAnalyzerProgressUnknown);
         break;
     case AnalyzerThreadState::Idle:
+        DEBUG_ASSERT(!trackId.isValid());
         DEBUG_ASSERT(analyzerProgress == kAnalyzerProgressUnknown);
         worker.onAnalyzerProgress(analyzerProgress);
         submitNextTrack(&worker);
         break;
     case AnalyzerThreadState::Busy:
+        DEBUG_ASSERT(trackId.isValid());
+        DEBUG_ASSERT(m_pendingTrackIds.find(trackId) != m_pendingTrackIds.end());
         DEBUG_ASSERT(analyzerProgress != kAnalyzerProgressUnknown);
         DEBUG_ASSERT(analyzerProgress < kAnalyzerProgressDone);
         worker.onAnalyzerProgress(analyzerProgress);
         emit trackProgress(trackId, analyzerProgress);
         break;
     case AnalyzerThreadState::Done:
+        DEBUG_ASSERT(trackId.isValid());
+        DEBUG_ASSERT(m_pendingTrackIds.find(trackId) != m_pendingTrackIds.end());
         DEBUG_ASSERT((analyzerProgress == kAnalyzerProgressDone) // success
                 || (analyzerProgress == kAnalyzerProgressUnknown)); // failure
+        m_pendingTrackIds.erase(trackId);
         worker.onAnalyzerProgress(analyzerProgress);
         emit trackProgress(trackId, analyzerProgress);
-        ++m_finishedTracksCount;
-        DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
         break;
     case AnalyzerThreadState::Exit:
+        DEBUG_ASSERT(!trackId.isValid());
         DEBUG_ASSERT(analyzerProgress == kAnalyzerProgressUnknown);
         worker.onThreadExit();
         DEBUG_ASSERT(!worker);
@@ -247,19 +255,28 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
             TrackPointer nextTrack =
                     m_library->trackCollection().getTrackDAO().getTrack(nextTrackId);
             if (nextTrack) {
-                VERIFY_OR_DEBUG_ASSERT(worker->submitNextTrack(std::move(nextTrack))) {
-                    // This will and must never happen! We will only submit the next
-                    // track only after the worker has signaled that it is idle. In
-                    // this case the lock-free FIFO for passing data between threads
-                    // is empty and enqueueing is expected to succeed.
-                    kLogger.critical()
-                            << "Failed to submit next track ...retrying...";
-                    // Retry to avoid skipping this track
-                    continue;
+                if (m_pendingTrackIds.insert(nextTrackId).second) {
+                    VERIFY_OR_DEBUG_ASSERT(worker->submitNextTrack(std::move(nextTrack))) {
+                        // This will and must never happen! We will only submit the next
+                        // track only after the worker has signaled that it is idle. In
+                        // this case the lock-free FIFO for passing data between threads
+                        // is empty and enqueueing is expected to succeed.
+                        kLogger.critical()
+                                << "Failed to submit next track ...retrying...";
+                        // Undo changes
+                        m_pendingTrackIds.erase(nextTrackId);
+                        // Retry to avoid skipping this track
+                        continue;
+                    }
+                    m_queuedTrackIds.pop_front();
+                    ++m_dequeuedTracksCount;
+                    return true;
+                } else {
+                    // This track is currently analyzed by one of the workers
+                    kLogger.debug()
+                            << "Skipping duplicate track id"
+                            << nextTrackId;
                 }
-                m_queuedTrackIds.pop_front();
-                ++m_dequeuedTracksCount;
-                return true;
             } else {
                 kLogger.warning()
                         << "Failed to load track by id"
@@ -273,9 +290,7 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
         // Skip this track
         m_queuedTrackIds.pop_front();
         ++m_dequeuedTracksCount;
-        ++m_finishedTracksCount;
     }
-    DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
     return false;
 }
 

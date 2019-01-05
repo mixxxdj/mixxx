@@ -1,6 +1,7 @@
 #pragma once
 
 #include <deque>
+#include <set>
 #include <vector>
 
 #include "analyzer/analyzerthread.h"
@@ -130,8 +131,8 @@ class TrackAnalysisScheduler : public QObject {
     void emitProgressOrFinished();
 
     bool allTracksFinished() const {
-        DEBUG_ASSERT(m_finishedTracksCount <= m_dequeuedTracksCount);
-        return m_queuedTrackIds.empty() && (m_finishedTracksCount == m_dequeuedTracksCount);
+        return m_queuedTrackIds.empty() &&
+                m_pendingTrackIds.empty();
     }
 
     Library* m_library;
@@ -140,11 +141,21 @@ class TrackAnalysisScheduler : public QObject {
 
     std::deque<TrackId> m_queuedTrackIds;
 
+    // Tracks that have already been submitted to workers
+    // and not yet reported back as finished.
+    std::set<TrackId> m_pendingTrackIds;
+
+    // TODO(XXX): Suspend and resume batch analysis
+    // https://bugs.launchpad.net/mixxx/+bug/1443181
+    // The remaining tracks that have not yet been analyzed can be
+    // found in m_queuedTrackIds + m_pendingTrackIds. The corresponding
+    // track ids need to be saved persistently in the database if
+    // analysis should be suspended in the current and resumed in
+    // a following session.
+
     AnalyzerProgress m_currentTrackProgress;
 
     int m_currentTrackNumber;
-
-    int m_finishedTracksCount;
 
     int m_dequeuedTracksCount;
 
