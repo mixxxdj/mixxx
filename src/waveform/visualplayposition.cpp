@@ -35,15 +35,16 @@ VisualPlayPosition::~VisualPlayPosition() {
     m_listVisualPlayPosition.remove(m_key);
 }
 
-void VisualPlayPosition::set(double playPos, double rate,
-                             double positionStep, double pSlipPosition) {
+void VisualPlayPosition::set(double playPos, double rate, double positionStep,
+        double slipPosition, double tempoTrackSeconds) {
     VisualPlayPositionData data;
     data.m_referenceTime = m_timeInfoTime;
     data.m_callbackEntrytoDac = m_dCallbackEntryToDacSecs * 1000000; // s to µs
     data.m_enginePlayPos = playPos;
     data.m_rate = rate;
     data.m_positionStep = positionStep;
-    data.m_pSlipPosition = pSlipPosition;
+    data.m_slipPosition = slipPosition;
+    data.m_tempoTrackSeconds = tempoTrackSeconds;
 
     // Atomic write
     m_data.setValue(data);
@@ -70,7 +71,7 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* vsyncThread) {
     return -1;
 }
 
-void VisualPlayPosition::getPlaySlipAt(int fromNowMicros, double* playPosition, double* slipPosition) {
+void VisualPlayPosition::getPlaySlipAt(int fromNowMicros, double* pPlayPosition, double* pSlipPosition) {
     //static double testPos = 0;
     //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
     //return testPos;
@@ -83,8 +84,8 @@ void VisualPlayPosition::getPlaySlipAt(int fromNowMicros, double* playPosition, 
         offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferMicros;
-        *playPosition = playPos;
-        *slipPosition = data.m_pSlipPosition;
+        *pPlayPosition = playPos;
+        *pSlipPosition = data.m_slipPosition;
     }
 }
 

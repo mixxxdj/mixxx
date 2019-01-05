@@ -1199,14 +1199,6 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    // * double speed
-    // * int iBufferSize
-    // m_trackSampleRateOld
-    // m_trackSamplesOld
-    // m_filepos_play
-    // m_tempo_ratio_old
-
-
     if (!m_trackSampleRateOld || !m_trackSamplesOld) {
         // no track loaded
         return;
@@ -1215,7 +1207,9 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // Increase samplesCalculated by the buffer size
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
 
-    double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
+    const double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
+    const double tempoTrackSeconds = m_trackSamplesOld / kSamplesPerFrame
+            / m_trackSampleRateOld / m_tempo_ratio_old;
     if(speed > 0 && fFractionalPlaypos == 1.0) {
         // At Track end
         speed = 0;
@@ -1230,7 +1224,6 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
     if (m_iSamplesSinceLastIndicatorUpdate > (kSamplesPerFrame * m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
-        const double tempoTrackSeconds = m_trackSamplesOld / kSamplesPerFrame / m_trackSampleRateOld / m_tempo_ratio_old;
         double timeRemaining = (1.0 - fFractionalPlaypos) * tempoTrackSeconds;
         m_timeRemaining->set(timeRemaining);
         m_timeElapsed->set(tempoTrackSeconds - timeRemaining);
@@ -1266,7 +1259,8 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // playpos slider
     m_visualPlayPos->set(fFractionalPlaypos, speed * m_baserate_old,
             (double)iBufferSize / m_trackSamplesOld,
-            fractionalPlayposFromAbsolute(m_dSlipPosition));
+            fractionalPlayposFromAbsolute(m_dSlipPosition),
+            tempoTrackSeconds);
 }
 
 void EngineBuffer::hintReader(const double dRate) {
