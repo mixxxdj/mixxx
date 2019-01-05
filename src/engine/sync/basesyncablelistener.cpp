@@ -63,11 +63,7 @@ int BaseSyncableListener::playingSyncDeckCount() const {
     int playing_sync_decks = 0;
 
     foreach (const Syncable* pSyncable, m_syncables) {
-        if (!pSyncable->isSynchronized()) {
-            continue;
-        }
-
-        if (pSyncable->isPlaying()) {
+        if (pSyncable->isSynchronized() && pSyncable->isPlaying()) {
             ++playing_sync_decks;
         }
     }
