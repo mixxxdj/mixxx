@@ -310,7 +310,7 @@ class EngineBuffer : public EngineObject {
     // during seek and loading of a new track
     QMutex m_pause;
     // Used in update of playpos slider
-    int m_iSamplesCalculated;
+    int m_iSamplesSinceLastIndicatorUpdate;
     int m_iUiSlowTick;
 
     // The location where the track would have been had slip not been engaged

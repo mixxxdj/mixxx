@@ -72,7 +72,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
           m_rate_old(0.),
           m_trackSamplesOld(0),
           m_trackSampleRateOld(0),
-          m_iSamplesCalculated(0),
+          m_iSamplesSinceLastIndicatorUpdate(0),
           m_iUiSlowTick(0),
           m_dSlipPosition(0.),
           m_dSlipRate(1.0),
@@ -452,7 +452,7 @@ void EngineBuffer::setNewPlaypos(double newpos, bool adjustingPhase) {
     m_pScale->clear();
 
     // Ensures that the playpos slider gets updated in next process call
-    m_iSamplesCalculated = 1000000;
+    m_iSamplesSinceLastIndicatorUpdate = 1000000;
 
     // Must hold the engineLock while using m_engineControls
     for (const auto& pControl: qAsConst(m_engineControls)) {
@@ -1199,16 +1199,25 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
+    // * double speed
+    // * int iBufferSize
+    // m_trackSampleRateOld
+    // m_trackSamplesOld
+    // m_filepos_play
+    // m_tempo_ratio_old
+
+
     if (!m_trackSampleRateOld || !m_trackSamplesOld) {
         // no track loaded
         return;
     }
 
     // Increase samplesCalculated by the buffer size
-    m_iSamplesCalculated += iBufferSize;
+    m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
 
     double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
     if(speed > 0 && fFractionalPlaypos == 1.0) {
+        // At Track end
         speed = 0;
     }
 
@@ -1220,7 +1229,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
-    if (m_iSamplesCalculated > (kSamplesPerFrame * m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
+    if (m_iSamplesSinceLastIndicatorUpdate > (kSamplesPerFrame * m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
         const double samplePositionToSeconds = 1.0 / m_trackSampleRateOld
                 / kSamplesPerFrame / m_tempo_ratio_old;
         m_timeElapsed->set(m_filepos_play * samplePositionToSeconds);
@@ -1252,7 +1261,7 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
         m_visualKey->set(m_pKeyControl->getKey());
 
         // Reset sample counter
-        m_iSamplesCalculated = 0;
+        m_iSamplesSinceLastIndicatorUpdate = 0;
     }
 
     // Update visual control object, this needs to be done more often than the
