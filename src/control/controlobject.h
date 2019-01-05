@@ -152,7 +152,8 @@ class ControlObject : public QObject {
     // audio thread has no Qt event queue. But be a ware of race conditions in this case.
     // ref: http://qt-project.org/doc/qt-4.8/qt.html#ConnectionType-enum
     bool connectValueChangeRequest(const QObject* receiver,
-                                   const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+                                   std::function<void(double)> method,
+                                   Qt::ConnectionType type = Qt::AutoConnection);
 
     // Installs a value-change request handler that ignores all sets.
     void setReadOnly();

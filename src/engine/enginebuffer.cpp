@@ -108,7 +108,7 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
     m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
     m_playButton->setButtonMode(ControlPushButton::TOGGLE);
     m_playButton->connectValueChangeRequest(
-            this, SLOT(slotControlPlayRequest(double)),
+            this, [=](double value){slotControlPlayRequest(value);},
             Qt::DirectConnection);
 
     //Play from Start Button (for sampler)

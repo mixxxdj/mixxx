@@ -81,7 +81,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pWaveformZoom = std::make_unique<ControlObject>(
         ConfigKey(group, "waveform_zoom"));
     m_pWaveformZoom->connectValueChangeRequest(
-        this, SLOT(slotWaveformZoomValueChangeRequest(double)),
+        this, [=](double value){slotWaveformZoomValueChangeRequest(value);},
         Qt::DirectConnection);
     m_pWaveformZoom->set(1.0);
     m_pWaveformZoomUp = std::make_unique<ControlPushButton>(

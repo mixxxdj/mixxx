@@ -64,15 +64,15 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                 ConfigKey("[Master]", "num_auxiliaries"), true, true)),
         m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
-            SLOT(slotChangeNumDecks(double)), Qt::DirectConnection);
+            [=](double value){slotChangeNumDecks(value);}, Qt::DirectConnection);
     m_pCONumSamplers->connectValueChangeRequest(this,
-            SLOT(slotChangeNumSamplers(double)), Qt::DirectConnection);
+            [=](double value){slotChangeNumSamplers(value);}, Qt::DirectConnection);
     m_pCONumPreviewDecks->connectValueChangeRequest(this,
-            SLOT(slotChangeNumPreviewDecks(double)), Qt::DirectConnection);
+            [=](double value){slotChangeNumPreviewDecks(value);}, Qt::DirectConnection);
     m_pCONumMicrophones->connectValueChangeRequest(this,
-            SLOT(slotChangeNumMicrophones(double)), Qt::DirectConnection);
+            [=](double value){slotChangeNumMicrophones(value);}, Qt::DirectConnection);
     m_pCONumAuxiliaries->connectValueChangeRequest(this,
-            SLOT(slotChangeNumAuxiliaries(double)), Qt::DirectConnection);
+            [=](double value){slotChangeNumAuxiliaries(value);}, Qt::DirectConnection);
 
     // This is parented to the PlayerManager so does not need to be deleted
     m_pSamplerBank = new SamplerBank(this);
