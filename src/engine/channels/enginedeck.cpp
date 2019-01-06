@@ -45,8 +45,8 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
     m_bPassthroughWasActive = false;
 
     // Set up passthrough toggle button
-    connect(m_pPassing, SIGNAL(valueChanged(double)),
-            this, SLOT(slotPassingToggle(double)),
+    connect(m_pPassing, &ControlObject::valueChanged,
+            this, &EngineDeck::slotPassingToggle,
             Qt::DirectConnection);
 
     m_pPregain = new EnginePregain(getGroup());
