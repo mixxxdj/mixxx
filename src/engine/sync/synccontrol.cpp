@@ -3,10 +3,10 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
-#include "engine/bpmcontrol.h"
+#include "engine/controls/bpmcontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
-#include "engine/ratecontrol.h"
 #include "util/math.h"
 #include "util/assert.h"
 

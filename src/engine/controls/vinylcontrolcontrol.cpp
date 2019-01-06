@@ -1,4 +1,4 @@
-#include "engine/vinylcontrolcontrol.h"
+#include "engine/controls/vinylcontrolcontrol.h"
 
 #include "vinylcontrol/vinylcontrol.h"
 #include "library/dao/cue.h"

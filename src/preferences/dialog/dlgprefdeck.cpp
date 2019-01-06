@@ -13,7 +13,7 @@
 #include "control/controlproxy.h"
 #include "widget/wnumberpos.h"
 #include "engine/enginebuffer.h"
-#include "engine/ratecontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "mixer/playermanager.h"
 #include "mixer/playerinfo.h"
 #include "control/controlobject.h"

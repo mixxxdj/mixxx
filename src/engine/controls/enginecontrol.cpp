@@ -1,7 +1,7 @@
 // enginecontrol.cpp
 // Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
 
-#include "engine/enginecontrol.h"
+#include "engine/controls/enginecontrol.h"
 #include "engine/enginemaster.h"
 #include "engine/enginebuffer.h"
 #include "engine/sync/enginesync.h"

@@ -8,7 +8,7 @@
 #include "track/track.h"
 #include "sources/soundsourceproxy.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginecontrol.h"
+#include "engine/controls/enginecontrol.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "track/beatgrid.h"

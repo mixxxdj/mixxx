@@ -10,9 +10,9 @@
 #include "util/math.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
-#include "engine/bpmcontrol.h"
-#include "engine/enginecontrol.h"
-#include "engine/ratecontrol.h"
+#include "engine/controls/bpmcontrol.h"
+#include "engine/controls/enginecontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "engine/positionscratchcontroller.h"
 
 #include <QtDebug>

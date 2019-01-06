@@ -5,7 +5,7 @@
 #include <QStringBuilder>
 
 #include "engine/enginebuffer.h"
-#include "engine/cuecontrol.h"
+#include "engine/controls/cuecontrol.h"
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"

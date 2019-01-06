@@ -1,8 +1,8 @@
-#include "engine/clockcontrol.h"
+#include "engine/controls/clockcontrol.h"
 
 #include "control/controlobject.h"
 #include "preferences/usersettings.h"
-#include "engine/enginecontrol.h"
+#include "engine/controls/enginecontrol.h"
 #include "control/controlproxy.h"
 
 ClockControl::ClockControl(QString group, UserSettingsPointer pConfig)

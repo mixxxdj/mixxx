@@ -7,8 +7,8 @@
 #include "control/controlobject.h"
 #include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
-#include "engine/quantizecontrol.h"
-#include "engine/enginecontrol.h"
+#include "engine/controls/quantizecontrol.h"
+#include "engine/controls/enginecontrol.h"
 #include "util/assert.h"
 
 QuantizeControl::QuantizeControl(QString group,

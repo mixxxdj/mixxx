@@ -9,20 +9,20 @@
 #include "control/controlproxy.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "engine/bpmcontrol.h"
-#include "engine/clockcontrol.h"
-#include "engine/cuecontrol.h"
+#include "engine/controls/bpmcontrol.h"
+#include "engine/controls/clockcontrol.h"
+#include "engine/controls/cuecontrol.h"
+#include "engine/controls/enginecontrol.h"
+#include "engine/controls/keycontrol.h"
+#include "engine/controls/loopingcontrol.h"
+#include "engine/controls/quantizecontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "engine/enginebufferscalelinear.h"
 #include "engine/enginebufferscalerubberband.h"
 #include "engine/enginebufferscalest.h"
 #include "engine/enginechannel.h"
-#include "engine/enginecontrol.h"
 #include "engine/enginemaster.h"
 #include "engine/engineworkerscheduler.h"
-#include "engine/keycontrol.h"
-#include "engine/loopingcontrol.h"
-#include "engine/quantizecontrol.h"
-#include "engine/ratecontrol.h"
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
@@ -38,7 +38,7 @@
 #include "waveform/visualplayposition.h"
 
 #ifdef __VINYLCONTROL__
-#include "engine/vinylcontrolcontrol.h"
+#include "engine/controls/vinylcontrolcontrol.h"
 #endif
 
 namespace {

@@ -1,7 +1,7 @@
 #ifndef KEYCONTROL_H
 #define KEYCONTROL_H
 
-#include "engine/enginecontrol.h"
+#include "engine/controls/enginecontrol.h"
 #include "control/controlvalue.h"
 
 class ControlObject;

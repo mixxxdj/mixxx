@@ -7,7 +7,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
-#include "engine/loopingcontrol.h"
+#include "engine/controls/loopingcontrol.h"
 #include "test/mockedenginebackendtest.h"
 #include "util/memory.h"
 

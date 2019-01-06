@@ -7,7 +7,7 @@
 #include <QObject>
 
 #include "preferences/usersettings.h"
-#include "engine/enginecontrol.h"
+#include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
 
 const int RATE_TEMP_STEP = 500;

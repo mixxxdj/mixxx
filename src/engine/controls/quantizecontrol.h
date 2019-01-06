@@ -4,7 +4,7 @@
 #include <QObject>
 
 #include "preferences/usersettings.h"
-#include "engine/enginecontrol.h"
+#include "engine/controls/enginecontrol.h"
 
 #include "track/track.h"
 #include "track/beats.h"

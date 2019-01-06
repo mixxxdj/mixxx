@@ -7,7 +7,7 @@
 #include <QList>
 #include <QMutex>
 
-#include "engine/enginecontrol.h"
+#include "engine/controls/enginecontrol.h"
 #include "preferences/usersettings.h"
 #include "control/controlproxy.h"
 #include "track/track.h"

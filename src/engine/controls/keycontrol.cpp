@@ -1,7 +1,7 @@
 #include <QtDebug>
 #include <QPair>
 
-#include "engine/keycontrol.h"
+#include "engine/controls/keycontrol.h"
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"

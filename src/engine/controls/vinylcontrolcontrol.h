@@ -1,7 +1,7 @@
 #ifndef VINYLCONTROLCONTROL_H
 #define VINYLCONTROLCONTROL_H
 
-#include "engine/enginecontrol.h"
+#include "engine/controls/enginecontrol.h"
 #include "track/track.h"
 #include "preferences/usersettings.h"
 #include "control/controlobject.h"

@@ -4,8 +4,8 @@
 #include "engine/readaheadmanager.h"
 
 #include "engine/cachingreader.h"
-#include "engine/loopingcontrol.h"
-#include "engine/ratecontrol.h"
+#include "engine/controls/loopingcontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "util/defs.h"
 #include "util/math.h"
 #include "util/sample.h"

@@ -15,7 +15,7 @@
 #include "engine/enginechannel.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
-#include "engine/ratecontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/deck.h"
 #include "mixer/previewdeck.h"
