@@ -17,6 +17,7 @@ class ControlObject;
 class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
+class VisualsManager;
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the
 // rest of Mixxx. Also makes testing a lot easier.
@@ -53,6 +54,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
                         UserSettingsPointer pConfig,
                         EngineMaster* pMixingEngine,
                         EffectsManager* pEffectsManager,
+                        VisualsManager* pVisualsManager,
                         EngineChannel::ChannelOrientation defaultOrientation,
                         const QString& group,
                         bool defaultMaster,
@@ -110,7 +112,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlProxy> m_pLoopInPoint;
     std::unique_ptr<ControlProxy> m_pLoopOutPoint;
     std::unique_ptr<ControlObject> m_pDuration;
-    std::unique_ptr<ControlObject> m_pEndOfTrack;
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
