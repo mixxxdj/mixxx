@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "util/duration.h"
@@ -7,9 +9,7 @@
 #include "util/performancetimer.h"
 #include "waveform/visualplayposition.h"
 
-#include <vector>
-
-// This calss updates the controls used for widgets and
+// This class updates the controls used for widgets and
 // controler indicator, in a CPU saving way and outside the engine thread
 class DeckVisuals {
   public:
