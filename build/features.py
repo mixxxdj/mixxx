@@ -759,6 +759,9 @@ class Opus(Feature):
                 if not conf.CheckLib(opus_lib):
                     raise Exception('Missing opus static library %s -- exiting' % opus_lib)
 
+        if build.platform_is_linux or build.platform_is_bsd:
+            build.env.ParseConfig('pkg-config opusfile opus --silence-errors --cflags --libs')
+                    
         build.env.Append(CPPDEFINES='__OPUS__')
 
     def sources(self, build):
