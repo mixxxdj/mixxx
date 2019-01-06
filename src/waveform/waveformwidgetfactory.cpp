@@ -25,6 +25,7 @@
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/guitick.h"
+#include "waveform/visualsmanager.h"
 #include "waveform/vsyncthread.h"
 #include "util/cmdlineargs.h"
 #include "util/performancetimer.h"
@@ -103,6 +104,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_beatGridAlpha(90),
         m_vsyncThread(NULL),
         m_pGuiTick(nullptr),
+        m_pVisualsManager(nullptr),
         m_frameCnt(0),
         m_actualFrameRate(0),
         m_vSyncType(0),
@@ -596,6 +598,7 @@ void WaveformWidgetFactory::render() {
         }
     }
 
+    m_pVisualsManager->process(m_endOfTrackWarningTime);
     m_pGuiTick->process();
 
     //qDebug() << "refresh end" << m_vsyncThread->elapsed();
@@ -835,8 +838,9 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
     return -1;
 }
 
-void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick) {
+void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager) {
     m_pGuiTick = pGuiTick;
+    m_pVisualsManager = pVisualsManager;
     m_vsyncThread = new VSyncThread(this);
     m_vsyncThread->start(QThread::NormalPriority);
 

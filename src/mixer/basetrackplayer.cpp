@@ -1,3 +1,4 @@
+#include <waveform/visualsmanager.h>
 #include <QMessageBox>
 
 #include "mixer/basetrackplayer.h"
@@ -28,6 +29,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
                                          UserSettingsPointer pConfig,
                                          EngineMaster* pMixingEngine,
                                          EffectsManager* pEffectsManager,
+                                         VisualsManager* pVisualsManager,
                                          EngineChannel::ChannelOrientation defaultOrientation,
                                          const QString& group,
                                          bool defaultMaster,
@@ -106,6 +108,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pReplayGain = std::make_unique<ControlProxy>(group, "replaygain", this);
     m_pPlay = std::make_unique<ControlProxy>(group, "play", this);
     m_pPlay->connectValueChanged(SLOT(slotPlayToggled(double)));
+
+    pVisualsManager->addDeck(group);
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {

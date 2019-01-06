@@ -34,11 +34,13 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                              SoundManager* pSoundManager,
                              EffectsManager* pEffectsManager,
+                             VisualsManager* pVisualsManager,
                              EngineMaster* pEngine) :
         m_mutex(QMutex::Recursive),
         m_pConfig(pConfig),
         m_pSoundManager(pSoundManager),
         m_pEffectsManager(pEffectsManager),
+        m_pVisualsManager(pVisualsManager),
         m_pEngine(pEngine),
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
@@ -339,7 +341,7 @@ void PlayerManager::addDeckInner() {
     }
 
     Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, m_pEffectsManager,
-                           orientation, group);
+            m_pVisualsManager, orientation, group);
     connect(pDeck, SIGNAL(noPassthroughInputConfigured()),
             this, SIGNAL(noDeckPassthroughInputConfigured()));
     connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
@@ -405,8 +407,8 @@ void PlayerManager::addSamplerInner() {
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
     Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine,
-                                    m_pEffectsManager, orientation, group);
-    if (m_pAnalyzerQueue) {
+            m_pEffectsManager, m_pVisualsManager, orientation, group);
+   if (m_pAnalyzerQueue) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
@@ -431,8 +433,7 @@ void PlayerManager::addPreviewDeckInner() {
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
     PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine,
-                                                m_pEffectsManager, orientation,
-                                                group);
+            m_pEffectsManager, m_pVisualsManager, orientation, group);
     if (m_pAnalyzerQueue) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyzerQueue, SLOT(slotAnalyseTrack(TrackPointer)));

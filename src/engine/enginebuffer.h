@@ -76,8 +76,6 @@ const int kiTempLength = 200000;
 
 // Rate at which the playpos slider is updated
 const int kiPlaypositionUpdateRate = 15; // updates per second
-// Number of kiUpdateRates that go by before we update BPM.
-const int kiBpmUpdateCnt = 4; // about 3.75 updates per sec
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
@@ -113,7 +111,7 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    EngineBuffer(QString _group, UserSettingsPointer pConfig,
+    EngineBuffer(const QString& group, UserSettingsPointer pConfig,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
 
@@ -311,7 +309,6 @@ class EngineBuffer : public EngineObject {
     QMutex m_pause;
     // Used in update of playpos slider
     int m_iSamplesSinceLastIndicatorUpdate;
-    int m_iUiSlowTick;
 
     // The location where the track would have been had slip not been engaged
     double m_dSlipPosition;
@@ -332,18 +329,12 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_backButton;
     ControlPushButton* m_pSlipButton;
 
-    ControlObject* m_visualBpm;
-    ControlObject* m_visualKey;
     ControlObject* m_pQuantize;
     ControlObject* m_pMasterRate;
-    ControlObject* m_timeElapsed;
-    ControlObject* m_timeRemaining;
     ControlPotmeter* m_playposSlider;
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
     ControlPushButton* m_pKeylock;
-
-    std::unique_ptr<ControlObject> m_pEndOfTrack;
 
     // This ControlProxys is created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating

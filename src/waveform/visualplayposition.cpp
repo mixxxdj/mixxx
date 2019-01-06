@@ -98,6 +98,17 @@ double VisualPlayPosition::getEnginePlayPos() {
     }
 }
 
+void VisualPlayPosition::getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds) {
+    if (m_valid) {
+        VisualPlayPositionData data = m_data.getValue();
+        *pPlayPosition = data.m_enginePlayPos;
+        *pTempoTrackSeconds = data.m_tempoTrackSeconds;
+    } else {
+        *pPlayPosition = 0;
+        *pTempoTrackSeconds = 0;
+    }
+}
+
 void VisualPlayPosition::slotAudioBufferSizeChanged(double sizeMillis) {
     m_audioBufferMicros = static_cast<int>(sizeMillis * kMicrosPerMillis);
 }

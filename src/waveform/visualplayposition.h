@@ -51,6 +51,7 @@ class VisualPlayPosition : public QObject {
     double getAtNextVSync(VSyncThread* vsyncThread);
     void getPlaySlipAt(int usFromNow, double* playPosition, double* slipPosition);
     double getEnginePlayPos();
+    void getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds);
 
     // WARNING: Not thread safe. This function must only be called from the main
     // thread.

@@ -50,7 +50,7 @@ const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
 } // anonymous namespace
 
-EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
+EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
                            EngineChannel* pChannel, EngineMaster* pMixingEngine)
         : m_group(group),
           m_pConfig(pConfig),
@@ -72,8 +72,6 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
           m_rate_old(0.),
           m_trackSamplesOld(0),
           m_trackSampleRateOld(0),
-          m_iSamplesSinceLastIndicatorUpdate(0),
-          m_iUiSlowTick(0),
           m_dSlipPosition(0.),
           m_dSlipRate(1.0),
           m_bSlipEnabledProcessing(false),
@@ -145,14 +143,6 @@ EngineBuffer::EngineBuffer(QString group, UserSettingsPointer pConfig,
 
     m_pSlipButton = new ControlPushButton(ConfigKey(m_group, "slip_enabled"));
     m_pSlipButton->setButtonMode(ControlPushButton::TOGGLE);
-
-    // BPM to display in the UI (updated more slowly than the actual bpm)
-    m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
-    m_visualKey = new ControlObject(ConfigKey(m_group, "visual_key"));
-
-    m_timeElapsed = new ControlObject(ConfigKey(m_group, "time_elapsed"));
-    m_timeRemaining = new ControlObject(ConfigKey(m_group, "time_remaining"));
-    m_pEndOfTrack = std::make_unique<ControlObject>(ConfigKey(group, "end_of_track"));
 
     m_playposSlider = new ControlLinPotmeter(
         ConfigKey(m_group, "playposition"), 0.0, 1.0, 0, 0, true);
@@ -282,15 +272,10 @@ EngineBuffer::~EngineBuffer() {
     delete m_playStartButton;
     delete m_stopStartButton;
 
-    delete m_timeElapsed;
-    delete m_timeRemaining;
-
     delete m_startButton;
     delete m_endButton;
     delete m_stopButton;
     delete m_playposSlider;
-    delete m_visualBpm;
-    delete m_visualKey;
 
     delete m_pSlipButton;
     delete m_pRepeat;
@@ -550,11 +535,6 @@ void EngineBuffer::ejectTrack() {
     TrackPointer pTrack = m_pCurrentTrack;
     m_pCurrentTrack.reset();
     m_playButton->set(0.0);
-    m_visualBpm->set(0.0);
-    m_visualKey->set(0.0);
-    m_timeElapsed->set(0);
-    m_timeRemaining->set(0);
-    m_pEndOfTrack->set(0.0);
     m_playposSlider->set(0);
     m_pCueControl->resetIndicators();
     doSeekFractional(0.0, SEEK_EXACT);
@@ -1224,35 +1204,8 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
     if (m_iSamplesSinceLastIndicatorUpdate > (kSamplesPerFrame * m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
-        double timeRemaining = (1.0 - fFractionalPlaypos) * tempoTrackSeconds;
-        m_timeRemaining->set(timeRemaining);
-        m_timeElapsed->set(tempoTrackSeconds - timeRemaining);
-
-        auto pFactory = WaveformWidgetFactory::instance();
-        double remainingTimeTriggerSeconds = pFactory ? pFactory->getEndOfTrackWarningTime() : 0;
-
-        if (!m_playButton->toBool() || // not playing
-                m_pLoopingControl->isLoopingEnabled() || // in loop
-                tempoTrackSeconds <= remainingTimeTriggerSeconds || // track too short
-                timeRemaining > remainingTimeTriggerSeconds // before the trigger
-                ) {
-            m_pEndOfTrack->set(0.0);
-        } else {
-            m_pEndOfTrack->set(1.0);
-        }
-
         m_playposSlider->set(fFractionalPlaypos);
         m_pCueControl->updateIndicators();
-
-        // Update the BPM even more slowly
-        m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateCnt;
-        if (m_iUiSlowTick == 0) {
-            m_visualBpm->set(m_pBpmControl->getBpm());
-        }
-        m_visualKey->set(m_pKeyControl->getKey());
-
-        // Reset sample counter
-        m_iSamplesSinceLastIndicatorUpdate = 0;
     }
 
     // Update visual control object, this needs to be done more often than the
