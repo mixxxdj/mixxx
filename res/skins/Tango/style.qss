@@ -2392,18 +2392,26 @@ WLibrary QPushButton {
   QPushButton#btnUnhide {
     font-weight: bold;
   }
-  
-  /* 'Enable AutoDJ' button	*/
+
+  /* Colored highlight for action buttons:
+  - Purge
+  - Unhide buttons
+  - Enable AutoDJ
+  - Analyze	*/
+  QPushButton#btnPurge:hover,
+  QPushButton#btnUnhide:hover,
   QPushButton#pushButtonAutoDJ:hover,
-  QPushButton#pushButtonRecording:hover,
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #ff6600;
   }
-  /* Push buttons at far right away from skin border	*/
+  
+  /* Increased margin for action buttons */
   QPushButton#pushButtonAutoDJ,
-  QPushButton#pushButtonRecording,
-  QPushButton#Analyze {
-    margin: 1px 9px 4px 1px;
+  QPushButton#pushButtonRecording {
+    margin: 1px 5px 4px 1px;
+  }
+  QPushButton#btnPurge {
+    margin: 1px 1px 4px 5px;
   }
   QPushButton#pushButtonRecording:unchecked {
     color: #888;
