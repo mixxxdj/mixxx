@@ -24,19 +24,29 @@ Description:
           <WidgetGroup><!-- Intro + Outro -->
             <ObjectName>Spacer0f</ObjectName>
             <Layout>horizontal</Layout>
-            <MinimumSize>32,24</MinimumSize>
-            <MaximumSize>48,24</MaximumSize>
+            <MinimumSize>64,24</MinimumSize>
+            <MaximumSize>96,24</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <Children>
                 <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_specialcue_deck.xml">
-                <SetVariable name="cue_type">intro</SetVariable>
-                <SetVariable name="label">I</SetVariable>
+                <SetVariable name="cue_type">intro_start</SetVariable>
+                <SetVariable name="label">IS</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_specialcue_deck.xml">
-                <SetVariable name="cue_type">outro</SetVariable>
-                <SetVariable name="label">O</SetVariable>
+                <SetVariable name="cue_type">intro_end</SetVariable>
+                <SetVariable name="label">IE</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:button_specialcue_deck.xml">
+                <SetVariable name="cue_type">outro_start</SetVariable>
+                <SetVariable name="label">OS</SetVariable>
+              </Template>
+                <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:button_specialcue_deck.xml">
+                <SetVariable name="cue_type">outro_end</SetVariable>
+                <SetVariable name="label">OE</SetVariable>
               </Template>
             </Children>
           </WidgetGroup>

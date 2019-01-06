@@ -117,34 +117,64 @@ CueControl::CueControl(QString group,
     m_pCueIndicator = new ControlIndicator(ConfigKey(group, "cue_indicator"));
     m_pPlayIndicator = new ControlIndicator(ConfigKey(group, "play_indicator"));
 
-    m_pIntroPosition = new ControlObject(ConfigKey(group, "intro_position"));
-    m_pIntroPosition->set(-1.0);
+    m_pIntroStartPosition = new ControlObject(ConfigKey(group, "intro_start_position"));
+    m_pIntroStartPosition->set(-1.0);
 
-    m_pIntroSource = new ControlObject(ConfigKey(group, "intro_source"));
+    m_pIntroStartSource = new ControlObject(ConfigKey(group, "intro_start_source"));
 
-    m_pIntroSet = new ControlPushButton(ConfigKey(group, "intro_set"));
-    connect(m_pIntroSet, SIGNAL(valueChanged(double)),
-            this, SLOT(introSet(double)),
+    m_pIntroStartSet = new ControlPushButton(ConfigKey(group, "intro_start_set"));
+    connect(m_pIntroStartSet, SIGNAL(valueChanged(double)),
+            this, SLOT(introStartSet(double)),
             Qt::DirectConnection);
 
-    m_pIntroClear = new ControlPushButton(ConfigKey(group, "intro_clear"));
-    connect(m_pIntroClear, SIGNAL(valueChanged(double)),
-            this, SLOT(introClear(double)),
+    m_pIntroStartClear = new ControlPushButton(ConfigKey(group, "intro_start_clear"));
+    connect(m_pIntroStartClear, SIGNAL(valueChanged(double)),
+            this, SLOT(introStartClear(double)),
             Qt::DirectConnection);
 
-    m_pOutroPosition = new ControlObject(ConfigKey(group, "outro_position"));
-    m_pOutroPosition->set(-1.0);
+    m_pIntroEndPosition = new ControlObject(ConfigKey(group, "intro_end_position"));
+    m_pIntroEndPosition->set(-1.0);
 
-    m_pOutroSource = new ControlObject(ConfigKey(group, "outro_source"));
+    m_pIntroEndSource = new ControlObject(ConfigKey(group, "intro_end_source"));
 
-    m_pOutroSet = new ControlPushButton(ConfigKey(group, "outro_set"));
-    connect(m_pOutroSet, SIGNAL(valueChanged(double)),
-            this, SLOT(outroSet(double)),
+    m_pIntroEndSet = new ControlPushButton(ConfigKey(group, "intro_end_set"));
+    connect(m_pIntroEndSet, SIGNAL(valueChanged(double)),
+            this, SLOT(introEndSet(double)),
             Qt::DirectConnection);
 
-    m_pOutroClear = new ControlPushButton(ConfigKey(group, "outro_clear"));
-    connect(m_pOutroClear, SIGNAL(valueChanged(double)),
-            this, SLOT(outroClear(double)),
+    m_pIntroEndClear = new ControlPushButton(ConfigKey(group, "intro_end_clear"));
+    connect(m_pIntroEndClear, SIGNAL(valueChanged(double)),
+            this, SLOT(introEndClear(double)),
+            Qt::DirectConnection);
+
+    m_pOutroStartPosition = new ControlObject(ConfigKey(group, "outro_start_position"));
+    m_pOutroStartPosition->set(-1.0);
+
+    m_pOutroStartSource = new ControlObject(ConfigKey(group, "outro_start_source"));
+
+    m_pOutroStartSet = new ControlPushButton(ConfigKey(group, "outro_start_set"));
+    connect(m_pOutroStartSet, SIGNAL(valueChanged(double)),
+            this, SLOT(outroStartSet(double)),
+            Qt::DirectConnection);
+
+    m_pOutroStartClear = new ControlPushButton(ConfigKey(group, "outro_start_clear"));
+    connect(m_pOutroStartClear, SIGNAL(valueChanged(double)),
+            this, SLOT(outroStartClear(double)),
+            Qt::DirectConnection);
+
+    m_pOutroEndPosition = new ControlObject(ConfigKey(group, "outro_end_position"));
+    m_pOutroEndPosition->set(-1.0);
+
+    m_pOutroEndSource = new ControlObject(ConfigKey(group, "outro_end_source"));
+
+    m_pOutroEndSet = new ControlPushButton(ConfigKey(group, "outro_end_set"));
+    connect(m_pOutroEndSet, SIGNAL(valueChanged(double)),
+            this, SLOT(outroEndSet(double)),
+            Qt::DirectConnection);
+
+    m_pOutroEndClear = new ControlPushButton(ConfigKey(group, "outro_end_clear"));
+    connect(m_pOutroEndClear, SIGNAL(valueChanged(double)),
+            this, SLOT(outroEndClear(double)),
             Qt::DirectConnection);
 
     m_pVinylControlEnabled = new ControlProxy(group, "vinylcontrol_enabled");
@@ -168,14 +198,22 @@ CueControl::~CueControl() {
     delete m_pPlayStutter;
     delete m_pCueIndicator;
     delete m_pPlayIndicator;
-    delete m_pIntroPosition;
-    delete m_pIntroSource;
-    delete m_pIntroSet;
-    delete m_pIntroClear;
-    delete m_pOutroPosition;
-    delete m_pOutroSource;
-    delete m_pOutroSet;
-    delete m_pOutroClear;
+    delete m_pIntroStartPosition;
+    delete m_pIntroStartSource;
+    delete m_pIntroStartSet;
+    delete m_pIntroStartClear;
+    delete m_pIntroEndPosition;
+    delete m_pIntroEndSource;
+    delete m_pIntroEndSet;
+    delete m_pIntroEndClear;
+    delete m_pOutroStartPosition;
+    delete m_pOutroStartSource;
+    delete m_pOutroStartSet;
+    delete m_pOutroStartClear;
+    delete m_pOutroEndPosition;
+    delete m_pOutroEndSource;
+    delete m_pOutroEndSet;
+    delete m_pOutroEndClear;
     delete m_pVinylControlEnabled;
     delete m_pVinylControlMode;
     qDeleteAll(m_hotcueControls);
@@ -253,10 +291,14 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
         m_pCuePoint->set(-1.0);
         m_pCueSource->set(Cue::UNKNOWN);
-        m_pIntroPosition->set(-1.0);
-        m_pIntroSource->set(Cue::UNKNOWN);
-        m_pOutroPosition->set(-1.0);
-        m_pOutroSource->set(Cue::UNKNOWN);
+        m_pIntroStartPosition->set(-1.0);
+        m_pIntroStartSource->set(Cue::UNKNOWN);
+        m_pIntroEndPosition->set(-1.0);
+        m_pIntroEndSource->set(Cue::UNKNOWN);
+        m_pOutroStartPosition->set(-1.0);
+        m_pOutroStartSource->set(Cue::UNKNOWN);
+        m_pOutroEndPosition->set(-1.0);
+        m_pOutroStartSource->set(Cue::UNKNOWN);
         m_pLoadedTrack.reset();
     }
 
@@ -289,7 +331,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         seekExact(m_pCuePoint->get());
         break;
     case SEEK_ON_LOAD_INTRO_CUE:
-        seekExact(m_pIntroPosition->get());
+        seekExact(m_pIntroStartPosition->get());
         break;
     default:
         // Respect cue recall preference option.
@@ -315,7 +357,7 @@ void CueControl::cueUpdated() {
 void CueControl::loadCuesFromTrack() {
     QMutexLocker lock(&m_mutex);
     QSet<int> active_hotcues;
-    CuePointer pLoadCue, pIntroCue, pOutroCue;
+    CuePointer pLoadCue, pIntroStartCue, pIntroEndCue, pOutroStartCue, pOutroEndCue;
 
     if (!m_pLoadedTrack)
         return;
@@ -324,12 +366,18 @@ void CueControl::loadCuesFromTrack() {
         if (pCue->getType() == Cue::LOAD) {
             DEBUG_ASSERT(!pLoadCue);  // There should be only one LOAD cue
             pLoadCue = pCue;
-        } else if (pCue->getType() == Cue::INTRO) {
-            DEBUG_ASSERT(!pIntroCue);  // There should be only one INTRO cue
-            pIntroCue = pCue;
-        } else if (pCue->getType() == Cue::OUTRO) {
-            DEBUG_ASSERT(!pOutroCue);  // There should be only one OUTRO cue
-            pOutroCue = pCue;
+        } else if (pCue->getType() == Cue::INTRO_START) {
+            DEBUG_ASSERT(!pIntroStartCue);  // There should be only one INTRO START cue
+            pIntroStartCue = pCue;
+        } else if (pCue->getType() == Cue::INTRO_END) {
+            DEBUG_ASSERT(!pIntroEndCue);  // There should be only one INTRO END cue
+            pIntroEndCue = pCue;
+        } else if (pCue->getType() == Cue::OUTRO_START) {
+            DEBUG_ASSERT(!pOutroStartCue);  // There should be only one OUTRO START cue
+            pOutroStartCue = pCue;
+        } else if (pCue->getType() == Cue::OUTRO_END) {
+            DEBUG_ASSERT(!pOutroEndCue);  // There should be only one OUTRO END cue
+            pOutroEndCue = pCue;
         } else if (pCue->getType() == Cue::CUE && pCue->getHotCue() != -1) {
             int hotcue = pCue->getHotCue();
             HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
@@ -364,18 +412,32 @@ void CueControl::loadCuesFromTrack() {
         m_pCueSource->set(Cue::UNKNOWN);
     }
 
-    if (pIntroCue) {
-        loadIntroCue(pIntroCue->getPosition(), pIntroCue->getSource());
+    if (pIntroStartCue) {
+        loadIntroStartCue(pIntroStartCue->getPosition(), pIntroStartCue->getSource());
     } else {
-        m_pIntroPosition->set(-1.0);
-        m_pIntroSource->set(Cue::UNKNOWN);
+        m_pIntroStartPosition->set(-1.0);
+        m_pIntroStartSource->set(Cue::UNKNOWN);
     }
 
-    if (pOutroCue) {
-        loadOutroCue(pOutroCue->getPosition(), pOutroCue->getSource());
+    if (pIntroEndCue) {
+        loadIntroEndCue(pIntroEndCue->getPosition(), pIntroEndCue->getSource());
     } else {
-        m_pOutroPosition->set(-1.0);
-        m_pOutroSource->set(Cue::UNKNOWN);
+        m_pIntroEndPosition->set(-1.0);
+        m_pIntroEndSource->set(Cue::UNKNOWN);
+    }
+
+    if (pOutroStartCue) {
+        loadOutroStartCue(pOutroStartCue->getPosition(), pOutroStartCue->getSource());
+    } else {
+        m_pOutroStartPosition->set(-1.0);
+        m_pOutroStartSource->set(Cue::UNKNOWN);
+    }
+
+    if (pOutroEndCue) {
+        loadOutroEndCue(pOutroEndCue->getPosition(), pOutroEndCue->getSource());
+    } else {
+        m_pOutroEndPosition->set(-1.0);
+        m_pOutroEndSource->set(Cue::UNKNOWN);
     }
 
     // Detach all hotcues that are no longer present
@@ -400,7 +462,7 @@ void CueControl::reloadCuesFromTrack() {
 
     // Retrieve current position of cues from COs.
     double cue = m_pCuePoint->get();
-    double intro = m_pIntroPosition->get();
+    double intro = m_pIntroStartPosition->get();
 
     // Make track follow the updated cues.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
@@ -450,7 +512,7 @@ void CueControl::loadMainCue(double position, Cue::CueSource source) {
     m_pCueSource->set(source);
 }
 
-void CueControl::loadIntroCue(double position, Cue::CueSource source) {
+void CueControl::loadIntroStartCue(double position, Cue::CueSource source) {
     // Snap automatically-placed intro cue point to nearest previous beat, but
     // only if quantization is enabled.
     if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
@@ -467,11 +529,11 @@ void CueControl::loadIntroCue(double position, Cue::CueSource source) {
     }
 
     // Update COs.
-    m_pIntroPosition->set(position);
-    m_pIntroSource->set(source);
+    m_pIntroStartPosition->set(position);
+    m_pIntroStartSource->set(source);
 }
 
-void CueControl::loadOutroCue(double position, Cue::CueSource source) {
+void CueControl::loadIntroEndCue(double position, Cue::CueSource source) {
     // Snap automatically-placed outro cue point to nearest following beat, but
     // only if quantization is enabled.
     if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
@@ -488,8 +550,50 @@ void CueControl::loadOutroCue(double position, Cue::CueSource source) {
     }
 
     // Update COs.
-    m_pOutroPosition->set(position);
-    m_pOutroSource->set(source);
+    m_pIntroEndPosition->set(position);
+    m_pIntroEndSource->set(source);
+}
+
+void CueControl::loadOutroStartCue(double position, Cue::CueSource source) {
+    // Snap automatically-placed intro cue point to nearest previous beat, but
+    // only if quantization is enabled.
+    if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
+        BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+        if (pBeats) {
+            double prevBeat, nextBeat;
+            pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
+            if (prevBeat != -1.0) {
+                position = prevBeat;
+            } else if (nextBeat != -1.0) {
+                position = nextBeat;
+            }
+        }
+    }
+
+    // Update COs.
+    m_pOutroStartPosition->set(position);
+    m_pOutroStartSource->set(source);
+}
+
+void CueControl::loadOutroEndCue(double position, Cue::CueSource source) {
+    // Snap automatically-placed outro cue point to nearest following beat, but
+    // only if quantization is enabled.
+    if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
+        BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+        if (pBeats) {
+            double prevBeat, nextBeat;
+            pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
+            if (nextBeat != -1.0) {
+                position = nextBeat;
+            } else if (prevBeat != -1.0) {
+                position = prevBeat;
+            }
+        }
+    }
+
+    // Update COs.
+    m_pOutroEndPosition->set(position);
+    m_pOutroEndSource->set(source);
 }
 
 void CueControl::hotcueSet(HotcueControl* pControl, double v) {
@@ -1044,7 +1148,7 @@ void CueControl::playStutter(double v) {
     }
 }
 
-void CueControl::introSet(double v) {
+void CueControl::introStartSet(double v) {
     if (!v) {
         return;
     }
@@ -1069,50 +1173,50 @@ void CueControl::introSet(double v) {
         position = sampleOfTrack.current;
     }
 
-    // Make sure user is not trying to place start cue on or after end cue.
-    double outro = m_pOutroPosition->get();
-    if (outro != -1.0 && position >= outro) {
-        qWarning() << "Trying to place intro cue on or after outro cue.";
+    // Make sure user is not trying to place intro start cue on or after intro end cue.
+    double introEnd = m_pIntroEndPosition->get();
+    if (introEnd != -1.0 && position >= introEnd) {
+        qWarning() << "Trying to place intro start cue on or after intro end cue.";
         return;
     }
 
-    m_pIntroPosition->set(position);
-    m_pIntroSource->set(Cue::MANUAL);
+    m_pIntroStartPosition->set(position);
+    m_pIntroStartSource->set(Cue::MANUAL);
 
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::INTRO);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::INTRO_START);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::INTRO);
+            pCue->setType(Cue::INTRO_START);
         }
         pCue->setSource(Cue::MANUAL);
         pCue->setPosition(position);
     }
 }
 
-void CueControl::introClear(double v) {
+void CueControl::introStartClear(double v) {
     if (!v) {
         return;
     }
 
     QMutexLocker lock(&m_mutex);
-    m_pIntroPosition->set(-1.0);
-    m_pIntroSource->set(Cue::UNKNOWN);
+    m_pIntroStartPosition->set(-1.0);
+    m_pIntroStartSource->set(Cue::UNKNOWN);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::INTRO);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::INTRO_START);
         if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
     }
 }
 
-void CueControl::outroSet(double v) {
+void CueControl::introEndSet(double v) {
     if (!v) {
         return;
     }
@@ -1137,43 +1241,190 @@ void CueControl::outroSet(double v) {
         position = sampleOfTrack.current;
     }
 
-    // Make sure user is not trying to place end cue on or before start cue.
-    double intro = m_pIntroPosition->get();
-    if (intro != -1.0 && position <= intro) {
-        qWarning() << "Trying to place outro cue on or before intro cue.";
+    // Make sure user is not trying to place intro start cue point outside ...
+    double introStart = m_pIntroStartPosition->get();
+    double outroStart = m_pOutroStartPosition->get();
+    if (introStart != -1.0 && position <= introStart) {
+        qWarning() << "Trying to place intro end cue on or before intro start cue.";
+        return;
+    }
+    if (outroStart != -1.0 && position >= outroStart) {
+        qWarning() << "Trying to place intro end cue on or after outro start cue.";
         return;
     }
 
-    m_pOutroPosition->set(position);
-    m_pOutroSource->set(Cue::MANUAL);
+    m_pIntroEndPosition->set(position);
+    m_pIntroEndSource->set(Cue::MANUAL);
 
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::OUTRO);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::INTRO_END);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::OUTRO);
+            pCue->setType(Cue::INTRO_END);
         }
         pCue->setSource(Cue::MANUAL);
         pCue->setPosition(position);
     }
 }
 
-void CueControl::outroClear(double v) {
+void CueControl::introEndClear(double v) {
     if (!v) {
         return;
     }
 
     QMutexLocker lock(&m_mutex);
-    m_pOutroPosition->set(-1.0);
-    m_pOutroSource->set(Cue::UNKNOWN);
+    m_pIntroEndPosition->set(-1.0);
+    m_pIntroEndSource->set(Cue::UNKNOWN);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::OUTRO);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::INTRO_END);
+        if (pCue) {
+            pLoadedTrack->removeCue(pCue);
+        }
+    }
+}
+
+void CueControl::outroStartSet(double v) {
+    if (!v) {
+        return;
+    }
+
+    QMutexLocker lock(&m_mutex);
+    SampleOfTrack sampleOfTrack = getSampleOfTrack();
+
+    // Quantize cue point to nearest beat before current position.
+    // Fall back to nearest beat after or current position.
+    double position;
+    if (m_pQuantizeEnabled->toBool()) {
+        double prevBeat = m_pPrevBeat->get();
+        double nextBeat = m_pNextBeat->get();
+        if (prevBeat != -1.0) {
+            position = prevBeat;
+        } else if (nextBeat != -1.0) {
+            position = nextBeat;
+        } else {
+            position = sampleOfTrack.current;
+        }
+    } else {
+        position = sampleOfTrack.current;
+    }
+
+    // Make sure user is not trying to place outro start cue on or before
+    // intro end cue or on or after outro end cue.
+    double introEnd = m_pIntroEndPosition->get();
+    double outroEnd = m_pOutroEndPosition->get();
+    if (introEnd != -1.0 && position <= introEnd) {
+        qWarning() << "Trying to place outro start cue on or before intro end cue.";
+        return;
+    }
+    if (outroEnd != -1.0 && position >= outroEnd) {
+        qWarning() << "Trying to place outro start cue on or after outro end cue.";
+        return;
+    }
+
+    m_pOutroStartPosition->set(position);
+    m_pOutroStartSource->set(Cue::MANUAL);
+
+    TrackPointer pLoadedTrack = m_pLoadedTrack;
+    lock.unlock();
+
+    if (pLoadedTrack) {
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::OUTRO_START);
+        if (!pCue) {
+            pCue = pLoadedTrack->createAndAddCue();
+            pCue->setType(Cue::OUTRO_START);
+        }
+        pCue->setSource(Cue::MANUAL);
+        pCue->setPosition(position);
+    }
+}
+
+void CueControl::outroStartClear(double v) {
+    if (!v) {
+        return;
+    }
+
+    QMutexLocker lock(&m_mutex);
+    m_pOutroStartPosition->set(-1.0);
+    m_pOutroStartSource->set(Cue::UNKNOWN);
+    TrackPointer pLoadedTrack = m_pLoadedTrack;
+    lock.unlock();
+
+    if (pLoadedTrack) {
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::OUTRO_START);
+        if (pCue) {
+            pLoadedTrack->removeCue(pCue);
+        }
+    }
+}
+
+void CueControl::outroEndSet(double v) {
+    if (!v) {
+        return;
+    }
+
+    QMutexLocker lock(&m_mutex);
+    SampleOfTrack sampleOfTrack = getSampleOfTrack();
+
+    // Quantize cue point to nearest beat after current position.
+    // Fall back to nearest beat before or current position.
+    double position;
+    if (m_pQuantizeEnabled->toBool()) {
+        double prevBeat = m_pPrevBeat->get();
+        double nextBeat = m_pNextBeat->get();
+        if (nextBeat != -1.0) {
+            position = nextBeat;
+        } else if (prevBeat != -1.0) {
+            position = prevBeat;
+        } else {
+            position = sampleOfTrack.current;
+        }
+    } else {
+        position = sampleOfTrack.current;
+    }
+
+    // Make sure user is not trying to place outro end cue on or before outro start cue.
+    double outroStart = m_pOutroStartPosition->get();
+    if (outroStart != -1.0 && position <= outroStart) {
+        qWarning() << "Trying to place outro end cue on or before outro start cue.";
+        return;
+    }
+
+    m_pOutroEndPosition->set(getSampleOfTrack().current);
+    m_pOutroEndSource->set(Cue::MANUAL);
+
+    TrackPointer pLoadedTrack = m_pLoadedTrack;
+    lock.unlock();
+
+    if (pLoadedTrack) {
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::OUTRO_END);
+        if (!pCue) {
+            pCue = pLoadedTrack->createAndAddCue();
+            pCue->setType(Cue::OUTRO_END);
+        }
+        pCue->setSource(Cue::MANUAL);
+        pCue->setPosition(position);
+    }
+}
+
+void CueControl::outroEndClear(double v) {
+    if (!v) {
+        return;
+    }
+
+    QMutexLocker lock(&m_mutex);
+    m_pOutroEndPosition->set(-1.0);
+    m_pOutroEndSource->set(Cue::UNKNOWN);
+    TrackPointer pLoadedTrack = m_pLoadedTrack;
+    lock.unlock();
+
+    if (pLoadedTrack) {
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::OUTRO_END);
         if (pCue) {
             pLoadedTrack->removeCue(pCue);
         }
@@ -1347,7 +1598,7 @@ bool CueControl::isTrackAtZeroPos() {
 }
 
 bool CueControl::isTrackAtIntroCue() {
-    return (fabs(getSampleOfTrack().current - m_pIntroPosition->get()) < 1.0f);
+    return (fabs(getSampleOfTrack().current - m_pIntroStartPosition->get()) < 1.0f);
 }
 
 bool CueControl::isPlayingByPlayButton() {

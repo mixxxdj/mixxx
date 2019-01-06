@@ -29,18 +29,18 @@ bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamp
 
     m_pTrack = tio;
 
-    m_pIntroCue = tio->findCueByType(Cue::INTRO);
+    m_pIntroCue = tio->findCueByType(Cue::INTRO_START);
     if (!m_pIntroCue) {
         m_pIntroCue = tio->createAndAddCue();
-        m_pIntroCue->setType(Cue::INTRO);
+        m_pIntroCue->setType(Cue::INTRO_START);
         m_pIntroCue->setSource(Cue::AUTOMATIC);
         m_pIntroCue->setPosition(-1.0);
     }
 
-    m_pOutroCue = tio->findCueByType(Cue::OUTRO);
+    m_pOutroCue = tio->findCueByType(Cue::OUTRO_END);
     if (!m_pOutroCue) {
         m_pOutroCue = tio->createAndAddCue();
-        m_pOutroCue->setType(Cue::OUTRO);
+        m_pOutroCue->setType(Cue::OUTRO_END);
         m_pOutroCue->setSource(Cue::AUTOMATIC);
         m_pOutroCue->setPosition(-1.0);
     }

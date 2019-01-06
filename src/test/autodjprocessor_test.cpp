@@ -45,8 +45,8 @@ class FakeDeck : public BaseTrackPlayer {
               play(ConfigKey(group, "play")),
               repeat(ConfigKey(group, "repeat")),
               seekOnLoadMode(ConfigKey(group, "seekonload_mode")),
-              introPos(ConfigKey(group, "intro_position")),
-              outroPos(ConfigKey(group, "outro_position")) {
+              introStartPos(ConfigKey(group, "intro_start_position")),
+              outroEndPos(ConfigKey(group, "outro_end_position")) {
         play.setButtonMode(ControlPushButton::TOGGLE);
         repeat.setButtonMode(ControlPushButton::TOGGLE);
     }
@@ -95,8 +95,8 @@ class FakeDeck : public BaseTrackPlayer {
     ControlPushButton play;
     ControlPushButton repeat;
     ControlObject seekOnLoadMode;
-    ControlObject introPos;
-    ControlObject outroPos;
+    ControlObject introStartPos;
+    ControlObject outroEndPos;
 };
 
 class MockPlayerManager : public PlayerManagerInterface {
@@ -1217,8 +1217,8 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_RespectOutroCue) {
     const double kOutroCuePositionSeconds = 90;
     const double kOutroCuePositionSamples = kOutroCuePositionSeconds *
             kChannelCount * pTrack->getSampleRate();
-    deck1.outroPos.set(kOutroCuePositionSamples);
-    EXPECT_EQ(kOutroCuePositionSamples, deck1.outroPos.get());
+    deck1.outroEndPos.set(kOutroCuePositionSamples);
+    EXPECT_EQ(kOutroCuePositionSamples, deck1.outroEndPos.get());
 
     // No change to the mode, crossfader or play states.
     EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());

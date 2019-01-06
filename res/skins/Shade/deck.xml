@@ -186,17 +186,33 @@
                           <TextColor>#FFFFFF</TextColor>
                         </Mark>
                         <Mark>
-                          <Control>intro_position</Control>
-                          <Source>intro_source</Source>
-                          <Text>INTRO</Text>
+                          <Control>intro_start_position</Control>
+                          <Source>intro_start_source</Source>
+                          <Text>INTRO START</Text>
                           <Align>bottom</Align>
                           <Color>#0000FF</Color>
                           <TextColor>#FFFFFF</TextColor>
                         </Mark>
                         <Mark>
-                          <Control>outro_position</Control>
-                          <Source>outro_source</Source>
-                          <Text>OUTRO</Text>
+                          <Control>intro_end_position</Control>
+                          <Source>intro_end_source</Source>
+                          <Text>INTRO END</Text>
+                          <Align>bottom</Align>
+                          <Color>#0000FF</Color>
+                          <TextColor>#FFFFFF</TextColor>
+                        </Mark>
+                        <Mark>
+                          <Control>outro_start_position</Control>
+                          <Source>outro_start_source</Source>
+                          <Text>OUTRO START</Text>
+                          <Align>bottom</Align>
+                          <Color>#0000FF</Color>
+                          <TextColor>#FFFFFF</TextColor>
+                        </Mark>
+                        <Mark>
+                          <Control>outro_end_position</Control>
+                          <Source>outro_end_source</Source>
+                          <Text>OUTRO END</Text>
                           <Align>bottom</Align>
                           <Color>#0000FF</Color>
                           <TextColor>#FFFFFF</TextColor>
@@ -299,15 +315,29 @@
                       <DisabledColor>#FFFFFF</DisabledColor>
                     </MarkRange>
                     <Mark>
-                      <Control>intro_position</Control>
-                      <Text>I</Text>
+                      <Control>intro_start_position</Control>
+                      <Text>IS</Text>
                       <Align>bottom|right</Align>
                       <Color>#0000FF</Color>
                       <TextColor>#FFFFFF</TextColor>
                     </Mark>
                     <Mark>
-                      <Control>outro_position</Control>
-                      <Text>O</Text>
+                      <Control>intro_end_position</Control>
+                      <Text>IE</Text>
+                      <Align>bottom|right</Align>
+                      <Color>#0000FF</Color>
+                      <TextColor>#FFFFFF</TextColor>
+                    </Mark>
+                    <Mark>
+                      <Control>outro_start_position</Control>
+                      <Text>OS</Text>
+                      <Align>bottom|left</Align>
+                      <Color>#0000FF</Color>
+                      <TextColor>#FFFFFF</TextColor>
+                    </Mark>
+                    <Mark>
+                      <Control>outro_end_position</Control>
+                      <Text>OE</Text>
                       <Align>bottom|left</Align>
                       <Color>#0000FF</Color>
                       <TextColor>#FFFFFF</TextColor>

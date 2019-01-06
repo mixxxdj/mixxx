@@ -1,4 +1,4 @@
-// cuecontrol.h
+﻿// cuecontrol.h
 // Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
 
 #ifndef CUECONTROL_H
@@ -153,10 +153,14 @@ class CueControl : public EngineControl {
     void pause(double v);
     void playStutter(double v);
 
-    void introSet(double v);
-    void introClear(double v);
-    void outroSet(double v);
-    void outroClear(double v);
+    void introStartSet(double v);
+    void introStartClear(double v);
+    void introEndSet(double v);
+    void introEndClear(double v);
+    void outroStartSet(double v);
+    void outroStartClear(double v);
+    void outroEndSet(double v);
+    void outroEndClear(double v);
 
   private:
     enum class TrackAt {
@@ -170,8 +174,10 @@ class CueControl : public EngineControl {
     void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
     void loadMainCue(double position, Cue::CueSource source);
-    void loadIntroCue(double position, Cue::CueSource source);
-    void loadOutroCue(double position, Cue::CueSource source);
+    void loadIntroStartCue(double position, Cue::CueSource source);
+    void loadIntroEndCue(double position, Cue::CueSource source);
+    void loadOutroStartCue(double position, Cue::CueSource source);
+    void loadOutroEndCue(double position, Cue::CueSource source);
     void loadCuesFromTrack();
     void reloadCuesFromTrack();
     TrackAt getTrackAt() const;
@@ -207,15 +213,25 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueGotoAndStop;
     ControlPushButton* m_pCuePreview;
 
-    ControlObject* m_pIntroPosition;
-    ControlObject* m_pIntroSource;
-    ControlPushButton* m_pIntroSet;
-    ControlPushButton* m_pIntroClear;
+    ControlObject* m_pIntroStartPosition;
+    ControlObject* m_pIntroStartSource;
+    ControlPushButton* m_pIntroStartSet;
+    ControlPushButton* m_pIntroStartClear;
 
-    ControlObject* m_pOutroPosition;
-    ControlObject* m_pOutroSource;
-    ControlPushButton* m_pOutroSet;
-    ControlPushButton* m_pOutroClear;
+    ControlObject* m_pIntroEndPosition;
+    ControlObject* m_pIntroEndSource;
+    ControlPushButton* m_pIntroEndSet;
+    ControlPushButton* m_pIntroEndClear;
+
+    ControlObject* m_pOutroStartPosition;
+    ControlObject* m_pOutroStartSource;
+    ControlPushButton* m_pOutroStartSet;
+    ControlPushButton* m_pOutroStartClear;
+
+    ControlObject* m_pOutroEndPosition;
+    ControlObject* m_pOutroEndSource;
+    ControlPushButton* m_pOutroEndSet;
+    ControlPushButton* m_pOutroEndClear;
 
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;

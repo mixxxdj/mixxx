@@ -393,7 +393,7 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <Size>144f,40f</Size>
+        <Size>186f,40f</Size>
         <Style>QGroupBox {
           border: 0px solid green;
           margin: 0px 0px 0px 0px;
@@ -467,11 +467,30 @@
             </State>
             <Pos>99,10</Pos>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],intro_set</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],intro_start_set</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],intro_clear</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],intro_start_clear</ConfigKey>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Style></Style>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>skin:/btn/btn_loop_in_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_loop_in.png</Unpressed>
+            </State>
+            <Pos>120,10</Pos>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],intro_end_set</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],intro_end_clear</ConfigKey>
               <ButtonState>RightButton</ButtonState>
             </Connection>
           </PushButton>
@@ -484,13 +503,32 @@
               <Pressed>skin:/btn/btn_loop_out_overdown.png</Pressed>
               <Unpressed>skin:/btn/btn_loop_out.png</Unpressed>
             </State>
-            <Pos>120,10</Pos>
+            <Pos>141,10</Pos>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],outro_set</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],outro_start_set</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],outro_clear</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],outro_start_clear</ConfigKey>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
+
+          <PushButton>
+            <Style></Style>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>skin:/btn/btn_loop_out_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_loop_out.png</Unpressed>
+            </State>
+            <Pos>162,10</Pos>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],outro_end_set</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],outro_end_clear</ConfigKey>
               <ButtonState>RightButton</ButtonState>
             </Connection>
           </PushButton>

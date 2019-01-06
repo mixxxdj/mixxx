@@ -158,18 +158,32 @@
           <DisabledColor>#FFFFFF</DisabledColor>
         </MarkRange>
         <Mark>
-          <Control>intro_position</Control>
+          <Control>intro_start_position</Control>
           <Align>bottom|right</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
-          <Text>I</Text>
+          <Text>IS</Text>
         </Mark>
         <Mark>
-          <Control>outro_position</Control>
+          <Control>intro_end_position</Control>
+          <Align>bottom|right</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <Text>IE</Text>
+        </Mark>
+        <Mark>
+          <Control>outro_start_position</Control>
           <Align>bottom|left</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
-          <Text>O</Text>
+          <Text>OS</Text>
+        </Mark>
+        <Mark>
+          <Control>outro_end_position</Control>
+          <Align>bottom|left</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+          <Text>OE</Text>
         </Mark>
         <Mark>
           <Control>cue_point</Control>

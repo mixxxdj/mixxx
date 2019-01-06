@@ -38,17 +38,33 @@ Variables:
           <Text> %1 </Text>
         </DefaultMark>
         <Mark>
-          <Control>intro_position</Control>
-          <Source>intro_source</Source>
-          <Text>INTRO</Text>
+          <Control>intro_start_position</Control>
+          <Source>intro_start_source</Source>
+          <Text>INTRO START</Text>
           <Align>bottom</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
         <Mark>
-          <Control>outro_position</Control>
-          <Source>outro_source</Source>
-          <Text>OUTRO</Text>
+          <Control>intro_end_position</Control>
+          <Source>intro_end_source</Source>
+          <Text>INTRO END</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>outro_start_position</Control>
+          <Source>outro_start_source</Source>
+          <Text>OUTRO START</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>outro_end_position</Control>
+          <Source>outro_end_source</Source>
+          <Text>OUTRO END</Text>
           <Align>bottom</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
