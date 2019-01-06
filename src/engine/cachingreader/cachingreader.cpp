@@ -55,14 +55,14 @@ CachingReader::CachingReader(QString group,
     }
 
     // Forward signals from worker
-    connect(&m_worker, SIGNAL(trackLoading()),
-            this, SIGNAL(trackLoading()),
+    connect(&m_worker, &CachingReaderWorker::trackLoading,
+            this, &CachingReader::trackLoading,
             Qt::DirectConnection);
-    connect(&m_worker, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SIGNAL(trackLoaded(TrackPointer, int, int)),
+    connect(&m_worker, &CachingReaderWorker::trackLoaded,
+            this, &CachingReader::trackLoaded,
             Qt::DirectConnection);
-    connect(&m_worker, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SIGNAL(trackLoadFailed(TrackPointer, QString)),
+    connect(&m_worker, &CachingReaderWorker::trackLoadFailed,
+            this, &CachingReader::trackLoadFailed,
             Qt::DirectConnection);
 
     m_worker.start(QThread::HighPriority);
