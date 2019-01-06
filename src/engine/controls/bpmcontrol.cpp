@@ -7,7 +7,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/controls/bpmcontrol.h"
 #include "waveform/visualplayposition.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "control/controlproxy.h"
 #include "util/assert.h"

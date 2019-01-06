@@ -6,7 +6,7 @@
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "util/math.h"
 #include "util/assert.h"
 

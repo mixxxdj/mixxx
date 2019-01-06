@@ -1,27 +1,30 @@
-// engineaux.h
-// created 4/8/2011 by Bill Good (bkgood@gmail.com)
-// unapologetically copied from enginemicrophone.h from RJ
+// enginemicrophone.h
+// created 3/16/2011 by RJ Ryan (rryan@mit.edu)
 
-#ifndef ENGINEAUX_H
-#define ENGINEAUX_H
+#ifndef ENGINEMICROPHONE_H
+#define ENGINEMICROPHONE_H
 
 #include <QScopedPointer>
 
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
+#include "engine/enginevumeter.h"
 #include "util/circularbuffer.h"
+
 #include "soundio/soundmanagerutil.h"
 
+class EngineEffectsManager;
 class ControlAudioTaperPot;
 
-// EngineAux is an EngineChannel that implements a mixing source whose
+// EngineMicrophone is an EngineChannel that implements a mixing source whose
 // samples are fed directly from the SoundManager
-class EngineAux : public EngineChannel, public AudioDestination {
+class EngineMicrophone : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager);
-    virtual ~EngineAux();
+    EngineMicrophone(const ChannelHandleAndGroup& handle_group,
+                     EffectsManager* pEffectsManager);
+    virtual ~EngineMicrophone();
 
     bool isActive();
 
@@ -36,20 +39,24 @@ class EngineAux : public EngineChannel, public AudioDestination {
     // case of multiple soundcards, this method is not re-entrant but it may be
     // concurrent with EngineMaster processing.
     virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                               unsigned int nFrames);
+                               unsigned int iNumSamples);
 
-    // Called by SoundManager whenever the aux input is connected to a
+    // Called by SoundManager whenever the microphone input is connected to a
     // soundcard input.
     virtual void onInputConfigured(AudioInput input);
 
-    // Called by SoundManager whenever the aux input is disconnected from
+    // Called by SoundManager whenever the microphone input is disconnected from
     // a soundcard input.
     virtual void onInputUnconfigured(AudioInput input);
+
+    bool isSolo();
+    double getSoloDamping();
 
   private:
     QScopedPointer<ControlObject> m_pInputConfigured;
     ControlAudioTaperPot* m_pPregain;
+
     bool m_wasActive;
 };
 
-#endif // ENGINEAUX_H
+#endif /* ENGINEMICROPHONE_H */

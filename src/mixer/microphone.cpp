@@ -2,7 +2,7 @@
 
 #include "control/controlproxy.h"
 #include "engine/enginemaster.h"
-#include "engine/enginemicrophone.h"
+#include "engine/channels/enginemicrophone.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 

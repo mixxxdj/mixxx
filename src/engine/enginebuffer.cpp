@@ -20,7 +20,7 @@
 #include "engine/enginebufferscalelinear.h"
 #include "engine/enginebufferscalerubberband.h"
 #include "engine/enginebufferscalest.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"

@@ -15,7 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"

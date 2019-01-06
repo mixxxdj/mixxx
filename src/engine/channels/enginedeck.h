@@ -24,7 +24,7 @@
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/engineobject.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "util/circularbuffer.h"
 
 #include "soundio/soundmanagerutil.h"

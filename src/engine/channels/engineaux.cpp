@@ -1,20 +1,20 @@
-// enginemicrophone.cpp
-// created 3/16/2011 by RJ Ryan (rryan@mit.edu)
+// engineaux.cpp
+// created 4/8/2011 by Bill Good (bkgood@gmail.com)
+// shameless stolen from enginemicrophone.cpp (from RJ)
 
-#include "engine/enginemicrophone.h"
+#include "engine/channels/engineaux.h"
 
 #include <QtDebug>
 
-#include "preferences/usersettings.h"
 #include "control/control.h"
+#include "preferences/usersettings.h"
 #include "control/controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "util/sample.h"
 
-EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
-                                   EffectsManager* pEffectsManager)
-        : EngineChannel(handle_group, EngineChannel::CENTER, pEffectsManager, true),
+EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager)
+        : EngineChannel(handle_group, EngineChannel::CENTER, pEffectsManager),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
           m_wasActive(false) {
@@ -23,14 +23,16 @@ EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
     ControlDoublePrivate::insertAlias(ConfigKey(getGroup(), "enabled"),
                                       ConfigKey(getGroup(), "input_configured"));
 
-    setMaster(false); // Use "talkover" button to enable microphones
+    // by default Aux is enabled on the master and disabled on PFL. User
+    // can over-ride by setting the "pfl" or "master" controls.
+    setMaster(true);
 }
 
-EngineMicrophone::~EngineMicrophone() {
+EngineAux::~EngineAux() {
     delete m_pPregain;
 }
 
-bool EngineMicrophone::isActive() {
+bool EngineAux::isActive() {
     bool enabled = m_pInputConfigured->toBool();
     if (enabled && m_sampleBuffer) {
         m_wasActive = true;
@@ -41,38 +43,36 @@ bool EngineMicrophone::isActive() {
     return m_wasActive;
 }
 
-void EngineMicrophone::onInputConfigured(AudioInput input) {
-    if (input.getType() != AudioPath::MICROPHONE) {
+void EngineAux::onInputConfigured(AudioInput input) {
+    if (input.getType() != AudioPath::AUXILIARY) {
         // This is an error!
-        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
+        qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
         return;
     }
     m_sampleBuffer = NULL;
     m_pInputConfigured->forceSet(1.0);
 }
 
-void EngineMicrophone::onInputUnconfigured(AudioInput input) {
-    if (input.getType() != AudioPath::MICROPHONE) {
+void EngineAux::onInputUnconfigured(AudioInput input) {
+    if (input.getType() != AudioPath::AUXILIARY) {
         // This is an error!
-        qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
+        qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
         return;
     }
     m_sampleBuffer = NULL;
     m_pInputConfigured->forceSet(0.0);
 }
 
-void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                                     unsigned int nFrames) {
+void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
+                              unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
     m_sampleBuffer = pBuffer;
 }
 
-void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
-    // If configured read into the output buffer.
-    // Otherwise, skip the appropriate number of samples to throw them away.
+void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
-    double pregain =  m_pPregain->get();
+    double pregain = m_pPregain->get();
     if (sampleBuffer) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
         EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
@@ -81,15 +81,15 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
                 m_group.handle(), m_pEffectsManager->getMasterHandle(),
                 pOut, iBufferSize, m_pSampleRate->get());
         }
+        m_sampleBuffer = NULL;
     } else {
         SampleUtil::clear(pOut, iBufferSize);
     }
-    m_sampleBuffer = NULL;
 
     // Update VU meter
     m_vuMeter.process(pOut, iBufferSize);
 }
 
-void EngineMicrophone::collectFeatures(GroupFeatureState* pGroupFeatures) const {
+void EngineAux::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     m_vuMeter.collectFeatures(pGroupFeatures);
 }

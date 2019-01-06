@@ -15,7 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "engine/enginedeck.h"
+#include "engine/channels/enginedeck.h"
 
 #include "control/controlpushbutton.h"
 #include "effects/effectsmanager.h"
