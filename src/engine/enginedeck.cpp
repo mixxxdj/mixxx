@@ -24,6 +24,7 @@
 #include "engine/enginepregain.h"
 #include "engine/enginevumeter.h"
 #include "util/sample.h"
+#include "waveform/waveformwidgetfactory.h"
 
 EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
                        UserSettingsPointer pConfig,

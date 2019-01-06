@@ -13,6 +13,7 @@
 #include "engine/enginemaster.h"
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/visualsmanager.h"
 #include "util/platform.h"
 #include "util/sandbox.h"
 #include "effects/effectsmanager.h"
@@ -27,6 +28,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
                                          UserSettingsPointer pConfig,
                                          EngineMaster* pMixingEngine,
                                          EffectsManager* pEffectsManager,
+                                         VisualsManager* pVisualsManager,
                                          EngineChannel::ChannelOrientation defaultOrientation,
                                          const QString& group,
                                          bool defaultMaster,
@@ -97,10 +99,6 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     connect(m_pWaveformZoomSetDefault.get(), SIGNAL(valueChanged(double)),
             this, SLOT(slotWaveformZoomSetDefault(double)));
 
-    m_pEndOfTrack = std::make_unique<ControlObject>(
-        ConfigKey(group, "end_of_track"));
-    m_pEndOfTrack->set(0.);
-
     m_pPreGain = std::make_unique<ControlProxy>(group, "pregain", this);
     // BPM of the current song
     m_pBPM = std::make_unique<ControlProxy>(group, "file_bpm", this);
@@ -109,6 +107,8 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pReplayGain = std::make_unique<ControlProxy>(group, "replaygain", this);
     m_pPlay = std::make_unique<ControlProxy>(group, "play", this);
     m_pPlay->connectValueChanged(this, &BaseTrackPlayerImpl::slotPlayToggled);
+
+    pVisualsManager->addDeck(group);
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {

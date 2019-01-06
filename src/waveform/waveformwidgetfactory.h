@@ -17,6 +17,7 @@ class WaveformWidgetAbstract;
 class QTimer;
 class VSyncThread;
 class GuiTick;
+class VisualsManager;
 
 class WaveformWidgetAbstractHandle {
   public:
@@ -102,7 +103,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void addTimerListener(QWidget* pWidget);
 
-    void startVSync(GuiTick* pGuiTick);
+    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
     void setVSyncType(int vsType);
     int getVSyncType();
 
@@ -165,6 +166,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     VSyncThread* m_vsyncThread;
     GuiTick* m_pGuiTick;  // not owned
+    VisualsManager* m_pVisualsManager;  // not owned
 
     //Debug
     PerformanceTimer m_time;

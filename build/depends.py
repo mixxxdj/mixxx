@@ -1067,6 +1067,7 @@ class MixxxCore(Feature):
                    "src/waveform/waveformwidgetfactory.cpp",
                    "src/waveform/vsyncthread.cpp",
                    "src/waveform/guitick.cpp",
+                   "src/waveform/visualsmanager.cpp",
                    "src/waveform/visualplayposition.cpp",
                    "src/waveform/renderers/waveformwidgetrenderer.cpp",
                    "src/waveform/renderers/waveformrendererabstract.cpp",

@@ -802,6 +802,10 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
     }
 }
 
+bool LoopingControl::isLoopingEnabled() {
+    return m_bLoopingEnabled;
+}
+
 void LoopingControl::trackLoaded(TrackPointer pNewTrack) {
     if (m_pTrack) {
         disconnect(m_pTrack.get(), &Track::beatsUpdated,
