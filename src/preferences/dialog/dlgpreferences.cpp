@@ -85,8 +85,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
             this, SLOT(slotButtonPressed(QAbstractButton*)));
 
     connect(contentsTreeWidget,
-            SIGNAL(currentItemChanged(QTreeWidgetItem*, QTreeWidgetItem*)),
-            this, SLOT(changePage(QTreeWidgetItem*, QTreeWidgetItem*)));
+            &QTreeWidget::currentItemChanged,
+            this, &DlgPreferences::changePage);
 
     while (pagesWidget->count() > 0) {
         pagesWidget->removeWidget(pagesWidget->currentWidget());
@@ -236,6 +236,10 @@ DlgPreferences::~DlgPreferences() {
                        m_geometry.join(","));
     }
 
+    // When DlgPrefControllers is deleted it manually deletes the controller tree items,
+    // which makes QTreeWidgetItem trigger this signal.
+    disconnect(contentsTreeWidget, &QTreeWidget::currentItemChanged,
+            this, &DlgPreferences::changePage);
     // Need to explicitly delete rather than relying on child auto-deletion
     // because otherwise the QStackedWidget will delete the controller
     // preference pages (and DlgPrefControllers dynamically generates and
