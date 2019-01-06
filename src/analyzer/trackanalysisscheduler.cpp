@@ -218,18 +218,41 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
     emitProgressOrFinished();
 }
 
-void TrackAnalysisScheduler::scheduleTrackById(TrackId trackId) {
+bool TrackAnalysisScheduler::scheduleTrackById(TrackId trackId) {
     VERIFY_OR_DEBUG_ASSERT(trackId.isValid()) {
         qWarning()
                 << "Cannot schedule track with invalid id"
                 << trackId;
-        return;
+        return false;
     }
     m_queuedTrackIds.push_back(trackId);
     // Don't wake up the suspended thread now to avoid race conditions
     // if multiple threads are added in a row by calling this function
     // multiple times. The caller is responsible to finish the scheduling
     // of multiple tracks with resume().
+    return true;
+}
+
+int TrackAnalysisScheduler::scheduleTracksById(const QList<TrackId>& trackIds) {
+    int scheduledCount = 0;
+    for (auto trackId: trackIds) {
+        if (scheduleTrackById(std::move(trackId))) {
+            ++scheduledCount;
+        }
+    }
+    return scheduledCount;
+}
+
+QList<TrackId> TrackAnalysisScheduler::collectScheduledTrackIds() const {
+    QList<TrackId> remainingTrackIds;
+    remainingTrackIds.reserve(m_queuedTrackIds.size() + m_pendingTrackIds.size());
+    for (auto queuedTrackId: m_queuedTrackIds) {
+        remainingTrackIds.append(std::move(queuedTrackId));
+    }
+    for (auto pendingTrackId: m_pendingTrackIds) {
+        remainingTrackIds.append(std::move(pendingTrackId));
+    }
+    return remainingTrackIds;
 }
 
 void TrackAnalysisScheduler::suspend() {

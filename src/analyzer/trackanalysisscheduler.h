@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QList>
+
 #include <deque>
 #include <set>
 #include <vector>
@@ -36,19 +38,28 @@ class TrackAnalysisScheduler : public QObject {
             AnalyzerModeFlags modeFlags);
     ~TrackAnalysisScheduler() override;
 
-    // Stops a running analysis and discards all enqueued tracks.
-    void stop();
+    // Schedule single or multiple tracks. After all tracks have been scheduled
+    // the caller must invoke resume() once.
+    bool scheduleTrackById(TrackId trackId);
+    int scheduleTracksById(const QList<TrackId>& trackIds);
+
+    // Returns the remaining tracks that have not yet been analyzed.
+    // Includes both queued tracks and tracks that are currently being
+    // analyzed. The result may contain duplicates.
+    // TODO(XXX): Use this function for implementing the feature
+    // "Suspend and resume batch analysis"
+    // https://bugs.launchpad.net/mixxx/+bug/1443181
+    QList<TrackId> collectScheduledTrackIds() const;
 
   public slots:
-    // Schedule tracks one by one. After all tracks have been scheduled
-    // the caller must invoke resume() once.
-    void scheduleTrackById(TrackId trackId);
-
     void suspend();
 
     // After scheduling tracks the analysis must be resumed once.
     // Resume must also be called after suspending the analysis.
     void resume();
+
+    // Stops a running analysis and discards all enqueued tracks.
+    void stop();
 
   signals:
     // Progress for individual tracks is passed-through from the workers
@@ -144,14 +155,6 @@ class TrackAnalysisScheduler : public QObject {
     // Tracks that have already been submitted to workers
     // and not yet reported back as finished.
     std::set<TrackId> m_pendingTrackIds;
-
-    // TODO(XXX): Suspend and resume batch analysis
-    // https://bugs.launchpad.net/mixxx/+bug/1443181
-    // The remaining tracks that have not yet been analyzed can be
-    // found in m_queuedTrackIds + m_pendingTrackIds. The corresponding
-    // track ids need to be saved persistently in the database if
-    // analysis should be suspended in the current and resumed in
-    // a following session.
 
     AnalyzerProgress m_currentTrackProgress;
 
