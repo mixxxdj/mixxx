@@ -1,4 +1,3 @@
-#include <waveform/visualsmanager.h>
 #include <QMessageBox>
 
 #include "mixer/basetrackplayer.h"
@@ -14,6 +13,7 @@
 #include "engine/enginemaster.h"
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/visualsmanager.h"
 #include "util/platform.h"
 #include "util/sandbox.h"
 #include "effects/effectsmanager.h"

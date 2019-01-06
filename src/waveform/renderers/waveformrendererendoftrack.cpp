@@ -66,7 +66,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     const int elapsed = m_timer.elapsed().toIntegerMillis() % kBlinkingPeriodMillis;
 
-    const double blickIntensity = (double)(2 * abs(elapsed - kBlinkingPeriodMillis / 2)) /
+    const double blinkIntensity = (double)(2 * abs(elapsed - kBlinkingPeriodMillis / 2)) /
             kBlinkingPeriodMillis;
 
     const double remainingTime = m_pTimeRemainingControl->get();
@@ -76,17 +76,17 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     painter->save();
     painter->resetTransform();
-    painter->setOpacity(0.5 * blickIntensity);
+    painter->setOpacity(0.5 * blinkIntensity);
     painter->setPen(m_pen);
     painter->drawRect(1, 1,
             m_waveformRenderer->getWidth() - 2, m_waveformRenderer->getHeight() - 2);
 
-    painter->setOpacity(0.5 * 0.25 * criticalIntensity * blickIntensity);
+    painter->setOpacity(0.5 * 0.25 * criticalIntensity * blinkIntensity);
     painter->setPen(QPen(Qt::transparent));
     painter->setBrush(m_color);
     painter->drawRects(m_backRects);
     // This is significant slower
-    //painter->setOpacity(0.5 * criticalIntensity * blickIntensity);
+    //painter->setOpacity(0.5 * criticalIntensity * blinkIntensity);
     //painter->fillRect(m_waveformRenderer->getWidth()/2, 1,
     //        m_waveformRenderer->getWidth() - 2, m_waveformRenderer->getHeight() - 2,
     //        m_gradient);
