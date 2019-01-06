@@ -1,4 +1,4 @@
-#include "engine/enginebufferscale.h"
+#include "engine/bufferscalers/enginebufferscale.h"
 
 #include "engine/engine.h"
 #include "util/defs.h"

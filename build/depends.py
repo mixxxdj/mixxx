@@ -501,7 +501,7 @@ class SoundTouch(Dependence):
 
             build.env.Append(LIBPATH=self.SOUNDTOUCH_INTERNAL_PATH)
             build.env.Append(LIBS=['soundtouch'])
-        return ['src/engine/enginebufferscalest.cpp']
+        return ['src/engine/bufferscalers/enginebufferscalest.cpp']
 
     def configure(self, build, conf, env=None):
         if env is None:
@@ -531,7 +531,7 @@ class SoundTouch(Dependence):
 
 class RubberBand(Dependence):
     def sources(self, build):
-        sources = ['src/engine/enginebufferscalerubberband.cpp', ]
+        sources = ['src/engine/bufferscalers/enginebufferscalerubberband.cpp', ]
         return sources
 
     def configure(self, build, conf, env=None):
@@ -791,8 +791,8 @@ class MixxxCore(Feature):
                    "src/engine/engineworker.cpp",
                    "src/engine/engineworkerscheduler.cpp",
                    "src/engine/enginebuffer.cpp",
-                   "src/engine/enginebufferscale.cpp",
-                   "src/engine/enginebufferscalelinear.cpp",
+                   "src/engine/bufferscalers/enginebufferscale.cpp",
+                   "src/engine/bufferscalers/enginebufferscalelinear.cpp",
                    "src/engine/channels/engineaux.cpp",
                    "src/engine/channels/enginechannel.cpp",
                    "src/engine/channels/enginedeck.cpp",

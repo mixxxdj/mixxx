@@ -1,4 +1,4 @@
-#include "engine/enginebufferscalerubberband.h"
+#include "engine/bufferscalers/enginebufferscalerubberband.h"
 
 #include <rubberband/RubberBandStretcher.h>
 

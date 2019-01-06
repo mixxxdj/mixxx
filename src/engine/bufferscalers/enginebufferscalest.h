@@ -1,7 +1,7 @@
 #ifndef ENGINEBUFFERSCALEST_H
 #define ENGINEBUFFERSCALEST_H
 
-#include "engine/enginebufferscale.h"
+#include "engine/bufferscalers/enginebufferscale.h"
 #include "util/memory.h"
 
 class ReadAheadManager;

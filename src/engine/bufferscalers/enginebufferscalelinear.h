@@ -1,7 +1,7 @@
 #ifndef ENGINEBUFFERSCALELINEAR_H
 #define ENGINEBUFFERSCALELINEAR_H
 
-#include "engine/enginebufferscale.h"
+#include "engine/bufferscalers/enginebufferscale.h"
 #include "engine/readaheadmanager.h"
 
 /** Number of samples to read ahead */

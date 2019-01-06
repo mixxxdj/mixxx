@@ -1,4 +1,4 @@
-#include "engine/enginebufferscalelinear.h"
+#include "engine/bufferscalers/enginebufferscalelinear.h"
 
 #include <QtDebug>
 

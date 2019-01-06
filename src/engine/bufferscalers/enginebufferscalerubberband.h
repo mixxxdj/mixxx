@@ -1,7 +1,7 @@
 #ifndef ENGINEBUFFERSCALERUBBERBAND_H
 #define ENGINEBUFFERSCALERUBBERBAND_H
 
-#include "engine/enginebufferscale.h"
+#include "engine/bufferscalers/enginebufferscale.h"
 #include "util/memory.h"
 
 namespace RubberBand {

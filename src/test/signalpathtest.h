@@ -12,7 +12,7 @@
 #include "mixer/deck.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginebufferscale.h"
+#include "engine/bufferscalers/enginebufferscale.h"
 #include "engine/channels/enginechannel.h"
 #include "engine/channels/enginedeck.h"
 #include "engine/enginemaster.h"
