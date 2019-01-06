@@ -35,15 +35,17 @@ class ControlRingValue {
     // This operation can be repeated multiple times for the same
     // slot, because the stored value is preserved.
     bool tryGet(T* value) const {
-        bool result = false;
         // Read while consuming one readerSlot
         if (m_readerSlots.fetchAndAddAcquire(-1) > 0) {
             // Reader slot has been acquired, no writer is active
             *value = m_value;
-            result = true;
+            m_readerSlots.fetchAndAddRelease(1);
+            // We need the early return here to make the compiler
+            // aware that *value is initalised in the true case.
+            return true;
         }
         m_readerSlots.fetchAndAddRelease(1);
-        return result;
+        return false;
     }
 
     bool trySet(const T& value) {
@@ -61,7 +63,6 @@ class ControlRingValue {
 
   private:
     T m_value;
-    int m_maxReaderSlots;
     mutable QAtomicInt m_readerSlots;
 };
 
