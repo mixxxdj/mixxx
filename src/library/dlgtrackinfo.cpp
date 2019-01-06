@@ -237,18 +237,22 @@ void DlgTrackInfo::slotCoverFound(const QObject* pRequestor,
 }
 
 void DlgTrackInfo::slotReloadCoverArt() {
-    if (m_pLoadedTrack) {
-        CoverInfo coverInfo =
-                CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
-        slotCoverInfoSelected(coverInfo);
+    VERIFY_OR_DEBUG_ASSERT(m_pLoadedTrack) {
+        return;
     }
+    CoverInfo coverInfo =
+            CoverArtUtils::guessCoverInfo(*m_pLoadedTrack);
+    slotCoverInfoSelected(coverInfo);
 }
 
-void DlgTrackInfo::slotCoverInfoSelected(const CoverInfo& coverInfo) {
+void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
     qDebug() << "DlgTrackInfo::slotCoverInfoSelected" << coverInfo;
-    m_loadedCoverInfo = coverInfo;
+    VERIFY_OR_DEBUG_ASSERT(m_pLoadedTrack) {
+        return;
+    }
+    m_loadedCoverInfo = CoverInfo(coverInfo, m_pLoadedTrack->getLocation());
     CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache != NULL) {
+    if (pCache) {
         pCache->requestCover(m_loadedCoverInfo, this, 0, false, true);
     }
 }

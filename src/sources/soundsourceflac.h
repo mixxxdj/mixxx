@@ -49,8 +49,6 @@ class SoundSourceFLAC: public SoundSource {
     SINT m_maxBlocksize; // in time samples (audio samples = time samples * chanCount)
     SINT m_bitsPerSample;
 
-    CSAMPLE m_sampleScaleFactor;
-
     ReadAheadSampleBuffer m_sampleBuffer;
 
     void invalidateCurFrameIndex() {

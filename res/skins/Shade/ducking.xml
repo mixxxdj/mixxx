@@ -10,20 +10,20 @@
 			    <NumberStates>3</NumberStates>
 			    <State>
 				    <Number>0</Number>
-				    <Pressed>btn_kill_down.png</Pressed>
-				    <Unpressed>btn_kill.png</Unpressed>
+				    <Pressed>skin:/btn/btn_kill_down.png</Pressed>
+				    <Unpressed>skin:/btn/btn_kill.png</Unpressed>
 			    </State>
 			    <State>
 				    <Number>1</Number>
                     <Text>A</Text>
-				    <Pressed>btn_kill_overdown.png</Pressed>
-				    <Unpressed>btn_kill_over.png</Unpressed>
+				    <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+				    <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
 			    </State>
 			    <State>
 				    <Number>2</Number>
                     <Text>M</Text>
-				    <Pressed>btn_kill_overdown.png</Pressed>
-				    <Unpressed>btn_kill_over.png</Unpressed>
+				    <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+				    <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
 			    </State>
 			    <Pos>6,30</Pos>
 			    <Connection>

@@ -32,7 +32,10 @@
 #include "dialog/dlgdevelopertools.h"
 #include "engine/enginemaster.h"
 #include "effects/effectsmanager.h"
-#include "effects/native/nativebackend.h"
+#include "effects/builtin/builtinbackend.h"
+#ifdef __LILV__
+#include "effects/lv2/lv2backend.h"
+#endif
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -195,8 +198,14 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Create effect backends. We do this after creating EngineMaster to allow
     // effect backends to refer to controls that are produced by the engine.
-    NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
-    m_pEffectsManager->addEffectsBackend(pNativeBackend);
+    BuiltInBackend* pBuiltInBackend = new BuiltInBackend(m_pEffectsManager);
+    m_pEffectsManager->addEffectsBackend(pBuiltInBackend);
+#ifdef __LILV__
+    LV2Backend* pLV2Backend = new LV2Backend(m_pEffectsManager);
+    m_pEffectsManager->addEffectsBackend(pLV2Backend);
+#else
+    LV2Backend* pLV2Backend = nullptr;
+#endif
 
     // Sets up the EffectChains and EffectRacks (long)
     m_pEffectsManager->setup();
@@ -357,7 +366,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                    m_pControllerManager, m_pVCManager, m_pEffectsManager,
+                                    m_pControllerManager, m_pVCManager, pLV2Backend, m_pEffectsManager,
                                     m_pSettingsManager, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
@@ -733,7 +742,7 @@ void MixxxMainWindow::initializeKeyboard() {
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
-    QString userKeyboard = QDir(m_cmdLineArgs.getSettingsPath()).filePath("Custom.kbd.cfg");
+    QString userKeyboard = QDir(pConfig->getSettingsPath()).filePath("Custom.kbd.cfg");
 
     // Empty keyboard configuration
     m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>(QString());
@@ -1306,6 +1315,9 @@ bool MixxxMainWindow::event(QEvent* e) {
 }
 
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
+    // WARNING: We can receive a CloseEvent while only partially
+    // initialized. This is because we call QApplication::processEvents to
+    // render LaunchImage progress in the constructor.
     if (!confirmExit()) {
         event->ignore();
         return;
@@ -1384,7 +1396,7 @@ bool MixxxMainWindow::confirmExit() {
             return false;
         }
     }
-    if (m_pPrefDlg->isVisible()) {
+    if (m_pPrefDlg && m_pPrefDlg->isVisible()) {
         QMessageBox::StandardButton btn = QMessageBox::question(
             this, tr("Confirm Exit"),
             tr("The preferences window is still open.") + "<br>" +

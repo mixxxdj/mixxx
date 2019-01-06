@@ -10,9 +10,7 @@
         <Layout>vertical</Layout>
         <Size>20f,-1me</Size>
         <Children>
-          <Template src="skin:spacer_vx.xml">
-            <SetVariable name="height">3</SetVariable>
-          </Template>
+          <WidgetGroup><Size>0min,3f</Size></WidgetGroup>
 
           <Template src="skin:hide_show_button.xml">
             <SetVariable name="object_name">SamplerRowExpandButton</SetVariable>
@@ -37,10 +35,10 @@
         <SetVariable name="i"><Variable name="4"/></SetVariable>
       </Template>
 
-      <WidgetGroup>
-        <ObjectName>SamplerMiddleSpacer</ObjectName>
-        <SizePolicy>me,min</SizePolicy>
-      </WidgetGroup>
+      <Template src="skin:spacer_hx.xml">
+        <SetVariable name="width">3</SetVariable>
+        <SetVariable name="color">22</SetVariable>
+      </Template>
 
       <Template src="skin:sampler.xml">
         <SetVariable name="i"><Variable name="5"/></SetVariable>

@@ -15,6 +15,8 @@
  *                                                                         *
  ***************************************************************************/
 
+#include <QPainter>
+
 #include "library/starrating.h"
 #include "util/math.h"
 
@@ -35,7 +37,6 @@ QSize StarRating::sizeHint() const {
 
 void StarRating::paint(QPainter *painter, const QRect &rect) const {
     // Assume the painter is configured with the right brush.
-    painter->save();
     painter->setRenderHint(QPainter::Antialiasing, true);
     painter->setPen(Qt::NoPen);
 
@@ -54,5 +55,4 @@ void StarRating::paint(QPainter *painter, const QRect &rect) const {
         }
         painter->translate(1.0, 0.0);
     }
-    painter->restore();
 }

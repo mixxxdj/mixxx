@@ -2,6 +2,7 @@
 #define COMPATABILITY_H
 
 #include <QAtomicInt>
+#include <QAtomicPointer>
 #include <QStringList>
 #include <QApplication>
 
@@ -14,6 +15,15 @@
 #endif
 
 inline int load_atomic(const QAtomicInt& value) {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    return value;
+#else
+    return value.load();
+#endif
+}
+
+template <typename T>
+inline T* load_atomic_pointer(const QAtomicPointer<T>& value) {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     return value;
 #else

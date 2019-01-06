@@ -29,7 +29,7 @@ If (argCount = 0) Then
 		vbNewLine & " 2nd argument is the path to a transform or database to import" &_
 		vbNewLine & " If the 2nd argument is missing, substorages will be listed" &_
 		vbNewLine & " 3rd argument is optional, the name used for the substorage" &_
-		vbNewLine & " If the 3rd arugment is missing, the file name is used" &_
+		vbNewLine & " If the 3rd argument is missing, the file name is used" &_
 		vbNewLine & " To remove a substorage, use /D or -D as the 2nd argument" &_
 		vbNewLine & " followed by the name of the substorage to remove" &_
 		vbNewLine &_

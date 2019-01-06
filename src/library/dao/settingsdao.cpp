@@ -32,7 +32,7 @@ QString SettingsDAO::getValue(const QString& name, QString defaultValue) const {
     } else {
         // Prepare is expected to fail for a fresh database
         // when the schema is still empty!
-        kLogger.debug()
+        kLogger.info()
                 << "Failed to prepare query:"
                 << "Returning default value"
                 << defaultValue

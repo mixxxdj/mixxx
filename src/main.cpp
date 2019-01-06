@@ -68,6 +68,11 @@ int main(int argc, char * argv[]) {
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
 
+    // This needs to be set before initializing the QApplication.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#endif
+
     // Setting the organization name results in a QDesktopStorage::DataLocation
     // of "$HOME/Library/Application Support/Mixxx/Mixxx" on OS X. Leave the
     // organization name blank.
@@ -87,6 +92,11 @@ int main(int argc, char * argv[]) {
     // ErrorDialogHandler::errorDialog(). TODO(XXX): Remove this hack.
     QThread::currentThread()->setObjectName("Main");
 
+    // Create the ErrorDialogHandler in the main thread, otherwise it will be
+    // created in the thread of the first caller to instance(), which may not be
+    // the main thread. Bug #1748636.
+    ErrorDialogHandler::instance();
+
     mixxx::Logging::initialize(args.getSettingsPath(),
                                args.getLogLevel(),
                                args.getLogFlushLevel(),
@@ -101,8 +111,7 @@ int main(int argc, char * argv[]) {
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 #endif
 
-    // Enumerate and load SoundSource plugins
-    SoundSourceProxy::loadPlugins();
+    SoundSourceProxy::registerSoundSourceProviders();
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());

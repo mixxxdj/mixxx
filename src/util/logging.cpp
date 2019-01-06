@@ -15,14 +15,18 @@
 #include <QtDebug>
 #include <QtGlobal>
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+#include <QLoggingCategory>
+#endif
+
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
 
 namespace mixxx {
 
 // Initialize the log level with the default value
-LogLevel Logging::s_logLevel = kLogLevelDefault;
-LogLevel Logging::s_logFlushLevel = kLogFlushLevelDefault;
+LogLevel g_logLevel = kLogLevelDefault;
+LogLevel g_logFlushLevel = kLogFlushLevelDefault;
 
 namespace {
 
@@ -189,8 +193,8 @@ void Logging::initialize(const QDir& settingsDir,
         return;
     }
 
-    s_logLevel = logLevel;
-    s_logFlushLevel = logFlushLevel;
+    g_logLevel = logLevel;
+    g_logFlushLevel = logFlushLevel;
 
     QString logFileName;
 
@@ -227,6 +231,17 @@ void Logging::initialize(const QDir& settingsDir,
     qInstallMsgHandler(MessageHandler);
 #else
     qInstallMessageHandler(MessageHandler);
+#endif
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+    // Ugly hack around distributions disabling debugging in Qt applications.
+    // This restores the default Qt behavior. It is required for getting useful
+    // logs from users and for developing controller mappings.
+    // Fedora: https://bugzilla.redhat.com/show_bug.cgi?id=1227295
+    // Debian: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=886437
+    // Ubuntu: https://bugs.launchpad.net/ubuntu/+source/qtbase-opensource-src/+bug/1731646
+    QLoggingCategory::setFilterRules("*.debug=true\n"
+                                     "qt.*.debug=false");
 #endif
 }
 

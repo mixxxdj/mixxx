@@ -19,10 +19,8 @@
 #include <QtDebug>
 #include <cstring> // for memcpy and strcmp
 
-#ifdef __PORTAUDIO__
 #include <QLibrary>
 #include <portaudio.h>
-#endif // ifdef __PORTAUDIO__
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -35,6 +33,7 @@
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/compatibility.h"
 #include "util/cmdlineargs.h"
 #include "util/defs.h"
 #include "util/sample.h"
@@ -42,9 +41,7 @@
 #include "util/version.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
-#ifdef __PORTAUDIO__
 typedef PaError (*SetJackClientName)(const char *name);
-#endif
 
 namespace {
 
@@ -65,10 +62,8 @@ SoundManager::SoundManager(UserSettingsPointer pConfig,
                            EngineMaster *pMaster)
         : m_pMaster(pMaster),
           m_pConfig(pConfig),
-#ifdef __PORTAUDIO__
           m_paInitialized(false),
           m_jackSampleRate(-1),
-#endif
           m_pErrorDevice(NULL),
           m_underflowHappened(0) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
@@ -108,12 +103,10 @@ SoundManager::~SoundManager() {
     const bool sleepAfterClosing = false;
     clearDeviceList(sleepAfterClosing);
 
-#ifdef __PORTAUDIO__
     if (m_paInitialized) {
         Pa_Terminate();
         m_paInitialized = false;
     }
-#endif
     // vinyl control proxies and input buffers are freed in closeDevices, called
     // by clearDeviceList -- bkgood
 
@@ -230,16 +223,13 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     m_devices.clear();
     m_pErrorDevice.clear();
 
-#ifdef __PORTAUDIO__
     if (m_paInitialized) {
         Pa_Terminate();
         m_paInitialized = false;
     }
-#endif
 }
 
 QList<unsigned int> SoundManager::getSampleRates(QString api) const {
-#ifdef __PORTAUDIO__
     if (api == MIXXX_PORTAUDIO_JACK_STRING) {
         // queryDevices must have been called for this to work, but the
         // ctor calls it -bkgood
@@ -247,7 +237,6 @@ QList<unsigned int> SoundManager::getSampleRates(QString api) const {
         samplerates.append(m_jackSampleRate);
         return samplerates;
     }
-#endif
     return m_samplerates;
 }
 
@@ -271,7 +260,6 @@ void SoundManager::clearAndQueryDevices() {
 }
 
 void SoundManager::queryDevicesPortaudio() {
-#ifdef __PORTAUDIO__
     PaError err = paNoError;
     if (!m_paInitialized) {
 #ifdef Q_OS_LINUX
@@ -318,7 +306,6 @@ void SoundManager::queryDevicesPortaudio() {
             m_jackSampleRate = deviceInfo->defaultSampleRate;
         }
     }
-#endif
 }
 
 void SoundManager::queryDevicesMixxx() {
@@ -363,8 +350,8 @@ SoundDeviceError SoundManager::setupDevices() {
 
     m_pMasterAudioLatencyOverloadCount->set(0);
 
-    // load with all configured devices. 
-    // all found devices are removed below 
+    // load with all configured devices.
+    // all found devices are removed below
     QSet<QString> devicesNotFound = m_config.getDevices();
 
     // pair is isInput, isOutput
@@ -566,7 +553,8 @@ SoundDeviceError SoundManager::setConfig(SoundManagerConfig config) {
     // certain parts of mixxx rely on this being here, for the time being, just
     // letting those be -- bkgood
     // Do this first so vinyl control gets the right samplerate -- Owen W.
-    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"), ConfigValue(m_config.getSampleRate()));
+    m_pConfig->set(ConfigKey("[Soundcard]","Samplerate"),
+                   ConfigValue(static_cast<int>(m_config.getSampleRate())));
 
     err = setupDevices();
     if (err == SOUNDDEVICE_ERROR_OK) {
@@ -656,7 +644,6 @@ QList<AudioInput> SoundManager::registeredInputs() const {
 }
 
 void SoundManager::setJACKName() const {
-#ifdef __PORTAUDIO__
 #ifdef Q_OS_LINUX
     typedef PaError (*SetJackClientName)(const char *name);
     QLibrary portaudio("libportaudio.so.2");
@@ -677,7 +664,6 @@ void SoundManager::setJACKName() const {
         qWarning() << "failed to load portaudio for JACK rename";
     }
 #endif
-#endif
 }
 
 void SoundManager::setConfiguredDeckCount(int count) {
@@ -692,14 +678,14 @@ int SoundManager::getConfiguredDeckCount() const {
 
 void SoundManager::processUnderflowHappened() {
     if (m_underflowUpdateCount == 0) {
-        if (m_underflowHappened) {
+        if (load_atomic(m_underflowHappened)) {
             m_pMasterAudioLatencyOverload->set(1.0);
             m_pMasterAudioLatencyOverloadCount->set(
                     m_pMasterAudioLatencyOverloadCount->get() + 1);
             m_underflowUpdateCount = CPU_OVERLOAD_DURATION * m_config.getSampleRate()
                     / m_config.getFramesPerBuffer() / 1000;
 
-            m_underflowHappened = 0; // resetting her is not thread save,
+            m_underflowHappened = 0; // resetting here is not thread safe,
                                      // but that is OK, because we count only
                                      // 1 underflow each 500 ms
         } else {

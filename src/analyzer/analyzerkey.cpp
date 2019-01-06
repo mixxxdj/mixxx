@@ -12,16 +12,11 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 
 AnalyzerKey::AnalyzerKey(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
-          m_pVamp(NULL),
           m_iSampleRate(0),
           m_iTotalSamples(0),
           m_bPreferencesKeyDetectionEnabled(true),
           m_bPreferencesFastAnalysisEnabled(false),
           m_bPreferencesReanalyzeEnabled(false) {
-}
-
-AnalyzerKey::~AnalyzerKey() {
-    delete m_pVamp;
 }
 
 bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
@@ -57,13 +52,12 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
     if (bShouldAnalyze) {
-        m_pVamp = new VampAnalyzer();
+        m_pVamp = std::make_unique<VampAnalyzer>();
         bShouldAnalyze = m_pVamp->Init(
             library, m_pluginId, sampleRate, totalSamples,
             m_bPreferencesFastAnalysisEnabled);
         if (!bShouldAnalyze) {
-            delete m_pVamp;
-            m_pVamp = NULL;
+            m_pVamp.reset();
         }
     }
 
@@ -86,12 +80,14 @@ bool AnalyzerKey::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
             ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
 
     // TODO(rryan): This belongs elsewhere.
-    if (library.isEmpty() || library.isNull())
+    if (library.isEmpty() || library.isNull()) {
         library = "libmixxxminimal";
+    }
 
     // TODO(rryan): This belongs elsewhere.
-    if (pluginID.isEmpty() || pluginID.isNull())
+    if (pluginID.isEmpty() || pluginID.isNull()) {
         pluginID = VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID;
+    }
 
     const Keys keys(tio->getKeys());
     if (keys.isValid()) {
@@ -123,23 +119,22 @@ bool AnalyzerKey::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 }
 
 void AnalyzerKey::process(const CSAMPLE *pIn, const int iLen) {
-    if (m_pVamp == NULL)
+    if (!m_pVamp) {
         return;
+    }
     bool success = m_pVamp->Process(pIn, iLen);
     if (!success) {
-        delete m_pVamp;
-        m_pVamp = NULL;
+        m_pVamp.reset();
     }
 }
 
 void AnalyzerKey::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
-    delete m_pVamp;
-    m_pVamp = NULL;
+    m_pVamp.reset();
 }
 
 void AnalyzerKey::finalize(TrackPointer tio) {
-    if (m_pVamp == NULL) {
+    if (!m_pVamp) {
         return;
     }
 
@@ -148,8 +143,7 @@ void AnalyzerKey::finalize(TrackPointer tio) {
 
     QVector<double> frames = m_pVamp->GetInitFramesVector();
     QVector<double> keys = m_pVamp->GetLastValuesVector();
-    delete m_pVamp;
-    m_pVamp = NULL;
+    m_pVamp.reset();
 
     if (frames.size() == 0 || frames.size() != keys.size()) {
         qWarning() << "AnalyzerKey: Key sequence and list of times do not match.";

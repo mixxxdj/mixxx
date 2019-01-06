@@ -364,7 +364,7 @@ SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
     }
 
     // Add stream parameters to context
-    if(avcodec_parameters_to_context(pCodecContext,pAudioStream->codecpar)) {
+    if (avcodec_parameters_to_context(pCodecContext,pAudioStream->codecpar)) {
         kLogger.warning()
                 << "Failed to find to set Code parameter for AVCodecContext"
                 << pAudioStream->index;
@@ -559,7 +559,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                   continue;
                 }
 
-                if(l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
+                if (l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
                       kLogger.warning() << "readFramesToCache: Warning can't decode frame!";
                 }
 
@@ -572,7 +572,7 @@ bool SoundSourceFFmpeg::readFramesToCache(unsigned int count, SINT offset) {
                   continue;
                 }
 
-                if(l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
+                if (l_iRet == AVERROR_EOF || l_iRet == AVERROR(EINVAL)) {
                       kLogger.warning() << "readFramesToCache: Warning can't decode frame!";
                 }
 
@@ -739,7 +739,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
     // If cache is empty then return without crash.
     if (m_SCache.isEmpty()) {
         kLogger.debug() << "getBytesFromCache: Cache is empty can't return bytes";
-        if(l_pBuffer != nullptr)
+        if (l_pBuffer != nullptr)
         {
             memset(l_pBuffer, 0x00, l_lLeft);
         }
@@ -839,7 +839,7 @@ bool SoundSourceFFmpeg::getBytesFromCache(CSAMPLE* buffer, SINT offset,
                     continue;
                 } else {
                     kLogger.debug() << "getBytesFromCache: Buffer run out. Shouldn't happen!";
-                    if(l_pBuffer != nullptr)
+                    if (l_pBuffer != nullptr)
                     {
                         memset(l_pBuffer, 0x00, l_lLeft);
                     }

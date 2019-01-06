@@ -186,7 +186,7 @@ public:
     static void evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cacheEntryPtr);
 
 private slots:
-    void evictAndSave(GlobalTrackCacheEntryPointer chacheEntryPtr);
+    void evictAndSave(GlobalTrackCacheEntryPointer cacheEntryPtr);
 
 private:
     friend class GlobalTrackCacheLocker;

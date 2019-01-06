@@ -10,6 +10,7 @@
 #include "engine/loopingcontrol.h"
 #include "engine/bpmcontrol.h"
 #include "engine/enginecontrol.h"
+#include "util/compatibility.h"
 #include "util/math.h"
 #include "util/sample.h"
 
@@ -682,6 +683,7 @@ void LoopingControl::slotReloopToggle(double val) {
         if (m_bLoopRollActive) {
             m_pSlipEnabled->set(0);
             m_bLoopRollActive = false;
+            m_activeLoopRolls.clear();
         }
         setLoopingEnabled(false);
         //qDebug() << "reloop_toggle looping off";
@@ -790,7 +792,7 @@ void LoopingControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
 void LoopingControl::setLoopingEnabled(bool enabled) {
     m_bLoopingEnabled = enabled;
     m_pCOLoopEnabled->set(enabled);
-    BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop;
+    BeatLoopingControl* pActiveBeatLoop = load_atomic_pointer(m_pActiveBeatLoop);
     if (pActiveBeatLoop != nullptr) {
         if (enabled) {
             pActiveBeatLoop->activate();
@@ -845,10 +847,11 @@ void LoopingControl::slotBeatLoopActivateRoll(BeatLoopingControl* pBeatLoopContr
          return;
      }
 
-    // Disregard existing loops.
+    // Disregard existing loops (except beatlooprolls).
     m_pSlipEnabled->set(1);
-    slotBeatLoop(pBeatLoopControl->getSize(), false, true);
+    slotBeatLoop(pBeatLoopControl->getSize(), m_bLoopRollActive, true);
     m_bLoopRollActive = true;
+    m_activeLoopRolls.push(pBeatLoopControl->getSize());
 }
 
 void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl) {
@@ -857,13 +860,28 @@ void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl
 }
 
 void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
-    Q_UNUSED(pBeatLoopControl);
-    setLoopingEnabled(false);
+    pBeatLoopControl->deactivate();
+    const double size = pBeatLoopControl->getSize();
+    auto i = m_activeLoopRolls.begin();
+    while (i != m_activeLoopRolls.end()) {
+        if (size == *i) {
+            i = m_activeLoopRolls.erase(i);
+        } else {
+            ++i;
+        }
+    }
+
     // Make sure slip mode is not turned off if it was turned on
     // by something that was not a rolling beatloop.
-    if (m_bLoopRollActive) {
+    if (m_bLoopRollActive && m_activeLoopRolls.empty()) {
+        setLoopingEnabled(false);
         m_pSlipEnabled->set(0);
         m_bLoopRollActive = false;
+    }
+
+    // Return to the previous beatlooproll if necessary.
+    if (!m_activeLoopRolls.empty()) {
+        slotBeatLoop(m_activeLoopRolls.top(), m_bLoopRollActive, true);
     }
 }
 
@@ -1054,6 +1072,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
             if (m_bLoopRollActive) {
                 m_pSlipEnabled->set(0.0);
                 m_bLoopRollActive = false;
+                m_activeLoopRolls.clear();
             }
         } else {
             m_pSlipEnabled->set(1.0);
@@ -1067,6 +1086,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
         if (m_bLoopRollActive) {
             m_pSlipEnabled->set(0.0);
             m_bLoopRollActive = false;
+            m_activeLoopRolls.clear();
         }
     }
 }

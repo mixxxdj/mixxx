@@ -181,7 +181,6 @@ void RecordingManager::stopRecording()
     m_secondsRecorded = 0;
 }
 
-
 void RecordingManager::setRecordingDir() {
     QDir recordDir(m_pConfig->getValueString(
         ConfigKey(RECORDING_PREF_KEY, "Directory")));
@@ -203,8 +202,6 @@ QString& RecordingManager::getRecordingDir() {
     setRecordingDir();
     return m_recordingDir;
 }
-
-
 
 // Only called when recording is active.
 void RecordingManager::slotDurationRecorded(quint64 duration)
@@ -265,15 +262,28 @@ void RecordingManager::slotBytesRecorded(int bytes)
     if (dfree > MIN_DISK_FREE) {
         m_dfSilence = false;
     } else if (m_dfSilence != true) {
-        // surpress further warnings until the situation has cleared
+        // suppress further warnings until the situation has cleared
         m_dfSilence = true;
         // we run out of diskspace and should warn the user.
         // FIXME(poelzi) temporary display a error message. Replace this with Message Infrastructure when ready
-        QMessageBox::warning(
-            NULL,
-            tr("Low Disk Space Warning"),
-            tr("There is less then 1 GiB of useable space in the recording folder"));
+        warnFreespace();
     }
+}
+
+void RecordingManager::warnFreespace() {
+    qWarning() << "RecordingManager: less than 1 GiB free space";
+    ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+    props->setType(DLG_WARNING);
+    props->setTitle(tr("Low Disk Space Warning"));
+    props->setText(tr("There is less than 1 GiB of useable space in the recording folder"));
+    props->setKey("RecordingManager::warnFreespace");   // To prevent multiple windows for the same error
+
+    props->addButton(QMessageBox::Ok);
+    props->setDefaultButton(QMessageBox::Ok);
+    props->setEscapeButton(QMessageBox::Ok);
+    props->setModal(false);
+
+    ErrorDialogHandler::instance()->requestErrorDialog(props);
 }
 
 void RecordingManager::slotIsRecording(bool isRecordingActive, bool error) {

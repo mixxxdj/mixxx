@@ -33,16 +33,7 @@ Variables:
               <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
 
               <!-- Greyed out if no headphone device is configured -->
-              <WidgetGroup>
-                <ObjectName>GuiCover</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>min,min</SizePolicy>
-                <Connection>
-                  <ConfigKey>[Master],headEnabled</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                  <Transform><Not/></Transform>
-                </Connection>
-              </WidgetGroup>
+              <Template src="skin:pfl_cover.xml"/>
 
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
@@ -79,7 +70,7 @@ Variables:
           <Template src="skin:knob_textless.xml">
             <SetVariable name="ObjectName">GainKnob</SetVariable>
             <SetVariable name="TooltipId">pregain</SetVariable>
-            <SetVariable name="Size">30f,30f</SetVariable>
+            <SetVariable name="Size">34f,30f</SetVariable>
             <SetVariable name="Color">yellow</SetVariable>
             <SetVariable name="group"><Variable name="group"/></SetVariable>
             <SetVariable name="ConfigKey">pregain</SetVariable>
@@ -88,32 +79,45 @@ Variables:
         </Children>
       </WidgetGroup><!-- /Volume Slider + Gain knob -->
 
-      <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
-
-      <WidgetGroup><!-- EQs + QuickEffect knobs -->
-        <Layout>vertical</Layout>
+      <WidgetGroup><!-- Spacer when EQ plugin is loaded & Kill buttons are shown -->
         <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
         <Children>
-            <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+          <WidgetGroup>
+            <Size>4f,0min</Size>
+            <Connection>
+              <ConfigKey>[Master],show_eq_kill_buttons</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,loaded</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- EQ + QuickEffect knobs/buttons -->
+        <Layout>vertical</Layout>
+        <SizePolicy>max,min</SizePolicy>
+        <Children>
+          <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
           <Template src="skin:eq_knob_right.xml"><!-- High EQ -->
             <SetVariable name="FxParameter">3</SetVariable>
           </Template>
-            <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
           <Template src="skin:eq_knob_right.xml"><!-- Mid EQ -->
             <SetVariable name="FxParameter">2</SetVariable>
           </Template>
-            <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
           <Template src="skin:eq_knob_right.xml"><!-- Low EQ -->
             <SetVariable name="FxParameter">1</SetVariable>
           </Template>
-            <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
-          <Template src="skin:quick_fx_knob_right.xml"/><!-- Quick Effect knob -->
+          <Template src="skin:quick_fx_knob_right.xml"/><!-- Quick Effect -->
         </Children>
         <Connection>
           <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /EQs + QuickEffect knobs -->
+      </WidgetGroup><!-- /EQ + QuickEffect knobs/buttons -->
 
       <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 

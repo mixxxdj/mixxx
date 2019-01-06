@@ -402,7 +402,7 @@ LED.prototype.flashOnceOff = function(relight) {
 //                      press the button a second time (Value will be
 //                      equal to DOWN), or the Long press is asserted
 //                      (value = DOWN because you are still holding down
-//                      the button or value=UP because you have realeased
+//                      the button or value=UP because you have released
 //                      the button only once before it becomes a long press).
 // doublePressTimeOut : delay in ms above which a second press on the
 //                      button will not be considered as a potential double
@@ -518,7 +518,7 @@ LongShortBtn.prototype.buttonUp = function() {
 //                      press the button a second time (Value will be
 //                      equal to DOWN), or the Long press is asserted
 //                      (value = DOWN because you are still holding down
-//                      the button or value=UP because you have realeased
+//                      the button or value=UP because you have released
 //                      the button only once before it becomes a long press).
 // longPressThreshold : delay in ms above which a first press on the
 //                      button will be considered as a Long press (default = 500ms).

@@ -7,6 +7,7 @@
 #include <QWidgetAction>
 #include <QCheckBox>
 #include <QLinkedList>
+#include <QScrollBar>
 
 #include "widget/wtracktableview.h"
 
@@ -94,8 +95,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pBPMMenu->setTitle(tr("Change BPM"));
 
     m_pClearMetadataMenu = new QMenu(this);
-    //: Clear metadata in right click track context menu in library
-    m_pClearMetadataMenu->setTitle(tr("Clear"));
+    //: Reset metadata in right click track context menu in library
+    m_pClearMetadataMenu->setTitle(tr("Reset"));
 
     m_pCoverMenu = new WCoverArtMenu(this);
     m_pCoverMenu->setTitle(tr("Cover Art"));
@@ -106,7 +107,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotReloadCoverArt()));
 
     // Create all the context m_pMenu->actions (stuff that shows up when you
-    //right-click)
+    // right-click)
     createActions();
 
     //Connect slots and signals to make the world go 'round.
@@ -146,6 +147,8 @@ WTrackTableView::~WTrackTableView() {
     delete m_pAutoDJTopAct;
     delete m_pAutoDJReplaceAct;
     delete m_pRemoveAct;
+    delete m_pRemovePlaylistAct;
+    delete m_pRemoveCrateAct;
     delete m_pHideAct;
     delete m_pUnhideAct;
     delete m_pPropertiesAct;
@@ -358,10 +361,14 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         // Stupid hack that assumes column 0 is never visible, but this is a weak
         // proxy for "there was a saved column sort order"
         if (horizontalHeader()->sortIndicatorSection() > 0) {
-            // Sort by the saved sort section and order. This line sorts the
-            // TrackModel and in turn generates a select()
+            // Sort by the saved sort section and order.
             horizontalHeader()->setSortIndicator(horizontalHeader()->sortIndicatorSection(),
                                                  horizontalHeader()->sortIndicatorOrder());
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            // in Qt4, the line above emits sortIndicatorChanged
+            // in Qt5, we need to call it manually, which triggers finally the select()
+            doSortByColumn(horizontalHeader()->sortIndicatorSection());
+#endif
         } else {
             // No saved order is present. Use the TrackModel's default sort order.
             int sortColumn = trackModel->defaultSortColumn();
@@ -372,8 +379,13 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
             while (sortColumn < 0 || trackModel->isColumnInternal(sortColumn)) {
                 sortColumn++;
             }
-            // This line sorts the TrackModel and in turn generates a select()
+            // This line sorts the TrackModel
             horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            // in Qt4, the line above emits sortIndicatorChanged
+            // in Qt5, we need to call it manually, which triggers finally the select()
+            doSortByColumn(sortColumn);
+#endif
         }
     }
 
@@ -413,6 +425,12 @@ void WTrackTableView::createActions() {
 
     m_pRemoveAct = new QAction(tr("Remove"), this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
+
+    m_pRemovePlaylistAct = new QAction(tr("Remove from Playlist"), this);
+    connect(m_pRemovePlaylistAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
+
+    m_pRemoveCrateAct = new QAction(tr("Remove from Crate"), this);
+    connect(m_pRemoveCrateAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
     m_pHideAct = new QAction(tr("Hide from Library"), this);
     connect(m_pHideAct, SIGNAL(triggered()), this, SLOT(slotHide()));
@@ -882,6 +900,20 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addMenu(m_pCrateMenu);
     }
 
+    // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
+    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        m_pRemoveAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pRemoveAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        m_pRemovePlaylistAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pRemovePlaylistAct);
+    }
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        m_pRemoveCrateAct->setEnabled(!locked);
+        m_pMenu->addAction(m_pRemoveCrateAct);
+    }
 
     m_pMenu->addSeparator();
     m_pMetadataMenu->clear();
@@ -1016,13 +1048,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
     m_pMenu->addMenu(m_pBPMMenu);
 
-    // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     m_pMenu->addSeparator();
-    bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
-        m_pRemoveAct->setEnabled(!locked);
-        m_pMenu->addAction(m_pRemoveAct);
-    }
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
         m_pHideAct->setEnabled(!locked);
         m_pMenu->addAction(m_pHideAct);
@@ -1036,7 +1062,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addAction(m_pPurgeAct);
     }
     m_pMenu->addAction(m_pFileBrowserAct);
-    m_pMenu->addSeparator();
     m_pPropertiesAct->setEnabled(oneSongSelected);
     m_pMenu->addAction(m_pPropertiesAct);
 
@@ -1727,22 +1752,16 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     }
 
     // Save the selection
-    const QList<TrackId> trackIds = getSelectedTrackIds();
+    const QList<TrackId> selectedTrackIds = getSelectedTrackIds();
+    int savedHScrollBarPos = horizontalScrollBar()->value();
 
     sortByColumn(headerSection);
 
     QItemSelectionModel* currentSelection = selectionModel();
-
-    // Find a visible column
-    int visibleColumn = 0;
-    while (isColumnHidden(visibleColumn) && visibleColumn < itemModel->columnCount()) {
-        visibleColumn++;
-    }
-
     currentSelection->reset(); // remove current selection
 
     QMap<int,int> selectedRows;
-    for (const auto& trackId : trackIds) {
+    for (const auto& trackId : selectedTrackIds) {
 
         // TODO(rryan) slowly fixing the issues with BaseSqlTableModel. This
         // code is broken for playlists because it assumes each trackid is in
@@ -1755,7 +1774,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         QLinkedList<int> rows = trackModel->getTrackRows(trackId);
         for (int row : rows) {
             // Restore sort order by rows, so the following commands will act as expected
-            selectedRows.insert(row,0);
+            selectedRows.insert(row, 0);
         }
     }
 
@@ -1763,7 +1782,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     QMapIterator<int,int> i(selectedRows);
     while (i.hasNext()) {
         i.next();
-        QModelIndex tl = itemModel->index(i.key(), visibleColumn);
+        QModelIndex tl = itemModel->index(i.key(), 0);
         currentSelection->select(tl, QItemSelectionModel::Rows | QItemSelectionModel::Select);
 
         if (!first.isValid()) {
@@ -1771,10 +1790,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         }
     }
 
-    if (first.isValid()) {
-        scrollTo(first, QAbstractItemView::EnsureVisible);
-        //scrollTo(first, QAbstractItemView::PositionAtCenter);
-    }
+    scrollTo(first, QAbstractItemView::EnsureVisible);
+    horizontalScrollBar()->setValue(savedHScrollBarPos);
 }
 
 void WTrackTableView::slotLockBpm() {

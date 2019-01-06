@@ -1,6 +1,7 @@
 #ifndef DLGPREFRECORD_H
 #define DLGPREFRECORD_H
 
+#include <QButtonGroup>
 #include <QRadioButton>
 #include <QWidget>
 

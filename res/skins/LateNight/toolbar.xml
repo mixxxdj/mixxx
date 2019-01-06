@@ -38,66 +38,7 @@
           </WidgetGroup>
 
           <PushButton>
-            <Size>56f,24f</Size>
-            <TooltipId>toggle_4decks</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>4 DECKS</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>4 DECKS</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_4decks</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>61f,24f</Size>
-            <TooltipId>show_spinny</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>SPINNIES</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>SPINNIES</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>44f,24f</Size>
-            <TooltipId>show_vinylcontrol</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>VINYL</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>VINYL</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[VinylControl],show_vinylcontrol</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <WidgetGroup>
-            <ObjectName>ToolbarDivider</ObjectName>
-            <Size>13f,9min</Size>
-          </WidgetGroup>
-
-          <PushButton>
-            <Size>46f,24f</Size>
+            <Size>48f,24f</Size>
             <TooltipId>show_mixer</TooltipId>
             <ObjectName>GuiToggleButton</ObjectName>
             <NumberStates>2</NumberStates>
@@ -114,76 +55,6 @@
             </Connection>
           </PushButton>
 
-          <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <PushButton>
-                <Size>44f,24f</Size>
-                <ObjectName>GuiToggleButton</ObjectName>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>EQ</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>EQ</Text>
-                </State>
-                <Connection>
-                  <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
-                </Connection>
-              </PushButton>
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <WidgetGroup>
-                <SizePolicy>min,min</SizePolicy>
-                <Layout>horizontal</Layout>
-                <Children>
-                  <PushButton>
-                    <Size>54f,24f</Size>
-                    <ObjectName>GuiToggleButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>EQ KILL</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>EQ KILL</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey persist="true">[Master],show_eq_kill_buttons</ConfigKey>
-                    </Connection>
-                  </PushButton>
-                </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-
-          <WidgetGroup>
-            <ObjectName>ToolbarDivider</ObjectName>
-            <Size>13f,9min</Size>
-          </WidgetGroup>
-
           <PushButton>
             <Size>59f,24f</Size>
             <TooltipId>show_effects</TooltipId>
@@ -201,77 +72,9 @@
               <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
             </Connection>
           </PushButton>
-
-          <PushButton>
-            <Size>94f,24f</Size>
-            <TooltipId>show_effects</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>4 EFFECT UNITS</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>4 EFFECT UNITS</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <WidgetGroup>
-            <SizePolicy>min,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Children>
-              <PushButton>
-                <Size>88f,24f</Size>
-                <ObjectName>GuiToggleButton</ObjectName>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>Super knobs</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>Super knobs</Text>
-                </State>
-                <Connection>
-                  <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
-                </Connection>
-              </PushButton>
-            </Children>
-            <Connection>
-              <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
-
-          <WidgetGroup>
-            <ObjectName>ToolbarDivider</ObjectName>
-            <Size>13f,9min</Size>
-          </WidgetGroup>
 
           <PushButton>
             <Size>61f,24f</Size>
-            <TooltipId>show_previewdeck</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>PREVIEW</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>PREVIEW</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[PreviewDeck],show_previewdeck</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <Size>59f,24f</Size>
             <TooltipId>show_microphone</TooltipId>
             <ObjectName>GuiToggleButton</ObjectName>
             <NumberStates>2</NumberStates>
@@ -289,7 +92,7 @@
           </PushButton>
 
           <PushButton>
-            <Size>69f,24f</Size>
+            <Size>71f,24f</Size>
             <TooltipId>show_samplers</TooltipId>
             <ObjectName>GuiToggleButton</ObjectName>
             <NumberStates>2</NumberStates>
@@ -305,6 +108,7 @@
               <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
             </Connection>
           </PushButton>
+
         </Children>
         <Connection>
           <ConfigKey>[Master],maximize_library</ConfigKey>
@@ -323,7 +127,7 @@
       <WidgetGroup><!-- Recording button & recording duration label -->
         <ObjectName>RecBox</ObjectName>
         <Layout>stacked</Layout>
-        <Size>72f,22f</Size>
+        <Size>72f,24f</Size>
         <!-- minus 1px border
             = 70x18 available for text -->
         <Children>
@@ -331,22 +135,22 @@
           <Template src="skin:button_2state.xml">
             <SetVariable name="ObjectName">RecButton</SetVariable>
             <SetVariable name="TooltipId">toggle_recording</SetVariable>
-            <SetVariable name="Size">70f,18f</SetVariable>
+            <SetVariable name="Size">68f,20f</SetVariable>
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
           </Template>
 
           <WidgetGroup><!-- Rec dot + RecDuration -->
             <Layout>horizontal</Layout>
-            <Size>70me,18me</Size>
+            <Size>68f,18f</Size>
             <Children>
               <Label>
                 <ObjectName>RecDot</ObjectName>
-                <Size>15me,18me</Size>
+                <Size>15f,18f</Size>
               </Label>  
 
               <RecordingDuration>
                 <ObjectName>RecDuration</ObjectName>
-                <Size>55me,18me</Size>
+                <Size>53f,18f</Size>
                 <InactiveText>REC</InactiveText>
                 <Alignment>center</Alignment>
               </RecordingDuration>
@@ -357,12 +161,65 @@
           <Template src="skin:button_3state_display.xml">
             <SetVariable name="ObjectName">RecFeedback</SetVariable>
             <SetVariable name="TooltipId">toggle_recording</SetVariable>
-            <SetVariable name="Size">70me,18me</SetVariable>
+            <SetVariable name="Size">65f,18f</SetVariable>
             <SetVariable name="ConfigKey">[Recording],toggle_recording</SetVariable>
             <SetVariable name="ConfigKeyDisp">[Recording],status</SetVariable>
           </Template>
         </Children>
       </WidgetGroup><!-- /Recording button & recording duration label -->
+
+      <PushButton>
+        <Size>82f,24f</Size>
+        <TooltipId>skin_settings</TooltipId>
+        <ObjectName>BroadcastButton</ObjectName>
+        <NumberStates>4</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>Broadcast</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>Broadcast</Text>
+        </State>
+        <State>
+          <Number>2</Number>
+          <Text>Broadcast</Text>
+        </State>
+        <State>
+          <Number>3</Number>
+          <Text>Broadcast</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Shoutcast],enabled</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey persist="true">[Shoutcast],status</ConfigKey>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup>
+        <ObjectName>ToolbarDivider</ObjectName>
+        <Size>13f,9min</Size>
+      </WidgetGroup>
+
+      <PushButton>
+        <Size>80f,24f</Size>
+        <TooltipId>skin_settings</TooltipId>
+        <ObjectName>SettingsButton</ObjectName>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Text>     SETTINGS</Text>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Text>     SETTINGS</Text>
+        </State>
+        <Connection>
+          <ConfigKey persist="true">[Master],skin_settings</ConfigKey>
+        </Connection>
+      </PushButton>
 
       <WidgetGroup> <!-- Spacer -->
         <Layout>horizontal</Layout>
@@ -377,7 +234,7 @@
 
       <WidgetGroup> <!-- Spacer -->
         <Layout>horizontal</Layout>
-        <Size>5f,min</Size>
+        <Size>7f,min</Size>
         <Children/>
       </WidgetGroup>
 
@@ -393,10 +250,7 @@
         </Children>
       </WidgetGroup>
 
-      <WidgetGroup>
-        <ObjectName>ToolbarDivider</ObjectName>
-        <Size>13f,9min</Size>
-      </WidgetGroup>
+      <WidgetGroup><Size>9f,1min</Size></WidgetGroup>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>
@@ -406,8 +260,6 @@
             <ObjectName>LatencyLabel</ObjectName>
             <Text>CPU</Text>
           </Label>
-
-          <WidgetGroup><Size>5f,1min</Size></WidgetGroup>
 
           <VuMeter>
             <TooltipId>audio_latency_usage</TooltipId>

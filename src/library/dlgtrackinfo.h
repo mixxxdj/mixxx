@@ -63,7 +63,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
 
     void slotCoverFound(const QObject* pRequestor,
                         const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
-    void slotCoverInfoSelected(const CoverInfo& coverInfo);
+    void slotCoverInfoSelected(const CoverInfoRelative& coverInfo);
     void slotReloadCoverArt();
 
   private:

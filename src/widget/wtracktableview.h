@@ -167,6 +167,8 @@ class WTrackTableView : public WLibraryTableView {
 
     // Remove from table
     QAction *m_pRemoveAct;
+    QAction *m_pRemovePlaylistAct;
+    QAction *m_pRemoveCrateAct;
     QAction *m_pHideAct;
     QAction *m_pUnhideAct;
     QAction *m_pPurgeAct;

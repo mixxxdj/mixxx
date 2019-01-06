@@ -57,15 +57,14 @@ Variables:
 
   <WidgetGroup>
     <ObjectName>NotFocusableEffect</ObjectName>
+    <SizePolicy>max,max</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
 
       <WidgetGroup>
         <ObjectName>EffectNotHighlightable</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>me,f</SizePolicy>
-        <MinimumSize>-1,65</MinimumSize>
-        <MaximumSize>-1,65</MaximumSize>
+        <Size>-1me,65f</Size>
         <Children>
 
           <WidgetGroup>

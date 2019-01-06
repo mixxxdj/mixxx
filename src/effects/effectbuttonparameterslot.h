@@ -13,9 +13,6 @@
 class ControlObject;
 class ControlPushButton;
 
-class EffectButtonParameterSlot;
-typedef QSharedPointer<EffectButtonParameterSlot> EffectButtonParameterSlotPointer;
-
 class EffectButtonParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:

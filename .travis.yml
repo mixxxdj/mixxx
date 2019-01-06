@@ -24,13 +24,14 @@ addons:
       - libid3tag0-dev
       - libmad0-dev
       - libmodplug-dev
+      - libmp3lame-dev
       - libmp4v2-dev
       - libopusfile-dev
       - libportmidi-dev
       - libprotobuf-dev
-      - libqt4-dev
-      - libqt4-opengl-dev
-      - libqt4-sql-sqlite
+      - libqt5opengl5-dev
+      - libqt5sql5-sqlite
+      - libqt5svg5-dev
       - librubberband-dev
       - libshout3-dev
       - libsndfile1-dev
@@ -42,9 +43,12 @@ addons:
       - libwavpack-dev
       - portaudio19-dev
       - protobuf-compiler
+      - qt5-default
+      - qtscript5-dev
       - scons
       - vamp-plugin-sdk
       - qtkeychain-dev
+      - liblilv-dev
 before_install:
   # Virtual X, needed for analyzer waveform tests
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0         ; fi
@@ -53,7 +57,7 @@ before_install:
   # Homebrew uses Python 3 now, and portmidi depends on Python 2 which triggers this bug:
   # https://github.com/Homebrew/homebrew-core/issues/26358
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade python ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband fftw libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband fftw libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv lame; fi
 
 install:
   ####
@@ -61,7 +65,8 @@ install:
 
   # Build flags common to OS X and Linux.
   # Parallel builds are important for avoiding OSX build timeouts.
-  - export COMMON="-j4 test=1 mad=1 faad=1 ffmpeg=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1"
+  # We turn off verbose output to avoid going over the 4MB output limit.
+  - export COMMON="-j4 qt5=1 test=1 mad=1 faad=1 ffmpeg=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0"
 
   #####
   # Ubuntu Trusty Build
@@ -69,7 +74,7 @@ install:
   ####
   # OS X Build
 
-  # Define QTDIR. Homebrew does not support Qt4 anymore, so /usr/local/Cellar/qt stores Qt5 installs.
+  # Define QTDIR.
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export QTDIR=$(find /usr/local/Cellar/qt -d 1 | tail -n 1) ; fi
 
   # Workaround for bug in libopus's opus.h including <opus_multistream.h>
@@ -78,11 +83,9 @@ install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export CFLAGS="-isystem /usr/local/include/opus" ; fi
 
   # NOTE(rryan): 2016-11-15 we are experiencing Travis timeouts for the OSX
-  # build.  Turning off optimizations to see if that speeds up compile times. We
-  # also need to avoid going over 4MB of output so we turn off verbose mode.
-  # NOTE(rryan): 2016-12-31 Homebrew has dropped qt4 support. Build with qt5.
+  # build.  Turning off optimizations to see if that speeds up compile times.
   # TODO(rryan): localecompare doesn't work on Travis with qt5 for some reason.
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export EXTRA_FLAGS="optimize=none asan=0 verbose=0 qt5=1 localecompare=0" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export EXTRA_FLAGS="optimize=none asan=0 localecompare=0" ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export EXTRA_FLAGS="localecompare=1" ; fi
 
   ####

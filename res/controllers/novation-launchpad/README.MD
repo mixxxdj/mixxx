@@ -258,7 +258,7 @@ Feedback
 
 #### KEY SHIFTS
 
-Buttons for temporarily chaning pitch, bound left to right, bottom to top. While pressed, they modify the key of
+Buttons for temporarily changing pitch, bound left to right, bottom to top. While pressed, they modify the key of
 the track. When pressing multiple, the one later pressed *steals* the modification.
 
 #### LOAD/EJECT

@@ -396,7 +396,7 @@ CALLBACK.registerCallbacks = function() {
   //VuMeters
   engine.makeConnection("[Master]", "VuMeterL", CALLBACK.vuMeterL);
   engine.makeConnection("[Master]", "VuMeterR", CALLBACK.vuMeterR);
-  //engine.makeConnection("[Master]","maximize_library",CALLBACK.middleButton);// doesnt work, help?
+  //engine.makeConnection("[Master]","maximize_library",CALLBACK.middleButton);// doesn't work, help?
   //cueButtons (pfl)
   for (var i = 1; i <= 4; i++) {
     engine.makeConnection("[Channel" + i + "]", "pfl", CALLBACK.cue);

@@ -14,12 +14,14 @@
 #include "util/fifo.h"
 
 
+// POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct CachingReaderChunkReadRequest {
     CachingReaderChunk* chunk;
 
-    explicit CachingReaderChunkReadRequest(
-            CachingReaderChunk* chunkArg = nullptr)
-        : chunk(chunkArg) {
+    void giveToWorker(CachingReaderChunkForOwner* chunkForOwner) {
+        DEBUG_ASSERT(chunkForOwner);
+        chunk = chunkForOwner;
+        chunkForOwner->giveToWorker();
     }
 } CachingReaderChunkReadRequest;
 
@@ -32,21 +34,27 @@ enum ReaderStatus {
     CHUNK_READ_INVALID
 };
 
+// POD with trivial ctor/dtor/copy for passing through FIFO
 typedef struct ReaderStatusUpdate {
     ReaderStatus status;
     CachingReaderChunk* chunk;
-    mixxx::IndexRange readableFrameIndexRange;
-    ReaderStatusUpdate()
-        : status(INVALID)
-        , chunk(nullptr) {
+    SINT readableFrameIndexRangeStart;
+    SINT readableFrameIndexRangeEnd;
+
+    void init(
+            ReaderStatus statusArg = INVALID,
+            CachingReaderChunk* chunkArg = nullptr,
+            const mixxx::IndexRange& readableFrameIndexRangeArg = mixxx::IndexRange()) {
+        status = statusArg;
+        chunk = chunkArg;
+        readableFrameIndexRangeStart = readableFrameIndexRangeArg.start();
+        readableFrameIndexRangeEnd = readableFrameIndexRangeArg.end();
     }
-    ReaderStatusUpdate(
-            ReaderStatus statusArg,
-            CachingReaderChunk* chunkArg,
-            const mixxx::IndexRange& readableFrameIndexRangeArg)
-        : status(statusArg)
-        , chunk(chunkArg)
-        , readableFrameIndexRange(readableFrameIndexRangeArg) {
+
+    mixxx::IndexRange readableFrameIndexRange() const {
+        return mixxx::IndexRange::between(
+                readableFrameIndexRangeStart,
+                readableFrameIndexRangeEnd);
     }
 } ReaderStatusUpdate;
 

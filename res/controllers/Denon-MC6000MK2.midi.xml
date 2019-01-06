@@ -770,26 +770,8 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>DenonMC6000MK2.recvLoopOutButton</key>
-                <status>0x90</status>
-                <midino>0x39</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel3]</group>
-                <key>DenonMC6000MK2.recvLoopOutButton</key>
-                <status>0x91</status>
-                <midino>0x39</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel2]</group>
-                <key>DenonMC6000MK2.recvLoopOutButton</key>
+                <key>DenonMC6000MK2.rightDeck2.loopOutButtonInput</key>
                 <status>0x92</status>
                 <midino>0x39</midino>
                 <options>
@@ -798,7 +780,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DenonMC6000MK2.recvLoopOutButton</key>
+                <key>DenonMC6000MK2.rightDeck4.loopOutButtonInput</key>
                 <status>0x93</status>
                 <midino>0x39</midino>
                 <options>
@@ -807,7 +789,115 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DenonMC6000MK2.recvLoopInButton</key>
+                <key>DenonMC6000MK2.leftDeck1.loopOutButtonInput</key>
+                <status>0x90</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>DenonMC6000MK2.leftDeck3.loopOutButtonInput</key>
+                <status>0x91</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonMC6000MK2.rightDeck2.loopOutButtonInput</key>
+                <status>0x82</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>DenonMC6000MK2.rightDeck4.loopOutButtonInput</key>
+                <status>0x83</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonMC6000MK2.leftDeck1.loopOutButtonInput</key>
+                <status>0x80</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>DenonMC6000MK2.leftDeck3.loopOutButtonInput</key>
+                <status>0x81</status>
+                <midino>0x39</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonMC6000MK2.rightDeck2.loopInButtonInput</key>
+                <status>0x82</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>DenonMC6000MK2.rightDeck4.loopInButtonInput</key>
+                <status>0x83</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonMC6000MK2.leftDeck1.loopInButtonInput</key>
+                <status>0x80</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>DenonMC6000MK2.leftDeck3.loopInButtonInput</key>
+                <status>0x81</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel2]</group>
+                <key>DenonMC6000MK2.rightDeck2.loopInButtonInput</key>
+                <status>0x92</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel4]</group>
+                <key>DenonMC6000MK2.rightDeck4.loopInButtonInput</key>
+                <status>0x93</status>
+                <midino>0x37</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel1]</group>
+                <key>DenonMC6000MK2.leftDeck1.loopInButtonInput</key>
                 <status>0x90</status>
                 <midino>0x37</midino>
                 <options>
@@ -816,7 +906,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DenonMC6000MK2.recvLoopInButton</key>
+                <key>DenonMC6000MK2.leftDeck3.loopInButtonInput</key>
                 <status>0x91</status>
                 <midino>0x37</midino>
                 <options>
@@ -830,24 +920,6 @@
                 <midino>0x04</midino>
                 <options>
                     <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel2]</group>
-                <key>DenonMC6000MK2.recvLoopInButton</key>
-                <status>0x92</status>
-                <midino>0x37</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel4]</group>
-                <key>DenonMC6000MK2.recvLoopInButton</key>
-                <status>0x93</status>
-                <midino>0x37</midino>
-                <options>
-                    <script-binding/>
                 </options>
             </control>
             <control>

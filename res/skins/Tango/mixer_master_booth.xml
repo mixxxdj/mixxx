@@ -4,8 +4,9 @@ Description:
 -->
 <Template>
   <WidgetGroup><!-- Master & Booth Mixer -->
+    <ObjectName>AlignLeft</ObjectName>
     <Layout>horizontal</Layout>
-    <Size>-1min,28f</Size>
+    <Size>1min,28f</Size>
     <Children>
 
       <WidgetGroup><!-- Master Mixer -->

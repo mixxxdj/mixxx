@@ -36,7 +36,6 @@
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>
-          <!--Template src="skin:preview_deck.xml" /-->
         </Children>
       </WidgetGroup>
     </Children>

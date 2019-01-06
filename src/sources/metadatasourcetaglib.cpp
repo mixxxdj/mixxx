@@ -112,10 +112,12 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
                 << "with type" << m_fileType;
         return afterImport(ImportResult::Unavailable);
     }
-    kLogger.trace() << "Importing"
-            << ((pTrackMetadata && pCoverImage) ? "track metadata and cover art" : (pTrackMetadata ? "track metadata" : "cover art"))
-            << "from file" << m_fileName
-            << "with type" << m_fileType;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "Importing"
+                << ((pTrackMetadata && pCoverImage) ? "track metadata and cover art" : (pTrackMetadata ? "track metadata" : "cover art"))
+                << "from file" << m_fileName
+                << "with type" << m_fileType;
+    }
 
     // Rationale: If a file contains different types of tags only
     // a single type of tag will be read. Tag types are read in a
@@ -326,10 +328,12 @@ MetadataSourceTagLib::importTrackMetadataAndCoverImage(
         return afterImport(ImportResult::Failed);
     }
 
-    kLogger.debug()
-            << "No track metadata or cover art found"
-            << "in file" << m_fileName
-            << "with type" << m_fileType;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "No track metadata or cover art found"
+                << "in file" << m_fileName
+                << "with type" << m_fileType;
+    }
     return afterImport(ImportResult::Unavailable);
 }
 
@@ -745,6 +749,9 @@ class SafelyWritableFile final {
 std::pair<MetadataSource::ExportResult, QDateTime>
 MetadataSourceTagLib::exportTrackMetadata(
         const TrackMetadata& trackMetadata) const {
+    // NOTE(uklotzde): Log unconditionally (with debug level) to
+    // identify files in the log file that might have caused a
+    // crash while exporting metadata.
     kLogger.debug() << "Exporting track metadata"
             << "into file" << m_fileName
             << "with type" << m_fileType;

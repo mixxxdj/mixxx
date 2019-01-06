@@ -86,9 +86,9 @@
           <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
             <SetVariable name="ObjectName">BeatsyncButton</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MinimumSize">32,22</SetVariable>
             <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+            <SetVariable name="SizePolicy">me,f</SetVariable>
             <SetVariable name="state_0_text">Sync</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>

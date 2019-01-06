@@ -16,8 +16,10 @@
 
 class AnalyzerBeats: public Analyzer {
   public:
-    AnalyzerBeats(UserSettingsPointer pConfig);
-    virtual ~AnalyzerBeats();
+    explicit AnalyzerBeats(
+            UserSettingsPointer pConfig,
+            bool enforceBpmDetection = false);
+    ~AnalyzerBeats() override = default;
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
@@ -30,7 +32,9 @@ class AnalyzerBeats: public Analyzer {
         QString pluginId, bool bPreferencesFastAnalysis);
     QVector<double> correctedBeats(QVector<double> rawbeats);
 
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
+    const bool m_enforceBpmDetection;
+
     VampAnalyzer* m_pVamp;
     QString m_pluginId;
     bool m_bPreferencesReanalyzeOldBpm;

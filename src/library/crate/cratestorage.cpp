@@ -2,6 +2,7 @@
 
 #include "library/crate/crateschema.h"
 #include "library/dao/trackschema.h"
+#include "library/queryutil.h"
 
 #include "util/db/dbconnection.h"
 
@@ -303,8 +304,11 @@ bool CrateStorage::readCrateByName(const QString& name, Crate* pCrate) const {
             }
             return true;
         } else {
-            kLogger.debug()
-                    << "Crate not found by name:" << name;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Crate not found by name:"
+                        << name;
+            }
         }
     }
     return false;
@@ -444,18 +448,18 @@ QString CrateStorage::formatSubselectQueryForCrateTrackIds(
             crateId.toString());
 }
 
-
-//static
 QString CrateStorage::formatQueryForTrackIdsByCrateNameLike(
-        const QString& crateNameLike) {
-    return QString("SELECT DISTINCT %1 FROM %2 JOIN %3 ON %4=%5 WHERE %6 LIKE '%7' ORDER BY %1").arg(
+        const QString& crateNameLike) const {
+    FieldEscaper escaper(m_database);
+    QString escapedCrateNameLike = escaper.escapeString(kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+    return QString("SELECT DISTINCT %1 FROM %2 JOIN %3 ON %4=%5 WHERE %6 LIKE %7 ORDER BY %1").arg(
             CRATETRACKSTABLE_TRACKID,
             CRATE_TRACKS_TABLE,
             CRATE_TABLE,
             CRATETRACKSTABLE_CRATEID,
             CRATETABLE_ID,
             CRATETABLE_NAME,
-            kSqlLikeMatchAll + crateNameLike + kSqlLikeMatchAll);
+            escapedCrateNameLike);
 }
 
 
@@ -647,8 +651,11 @@ bool CrateStorage::onDeletingCrate(
             return false;
         }
         if (query.numRowsAffected() <= 0) {
-            kLogger.debug()
-                    << "Deleting empty crate with id" << crateId;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Deleting empty crate with id"
+                        << crateId;
+            }
         }
     }
     {
@@ -697,9 +704,11 @@ bool CrateStorage::onAddingCrateTracks(
         }
         if (query.numRowsAffected() == 0) {
             // track is already in crate
-            kLogger.debug()
-                    << "Track" << trackId
-                    << "not added to crate" << crateId;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Track" << trackId
+                        << "not added to crate" << crateId;
+            }
         } else {
             DEBUG_ASSERT(query.numRowsAffected() == 1);
         }
@@ -729,9 +738,11 @@ bool CrateStorage::onRemovingCrateTracks(
         }
         if (query.numRowsAffected() == 0) {
             // track not found in crate
-            kLogger.debug()
-                    << "Track" << trackId
-                    << "not removed from crate" << crateId;
+            if (kLogger.debugEnabled()) {
+                kLogger.debug()
+                        << "Track" << trackId
+                        << "not removed from crate" << crateId;
+            }
         } else {
             DEBUG_ASSERT(query.numRowsAffected() == 1);
         }

@@ -147,7 +147,7 @@ class AnalyzerWaveform : public Analyzer {
     void finalize(TrackPointer tio) override;
 
   private:
-    void storeCurentStridePower();
+    void storeCurrentStridePower();
     void resetCurrentStride();
 
     void createFilters(int sampleRate);
