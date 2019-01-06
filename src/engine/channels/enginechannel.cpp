@@ -38,14 +38,14 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
     m_pOrientation->setStates(3);
     m_pOrientation->set(defaultOrientation);
     m_pOrientationLeft = new ControlPushButton(ConfigKey(getGroup(), "orientation_left"));
-    connect(m_pOrientationLeft, SIGNAL(valueChanged(double)),
-            this, SLOT(slotOrientationLeft(double)), Qt::DirectConnection);
+    connect(m_pOrientationLeft, &ControlObject::valueChanged,
+            this, &EngineChannel::slotOrientationLeft, Qt::DirectConnection);
     m_pOrientationRight = new ControlPushButton(ConfigKey(getGroup(), "orientation_right"));
-    connect(m_pOrientationRight, SIGNAL(valueChanged(double)),
-            this, SLOT(slotOrientationRight(double)), Qt::DirectConnection);
+    connect(m_pOrientationRight, &ControlObject::valueChanged,
+            this, &EngineChannel::slotOrientationRight, Qt::DirectConnection);
     m_pOrientationCenter = new ControlPushButton(ConfigKey(getGroup(), "orientation_center"));
-    connect(m_pOrientationCenter, SIGNAL(valueChanged(double)),
-            this, SLOT(slotOrientationCenter(double)), Qt::DirectConnection);
+    connect(m_pOrientationCenter, &ControlObject::valueChanged,
+            this, &EngineChannel::slotOrientationCenter, Qt::DirectConnection);
     m_pTalkover = new ControlPushButton(ConfigKey(getGroup(), "talkover"));
     m_pTalkover->setButtonMode(ControlPushButton::POWERWINDOW);
 
