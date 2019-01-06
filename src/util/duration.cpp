@@ -25,9 +25,9 @@ QChar DurationBase::kHectosecondSeparator = QChar(0x231E);
 
 // static
 QString DurationBase::formatTime(double dSeconds, Precision precision) {
-    VERIFY_OR_DEBUG_ASSERT (dSeconds >= 0.0) {
+    if (dSeconds < 0.0) {
         // negative durations are not supported
-        // TODO:(XXX) Does this actually need to do anything?
+	return "?";
     }
 
     const qint64 days = static_cast<qint64>(std::floor(dSeconds)) / kSecondsPerDay;
@@ -57,9 +57,9 @@ QString DurationBase::formatTime(double dSeconds, Precision precision) {
 }
 
 QString DurationBase::formatSeconds(double dSeconds, Precision precision) {
-    VERIFY_OR_DEBUG_ASSERT (dSeconds >= 0.0) {
+    if (dSeconds < 0.0) {
         // negative durations are not supported
-        // TODO:(XXX) Does this actually need to do anything?
+	return "?";
     }
 
     QString durationString;
@@ -77,9 +77,9 @@ QString DurationBase::formatSeconds(double dSeconds, Precision precision) {
 
 // static
 QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
-    VERIFY_OR_DEBUG_ASSERT (dSeconds >= 0.0) {
+    if (dSeconds < 0.0) {
         // negative durations are not supported
-        // TODO:(XXX) Does this actually need to do anything?
+	return "?";
     }
 
     int kilos = (int)dSeconds / 1000;
@@ -104,9 +104,9 @@ QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
 
 // static
 QString DurationBase::formatHectoSeconds(double dSeconds, Precision precision) {
-    VERIFY_OR_DEBUG_ASSERT (dSeconds >= 0.0) {
+    if (dSeconds < 0.0) {
         // negative durations are not supported
-        // TODO:(XXX) Does this actually need to do anything?
+	return "?";
     }
 
     int hecto = (int)dSeconds / 100;
