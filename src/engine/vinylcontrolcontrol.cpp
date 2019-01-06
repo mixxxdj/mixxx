@@ -22,8 +22,8 @@ VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pCon
     }
 
     m_pControlVinylSeek = new ControlObject(ConfigKey(group, "vinylcontrol_seek"));
-    connect(m_pControlVinylSeek, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlVinylSeek(double)),
+    connect(m_pControlVinylSeek, &ControlObject::valueChanged,
+            this, &VinylControlControl::slotControlVinylSeek,
             Qt::DirectConnection);
 
     m_pControlVinylRate = new ControlObject(ConfigKey(group, "vinylcontrol_rate"));
