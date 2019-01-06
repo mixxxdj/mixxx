@@ -7,7 +7,7 @@
 #include <QThread>
 #include <QString>
 
-#include "engine/cachingreaderchunk.h"
+#include "engine/cachingreader/cachingreaderchunk.h"
 #include "track/track.h"
 #include "engine/engineworker.h"
 #include "sources/audiosource.h"

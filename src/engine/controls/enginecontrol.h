@@ -13,7 +13,7 @@
 #include "track/track.h"
 #include "control/controlvalue.h"
 #include "engine/effects/groupfeaturestate.h"
-#include "engine/cachingreader.h"
+#include "engine/cachingreader/cachingreader.h"
 
 class EngineMaster;
 class EngineBuffer;

@@ -1,4 +1,4 @@
-#include "engine/cachingreaderchunk.h"
+#include "engine/cachingreader/cachingreaderchunk.h"
 
 #include <QtDebug>
 

@@ -3,7 +3,7 @@
 #include <QtDebug>
 #include <QScopedPointer>
 
-#include "engine/cachingreader.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "control/controlobject.h"
 #include "engine/controls/loopingcontrol.h"
 #include "engine/readaheadmanager.h"

@@ -1,7 +1,7 @@
 #include <QtDebug>
 #include <QFileInfo>
 
-#include "engine/cachingreader.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "control/controlobject.h"
 #include "track/track.h"
 #include "util/assert.h"

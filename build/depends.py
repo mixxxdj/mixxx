@@ -829,9 +829,9 @@ class MixxxCore(Feature):
                    "src/engine/controls/ratecontrol.cpp",
                    "src/engine/readaheadmanager.cpp",
                    "src/engine/enginetalkoverducking.cpp",
-                   "src/engine/cachingreader.cpp",
-                   "src/engine/cachingreaderchunk.cpp",
-                   "src/engine/cachingreaderworker.cpp",
+                   "src/engine/cachingreader/cachingreader.cpp",
+                   "src/engine/cachingreader/cachingreaderchunk.cpp",
+                   "src/engine/cachingreader/cachingreaderworker.cpp",
 
                    "src/analyzer/trackanalysisscheduler.cpp",
                    "src/analyzer/analyzerthread.cpp",

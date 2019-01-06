@@ -2,7 +2,7 @@
 
 #include <QtDebug>
 
-#include "engine/cachingreader.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "preferences/usersettings.h"
 #include "control/controlindicator.h"
 #include "control/controllinpotmeter.h"
