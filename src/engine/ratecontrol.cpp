@@ -57,21 +57,21 @@ RateControl::RateControl(QString group,
 
     // Forward button
     m_pForwardButton = new ControlPushButton(ConfigKey(group, "fwd"));
-    connect(m_pForwardButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlFastForward(double)),
+    connect(m_pForwardButton, &ControlObject::valueChanged,
+            this, &RateControl::slotControlFastForward,
             Qt::DirectConnection);
     m_pForwardButton->set(0);
 
     // Back button
     m_pBackButton = new ControlPushButton(ConfigKey(group, "back"));
-    connect(m_pBackButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlFastBack(double)),
+    connect(m_pBackButton, &ControlObject::valueChanged,
+            this, &RateControl::slotControlFastBack,
             Qt::DirectConnection);
     m_pBackButton->set(0);
 
     m_pReverseRollButton = new ControlPushButton(ConfigKey(group, "reverseroll"));
-    connect(m_pReverseRollButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotReverseRollActivate(double)),
+    connect(m_pReverseRollButton, &ControlObject::valueChanged,
+            this, &RateControl::slotReverseRollActivate,
             Qt::DirectConnection);
 
     m_pSlipEnabled = new ControlProxy(group, "slip_enabled", this);
@@ -83,51 +83,51 @@ RateControl::RateControl(QString group,
     // Permanent rate-change buttons
     buttonRatePermDown =
         new ControlPushButton(ConfigKey(group,"rate_perm_down"));
-    connect(buttonRatePermDown, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRatePermDown(double)),
+    connect(buttonRatePermDown, &ControlObject::valueChanged,
+            this, &RateControl::slotControlRatePermDown,
             Qt::DirectConnection);
 
     buttonRatePermDownSmall =
         new ControlPushButton(ConfigKey(group,"rate_perm_down_small"));
-    connect(buttonRatePermDownSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRatePermDownSmall(double)),
+    connect(buttonRatePermDownSmall, &ControlObject::valueChanged,
+            this, &RateControl::slotControlRatePermDownSmall,
             Qt::DirectConnection);
 
     buttonRatePermUp =
         new ControlPushButton(ConfigKey(group,"rate_perm_up"));
-    connect(buttonRatePermUp, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRatePermUp(double)),
+    connect(buttonRatePermUp, &ControlObject::valueChanged,
+            this, &RateControl::slotControlRatePermUp,
             Qt::DirectConnection);
 
     buttonRatePermUpSmall =
         new ControlPushButton(ConfigKey(group,"rate_perm_up_small"));
-    connect(buttonRatePermUpSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRatePermUpSmall(double)),
+    connect(buttonRatePermUpSmall, &ControlObject::valueChanged,
+            this, &RateControl::slotControlRatePermUpSmall,
             Qt::DirectConnection);
 
     // Temporary rate-change buttons
     buttonRateTempDown =
         new ControlPushButton(ConfigKey(group,"rate_temp_down"));
-    connect(buttonRateTempDown, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRateTempDown(double)),
+    connect(buttonRateTempDown, &ControlObject::valueChanged,
+            this, &RateControl::slotControlRateTempDown,
             Qt::DirectConnection);
 
     buttonRateTempDownSmall =
         new ControlPushButton(ConfigKey(group,"rate_temp_down_small"));
-    connect(buttonRateTempDownSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRateTempDownSmall(double)),
+    connect(buttonRateTempDownSmall, &ControlObject::valueChanged,
+            this, &RateControl::slotControlRateTempDownSmall,
             Qt::DirectConnection);
 
     buttonRateTempUp =
         new ControlPushButton(ConfigKey(group,"rate_temp_up"));
-    connect(buttonRateTempUp, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRateTempUp(double)),
+    connect(buttonRateTempUp, &ControlObject::valueChanged,
+            this, &RateControl::slotControlRateTempUp,
             Qt::DirectConnection);
 
     buttonRateTempUpSmall =
         new ControlPushButton(ConfigKey(group,"rate_temp_up_small"));
-    connect(buttonRateTempUpSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRateTempUpSmall(double)),
+    connect(buttonRateTempUpSmall, &ControlObject::valueChanged,
+            this, &RateControl::slotControlRateTempUpSmall,
             Qt::DirectConnection);
 
     // We need the sample rate so we can guesstimate something close
