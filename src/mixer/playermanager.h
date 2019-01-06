@@ -9,10 +9,10 @@
 #include <QMap>
 #include <QMutex>
 
+#include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 
-class AnalyzerQueue;
 class Auxiliary;
 class BaseTrackPlayer;
 class ControlObject;
@@ -138,8 +138,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Get the auxiliary by its number. Auxiliaries are numbered starting with 1.
     Auxiliary* getAuxiliary(unsigned int auxiliary) const;
 
-    // Binds signals between PlayerManager and Library. Does not store a pointer
-    // to the Library.
+    // Binds signals between PlayerManager and Library. The library
+    // must exist at least for the lifetime of this instance.
     void bindToLibrary(Library* pLibrary);
 
     // Returns the group for the ith sampler where i is zero indexed
@@ -201,6 +201,12 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void slotChangeNumMicrophones(double v);
     void slotChangeNumAuxiliaries(double v);
 
+  private slots:
+    void slotAnalyzeTrack(TrackPointer track);
+
+    void onTrackAnalysisProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void onTrackAnalysisFinished();
+
   signals:
     void loadLocationToPlayer(QString location, QString group);
 
@@ -218,6 +224,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Emitted when the number of decks changes.
     void numberOfDecksChanged(int decks);
+
+    void trackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+    void trackAnalyzerIdle();
 
   private:
     TrackPointer lookupTrack(QString location);
@@ -246,12 +255,13 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     VisualsManager* m_pVisualsManager;
     EngineMaster* m_pEngine;
     SamplerBank* m_pSamplerBank;
-    AnalyzerQueue* m_pAnalyzerQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCONumPreviewDecks;
     ControlObject* m_pCONumMicrophones;
     ControlObject* m_pCONumAuxiliaries;
+
+    TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;

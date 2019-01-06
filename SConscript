@@ -27,7 +27,6 @@ plugins = []
 # Grab these from the SConstruct above us
 Import('build')
 Import('sources')
-Import('mixxxminimal_plugins')
 
 env = build.env
 flags = build.flags
@@ -92,11 +91,6 @@ elif build.platform_is_osx:
         mixxx_bin = env.Program('Mixxx', [mixxx_main, mixxx_qrc])
 else:
         mixxx_bin = env.Program('mixxx', [mixxx_main, mixxx_qrc])
-
-# Make sure mixxxminimal plugins are built before
-# mixxx_bin. This fixes a race where when building with multiple threads the
-# packaging step starts before the plugins are built.
-Depends(mixxx_bin, mixxxminimal_plugins)
 
 # For convenience, copy the Mixxx binary out of the build directory to the
 # root. Don't do it on windows because the binary can't run on its own and needs
@@ -266,9 +260,6 @@ if test_bin is not None:
 if build.bundle_pdbs:
         binary_files.append(env.SideEffect('mixxx.pdb', mixxx_bin))
 
-#VAMP beat tracking and key detection plugin
-libmixxxminimal_vamp_plugin = mixxxminimal_plugins
-
 #Skins
 skin_files = Glob('#res/skins/*')
 
@@ -380,9 +371,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                 binary = env.Install(unix_bin_path, binary_files)
                 skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
                 fonts = env.Install(os.path.join(unix_share_path, 'mixxx', 'fonts'), font_files)
-                vamp_plugin =  env.Install(
-                    os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vampqt5'),
-                    libmixxxminimal_vamp_plugin)
                 controllermappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'controllers'), controllermappings_files)
                 translations = env.Install(os.path.join(unix_share_path, 'mixxx', 'translations'), translation_files)
                 keyboardmappings = env.Install(os.path.join(unix_share_path, 'mixxx', 'keyboard'), keyboardmappings_files)
@@ -407,7 +395,6 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', dotdesktop)
                 env.Alias('install', dotappstream)
                 env.Alias('install', icon)
-                env.Alias('install', vamp_plugin)
 
                 if not building_debian_package and os.access(udev_root, os.W_OK):
                         env.Alias('install', hidudev)
@@ -435,9 +422,6 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 [("sqldrivers", e) for e in sql_dylibs] +
                 [("styles", "libqmacstyle.dylib")]
         )
-
-        for x in mixxxminimal_plugins:
-                plugins.append(x.get_abspath())
 
         resource_map = {}
         for tfile in translation_files:
@@ -535,8 +519,6 @@ if build.platform_is_windows:
         docs = env.Install(os.path.join(base_dist_dir, "doc/"), docs_files)
         #icon = env.Install(base_dist_dir+"", icon_files)
         dlls = env.Install(base_dist_dir+"/", dll_files)
-        vamp_plugins = env.Install(os.path.join(base_dist_dir, "plugins", "vamp/"),
-                                   libmixxxminimal_vamp_plugin)
         binary = env.Install(base_dist_dir+"/", binary_files)
 
         #Always trigger these install builders when compiling on Windows
@@ -547,11 +529,10 @@ if build.platform_is_windows:
         env.Alias('mixxx', keyboardmappings)
         env.Alias('mixxx', docs)
         env.Alias('mixxx', dlls)
-        env.Alias('mixxx', vamp_plugins)
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
 
-        binaries_to_codesign = [binary, dlls, vamp_plugins]
+        binaries_to_codesign = [binary, dlls]
 
         # imageformats DLL
         if imgfmtdll_files:

@@ -1,3 +1,12 @@
+==== 2.3.0 (Unreleased) ====
+
+* Add support for multi-threaded track analysis. lp:1641153
+* Add built-in support for MP3 encoding. LAME is now a required dependency. lp:1294128
+* Add support for searching for empty fields. (e.g. crate:""). lp:1788086
+* Unify skin controls for better consistency of settings across skins. lp:1740513
+* Remove VAMP plugin support. vamp-plugin-sdk and vamp-hostsdk are no longer required dependencies.
+* Remove SoundSource plugin support. lp:1792747
+
 ==== 2.2.0 2018-12-17 ====
 
 General
