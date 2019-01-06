@@ -21,7 +21,6 @@
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginefilterbessel4.h"
 #include "engine/enginepregain.h"
 #include "engine/enginevumeter.h"
 #include "util/sample.h"

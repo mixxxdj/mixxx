@@ -2,9 +2,9 @@
 #include <QtDebug>
 
 #include "preferences/dialog/dlgprefcrossfader.h"
-#include "engine/enginefilterbessel4.h"
 #include "control/controlobject.h"
 #include "engine/enginexfader.h"
+#include "util/math.h"
 #include "util/rescaler.h"
 
 DlgPrefCrossfader::DlgPrefCrossfader(

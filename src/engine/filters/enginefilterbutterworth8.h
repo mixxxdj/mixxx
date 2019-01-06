@@ -1,7 +1,7 @@
 #ifndef ENGINEFILTERBUTTERWORTH8_H
 #define ENGINEFILTERBUTTERWORTH8_H
 
-#include "engine/enginefilteriir.h"
+#include "engine/filters/enginefilteriir.h"
 
 class EngineFilterButterworth8Low : public EngineFilterIIR<8, IIR_LP> {
     Q_OBJECT

@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "engine/enginefilterbiquad1.h"
+#include "engine/filters/enginefilterbiquad1.h"
 
 EngineFilterBiquad1LowShelving::EngineFilterBiquad1LowShelving(int sampleRate,
                                                                double centerFreq,

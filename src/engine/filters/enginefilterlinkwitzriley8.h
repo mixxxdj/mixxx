@@ -1,7 +1,7 @@
 #ifndef ENGINEFILTELINKWITZRILEY8_H
 #define ENGINEFILTELINKWITZRILEY8_H
 
-#include "engine/enginefilteriir.h"
+#include "engine/filters/enginefilteriir.h"
 
 class EngineFilterLinkwitzRiley8Low : public EngineFilterIIR<8, IIR_LP> {
     Q_OBJECT
