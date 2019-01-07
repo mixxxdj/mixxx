@@ -12,15 +12,22 @@
 
 #include "encoder/encoderopus.h"
 
+// Opus only supports 48 and 96 kHz samplerates
+const int EncoderOpus::MASTER_SAMPLERATE = 48000;
+
+const char* EncoderOpus::INVALID_SAMPLERATE_MESSAGE =
+    "Using Opus at samplerates other than 48 kHz "
+    "is not supported by the Opus encoder. Please use "
+    "48000 Hz in \"Sound Hardware\" preferences "
+    "or switch to a different encoding.";
+
 namespace {
 // From libjitsi's Opus encoder:
 // 1 byte TOC + maximum frame size (1275)
 // See https://tools.ietf.org/html/rfc6716#section-3.2
-const int kMaxOpusBufferSize = 1+1275;
+static const int kMaxOpusBufferSize = 1+1275;
 // Opus frame duration in milliseconds. Fixed to 60ms
-const int kOpusFrameMs = 60;
-// Opus only supports these samplerates
-const int kOpusSamplerate = 48000;
+static const int kOpusFrameMs = 60;
 
 const mixxx::Logger kLogger("EncoderOpus");
 }
@@ -80,20 +87,16 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
 int EncoderOpus::initEncoder(int samplerate, QString errorMessage) {
     Q_UNUSED(errorMessage);
 
-    if (samplerate != kOpusSamplerate) {
+    if (samplerate != MASTER_SAMPLERATE) {
         kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";
 
-        QString invalidSamplerate = QObject::tr(
-                "Using Opus at samplerates other than 48 kHz "
-                "is not supported by the Opus encoder. Please use "
-                "48000 Hz in \"Sound Hardware\" preferences "
-                "or switch to a different encoding.");
+        QString invalidSamplerateMessage = QObject::tr(INVALID_SAMPLERATE_MESSAGE);
 
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(QObject::tr("Encoder"));
-        props->setText(invalidSamplerate);
-        props->setKey(invalidSamplerate);
+        props->setText(invalidSamplerateMessage);
+        props->setKey(invalidSamplerateMessage);
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return -1;
     }

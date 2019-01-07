@@ -22,6 +22,7 @@
 #include "control/controlpushbutton.h"
 #include "encoder/encoder.h"
 #include "encoder/encoderbroadcastsettings.h"
+#include "encoder/encoderopus.h"
 #include "mixer/playerinfo.h"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
@@ -370,12 +371,11 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-    if(m_format_is_opus && iMasterSamplerate != 48000) {
-        errorDialog(tr("Broadcasting at samplerates other than 48 kHz "
-                       "is not supported by the Opus encoder. Please use "
-                       "48000 Hz in \"Sound Hardware\" preferences "
-                       "or switch to a different encoding."),
-                    tr("Unsupported samplerate"));
+    if(m_format_is_opus && iMasterSamplerate != EncoderOpus::MASTER_SAMPLERATE) {
+        errorDialog(
+            tr(EncoderOpus::INVALID_SAMPLERATE_MESSAGE),
+            tr("Unsupported samplerate")
+        );
         return;
     }
 

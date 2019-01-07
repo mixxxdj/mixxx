@@ -19,6 +19,9 @@
 
 class EncoderOpus: public Encoder {
   public:
+    static const int MASTER_SAMPLERATE;
+    static const char* INVALID_SAMPLERATE_MESSAGE;
+
     EncoderOpus(EncoderCallback* pCallback = nullptr);
     virtual ~EncoderOpus();
 
