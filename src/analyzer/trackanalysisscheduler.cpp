@@ -243,18 +243,6 @@ int TrackAnalysisScheduler::scheduleTracksById(const QList<TrackId>& trackIds) {
     return scheduledCount;
 }
 
-QList<TrackId> TrackAnalysisScheduler::collectScheduledTrackIds() const {
-    QList<TrackId> remainingTrackIds;
-    remainingTrackIds.reserve(m_queuedTrackIds.size() + m_pendingTrackIds.size());
-    for (auto queuedTrackId: m_queuedTrackIds) {
-        remainingTrackIds.append(std::move(queuedTrackId));
-    }
-    for (auto pendingTrackId: m_pendingTrackIds) {
-        remainingTrackIds.append(std::move(pendingTrackId));
-    }
-    return remainingTrackIds;
-}
-
 void TrackAnalysisScheduler::suspend() {
     kLogger.debug() << "Suspending";
     for (auto& worker: m_workers) {
@@ -319,10 +307,27 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
 
 void TrackAnalysisScheduler::stop() {
     kLogger.debug() << "Stopping";
-    m_queuedTrackIds.clear();
     for (auto& worker: m_workers) {
         worker.stopThread();
     }
     // The worker threads are still running at this point
     // and m_workers must not be modified!
+    m_queuedTrackIds.clear();
+    m_pendingTrackIds.clear();
+    DEBUG_ASSERT((allTracksFinished()));
+}
+
+QList<TrackId> TrackAnalysisScheduler::stopAndCollectScheduledTrackIds() {
+    QList<TrackId> scheduledTrackIds;
+    scheduledTrackIds.reserve(m_queuedTrackIds.size() + m_pendingTrackIds.size());
+    for (auto queuedTrackId: m_queuedTrackIds) {
+        scheduledTrackIds.append(std::move(queuedTrackId));
+    }
+    for (auto pendingTrackId: m_pendingTrackIds) {
+        scheduledTrackIds.append(std::move(pendingTrackId));
+    }
+    // Stopping the scheduler will clear all queued and pending tracks,
+    // so we need to do this after we have collected all scheduled tracks!
+    stop();
+    return scheduledTrackIds;
 }
