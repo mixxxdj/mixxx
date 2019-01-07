@@ -1189,5 +1189,5 @@ PioneerDDJSB2.EffectUnit = function (unitNumber) {
             var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + value + ']';
             engine.softTakeoverIgnoreNextValue(effectGroup, 'meta');
         }
-    });
+    }.bind(this));
 };
