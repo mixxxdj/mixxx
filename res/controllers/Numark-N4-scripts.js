@@ -95,7 +95,7 @@ NumarkN4.init = function (id) {
   }
   // create xFader callbacks and trigger them to fill NumarkN4.storedCrossfaderParams
   _.forEach(NumarkN4.scratchXFader, function (value,control) {
-    var connectionObject = engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback);
+    var connectionObject = engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback.bind(this));
     connectionObject.trigger();
     NumarkN4.crossfaderCallbackConnections.push(connectionObject);
   });
@@ -231,7 +231,7 @@ NumarkN4.topContainer = function (channel) {
       this.timer = engine.beginTimer(1000, function () {
         theContainer.reconnectComponents();
         this.timer = 0;
-      }, true);
+      }.bind(this), true);
     },
     shift: function () {
       this.group=theContainer.group;
@@ -325,14 +325,14 @@ NumarkN4.MixerTemplate = function () {
         _.forEach(NumarkN4.scratchXFader, function (value, control){
           engine.setValue("[Mixer Profile]", control, value);
           NumarkN4.crossfaderCallbackConnections.push(
-            engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback)
+            engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback.bind(this))
           );
         });
       } else {
         _.forEach(NumarkN4.storedCrossfaderParams, function (value, control) {
           engine.setValue("[Mixer Profile]", control, value);
           NumarkN4.crossfaderCallbackConnections.push(
-            engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback)
+            engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback.bind(this))
           );
         });
       }
@@ -495,7 +495,7 @@ NumarkN4.Deck = function (channel) {
         }
         engine.beginTimer(100,function () {
           this.flickerSafetyTimeout=true;
-        },true);
+        }.bind(this),true);
       }
     },
   });
@@ -587,10 +587,10 @@ NumarkN4.Deck = function (channel) {
     // spawned which conflicted with the old (still running) timers.
     if (!this.previouslyLoaded) {
       //timer is more efficent is this case than a callback because it would be called too often.
-      theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,theDeck.manageChannelIndicator);
+      theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,theDeck.manageChannelIndicator.bind(theDeck));
     }
     this.previouslyLoaded=value;
-  });
+  }.bind(this));
   this.pitchBendMinus = new components.Button({
     midi: [0x90+channel,0x18,0xB0+channel,0x3D],
     key: "rate_temp_down",
