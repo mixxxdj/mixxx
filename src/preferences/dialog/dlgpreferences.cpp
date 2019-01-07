@@ -199,8 +199,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
 
 #ifdef __MODPLUG__
     addPageWidget(PreferencesPage(
-            tr("Modplug Decoder"),
-            QIcon(":/images/preferences/ic_preferences_modplug.svg"))
+            new DlgPrefModplug(this, m_pConfig),
+            createTreeItem(tr("Modplug Decoder"), QIcon(":/images/preferences/ic_preferences_modplug.svg"))
     ));
 #endif
 
@@ -237,7 +237,10 @@ DlgPreferences::~DlgPreferences() {
     }
 
     // When DlgPrefControllers is deleted it manually deletes the controller tree items,
-    // which makes QTreeWidgetItem trigger this signal.
+    // which makes QTreeWidgetItem trigger this signal. If we don't disconnect,
+    // &DlgPreferences::changePage iterates on the PreferencesPage instances in m_allPages,
+    // but the pDlg objects of the controller items are already destroyed by DlgPrefControllers,
+    // which causes a crash when accessed.
     disconnect(contentsTreeWidget, &QTreeWidget::currentItemChanged,
             this, &DlgPreferences::changePage);
     // Need to explicitly delete rather than relying on child auto-deletion
@@ -433,7 +436,6 @@ void DlgPreferences::addPageWidget(PreferencesPage page) {
     int iframe = 2 * sa->frameWidth();
     m_pageSizeHint = m_pageSizeHint.expandedTo(
             page.pDlg->sizeHint()+QSize(iframe, iframe));
-
 }
 
 DlgPreferencePage* DlgPreferences::currentPage() {

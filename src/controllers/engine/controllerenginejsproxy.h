@@ -17,7 +17,6 @@ class ControllerEngine;
 class ControllerEngineJSProxy: public QObject {
     Q_OBJECT
   public:
-
     ControllerEngineJSProxy(ControllerEngine* m_pEngine);
 
     virtual ~ControllerEngineJSProxy();

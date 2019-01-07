@@ -2,13 +2,9 @@
 #include "controllers/engine/controllerengine.h"
 
 ControllerEngineJSProxy::ControllerEngineJSProxy(ControllerEngine* m_pEngine)
-    : m_pEngine(m_pEngine) {
+    : m_pEngine(m_pEngine) {}
 
-}
-
-ControllerEngineJSProxy::~ControllerEngineJSProxy() {
-
-}
+ControllerEngineJSProxy::~ControllerEngineJSProxy() {}
 
 double ControllerEngineJSProxy::getValue(QString group, QString name) {
     return m_pEngine->getValue(group, name);

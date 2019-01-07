@@ -62,7 +62,7 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
 
     m_ui.groupBoxWarning->hide();
     m_ui.labelWarning->setText(tr("<font color='#BB0000'><b>If you use this preset your controller may not work correctly. "
-            "Please select another preset.</b></font><br><br>"
+            "Please select another preset or disable the controller.</b></font><br><br>"
             "This preset was designed for a newer Mixxx Controller Engine "
             "and cannot be used on your current Mixxx installation.<br>"
             "Your Mixxx installation has Controller Engine version %1. "

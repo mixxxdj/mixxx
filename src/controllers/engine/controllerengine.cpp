@@ -1042,7 +1042,6 @@ bool ControllerEngine::isDeckPlaying(const QString& group) {
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, double rpm,
                                      double alpha, double beta, bool ramp) {
-
     // If we're already scratching this deck, override that with this request
     if (m_dx[deck]) {
         //qDebug() << "Already scratching deck" << deck << ". Overriding.";
