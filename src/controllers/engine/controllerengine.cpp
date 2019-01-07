@@ -33,7 +33,8 @@ const double kAlphaBetaDt = kScratchTimerMs / 1000.0;
 ControllerEngine::ControllerEngine(Controller* controller)
         : m_bDisplayingExceptionDialog(false),
           m_pScriptEngine(nullptr),
-          m_pController(controller) {
+          m_pController(controller),
+          m_bTesting(false) {
     // Handle error dialog buttons
     qRegisterMetaType<QMessageBox::StandardButton>("QMessageBox::StandardButton");
 
@@ -615,9 +616,13 @@ QJSValue ControllerEngine::makeConnection(QString group, QString name,
 
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
-        throwJSError("ControllerEngine: script tried to connect to ControlObject (" +
-                group + ", " + name +
-                ") which is non-existent.");
+        // The test setups do not run all of Mixxx, so ControlObjects not
+        // existing during tests is okay.
+        if (!m_bTesting) {
+            throwJSError("ControllerEngine: script tried to connect to ControlObject (" +
+                    group + ", " + name +
+                    ") which is non-existent.");
+        }
         return QJSValue();
     }
 
@@ -728,12 +733,16 @@ QJSValue ControllerEngine::connectControl(
     // This check is redundant with makeConnection, but the
     // ControlObjectScript is also needed here to check for duplicate connections.
     if (coScript == nullptr) {
-        if (disconnect) {
-            qWarning() << "ControllerEngine: script tried to disconnect from ControlObject (" +
-                          group + ", " + name + ") which is non-existent, ignoring.";
-        } else {
-            qWarning() << "ControllerEngine: script tried to connect to ControlObject (" +
-                           group + ", " + name + ") which is non-existent, ignoring.";
+        // The test setups do not run all of Mixxx, so ControlObjects not
+        // existing during tests is okay.
+        if (!m_bTesting) {
+            if (disconnect) {
+                throwJSError("ControllerEngine: script tried to disconnect from ControlObject (" +
+                              group + ", " + name + ") which is non-existent.");
+            } else {
+                throwJSError("ControllerEngine: script tried to connect to ControlObject (" +
+                              group + ", " + name + ") which is non-existent.");
+            }
         }
         // This is inconsistent with other failures, which return false.
         // QJSValue() with no arguments is undefined in JavaScript.

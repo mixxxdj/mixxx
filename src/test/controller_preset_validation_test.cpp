@@ -116,6 +116,8 @@ class FakeController : public Controller {
 FakeController::FakeController()
         : m_bMidiPreset(false),
           m_bHidPreset(false) {
+    startEngine();
+    getEngine()->setTesting(true);
 }
 
 FakeController::~FakeController() {
@@ -138,7 +140,6 @@ class ControllerPresetValidationTest : public MixxxTest {
 
         FakeController controller;
         controller.setDeviceName("Test Controller");
-        controller.startEngine();
         controller.setPreset(*pPreset);
         // Do not initialize the scripts.
         bool result = controller.applyPreset(m_presetPaths, false);

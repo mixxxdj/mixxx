@@ -33,7 +33,7 @@ class ControllerEngineTest : public MixxxTest {
     }
 
     bool evaluateScriptFile(const QString& scriptName, QList<QString> scriptPaths = QList<QString>()) {
-    	return cEngine->evaluateScriptFile(scriptName, scriptPaths);
+        return cEngine->evaluateScriptFile(scriptName, scriptPaths);
     }
 
     ControllerEngine *cEngine;

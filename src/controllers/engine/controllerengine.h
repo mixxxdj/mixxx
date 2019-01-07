@@ -97,6 +97,8 @@ class ControllerEngine : public QObject {
     void removeScriptConnection(const ScriptConnection conn);
     void triggerScriptConnection(const ScriptConnection conn);
 
+    inline void setTesting(bool testing) { m_bTesting = testing; };
+
   protected:
     double getValue(QString group, QString name);
     void setValue(QString group, QString name, double newValue);
@@ -200,6 +202,8 @@ class ControllerEngine : public QObject {
     // Filesystem watcher for script auto-reload
     QFileSystemWatcher m_scriptWatcher;
     QList<QString> m_lastScriptPaths;
+
+    bool m_bTesting;
 
     friend class ScriptConnection;
     friend class ControllerEngineJSProxy;
