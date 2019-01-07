@@ -42,8 +42,8 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
     initTableView(m_ui.m_pOutputMappingTableView);
     initTableView(m_ui.m_pScriptsTableWidget);
 
-    connect(m_pController, SIGNAL(presetLoaded(ControllerPresetPointer)),
-            this, SLOT(slotPresetLoaded(ControllerPresetPointer)));
+    connect(m_pController, &Controller::presetLoaded,
+            this, &DlgPrefController::slotPresetLoaded);
     // TODO(rryan): Eh, this really isn't thread safe but it's the way it's been
     // since 1.11.0. We shouldn't be calling Controller methods because it lives
     // in a different thread. Booleans (like isOpen()) are fine but a complex
@@ -564,7 +564,19 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
 
 void DlgPrefController::checkPresetCompatibility(ControllerPresetPointer preset) {
     State bPreviousState = m_bState;
-    if (presetIsSupported(preset)) {
+    if (m_ui.chkEnabledDevice->isChecked() && !presetIsSupported(preset)) {
+        m_bState = State::invalid;
+        m_ui.groupBoxWarning->show();
+        m_ui.btnLearningWizard->setEnabled(false);
+        m_ui.btnAddInputMapping->setEnabled(false);
+        m_ui.btnRemoveInputMappings->setEnabled(false);
+        m_ui.btnClearAllInputMappings->setEnabled(false);
+        m_ui.btnAddOutputMapping->setEnabled(false);
+        m_ui.btnRemoveOutputMappings->setEnabled(false);
+        m_ui.btnClearAllOutputMappings->setEnabled(false);
+        m_ui.btnAddScript->setEnabled(false);
+        m_ui.btnRemoveScript->setEnabled(false);
+    } else {
         m_bState = State::valid;
         m_ui.groupBoxWarning->hide();
         bool isMappable = m_pController->isMappable();
@@ -577,18 +589,6 @@ void DlgPrefController::checkPresetCompatibility(ControllerPresetPointer preset)
         m_ui.btnClearAllOutputMappings->setEnabled(true);
         m_ui.btnAddScript->setEnabled(true);
         m_ui.btnRemoveScript->setEnabled(true);
-    } else {
-        m_bState = State::invalid;
-        m_ui.groupBoxWarning->show();
-        m_ui.btnLearningWizard->setEnabled(false);
-        m_ui.btnAddInputMapping->setEnabled(false);
-        m_ui.btnRemoveInputMappings->setEnabled(false);
-        m_ui.btnClearAllInputMappings->setEnabled(false);
-        m_ui.btnAddOutputMapping->setEnabled(false);
-        m_ui.btnRemoveOutputMappings->setEnabled(false);
-        m_ui.btnClearAllOutputMappings->setEnabled(false);
-        m_ui.btnAddScript->setEnabled(false);
-        m_ui.btnRemoveScript->setEnabled(false);
     }
     if (bPreviousState != m_bState) {
         emit(stateChanged());
@@ -598,6 +598,7 @@ void DlgPrefController::checkPresetCompatibility(ControllerPresetPointer preset)
 void DlgPrefController::slotEnableDevice(bool enable) {
     slotDirty();
 
+    checkPresetCompatibility(m_pPreset);
     // Set tree item text to normal/bold.
     emit(controllerEnabled(this, enable));
 }
