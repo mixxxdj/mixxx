@@ -345,38 +345,6 @@
           <SizePolicy>me,me</SizePolicy>
           <Children>
 
-        <!-- put invisble waveforms Singletons here to enable end-of-track warning
-            without actually showing scrolling waveforms -->
-            <WidgetGroup>
-              <Layout>horizontal</Layout>
-              <Size>0me,0f</Size>
-              <Children>
-                <SingletonContainer>
-                  <ObjectName>DeckVisualRow1</ObjectName>
-                </SingletonContainer>
-                <SingletonContainer>
-                  <ObjectName>DeckVisualRow2</ObjectName>
-                </SingletonContainer>
-
-                <WidgetGroup>
-                  <Layout>horizontal</Layout>
-                  <Children>
-                    <SingletonContainer>
-                      <ObjectName>DeckVisualRow3</ObjectName>
-                    </SingletonContainer>
-                    <SingletonContainer>
-                      <ObjectName>DeckVisualRow4</ObjectName>
-                    </SingletonContainer>
-                  </Children>
-                  <Connection>
-                    <ConfigKey>[Skin],show_4decks</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
-                </WidgetGroup>
-
-              </Children>
-            </WidgetGroup><!-- (Invisible) scrolling waveforms -->
-
             <Template src="skin:decks_small.xml"/>
 
             <SingletonContainer>

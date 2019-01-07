@@ -4,13 +4,6 @@
     <Size>0e,40f</Size>
     <Layout>horizontal</Layout>
     <Children>
-      <!--
-      **********************************************
-      Visual- Waveform
-        Place scrolling waveform behind left border image to make the
-        end-of-track warning appear in minimal deck's overview, as well.
-      **********************************************
-      -->
       <WidgetGroup>
         <ObjectName>EffectLeftBorder</ObjectName>
         <Size>5f,40f</Size>
