@@ -19,24 +19,21 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     setupUi(this);
     setupControllerWidgets();
 
-    connect(&m_buttonMapper, SIGNAL(mapped(QString)),
-            this, SLOT(slotOpenLocalFile(QString)));
-
-    connect(btnOpenUserPresets, SIGNAL(clicked()),
-            &m_buttonMapper, SLOT(map()));
-
-    m_buttonMapper.setMapping(btnOpenUserPresets, userPresetsPath(m_pConfig));
+    connect(btnOpenUserPresets, &QPushButton::clicked, [=]() {
+            QString presetsPath = userPresetsPath(m_pConfig);
+            openLocalFile(presetsPath);
+    });
 
     // Connections
-    connect(m_pControllerManager, SIGNAL(devicesChanged()),
-            this, SLOT(rescanControllers()));
+    connect(m_pControllerManager, &ControllerManager::devicesChanged,
+            this, &DlgPrefControllers::rescanControllers);
 }
 
 DlgPrefControllers::~DlgPrefControllers() {
     destroyControllerWidgets();
 }
 
-void DlgPrefControllers::slotOpenLocalFile(const QString& file) {
+void DlgPrefControllers::openLocalFile(const QString& file) {
     QDesktopServices::openUrl(QUrl::fromLocalFile(file));
 }
 
@@ -126,16 +123,16 @@ void DlgPrefControllers::setupControllerWidgets() {
 
         DlgPrefController* controllerDlg = new DlgPrefController(
             this, pController, m_pControllerManager, m_pConfig);
-        connect(controllerDlg, SIGNAL(mappingStarted()),
-                m_pDlgPreferences, SLOT(hide()));
-        connect(controllerDlg, SIGNAL(mappingEnded()),
-                m_pDlgPreferences, SLOT(show()));
+        connect(controllerDlg, &DlgPrefController::mappingStarted,
+                m_pDlgPreferences, &DlgPreferences::hide);
+        connect(controllerDlg, &DlgPrefController::mappingEnded,
+                m_pDlgPreferences, &DlgPreferences::show);
 
         m_controllerWindows.append(controllerDlg);
         m_pDlgPreferences->addPageWidget(DlgPreferences::PreferencesPage(controllerDlg, controllerWindowLink));
 
-        connect(controllerDlg, SIGNAL(controllerEnabled(DlgPrefController*, bool)),
-                this, SLOT(slotHighlightDevice(DlgPrefController*, bool)));
+        connect(controllerDlg, &DlgPrefController::controllerEnabled,
+                this, &DlgPrefControllers::slotHighlightDevice);
     }
 
     // If no controllers are available, show the "No controllers available"
