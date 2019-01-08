@@ -14,6 +14,7 @@
 #include "encoder/encoder.h"
 #include "encoder/encodercallback.h"
 #include "util/fifo.h"
+#include "util/memory.h"
 #include "util/sample.h"
 #include "util/samplebuffer.h"
 
@@ -22,8 +23,8 @@ class EncoderOpus: public Encoder {
     static const int MASTER_SAMPLERATE;
     static const char* INVALID_SAMPLERATE_MESSAGE;
 
-    EncoderOpus(EncoderCallback* pCallback = nullptr);
-    virtual ~EncoderOpus();
+    explicit EncoderOpus(EncoderCallback* pCallback = nullptr);
+    ~EncoderOpus() override;
 
     int initEncoder(int samplerate, QString errorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
@@ -32,8 +33,6 @@ class EncoderOpus: public Encoder {
     void setEncoderSettings(const EncoderSettings& settings) override;
 
   private:
-    static QString opusErrorString(int error);
-    static int getSerial();
     void initStream();
     void pushHeaderPacket();
     void pushTagsPacket();
@@ -47,7 +46,7 @@ class EncoderOpus: public Encoder {
     int m_readRequired;
     EncoderCallback* m_pCallback;
     FIFO<CSAMPLE> m_fifoBuffer;
-    mixxx::SampleBuffer* m_pFifoChunkBuffer;
+    std::unique_ptr<mixxx::SampleBuffer> m_pFifoChunkBuffer;
     OpusEncoder* m_pOpus;
     QVector<unsigned char> m_opusDataBuffer;
     ogg_stream_state m_oggStream;

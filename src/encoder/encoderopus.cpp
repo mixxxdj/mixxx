@@ -25,11 +25,59 @@ namespace {
 // From libjitsi's Opus encoder:
 // 1 byte TOC + maximum frame size (1275)
 // See https://tools.ietf.org/html/rfc6716#section-3.2
-static const int kMaxOpusBufferSize = 1+1275;
+constexpr int kMaxOpusBufferSize = 1+1275;
 // Opus frame duration in milliseconds. Fixed to 60ms
-static const int kOpusFrameMs = 60;
+constexpr int kOpusFrameMs = 60;
+
+constexpr int kOpusChannelCount = 2;
 
 const mixxx::Logger kLogger("EncoderOpus");
+
+QString opusErrorString(int error) {
+    QString errorString = "";
+    switch (error) {
+        case OPUS_OK:
+            errorString = "OPUS_OK";
+            break;
+        case OPUS_BAD_ARG:
+            errorString = "OPUS_BAD_ARG";
+            break;
+        case OPUS_BUFFER_TOO_SMALL:
+            errorString = "OPUS_BUFFER_TOO_SMALL";
+            break;
+        case OPUS_INTERNAL_ERROR:
+            errorString = "OPUS_INTERNAL_ERROR";
+            break;
+        case OPUS_INVALID_PACKET:
+            errorString = "OPUS_INVALID_PACKET";
+            break;
+        case OPUS_UNIMPLEMENTED:
+            errorString = "OPUS_UNIMPLEMENTED";
+            break;
+        case OPUS_INVALID_STATE:
+            errorString = "OPUS_INVALID_STATE";
+            break;
+        case OPUS_ALLOC_FAIL:
+            errorString = "OPUS_ALLOC_FAIL";
+            break;
+        default:
+            return "Unknown error";
+    }
+    return errorString + (QString(" (%1)").arg(error));
+}
+
+int getSerial() {
+    static int prevSerial = 0;
+
+    int serial;
+    do {
+        serial = qrand();
+    } while(prevSerial == serial);
+
+    prevSerial = serial;
+    kLogger.debug() << "RETURNING SERIAL " << serial;
+    return serial;
+}
 }
 
 EncoderOpus::EncoderOpus(EncoderCallback* pCallback)
@@ -39,8 +87,8 @@ EncoderOpus::EncoderOpus(EncoderCallback* pCallback)
       m_samplerate(0),
 	  m_readRequired(0),
       m_pCallback(pCallback),
-      m_fifoBuffer(EngineSideChain::SIDECHAIN_BUFFER_SIZE * 2),
-      m_pFifoChunkBuffer(nullptr),
+      m_fifoBuffer(EngineSideChain::SIDECHAIN_BUFFER_SIZE * kOpusChannelCount),
+      m_pFifoChunkBuffer(),
       m_pOpus(nullptr),
       m_opusDataBuffer(kMaxOpusBufferSize),
       m_header_write(false),
@@ -65,7 +113,6 @@ EncoderOpus::~EncoderOpus() {
     }
 
     ogg_stream_clear(&m_oggStream);
-    delete m_pFifoChunkBuffer;
 }
 
 void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
@@ -134,7 +181,7 @@ int EncoderOpus::initEncoder(int samplerate, QString errorMessage) {
     double samplesPerChannel = kOpusFrameMs / samplingPeriodMs;
 
     m_readRequired = samplesPerChannel * m_channels;
-    m_pFifoChunkBuffer = new mixxx::SampleBuffer(m_readRequired);
+    m_pFifoChunkBuffer = std::make_unique<mixxx::SampleBuffer>(m_readRequired);
     initStream();
 
     return 0;
@@ -417,50 +464,3 @@ void EncoderOpus::flush() {
     // At this point there may still be samples in the FIFO buffer
     processFIFO();
 }
-
-QString EncoderOpus::opusErrorString(int error) {
-    QString errorString = "";
-    switch (error) {
-        case OPUS_OK:
-            errorString = "OPUS_OK";
-            break;
-        case OPUS_BAD_ARG:
-            errorString = "OPUS_BAD_ARG";
-            break;
-        case OPUS_BUFFER_TOO_SMALL:
-            errorString = "OPUS_BUFFER_TOO_SMALL";
-            break;
-        case OPUS_INTERNAL_ERROR:
-            errorString = "OPUS_INTERNAL_ERROR";
-            break;
-        case OPUS_INVALID_PACKET:
-            errorString = "OPUS_INVALID_PACKET";
-            break;
-        case OPUS_UNIMPLEMENTED:
-            errorString = "OPUS_UNIMPLEMENTED";
-            break;
-        case OPUS_INVALID_STATE:
-            errorString = "OPUS_INVALID_STATE";
-            break;
-        case OPUS_ALLOC_FAIL:
-            errorString = "OPUS_ALLOC_FAIL";
-            break;
-        default:
-            return "Unknown error";
-    }
-    return errorString + (QString(" (%1)").arg(error));
-}
-
-int EncoderOpus::getSerial() {
-    static int prevSerial = 0;
-
-    int serial;
-    do {
-        serial = qrand();
-    } while(prevSerial == serial);
-
-    prevSerial = serial;
-    kLogger.debug() << "RETURNING SERIAL " << serial;
-    return serial;
-}
-
