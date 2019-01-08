@@ -228,6 +228,7 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 
         connect(pNewTrack.get(), SIGNAL(waveformSummaryUpdated()),
                 this, SLOT(slotWaveformSummaryUpdated()));
+        slotWaveformSummaryUpdated();
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
