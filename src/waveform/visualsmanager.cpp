@@ -7,6 +7,7 @@
 DeckVisuals::DeckVisuals(const QString& group)
         : m_group(group),
           m_SlowTickCnt(0),
+          m_trackLoaded(false),
           playButton(ConfigKey(group, "play")),
           loopEnabled(ConfigKey(group, "loop_enabled")),
           engineBpm(ConfigKey(group, "bpm")),
@@ -27,6 +28,10 @@ void DeckVisuals::process(double remainingTimeTriggerSeconds) {
     double playPosition;
     double tempoTrackSeconds;
     m_pVisualPlayPos->getTrackTime(&playPosition, &tempoTrackSeconds);
+    bool trackLoaded = (tempoTrackSeconds != 0.0);
+    if (!m_trackLoaded && !trackLoaded) {
+        return;
+    }
 
     double timeRemaining = (1.0 - playPosition) * tempoTrackSeconds;
     m_pTimeRemaining->set(timeRemaining);
@@ -44,8 +49,10 @@ void DeckVisuals::process(double remainingTimeTriggerSeconds) {
 
     // Update the BPM even more slowly
     m_SlowTickCnt = (m_SlowTickCnt + 1) % kSlowUpdateDivider;
-    if (m_SlowTickCnt == 0) {
+    if (m_SlowTickCnt == 0 || !trackLoaded) {
         m_pVisualBpm->set(engineBpm.get());
     }
     m_pVisualKey->set(engineKey.get());
+
+    m_trackLoaded = trackLoaded;
 }

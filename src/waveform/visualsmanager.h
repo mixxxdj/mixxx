@@ -28,6 +28,7 @@ class DeckVisuals {
   private:
     QString m_group;
     int m_SlowTickCnt;
+    bool m_trackLoaded;
 
     std::unique_ptr<ControlObject> m_pTimeElapsed;
     std::unique_ptr<ControlObject> m_pTimeRemaining;
