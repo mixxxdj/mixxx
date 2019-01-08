@@ -37,7 +37,7 @@ EncoderOpus::EncoderOpus(EncoderCallback* pCallback)
       m_bitrateMode(0),
       m_channels(0),
       m_samplerate(0),
-	  m_readRequired(0),
+      m_readRequired(0),
       m_pCallback(pCallback),
       m_fifoBuffer(EngineSideChain::SIDECHAIN_BUFFER_SIZE * 2),
       m_pFifoChunkBuffer(nullptr),
