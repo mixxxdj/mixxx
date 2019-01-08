@@ -828,7 +828,7 @@ double BpmControl::updateLocalBpm() {
 double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(getSampleOfTrack().current);
     m_pThisBeatDistance->set(beat_distance);
-    if (getSyncMode() <= SYNC_NONE) {
+    if (!isSynchronized()) {
         m_dUserOffset.setValue(0.0);
     }
     return beat_distance;

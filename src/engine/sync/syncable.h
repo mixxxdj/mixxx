@@ -22,6 +22,10 @@ inline SyncMode syncModeFromDouble(double value) {
     return mode;
 }
 
+inline bool toSynchronized(SyncMode mode) {
+    return mode > SYNC_NONE;
+}
+
 class Syncable {
   public:
     virtual ~Syncable() { }
@@ -44,7 +48,7 @@ class Syncable {
     virtual SyncMode getSyncMode() const = 0;
 
     inline bool isSynchronized() const {
-        return getSyncMode() > SYNC_NONE;
+        return toSynchronized(getSyncMode());
     }
 
     // Only relevant for player Syncables.
