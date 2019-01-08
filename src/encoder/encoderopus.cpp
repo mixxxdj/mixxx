@@ -263,7 +263,7 @@ void EncoderOpus::pushHeaderPacket() {
     packet.e_o_s = 0;
     packet.granulepos = 0;
     packet.packetno = m_packetNumber++;
-    packet.packet = (unsigned char*)frame.data();
+    packet.packet = reinterpret_cast<unsigned char*>(frame.data());
     packet.bytes = frameSize;
 
     if (ogg_stream_packetin(&m_oggStream, &packet) != 0) {
@@ -353,7 +353,7 @@ void EncoderOpus::pushTagsPacket() {
     packet.e_o_s = 0;
     packet.granulepos = 0;
     packet.packetno = m_packetNumber++;
-    packet.packet = (unsigned char*)frame.data();
+    packet.packet = reinterpret_cast<unsigned char*>(frame.data());
     packet.bytes = frameSize;
 
     if (ogg_stream_packetin(&m_oggStream, &packet) != 0) {
