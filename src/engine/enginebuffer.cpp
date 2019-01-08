@@ -1180,6 +1180,11 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackSampleRateOld && m_trackSamplesOld) {
+        // no track loaded, function not called in this case
+        return;
+    }
+
     // Increase samplesCalculated by the buffer size
     m_iSamplesSinceLastIndicatorUpdate += iBufferSize;
 
