@@ -14,8 +14,8 @@
 
 class EncoderOpusSettings: public EncoderSettings {
   public:
-    EncoderOpusSettings(UserSettingsPointer pConfig);
-    virtual ~EncoderOpusSettings();
+    explicit EncoderOpusSettings(UserSettingsPointer pConfig);
+    ~EncoderOpusSettings() override = default;
 
     // Indicates that it uses the quality slider section of the preferences
     bool usesQualitySlider() const override {

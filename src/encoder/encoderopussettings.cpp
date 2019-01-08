@@ -45,9 +45,6 @@ EncoderOpusSettings::EncoderOpusSettings(UserSettingsPointer pConfig)
             QObject::tr("Bitrate Mode"), BITRATE_MODE_GROUP, modes.values()));
 }
 
-EncoderOpusSettings::~EncoderOpusSettings() {
-}
-
 QList<int> EncoderOpusSettings::getQualityValues() const {
     return m_qualList;
 }
@@ -108,7 +105,7 @@ QList<EncoderSettings::OptionsGroup> EncoderOpusSettings::getOptionGroups() cons
 
 void EncoderOpusSettings::setGroupOption(QString groupCode, int optionIndex) {
     bool found = false;
-    for (OptionsGroup group : m_radioList) {
+    for (OptionsGroup group : qAsConst(m_radioList)) {
         if (groupCode == group.groupCode) {
             found = true;
             if (optionIndex < group.controlNames.size() || optionIndex == 1) {
@@ -134,7 +131,7 @@ int EncoderOpusSettings::getSelectedOption(QString groupCode) const {
             ConfigKey(RECORDING_PREF_KEY, BITRATE_MODE_GROUP), 0);
 
     bool found = false;
-    for (OptionsGroup group : m_radioList) {
+    for (OptionsGroup group : qAsConst(m_radioList)) {
         if (groupCode == group.groupCode) {
             found = true;
             if (value >= group.controlNames.size() && value > 1) {
