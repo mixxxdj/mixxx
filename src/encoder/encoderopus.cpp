@@ -13,7 +13,7 @@
 #include "encoder/encoderopus.h"
 
 // Opus only supports 48 and 96 kHz samplerates
-const int EncoderOpus::MASTER_SAMPLERATE = 48000;
+constexpr int EncoderOpus::MASTER_SAMPLERATE = 48000;
 
 const char* EncoderOpus::INVALID_SAMPLERATE_MESSAGE =
     "Using Opus at samplerates other than 48 kHz "
@@ -28,7 +28,6 @@ namespace {
 constexpr int kMaxOpusBufferSize = 1+1275;
 // Opus frame duration in milliseconds. Fixed to 60ms
 constexpr int kOpusFrameMs = 60;
-
 constexpr int kOpusChannelCount = 2;
 
 const mixxx::Logger kLogger("EncoderOpus");
