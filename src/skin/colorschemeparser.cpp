@@ -11,6 +11,9 @@
 #include "skin/imgcolor.h"
 #include "skin/imginvert.h"
 #include "skin/legacyskinparser.h"
+#include "skin/skincontext.h"
+// define skincontext include in .h
+//#include "skin/skincontext.h"
 
 void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
                                                 UserSettingsPointer pConfig,
@@ -43,6 +46,11 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             WPixmapStore::setLoader(imsrc);
             WImageStore::setLoader(imsrc);
             WSkinColor::setLoader(imsrc);
+
+            // ronso0 :: find <SetVariable> nodes, update them.
+            // This calls SkinContext::updateVariables in skincontext.cpp which
+            // iterates over all <SetVariable> nodes
+            m_pContext->updateVariables;
 
             if (pStyle) {
                 *pStyle = LegacySkinParser::getStyleFromNode(sch);
