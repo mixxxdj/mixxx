@@ -60,27 +60,24 @@ mixxx_feedback_func(struct ctlra_dev_t* dev, void *userdata)
 	c->feedback_func(dev);
 }
 
-static int mixxx_accept_dev_func(const struct ctlra_dev_info_t *info,
-                    ctlra_event_func *event_func,
-                    ctlra_feedback_func *feedback_func,
-                    ctlra_remove_dev_func *remove_func,
-                    void **userdata_for_event_func,
-                    void *userdata)
+
+static int mixxx_accept_dev_func(struct ctlra_t *ctlra,
+				 const struct ctlra_dev_info_t *info,
+				 struct ctlra_dev_t *dev,
+				 void *userdata)
 {
-	CtlraEnumerator *ce = (CtlraEnumerator*)userdata;
+	printf("mixxx/ctlra: accepting %s %s\n", info->vendor, info->device);
 
-	// hide functions in struct, avoids polluting CtlraEnumerator
-	// header with all of the Ctlra functions and typedefs
-	struct mixxx_ctlra_accept_t accept;
-	accept.info = info;
-	accept.event_func = event_func;
-	accept.feedback_func = feedback_func;
-	accept.remove_func = remove_func;
-	accept.userdata_for_event_func = userdata_for_event_func;
+	/* here we use the Ctlra APIs to set callback functions to get
+	 * events and send feedback updates to/from the device */
+	ctlra_dev_set_event_func(dev, mixxx_event_func);
+	ctlra_dev_set_feedback_func(dev, mixxx_feedback_func);
+	//ctlra_dev_set_screen_feedback_func(dev, screen_redraw_func);
+	//ctlra_dev_set_remove_func(dev, remove_func);
+	ctlra_dev_set_callback_userdata(dev, userdata);
 
-	return ce->accept_dev_func(&accept);
+	return 1;
 }
-
 
 int CtlraEnumerator::accept_dev_func(struct mixxx_ctlra_accept_t *a)
 {
