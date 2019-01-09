@@ -33,13 +33,15 @@
 #include <engine/sidechain/shoutconnection.h>
 
 namespace {
-static const int kConnectRetries = 30;
-static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
+
+const int kConnectRetries = 30;
+const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 // Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
-static const int kMaxShoutFailures = 3;
+const int kMaxShoutFailures = 3;
 
 const mixxx::Logger kLogger("ShoutConnection");
+
 }
 
 ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
@@ -371,9 +373,9 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-    if(m_format_is_opus && iMasterSamplerate != EncoderOpus::MASTER_SAMPLERATE) {
+    if(m_format_is_opus && iMasterSamplerate != EncoderOpus::getMasterSamplerate()) {
         errorDialog(
-            tr(EncoderOpus::INVALID_SAMPLERATE_MESSAGE),
+            EncoderOpus::getInvalidSamplerateMessage(),
             tr("Unsupported samplerate")
         );
         return;
