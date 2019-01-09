@@ -532,6 +532,7 @@ void EngineBuffer::ejectTrack() {
     m_pTrackLoaded->forceSet(0);
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
+    m_visualPlayPos->set(0.0, 0.0, 0.0, 0.0, 0.0);
     TrackPointer pTrack = m_pCurrentTrack;
     m_pCurrentTrack.reset();
     m_playButton->set(0.0);
@@ -1179,8 +1180,8 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    if (!m_trackSampleRateOld || !m_trackSamplesOld) {
-        // no track loaded
+    VERIFY_OR_DEBUG_ASSERT(m_trackSampleRateOld && m_trackSamplesOld) {
+        // no track loaded, function not called in this case
         return;
     }
 
