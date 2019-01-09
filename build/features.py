@@ -158,6 +158,8 @@ class Ctlra(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
+        build.env.ParseConfig(
+            'pkg-config openav_ctlra --silence-errors --cflags --libs')
 
         if build.platform_is_linux:
             build.env.Append(CPPDEFINES='__CTLRA__')
@@ -165,8 +167,8 @@ class Ctlra(Feature):
 
     def sources(self, build):
         if build.platform_is_linux:
-            sources = ['controllers/ctlra/ctlraenumerator.cpp',
-                       'controllers/ctlra/ctlracontroller.cpp']
+            sources = ['src/controllers/ctlra/ctlraenumerator.cpp',
+                       'src/controllers/ctlra/ctlracontroller.cpp']
             return sources
         return []
 

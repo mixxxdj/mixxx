@@ -114,17 +114,13 @@ class CtlraLibrary(Dependence):
     def configure(self, build, conf):
         if not build.platform_is_linux:
             return
-        ctlra_env = str(os.environ["CTLRA_PATH"])
-        if ctlra_env == "":
-            raise Exception("CtlraLibrary Error, CTLRA_PATH env\
-                    variable not set! Please run: export\
-                    CTLRA_PATH=/dir/to/ctlra/ and ensure that the Ctlra\
-                    library is built")
-            return
-        ctlra_link_path = "-L" + ctlra_env + "/build/ctlra/"
-        build.env.Append(CCFLAGS="-I" + ctlra_env + "/ctlra/")
-        build.env.Append(LINKFLAGS= str(ctlra_link_path) )
-        build.env.Append(LIBS='ctlra')
+
+        #libs = ['openav_ctlra']
+        #if not conf.CheckLib(libs):
+        #    raise Exception('Did not find OpenAV Ctlra library')
+
+        build.env.ParseConfig(
+                'pkg-config openav_ctlra --silence-errors --cflags --libs')
 
 class OggVorbis(Dependence):
 
