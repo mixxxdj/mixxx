@@ -2,27 +2,27 @@
 
 #include <QtDebug>
 
-#include "engine/cachingreader.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "preferences/usersettings.h"
 #include "control/controlindicator.h"
 #include "control/controllinpotmeter.h"
 #include "control/controlproxy.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "engine/bpmcontrol.h"
-#include "engine/clockcontrol.h"
-#include "engine/cuecontrol.h"
-#include "engine/enginebufferscalelinear.h"
-#include "engine/enginebufferscalerubberband.h"
-#include "engine/enginebufferscalest.h"
-#include "engine/enginechannel.h"
-#include "engine/enginecontrol.h"
+#include "engine/controls/bpmcontrol.h"
+#include "engine/controls/clockcontrol.h"
+#include "engine/controls/cuecontrol.h"
+#include "engine/controls/enginecontrol.h"
+#include "engine/controls/keycontrol.h"
+#include "engine/controls/loopingcontrol.h"
+#include "engine/controls/quantizecontrol.h"
+#include "engine/controls/ratecontrol.h"
+#include "engine/bufferscalers/enginebufferscalelinear.h"
+#include "engine/bufferscalers/enginebufferscalerubberband.h"
+#include "engine/bufferscalers/enginebufferscalest.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "engine/engineworkerscheduler.h"
-#include "engine/keycontrol.h"
-#include "engine/loopingcontrol.h"
-#include "engine/quantizecontrol.h"
-#include "engine/ratecontrol.h"
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
@@ -39,7 +39,7 @@
 #include "waveform/waveformwidgetfactory.h"
 
 #ifdef __VINYLCONTROL__
-#include "engine/vinylcontrolcontrol.h"
+#include "engine/controls/vinylcontrolcontrol.h"
 #endif
 
 namespace {
@@ -93,52 +93,52 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
     SampleUtil::clear(m_pCrossfadeBuffer, MAX_BUFFER_LEN);
 
     m_pReader = new CachingReader(group, pConfig);
-    connect(m_pReader, SIGNAL(trackLoading()),
-            this, SLOT(slotTrackLoading()),
+    connect(m_pReader, &CachingReader::trackLoading,
+            this, &EngineBuffer::slotTrackLoading,
             Qt::DirectConnection);
-    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
+    connect(m_pReader, &CachingReader::trackLoaded,
+            this, &EngineBuffer::slotTrackLoaded,
             Qt::DirectConnection);
-    connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
+    connect(m_pReader, &CachingReader::trackLoadFailed,
+            this, &EngineBuffer::slotTrackLoadFailed,
             Qt::DirectConnection);
 
     // Play button
     m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
     m_playButton->setButtonMode(ControlPushButton::TOGGLE);
     m_playButton->connectValueChangeRequest(
-            this, SLOT(slotControlPlayRequest(double)),
+            this, &EngineBuffer::slotControlPlayRequest,
             Qt::DirectConnection);
 
     //Play from Start Button (for sampler)
     m_playStartButton = new ControlPushButton(ConfigKey(m_group, "start_play"));
-    connect(m_playStartButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlPlayFromStart(double)),
+    connect(m_playStartButton, &ControlObject::valueChanged,
+            this, &EngineBuffer::slotControlPlayFromStart,
             Qt::DirectConnection);
 
     // Jump to start and stop button
     m_stopStartButton = new ControlPushButton(ConfigKey(m_group, "start_stop"));
-    connect(m_stopStartButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlJumpToStartAndStop(double)),
+    connect(m_stopStartButton, &ControlObject::valueChanged,
+            this, &EngineBuffer::slotControlJumpToStartAndStop,
             Qt::DirectConnection);
 
     //Stop playback (for sampler)
     m_stopButton = new ControlPushButton(ConfigKey(m_group, "stop"));
-    connect(m_stopButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlStop(double)),
+    connect(m_stopButton, &ControlObject::valueChanged,
+            this, &EngineBuffer::slotControlStop,
             Qt::DirectConnection);
 
     // Start button
     m_startButton = new ControlPushButton(ConfigKey(m_group, "start"));
     m_startButton->setButtonMode(ControlPushButton::TRIGGER);
-    connect(m_startButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlStart(double)),
+    connect(m_startButton, &ControlObject::valueChanged,
+            this, &EngineBuffer::slotControlStart,
             Qt::DirectConnection);
 
     // End button
     m_endButton = new ControlPushButton(ConfigKey(m_group, "end"));
-    connect(m_endButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlEnd(double)),
+    connect(m_endButton, &ControlObject::valueChanged,
+            this, &EngineBuffer::slotControlEnd,
             Qt::DirectConnection);
 
     m_pSlipButton = new ControlPushButton(ConfigKey(m_group, "slip_enabled"));
@@ -146,8 +146,8 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
 
     m_playposSlider = new ControlLinPotmeter(
         ConfigKey(m_group, "playposition"), 0.0, 1.0, 0, 0, true);
-    connect(m_playposSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlSeek(double)),
+    connect(m_playposSlider, &ControlObject::valueChanged,
+            this, &EngineBuffer::slotControlSeek,
             Qt::DirectConnection);
 
     // Control used to communicate ratio playpos to GUI thread
@@ -159,7 +159,7 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
     m_pSampleRate = new ControlProxy("[Master]", "samplerate", this);
 
     m_pKeylockEngine = new ControlProxy("[Master]", "keylock_engine", this);
-    m_pKeylockEngine->connectValueChanged(SLOT(slotKeylockEngineChanged(double)),
+    m_pKeylockEngine->connectValueChanged(this, &EngineBuffer::slotKeylockEngineChanged,
                                           Qt::DirectConnection);
 
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
@@ -169,8 +169,8 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
 
     m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
-    connect(m_pEject, SIGNAL(valueChanged(double)),
-            this, SLOT(slotEjectTrack(double)),
+    connect(m_pEject, &ControlObject::valueChanged,
+            this, &EngineBuffer::slotEjectTrack,
             Qt::DirectConnection);
 
     m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), false);
@@ -244,7 +244,7 @@ EngineBuffer::EngineBuffer(const QString& group, UserSettingsPointer pConfig,
     m_bScalerChanged = true;
 
     m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
-    m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughChanged(double)),
+    m_pPassthroughEnabled->connectValueChanged(this, &EngineBuffer::slotPassthroughChanged,
                                                Qt::DirectConnection);
 
 #ifdef __SCALER_DEBUG__
@@ -1295,14 +1295,14 @@ void EngineBuffer::setReader(CachingReader* pReader) {
     delete m_pReader;
     m_pReader = pReader;
     m_pReadAheadManager->setReader(pReader);
-    connect(m_pReader, SIGNAL(trackLoading()),
-            this, SLOT(slotTrackLoading()),
+    connect(m_pReader, &CachingReader::trackLoading,
+            this, &EngineBuffer::slotTrackLoading,
             Qt::DirectConnection);
-    connect(m_pReader, SIGNAL(trackLoaded(TrackPointer, int, int)),
-            this, SLOT(slotTrackLoaded(TrackPointer, int, int)),
+    connect(m_pReader, &CachingReader::trackLoaded,
+            this, &EngineBuffer::slotTrackLoaded,
             Qt::DirectConnection);
-    connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
-            this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
+    connect(m_pReader, &CachingReader::trackLoadFailed,
+            this, &EngineBuffer::slotTrackLoadFailed,
             Qt::DirectConnection);
 }
 */

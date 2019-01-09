@@ -27,7 +27,7 @@ WBeatSpinBox::WBeatSpinBox(QWidget* parent, const ConfigKey& configKey,
     setValue(m_valueControl.get());
     connect(this, SIGNAL(valueChanged(double)),
             this, SLOT(slotSpinboxValueChanged(double)));
-    m_valueControl.connectValueChanged(SLOT(slotControlValueChanged(double)));
+    m_valueControl.connectValueChanged(this, &WBeatSpinBox::slotControlValueChanged);
 }
 
 void WBeatSpinBox::setup(const QDomNode& node, const SkinContext& context) {

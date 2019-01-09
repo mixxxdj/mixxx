@@ -151,8 +151,15 @@ class ControlObject : public QObject {
     // You need to use Qt::DirectConnection for the engine objects, since the
     // audio thread has no Qt event queue. But be a ware of race conditions in this case.
     // ref: http://qt-project.org/doc/qt-4.8/qt.html#ConnectionType-enum
-    bool connectValueChangeRequest(const QObject* receiver,
-                                   const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+    template <typename Receiver, typename Slot>
+    bool connectValueChangeRequest(Receiver receiver, Slot func,
+                                   Qt::ConnectionType type = Qt::AutoConnection) {
+        bool ret = false;
+        if (m_pControl) {
+          ret = m_pControl->connectValueChangeRequest(receiver, func, type);
+        }
+        return ret;
+    }
 
     // Installs a value-change request handler that ignores all sets.
     void setReadOnly();

@@ -13,7 +13,7 @@ ControlWidgetConnection::ControlWidgetConnection(
         : m_pWidget(pBaseWidget),
           m_pValueTransformer(pTransformer) {
     m_pControl = new ControlProxy(key, this);
-    m_pControl->connectValueChanged(SLOT(slotControlValueChanged(double)));
+    m_pControl->connectValueChanged(this, &ControlWidgetConnection::slotControlValueChanged);
 }
 
 void ControlWidgetConnection::setControlParameter(double parameter) {

@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "engine/ratecontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "preferences/constants.h"
 #include "preferences/dialog/ui_dlgprefdeckdlg.h"
 #include "preferences/usersettings.h"

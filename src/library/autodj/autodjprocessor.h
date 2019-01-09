@@ -7,7 +7,7 @@
 
 #include "preferences/usersettings.h"
 #include "control/controlproxy.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "library/playlisttablemodel.h"
 #include "track/track.h"
 #include "util/class.h"
