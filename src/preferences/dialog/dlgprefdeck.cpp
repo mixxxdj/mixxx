@@ -117,13 +117,15 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     QLocale locale;
     // Track Display model
     comboBoxTimeFormat->clear();
-    comboBoxTimeFormat->addItem(tr("hh:mm:ss.zzz - Traditional"),
+    comboBoxTimeFormat->addItem(tr("hh:mm:ss.zz - Traditional"),
                                 static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL));
+    comboBoxTimeFormat->addItem(tr("hh:mm:ss - Traditional (Coarse)"),
+                                static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL_COARSE));
     comboBoxTimeFormat->addItem(tr("s%1zz - Seconds").arg(mixxx::DurationBase::kCentisecondSeparator),
                                 static_cast<int>(TrackTime::DisplayFormat::SECOND));
     comboBoxTimeFormat->addItem(tr("k.sss%1zz - Kiloseconds").arg(mixxx::DurationBase::kCentisecondSeparator),
                                 static_cast<int>(TrackTime::DisplayFormat::KILO_SECOND));
-    comboBoxTimeFormat->addItem(tr("hs.ss%1zz - Hectoseconds").arg(mixxx::DurationBase::kCentisecondSeparator),
+    comboBoxTimeFormat->addItem(tr("hs.ss%1zz - Hectoseconds").arg(mixxx::DurationBase::kHectosecondSeparator),
                                 static_cast<int>(TrackTime::DisplayFormat::HECTO_SECOND));
     double time_format = static_cast<double>(
                                        m_pConfig->getValue(

@@ -69,28 +69,28 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
         timeFormat = &mixxx::Duration::formatTime;
     }
 
+    mixxx::Duration::Precision precision;
+    if (m_displayFormat != TrackTime::DisplayFormat::TRADITIONAL_COARSE) {
+        precision = mixxx::Duration::Precision::CENTISECONDS;
+    } else {
+        precision = mixxx::Duration::Precision::SECONDS;
+    }
+
     if (m_displayMode == TrackTime::DisplayMode::Elapsed) {
         if (dTimeElapsed >= 0.0) {
-            setText(timeFormat(
-                    dTimeElapsed, mixxx::Duration::Precision::CENTISECONDS));
+            setText(timeFormat(dTimeElapsed, precision));
         } else {
-            setText(QLatin1String("-") % timeFormat(
-                    -dTimeElapsed, mixxx::Duration::Precision::CENTISECONDS));
+            setText(QLatin1String("-") % timeFormat(-dTimeElapsed, precision));
         }
     } else if (m_displayMode == TrackTime::DisplayMode::Remaining) {
-        setText(QLatin1String("-") % timeFormat(
-                dTimeRemaining, mixxx::Duration::Precision::CENTISECONDS));
+        setText(QLatin1String("-") % timeFormat(dTimeRemaining, precision));
     } else if (m_displayMode == TrackTime::DisplayMode::ElapsedAndRemaining) {
         if (dTimeElapsed >= 0.0) {
-            setText(timeFormat(
-                    dTimeElapsed, mixxx::Duration::Precision::CENTISECONDS)
-                    % QLatin1String("  -") % timeFormat(
-                    dTimeRemaining, mixxx::Duration::Precision::CENTISECONDS));
+            setText(timeFormat(dTimeElapsed, precision)
+                    % QLatin1String("  -") % timeFormat(dTimeRemaining, precision));
         } else {
-            setText(QLatin1String("-") % timeFormat(
-                    -dTimeElapsed, mixxx::Duration::Precision::CENTISECONDS)
-                    % QLatin1String("  -") % timeFormat(
-                    dTimeRemaining, mixxx::Duration::Precision::CENTISECONDS));
+            setText(QLatin1String("-") % timeFormat(-dTimeElapsed, precision)
+                    % QLatin1String("  -") % timeFormat(dTimeRemaining, precision));
         }
     }
     m_dOldTimeElapsed = dTimeElapsed;

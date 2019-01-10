@@ -25,6 +25,7 @@ namespace TrackTime {
 
     enum class DisplayFormat {
         TRADITIONAL,
+        TRADITIONAL_COARSE,
         SECOND,
         KILO_SECOND,
         HECTO_SECOND
