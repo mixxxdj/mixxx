@@ -12,12 +12,11 @@
 #include "skin/imginvert.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skincontext.h"
-// define skincontext include in .h
-//#include "skin/skincontext.h"
 
 void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
                                                 UserSettingsPointer pConfig,
-                                                QString* pStyle) {
+                                                QString* pStyle,
+                                                const SkinContext& context) {
     QDomNode colsch = docElem.namedItem("Schemes");
 
     bool found = false;
@@ -50,7 +49,7 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             // ronso0 :: find <SetVariable> nodes, update them.
             // This calls SkinContext::updateVariables in skincontext.cpp which
             // iterates over all <SetVariable> nodes
-            m_pContext->updateVariables;
+            m_pContext->updateVariables(context);
 
             if (pStyle) {
                 *pStyle = LegacySkinParser::getStyleFromNode(sch);
