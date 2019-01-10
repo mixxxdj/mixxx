@@ -129,6 +129,13 @@ CtlraEnumerator::~CtlraEnumerator()
 		delete m_devices.takeLast();
 	}
 
+	if(m_reader != nullptr) {
+		m_reader->stop();
+		m_reader->wait();
+		delete m_reader;
+		m_reader = NULL;
+	}
+
 	ctlra_exit(m_ctlra);
 }
 
