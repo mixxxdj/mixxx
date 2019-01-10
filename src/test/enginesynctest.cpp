@@ -12,7 +12,7 @@
 
 #include "preferences/usersettings.h"
 #include "control/controlobject.h"
-#include "engine/bpmcontrol.h"
+#include "engine/controls/bpmcontrol.h"
 #include "engine/sync/synccontrol.h"
 #include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"

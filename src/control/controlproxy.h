@@ -30,10 +30,66 @@ class ControlProxy : public QObject {
         return m_key;
     }
 
-    bool connectValueChanged(const QObject* receiver,
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
-    bool connectValueChanged(
-            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+    template <typename Receiver, typename Slot>
+    bool connectValueChanged(Receiver receiver,
+            Slot func, Qt::ConnectionType requestedConnectionType = Qt::AutoConnection) {
+        if (!m_pControl) {
+            return false;
+        }
+
+        // We connect to the
+        // ControlObjectPrivate only once and in a way that
+        // the requested ConnectionType is working as desired.
+        // We try to avoid direct connections if not requested
+        // since you cannot safely delete an object with a pending
+        // direct connection. This fixes bug Bug #1406124
+        // requested: Auto -> COP = Auto / SCO = Auto
+        // requested: Direct -> COP = Direct / SCO = Direct
+        // requested: Queued -> COP = Queued / SCO = Auto
+        // requested: BlockingQueued -> Assert(false)
+
+        auto copSlot = &ControlProxy::slotValueChangedAuto;
+        Qt::ConnectionType copConnection;
+        Qt::ConnectionType scoConnection;
+        switch(requestedConnectionType) {
+        case Qt::AutoConnection:
+            copConnection = Qt::AutoConnection;
+            scoConnection = Qt::AutoConnection;
+            break;
+        case Qt::DirectConnection:
+            copSlot = &ControlProxy::slotValueChangedDirect;
+            copConnection = Qt::DirectConnection;
+            scoConnection = Qt::DirectConnection;
+            break;
+        case Qt::QueuedConnection:
+            copSlot = &ControlProxy::slotValueChangedQueued;
+            copConnection = Qt::QueuedConnection;
+            scoConnection = Qt::AutoConnection;
+            break;
+        case Qt::BlockingQueuedConnection:
+            // We must not block the signal source by a blocking connection
+            DEBUG_ASSERT(false);
+            return false;
+        default:
+            DEBUG_ASSERT(false);
+            return false;
+        }
+
+        if (!connect(this, &ControlProxy::valueChanged, receiver, func, scoConnection)) {
+            return false;
+        }
+
+        // Connect to ControlObjectPrivate only if required. Do not allow
+        // duplicate connections.
+
+        // use only explicit direct connection if requested
+        // the caller must not delete this until the all signals are
+        // processed to avoid segfaults
+        connect(m_pControl.data(), &ControlDoublePrivate::valueChanged,
+                this, copSlot,
+                static_cast<Qt::ConnectionType>(copConnection | Qt::UniqueConnection));
+        return true;
+    }
 
     // Called from update();
     virtual void emitValueChanged() {

@@ -19,7 +19,7 @@
 WNumberRate::WNumberRate(const char * group, QWidget * parent)
         : WNumber(parent) {
     m_pRateRatio = new ControlProxy(group, "rate_ratio", this);
-    m_pRateRatio->connectValueChanged(SLOT(setValue(double)));
+    m_pRateRatio->connectValueChanged(this, &WNumberRate::setValue);
     // Initialize the widget.
     setValue(0);
 }

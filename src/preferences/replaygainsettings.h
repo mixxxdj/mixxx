@@ -21,6 +21,7 @@ class ReplayGainSettings {
     bool getReplayGainReanalyze() const;
     void setReplayGainReanalyze(bool value);
 
+    bool isAnalyzerEnabled(int version) const;
     bool isAnalyzerDisabled(int version, TrackPointer tio) const;
 
   private:

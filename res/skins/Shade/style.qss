@@ -413,13 +413,11 @@ QLabel, QRadioButton {
 
 WLibrary { margin: 2px 3px 0px 0px; }
 
-/* Additional space for QRadionButtons */
-WLibrary QRadioButton { margin: 9px 3px 6px 3px; }
-/* Additional space for QLabels */
-WLibrary QLabel { margin: 6px 3px 9px 3px; }
-
-/* Additional space for the first QRadionButton in the row*/
-WLibrary QRadioButton#radioButtonRecentlyAdded { margin: 9px 3px 6px 12px; }
+WLibrary QRadioButton {
+  margin: 0px 3px 3px 3px;
+}
+/* Center QLabels */
+WLibrary QLabel { margin: 0px 3px 3px 0px; }
 
 WLibrary QRadioButton::indicator:checked {
   background: transparent url(skin:/btn/btn_lib_radio_button_on.svg) center center;
@@ -459,17 +457,27 @@ WLibrary QPushButton {
     color: #000;
     background-color: #F90562;
     }
-  /* 'Enable AutoDJ' button	*/
+  /* Hover highlight for action buttons	*/
   QPushButton#pushButtonAutoDJ:hover,
   QPushButton#pushButtonRecording:hover,
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #F90562;
   }
-  /* Push 'Start/Stop Recording' button and
-    'Enable AutoDJ' button away from skin border	*/
-  QPushButton#pushButtonAutoDJ,
+  /* Space in between 'Enable AutoDJ' button and transition time spinbox	*/
+  QPushButton#pushButtonAutoDJ {
+    margin: 1px 12px 3px 1px;
+  }
+  /* Space in between 'Recording'	button and recording label */
   QPushButton#pushButtonRecording {
-    margin: 1px 20px 3px 1px;
+    margin: 1px 6px 3px 1px;
+  }
+  /* Space in between AutoDJ 'Fade'/'Skip' and 'Shuffle'/'Add Random' */
+  QPushButton#pushButtonSkipNext {
+    margin: 1px 12px 3px 1px;
+  }
+  /* Push 'Select All' button and away from radio buttons	*/
+  QPushButton#pushButtonSelectAll {
+    margin: 1px 2px 3px 10px;
   }
 
 

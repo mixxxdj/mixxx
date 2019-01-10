@@ -4,12 +4,12 @@
 # Ferran Pujol Camins <ferranpujolcamins@gmail.com>, 2016
 # Josep Maria Antolin <josepma@gmail.com>, 2016-2017
 # Josep Maria Antolin <josepma@gmail.com>, 2016
-# S.Brandt <s.brandt@mixxx.org>, 2016
+# S.Brandt <s.brandt@mixxx.org>, 2016,2018
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-09-23 22:04+0000\n"
-"Last-Translator: Josep Maria Antolin <josepma@gmail.com>\n"
+"PO-Revision-Date: 2018-12-16 18:33+0000\n"
+"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: Catalan (Spain) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ca_ES/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -60,10 +60,10 @@ msgstr "Heu d'instal·lar la versió de 32 bits d'aquest producte en un Windows 
 
 msgctxt "x86VersionWarning"
 msgid ""
-"You are about to install the 32-bit version on a 64-bit operating system.\r\n"
-"We recommend using the 64-bit version for better performance.\r\n"
-"You can download the 64-bit installation package from http://mixxx.org/download/"
-msgstr "Esteu a punt d'instal·lar la versió de 32 bits en un sistema operatiu de 64 bits.\nRecomanem utilitzar la versió de 64 bits per a un millor rendiment.\nPodeu baixar l'instal·lador de la versió de 64 bits des de http://mixxx.org/download/"
+"You are about to install the 32-bit version on a 64-bit operating system. We"
+" recommend using the 64-bit version for better performance. You can download"
+" the 64-bit installation package from http://mixxx.org/download/"
+msgstr "Esteu a punt d'instal·lar la versió de 32 bits en un sistema operatiu de 64 bits. Recomanem utilitzar la versió de 64 bits per a un millor rendiment. Podeu baixar l'instal·lador de la versió de 64 bits des de http://mixxx.org/download/"
 
 msgctxt "XPWarning"
 msgid ""

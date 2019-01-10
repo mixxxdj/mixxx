@@ -17,7 +17,11 @@ NumarkN4.encoderResolution=0.05; // 1/encoderResolution = number of steps going 
 
 NumarkN4.resetHotCuePageOnTrackLoad=true; // resets the page of the Hotcue back to 1 after loading a new track.
 
-NumarkN4.cueReverseRoll=true;
+NumarkN4.cueReverseRoll=true; // enables the ability to do a reverse roll while shift-pressing the cue button
+
+// true = wrap around => scrolling past 4 will reset the page to the first page and vice versa
+// false = clamp the the pages to the [1:4] range
+NumarkN4.hotcuePageIndexBehavior=true;
 
 // possible ranges (0.0..3.0 where 0.06=6%)
 NumarkN4.rateRanges = [0,   // default (gets set via script later; don't modifify)
@@ -35,6 +39,11 @@ NumarkN4.vinylTouched = [false,false,false,false];
 
 NumarkN4.globalShift = false;
 
+NumarkN4.scratchXFader = {
+  xFaderMode: 0, // fast cut (additive)
+  xFaderCurve: 999.60,
+  xFaderCalibration: 1.0
+};
 
 components.Encoder.prototype.input = function (channel, control, value, status, group) {
   this.inSetParameter(
@@ -68,20 +77,28 @@ components.Component.prototype.send = function (value) {
   }
 };
 
+// gets filled via trigger of the callbacks in NumarkN4.crossfaderCallbackConnections
+NumarkN4.storedCrossfaderParams = {};
+NumarkN4.crossfaderCallbackConnections = [];
+NumarkN4.CrossfaderChangeCallback = function (value, group, control) {
+  // indicates that the crossfader settings were changed while during session
+  this.changed = true;
+  NumarkN4.storedCrossfaderParams[control] = value;
+}
+
 NumarkN4.init = function (id) {
-  NumarkN4.xFaderSettings = {
-    mode: engine.getValue("[Mixer Profile]", "xFaderMode"),
-    curve: engine.getValue("[Mixer Profile]","xFaderCurve"),
-    calibration: engine.getValue("[Mixer Profile]","xFaderCalibration")
-  }
-  NumarkN4.setCrossfaderSettings(NumarkN4.xFaderSettings);
   NumarkN4.rateRanges[0]=engine.getValue("[Channel1]","rateRange");
   NumarkN4.Decks=[];
   for (var i=1;i<=4;i++){
     // Array is based on 1 because it makes more sense in the XML
     NumarkN4.Decks[i] = new NumarkN4.Deck(i);
-
   }
+  // create xFader callbacks and trigger them to fill NumarkN4.storedCrossfaderParams
+  _.forEach(NumarkN4.scratchXFader, function (value,control) {
+    var connectionObject = engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback);
+    connectionObject.trigger();
+    NumarkN4.crossfaderCallbackConnections.push(connectionObject);
+  });
 
   NumarkN4.Mixer = new NumarkN4.MixerTemplate();
 
@@ -89,12 +106,6 @@ NumarkN4.init = function (id) {
   midi.sendSysexMsg(NumarkN4.QueryStatusMessage,NumarkN4.QueryStatusMessage.length)
 
 };
-
-NumarkN4.setCrossfaderSettings = function (settingsStruct) {
-  engine.setValue("[Mixer Profile]","xFaderMode",settingsStruct.mode);
-  engine.setValue("[Mixer Profile]","xFaderCurve",settingsStruct.curve);
-  engine.setValue("[Mixer Profile]","xFaderCalibration",settingsStruct.calibration);
-}
 
 NumarkN4.topContainer = function (channel) {
   this.group = '[Channel'+channel+']';
@@ -194,7 +205,8 @@ NumarkN4.topContainer = function (channel) {
       if (displayFeedback == undefined) {
         displayFeedback = true;
       }
-      layer = Math.max(Math.min(layer,3),0); // clamp layer value to [0;3] range
+      // when the layer becommes negative, the (layer+4) will force a positive/valid page indexOf
+      layer = NumarkN4.hotcuePageIndexBehavior ? (layer+4)%4 : Math.max(Math.min(layer,3),0); // clamp layer value to [0;3] range
       this.hotCuePage = layer;
       if (this.timer !== 0) {
         engine.stopTimer(this.timer);
@@ -300,19 +312,29 @@ NumarkN4.MixerTemplate = function () {
     inKey: "mute",
   });
 
-  // NOTE: [Mixer Profile] is not a documented group. Taken from script.crossfaderCurve
-  // BUG: Help on Mixxx forum is needed
   this.changeCrossfaderContour = new components.Button({
     midi: [0x90,0x4B],
+    state: false,
     input: function (channel, control, value, status, group) {
-      if (this.isPress(channel,control, value, status)) {
-        NumarkN4.setCrossfaderSettings({
-          mode: 0, // fast cut (additive)
-          curve: 999.60,
-          calibration: 1.0
+      _.forEach(NumarkN4.crossfaderCallbackConnections, function (callbackObject) {
+        callbackObject.disconnect();
+      });
+      NumarkN4.crossfaderCallbackConnections = [];
+      this.state=this.isPress(channel, control, value, status);
+      if (this.state) {
+        _.forEach(NumarkN4.scratchXFader, function (value, control){
+          engine.setValue("[Mixer Profile]", control, value);
+          NumarkN4.crossfaderCallbackConnections.push(
+            engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback)
+          );
         });
       } else {
-        NumarkN4.setCrossfaderSettings(NumarkN4.xFaderSettings);
+        _.forEach(NumarkN4.storedCrossfaderParams, function (value, control) {
+          engine.setValue("[Mixer Profile]", control, value);
+          NumarkN4.crossfaderCallbackConnections.push(
+            engine.makeConnection("[Mixer Profile]", control, NumarkN4.CrossfaderChangeCallback)
+          );
+        });
       }
     }
   });
@@ -544,10 +566,10 @@ NumarkN4.Deck = function (channel) {
   });
 
   this.manageChannelIndicator = function () {
-    this.alternating=!this.alternating; //mimics a static variable
     this.duration=engine.getParameter(theDeck.group, "duration");
     // checks if the playposition is in the warnTimeFrame
     if (engine.getParameter(theDeck.group, "playposition") * this.duration > (this.duration - NumarkN4.warnAfterTime)) {
+      this.alternating=!this.alternating; //mimics a static variable
       midi.sendShortMsg(0xB0,0x1D+channel, this.alternating?0x7F:0x0);
     } else {
       midi.sendShortMsg(0xB0,0x1D+channel, 0x7F);
@@ -560,8 +582,14 @@ NumarkN4.Deck = function (channel) {
       theDeck.blinkTimer=0;
       return; // return early so no new timer gets created.
     }
-    //timer is more efficent is this case than a callback because it would be called too often.
-    theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,theDeck.manageChannelIndicator);
+    // this previouslyLoaded guard is needed because everytime a new track gets
+    // loaded into a deck without previously ejecting, a new timer would get
+    // spawned which conflicted with the old (still running) timers.
+    if (!this.previouslyLoaded) {
+      //timer is more efficent is this case than a callback because it would be called too often.
+      theDeck.blinkTimer=engine.beginTimer(NumarkN4.blinkInterval,theDeck.manageChannelIndicator);
+    }
+    this.previouslyLoaded=value;
   });
   this.pitchBendMinus = new components.Button({
     midi: [0x90+channel,0x18,0xB0+channel,0x3D],
@@ -675,7 +703,12 @@ NumarkN4.shutdown = function () {
     // View Definition of Array for explanation.
     NumarkN4.Decks[i].shutdown();
   }
-  // reset crossfader parameters to user preferences.
-  NumarkN4.setCrossfaderSettings(NumarkN4.xFaderSettings);
+  // revert the crossfader parameters only if they haven't been changed by the
+  // user and if they are currently set to scratch
+  if (!NumarkN4.CrossfaderChangeCallback.changed || NumarkN4.changeCrossfaderContour.state) {
+    _.forEach(NumarkN4.storedCrossfaderParams, function (value, control) {
+      engine.setValue("[Mixer Profile]", control, value);
+    })
+  }
   // midi.sendSysexMsg(NumarkN4.ShutoffSequence,NumarkN4.ShutoffSequence.length);
 };

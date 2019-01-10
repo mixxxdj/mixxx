@@ -18,7 +18,6 @@ addons:
       - libavformat-dev
       - libchromaprint-dev
       - libfaad-dev
-      - libfftw3-dev
       - libflac-dev
       - libid3tag0-dev
       - libmad0-dev
@@ -34,11 +33,11 @@ addons:
       - librubberband-dev
       - libshout3-dev
       - libsndfile1-dev
+      - libsoundtouch-dev
       - libsqlite3-dev
       - libtag1-dev
       - libupower-glib-dev
       - libusb-1.0-0-dev
-      - libvamp-hostsdk3
       - libwavpack-dev
       - portaudio19-dev
       - protobuf-compiler
@@ -46,14 +45,13 @@ addons:
       - qtscript5-dev
       - libqt5x11extras5-dev
       - scons
-      - vamp-plugin-sdk
       - qtkeychain-dev
       - liblilv-dev
 before_install:
   # Virtual X, needed for analyzer waveform tests
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0         ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sh -e /etc/init.d/xvfb start ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv lame; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install scons portaudio libsndfile libogg libvorbis portmidi taglib libshout protobuf flac ffmpeg qt chromaprint rubberband libmodplug libid3tag libmad mp4v2 faad2 wavpack opusfile lilv lame sound-touch; fi
 
 install:
   ####

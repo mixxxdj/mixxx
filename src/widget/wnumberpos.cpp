@@ -12,14 +12,13 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
         : WNumber(parent),
           m_dOldTimeElapsed(0.0) {
     m_pTimeElapsed = new ControlProxy(group, "time_elapsed", this);
-    m_pTimeElapsed->connectValueChanged(SLOT(slotSetTimeElapsed(double)));
+    m_pTimeElapsed->connectValueChanged(this, &WNumberPos::slotSetTimeElapsed);
     m_pTimeRemaining = new ControlProxy(group, "time_remaining", this);
-    m_pTimeRemaining->connectValueChanged(SLOT(slotTimeRemainingUpdated(double)));
+    m_pTimeRemaining->connectValueChanged(this, &WNumberPos::slotTimeRemainingUpdated);
 
     m_pShowTrackTimeRemaining = new ControlProxy(
             "[Controls]", "ShowDurationRemaining", this);
-    m_pShowTrackTimeRemaining->connectValueChanged(
-            SLOT(slotSetDisplayMode(double)));
+    m_pShowTrackTimeRemaining->connectValueChanged(this, &WNumberPos::slotSetDisplayMode);
     slotSetDisplayMode(m_pShowTrackTimeRemaining->get());
 }
 

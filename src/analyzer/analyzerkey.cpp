@@ -1,19 +1,26 @@
-#include "analyzerkey.h"
+#include "analyzer/analyzerkey.h"
 
 #include <QtDebug>
 #include <QVector>
 
+#include "analyzer/constants.h"
+#include "analyzer/plugins/analyzerqueenmarykey.h"
 #include "proto/keys.pb.h"
-#include "track/key_preferences.h"
 #include "track/keyfactory.h"
 
-using mixxx::track::io::key::ChromaticKey;
-using mixxx::track::io::key::ChromaticKey_IsValid;
+// static
+QList<mixxx::AnalyzerPluginInfo> AnalyzerKey::availablePlugins() {
+    QList<mixxx::AnalyzerPluginInfo> analyzers;
+    analyzers.push_back(mixxx::AnalyzerQueenMaryKey::pluginInfo());
+    return analyzers;
+}
 
-AnalyzerKey::AnalyzerKey(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
+AnalyzerKey::AnalyzerKey(KeyDetectionSettings keySettings)
+        : m_keySettings(keySettings),
           m_iSampleRate(0),
           m_iTotalSamples(0),
+          m_iMaxSamplesToProcess(0),
+          m_iCurrentSample(0),
           m_bPreferencesKeyDetectionEnabled(true),
           m_bPreferencesFastAnalysisEnabled(false),
           m_bPreferencesReanalyzeEnabled(false) {
@@ -24,70 +31,58 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
         return false;
     }
 
-    m_bPreferencesKeyDetectionEnabled = m_pConfig->getValue<bool>(
-            ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED));
+    m_bPreferencesKeyDetectionEnabled = m_keySettings.getKeyDetectionEnabled();
     if (!m_bPreferencesKeyDetectionEnabled) {
         qDebug() << "Key detection is deactivated";
         return false;
     }
-    m_bPreferencesFastAnalysisEnabled = m_pConfig->getValue<bool>(
-            ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS));
-    m_bPreferencesReanalyzeEnabled = m_pConfig->getValue<bool>(
-            ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE));
 
-    QString library = m_pConfig->getValue(
-            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY),
-            // TODO(rryan) this default really doesn't belong here.
-            "libmixxxminimal");
-    QString pluginID = m_pConfig->getValue(
-            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID),
-            // TODO(rryan) this default really doesn't belong here.
-            VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID);
+    m_bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
+    m_bPreferencesReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
+    m_pluginId = m_keySettings.getKeyPluginId();
 
-    m_pluginId = pluginID;
+    qDebug() << "AnalyzerKey preference settings:"
+             << "\nPlugin:" << m_pluginId
+             << "\nRe-analyze when settings change:" << m_bPreferencesReanalyzeEnabled
+             << "\nFast analysis:" << m_bPreferencesFastAnalysisEnabled;
+
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
+    // In fast analysis mode, skip processing after
+    // kFastAnalysisSecondsToAnalyze seconds are analyzed.
+    if (m_bPreferencesFastAnalysisEnabled) {
+        m_iMaxSamplesToProcess = mixxx::kFastAnalysisSecondsToAnalyze * m_iSampleRate * mixxx::kAnalysisChannels;
+    } else {
+        m_iMaxSamplesToProcess = m_iTotalSamples;
+    }
+    m_iCurrentSample = 0;
 
     // if we can't load a stored track reanalyze it
     bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
     if (bShouldAnalyze) {
-        m_pVamp = std::make_unique<VampAnalyzer>();
-        bShouldAnalyze = m_pVamp->Init(
-            library, m_pluginId, sampleRate, totalSamples,
-            m_bPreferencesFastAnalysisEnabled);
-        if (!bShouldAnalyze) {
-            m_pVamp.reset();
+        if (m_pluginId == mixxx::AnalyzerQueenMaryKey::pluginInfo().id) {
+            m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();
+        } else {
+            // Default to our built-in key detector.
+            m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();
         }
+        bShouldAnalyze = m_pPlugin->initialize(sampleRate);
     }
 
     if (bShouldAnalyze) {
         qDebug() << "Key calculation started with plugin" << m_pluginId;
     } else {
         qDebug() << "Key calculation will not start.";
+        m_pPlugin.reset();
     }
 
     return bShouldAnalyze;
 }
 
 bool AnalyzerKey::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    bool bPreferencesFastAnalysisEnabled = m_pConfig->getValue<bool>(
-            ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS));
-
-    QString library = m_pConfig->getValueString(
-            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_LIBRARY));
-    QString pluginID = m_pConfig->getValueString(
-            ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYZER_KEY_PLUGIN_ID));
-
-    // TODO(rryan): This belongs elsewhere.
-    if (library.isEmpty() || library.isNull()) {
-        library = "libmixxxminimal";
-    }
-
-    // TODO(rryan): This belongs elsewhere.
-    if (pluginID.isEmpty() || pluginID.isNull()) {
-        pluginID = VAMP_ANALYZER_KEY_DEFAULT_PLUGIN_ID;
-    }
+    bool bPreferencesFastAnalysisEnabled = m_keySettings.getFastAnalysis();
+    QString pluginID = m_keySettings.getKeyPluginId();
 
     const Keys keys(tio->getKeys());
     if (keys.isValid()) {
@@ -119,45 +114,41 @@ bool AnalyzerKey::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 }
 
 void AnalyzerKey::process(const CSAMPLE *pIn, const int iLen) {
-    if (!m_pVamp) {
+    if (!m_pPlugin) {
         return;
     }
-    bool success = m_pVamp->Process(pIn, iLen);
+
+    m_iCurrentSample += iLen;
+    if (m_iCurrentSample > m_iMaxSamplesToProcess) {
+        return;
+    }
+
+    bool success = m_pPlugin->process(pIn, iLen);
     if (!success) {
-        m_pVamp.reset();
+        m_pPlugin.reset();
     }
 }
 
 void AnalyzerKey::cleanup(TrackPointer tio) {
     Q_UNUSED(tio);
-    m_pVamp.reset();
+    m_pPlugin.reset();
 }
 
 void AnalyzerKey::finalize(TrackPointer tio) {
-    if (!m_pVamp) {
+    if (!m_pPlugin) {
         return;
     }
 
-    bool success = m_pVamp->End();
+    bool success = m_pPlugin->finalize();
     qDebug() << "Key Detection" << (success ? "complete" : "failed");
 
-    QVector<double> frames = m_pVamp->GetInitFramesVector();
-    QVector<double> keys = m_pVamp->GetLastValuesVector();
-    m_pVamp.reset();
-
-    if (frames.size() == 0 || frames.size() != keys.size()) {
-        qWarning() << "AnalyzerKey: Key sequence and list of times do not match.";
+    if (!success) {
+        m_pPlugin.reset();
         return;
     }
 
-    KeyChangeList key_changes;
-    for (int i = 0; i < keys.size(); ++i) {
-        if (ChromaticKey_IsValid(keys[i])) {
-            key_changes.push_back(qMakePair(
-                // int() intermediate cast required by MSVC.
-                static_cast<ChromaticKey>(int(keys[i])), frames[i]));
-        }
-    }
+    KeyChangeList key_changes = m_pPlugin->getKeyChanges();
+    m_pPlugin.reset();
 
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
         m_pluginId, m_bPreferencesFastAnalysisEnabled);

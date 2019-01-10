@@ -33,7 +33,8 @@ class VisualPlayPositionData {
     double m_enginePlayPos; // Play position of fist Sample in Buffer
     double m_rate;
     double m_positionStep;
-    double m_pSlipPosition;
+    double m_slipPosition;
+    double m_tempoTrackSeconds; // total track time, taking the current tempo into account
 };
 
 
@@ -45,10 +46,12 @@ class VisualPlayPosition : public QObject {
 
     // WARNING: Not thread safe. This function must be called only from the
     // engine thread.
-    void set(double playPos, double rate, double positionStep, double pSlipPosition);
+    void set(double playPos, double rate, double positionStep,
+            double slipPosition, double tempoTrackSeconds);
     double getAtNextVSync(VSyncThread* vsyncThread);
     void getPlaySlipAt(int usFromNow, double* playPosition, double* slipPosition);
     double getEnginePlayPos();
+    void getTrackTime(double* pPlayPosition, double* pTempoTrackSeconds);
 
     // WARNING: Not thread safe. This function must only be called from the main
     // thread.

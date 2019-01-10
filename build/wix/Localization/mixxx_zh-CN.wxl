@@ -26,7 +26,7 @@
   <String Id="NewerInstalled">已安装此产品相同或更高版本。</String>
   <String Id="x64VersionRequired">您需要在64位Windows上安装本产品的64位版本。</String>
   <String Id="x86VersionRequired">您需要在32位Windows上安装本产品的32位版本。</String>
-  <String Id="x86VersionWarning">您将要在64位操作系统上安装32位版本的Mixxx。&#13;&#10;我们建议使用64位版本以获取更好的性能。&#13;&#10;您可以从http://mixxx.org/download/ 下载64位的安装包。</String>
+  <String Id="x86VersionWarning">您将要在64位操作系统上安装32位版本的Mixxx。我们建议使用64位版本以获取更好的性能。您可以从http://mixxx.org/download/ 下载64位的安装包。</String>
   <String Id="XPWarning">您正在一个过时的操作系统上安装Mixxx。部分甚至全部功能可能无法正常工作，我们建议您升级操作系统。</String>
   <String Id="bitWidthMismatch32">您将要安装Mixxx的32位版本，但64位版本已经安装，这可能会导致超乎您意料的结果。请先卸载现有的Mixxx，或下载64位的安装包进行升级 (除非您知道自己在做什么。)</String>
   <String Id="bitWidthMismatch64">您将要安装Mixxx的64位版本，但32位版本已经安装，这可能会导致超乎您意料的结果。请先卸载现有的Mixxx，或下载64位的安装包进行升级 (除非您知道自己在做什么。)</String>

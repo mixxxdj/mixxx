@@ -19,7 +19,7 @@
 #include <QMutexLocker>
 
 #include "control/controlobject.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 

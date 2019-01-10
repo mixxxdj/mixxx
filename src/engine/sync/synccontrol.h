@@ -4,7 +4,7 @@
 #include <QScopedPointer>
 #include <gtest/gtest_prod.h>
 
-#include "engine/enginecontrol.h"
+#include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
 
 class EngineChannel;

@@ -25,7 +25,6 @@
 #include <QUrl>
 #include <QtDebug>
 
-#include "analyzer/analyzerqueue.h"
 #include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgprefeq.h"
@@ -51,6 +50,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "waveform/visualsmanager.h"
 #include "waveform/sharedglcontext.h"
 #include "database/mixxxdb.h"
 #include "util/debug.h"
@@ -264,6 +264,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Needs to be created before CueControl (decks) and WTrackTableView.
     m_pGuiTick = new GuiTick();
+    m_pVisualsManager = new VisualsManager();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager = new VinylControlManager(this, pConfig, m_pSoundManager);
@@ -273,7 +274,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Create the player manager. (long)
     m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager,
-                                         m_pEffectsManager, m_pEngine);
+            m_pEffectsManager, m_pVisualsManager, m_pEngine);
     connect(m_pPlayerManager, SIGNAL(noMicrophoneInputConfigured()),
             this, SLOT(slotNoMicrophoneInputConfigured()));
     connect(m_pPlayerManager, SIGNAL(noDeckPassthroughInputConfigured()),
@@ -380,7 +381,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     launchProgress(47);
 
     WaveformWidgetFactory::createInstance(); // takes a long time
-    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
+    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
     WaveformWidgetFactory::instance()->setConfig(pConfig);
 
     launchProgress(52);
@@ -604,6 +605,9 @@ void MixxxMainWindow::finalize() {
         qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
     }
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";
+    m_pLibrary->stopFeatures();
+
     // SoundManager depend on Engine and Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SoundManager";
     delete m_pSoundManager;
@@ -671,6 +675,7 @@ void MixxxMainWindow::finalize() {
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
+    delete m_pVisualsManager;
 
     // Check for leaked ControlObjects and give warnings.
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
@@ -726,6 +731,11 @@ void MixxxMainWindow::finalize() {
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
     StatsManager::destroy();
+
+    // NOTE(uklotzde, 2018-12-28): Finally destroy the singleton instance
+    // to prevent a deadlock when exiting the main() function! The actual
+    // cause of the deadlock is still unclear.
+    GlobalTrackCache::destroyInstance();
 }
 
 bool MixxxMainWindow::initializeDatabase() {
