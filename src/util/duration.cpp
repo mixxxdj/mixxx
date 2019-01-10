@@ -27,7 +27,7 @@ QChar DurationBase::kHectosecondSeparator = QChar(0x231E);
 QString DurationBase::formatTime(double dSeconds, Precision precision) {
     if (dSeconds < 0.0) {
         // negative durations are not supported
-	return "?";
+        return "?";
     }
 
     const qint64 days = static_cast<qint64>(std::floor(dSeconds)) / kSecondsPerDay;
@@ -59,7 +59,7 @@ QString DurationBase::formatTime(double dSeconds, Precision precision) {
 QString DurationBase::formatSeconds(double dSeconds, Precision precision) {
     if (dSeconds < 0.0) {
         // negative durations are not supported
-	return "?";
+        return "?";
     }
 
     QString durationString;
@@ -79,7 +79,7 @@ QString DurationBase::formatSeconds(double dSeconds, Precision precision) {
 QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
     if (dSeconds < 0.0) {
         // negative durations are not supported
-	return "?";
+        return "?";
     }
 
     int kilos = (int)dSeconds / 1000;
@@ -106,7 +106,7 @@ QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
 QString DurationBase::formatHectoSeconds(double dSeconds, Precision precision) {
     if (dSeconds < 0.0) {
         // negative durations are not supported
-	return "?";
+        return "?";
     }
 
     int hecto = (int)dSeconds / 100;
