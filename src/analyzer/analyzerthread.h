@@ -103,9 +103,12 @@ class AnalyzerThread : public WorkerThread {
     // Thread-safe atomic values
 
     // There is only one consumer (namely the worker thread) and one producer
-    // (the host thread) for this value. A single value is written and read
-    // in turn so the minimum capacity is sufficient.
-    MpscFifo<TrackPointer, 2> m_nextTrack;
+    // (the host thread) for this value. A single value is written and then
+    // read so a lock-free FIFO with the minimum capacity is sufficient for
+    // safely exchanging data between two threads.
+    // NOTE(uklotzde, 2018-01-04): Ideally we would use std::atomic<TrackPointer>,
+    // for this purpose, which will become available in C++20.
+    MpscFifo<TrackPointer, 1> m_nextTrack;
 
     /////////////////////////////////////////////////////////////////////////
     // Thread local: Only used in the constructor/destructor and within

@@ -154,7 +154,6 @@ class TrackAnalysisScheduler : public QObject {
         AnalyzerProgress m_analyzerProgress;
     };
 
-    TrackPointer loadTrackById(TrackId trackId);
     bool submitNextTrack(Worker* worker);
     void emitProgressOrFinished();
 

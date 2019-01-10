@@ -511,6 +511,9 @@ class SoundTouch(Dependence):
             # Try using system lib
             if conf.CheckForPKG('soundtouch', '2.0.0'):
                 # System Lib found
+                if not conf.CheckLib(['SoundTouch']):
+                    raise Exception(
+                        "Could not find libSoundTouch or its development headers.")
                 build.env.ParseConfig('pkg-config soundtouch --silence-errors --cflags --libs')
                 self.INTERNAL_LINK = False
 
@@ -1065,6 +1068,7 @@ class MixxxCore(Feature):
                    "src/waveform/waveformwidgetfactory.cpp",
                    "src/waveform/vsyncthread.cpp",
                    "src/waveform/guitick.cpp",
+                   "src/waveform/visualsmanager.cpp",
                    "src/waveform/visualplayposition.cpp",
                    "src/waveform/renderers/waveformwidgetrenderer.cpp",
                    "src/waveform/renderers/waveformrendererabstract.cpp",
