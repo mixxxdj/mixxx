@@ -9,7 +9,7 @@
             <product protocol="hid" vendor_id="0x17cc" product_id="0x1120" usage_page="0x1ff" usage="0x1" interface_number="0x1" />
         </devices>
     </info>
-    <controller id="Traktor Kontrol F1">
+    <controller id="KontrolF1">
         <scriptfiles>
             <file filename="common-hid-packet-parser.js" functionprefix=""/>
             <file filename="Traktor-Kontrol-F1-scripts.js" functionprefix="KontrolF1"/>
