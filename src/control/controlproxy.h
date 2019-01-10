@@ -90,12 +90,6 @@ class ControlProxy : public QObject {
                 static_cast<Qt::ConnectionType>(copConnection | Qt::UniqueConnection));
         return true;
     }
-    // TODO: get the compiler to accept parent() for the receiver
-    //template <typename Slot>
-    //bool connectValueChanged(Slot func, Qt::ConnectionType type = Qt::AutoConnection) {
-    //    DEBUG_ASSERT(parent() != nullptr);
-    //    return connectValueChanged(parent(), func, type);
-    //}
 
     // Called from update();
     virtual void emitValueChanged() {
