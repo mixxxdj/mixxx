@@ -5,6 +5,15 @@
 # $ git config --global merge.ours.driver true
 #
 # Otherwise the settings in this file are ignored!
+#
+# Background: Localization files from external sources like
+# Transifex must not be merged between release branches and
+# should be ignore while merging! Instead those files are
+# updated by re-importing them manually from the external
+# source. This workflow is supported by configuring the merge
+# strategy for the local Git repository appropriately, i.e.
+# by excluding those files from merging and always keeping the
+# files from the current/target branch (= "ours").
 
 # Exclude Transifex files from merging
 /res/translations/*.ts merge=ours
