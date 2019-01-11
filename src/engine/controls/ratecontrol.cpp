@@ -44,26 +44,26 @@ RateControl::RateControl(QString group,
     // The track original rate ratio is 1.
     m_pRateRatio = new ControlObject(ConfigKey(group, "rate_ratio"),
                   true, false, false, 1.0);
-    connect(m_pRateRatio, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateRatioChanged(double)),
+    connect(m_pRateRatio, &ControlObject::valueChanged,
+            this, &RateControl::slotRateRatioChanged,
             Qt::DirectConnection);
 
     m_pRateDir = new ControlObject(ConfigKey(group, "rate_dir"));
-    connect(m_pRateDir, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateRangeChanged(double)),
+    connect(m_pRateDir, &ControlObject::valueChanged,
+            this, &RateControl::slotRateRangeChanged,
             Qt::DirectConnection);
     m_pRateRange = new ControlPotmeter(
             ConfigKey(group, "rateRange"), 0.01, 4.00);
-    connect(m_pRateRange, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateRangeChanged(double)),
+    connect(m_pRateRange, &ControlObject::valueChanged,
+            this, &RateControl::slotRateRangeChanged,
             Qt::DirectConnection);
 
     // Allow rate slider to go out of bounds so that master sync rate
     // adjustments are not capped.
     m_pRateSlider = new ControlPotmeter(
             ConfigKey(group, "rate"), -1.0, 1.0, true);
-    connect(m_pRateSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateSliderChanged(double)),
+    connect(m_pRateSlider, &ControlObject::valueChanged,
+            this, &RateControl::slotRateSliderChanged,
             Qt::DirectConnection);
 
     // Search rate. Rate used when searching in sound. This overrules the
