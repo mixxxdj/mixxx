@@ -77,7 +77,7 @@ class ControlValueAtomicBase {
   public:
     inline T getValue() const {
         T value;
-        unsigned int index = static_cast<unsigned int>(load_atomic(m_readIndex)) % cRingSize;
+        unsigned int index = static_cast<unsigned int>(m_readIndex.load()) % cRingSize;
         while (!m_ring[index].tryGet(&value)) {
             // We are here if
             // 1) there are more then kMaxReaderSlots reader (get) reading the same value or

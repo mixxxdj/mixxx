@@ -434,7 +434,7 @@ void BroadcastProfile::setConnectionStatus(int newState) {
 }
 
 int BroadcastProfile::connectionStatus() {
-    return load_atomic(m_connectionStatus);
+    return m_connectionStatus.load();
 }
 
 void BroadcastProfile::setSecureCredentialStorage(bool value) {
