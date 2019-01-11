@@ -118,11 +118,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     // Track Display model
     comboBoxTimeFormat->clear();
 
-    comboBoxTimeFormat->addItem(tr("hh:mm:ss.zz - Traditional"),
+    comboBoxTimeFormat->addItem(tr("mm:ss.zz - Traditional"),
                                 static_cast<int>
                                 (TrackTime::DisplayFormat::TRADITIONAL));
 
-    comboBoxTimeFormat->addItem(tr("hh:mm:ss - Traditional (Coarse)"),
+    comboBoxTimeFormat->addItem(tr("mm:ss - Traditional (Coarse)"),
                                 static_cast<int>
                                 (TrackTime::DisplayFormat::TRADITIONAL_COARSE));
 
