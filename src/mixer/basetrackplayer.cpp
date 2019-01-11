@@ -8,8 +8,8 @@
 #include "track/track.h"
 #include "sources/soundsourceproxy.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginecontrol.h"
-#include "engine/enginedeck.h"
+#include "engine/controls/enginecontrol.h"
+#include "engine/channels/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -45,10 +45,10 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 
     m_pInputConfigured = std::make_unique<ControlProxy>(group, "input_configured", this);
     m_pPassthroughEnabled = std::make_unique<ControlProxy>(group, "passthrough", this);
-    m_pPassthroughEnabled->connectValueChanged(SLOT(slotPassthroughEnabled(double)));
+    m_pPassthroughEnabled->connectValueChanged(this, &BaseTrackPlayerImpl::slotPassthroughEnabled);
 #ifdef __VINYLCONTROL__
     m_pVinylControlEnabled = std::make_unique<ControlProxy>(group, "vinylcontrol_enabled", this);
-    m_pVinylControlEnabled->connectValueChanged(SLOT(slotVinylControlEnabled(double)));
+    m_pVinylControlEnabled->connectValueChanged(this, &BaseTrackPlayerImpl::slotVinylControlEnabled);
     m_pVinylControlStatus = std::make_unique<ControlProxy>(group, "vinylcontrol_status", this);
 #endif
 
@@ -83,7 +83,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pWaveformZoom = std::make_unique<ControlObject>(
         ConfigKey(group, "waveform_zoom"));
     m_pWaveformZoom->connectValueChangeRequest(
-        this, SLOT(slotWaveformZoomValueChangeRequest(double)),
+        this, &BaseTrackPlayerImpl::slotWaveformZoomValueChangeRequest,
         Qt::DirectConnection);
     m_pWaveformZoom->set(1.0);
     m_pWaveformZoomUp = std::make_unique<ControlPushButton>(
@@ -106,7 +106,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
 
     m_pReplayGain = std::make_unique<ControlProxy>(group, "replaygain", this);
     m_pPlay = std::make_unique<ControlProxy>(group, "play", this);
-    m_pPlay->connectValueChanged(SLOT(slotPlayToggled(double)));
+    m_pPlay->connectValueChanged(this, &BaseTrackPlayerImpl::slotPlayToggled);
 
     pVisualsManager->addDeck(group);
 }

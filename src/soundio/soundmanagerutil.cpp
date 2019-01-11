@@ -15,7 +15,7 @@
 
 #include "soundio/soundmanagerutil.h"
 
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 
 /**
  * Constructs a ChannelGroup.

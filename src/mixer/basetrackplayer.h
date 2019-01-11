@@ -6,8 +6,8 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
-#include "engine/enginechannel.h"
-#include "engine/enginedeck.h"
+#include "engine/channels/enginechannel.h"
+#include "engine/channels/enginedeck.h"
 #include "mixer/baseplayer.h"
 #include "track/track.h"
 #include "util/memory.h"

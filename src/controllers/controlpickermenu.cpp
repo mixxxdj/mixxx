@@ -2,8 +2,8 @@
 
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "mixer/playermanager.h"
-#include "engine/cuecontrol.h"
-#include "engine/loopingcontrol.h"
+#include "engine/controls/cuecontrol.h"
+#include "engine/controls/loopingcontrol.h"
 #include "effects/effectrack.h"
 #include "effects/effectchainslot.h"
 #include "effects/effectslot.h"

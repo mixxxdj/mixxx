@@ -115,8 +115,14 @@ class ControlDoublePrivate : public QObject {
     // confirmed by setAndConfirm() or not. Note: Once connected, the CO value
     // itself is ONLY set by setAndConfirm() typically called in the connected
     // slot.
-    bool connectValueChangeRequest(const QObject* receiver,
-                                   const char* method, Qt::ConnectionType type);
+    template <typename Receiver, typename Slot>
+    bool connectValueChangeRequest(Receiver receiver,
+                                   Slot func, Qt::ConnectionType type) {
+        // confirmation is only required if connect was successful
+        m_confirmRequired = connect(this, &ControlDoublePrivate::valueChangeRequest,
+                    receiver, func, type);
+        return m_confirmRequired;
+    }
 
   signals:
     // Emitted when the ControlDoublePrivate value changes. pSender is a

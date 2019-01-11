@@ -3,10 +3,10 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "control/controlproxy.h"
-#include "engine/bpmcontrol.h"
+#include "engine/controls/bpmcontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginechannel.h"
-#include "engine/ratecontrol.h"
+#include "engine/channels/enginechannel.h"
 #include "util/math.h"
 #include "util/assert.h"
 
@@ -40,37 +40,37 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
     m_pPlayButton = new ControlProxy(group, "play", this);
-    m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)),
+    m_pPlayButton->connectValueChanged(this, &SyncControl::slotControlPlay,
                                        Qt::DirectConnection);
 
     m_pSyncMode.reset(new ControlPushButton(ConfigKey(group, "sync_mode")));
     m_pSyncMode->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMode->setStates(SYNC_NUM_MODES);
     m_pSyncMode->connectValueChangeRequest(
-            this, SLOT(slotSyncModeChangeRequest(double)), Qt::DirectConnection);
+            this, &SyncControl::slotSyncModeChangeRequest, Qt::DirectConnection);
 
     m_pSyncMasterEnabled.reset(
             new ControlPushButton(ConfigKey(group, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMasterEnabled->connectValueChangeRequest(
-            this, SLOT(slotSyncMasterEnabledChangeRequest(double)), Qt::DirectConnection);
+            this, &SyncControl::slotSyncMasterEnabledChangeRequest, Qt::DirectConnection);
 
     m_pSyncEnabled.reset(
             new ControlPushButton(ConfigKey(group, "sync_enabled")));
     m_pSyncEnabled->setButtonMode(ControlPushButton::LONGPRESSLATCHING);
     m_pSyncEnabled->connectValueChangeRequest(
-            this, SLOT(slotSyncEnabledChangeRequest(double)), Qt::DirectConnection);
+            this, &SyncControl::slotSyncEnabledChangeRequest, Qt::DirectConnection);
 
     m_pSyncBeatDistance.reset(
             new ControlObject(ConfigKey(group, "beat_distance")));
 
     m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
-    m_pPassthroughEnabled->connectValueChanged(
-            SLOT(slotPassthroughChanged(double)), Qt::DirectConnection);
+    m_pPassthroughEnabled->connectValueChanged(this,
+            &SyncControl::slotPassthroughChanged, Qt::DirectConnection);
 
     m_pEjectButton = new ControlProxy(group, "eject", this);
-    m_pEjectButton->connectValueChanged(
-            SLOT(slotEjectPushed(double)), Qt::DirectConnection);
+    m_pEjectButton->connectValueChanged(this,
+            &SyncControl::slotEjectPushed, Qt::DirectConnection);
 
     m_pQuantize = new ControlProxy(group, "quantize", this);
 
@@ -93,19 +93,19 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pLocalBpm = new ControlProxy(getGroup(), "local_bpm", this);
 
     m_pFileBpm = new ControlProxy(getGroup(), "file_bpm", this);
-    m_pFileBpm->connectValueChanged(SLOT(slotFileBpmChanged()),
+    m_pFileBpm->connectValueChanged(this, &SyncControl::slotFileBpmChanged,
                                     Qt::DirectConnection);
 
     m_pRateSlider = new ControlProxy(getGroup(), "rate", this);
-    m_pRateSlider->connectValueChanged(SLOT(slotRateChanged()),
+    m_pRateSlider->connectValueChanged(this, &SyncControl::slotRateChanged,
                                        Qt::DirectConnection);
 
     m_pRateDirection = new ControlProxy(getGroup(), "rate_dir", this);
-    m_pRateDirection->connectValueChanged(SLOT(slotRateChanged()),
+    m_pRateDirection->connectValueChanged(this, &SyncControl::slotRateChanged,
                                           Qt::DirectConnection);
 
     m_pRateRange = new ControlProxy(getGroup(), "rateRange", this);
-    m_pRateRange->connectValueChanged(SLOT(slotRateChanged()),
+    m_pRateRange->connectValueChanged(this, &SyncControl::slotRateChanged,
                                       Qt::DirectConnection);
 
     m_pSyncPhaseButton = new ControlProxy(getGroup(), "beatsync_phase", this);
@@ -118,7 +118,7 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
     DEBUG_ASSERT(m_pVCEnabled->valid());
 
-    m_pVCEnabled->connectValueChanged(SLOT(slotVinylControlChanged(double)),
+    m_pVCEnabled->connectValueChanged(this, &SyncControl::slotVinylControlChanged,
                                       Qt::DirectConnection);
 #endif
 }
