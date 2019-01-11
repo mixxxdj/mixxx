@@ -49,7 +49,7 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             // ronso0 :: find <SetVariable> nodes, update them.
             // This calls SkinContext::updateVariables in skincontext.cpp which
             // iterates over all <SetVariable> nodes
-            m_pContext->updateVariables(context);
+            *m_pContext->updateVariables(context);
 
             if (pStyle) {
                 *pStyle = LegacySkinParser::getStyleFromNode(sch);
