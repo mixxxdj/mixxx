@@ -628,7 +628,7 @@ QJSValue ControllerEngine::makeConnection(QString group, QString name,
 
     if (!callback.isCallable()) {
         throwJSError("Tried to connect (" + group + ", " + name + ")"
-                + " to an invalid callback.");
+                + " to an invalid callback. Make sure that your code contains no syntax errors.");
         return QJSValue();
     }
 
@@ -908,10 +908,9 @@ int ControllerEngine::beginTimer(int interval, QJSValue timerCallback,
                                  bool oneShot) {
     if (timerCallback.isString()) {
         timerCallback = evaluateCodeString(timerCallback.toString());
-    }
-
-    if (!timerCallback.isCallable()) {
-        QString sErrorMessage("Invalid timer callback provided to engine.beginTimer. Valid callbacks are strings and functions.");
+    } else if (!timerCallback.isCallable()) {
+        QString sErrorMessage("Invalid timer callback provided to engine.beginTimer. Valid callbacks are strings and functions. "
+                "Make sure that your code contains no syntax errors.");
         if (timerCallback.isError()) {
             sErrorMessage.append("\n" + timerCallback.toString());
         }
