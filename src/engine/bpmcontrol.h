@@ -93,6 +93,9 @@ class BpmControl : public EngineControl {
     SyncMode getSyncMode() const {
         return syncModeFromDouble(m_pSyncMode->get());
     }
+    inline bool isSynchronized() const {
+        return toSynchronized(getSyncMode());
+    }
     bool syncTempo();
     double calcSyncAdjustment(double my_percentage, bool userTweakingSync);
     double calcRateRatio() const;
