@@ -453,7 +453,7 @@
               <ButtonState>LeftButton</ButtonState>
             </Connection>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],beatsync_phase</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],beatsync_tempo</ConfigKey>
               <ButtonState>RightButton</ButtonState>
             </Connection>
           </PushButton>
