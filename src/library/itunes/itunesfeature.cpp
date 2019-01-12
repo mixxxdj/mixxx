@@ -1,7 +1,7 @@
 #include <QMessageBox>
 #include <QtDebug>
 #include <QXmlStreamReader>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QFileDialog>
 #include <QMenu>
 #include <QAction>
@@ -61,7 +61,8 @@ QString localhost_token() {
 ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
-          m_cancelImport(false) {
+          m_cancelImport(false),
+          m_icon(":/images/library/ic_library_itunes.svg") {
     QString tableName = "itunes_library";
     QString idColumn = "id";
     QStringList columns;
@@ -139,7 +140,7 @@ QVariant ITunesFeature::title() {
 }
 
 QIcon ITunesFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_itunes.svg");
+    return m_icon;
 }
 
 void ITunesFeature::activate() {
@@ -265,10 +266,10 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
 QString ITunesFeature::getiTunesMusicPath() {
     QString musicFolder;
 #if defined(__APPLE__)
-    musicFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+    musicFolder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation)
                   + "/iTunes/iTunes Music Library.xml";
 #elif defined(__WINDOWS__)
-    musicFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+    musicFolder = QStandardPaths::writableLocation(QStandardPaths::MusicLocation)
                   + "\\iTunes\\iTunes Music Library.xml";
 #else
     musicFolder = "";

@@ -4,7 +4,6 @@
     <ObjectName>SamplerDeck</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
-    <MinimumSize>280,100</MinimumSize>
     <Children>
       <!-- SamplerMainControls -->
       <WidgetGroup>
@@ -25,6 +24,21 @@
                 <Group><Variable name="group"/></Group>
                 <Elide>right</Elide>
               </TrackProperty>
+
+              <Number>
+                <TooltipId>visual_bpm</TooltipId>
+                <Group>[Sampler<Variable name="samplernum"/>]</Group>
+                <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                <Alignment>left</Alignment>
+                <Connection>
+                  <ConfigKey>[Sampler<Variable name="samplernum"/>],visual_bpm</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Sampler<Variable name="samplernum"/>],track_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </Number>
+
             </Children>
           </WidgetGroup>
 
@@ -39,31 +53,17 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <PushButton>
-                    <TooltipId>cue_gotoandplay_cue_default</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_play_sampler_down.svg</Pressed>
-                      <Unpressed>buttons/btn_play_sampler.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_play_sampler_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_play_sampler_over.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,cue_gotoandplay</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,cue_default</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,play_indicator</ConfigKey>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state_right_display.xml">
+                    <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
+                    <SetVariable name="Size">34f,34f</SetVariable>
+                    <SetVariable name="state_0_pressed">play_sampler_down.svg</SetVariable>
+                    <SetVariable name="state_0_unpressed">play_sampler.svg</SetVariable>
+                    <SetVariable name="state_1_pressed">play_sampler_overdown.svg</SetVariable>
+                    <SetVariable name="state_1_unpressed">play_sampler_over.svg</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
+                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+                    <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup>
 
@@ -106,36 +106,18 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <PushButton>
-                        <TooltipId>repeat</TooltipId>
-                        <NumberStates>2</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>buttons/btn_repeat.svg</Pressed>
-                          <Unpressed>buttons/btn_repeat.svg</Unpressed>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Pressed>buttons/btn_repeat_over.svg</Pressed>
-                          <Unpressed>buttons/btn_repeat_over.svg</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
-                        </Connection>
-                      </PushButton>
-                      <PushButton>
-                        <TooltipId>eject</TooltipId>
-                        <NumberStates>1</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>buttons/btn_eject_over.svg</Pressed>
-                          <Unpressed>buttons/btn_eject.svg</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,eject</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                      </PushButton>
+                      <Template src="skin:button_2state_nohover.xml">
+                        <SetVariable name="TooltipId">repeat</SetVariable>
+                        <SetVariable name="icon">repeat</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,repeat</SetVariable>
+                        <SetVariable name="Size">25,18</SetVariable>
+                      </Template>
+                      <Template src="skin:button_2state_nohover.xml">
+                        <SetVariable name="TooltipId">eject</SetVariable>
+                        <SetVariable name="icon">eject</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,eject</SetVariable>
+                        <SetVariable name="Size">25,18</SetVariable>
+                      </Template>
                     </Children>
                   </WidgetGroup>
 
@@ -148,17 +130,17 @@
                         <NumberStates>3</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>buttons/btn_orientation_sampler_left.svg</Pressed>
+                          <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_sampler_left.svg</Pressed>
                           <Unpressed>buttons/btn_orientation_sampler_left.svg</Unpressed>
                         </State>
                         <State>
                           <Number>1</Number>
-                          <Pressed>buttons/btn_orientation_sampler_master.svg</Pressed>
+                          <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_sampler_master.svg</Pressed>
                           <Unpressed>buttons/btn_orientation_sampler_master.svg</Unpressed>
                         </State>
                         <State>
                           <Number>2</Number>
-                          <Pressed>buttons/btn_orientation_sampler_right.svg</Pressed>
+                          <Pressed scalemode="STRETCH_ASPECT">buttons/btn_orientation_sampler_right.svg</Pressed>
                           <Unpressed>buttons/btn_orientation_sampler_right.svg</Unpressed>
                         </State>
                         <Connection>
@@ -166,23 +148,12 @@
                           <ButtonState>LeftButton</ButtonState>
                         </Connection>
                       </PushButton>
-                      <PushButton>
-                        <TooltipId>keylock</TooltipId>
-                        <NumberStates>2</NumberStates>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>buttons/btn_keylock.svg</Pressed>
-                          <Unpressed>buttons/btn_keylock.svg</Unpressed>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Pressed>buttons/btn_keylock_over.svg</Pressed>
-                          <Unpressed>buttons/btn_keylock_over.svg</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
-                        </Connection>
-                      </PushButton>
+                      <Template src="skin:button_2state_nohover.xml">
+                        <SetVariable name="TooltipId">keylock</SetVariable>
+                        <SetVariable name="icon">keylock</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,keylock</SetVariable>
+                        <SetVariable name="Size">25,18</SetVariable>
+                      </Template>
                     </Children>
                   </WidgetGroup>
                 </Children>
@@ -196,6 +167,7 @@
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="TooltipId">pregain</SetVariable>
                     <SetVariable name="Size">35f,30f</SetVariable>
+                    <SetVariable name="Color">orange</SetVariable>
                     <SetVariable name="group"><Variable name="group"/></SetVariable>
                     <SetVariable name="control">pregain</SetVariable>
                   </Template>
@@ -218,237 +190,44 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <PushButton>
-                    <TooltipId>hotcue</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_hotcue_1_down.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_1.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_hotcue_1_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_1_over.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_1_activate</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_1_clear</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_1_enabled</ConfigKey>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">1</SetVariable>
+                  </Template>
 
-                  <PushButton>
-                    <TooltipId>hotcue</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_hotcue_2_down.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_2.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_hotcue_2_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_2_over.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_2_activate</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_2_clear</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_2_enabled</ConfigKey>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">2</SetVariable>
+                  </Template>
 
-                  <PushButton>
-                    <TooltipId>hotcue</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_hotcue_3_down.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_3.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_hotcue_3_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_3_over.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_3_activate</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_3_clear</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_3_enabled</ConfigKey>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">3</SetVariable>
+                  </Template>
 
-                  <PushButton>
-                    <TooltipId>hotcue</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_hotcue_4_down.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_4.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_hotcue_4_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_hotcue_4_over.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_4_activate</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_4_clear</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,hotcue_4_enabled</ConfigKey>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_hotcue.xml">
+                    <SetVariable name="number">4</SetVariable>
+                  </Template>
 
                   <WidgetGroup><!-- /Hotcues 5-8 -->
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
+                      <Template src="skin:button_hotcue.xml">
+                        <SetVariable name="number">5</SetVariable>
+                      </Template>
 
-                      <PushButton>
-                        <TooltipId>hotcue</TooltipId>
-                        <NumberStates>2</NumberStates>
-                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                        <RightClickIsPushButton>true</RightClickIsPushButton>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>buttons/btn_hotcue_5_down.svg</Pressed>
-                          <Unpressed>buttons/btn_hotcue_5.svg</Unpressed>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Pressed>buttons/btn_hotcue_5_overdown.svg</Pressed>
-                          <Unpressed>buttons/btn_hotcue_5_over.svg</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,hotcue_5_activate</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,hotcue_5_clear</ConfigKey>
-                          <ButtonState>RightButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,hotcue_5_enabled</ConfigKey>
-                        </Connection>
-                      </PushButton>
+                      <Template src="skin:button_hotcue.xml">
+                        <SetVariable name="number">6</SetVariable>
+                      </Template>
 
-                      <PushButton>
-                        <TooltipId>hotcue</TooltipId>
-                        <NumberStates>2</NumberStates>
-                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                        <RightClickIsPushButton>true</RightClickIsPushButton>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>buttons/btn_hotcue_6_down.svg</Pressed>
-                          <Unpressed>buttons/btn_hotcue_6.svg</Unpressed>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Pressed>buttons/btn_hotcue_6_overdown.svg</Pressed>
-                          <Unpressed>buttons/btn_hotcue_6_over.svg</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,hotcue_6_activate</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,hotcue_6_clear</ConfigKey>
-                          <ButtonState>RightButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,hotcue_6_enabled</ConfigKey>
-                        </Connection>
-                      </PushButton>
+                      <Template src="skin:button_hotcue.xml">
+                        <SetVariable name="number">7</SetVariable>
+                      </Template>
 
-                      <PushButton>
-                        <TooltipId>hotcue</TooltipId>
-                        <NumberStates>2</NumberStates>
-                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                        <RightClickIsPushButton>true</RightClickIsPushButton>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>buttons/btn_hotcue_7_down.svg</Pressed>
-                          <Unpressed>buttons/btn_hotcue_7.svg</Unpressed>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Pressed>buttons/btn_hotcue_7_overdown.svg</Pressed>
-                          <Unpressed>buttons/btn_hotcue_7_over.svg</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,hotcue_7_activate</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,hotcue_7_clear</ConfigKey>
-                          <ButtonState>RightButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,hotcue_7_enabled</ConfigKey>
-                        </Connection>
-                      </PushButton>
-
-                      <PushButton>
-                        <TooltipId>hotcue</TooltipId>
-                        <NumberStates>2</NumberStates>
-                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
-                        <RightClickIsPushButton>true</RightClickIsPushButton>
-                        <State>
-                          <Number>0</Number>
-                          <Pressed>buttons/btn_hotcue_8_down.svg</Pressed>
-                          <Unpressed>buttons/btn_hotcue_8.svg</Unpressed>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                          <Pressed>buttons/btn_hotcue_8_overdown.svg</Pressed>
-                          <Unpressed>buttons/btn_hotcue_8_over.svg</Unpressed>
-                        </State>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,hotcue_8_activate</ConfigKey>
-                          <ButtonState>LeftButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,hotcue_8_clear</ConfigKey>
-                          <ButtonState>RightButton</ButtonState>
-                        </Connection>
-                        <Connection>
-                          <ConfigKey><Variable name="group"/>,hotcue_8_enabled</ConfigKey>
-                        </Connection>
-                      </PushButton>
+                      <Template src="skin:button_hotcue.xml">
+                        <SetVariable name="number">8</SetVariable>
+                      </Template>
                     </Children>
                     <Connection>
-                      <ConfigKey persist="true">[Skin],8_hotcues</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_8_hotcues</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- /Hotcues 5-8 -->
@@ -464,23 +243,12 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <PushButton>
-                    <TooltipId>pfl</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_pfl_down.svg</Pressed>
-                      <Unpressed>buttons/btn_pfl.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_pfl_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_pfl_over.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">pfl</SetVariable>
+                    <SetVariable name="icon">pfl</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+                    <SetVariable name="Size">26,26</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup><!-- /SamplerPfl -->
 
@@ -538,7 +306,7 @@
             <Children>
               <SliderComposed>
                 <TooltipId>rate</TooltipId>
-                <Handle>knob_pitch_sampler.svg</Handle>
+                <Handle scalemode="STRETCH_ASPECT">knob_pitch_sampler.svg</Handle>
                 <Slider>slider_pitch_sampler.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
@@ -553,23 +321,14 @@
             <Layout>horizontal</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <PushButton>
-                <TooltipId>beatsync_beatsync_tempo</TooltipId>
-                <NumberStates>1</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_sync_sampler_overdown.svg</Pressed>
-                  <Unpressed>buttons/btn_sync_sampler.svg</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatsync</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,beatsync_tempo</ConfigKey>
-                  <ButtonState>RightButton</ButtonState>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_1state_right.xml">
+                <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
+                <SetVariable name="Size">28f,26f</SetVariable>
+                <SetVariable name="state_0_pressed">sync_sampler_overdown.svg</SetVariable>
+                <SetVariable name="state_0_unpressed">sync_sampler.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,beatsync</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
+              </Template>
             </Children>
           </WidgetGroup>
         </Children>

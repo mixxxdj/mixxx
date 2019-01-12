@@ -26,7 +26,7 @@
           <Template src="skin:mixer_column_eq_right.xml"/>
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform>
             <Not/>
@@ -50,7 +50,7 @@
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

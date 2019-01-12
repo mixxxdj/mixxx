@@ -36,12 +36,24 @@ Description:
               <!-- push Close button to far right -->
               <WidgetGroup><Size>1me,1me</Size></WidgetGroup>
 
-              <Template src="skin:../Tango/button_2state.xml">
-                <SetVariable name="TooltipId">skin_settings</SetVariable>
-                <SetVariable name="ObjectName">SkinSettingsClose</SetVariable>
-                <SetVariable name="Size">20f,24f</SetVariable>
-                <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
-              </Template>
+              <PushButton>
+                <TooltipId>skin_settings</TooltipId>
+                <ObjectName>SkinSettingsClose</ObjectName>
+                <Size>20f,24f</Size>
+                <!-- This is used to work around Bug 1795663 on OSX -->
+                <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
             </Children>
           </WidgetGroup>
 
@@ -66,7 +78,7 @@ Description:
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">4 Decks</SetVariable>
-                <SetVariable name="Setting">[Master],show_4decks</SetVariable>
+                <SetVariable name="Setting">[Skin],show_4decks</SetVariable>
               </Template>
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
@@ -126,13 +138,13 @@ Description:
                             <SetVariable name="state_x_text"> [ 4 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">0</SetVariable>
-                            <SetVariable name="Setting">[Skin],8_hotcues</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
                           </Template>
                           <Template src="skin:../Tango/skin_settings_button_multi.xml">
                             <SetVariable name="state_x_text"> [ 8 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">1</SetVariable>
-                            <SetVariable name="Setting">[Skin],8_hotcues</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
                           </Template>
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
@@ -144,7 +156,7 @@ Description:
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Loop / Beatjump Buttons</SetVariable>
-                <SetVariable name="Setting">[Tango],loop_beatjump_controls</SetVariable>
+                <SetVariable name="Setting">[Skin],show_loop_beatjump_controls</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Permanent deck controls -->
@@ -159,7 +171,7 @@ Description:
                     <MinimumSize>182,13</MinimumSize>
                     <MaximumSize>182,17</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
-                    <Text>Permanent Deck controls:</Text>
+                    <Text>Permanent Deck Controls:</Text>
                     <Alignment>left</Alignment>
                   </Label>
                   <WidgetGroup><!-- Permanent deck control icons -->
@@ -204,7 +216,7 @@ Description:
                         <SetVariable name="ObjectName">DeckButtonVisibility</SetVariable>
                         <SetVariable name="Size">16f,15f</SetVariable>
                         <SetVariable name="state_0_icon">xfader_center.svg</SetVariable>
-                        <SetVariable name="state_1_icon">xfader_visible.svg</SetVariable>
+                        <SetVariable name="state_1_icon">xfader_center_attention.svg</SetVariable>
                         <SetVariable name="ConfigKey">[Tango],always_visible_orientation</SetVariable>
                       </Template>
 
@@ -230,7 +242,7 @@ Description:
                             <Layout>vertical</Layout>
                             <Size>16f,15f</Size>
                             <Connection>
-                              <ConfigKey persist="true">[Tango],stars_fit</ConfigKey>
+                              <ConfigKey persist="true">[Tango],starrating_fits</ConfigKey>
                               <Transform><Not/></Transform>
                               <BindProperty>visible</BindProperty>
                             </Connection>
@@ -241,7 +253,7 @@ Description:
                             <SetVariable name="Size">16f,15f</SetVariable>
                             <SetVariable name="state_0_icon">stars_hidden.svg</SetVariable>
                             <SetVariable name="state_1_icon">stars_visible.svg</SetVariable>
-                            <SetVariable name="ConfigKey">[Tango],stars</SetVariable>
+                            <SetVariable name="ConfigKey">[Skin],show_starrating</SetVariable>
                           </Template>
                         </Children>
                       </WidgetGroup><!-- /Star rating -->
@@ -268,7 +280,7 @@ Description:
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">BPM/Sync &amp; Pitch Fader</SetVariable>
-                <SetVariable name="Setting">[Master],show_rate_control</SetVariable>
+                <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Rate/Key submenu -->
@@ -287,7 +299,7 @@ Description:
                     <MaximumSize>-1,34</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Connection>
-                      <ConfigKey persist="true">[Master],show_rate_control</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -325,7 +337,7 @@ Description:
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Spinny</SetVariable>
-                <SetVariable name="Setting">[Spinny],show_spinnies</SetVariable>
+                <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
               </Template>
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
@@ -335,7 +347,7 @@ Description:
 
             <!-- A hack involving a SizeAwareStack and WidgetStacks
               that toggles [Tango],no_spinny_no_cover when both
-              [Spinny],show_spinnies and [Skin],show_coverart are 0 -->
+              [Skin],show_spinnies and [Skin],show_coverart are 0 -->
               <WidgetGroup>
                 <Size>3f,0f</Size>
                 <Layout>horizontal</Layout>
@@ -343,7 +355,7 @@ Description:
                   <WidgetGroup>
                     <Size>1f,0f</Size>
                     <Connection>
-                      <ConfigKey persist="true">[Spinny],show_spinnies</ConfigKey>
+                      <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
@@ -446,13 +458,13 @@ Description:
                         <SetVariable name="state_x_text"> [  °  ] </SetVariable>
                         <SetVariable name="width">28</SetVariable>
                         <SetVariable name="stateX">0</SetVariable>
-                        <SetVariable name="Setting">[Tango],show_BIG_spinny_cover</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
                       </Template>
                       <Template src="skin:../Tango/skin_settings_button_multi.xml">
                         <SetVariable name="state_x_text"> [ O ] </SetVariable>
                         <SetVariable name="width">28</SetVariable>
                         <SetVariable name="stateX">1</SetVariable>
-                        <SetVariable name="Setting">[Tango],show_BIG_spinny_cover</SetVariable>
+                        <SetVariable name="Setting">[Skin],show_big_spinny_coverart</SetVariable>
                       </Template>
                       <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                     </Children>
@@ -516,7 +528,7 @@ Description:
                           </Label>
                         </Children>
                         <Connection>
-                          <ConfigKey persist="true">[Tango],show_BIG_spinny_cover</ConfigKey>
+                          <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup>
@@ -557,7 +569,7 @@ Description:
                   	<Children>
 		                  <Template src="skin:../Tango/skin_settings_button_2state.xml">
 		                    <SetVariable name="text">EQ &amp; QuickEffect Knobs</SetVariable>
-		                    <SetVariable name="Setting">[Master],show_eqs</SetVariable>
+		                    <SetVariable name="Setting">[Skin],show_eq_knobs</SetVariable>
 		                  </Template>
 
 				              <WidgetGroup><!-- EQ Kill buttons -->
@@ -576,7 +588,7 @@ Description:
 				                    <MaximumSize>182,17</MaximumSize>
 				                    <SizePolicy>me,me</SizePolicy>
 				                    <Connection>
-				                      <ConfigKey persist="true">[Master],show_eqs</ConfigKey>
+				                      <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
 				                      <Transform><Not/></Transform>
 				                      <BindProperty>visible</BindProperty>
 				                    </Connection>
@@ -584,7 +596,7 @@ Description:
 
 				                  <Template src="skin:../Tango/skin_settings_button_2state.xml">
 				                    <SetVariable name="text">EQ Kill Buttons</SetVariable>
-				                    <SetVariable name="Setting">[Master],show_eq_kill_buttons</SetVariable>
+				                    <SetVariable name="Setting">[Skin],show_eq_kill_buttons</SetVariable>
 				                  </Template>
 
 				                </Children>
@@ -592,7 +604,7 @@ Description:
 
 								      <Template src="skin:../Tango/skin_settings_button_2state.xml">
 								        <SetVariable name="text">Crossfader</SetVariable>
-								        <SetVariable name="Setting">[Master],show_xfader</SetVariable>
+								        <SetVariable name="Setting">[Skin],show_xfader</SetVariable>
 								      </Template>
 
 										</Children>
@@ -686,13 +698,13 @@ Description:
                             <SetVariable name="state_x_text"> [ 2 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">0</SetVariable>
-                            <SetVariable name="Setting">[Master],show_4effectunits</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_4effectunits</SetVariable>
                           </Template>
                           <Template src="skin:../Tango/skin_settings_button_multi.xml">
                             <SetVariable name="state_x_text"> [ 4 ] </SetVariable>
                             <SetVariable name="width">26</SetVariable>
                             <SetVariable name="stateX">1</SetVariable>
-                            <SetVariable name="Setting">[Master],show_4effectunits</SetVariable>
+                            <SetVariable name="Setting">[Skin],show_4effectunits</SetVariable>
                           </Template>
                           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
                         </Children>
@@ -724,7 +736,7 @@ Description:
 
                   <Template src="skin:../Tango/skin_settings_button_2state.xml">
                     <SetVariable name="text">Super Knobs</SetVariable>
-                    <SetVariable name="Setting">[Master],show_superknobs</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_superknobs</SetVariable>
                   </Template>
                 </Children>
               </WidgetGroup><!-- /Super Knobs -->

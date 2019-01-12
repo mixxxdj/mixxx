@@ -75,6 +75,9 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
         : m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {
+#ifndef __LILV__
+    Q_UNUSED(pLV2Backend);
+#endif /* __LILV__ */
     setupUi(this);
 #if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
     contentsTreeWidget->setHeaderHidden(true);
@@ -138,12 +141,11 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     m_recordingPage = new DlgPrefRecord(this, m_pConfig);
     addPageWidget(m_recordingPage);
 
-#ifdef __VAMP__
     m_beatgridPage = new DlgPrefBeats(this, m_pConfig);
     addPageWidget (m_beatgridPage);
+
     m_musicalKeyPage = new DlgPrefKey(this, m_pConfig);
     addPageWidget(m_musicalKeyPage);
-#endif
 
     m_replayGainPage = new DlgPrefReplayGain(this, m_pConfig);
     addPageWidget(m_replayGainPage);
@@ -276,7 +278,6 @@ void DlgPreferences::createIcons() {
     m_pRecordingButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-#ifdef __VAMP__
     m_pBeatDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pBeatDetectionButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.svg"));
     m_pBeatDetectionButton->setText(0, tr("Beat Detection"));
@@ -288,7 +289,6 @@ void DlgPreferences::createIcons() {
     m_pKeyDetectionButton->setText(0, tr("Key Detection"));
     m_pKeyDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pKeyDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-#endif
 
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.svg"));

@@ -2,6 +2,7 @@
 #include <QtDebug>
 #include <QStringBuilder>
 
+#include "util/desktophelper.h"
 #include "library/dlgtrackinfo.h"
 #include "sources/soundsourceproxy.h"
 #include "library/coverartcache.h"
@@ -262,22 +263,7 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
         return;
     }
 
-    QDir dir;
-    QStringList splittedPath = m_pLoadedTrack->getDirectory().split("/");
-    do {
-        dir = QDir(splittedPath.join("/"));
-        splittedPath.removeLast();
-    } while (!dir.exists() && splittedPath.size());
-
-    // This function does not work for a non-existent directory!
-    // so it is essential that in the worst case it try opening
-    // a valid directory, in this case, 'QDir::home()'.
-    // Otherwise nothing would happen...
-    if (!dir.exists()) {
-        // it ensures a valid dir for any OS (Windows)
-        dir = QDir::home();
-    }
-    QDesktopServices::openUrl(QUrl::fromLocalFile(dir.absolutePath()));
+    mixxx::DesktopHelper::openInFileBrowser(QStringList(m_pLoadedTrack->getLocation()));
 }
 
 void DlgTrackInfo::populateCues(TrackPointer pTrack) {
@@ -395,7 +381,7 @@ void DlgTrackInfo::saveTrack() {
         updatedRows.insert(oldRow);
 
         QVariant vHotcue = hotcueItem->data(Qt::DisplayRole);
-        if (vHotcue.canConvert<int>()) {
+        if (vHotcue.canConvert(QMetaType::Int)) {
             int iTableHotcue = vHotcue.toInt();
             // The GUI shows hotcues as 1-indexed, but they are actually
             // 0-indexed, so subtract 1

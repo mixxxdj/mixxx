@@ -15,7 +15,7 @@
 
 #include "soundio/soundmanagerutil.h"
 
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 
 /**
  * Constructs a ChannelGroup.
@@ -152,27 +152,27 @@ QString AudioPath::getStringFromType(AudioPathType type) {
     case INVALID:
         // this shouldn't happen but g++ complains if I don't
         // handle this -- bkgood
-        return QString::fromAscii("Invalid");
+        return QStringLiteral("Invalid");
     case MASTER:
-        return QString::fromAscii("Master");
+        return QStringLiteral("Master");
     case BOOTH:
-        return QString::fromAscii("Booth");
+        return QStringLiteral("Booth");
     case HEADPHONES:
-        return QString::fromAscii("Headphones");
+        return QStringLiteral("Headphones");
     case BUS:
-        return QString::fromAscii("Bus");
+        return QStringLiteral("Bus");
     case DECK:
-        return QString::fromAscii("Deck");
+        return QStringLiteral("Deck");
     case RECORD_BROADCAST:
-        return QString::fromAscii("Record/Broadcast");
+        return QStringLiteral("Record/Broadcast");
     case VINYLCONTROL:
-        return QString::fromAscii("Vinyl Control");
+        return QStringLiteral("Vinyl Control");
     case MICROPHONE:
-        return QString::fromAscii("Microphone");
+        return QStringLiteral("Microphone");
     case AUXILIARY:
-        return QString::fromAscii("Auxiliary");
+        return QStringLiteral("Auxiliary");
     }
-    return QString::fromAscii("Unknown path type %1").arg(type);
+    return QStringLiteral("Unknown path type %1").arg(type);
 }
 
 /**
@@ -304,6 +304,7 @@ AudioOutput::AudioOutput(AudioPathType type,
                          unsigned char channels,
                          unsigned char index)
     : AudioPath(channelBase, channels) {
+    // TODO(rryan): This is a virtual function call from a constructor.
     setType(type);
     if (isIndexed(type)) {
         m_index = index;
@@ -389,6 +390,7 @@ AudioInput::AudioInput(AudioPathType type,
                        unsigned char channels,
                        unsigned char index)
         : AudioPath(channelBase, channels) {
+    // TODO(rryan): This is a virtual function call from a constructor.
     setType(type);
     if (isIndexed(type)) {
         m_index = index;

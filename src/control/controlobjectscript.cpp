@@ -57,7 +57,7 @@ void ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
 
 void ControlObjectScript::disconnectAllConnectionsToFunction(const QScriptValue& function) {
     // Make a local copy of m_scriptConnections because items are removed within the loop.
-    QList<ScriptConnection> connections = m_scriptConnections;
+    const QList<ScriptConnection> connections = m_scriptConnections;
     for (const auto& conn: connections) {
         if (conn.callback.strictlyEquals(function)) {
             removeScriptConnection(conn);
@@ -70,7 +70,7 @@ void ControlObjectScript::slotValueChanged(double value, QObject*) {
     // This allows a script to disconnect a callback from inside the
     // the callback. Otherwise the this may crash since the disconnect call
     // happens during conn.function.call() in the middle of the loop below.
-    QList<ScriptConnection> connections = m_scriptConnections;
+    const QList<ScriptConnection> connections = m_scriptConnections;
     for (auto&& conn: connections) {
         conn.executeCallback(value);
     }

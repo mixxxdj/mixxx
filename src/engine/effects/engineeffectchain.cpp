@@ -293,7 +293,7 @@ bool EngineEffectChain::process(const ChannelHandle& inputHandle,
                                 && m_mixMode == EffectChainMixMode::DryPlusWet;
 
                         if (!skipAddingDry) {
-                            for (int i=0; i <= numSamples; ++i) {
+                            for (SINT i = 0; i <= static_cast<SINT>(numSamples); ++i) {
                                 pIntermediateOutput[i] += pIntermediateInput[i];
                             }
                         }

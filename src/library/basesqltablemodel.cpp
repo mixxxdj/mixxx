@@ -49,6 +49,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
             this, SLOT(trackLoaded(QString, TrackPointer)));
     connect(&m_pTrackCollection->getTrackDAO(), SIGNAL(forceModelUpdate()),
             this, SLOT(select()));
+    // TODO(rryan): This is a virtual function call from a constructor.
     trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 
@@ -659,10 +660,10 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                     value = QString();
                 }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-                if (qVariantCanConvert<int>(value))
+                if (value.canConvert(QMetaType::Int))
                     value = qVariantFromValue(StarRating(value.toInt()));
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-                if (qVariantCanConvert<int>(value))
+                if (value.canConvert(QMetaType::Int))
                     value =  QString("(%1)").arg(value.toInt());
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)) {
                 value = value.toBool();
@@ -718,7 +719,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = index.sibling(
                     row, fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)).data().toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-                if (qVariantCanConvert<int>(value)) {
+                if (value.canConvert(QMetaType::Int)) {
                     value = qVariantFromValue(StarRating(value.toInt()));
                 }
             }
@@ -947,7 +948,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
             pTrack->resetPlayCounter();
         }
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING) == column) {
-        StarRating starRating = qVariantValue<StarRating>(value);
+        StarRating starRating = value.value<StarRating>();
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY) == column) {
         pTrack->setKeyText(value.toString(),

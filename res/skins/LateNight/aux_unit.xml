@@ -60,29 +60,14 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,max</SizePolicy>
                 <Children>
-                  <PushButton>
-                    <TooltipId>orientation</TooltipId>
-                    <NumberStates>3</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_orientation_aux_left.svg</Pressed>
-                      <Unpressed>buttons/btn_orientation_aux_left.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_orientation_aux_master.svg</Pressed>
-                      <Unpressed>buttons/btn_orientation_aux_master.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>2</Number>
-                      <Pressed>buttons/btn_orientation_aux_right.svg</Pressed>
-                      <Unpressed>buttons/btn_orientation_aux_right.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,orientation</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_3state.xml">
+                    <SetVariable name="TooltipId">mute</SetVariable>
+                    <SetVariable name="Size">34f,15f</SetVariable>
+                    <SetVariable name="state_0">orientation_aux_left</SetVariable>
+                    <SetVariable name="state_1">orientation_aux_master</SetVariable>
+                    <SetVariable name="state_2">orientation_aux_right</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,orientation</SetVariable>
+                  </Template>
                 </Children>
               </WidgetGroup>
 
@@ -139,30 +124,19 @@
                       <Template src="skin:knob_textless.xml">
                         <SetVariable name="TooltipId">pregain</SetVariable>
                         <SetVariable name="Size">36f,30f</SetVariable>
+                        <SetVariable name="Color">orange</SetVariable>
                         <SetVariable name="group"><Variable name="group"/></SetVariable>
                         <SetVariable name="control">pregain</SetVariable>
                       </Template>
                     </Children>
                   </WidgetGroup>
 
-                  <PushButton>
-                    <TooltipId>pfl</TooltipId>
-                    <ObjectName>MicPflButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>buttons/btn_pfl_down.svg</Pressed>
-                      <Unpressed>buttons/btn_pfl.svg</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>buttons/btn_pfl_overdown.svg</Pressed>
-                      <Unpressed>buttons/btn_pfl_over.svg</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">pfl</SetVariable>
+                    <SetVariable name="icon">pfl</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+                    <SetVariable name="Size">26f,26f</SetVariable>
+                  </Template>
 
                 </Children>
               </WidgetGroup><!-- /Gain, Pfl -->
@@ -172,46 +146,26 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <PushButton>
-                    <Size>35f,22f</Size>
-                    <TooltipId>EffectUnit_auxiliary_enabled</TooltipId>
-                    <ObjectName>FxAssignButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>FX&#8202;1</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>FX&#8202;1</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[EffectRack1_EffectUnit1],group_<Variable name="group"/>_enable</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Size">35f,22f</SetVariable>
+                    <SetVariable name="state_0_text">FX&#8202;1</SetVariable>
+                    <SetVariable name="state_1_text">FX&#8202;1</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit1],group_<Variable name="group"/>_enable</SetVariable>
+                  </Template>
 
-                  <PushButton>
-                    <Size>35f,22f</Size>
-                    <TooltipId>EffectUnit_auxiliary_enabled</TooltipId>
-                    <ObjectName>FxAssignButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>FX&#8202;2</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>FX&#8202;2</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[EffectRack1_EffectUnit2],group_<Variable name="group"/>_enable</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Size">35f,22f</SetVariable>
+                    <SetVariable name="state_0_text">FX&#8202;2</SetVariable>
+                    <SetVariable name="state_1_text">FX&#8202;2</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit2],group_<Variable name="group"/>_enable</SetVariable>
+                  </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -222,84 +176,44 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <PushButton>
-                    <Size>30f,22f</Size>
-                    <TooltipId>EffectUnit_auxiliary_enabled</TooltipId>
-                    <ObjectName>FxAssignButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>FX&#8202;1</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>FX&#8202;1</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[EffectRack1_EffectUnit1],group_<Variable name="group"/>_enable</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Size">30f,22f</SetVariable>
+                    <SetVariable name="state_0_text">FX&#8202;1</SetVariable>
+                    <SetVariable name="state_1_text">FX&#8202;1</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit1],group_<Variable name="group"/>_enable</SetVariable>
+                  </Template>
 
-                  <PushButton>
-                    <Size>20f,22f</Size>
-                    <TooltipId>EffectUnit_auxiliary_enabled</TooltipId>
-                    <ObjectName>FxAssignButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>2</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>2</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[EffectRack1_EffectUnit2],group_<Variable name="group"/>_enable</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Size">20f,22f</SetVariable>
+                    <SetVariable name="state_0_text">2</SetVariable>
+                    <SetVariable name="state_1_text">2</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit2],group_<Variable name="group"/>_enable</SetVariable>
+                  </Template>
 
-                  <PushButton>
-                    <Size>20f,22f</Size>
-                    <TooltipId>EffectUnit_auxiliary_enabled</TooltipId>
-                    <ObjectName>FxAssignButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>3</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>3</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[EffectRack1_EffectUnit3],group_<Variable name="group"/>_enable</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Size">20f,22f</SetVariable>
+                    <SetVariable name="state_0_text">3</SetVariable>
+                    <SetVariable name="state_1_text">3</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit3],group_<Variable name="group"/>_enable</SetVariable>
+                  </Template>
 
-                  <PushButton>
-                    <Size>20f,22f</Size>
-                    <TooltipId>EffectUnit_auxiliary_enabled</TooltipId>
-                    <ObjectName>FxAssignButton</ObjectName>
-                    <NumberStates>2</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                      <Text>4</Text>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Text>4</Text>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[EffectRack1_EffectUnit4],group_<Variable name="group"/>_enable</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <Template src="skin:button_2state.xml">
+                    <SetVariable name="TooltipId">EffectUnit_auxiliary_enabled</SetVariable>
+                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
+                    <SetVariable name="Size">20f,22f</SetVariable>
+                    <SetVariable name="state_0_text">4</SetVariable>
+                    <SetVariable name="state_1_text">4</SetVariable>
+                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit4],group_<Variable name="group"/>_enable</SetVariable>
+                  </Template>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_4effectunits</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_4effectunits</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- /FX buttons 1+2+3+4 -->

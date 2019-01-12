@@ -18,13 +18,16 @@
 #include "mixxx.h"
 
 #include <QDesktopServices>
+#include <QStandardPaths>
 #include <QDesktopWidget>
 #include <QFileDialog>
 #include <QGLWidget>
 #include <QUrl>
 #include <QtDebug>
+#include <QLocale>
+#include <QGuiApplication>
+#include <QInputMethod>
 
-#include "analyzer/analyzerqueue.h"
 #include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/dialog/dlgprefeq.h"
@@ -50,6 +53,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "waveform/visualsmanager.h"
 #include "waveform/sharedglcontext.h"
 #include "database/mixxxdb.h"
 #include "util/debug.h"
@@ -81,9 +85,48 @@
 #include "preferences/dialog/dlgprefmodplug.h"
 #endif
 
+#if defined(Q_OS_LINUX)
+#include <QtX11Extras/QX11Info>
+#include <X11/Xlib.h>
+#include <X11/Xlibint.h>
+// Xlibint.h predates C++ and defines macros which conflict
+// with references to std::max and std::min
+#undef max
+#undef min
+#endif
+
 namespace {
 
 const mixxx::Logger kLogger("MixxxMainWindow");
+
+// hack around https://gitlab.freedesktop.org/xorg/lib/libx11/issues/25
+// https://bugs.launchpad.net/mixxx/+bug/1805559
+#if defined(Q_OS_LINUX)
+typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
+
+const int NUM_HANDLERS = 256;
+WireToErrorType __oldHandlers[NUM_HANDLERS] = {0};
+
+Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
+    // Call any previous handler first in case it needs to do real work.
+    auto code = static_cast<int>(event->error_code);
+    if (__oldHandlers[code] != NULL) {
+        __oldHandlers[code](display, event, error);
+    }
+
+    // Always return false so the error does not get passed to the normal
+    // application defined handler.
+    return False;
+}
+
+#endif
+
+inline QLocale inputLocale() {
+    // Use the default config for local keyboard
+    QInputMethod* pInputMethod = QGuiApplication::inputMethod();
+    return pInputMethod ? pInputMethod->locale() :
+            QLocale(QLocale::English);
+}
 
 } // anonymous namespace
 
@@ -150,12 +193,6 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     setCentralWidget(m_pWidgetParent);
 
     show();
-#if defined(Q_WS_X11)
-    // In asynchronous X11, the window will be mapped to screen
-    // some time after being asked to show itself on the screen.
-    extern void qt_x11_wait_for_window_manager(QWidget *mainWin);
-    qt_x11_wait_for_window_manager(this);
-#endif
     pApp->processEvents();
 
     initialize(pApp, args);
@@ -168,6 +205,15 @@ MixxxMainWindow::~MixxxMainWindow() {
 
 void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     ScopedTimer t("MixxxMainWindow::initialize");
+
+#if defined(Q_OS_LINUX)
+    // XESetWireToError will segfault if running as a Wayland client
+    if (pApp->platformName() == QStringLiteral("xcb")) {
+        for (auto i = 0; i < NUM_HANDLERS; ++i) {
+            XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
+        }
+    }
+#endif
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
@@ -229,6 +275,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Needs to be created before CueControl (decks) and WTrackTableView.
     m_pGuiTick = new GuiTick();
+    m_pVisualsManager = new VisualsManager();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager = new VinylControlManager(this, pConfig, m_pSoundManager);
@@ -238,7 +285,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Create the player manager. (long)
     m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager,
-                                         m_pEffectsManager, m_pEngine);
+            m_pEffectsManager, m_pVisualsManager, m_pEngine);
     connect(m_pPlayerManager, SIGNAL(noMicrophoneInputConfigured()),
             this, SLOT(slotNoMicrophoneInputConfigured()));
     connect(m_pPlayerManager, SIGNAL(noDeckPassthroughInputConfigured()),
@@ -320,13 +367,13 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
         // possible with the Windows 7 "Music" library, which is what
-        // QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+        // QStandardPaths::writableLocation(QStandardPaths::MusicLocation)
         // resolves to) and a user hitting 'cancel'. If we get a blank return
         // but the user didn't hit cancel, we need to know this and let the
         // user take some course of action -- bkgood
         QString fd = QFileDialog::getExistingDirectory(
             this, tr("Choose music library directory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
         if (!fd.isEmpty()) {
             // adds Folder to database.
             m_pLibrary->slotRequestAddDir(fd);
@@ -345,7 +392,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     launchProgress(47);
 
     WaveformWidgetFactory::createInstance(); // takes a long time
-    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
+    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
     WaveformWidgetFactory::instance()->setConfig(pConfig);
 
     launchProgress(52);
@@ -368,7 +415,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                     m_pControllerManager, m_pVCManager, pLV2Backend, m_pEffectsManager,
                                     m_pSettingsManager, m_pLibrary);
-    m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
     launchProgress(60);
@@ -379,9 +426,11 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Before creating the first skin we need to create a QGLWidget so that all
     // the QGLWidget's we create can use it as a shared QGLContext.
-    QGLWidget* pContextWidget = new QGLWidget(this);
-    pContextWidget->hide();
-    SharedGLContext::setWidget(pContextWidget);
+    if (!CmdlineArgs::Instance().getSafeMode()) {
+        QGLWidget* pContextWidget = new QGLWidget(this);
+        pContextWidget->hide();
+        SharedGLContext::setWidget(pContextWidget);
+    }
 
     launchProgress(63);
 
@@ -567,6 +616,9 @@ void MixxxMainWindow::finalize() {
         qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
     }
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";
+    m_pLibrary->stopFeatures();
+
     // SoundManager depend on Engine and Config
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting SoundManager";
     delete m_pSoundManager;
@@ -634,6 +686,7 @@ void MixxxMainWindow::finalize() {
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
+    delete m_pVisualsManager;
 
     // Check for leaked ControlObjects and give warnings.
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
@@ -689,6 +742,11 @@ void MixxxMainWindow::finalize() {
     // Report the total time we have been running.
     m_runtime_timer.elapsed(true);
     StatsManager::destroy();
+
+    // NOTE(uklotzde, 2018-12-28): Finally destroy the singleton instance
+    // to prevent a deadlock when exiting the main() function! The actual
+    // cause of the deadlock is still unclear.
+    GlobalTrackCache::destroyInstance();
 }
 
 bool MixxxMainWindow::initializeDatabase() {
@@ -728,7 +786,7 @@ void MixxxMainWindow::initializeWindow() {
     restoreState(QByteArray::fromBase64(m_pSettingsManager->settings()->getValueString(
         ConfigKey("[MainWindow]", "state")).toUtf8()));
 
-    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     slotUpdateWindowTitle(TrackPointer());
 }
 
@@ -1151,36 +1209,42 @@ void MixxxMainWindow::slotOptionsPreferences() {
 }
 
 void MixxxMainWindow::slotNoVinylControlInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this vinyl control.\n"
            "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotNoDeckPassthroughInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this passthrough control.\n"
            "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotNoMicrophoneInputConfigured() {
-    QMessageBox::warning(
+    QMessageBox::StandardButton btn = QMessageBox::warning(
         this,
         Version::applicationName(),
         tr("There is no input device selected for this microphone.\n"
            "Please select an input device in the sound hardware preferences first."),
-        QMessageBox::Ok, QMessageBox::Ok);
-    m_pPrefDlg->show();
-    m_pPrefDlg->showSoundHardwarePage();
+        QMessageBox::Ok | QMessageBox::Cancel, QMessageBox::Cancel);
+    if (btn == QMessageBox::Ok) {
+        m_pPrefDlg->show();
+        m_pPrefDlg->showSoundHardwarePage();
+    }
 }
 
 void MixxxMainWindow::slotChangedPlayingDeck(int deck) {

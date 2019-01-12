@@ -29,7 +29,7 @@ Variables:
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Tango],loop_beatjump_controls</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_loop_beatjump_controls</ConfigKey>
       <Transform><Not/></Transform>
       <BindProperty>visible</BindProperty>
     </Connection>

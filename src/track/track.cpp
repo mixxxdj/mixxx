@@ -6,11 +6,10 @@
 
 #include "track/track.h"
 #include "track/trackref.h"
-
 #include "track/beatfactory.h"
+
 #include "util/assert.h"
 #include "util/logger.h"
-#include "util/compatibility.h"
 
 
 namespace {
@@ -69,8 +68,7 @@ Track::Track(
           m_pSecurityToken(openSecurityToken(m_fileInfo, std::move(pSecurityToken))),
           m_record(trackId),
           m_bDirty(false),
-          m_bMarkedForMetadataExport(false),
-          m_analyzerProgress(-1) {
+          m_bMarkedForMetadataExport(false) {
     if (kLogStats && kLogger.debugEnabled()) {
         long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
         kLogger.debug()
@@ -204,7 +202,24 @@ QString Track::getCanonicalLocation() const {
     // (copy-on write). But operating on a single instance of QFileInfo
     // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
-    return TrackRef::canonicalLocation(m_fileInfo);
+
+    // Note: We return here the cached value, that was calculated just after 
+    // init this Track object. This will avoid repeated use of the time 
+    // consuming file IO.
+    // We ignore the case when the user changes a symbolic link to 
+    // point a file to an other location, since this is a user action.
+    // We also don't care if a file disappears while Mixxx is running. Opening 
+    // a non-existent file is already handled and doesn't cause any malfunction.
+    QString loc = TrackRef::canonicalLocation(m_fileInfo);
+    if (loc.isEmpty()) {
+        // we see here an empty path because the file did not exist  
+        // when creating the track object.
+        // The user might have restored the track in the meanwhile.
+        // So try again it again. 
+        m_fileInfo.refresh();
+        loc = TrackRef::canonicalLocation(m_fileInfo);
+    }
+    return loc;
 }
 
 QString Track::getDirectory() const {
@@ -709,19 +724,6 @@ ConstWaveformPointer Track::getWaveformSummary() const {
 void Track::setWaveformSummary(ConstWaveformPointer pWaveform) {
     m_waveformSummary = pWaveform;
     emit(waveformSummaryUpdated());
-}
-
-void Track::setAnalyzerProgress(int progress) {
-    // progress in 0 .. 1000. QAtomicInt so no need for lock.
-    int oldProgress = m_analyzerProgress.fetchAndStoreAcquire(progress);
-    if (progress != oldProgress) {
-        emit(analyzerProgress(progress));
-    }
-}
-
-int Track::getAnalyzerProgress() const {
-    // QAtomicInt so no need for lock.
-    return load_atomic(m_analyzerProgress);
 }
 
 void Track::setCuePoint(double cue) {

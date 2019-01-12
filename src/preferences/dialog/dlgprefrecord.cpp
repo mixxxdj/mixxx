@@ -1,5 +1,5 @@
 #include <QFileDialog>
-#include <QDesktopServices>
+#include <QStandardPaths>
 
 #include "preferences/dialog/dlgprefrecord.h"
 #include "recording/defs_recording.h"
@@ -22,7 +22,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     if (recordingsPath == "") {
         // Initialize recordings path in config to old default path.
         // Do it here so we show current value in UI correctly.
-        QString musicDir = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
+        QString musicDir = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
         QDir recordDir(musicDir + "/Mixxx/Recordings");
         recordingsPath = recordDir.absolutePath();
     }

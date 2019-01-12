@@ -57,9 +57,9 @@ LibraryControl::LibraryControl(Library* pLibrary)
     slotNumDecksChanged(m_numDecks.get());
     slotNumSamplersChanged(m_numSamplers.get());
     slotNumPreviewDecksChanged(m_numPreviewDecks.get());
-    m_numDecks.connectValueChanged(SLOT(slotNumDecksChanged(double)));
-    m_numSamplers.connectValueChanged(SLOT(slotNumSamplersChanged(double)));
-    m_numPreviewDecks.connectValueChanged(SLOT(slotNumPreviewDecksChanged(double)));
+    m_numDecks.connectValueChanged(this, &LibraryControl::slotNumDecksChanged);
+    m_numSamplers.connectValueChanged(this, &LibraryControl::slotNumSamplersChanged);
+    m_numPreviewDecks.connectValueChanged(this, &LibraryControl::slotNumPreviewDecksChanged);
 
     // Controls to navigate vertically within currently focused widget (up/down buttons)
     m_pMoveUp = std::make_unique<ControlPushButton>(ConfigKey("[Library]", "MoveUp"));

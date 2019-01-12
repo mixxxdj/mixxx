@@ -39,6 +39,7 @@ class DlgPreferences;
 class EffectsManager;
 class EngineMaster;
 class GuiTick;
+class VisualsManager;
 class LaunchImage;
 class Library;
 class KeyboardEventFilter;
@@ -166,6 +167,7 @@ class MixxxMainWindow : public QMainWindow {
     ControllerManager* m_pControllerManager;
 
     GuiTick* m_pGuiTick;
+    VisualsManager* m_pVisualsManager;
 
     VinylControlManager* m_pVCManager;
 

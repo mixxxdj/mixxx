@@ -332,7 +332,7 @@
 											<Pressed>skin:/btn/btn_hotcue_1_overdown.png</Pressed>
 											<Unpressed>skin:/btn/btn_hotcue_1_over.png</Unpressed>
 										</State>
-										<Pos>50,8</Pos>
+										<Pos>47,8</Pos>
 										<Connection>
 											<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_1_activate</ConfigKey>
 											<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -366,7 +366,7 @@
 											<Pressed>skin:/btn/btn_hotcue_2_overdown.png</Pressed>
 											<Unpressed>skin:/btn/btn_hotcue_2_over.png</Unpressed>
 										</State>
-										<Pos>71,8</Pos>
+										<Pos>68,8</Pos>
 										<Connection>
 											<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_2_activate</ConfigKey>
 											<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -400,7 +400,7 @@
 											<Pressed>skin:/btn/btn_hotcue_3_overdown.png</Pressed>
 											<Unpressed>skin:/btn/btn_hotcue_3_over.png</Unpressed>
 										</State>
-										<Pos>92,8</Pos>
+										<Pos>89,8</Pos>
 										<Connection>
 											<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_3_activate</ConfigKey>
 											<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -434,7 +434,7 @@
 											<Pressed>skin:/btn/btn_hotcue_4_overdown.png</Pressed>
 											<Unpressed>skin:/btn/btn_hotcue_4_over.png</Unpressed>
 										</State>
-										<Pos>113,8</Pos>
+										<Pos>110,8</Pos>
 										<Connection>
 											<ConfigKey>[Sampler<Variable name="samplernum"/>],hotcue_4_activate</ConfigKey>
 											<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -466,7 +466,7 @@
 											<Pressed>skin:/btn/btn_pfl_sampler_overdown.png</Pressed>
 											<Unpressed>skin:/btn/btn_pfl_sampler_over.png</Unpressed>
 										</State>
-										<Pos>139,8</Pos>
+										<Pos>134,8</Pos>
 										<Connection>
 											<ConfigKey>[Sampler<Variable name="samplernum"/>],pfl</ConfigKey>
 										</Connection>
@@ -476,7 +476,7 @@
 										<Style></Style>
 										<NumberStates>64</NumberStates>
 										<Path>knobs/knob_rotary_s%1.png</Path>
-										<Pos>176,6</Pos>
+										<Pos>168,6</Pos>
 										<Connection>
 											<ConfigKey>[Sampler<Variable name="samplernum"/>],pregain</ConfigKey>
 										</Connection>

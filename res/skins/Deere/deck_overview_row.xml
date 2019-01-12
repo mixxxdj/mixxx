@@ -175,7 +175,7 @@
           gap between deck options and overview and FX assignment buttons -->
       <WidgetGroup><Size>1f,0min</Size></WidgetGroup>
 
-      <WidgetStack currentpage="[Master],show_4effectunits" persist="true">
+      <WidgetStack currentpage="[Skin],show_4effectunits" persist="true">
         <SizePolicy>max,min</SizePolicy>
         <MaximumSize>-1,46</MaximumSize>
         <Children>
