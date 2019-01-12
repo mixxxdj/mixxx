@@ -74,7 +74,8 @@ void deleteTrack(Track* plainPtr) {
                 << "Deleting"
                 << plainPtr;
     }
-    plainPtr->deleteLater();
+    // QObject::deleteLater() is not thread-safe!
+    QMetaObject::invokeMethod(plainPtr, &QObject::deleteLater);
 }
 
 } // anonymous namespace
@@ -216,6 +217,7 @@ void GlobalTrackCache::destroyInstance() {
     // Reset the static/global pointer before entering the destructor
     s_pInstance = nullptr;
     // Delete the singular instance
+    DEBUG_ASSERT(QThread::currentThread() == pInstance->thread());
     pInstance->deleteLater();
 }
 

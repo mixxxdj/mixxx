@@ -20,7 +20,8 @@ void deleteTrackAnalysisScheduler(TrackAnalysisScheduler* plainPtr) {
         // Trigger stop
         plainPtr->stop();
         // Release ownership and let Qt delete the queue later
-        plainPtr->deleteLater();
+        // QObject::deleteLater() is not thread-safe!
+        QMetaObject::invokeMethod(plainPtr, &QObject::deleteLater);
     }
 }
 

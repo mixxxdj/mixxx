@@ -12,8 +12,12 @@ namespace {
     const QString kDefaultLabel = ""; // empty string, not null
 }
 
-Cue::~Cue() {
-    //qDebug() << "~Cue()" << m_iId;
+//static
+void CuePointer::deleteLater(Cue* pCue) {
+    if (pCue) {
+        // QObject::deleteLater() is not thread-safe!
+        QMetaObject::invokeMethod(pCue, &QObject::deleteLater);
+    }
 }
 
 Cue::Cue(TrackId trackId)
