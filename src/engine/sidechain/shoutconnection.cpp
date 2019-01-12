@@ -22,7 +22,9 @@
 #include "control/controlpushbutton.h"
 #include "encoder/encoder.h"
 #include "encoder/encoderbroadcastsettings.h"
+#ifdef __OPUS__
 #include "encoder/encoderopus.h"
+#endif
 #include "mixer/playerinfo.h"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
@@ -373,6 +375,7 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
+#ifdef __OPUS__
     if(m_format_is_opus && iMasterSamplerate != EncoderOpus::getMasterSamplerate()) {
         errorDialog(
             EncoderOpus::getInvalidSamplerateMessage(),
@@ -380,6 +383,7 @@ void ShoutConnection::updateFromPreferences() {
         );
         return;
     }
+#endif
 
     if (shout_set_audio_info(
             m_pShout, SHOUT_AI_BITRATE,

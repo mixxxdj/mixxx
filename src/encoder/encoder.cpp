@@ -30,8 +30,8 @@
 
 #ifdef __OPUS__
 #include "encoder/encoderopus.h"
-#include "encoder/encoderopussettings.h"
 #endif
+#include "encoder/encoderopussettings.h"
 
 #include <QList>
 
@@ -71,7 +71,7 @@ Encoder::Format EncoderFactory::getFormatFor(QString formatText) const
             return format;
         }
     }
-    qWarning() << "Format: " << formatText << " not recognized! Returning format " 
+    qWarning() << "Format: " << formatText << " not recognized! Returning format "
         << m_formats.first().internalName;
     return m_formats.first();
 }
