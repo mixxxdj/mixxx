@@ -1,10 +1,12 @@
-# TODO
 # Execute the following command in your local project
-# directory to enable automatic merge resolution:
+# directory to exclude localization files from merges
+# across branches:
 #
 # $ git config --global merge.ours.driver true
 #
-# Otherwise the settings in this file are ignored!
+# This command sets a shell script that is used for all
+# merge=ours files. In this case the script "true" does
+# not touch anything, just returns successful.
 #
 # Background: Localization files from external sources like
 # Transifex must not be merged between release branches and
