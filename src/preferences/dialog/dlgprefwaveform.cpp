@@ -113,7 +113,7 @@ void DlgPrefWaveform::slotUpdate() {
     midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
-    showBarAndPhraseMarksCheckBox->setChecked(factory->isBarAndPhrase());
+    showBarAndPhraseMarksCheckBox->setChecked(factory->showBarAndPhrase());
     defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
     playMarkerPositionSlider->setValue(factory->getPlayMarkerPosition() * 100);
     beatGridAlphaSpinBox->setValue(factory->beatGridAlpha());

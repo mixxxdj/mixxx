@@ -70,7 +70,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     // Calculate beat length
     double beatLength = (c_secondsPerMinute * trackInfo->getSampleRate() / trackInfo->getBpm()) * c_numberOfChannels;
 
-	// Get the visible beats
+    // Get the visible beats
     std::unique_ptr<BeatIterator> it(trackBeats->findBeats(
             firstDisplayedPosition * trackSamples,
             lastDisplayedPosition * trackSamples));

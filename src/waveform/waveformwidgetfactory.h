@@ -158,7 +158,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_zoomSync;
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
-    bool m_barAndPhrase;
+    bool m_showBarAndPhrase;
 
     bool m_openGLAvailable;
     QString m_openGLVersion;
