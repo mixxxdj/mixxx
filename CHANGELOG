@@ -30,6 +30,26 @@ Miscellaneous
   scrolling waveforms.
 * Support IRC/AIM/ICQ broadcast metadata.
 
+==== 2.1.6 2018-12-23 ====
+
+* Fix crash when loading a Qt5 Soundsource / Vamp Plug-In. lp:1774639 * Validate effect parameter range. lp:1795234
+* Fix crash using the bpm_tap button without a track loaded. lp:1801844
+* Fix possible crash after ejecting a track. lp:1801874 	
+* Fix wrong bitrate reported for faulty mp3 files. lp:1782912
+* Fix Echo effect syncing lp:1793232
+* Fix iTunes context menu lp:1799932
+* Fix loading the wrong track after delete search and scroll. lp:1803148
+* Improve search bar timing. lp:1635087
+* Fix quoted search sentence. lp:1784141 
+* Fix loading a track formerly not existing. lp:1800395 
+* Fix imporing m3u files with blank lines. lp:1806271
+* Fix position in sampler overview waveforms. lp:1744170
+* Don't reset rate slider, syncing a track without a beatgrid. lp:1783020 	
+* Clean up iTunes track context menu. lp:1800335
+* Collapsed sampler are not analyzed on startup. lp:1801126
+* search for decoration characters like "˚". lp:#1802730
+* Fix cue button blinking after pressing eject on an empty deck. lp:1808222 	
+
 ==== 2.1.5 2018-10-28 ====
 
 * Code signing for Windows builds. lp:1517823
