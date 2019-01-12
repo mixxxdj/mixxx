@@ -75,7 +75,7 @@ void deleteTrack(Track* plainPtr) {
                 << plainPtr;
     }
     // QObject::deleteLater() is not thread-safe!
-    QMetaObject::invokeMethod(plainPtr, &QObject::deleteLater);
+    QMetaObject::invokeMethod(plainPtr, &Track::deleteLater);
 }
 
 } // anonymous namespace

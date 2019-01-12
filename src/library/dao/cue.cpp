@@ -16,7 +16,7 @@ namespace {
 void CuePointer::deleteLater(Cue* pCue) {
     if (pCue) {
         // QObject::deleteLater() is not thread-safe!
-        QMetaObject::invokeMethod(pCue, &QObject::deleteLater);
+        QMetaObject::invokeMethod(pCue, &Cue::deleteLater);
     }
 }
 
