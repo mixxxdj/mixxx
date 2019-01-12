@@ -29,6 +29,8 @@ Variables:
         <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
         <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
         <BeatColor>#ffffff</BeatColor>
+        <BarColor>#ccffff</BarColor>
+        <PhraseColor>#00ff00</PhraseColor>
         <BarColor>#00ff00</BarColor>
         <PhraseColor>#ccffff</PhraseColor>
         <PlayPosColor>#FF4300</PlayPosColor>
