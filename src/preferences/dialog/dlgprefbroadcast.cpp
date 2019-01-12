@@ -89,8 +89,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
 
     m_pBroadcastEnabled = new ControlProxy(
             BROADCAST_PREF_KEY, "enabled", this);
-    m_pBroadcastEnabled->connectValueChanged(
-            SLOT(broadcastEnabledChanged(double)));
+    m_pBroadcastEnabled->connectValueChanged(this,
+            &DlgPrefBroadcast::broadcastEnabledChanged);
 
     //Server type combobox
     comboBoxServerType->addItem(tr("Icecast 2"), BROADCAST_SERVER_ICECAST2);
@@ -120,6 +120,9 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      // Encoding format combobox
      comboBoxEncodingFormat->addItem(tr("MP3"), BROADCAST_FORMAT_MP3);
      comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), BROADCAST_FORMAT_OV);
+#ifdef __OPUS__
+     comboBoxEncodingFormat->addItem(tr("Opus"), BROADCAST_FORMAT_OPUS);
+#endif
 
      // Encoding channels combobox
      comboBoxEncodingChannels->addItem(tr("Automatic"),

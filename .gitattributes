@@ -1,0 +1,26 @@
+# Execute the following command in your local project
+# directory to exclude localization files from merges
+# across branches:
+#
+# $ git config --global merge.ours.driver true
+#
+# This command sets a shell script that is used for all
+# merge=ours files. In this case the script "true" does
+# not touch anything, just returns successful.
+#
+# Background: Localization files from external sources like
+# Transifex must not be merged between release branches and
+# should be ignore while merging! Instead those files are
+# updated by re-importing them manually from the external
+# source. This workflow is supported by configuring the merge
+# strategy for the local Git repository appropriately, i.e.
+# by excluding those files from merging and always keeping the
+# files from the current/target branch (= "ours").
+
+# Exclude Transifex files from merging
+/res/translations/*.ts merge=ours
+/res/translations/*.qm merge=ours
+
+# Exclude WiX translations from merging
+/build/wix/Localization/po/*.po merge=ours
+/build/wix/Localization/po/*.wxl merge=ours

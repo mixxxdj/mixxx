@@ -1,8 +1,8 @@
 #include "analyzer/analyzerwaveform.h"
 
 #include "engine/engineobject.h"
-#include "engine/enginefilterbutterworth8.h"
-#include "engine/enginefilterbessel4.h"
+#include "engine/filters/enginefilterbutterworth8.h"
+#include "engine/filters/enginefilterbessel4.h"
 #include "library/trackcollection.h"
 #include "track/track.h"
 #include "waveform/waveformfactory.h"

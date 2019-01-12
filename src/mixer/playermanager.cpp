@@ -8,7 +8,7 @@
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectrack.h"
-#include "engine/enginedeck.h"
+#include "engine/channels/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "library/library.h"
 #include "mixer/auxiliary.h"
@@ -44,11 +44,13 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                              SoundManager* pSoundManager,
                              EffectsManager* pEffectsManager,
+                             VisualsManager* pVisualsManager,
                              EngineMaster* pEngine) :
         m_mutex(QMutex::Recursive),
         m_pConfig(pConfig),
         m_pSoundManager(pSoundManager),
         m_pEffectsManager(pEffectsManager),
+        m_pVisualsManager(pVisualsManager),
         m_pEngine(pEngine),
         // NOTE(XXX) LegacySkinParser relies on these controls being Controls
         // and not ControlProxies.
@@ -64,15 +66,15 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                 ConfigKey("[Master]", "num_auxiliaries"), true, true)),
         m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
-            SLOT(slotChangeNumDecks(double)), Qt::DirectConnection);
+            &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);
     m_pCONumSamplers->connectValueChangeRequest(this,
-            SLOT(slotChangeNumSamplers(double)), Qt::DirectConnection);
+            &PlayerManager::slotChangeNumSamplers, Qt::DirectConnection);
     m_pCONumPreviewDecks->connectValueChangeRequest(this,
-            SLOT(slotChangeNumPreviewDecks(double)), Qt::DirectConnection);
+            &PlayerManager::slotChangeNumPreviewDecks, Qt::DirectConnection);
     m_pCONumMicrophones->connectValueChangeRequest(this,
-            SLOT(slotChangeNumMicrophones(double)), Qt::DirectConnection);
+            &PlayerManager::slotChangeNumMicrophones, Qt::DirectConnection);
     m_pCONumAuxiliaries->connectValueChangeRequest(this,
-            SLOT(slotChangeNumAuxiliaries(double)), Qt::DirectConnection);
+            &PlayerManager::slotChangeNumAuxiliaries, Qt::DirectConnection);
 
     // This is parented to the PlayerManager so does not need to be deleted
     m_pSamplerBank = new SamplerBank(this);
@@ -207,7 +209,7 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
 unsigned int PlayerManager::numDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumDecks = load_atomic_pointer(m_pCOPNumDecks);
+    ControlProxy* pCOPNumDecks = m_pCOPNumDecks.load();
     if (pCOPNumDecks == nullptr) {
         pCOPNumDecks = new ControlProxy(ConfigKey("[Master]", "num_decks"));
         if (!pCOPNumDecks->valid()) {
@@ -225,7 +227,7 @@ unsigned int PlayerManager::numDecks() {
 unsigned int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumSamplers = load_atomic_pointer(m_pCOPNumSamplers);
+    ControlProxy* pCOPNumSamplers = m_pCOPNumSamplers.load();
     if (pCOPNumSamplers == nullptr) {
         pCOPNumSamplers = new ControlProxy(ConfigKey("[Master]", "num_samplers"));
         if (!pCOPNumSamplers->valid()) {
@@ -243,7 +245,7 @@ unsigned int PlayerManager::numSamplers() {
 unsigned int PlayerManager::numPreviewDecks() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.
-    ControlProxy* pCOPNumPreviewDecks = load_atomic_pointer(m_pCOPNumPreviewDecks);
+    ControlProxy* pCOPNumPreviewDecks = m_pCOPNumPreviewDecks.load();
     if (pCOPNumPreviewDecks == nullptr) {
         pCOPNumPreviewDecks = new ControlProxy(
                 ConfigKey("[Master]", "num_preview_decks"));
@@ -363,7 +365,7 @@ void PlayerManager::addDeckInner() {
     }
 
     Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, m_pEffectsManager,
-                           orientation, group);
+            m_pVisualsManager, orientation, group);
     connect(pDeck, SIGNAL(noPassthroughInputConfigured()),
             this, SIGNAL(noDeckPassthroughInputConfigured()));
     connect(pDeck, SIGNAL(noVinylControlInputConfigured()),
@@ -429,7 +431,7 @@ void PlayerManager::addSamplerInner() {
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
     Sampler* pSampler = new Sampler(this, m_pConfig, m_pEngine,
-                                    m_pEffectsManager, orientation, group);
+            m_pEffectsManager, m_pVisualsManager, orientation, group);
     if (m_pTrackAnalysisScheduler) {
         connect(pSampler, SIGNAL(newTrackLoaded(TrackPointer)),
                 this, SLOT(slotAnalyzeTrack(TrackPointer)));
@@ -455,8 +457,7 @@ void PlayerManager::addPreviewDeckInner() {
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
 
     PreviewDeck* pPreviewDeck = new PreviewDeck(this, m_pConfig, m_pEngine,
-                                                m_pEffectsManager, orientation,
-                                                group);
+            m_pEffectsManager, m_pVisualsManager, orientation, group);
     if (m_pTrackAnalysisScheduler) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 this, SLOT(slotAnalyzeTrack(TrackPointer)));

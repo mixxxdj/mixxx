@@ -25,6 +25,7 @@
 
 #define BROADCAST_FORMAT_MP3 "MP3"
 #define BROADCAST_FORMAT_OV "OggVorbis"
+#define BROADCAST_FORMAT_OPUS "Opus"
 
 // EngineNetworkStream can't use locking mechanisms to protect its
 // internal worker list against concurrency issues, as it is used by

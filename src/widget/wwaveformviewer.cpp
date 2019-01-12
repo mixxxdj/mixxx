@@ -27,7 +27,7 @@ WWaveformViewer::WWaveformViewer(const char *group, UserSettingsPointer pConfig,
     setAcceptDrops(true);
 
     m_pZoom = new ControlProxy(group, "waveform_zoom", this);
-    m_pZoom->connectValueChanged(SLOT(onZoomChange(double)));
+    m_pZoom->connectValueChanged(this, &WWaveformViewer::onZoomChange);
 
     m_pScratchPositionEnable = new ControlProxy(
             group, "scratch_position_enable", this);

@@ -2,7 +2,7 @@ Mixxx 2.3
 
 * HOMEPAGE *************************************************
 
-http://www.mixxx.org
+https://www.mixxx.org
 
 * ABOUT ****************************************************
 
@@ -16,7 +16,7 @@ directory for a copy of the license.
 * NEWS *****************************************************
 
 Check the Mixxx blog to find out what's new in this version:
-http://mixxxblog.blogspot.com
+https://mixxxblog.blogspot.com
 
 * UPGRADING ************************************************
 
@@ -46,7 +46,7 @@ Mixxx has the following dependencies:
 - taglib
 - PortAudio-v19
 - portmidi
-- QT 4.6+
+- Qt 5
 - scons
 - protocol-buffers
 - libusb-1.0
@@ -58,8 +58,7 @@ Mixxx has the following dependencies:
 NOTE: If you want JACK support in Mixxx, make sure you
 compile PortAudio-v19 with JACK support first.
 
-Mixxx's build system is now SCons as of Mixxx 1.6.0.
-To compile Mixxx using SCons, run:
+Mixxx's build system is SCons. To compile Mixxx using SCons, run:
 
    $ scons
 
@@ -85,11 +84,11 @@ may not compile or may be unstable. Be forewarned.
 
 More detailed compiling instructions are available for your
 platform on our wiki:
-    http://www.mixxx.org/wiki/
+    https://www.mixxx.org/wiki/
 
 * HERCULES DJ CONSOLE USERS ON LINUX ***********************
 
-Please see: http://www.mixxx.org/wiki/doku.php/hercules
+Please see: https://www.mixxx.org/wiki/doku.php/hercules
 You may need to install the official Hercules Linux drivers
 from: http://www.hercules.com/
 
@@ -110,7 +109,7 @@ or
 Please see the manual, included in this directory,
 Mixxx-Manual.pdf or at:
 
-    http://www.mixxx.org/manual/latest
+    https://www.mixxx.org/manual/latest
 
 * CONTACT **************************************************
 To contact the lead developer, send an email to
@@ -123,7 +122,7 @@ On some platforms, Mixxx may come with a pre-built copy of
 Qt. This code is licensed under the LGPL and source for this
 library may be obtained from:
 
-    http://qt-project.org/downloads
+    https://www.qt.io/download
 
 * Microsoft Runtimes ***************************************
 On Microsoft platforms, Mixxx may come with runtime dlls

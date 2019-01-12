@@ -24,6 +24,9 @@
 #include <QGLWidget>
 #include <QUrl>
 #include <QtDebug>
+#include <QLocale>
+#include <QGuiApplication>
+#include <QInputMethod>
 
 #include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
@@ -50,6 +53,7 @@
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "waveform/visualsmanager.h"
 #include "waveform/sharedglcontext.h"
 #include "database/mixxxdb.h"
 #include "util/debug.h"
@@ -114,7 +118,15 @@ Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
     // application defined handler.
     return False;
 }
+
 #endif
+
+inline QLocale inputLocale() {
+    // Use the default config for local keyboard
+    QInputMethod* pInputMethod = QGuiApplication::inputMethod();
+    return pInputMethod ? pInputMethod->locale() :
+            QLocale(QLocale::English);
+}
 
 } // anonymous namespace
 
@@ -263,6 +275,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Needs to be created before CueControl (decks) and WTrackTableView.
     m_pGuiTick = new GuiTick();
+    m_pVisualsManager = new VisualsManager();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager = new VinylControlManager(this, pConfig, m_pSoundManager);
@@ -272,7 +285,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     // Create the player manager. (long)
     m_pPlayerManager = new PlayerManager(pConfig, m_pSoundManager,
-                                         m_pEffectsManager, m_pEngine);
+            m_pEffectsManager, m_pVisualsManager, m_pEngine);
     connect(m_pPlayerManager, SIGNAL(noMicrophoneInputConfigured()),
             this, SLOT(slotNoMicrophoneInputConfigured()));
     connect(m_pPlayerManager, SIGNAL(noDeckPassthroughInputConfigured()),
@@ -379,7 +392,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     launchProgress(47);
 
     WaveformWidgetFactory::createInstance(); // takes a long time
-    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
+    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
     WaveformWidgetFactory::instance()->setConfig(pConfig);
 
     launchProgress(52);
@@ -673,6 +686,7 @@ void MixxxMainWindow::finalize() {
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
+    delete m_pVisualsManager;
 
     // Check for leaked ControlObjects and give warnings.
     QList<QSharedPointer<ControlDoublePrivate> > leakedControls;
