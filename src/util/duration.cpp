@@ -19,9 +19,11 @@ static const qint64 kSecondsPerDay = 24 * kSecondsPerHour;
 
 // static
 // Unicode for thin space
-QChar DurationBase::kCentisecondSeparator = QChar(0x2009);
+QChar DurationBase::kKiloGroupSeparator = QChar(0x2009);
 // Unicode for bottom left corner
-QChar DurationBase::kHectosecondSeparator = QChar(0x231E);
+QChar DurationBase::kHectoGroupSeparator = QChar(0x231E);
+// Unicode for decimal point
+QChar DurationBase::kDecimalSeparator = QChar(0x002E);
 
 // static
 QString DurationBase::formatTime(double dSeconds, Precision precision) {
@@ -87,9 +89,9 @@ QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
     double subs = fmod(dSeconds, 1);
 
     QString durationString =
-            QString("%1.%2").arg(kilos, 0, 10).arg(seconds, 3, 'f', 0, QLatin1Char('0'));
+            QString("%1%2%3").arg(kilos, 0, 10).arg(kKiloGroupSeparator).arg(seconds, 3, 'f', 0, QLatin1Char('0'));
     if (Precision::SECONDS != precision) {
-            durationString += kCentisecondSeparator % QString::number(subs, 'f', 3).right(3);
+            durationString += kDecimalSeparator % QString::number(subs, 'f', 3).right(3);
     }
 
     // The format string gives us milliseconds but we want
@@ -109,14 +111,14 @@ QString DurationBase::formatHectoSeconds(double dSeconds, Precision precision) {
         return "?";
     }
 
-    int hecto = (int)dSeconds / 100;
+    int hectos = (int)dSeconds / 100;
     double seconds = floor(fmod(dSeconds, 100));
     double subs = fmod(dSeconds, 1);
 
     QString durationString =
-            QString("%1%2%3").arg(hecto, 0, 10).arg(kHectosecondSeparator).arg(seconds, 2, 'f', 0, QLatin1Char('0'));
+            QString("%1%2%3").arg(hectos, 0, 10).arg(kHectoGroupSeparator).arg(seconds, 2, 'f', 0, QLatin1Char('0'));
     if (Precision::SECONDS != precision) {
-            durationString += kCentisecondSeparator % QString::number(subs, 'f', 3).right(3);
+            durationString += kDecimalSeparator % QString::number(subs, 'f', 3).right(3);
     }
 
 
