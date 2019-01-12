@@ -124,31 +124,31 @@ TEST_F(DurationUtilTest, formatSecond) {
 
 
 TEST_F(DurationUtilTest, FormatKiloSeconds) {
-    formatKiloSeconds(QString::fromUtf8("0.000\u2009000"), 0);
-    formatKiloSeconds(QString::fromUtf8("0.001\u2009000"), 1);
-    formatKiloSeconds(QString::fromUtf8("0.001\u2009500"), 1.5);
-    formatKiloSeconds(QString::fromUtf8("0.001\u2009510"), 1.51);
-    formatKiloSeconds(QString::fromUtf8("0.001\u2009490"), 1.49);
-    formatKiloSeconds(QString::fromUtf8("0.059\u2009000"), 59);
-    formatKiloSeconds(QString::fromUtf8("0.060\u2009000"), 60);
-    formatKiloSeconds(QString::fromUtf8("0.061\u2009123"), 61.1234);
-    formatKiloSeconds(QString::fromUtf8("0.999\u2009990"), 999.99);
-    formatKiloSeconds(QString::fromUtf8("1.000\u2009000"), 1000.00);
-    formatKiloSeconds(QString::fromUtf8("86.400\u2009000"), 24 * 3600);
+    formatKiloSeconds(QString::fromUtf8("0\u2009000\u002E000"), 0);
+    formatKiloSeconds(QString::fromUtf8("0\u2009001\u002E000"), 1);
+    formatKiloSeconds(QString::fromUtf8("0\u2009001\u002E500"), 1.5);
+    formatKiloSeconds(QString::fromUtf8("0\u2009001\u002E510"), 1.51);
+    formatKiloSeconds(QString::fromUtf8("0\u2009001\u002E490"), 1.49);
+    formatKiloSeconds(QString::fromUtf8("0\u2009059\u002E000"), 59);
+    formatKiloSeconds(QString::fromUtf8("0\u2009060\u002E000"), 60);
+    formatKiloSeconds(QString::fromUtf8("0\u2009061\u002E123"), 61.1234);
+    formatKiloSeconds(QString::fromUtf8("0\u2009999\u002E990"), 999.99);
+    formatKiloSeconds(QString::fromUtf8("1\u2009000\u002E000"), 1000.00);
+    formatKiloSeconds(QString::fromUtf8("86\u2009400\u002E000"), 24 * 3600);
 }
 
 TEST_F(DurationUtilTest, FormatHectoSeconds) {
-    formatHectoSeconds(QString::fromUtf8("0\u231E00\u2009000"), 0);
-    formatHectoSeconds(QString::fromUtf8("0\u231E01\u2009000"), 1);
-    formatHectoSeconds(QString::fromUtf8("0\u231E01\u2009500"), 1.5);
-    formatHectoSeconds(QString::fromUtf8("0\u231E01\u2009510"), 1.51);
-    formatHectoSeconds(QString::fromUtf8("0\u231E01\u2009490"), 1.49);
-    formatHectoSeconds(QString::fromUtf8("0\u231E59\u2009000"), 59);
-    formatHectoSeconds(QString::fromUtf8("0\u231E60\u2009000"), 60);
-    formatHectoSeconds(QString::fromUtf8("0\u231E61\u2009123"), 61.1234);
-    formatHectoSeconds(QString::fromUtf8("9\u231E99\u2009990"), 999.99);
-    formatHectoSeconds(QString::fromUtf8("10\u231E00\u2009000"), 1000.00);
-    formatHectoSeconds(QString::fromUtf8("864\u231E00\u2009000"), 24 * 3600);
+    formatHectoSeconds(QString::fromUtf8("0\u231E00\u002E000"), 0);
+    formatHectoSeconds(QString::fromUtf8("0\u231E01\u002E000"), 1);
+    formatHectoSeconds(QString::fromUtf8("0\u231E01\u002E500"), 1.5);
+    formatHectoSeconds(QString::fromUtf8("0\u231E01\u002E510"), 1.51);
+    formatHectoSeconds(QString::fromUtf8("0\u231E01\u002E490"), 1.49);
+    formatHectoSeconds(QString::fromUtf8("0\u231E59\u002E000"), 59);
+    formatHectoSeconds(QString::fromUtf8("0\u231E60\u002E000"), 60);
+    formatHectoSeconds(QString::fromUtf8("0\u231E61\u002E123"), 61.1234);
+    formatHectoSeconds(QString::fromUtf8("9\u231E99\u002E990"), 999.99);
+    formatHectoSeconds(QString::fromUtf8("10\u231E00\u002E000"), 1000.00);
+    formatHectoSeconds(QString::fromUtf8("864\u231E00\u002E000"), 24 * 3600);
 }
 
 
