@@ -258,7 +258,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
 
-    int barAndPhrase = m_config->getValueString(ConfigKey("[Waveform]","BarAndPhrase")).toInt(&ok);
+    bool showBarAndPhrase = m_config->getValue(ConfigKey("[Waveform]","BarAndPhrase"), m_showBarAndPhrase);
     if (ok) {
         setBarAndPhrase(static_cast<bool>(barAndPhrase));
     } else {
