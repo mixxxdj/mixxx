@@ -36,11 +36,12 @@ public:
 
     // Enumerations which hold the state of the pitchbend buttons.
     // These enumerations can be used like a bitmask.
-    enum RATERAMP_DIRECTION {
-        RATERAMP_NONE = 0,  // No buttons are held down
-        RATERAMP_DOWN = 1,  // Down button is being held
-        RATERAMP_UP = 2,    // Up button is being held
-        RATERAMP_BOTH = 3   // Both buttons are being held down
+    enum class RampDirection {
+        None,  // No buttons are held down
+        Down,  // Down button is being held
+        Up,    // Up button is being held
+        DownSmall,  // DownSmall button is being held
+        UpSmall,    // UpSmall button is being held
     };
 
     enum class RampMode {
@@ -84,10 +85,6 @@ public:
     void slotControlRatePermDownSmall(double);
     void slotControlRatePermUp(double);
     void slotControlRatePermUpSmall(double);
-    void slotControlRateTempDown(double);
-    void slotControlRateTempDownSmall(double);
-    void slotControlRateTempUp(double);
-    void slotControlRateTempUpSmall(double);
     void slotControlFastForward(double);
     void slotControlFastBack(double);
 
@@ -152,11 +149,6 @@ public:
 
     ControlProxy* m_pSyncMode;
     ControlProxy* m_pSlipEnabled;
-
-    // The current rate ramping direction. Only holds the last button pressed.
-    int m_ePbCurrent;
-    //  The rate ramping buttons which are currently being pressed.
-    int m_ePbPressed;
 
     // This is true if we've already started to ramp the rate
     bool m_bTempStarted;

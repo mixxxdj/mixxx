@@ -32,8 +32,6 @@ RateControl::RateControl(QString group,
                          UserSettingsPointer pConfig)
     : EngineControl(group, pConfig),
       m_pBpmControl(NULL),
-      m_ePbCurrent(0),
-      m_ePbPressed(0),
       m_bTempStarted(false),
       m_tempRateRatio(0.0),
       m_dRateTempRampChange(0.0) {
@@ -107,27 +105,12 @@ RateControl::RateControl(QString group,
     // Temporary rate-change buttons
     m_pButtonRateTempDown =
         new ControlPushButton(ConfigKey(group,"rate_temp_down"));
-    connect(m_pButtonRateTempDown, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRateTempDown(double)),
-            Qt::DirectConnection);
-
     m_pButtonRateTempDownSmall =
         new ControlPushButton(ConfigKey(group,"rate_temp_down_small"));
-    connect(m_pButtonRateTempDownSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRateTempDownSmall(double)),
-            Qt::DirectConnection);
-
     m_pButtonRateTempUp =
         new ControlPushButton(ConfigKey(group,"rate_temp_up"));
-    connect(m_pButtonRateTempUp, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRateTempUp(double)),
-            Qt::DirectConnection);
-
     m_pButtonRateTempUpSmall =
         new ControlPushButton(ConfigKey(group,"rate_temp_up_small"));
-    connect(m_pButtonRateTempUpSmall, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlRateTempUpSmall(double)),
-            Qt::DirectConnection);
 
     // We need the sample rate so we can guesstimate something close
     // what latency is.
@@ -329,64 +312,6 @@ void RateControl::slotControlRatePermUpSmall(double v) {
     }
 }
 
-void RateControl::slotControlRateTempDown(double value) {
-    // Set the state of the Temporary button. Logic is handled in ::process()
-    bool pressed = value > 0;
-    if (pressed && !(m_ePbPressed & RateControl::RATERAMP_DOWN))
-    {
-        m_ePbPressed |= RateControl::RATERAMP_DOWN;
-        m_ePbCurrent = RateControl::RATERAMP_DOWN;
-    }
-    else if (!pressed)
-    {
-        m_ePbPressed &= ~RateControl::RATERAMP_DOWN;
-        m_ePbCurrent = m_ePbPressed;
-    }
-}
-
-void RateControl::slotControlRateTempDownSmall(double value) {
-    // Set the state of the Temporary button. Logic is handled in ::process()
-    bool pressed = value > 0;
-    if (pressed && !(m_ePbPressed & RateControl::RATERAMP_DOWN))
-    {
-        m_ePbPressed |= RateControl::RATERAMP_DOWN;
-        m_ePbCurrent = RateControl::RATERAMP_DOWN;
-    }
-    else if (!pressed)
-    {
-        m_ePbPressed &= ~RateControl::RATERAMP_DOWN;
-        m_ePbCurrent = m_ePbPressed;
-    }
-}
-
-void RateControl::slotControlRateTempUp(double value) {
-    // Set the state of the Temporary button. Logic is handled in ::process()
-    bool pressed = value > 0;
-    if (pressed && !(m_ePbPressed & RateControl::RATERAMP_UP))
-    {
-        m_ePbPressed |= RateControl::RATERAMP_UP;
-        m_ePbCurrent = RateControl::RATERAMP_UP;
-    }
-    else if (!pressed)
-    {
-        m_ePbPressed &= ~RateControl::RATERAMP_UP;
-        m_ePbCurrent = m_ePbPressed;
-    }
-}
-
-void RateControl::slotControlRateTempUpSmall(double value)
-{
-    // Set the state of the Temporary button. Logic is handled in ::process()
-    bool pressed = value > 0;
-    if (pressed && !(m_ePbPressed & RateControl::RATERAMP_UP)) {
-        m_ePbPressed |= RateControl::RATERAMP_UP;
-        m_ePbCurrent = RateControl::RATERAMP_UP;
-    } else if (!pressed) {
-        m_ePbPressed &= ~RateControl::RATERAMP_UP;
-        m_ePbCurrent = m_ePbPressed;
-    }
-}
-
 double RateControl::calcRateRatio() const {
     double rateRatio = 1.0 + m_pRateDir->get() * m_pRateRange->get() *
             m_pRateSlider->get();
@@ -531,50 +456,69 @@ void RateControl::processTempRate(const int bufferSamples) {
     // We support two behaviors, the standard ramped pitch bending
     // and pitch shift stepping, which is the old behavior.
 
-    if (m_eRateRampMode == RampMode::Stepping) {
-        if (m_ePbPressed && !m_bTempStarted) {
-            m_bTempStarted = true;
-            // old temporary pitch shift behavior
-            double change = m_dTemporaryRateChangeCoarse.getValue() / 100.0;
-            double csmall = m_dTemporaryRateChangeFine.getValue() / 100.0;
+    RampDirection rampDirection = RampDirection::None;
+    if (m_pButtonRateTempUp->toBool()) {
+        rampDirection = RampDirection::Up;
+    } else if (m_pButtonRateTempDown->toBool()) {
+        rampDirection = RampDirection::Down;
+    } else if (m_pButtonRateTempUpSmall->toBool()) {
+        rampDirection = RampDirection::UpSmall;
+    } else if (m_pButtonRateTempDownSmall->toBool()) {
+        rampDirection = RampDirection::DownSmall;
+    }
 
-            if (m_pButtonRateTempUp->toBool()) {
-                setRateTemp(change);
-            } else if (m_pButtonRateTempDown->toBool()) {
-                setRateTemp(-change);
-            } else if (m_pButtonRateTempUpSmall->toBool()) {
-                setRateTemp(csmall);
-            } else if (m_pButtonRateTempDownSmall->toBool()) {
-                setRateTemp(-csmall);
+    if (rampDirection != RampDirection::None) {
+        if (m_eRateRampMode == RampMode::Stepping) {
+            if (!m_bTempStarted) {
+                m_bTempStarted = true;
+                // old temporary pitch shift behavior
+                double change = m_dTemporaryRateChangeCoarse.getValue() / 100.0;
+                double csmall = m_dTemporaryRateChangeFine.getValue() / 100.0;
+
+                switch (rampDirection) {
+                case RampDirection::Up:
+                    setRateTemp(change);
+                    break;
+                case RampDirection::Down:
+                    setRateTemp(-change);
+                    break;
+                case RampDirection::UpSmall:
+                    setRateTemp(csmall);
+                    break;
+                case RampDirection::DownSmall:
+                    setRateTemp(-csmall);
+                    break;
+                case RampDirection::None:
+                default:
+                    DEBUG_ASSERT(false);
+                }
+            }
+        } else if (m_eRateRampMode == RampMode::Linear) {
+            if (rampDirection != RampDirection::None) {
+                if (!m_bTempStarted) {
+                    m_bTempStarted = true;
+                    double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
+                    m_dRateTempRampChange = (latrate / ((double)m_iRateRampSensitivity / 100.));
+                }
+
+                switch (rampDirection) {
+                case RampDirection::Up:
+                case RampDirection::UpSmall:
+                    addRateTemp(m_dRateTempRampChange * m_pRateRange->get());
+                    break;
+                case RampDirection::Down:
+                case RampDirection::DownSmall:
+                    subRateTemp(m_dRateTempRampChange * m_pRateRange->get());
+                    break;
+                case RampDirection::None:
+                default:
+                    DEBUG_ASSERT(false);
+                }
             }
         }
-
-        if (m_bTempStarted) {
-            if (!m_ePbCurrent) {
-                m_bTempStarted = false;
-                resetRateTemp();
-            }
-        }
-    } else if (m_eRateRampMode == RampMode::Linear) {
-        if (m_ePbPressed && !m_bTempStarted) {
-            m_bTempStarted = true;
-            double latrate = ((double)bufferSamples / (double)m_pSampleRate->get());
-            m_dRateTempRampChange = (latrate / ((double)m_iRateRampSensitivity / 100.));
-        }
-
-        if (m_ePbCurrent) {
-            // apply ramped pitchbending
-            if (m_ePbCurrent == RateControl::RATERAMP_UP) {
-                addRateTemp(m_dRateTempRampChange * m_pRateRange->get());
-            } else if (m_ePbCurrent == RateControl::RATERAMP_DOWN) {
-                subRateTemp(m_dRateTempRampChange * m_pRateRange->get());
-            }
-        } else if ((m_bTempStarted)
-                || (m_tempRateRatio != 0.0)) {
-            // No buttons pressed, so time to deinitialize
-            m_bTempStarted = false;
-            resetRateTemp();
-        }
+    } else if (m_bTempStarted) {
+        m_bTempStarted = false;
+        resetRateTemp();
     }
 }
 
