@@ -118,7 +118,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     // Track Display model
     comboBoxTimeFormat->clear();
 
-    comboBoxTimeFormat->addItem(tr("mm:ss.zz - Traditional"),
+    comboBoxTimeFormat->addItem(tr("mm:ss%1zz - Traditional")
+                                .arg(mixxx::DurationBase::kDecimalSeparator),
                                 static_cast<int>
                                 (TrackTime::DisplayFormat::TRADITIONAL));
 
@@ -127,16 +128,19 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
                                 (TrackTime::DisplayFormat::TRADITIONAL_COARSE));
 
     comboBoxTimeFormat->addItem(tr("s%1zz - Seconds")
-                                .arg(mixxx::DurationBase::kCentisecondSeparator),
-                                static_cast<int>(TrackTime::DisplayFormat::SECOND));
+                                .arg(mixxx::DurationBase::kDecimalSeparator),
+                                static_cast<int>
+                                (TrackTime::DisplayFormat::SECOND));
 
-    comboBoxTimeFormat->addItem(tr("k.sss%1zz - Kiloseconds")
-                                .arg(mixxx::DurationBase::kCentisecondSeparator),
+    comboBoxTimeFormat->addItem(tr("k%1sss%2zz - Kiloseconds")
+                                .arg(mixxx::DurationBase::kKiloGroupSeparator)
+                                .arg(mixxx::DurationBase::kDecimalSeparator),
                                 static_cast<int>
                                 (TrackTime::DisplayFormat::KILO_SECOND));
 
-    comboBoxTimeFormat->addItem(tr("hs.ss%1zz - Hectoseconds")
-                                .arg(mixxx::DurationBase::kHectosecondSeparator),
+    comboBoxTimeFormat->addItem(tr("hs%1ss%2zz - Hectoseconds")
+                                .arg(mixxx::DurationBase::kHectoGroupSeparator)
+                                .arg(mixxx::DurationBase::kDecimalSeparator),
                                 static_cast<int>
                                 (TrackTime::DisplayFormat::HECTO_SECOND));
 
