@@ -97,7 +97,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int isOverviewNormalized() const { return m_overviewNormalized;}
 
     void setBarAndPhrase(bool normalize);
-    int isBarAndPhrase() const { return m_barAndPhrase;}
+    bool showBarAndPhrase() const { return m_showBarAndPhrase;}
 
     const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
     void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
