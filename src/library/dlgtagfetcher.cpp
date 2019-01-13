@@ -113,8 +113,9 @@ void DlgTagFetcher::fetchTagFinished(const TrackPointer track,
 void DlgTagFetcher::slotNetworkError(int httpError, QString app, QString message, int code) {
     m_networkError = httpError == 0 ?  FTWERROR : HTTPERROR;
     m_data.m_pending = false;
-    QString httpStatusMessage = tr("HTTP Status: %1");
-    httpStatus->setText(httpStatusMessage.arg(httpError));
+    QString strError = tr("HTTP Status: %1");
+    QString strCode = tr("Code: %1");
+    httpStatus->setText(strError.arg(httpError) + "\n" + strCode.arg(code) + "\n" + message);
     QString unknownError = tr("Mixxx can't connect to %1 for an unknown reason.");
     cantConnectMessage->setText(unknownError.arg(app));
     QString cantConnect = tr("Mixxx can't connect to %1.");
