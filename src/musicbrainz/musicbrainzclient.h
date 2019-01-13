@@ -82,7 +82,7 @@ class MusicBrainzClient : public QObject {
   signals:
     // Finished signal emitted when fechting songs tags
     void finished(int id, const MusicBrainzClient::ResultList& result);
-    void networkError(int, QString);
+    void networkError(int httpStatus, QString app, QString message, int code);
 
   private slots:
     void requestFinished();

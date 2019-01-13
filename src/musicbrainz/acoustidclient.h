@@ -52,7 +52,7 @@ class AcoustidClient : public QObject {
 
   signals:
     void finished(int id, const QString& mbid);
-    void networkError(int, QString);
+    void networkError(int httpStatus, QString app, QString message, int code);
 
   private slots:
     void requestFinished();

@@ -98,7 +98,7 @@ void MusicBrainzClient::requestFinished() {
     if (status != 200 && status != 404) {
         emit(networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "MusicBrainz"));
+             "MusicBrainz", QString(), 0));
         return;
     }
 

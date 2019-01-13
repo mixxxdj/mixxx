@@ -92,7 +92,7 @@ void AcoustidClient::requestFinished() {
         qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body.readAll();
         emit(networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "AcoustID"));
+             "AcoustID", QString(), 0));
         return;
     }
 

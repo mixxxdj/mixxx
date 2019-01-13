@@ -31,8 +31,8 @@ void DlgTagFetcher::init() {
             this, SLOT(fetchTagFinished(const TrackPointer,const QList<TrackPointer>&)));
     connect(&m_TagFetcher, SIGNAL(fetchProgress(QString)),
             this, SLOT(fetchTagProgress(QString)));
-    connect(&m_TagFetcher, SIGNAL(networkError(int, QString)),
-            this, SLOT(slotNetworkError(int, QString)));
+    connect(&m_TagFetcher, SIGNAL(networkError(int, QString, QString, int)),
+            this, SLOT(slotNetworkError(int, QString, QString, int)));
 
     // Resize columns, this can't be set in the ui file
     results->setColumnWidth(0, 50);  // Track column
@@ -110,11 +110,11 @@ void DlgTagFetcher::fetchTagFinished(const TrackPointer track,
     updateStack();
 }
 
-void DlgTagFetcher::slotNetworkError(int errorCode, QString app) {
-    m_networkError = errorCode==0 ?  FTWERROR : HTTPERROR;
+void DlgTagFetcher::slotNetworkError(int httpError, QString app, QString message, int code) {
+    m_networkError = httpError == 0 ?  FTWERROR : HTTPERROR;
     m_data.m_pending = false;
     QString httpStatusMessage = tr("HTTP Status: %1");
-    httpStatus->setText(httpStatusMessage.arg(errorCode));
+    httpStatus->setText(httpStatusMessage.arg(httpError));
     QString unknownError = tr("Mixxx can't connect to %1 for an unknown reason.");
     cantConnectMessage->setText(unknownError.arg(app));
     QString cantConnect = tr("Mixxx can't connect to %1.");
