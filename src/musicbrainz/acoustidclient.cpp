@@ -91,7 +91,18 @@ void AcoustidClient::requestFinished() {
     const QByteArray body(reply->readAll());
     QXmlStreamReader reader(body);
 
-    if (status != 200) {
+    QString statusText;
+    while (!reader.atEnd()) {
+        if (reader.readNext() == QXmlStreamReader::StartElement) {
+            const QStringRef name = reader.name();
+            if (name == "status") {
+                statusText = reader.readElementText();
+                break;
+            }
+        }
+    }
+
+    if (status != 200 || statusText != "ok") {
         qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body;
         QString message;
         QString code;
