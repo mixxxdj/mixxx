@@ -87,27 +87,38 @@ void AcoustidClient::requestFinished() {
     int id = m_requests.take(reply);
 
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+    QTextStream textReader(reply);
+    const QByteArray body(reply->readAll());
+    QXmlStreamReader reader(body);
+
     if (status != 200) {
-        QTextStream body(reply);
-        qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body.readAll();
+        qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body;
+        QString message;
+        QString code;
+        while (!reader.atEnd()) {
+            if (reader.readNext() == QXmlStreamReader::StartElement) {
+                const QStringRef name = reader.name();
+                if (name == "message") {
+                    message = reader.readElementText();
+                } else if (name == "code") {
+                    code = reader.readElementText();
+                }
+            }
+        }
         emit(networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "AcoustID", QString(), 0));
+             "AcoustID", message, code.toInt()));
         return;
     }
 
-
-    QTextStream textReader(reply);
-    QString body = textReader.readAll();
     qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body;
 
-    QXmlStreamReader reader(body);
     QString ID;
     while (!reader.atEnd()) {
         if (reader.readNext() == QXmlStreamReader::StartElement
-            && reader.name()== "results") {
-                ID = parseResult(reader);
-            }
+                && reader.name()== "results") {
+            ID = parseResult(reader);
+        }
     }
 
     emit(finished(id, ID));

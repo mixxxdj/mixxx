@@ -90,21 +90,33 @@ void MusicBrainzClient::requestFinished() {
     ResultList ret;
 
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    qDebug() << "MusicBrainzClient GET reply status:" << status;
+    QTextStream textReader(reply);
+    const QByteArray body(reply->readAll());
+    QXmlStreamReader reader(body);
 
     // MusicBrainz returns 404 when the MBID is not in their database. We treat
     // a status of 404 the same as a 200 but it will produce an empty list of
     // results.
     if (status != 200 && status != 404) {
+        qDebug() << "MusicBrainzClient POST reply status:" << status << "body:" << body;
+        QString message;
+        QString code;
+        while (!reader.atEnd()) {
+            if (reader.readNext() == QXmlStreamReader::StartElement) {
+                const QStringRef name = reader.name();
+                if (name == "message") {
+                    message = reader.readElementText();
+                } else if (name == "code") {
+                    code = reader.readElementText();
+                }
+            }
+        }
         emit(networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "MusicBrainz", QString(), 0));
+             "MusicBrainz", message, code.toInt()));
         return;
     }
 
-    const QByteArray body(reply->readAll());
-
-    QXmlStreamReader reader(body);
     QStringRef codecName;
     while (!reader.atEnd()) {
         switch (reader.readNext()) {
