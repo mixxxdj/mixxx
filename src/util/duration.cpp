@@ -18,6 +18,7 @@ static const qint64 kSecondsPerDay = 24 * kSecondsPerHour;
 } // namespace
 
 // static
+const QString DurationBase::kInvalidDurationString = "?";
 // Unicode for thin space
 QChar DurationBase::kKiloGroupSeparator = QChar(0x2009);
 // Unicode for bottom left corner
@@ -29,7 +30,7 @@ QChar DurationBase::kDecimalSeparator = QChar(0x002E);
 QString DurationBase::formatTime(double dSeconds, Precision precision) {
     if (dSeconds < 0.0) {
         // negative durations are not supported
-        return "?";
+        return kInvalidDurationString;
     }
 
     const qint64 days = static_cast<qint64>(std::floor(dSeconds)) / kSecondsPerDay;
@@ -61,7 +62,7 @@ QString DurationBase::formatTime(double dSeconds, Precision precision) {
 QString DurationBase::formatSeconds(double dSeconds, Precision precision) {
     if (dSeconds < 0.0) {
         // negative durations are not supported
-        return "?";
+        return kInvalidDurationString;
     }
 
     QString durationString;
@@ -81,7 +82,7 @@ QString DurationBase::formatSeconds(double dSeconds, Precision precision) {
 QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
     if (dSeconds < 0.0) {
         // negative durations are not supported
-        return "?";
+        return kInvalidDurationString;
     }
 
     int kilos = (int)dSeconds / 1000;
@@ -108,7 +109,7 @@ QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
 QString DurationBase::formatHectoSeconds(double dSeconds, Precision precision) {
     if (dSeconds < 0.0) {
         // negative durations are not supported
-        return "?";
+        return kInvalidDurationString;
     }
 
     int hectos = (int)dSeconds / 100;
