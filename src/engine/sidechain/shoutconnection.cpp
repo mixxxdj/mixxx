@@ -29,7 +29,6 @@
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
-#include "util/compatibility.h"
 #include "util/logger.h"
 
 #include <engine/sidechain/shoutconnection.h>
