@@ -1,62 +1,62 @@
 <Template>
-		<WidgetGroup>
-			<Pos>0,0</Pos>
-			<Size>93f,54f</Size>
-			<BackPath>style/style_bg_microphone.png</BackPath>
-			<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
-			<!--<Layout>horizontal</Layout>-->
-			<Children>
-				<!--
-				**********************************************
-				Visual- Volume peak indicator
-				**********************************************
-				-->
-				<StatusLight>
-					<TooltipId>microphone_PeakIndicator</TooltipId>
-					<Style></Style>
-					<PathStatusLight>skin:/style/volume_clipping_microphone_over.png</PathStatusLight>
-					<PathBack>skin:/style/volume_clipping_microphone.png</PathBack>
-					<Pos>82,6</Pos>
-					<Connection>
-						<ConfigKey>[Microphone<Variable name="micnum"/>],PeakIndicator</ConfigKey>
-					</Connection>
-				</StatusLight>
+    <WidgetGroup>
+      <Pos>0,0</Pos>
+      <Size>93f,54f</Size>
+      <BackPath>style/style_bg_microphone_<Variable name="miclabel"/>.png</BackPath>
+      <Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+      <!--<Layout>horizontal</Layout>-->
+      <Children>
+        <!--
+        **********************************************
+        Visual- Volume peak indicator
+        **********************************************
+        -->
+        <StatusLight>
+          <TooltipId>microphone_PeakIndicator</TooltipId>
+          <Style></Style>
+          <PathStatusLight>skin:/style/volume_clipping_microphone_over.png</PathStatusLight>
+          <PathBack>skin:/style/volume_clipping_microphone.png</PathBack>
+          <Pos>82,6</Pos>
+          <Connection>
+            <ConfigKey>[Microphone<Variable name="micnum"/>],PeakIndicator</ConfigKey>
+          </Connection>
+        </StatusLight>
 
-				<!--
-				**********************************************
-				Visual - Volume level display
-				**********************************************
-				-->
-				<VuMeter>
-					<TooltipId>microphone_VuMeter</TooltipId>
-					<Style></Style>
-					<PathVu>skin:/style/volume_display_microphone_over.png</PathVu>
-					<PathBack>skin:/style/volume_display_microphone.png</PathBack>
-					<Pos>82,14</Pos>
-					<PeakHoldSize>5</PeakHoldSize>
-					<PeakHoldTime>500</PeakHoldTime>
-					<PeakFallTime>50</PeakFallTime>
-					<PeakFallStep>2</PeakFallStep>
-					<Connection>
-						<ConfigKey>[Microphone<Variable name="micnum"/>],VuMeter</ConfigKey>
-					</Connection>
-				</VuMeter>
+        <!--
+        **********************************************
+        Visual - Volume level display
+        **********************************************
+        -->
+        <VuMeter>
+          <TooltipId>microphone_VuMeter</TooltipId>
+          <Style></Style>
+          <PathVu>skin:/style/volume_display_microphone_over.png</PathVu>
+          <PathBack>skin:/style/volume_display_microphone.png</PathBack>
+          <Pos>82,14</Pos>
+          <PeakHoldSize>5</PeakHoldSize>
+          <PeakHoldTime>500</PeakHoldTime>
+          <PeakFallTime>50</PeakFallTime>
+          <PeakFallStep>2</PeakFallStep>
+          <Connection>
+            <ConfigKey>[Microphone<Variable name="micnum"/>],VuMeter</ConfigKey>
+          </Connection>
+        </VuMeter>
 
-				<!--
-				**********************************************
-				Knob- Channel Volume
-				**********************************************
-				-->
-				<Knob>
-					<TooltipId>microphone_pregain</TooltipId>
-					<Style></Style>
-					<NumberStates>64</NumberStates>
-					<Path>knobs/knob_rotary_s%1.png</Path>
-					<Pos>49,22</Pos>
-					<Connection>
-						<ConfigKey>[Microphone<Variable name="micnum"/>],pregain</ConfigKey>
-					</Connection>
-				</Knob>
-			</Children>
-		</WidgetGroup>
+        <!--
+        **********************************************
+        Knob- Channel Volume
+        **********************************************
+        -->
+        <Knob>
+          <TooltipId>microphone_pregain</TooltipId>
+          <Style></Style>
+          <NumberStates>64</NumberStates>
+          <Path>knobs/knob_rotary_s%1.png</Path>
+          <Pos>49,22</Pos>
+          <Connection>
+            <ConfigKey>[Microphone<Variable name="micnum"/>],pregain</ConfigKey>
+          </Connection>
+        </Knob>
+      </Children>
+    </WidgetGroup>
 </Template>
