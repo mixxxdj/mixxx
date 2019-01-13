@@ -18,9 +18,9 @@ class ControlObject;
 
 namespace TrackTime {
     enum class DisplayMode {
-        Elapsed,
-        Remaining,
-        ElapsedAndRemaining,
+        ELAPSED,
+        REMAINING,
+        ELAPSED_AND_REMAINING,
     };
 
     enum class DisplayFormat {
