@@ -4,6 +4,7 @@
 #include <QThread>
 
 #include "util/assert.h"
+#include "util/compatibility.h"
 #include "util/logger.h"
 
 
@@ -75,7 +76,7 @@ void deleteTrack(Track* plainPtr) {
                 << plainPtr;
     }
     // QObject::deleteLater() is not thread-safe!
-    QMetaObject::invokeMethod(plainPtr, &Track::deleteLater);
+    invokeDeleteLater(plainPtr);
 }
 
 } // anonymous namespace

@@ -3,6 +3,7 @@
 #include "library/library.h"
 #include "library/trackcollection.h"
 
+#include "util/compatibility.h"
 #include "util/logger.h"
 
 
@@ -21,7 +22,7 @@ void deleteTrackAnalysisScheduler(TrackAnalysisScheduler* plainPtr) {
         plainPtr->stop();
         // Release ownership and let Qt delete the queue later
         // QObject::deleteLater() is not thread-safe!
-        QMetaObject::invokeMethod(plainPtr, &TrackAnalysisScheduler::deleteLater);
+        invokeDeleteLater(plainPtr);
     }
 }
 
