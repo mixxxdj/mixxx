@@ -51,19 +51,19 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="75"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="84"/>
         <source>Error loading Banshee database</source>
-        <translation>載入女妖資料庫時出錯</translation>
+        <translation>載入您的資料庫時出錯</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
         <source>Banshee database file not found at
 </source>
-        <translation>在找不到的女妖資料庫檔案</translation>
+        <translation>在找不到的您的資料庫檔案</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="85"/>
         <source>There was an error loading your Banshee database at
 </source>
-        <translation>載入在你女妖資料庫時出錯</translation>
+        <translation>載入在你您的資料庫時出錯</translation>
     </message>
 </context>
 <context>
