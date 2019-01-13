@@ -14,6 +14,7 @@
 #include <QTextStream>
 #include <QXmlStreamReader>
 #include <QUrl>
+#include <QJsonDocument>
 
 #include "musicbrainz/musicbrainzclient.h"
 #include "util/version.h"
@@ -99,21 +100,15 @@ void MusicBrainzClient::requestFinished() {
     // results.
     if (status != 200 && status != 404) {
         qDebug() << "MusicBrainzClient POST reply status:" << status << "body:" << body;
-        QString message;
-        QString code;
-        while (!reader.atEnd()) {
-            if (reader.readNext() == QXmlStreamReader::StartElement) {
-                const QStringRef name = reader.name();
-                if (name == "message") {
-                    message = reader.readElementText();
-                } else if (name == "code") {
-                    code = reader.readElementText();
-                }
-            }
-        }
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(body);
+        QJsonObject jsonObject = jsonResponse.object();
+        QString message = jsonObject["error"].toString();
+        QStringList propertyNames;
+        QStringList propertyKeys;
+        QString strReply = (QString)reply->readAll();
         emit(networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "MusicBrainz", message, code.toInt()));
+             "MusicBrainz", message, 0));
         return;
     }
 
