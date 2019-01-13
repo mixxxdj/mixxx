@@ -1,3 +1,10 @@
+==== 2.1.7 2019-01-13 ====
+
+* Fix syncing to doublespeed lp:1808697
+* Fix issues when changing beats of a synced track lp:1808698 
+* Fix direction of pitch bend buttons when inverting rate slider lp:1770745
+* Use first loaded deck if no playing deck is found lp:1784185 	
+
 ==== 2.1.6 2018-12-23 ====
 
 * Fix crash when loading a Qt5 Soundsource / Vamp Plug-In. lp:1774639 * Validate effect parameter range. lp:1795234
