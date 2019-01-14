@@ -14,6 +14,7 @@ namespace mixxx {
 class DurationBase {
 
   public:
+
     enum Units {
         SECONDS,
         MILLIS,
@@ -89,6 +90,7 @@ class DurationBase {
     static constexpr qint64 kNanosPerSecond  = kMicrosPerSecond * 1000;
     static constexpr qint64 kNanosPerMilli   = kNanosPerSecond / 1000;
     static constexpr qint64 kNanosPerMicro   = kNanosPerMilli / 1000;
+    static const QString kInvalidDurationString;
     static QChar kKiloGroupSeparator;
     static QChar kHectoGroupSeparator;
     static QChar kDecimalSeparator;

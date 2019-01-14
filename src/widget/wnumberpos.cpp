@@ -35,12 +35,12 @@ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
 
     if (leftClick) {
         // Cycle through display modes
-        if (m_displayMode == TrackTime::DisplayMode::Elapsed) {
-            m_displayMode = TrackTime::DisplayMode::Remaining;
-        } else if (m_displayMode == TrackTime::DisplayMode::Remaining) {
-            m_displayMode = TrackTime::DisplayMode::ElapsedAndRemaining;
-        } else if (m_displayMode == TrackTime::DisplayMode::ElapsedAndRemaining) {
-            m_displayMode = TrackTime::DisplayMode::Elapsed;
+        if (m_displayMode == TrackTime::DisplayMode::ELAPSED) {
+            m_displayMode = TrackTime::DisplayMode::REMAINING;
+        } else if (m_displayMode == TrackTime::DisplayMode::REMAINING) {
+            m_displayMode = TrackTime::DisplayMode::ELAPSED_AND_REMAINING;
+        } else if (m_displayMode == TrackTime::DisplayMode::ELAPSED_AND_REMAINING) {
+            m_displayMode = TrackTime::DisplayMode::ELAPSED;
         }
 
         m_pShowTrackTimeRemaining->set(static_cast<double>(m_displayMode));
@@ -77,15 +77,15 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
         precision = mixxx::Duration::Precision::SECONDS;
     }
 
-    if (m_displayMode == TrackTime::DisplayMode::Elapsed) {
+    if (m_displayMode == TrackTime::DisplayMode::ELAPSED) {
         if (dTimeElapsed >= 0.0) {
             setText(timeFormat(dTimeElapsed, precision));
         } else {
             setText(QLatin1String("-") % timeFormat(-dTimeElapsed, precision));
         }
-    } else if (m_displayMode == TrackTime::DisplayMode::Remaining) {
+    } else if (m_displayMode == TrackTime::DisplayMode::REMAINING) {
         setText(QLatin1String("-") % timeFormat(dTimeRemaining, precision));
-    } else if (m_displayMode == TrackTime::DisplayMode::ElapsedAndRemaining) {
+    } else if (m_displayMode == TrackTime::DisplayMode::ELAPSED_AND_REMAINING) {
         if (dTimeElapsed >= 0.0) {
             setText(timeFormat(dTimeElapsed, precision)
                     % QLatin1String("  -") % timeFormat(dTimeRemaining, precision));
@@ -110,11 +110,11 @@ void WNumberPos::slotTimeRemainingUpdated(double dTimeRemaining) {
 
 void WNumberPos::slotSetDisplayMode(double remain) {
     if (remain == 1.0) {
-        m_displayMode = TrackTime::DisplayMode::Remaining;
+        m_displayMode = TrackTime::DisplayMode::REMAINING;
     } else if (remain == 2.0) {
-        m_displayMode = TrackTime::DisplayMode::ElapsedAndRemaining;
+        m_displayMode = TrackTime::DisplayMode::ELAPSED_AND_REMAINING;
     } else {
-        m_displayMode = TrackTime::DisplayMode::Elapsed;
+        m_displayMode = TrackTime::DisplayMode::ELAPSED;
     }
 
     slotSetTimeElapsed(m_dOldTimeElapsed);
