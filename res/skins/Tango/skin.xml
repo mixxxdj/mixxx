@@ -197,15 +197,6 @@
     <SetVariable name="PotiMinAngle">-130</SetVariable>
     <SetVariable name="PotiMaxAngle">130</SetVariable>
 
-    <SetVariable name="SignalColor_1">#5EBAFF</SetVariable>
-    <SetVariable name="SignalColor_2">#5EBAFF</SetVariable>
-    <SetVariable name="SignalColor_3">#DF4DF0</SetVariable>
-    <SetVariable name="SignalColor_4">#DF4DF0</SetVariable>
-
-    <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
-    <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
-    <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
-
     <SetVariable name="PlayedOverlayColor">#99000000</SetVariable>
 
 <!--################################################################
