@@ -39,10 +39,10 @@ DeckAttributes::DeckAttributes(int index,
             this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
     connect(m_pPlayer, SIGNAL(playerEmpty()),
             this, SLOT(slotPlayerEmpty()));
-    m_playPos.connectValueChanged(this, SLOT(slotPlayPosChanged(double)));
-    m_play.connectValueChanged(this, SLOT(slotPlayChanged(double)));
-    m_introStartPos.connectValueChanged(this, SLOT(slotIntroStartPositionChanged(double)));
-    m_outroEndPos.connectValueChanged(this, SLOT(slotOutroEndPositionChanged(double)));
+    m_playPos.connectValueChanged(this, &DeckAttributes::slotPlayPosChanged);
+    m_play.connectValueChanged(this, &DeckAttributes::slotPlayChanged);
+    m_introStartPos.connectValueChanged(this, &DeckAttributes::slotIntroStartPositionChanged);
+    m_outroEndPos.connectValueChanged(this, &DeckAttributes::slotOutroEndPositionChanged);
 }
 
 DeckAttributes::~DeckAttributes() {

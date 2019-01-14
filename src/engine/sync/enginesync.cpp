@@ -21,7 +21,7 @@
 #include <QStringList>
 
 #include "engine/enginebuffer.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/sync/internalclock.h"
 #include "util/assert.h"
 

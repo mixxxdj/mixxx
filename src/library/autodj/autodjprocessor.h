@@ -7,8 +7,8 @@
 
 #include "preferences/usersettings.h"
 #include "control/controlproxy.h"
-#include "engine/cuecontrol.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
+#include "engine/controls/cuecontrol.h"
 #include "library/playlisttablemodel.h"
 #include "track/track.h"
 #include "util/class.h"

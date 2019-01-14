@@ -122,7 +122,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(updateSelectionCrates(QWidget *)));
 
     m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
-    m_pCOTGuiTick->connectValueChanged(SLOT(slotGuiTick50ms(double)));
+    m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));

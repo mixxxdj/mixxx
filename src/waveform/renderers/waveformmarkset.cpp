@@ -2,7 +2,7 @@
 #include <QtDebug>
 
 #include "waveformmarkset.h"
-#include "engine/cuecontrol.h"
+#include "engine/controls/cuecontrol.h"
 #include "control/controlobject.h"
 #include "util/memory.h"
 

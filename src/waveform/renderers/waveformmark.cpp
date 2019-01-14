@@ -20,7 +20,7 @@ WaveformMark::WaveformMark(const QString& group,
     QString source = context.selectString(node, "Source");
     if (!source.isEmpty()) {
         m_pSourceCos = std::make_unique<ControlProxy>(group, source);
-        m_pSourceCos->connectValueChanged(this, SLOT(slotCueSourceChanged()));
+        m_pSourceCos->connectValueChanged(this, &WaveformMark::slotCueSourceChanged);
     }
     m_properties = WaveformMarkProperties(node, context, signalColors, m_iHotCue);
 }
@@ -38,14 +38,9 @@ WaveformMark::WaveformMark(const QString& group,
     QString source = context.selectString(node, "Source");
     if (!source.isEmpty()) {
         m_pSourceCos = std::make_unique<ControlProxy>(group, source);
-        m_pSourceCos->connectValueChanged(this, SLOT(slotCueSourceChanged()));
+        m_pSourceCos->connectValueChanged(this, &WaveformMark::slotCueSourceChanged);
     }
     m_properties = WaveformMarkProperties(node, context, signalColors, hotCue);
-}
-
-
-void WaveformMark::connectSamplePositionChanged(const QObject *obj, const char *slt) const {
-    m_pPointCos->connectValueChanged(obj, slt, Qt::AutoConnection);
 }
 
 void WaveformMark::slotCueSourceChanged() {
