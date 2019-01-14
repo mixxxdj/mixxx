@@ -1,4 +1,5 @@
-# Mixxx
+# Mixxx 
+[![Packaging status](https://repology.org/badge/tiny-repos/mixxx.svg)](https://repology.org/metapackage/mixxx/versions)
 
 [Mixxx] is Free DJ software that gives you everything you need to perform live
 DJ mixes. Mixxx works on GNU/Linux, Windows, and macOS.
@@ -73,10 +74,6 @@ development and community news:
 - Join the developer [mailing list].
 - Post on the [Mixxx forums][forums].
 
-## Distributed
-
-[![Packaging status](https://repology.org/badge/tiny-repos/mixxx.svg)](https://repology.org/metapackage/mixxx/versions)
-
 ## License
 
 Mixxx is released under the GPLv2. See the LICENSE file for a full copy of the
@@ -109,3 +106,7 @@ license.
 [Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
 [hardware compatibility]: https://mixxx.org/wiki/doku.php/hardware_compatibility
 [zulip]: https://mixxx.zulipchat.com/
+
+## Distributed
+
+[![Packaging status](https://repology.org/badge/vertical-allrepos/mixxx.svg)](https://repology.org/metapackage/mixxx/versions)
