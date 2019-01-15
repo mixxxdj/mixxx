@@ -26,7 +26,7 @@ Variables:
             <Group><Variable name="group"/></Group>
             <PathBackground scalemode="STRETCH_ASPECT">graphics/spinnyMini_bg.svg</PathBackground>
             <PathForeground scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator.svg</PathForeground>
-            <PathMask scalemode="STRETCH_ASPECT">graphics/spinnyMini_<Variable name="chanNum"/>_mask.svg</PathMask>
+            <PathMask scalemode="STRETCH_ASPECT">graphics/spinnyMini_mask_<Variable name="spinnyCoverColor"/>.svg</PathMask>
             <PathGhost scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator_ghost.svg</PathGhost>
             <ShowCover>false</ShowCover>
             <Connection>
@@ -43,7 +43,7 @@ Variables:
             <Group><Variable name="group"/></Group>
             <PathBackground scalemode="STRETCH_ASPECT">graphics/spinnyMini_bg.svg</PathBackground>
             <PathForeground scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator.svg</PathForeground>
-            <PathMask scalemode="STRETCH_ASPECT">graphics/spinnyMini_<Variable name="chanNum"/>_mask.svg</PathMask>
+            <PathMask scalemode="STRETCH_ASPECT">graphics/spinnyMini_mask_<Variable name="spinnyCoverColor"/>.svg</PathMask>
             <PathGhost scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator_ghost.svg</PathGhost>
             <ShowCover>true</ShowCover>
             <Connection>
@@ -69,7 +69,7 @@ Variables:
             <TooltipId>coverart</TooltipId>
             <Size>50f,50f</Size>
             <Group>[Channel<Variable name="chanNum"/>]</Group>
-            <DefaultCover>skin:/graphics/cover_default_mini_<Variable name="chanNum"/>.svg</DefaultCover>
+            <DefaultCover>skin:/graphics/cover_default_mini_<Variable name="spinnyCoverColor"/>.svg</DefaultCover>
             <Connection>
               <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>

@@ -98,35 +98,11 @@ WWidgetGroup {
 ####### Colors ##################################################
 ###############################################################*/
 
-#Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
-#Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
-  color: #33a8ff;
-}
-#Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
-#Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
-  color: #d910f0;
-}
-
-#WaveformContainer1,
-#WaveformContainer2 {
-  background-color: #001D33;
-}
-#WaveformContainer3,
-#WaveformContainer4 {
-  background-color: #3A0440;
-}
-
-/*	Define background-color here to make VinylToggler match
-  the waveforms background-color.
-  spinnyMini_Xmask.svg must match as well. */
-#DeckOverview1,
-#DeckOverview2 {
-  background-color: #001D33;
-}
-#DeckOverview3,
-#DeckOverview4 {
-  background-color: #3A0440;
-}
+/* All deck-specific colors are now defined in <Schemes> in skin.xml.
+  - deck labels
+  - waveform & overview background/signal colors
+  - Spinny mini mask, mini default cover 
+ */
 
 
 

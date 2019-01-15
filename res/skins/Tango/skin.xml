@@ -122,29 +122,43 @@
   -->
   <Schemes>
     <Scheme>
-      <Name>Nuevo</Name>
+      <Name>Classic</Name>
       <Filters/>
+      <!-- Colors for waveform & overview -->
       <SetVariable name="SignalColor_12">#5EBAFF</SetVariable>
       <SetVariable name="SignalBgColor_12">#001D33</SetVariable>
       <SetVariable name="SignalColor_34">#DF4DF0</SetVariable>
       <SetVariable name="SignalBgColor_34">#3A0440</SetVariable>
-
-      <SetVariable name="SignalColor_1">#5EBAFF</SetVariable>
-      <SetVariable name="SignalColor_2">#5EBAFF</SetVariable>
-      <SetVariable name="SignalColor_3">#DF4DF0</SetVariable>
-      <SetVariable name="SignalColor_4">#DF4DF0</SetVariable>
+      <!-- small Spinny mask and default mini cover should match -->
+      <SetVariable name="spinnyCoverColor_12">blue</SetVariable>
+      <SetVariable name="spinnyCoverColor_34">purple</SetVariable>
+      <Style>
+        <!-- All text labels in decks (artist, title, time, BPM, key, ...) -->
+        #Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
+        #Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton { color: #33a8ff;}
+        #Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
+        #Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton { color: #d910f0;}
+        <!-- Vinyl Controls toggle is transparent. This sets bg color so it matches those above -->
+        #DeckOverview1, #DeckOverview2 { background-color: #001D33;}
+        #DeckOverview3, #DeckOverview4 { background-color: #3A0440;}
+      </Style>
     </Scheme>
     <Scheme>
       <Name>Twist</Name>
-      <SetVariable name="SignalColor_12">#FF0000</SetVariable>
-      <SetVariable name="SignalBgColor_12">#00FF00</SetVariable>
-      <SetVariable name="SignalColor_34">#FFFF00</SetVariable>
-      <SetVariable name="SignalBgColor_34">#00FFFF</SetVariable>
-
-      <SetVariable name="SignalColor_1">#55FF00</SetVariable>
-      <SetVariable name="SignalColor_2">#55FF00</SetVariable>
-      <SetVariable name="SignalColor_3">#FF8800</SetVariable>
-      <SetVariable name="SignalColor_4">#FF8800</SetVariable>
+      <SetVariable name="SignalColor_12">#DF4DF0</SetVariable>
+      <SetVariable name="SignalBgColor_12">#3A0440</SetVariable>
+      <SetVariable name="SignalColor_34">#5EBAFF</SetVariable>
+      <SetVariable name="SignalBgColor_34">#001D33</SetVariable>
+      <SetVariable name="spinnyCoverColor_12">purple</SetVariable>
+      <SetVariable name="spinnyCoverColor_34">blue</SetVariable>
+      <Style>
+        #Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
+        #Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton { color: #d910f0;}
+        #Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
+        #Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton { color: #33a8ff;}
+        #DeckOverview1, #DeckOverview2 { background-color: #3A0440;}
+        #DeckOverview3, #DeckOverview4 { background-color: #001D33;}
+      </Style>
     </Scheme>
   </Schemes>
 
@@ -196,6 +210,10 @@
       Values beyond -150/150 might interfere with some knob labels -->
     <SetVariable name="PotiMinAngle">-130</SetVariable>
     <SetVariable name="PotiMaxAngle">130</SetVariable>
+  
+    <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+    <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+    <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
 
     <SetVariable name="PlayedOverlayColor">#99000000</SetVariable>
 
