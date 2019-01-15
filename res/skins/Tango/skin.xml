@@ -130,8 +130,8 @@
       <SetVariable name="SignalColor_34">#DF4DF0</SetVariable>
       <SetVariable name="SignalBgColor_34">#3A0440</SetVariable>
       <!-- small Spinny mask and default mini cover should match -->
-      <SetVariable name="spinnyCoverColor_12">blue</SetVariable>
-      <SetVariable name="spinnyCoverColor_34">purple</SetVariable>
+      <SetVariable name="SpinnyCoverColor_12">blue</SetVariable>
+      <SetVariable name="SpinnyCoverColor_34">purple</SetVariable>
       <Style>
         <!-- All text labels in decks (artist, title, time, BPM, key, ...) -->
         #Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
@@ -149,8 +149,8 @@
       <SetVariable name="SignalBgColor_12">#3A0440</SetVariable>
       <SetVariable name="SignalColor_34">#5EBAFF</SetVariable>
       <SetVariable name="SignalBgColor_34">#001D33</SetVariable>
-      <SetVariable name="spinnyCoverColor_12">purple</SetVariable>
-      <SetVariable name="spinnyCoverColor_34">blue</SetVariable>
+      <SetVariable name="SpinnyCoverColor_12">purple</SetVariable>
+      <SetVariable name="SpinnyCoverColor_34">blue</SetVariable>
       <Style>
         #Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
         #Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton { color: #d910f0;}
