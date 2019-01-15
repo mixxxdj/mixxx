@@ -1,105 +1,105 @@
 <Template>
-	<WidgetGroup>
-		<Size>108f,54f</Size>
-	    <BackPath>style/style_bg_auxiliary.png</BackPath>
-		<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
-		<!--<Layout>horizontal</Layout>-->
-		<Children>
-			<!--
-			**********************************************
-			Visual- Volume peak indicator
-			**********************************************
-			-->
-			<StatusLight>
-				<TooltipId>channel_PeakIndicator</TooltipId>
-				<Style></Style>
-				<PathStatusLight>skin:/style/volume_clipping_microphone_over.png</PathStatusLight>
-				<PathBack>skin:/style/volume_clipping_microphone.png</PathBack>
-				<Pos>99,6</Pos>
-				<Connection>
-					<ConfigKey>[Auxiliary<Variable name="auxnum"/>],PeakIndicator</ConfigKey>
-				</Connection>
-			</StatusLight>
+  <WidgetGroup>
+    <Size>108f,54f</Size>
+    <BackPath>style/style_bg_auxiliary_<Variable name="auxnum"/>.png</BackPath>
+    <Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
+    <!--<Layout>horizontal</Layout>-->
+    <Children>
+      <!--
+      **********************************************
+      Visual- Volume peak indicator
+      **********************************************
+      -->
+      <StatusLight>
+        <TooltipId>channel_PeakIndicator</TooltipId>
+        <Style></Style>
+        <PathStatusLight>skin:/style/volume_clipping_microphone_over.png</PathStatusLight>
+        <PathBack>skin:/style/volume_clipping_microphone.png</PathBack>
+        <Pos>99,6</Pos>
+        <Connection>
+          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],PeakIndicator</ConfigKey>
+        </Connection>
+      </StatusLight>
 
-			<!--
-			**********************************************
-			Visual - Volume level display
-			**********************************************
-			-->
-			<VuMeter>
-				<TooltipId>channel_VuMeter</TooltipId>
-				<Style></Style>
-				<PathVu>skin:/style/volume_display_microphone_over.png</PathVu>
-				<PathBack>skin:/style/volume_display_microphone.png</PathBack>
-				<Pos>99,14</Pos>
-				<PeakHoldSize>5</PeakHoldSize>
-				<PeakHoldTime>500</PeakHoldTime>
-				<PeakFallTime>50</PeakFallTime>
-				<PeakFallStep>2</PeakFallStep>
-				<Connection>
-					<ConfigKey>[Auxiliary<Variable name="auxnum"/>],VuMeter</ConfigKey>
-				</Connection>
-			</VuMeter>
+      <!--
+      **********************************************
+      Visual - Volume level display
+      **********************************************
+      -->
+      <VuMeter>
+        <TooltipId>channel_VuMeter</TooltipId>
+        <Style></Style>
+        <PathVu>skin:/style/volume_display_microphone_over.png</PathVu>
+        <PathBack>skin:/style/volume_display_microphone.png</PathBack>
+        <Pos>99,14</Pos>
+        <PeakHoldSize>5</PeakHoldSize>
+        <PeakHoldTime>500</PeakHoldTime>
+        <PeakFallTime>50</PeakFallTime>
+        <PeakFallStep>2</PeakFallStep>
+        <Connection>
+          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],VuMeter</ConfigKey>
+        </Connection>
+      </VuMeter>
 
-			<Knob>
-				<TooltipId>pregain</TooltipId>
-				<Style></Style>
-				<NumberStates>64</NumberStates>
-				<Path>knobs/knob_rotary_s%1.png</Path>
-				<Pos>66,22</Pos>
-				<Connection>
-					<ConfigKey>[Auxiliary<Variable name="auxnum"/>],pregain</ConfigKey>
-				</Connection>
-			</Knob>
+      <Knob>
+        <TooltipId>pregain</TooltipId>
+        <Style></Style>
+        <NumberStates>64</NumberStates>
+        <Path>knobs/knob_rotary_s%1.png</Path>
+        <Pos>66,22</Pos>
+        <Connection>
+          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],pregain</ConfigKey>
+        </Connection>
+      </Knob>
 
-			<PushButton>
-				<TooltipId>orientation</TooltipId>
-				<Style></Style>
-				<NumberStates>3</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>skin:/btn/btn_orientation_sampler_left_over.png</Pressed>
-					<Unpressed>skin:/btn/btn_orientation_sampler_left_over.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>skin:/btn/btn_orientation_sampler_master.png</Pressed>
-					<Unpressed>skin:/btn/btn_orientation_sampler_master.png</Unpressed>
-				</State>
-				<State>
-					<Number>2</Number>
-					<Pressed>skin:/btn/btn_orientation_sampler_right_over.png</Pressed>
-					<Unpressed>skin:/btn/btn_orientation_sampler_right_over.png</Unpressed>
-				</State>
-				<Pos>0,28</Pos>
-				<Connection>
-					<ConfigKey>[Auxiliary<Variable name="auxnum"/>],orientation</ConfigKey>
-					<EmitOnDownPress>true</EmitOnDownPress>
-					<ButtonState>LeftButton</ButtonState>
-				</Connection>
-			</PushButton>
+      <PushButton>
+        <TooltipId>orientation</TooltipId>
+        <Style></Style>
+        <NumberStates>3</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_orientation_sampler_left_over.png</Pressed>
+          <Unpressed>skin:/btn/btn_orientation_sampler_left_over.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_orientation_sampler_master.png</Pressed>
+          <Unpressed>skin:/btn/btn_orientation_sampler_master.png</Unpressed>
+        </State>
+        <State>
+          <Number>2</Number>
+          <Pressed>skin:/btn/btn_orientation_sampler_right_over.png</Pressed>
+          <Unpressed>skin:/btn/btn_orientation_sampler_right_over.png</Unpressed>
+        </State>
+        <Pos>0,28</Pos>
+        <Connection>
+          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],orientation</ConfigKey>
+          <EmitOnDownPress>true</EmitOnDownPress>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
 
-		    <PushButton>
-			    <TooltipId></TooltipId>
-			    <Style></Style>
-			    <NumberStates>2</NumberStates>
-			    <State>
-				    <Number>0</Number>
-				    <Pressed>skin:/btn/btn_pfl_fx_down.png</Pressed>
-				    <Unpressed>skin:/btn/btn_pfl_fx.png</Unpressed>
-			    </State>
-			    <State>
-				    <Number>1</Number>
-				    <Pressed>skin:/btn/btn_pfl_fx_overdown.png</Pressed>
-				    <Unpressed>skin:/btn/btn_pfl_fx_over.png</Unpressed>
-			    </State>
-			    <Pos>21,30</Pos>
-			    <Connection>
-				    <ConfigKey>[Auxiliary<Variable name="auxnum"/>],pfl</ConfigKey>
-				    <ButtonState>LeftButton</ButtonState>
-			    </Connection>
-		    </PushButton>
+      <PushButton>
+        <TooltipId></TooltipId>
+        <Style></Style>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_pfl_fx_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_pfl_fx.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_pfl_fx_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_pfl_fx_over.png</Unpressed>
+        </State>
+        <Pos>21,30</Pos>
+        <Connection>
+          <ConfigKey>[Auxiliary<Variable name="auxnum"/>],pfl</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
 
-	    </Children>
-	</WidgetGroup>
+    </Children>
+  </WidgetGroup>
 </Template>
