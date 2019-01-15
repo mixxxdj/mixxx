@@ -106,7 +106,3 @@ license.
 [Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
 [hardware compatibility]: https://mixxx.org/wiki/doku.php/hardware_compatibility
 [zulip]: https://mixxx.zulipchat.com/
-
-## Distributed
-
-[![Packaging status](https://repology.org/badge/vertical-allrepos/mixxx.svg)](https://repology.org/metapackage/mixxx/versions)
