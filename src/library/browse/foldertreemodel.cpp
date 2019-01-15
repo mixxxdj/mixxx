@@ -86,7 +86,7 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     // http://stackoverflow.com/questions/2579948/checking-if-subfolders-exist-linux
 
     std::string dot("."), dotdot("..");
-    QByteArray ba = path.toLocal8Bit();
+    QByteArray ba = QFile::encodeName(path);
     DIR *directory = opendir(ba);
     int unknown_count = 0;
     int total_count = 0;
