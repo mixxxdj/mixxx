@@ -148,11 +148,11 @@ double BpmControl::getBpm() const {
     return m_pEngineBpm->get();
 }
 
-void BpmControl::slotFileBpmChanged(double bpm) {
-    Q_UNUSED(bpm);
+void BpmControl::slotFileBpmChanged(double file_bpm) {
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
     // set our BPM if the file BPM changes. See SyncControl::fileBpmChanged().
+    //qDebug() << "BpmControl::slotFileBpmChanged" << file_bpm;
     BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         const double beats_bpm =
@@ -161,13 +161,10 @@ void BpmControl::slotFileBpmChanged(double bpm) {
         if (beats_bpm != -1) {
             m_pLocalBpm->set(beats_bpm);
         } else {
-            m_pLocalBpm->set(bpm);
+            m_pLocalBpm->set(file_bpm);
         }
     } else {
-        m_pLocalBpm->set(bpm);
-    }
-    if (getSyncMode() == SYNC_NONE) {
-        slotUpdateEngineBpm();
+        m_pLocalBpm->set(file_bpm);
     }
     resetSyncAdjustment();
 }
@@ -271,8 +268,8 @@ bool BpmControl::syncTempo() {
     double fOtherBpm = pOtherEngineBuffer->getBpm();
     double fOtherLocalBpm = pOtherEngineBuffer->getLocalBpm();
 
-    //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisFileBpm;
-    //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherFileBpm;
+    //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisLocalBpm;
+    //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherLocalBpm;
 
     ////////////////////////////////////////////////////////////////////////////
     // Rough proof of how syncing works -- rryan 3/2011
@@ -587,8 +584,11 @@ double BpmControl::getNearestPositionInPhase(
     if (!pBeats) {
         return dThisPosition;
     }
+
+    SyncMode syncMode = getSyncMode();
+
     // Master buffer is always in sync!
-    if (getSyncMode() == SYNC_MASTER) {
+    if (syncMode == SYNC_MASTER) {
         return dThisPosition;
     }
 
@@ -614,22 +614,24 @@ double BpmControl::getNearestPositionInPhase(
     }
 
     double dOtherBeatFraction;
-    if (getSyncMode() == SYNC_FOLLOWER) {
+    if (syncMode == SYNC_FOLLOWER) {
         // If we're a follower, it's easy to get the other beat fraction
         dOtherBeatFraction = m_dSyncTargetBeatDistance.getValue();
     } else {
         // If not, we have to figure it out
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
-        if (pOtherEngineBuffer == NULL) {
-            return dThisPosition;
+        if (playing) {
+            if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
+                // "this" track is playing, or just starting
+                // only match phase if the sync target is playing as well
+                // else use the previouse phase of "this" track before the seek
+                pOtherEngineBuffer = getEngineBuffer();
+            }
         }
 
-        if (playing) {
-            // "this" track is playing, or just starting
-            // only match phase if the sync target is playing as well
-            if (pOtherEngineBuffer->getSpeed() == 0.0) {
-                return dThisPosition;
-            }
+        if (!pOtherEngineBuffer) {
+            // no suitable sync buffer found
+            return dThisPosition;
         }
 
         TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
@@ -830,7 +832,7 @@ double BpmControl::updateLocalBpm() {
 double BpmControl::updateBeatDistance() {
     double beat_distance = getBeatDistance(getSampleOfTrack().current);
     m_pThisBeatDistance->set(beat_distance);
-    if (getSyncMode() == SYNC_NONE) {
+    if (!isSynchronized()) {
         m_dUserOffset.setValue(0.0);
     }
     return beat_distance;

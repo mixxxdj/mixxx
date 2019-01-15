@@ -457,6 +457,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            tr("Quick Effect Super Knob (control linked effect parameters)"),
                            tr("Quick Effect"),
                            quickEffectMenu);
+        addPrefixedControl(QString("[QuickEffectRack1_[Channel%1]_Effect1]").arg(i),
+                           "enabled",
+                           tr("Deck %1 Quick Effect Enable Button").arg(i),
+                           tr("Quick Effect Enable Button"),
+                           tr("Quick Effect"),
+                           quickEffectMenu);
     }
 
     const int kNumEffectRacks = 1;

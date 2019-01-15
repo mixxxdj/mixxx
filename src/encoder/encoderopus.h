@@ -20,8 +20,8 @@
 
 class EncoderOpus: public Encoder {
   public:
-    static const int MASTER_SAMPLERATE;
-    static const char* INVALID_SAMPLERATE_MESSAGE;
+    static int getMasterSamplerate();
+    static QString getInvalidSamplerateMessage();
 
     explicit EncoderOpus(EncoderCallback* pCallback = nullptr);
     ~EncoderOpus() override;

@@ -22,7 +22,9 @@
 #include "control/controlpushbutton.h"
 #include "encoder/encoder.h"
 #include "encoder/encoderbroadcastsettings.h"
+#ifdef __OPUS__
 #include "encoder/encoderopus.h"
+#endif
 #include "mixer/playerinfo.h"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
@@ -33,13 +35,15 @@
 #include <engine/sidechain/shoutconnection.h>
 
 namespace {
-static const int kConnectRetries = 30;
-static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
+
+const int kConnectRetries = 30;
+const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 // Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
-static const int kMaxShoutFailures = 3;
+const int kMaxShoutFailures = 3;
 
 const mixxx::Logger kLogger("ShoutConnection");
+
 }
 
 ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
@@ -371,13 +375,15 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-    if(m_format_is_opus && iMasterSamplerate != EncoderOpus::MASTER_SAMPLERATE) {
+#ifdef __OPUS__
+    if(m_format_is_opus && iMasterSamplerate != EncoderOpus::getMasterSamplerate()) {
         errorDialog(
-            tr(EncoderOpus::INVALID_SAMPLERATE_MESSAGE),
+            EncoderOpus::getInvalidSamplerateMessage(),
             tr("Unsupported samplerate")
         );
         return;
     }
+#endif
 
     if (shout_set_audio_info(
             m_pShout, SHOUT_AI_BITRATE,
@@ -942,7 +948,7 @@ QSharedPointer<FIFO<CSAMPLE>> ShoutConnection::getOutputFifo() {
 }
 
 bool ShoutConnection::threadWaiting() {
-    return load_atomic(m_threadWaiting);
+    return m_threadWaiting.load();
 }
 
 void ShoutConnection::run() {

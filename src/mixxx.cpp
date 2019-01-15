@@ -24,6 +24,9 @@
 #include <QGLWidget>
 #include <QUrl>
 #include <QtDebug>
+#include <QLocale>
+#include <QGuiApplication>
+#include <QInputMethod>
 
 #include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
@@ -115,7 +118,15 @@ Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
     // application defined handler.
     return False;
 }
+
 #endif
+
+inline QLocale inputLocale() {
+    // Use the default config for local keyboard
+    QInputMethod* pInputMethod = QGuiApplication::inputMethod();
+    return pInputMethod ? pInputMethod->locale() :
+            QLocale(QLocale::English);
+}
 
 } // anonymous namespace
 

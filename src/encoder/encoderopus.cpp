@@ -12,15 +12,6 @@
 
 #include "encoder/encoderopus.h"
 
-// Opus only supports 48 and 96 kHz samplerates
-constexpr int EncoderOpus::MASTER_SAMPLERATE = 48000;
-
-const char* EncoderOpus::INVALID_SAMPLERATE_MESSAGE =
-    "Using Opus at samplerates other than 48 kHz "
-    "is not supported by the Opus encoder. Please use "
-    "48000 Hz in \"Sound Hardware\" preferences "
-    "or switch to a different encoding.";
-
 namespace {
 // From libjitsi's Opus encoder:
 // 1 byte TOC + maximum frame size (1275)
@@ -29,6 +20,8 @@ constexpr int kMaxOpusBufferSize = 1+1275;
 // Opus frame duration in milliseconds. Fixed to 60ms
 constexpr int kOpusFrameMs = 60;
 constexpr int kOpusChannelCount = 2;
+// Opus only supports 48 and 96 kHz samplerates
+constexpr int kMasterSamplerate = 48000;
 
 const mixxx::Logger kLogger("EncoderOpus");
 
@@ -78,6 +71,20 @@ int getSerial() {
     return serial;
 }
 }
+
+//static 
+int EncoderOpus::getMasterSamplerate() {
+    return kMasterSamplerate;
+}
+
+//static 
+QString EncoderOpus::getInvalidSamplerateMessage() {
+    return QObject::tr(
+            "Using Opus at samplerates other than 48 kHz "
+            "is not supported by the Opus encoder. Please use "
+            "48000 Hz in \"Sound Hardware\" preferences "
+            "or switch to a different encoding.");
+};
 
 EncoderOpus::EncoderOpus(EncoderCallback* pCallback)
     : m_bitrate(0),
@@ -133,10 +140,10 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
 int EncoderOpus::initEncoder(int samplerate, QString errorMessage) {
     Q_UNUSED(errorMessage);
 
-    if (samplerate != MASTER_SAMPLERATE) {
+    if (samplerate != kMasterSamplerate) {
         kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";
 
-        QString invalidSamplerateMessage = QObject::tr(INVALID_SAMPLERATE_MESSAGE);
+        const QString invalidSamplerateMessage = getInvalidSamplerateMessage();
 
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
