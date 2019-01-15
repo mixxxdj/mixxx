@@ -199,9 +199,9 @@ AVFormatContext* SoundSourceFFmpeg::openInputFile(
     const QByteArray qBAFilename(
             avformat_version() >= AV_VERSION_INT(52, 0, 0) ?
                     fileName.toUtf8() :
-                    fileName.toLocal8Bit());
+                    QFile::encodeName(fileName));
 #else
-    const QByteArray qBAFilename(fileName.toLocal8Bit());
+    const QByteArray qBAFilename(QFile::encodeName(fileName));
 #endif
 
     // Open input file and allocate/initialize AVFormatContext
