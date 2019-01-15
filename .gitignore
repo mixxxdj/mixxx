@@ -20,7 +20,6 @@ src/mixxx.res
 .sconf_temp
 .sconsign.branch
 .sconsign.dblite
-.project
 
 *.sqlite
 
