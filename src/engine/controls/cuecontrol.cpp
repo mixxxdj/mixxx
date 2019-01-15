@@ -42,8 +42,8 @@ CueControl::CueControl(QString group,
     m_pTrackSamples = ControlObject::getControl(ConfigKey(group, "track_samples"));
 
     m_pQuantizeEnabled = ControlObject::getControl(ConfigKey(group, "quantize"));
-    connect(m_pQuantizeEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(quantizeChanged(double)),
+    connect(m_pQuantizeEnabled, &ControlObject::valueChanged,
+            this, &CueControl::quantizeChanged,
             Qt::DirectConnection);
 
     m_pPrevBeat = ControlObject::getControl(ConfigKey(group, "beat_prev"));
@@ -67,8 +67,8 @@ CueControl::CueControl(QString group,
 
     m_pCueClear = new ControlPushButton(ConfigKey(group, "cue_clear"));
     m_pCueClear->setButtonMode(ControlPushButton::TRIGGER);
-    connect(m_pCueClear, SIGNAL(valueChanged(double)),
-            this, SLOT(cueClear(double)),
+    connect(m_pCueClear, &ControlObject::valueChanged,
+            this, &CueControl::cueClear,
             Qt::DirectConnection);
 
     m_pCueGoto = new ControlPushButton(ConfigKey(group, "cue_goto"));
@@ -123,13 +123,13 @@ CueControl::CueControl(QString group,
     m_pIntroStartSource = new ControlObject(ConfigKey(group, "intro_start_source"));
 
     m_pIntroStartSet = new ControlPushButton(ConfigKey(group, "intro_start_set"));
-    connect(m_pIntroStartSet, SIGNAL(valueChanged(double)),
-            this, SLOT(introStartSet(double)),
+    connect(m_pIntroStartSet, &ControlObject::valueChanged,
+            this, &CueControl::introStartSet,
             Qt::DirectConnection);
 
     m_pIntroStartClear = new ControlPushButton(ConfigKey(group, "intro_start_clear"));
-    connect(m_pIntroStartClear, SIGNAL(valueChanged(double)),
-            this, SLOT(introStartClear(double)),
+    connect(m_pIntroStartClear, &ControlObject::valueChanged,
+            this, &CueControl::introStartClear,
             Qt::DirectConnection);
 
     m_pIntroEndPosition = new ControlObject(ConfigKey(group, "intro_end_position"));
@@ -138,13 +138,13 @@ CueControl::CueControl(QString group,
     m_pIntroEndSource = new ControlObject(ConfigKey(group, "intro_end_source"));
 
     m_pIntroEndSet = new ControlPushButton(ConfigKey(group, "intro_end_set"));
-    connect(m_pIntroEndSet, SIGNAL(valueChanged(double)),
-            this, SLOT(introEndSet(double)),
+    connect(m_pIntroEndSet, &ControlObject::valueChanged,
+            this, &CueControl::introEndSet,
             Qt::DirectConnection);
 
     m_pIntroEndClear = new ControlPushButton(ConfigKey(group, "intro_end_clear"));
-    connect(m_pIntroEndClear, SIGNAL(valueChanged(double)),
-            this, SLOT(introEndClear(double)),
+    connect(m_pIntroEndClear, &ControlObject::valueChanged,
+            this, &CueControl::introEndClear,
             Qt::DirectConnection);
 
     m_pOutroStartPosition = new ControlObject(ConfigKey(group, "outro_start_position"));
@@ -153,13 +153,13 @@ CueControl::CueControl(QString group,
     m_pOutroStartSource = new ControlObject(ConfigKey(group, "outro_start_source"));
 
     m_pOutroStartSet = new ControlPushButton(ConfigKey(group, "outro_start_set"));
-    connect(m_pOutroStartSet, SIGNAL(valueChanged(double)),
-            this, SLOT(outroStartSet(double)),
+    connect(m_pOutroStartSet, &ControlObject::valueChanged,
+            this, &CueControl::outroStartSet,
             Qt::DirectConnection);
 
     m_pOutroStartClear = new ControlPushButton(ConfigKey(group, "outro_start_clear"));
-    connect(m_pOutroStartClear, SIGNAL(valueChanged(double)),
-            this, SLOT(outroStartClear(double)),
+    connect(m_pOutroStartClear, &ControlObject::valueChanged,
+            this, &CueControl::outroStartClear,
             Qt::DirectConnection);
 
     m_pOutroEndPosition = new ControlObject(ConfigKey(group, "outro_end_position"));
@@ -168,13 +168,13 @@ CueControl::CueControl(QString group,
     m_pOutroEndSource = new ControlObject(ConfigKey(group, "outro_end_source"));
 
     m_pOutroEndSet = new ControlPushButton(ConfigKey(group, "outro_end_set"));
-    connect(m_pOutroEndSet, SIGNAL(valueChanged(double)),
-            this, SLOT(outroEndSet(double)),
+    connect(m_pOutroEndSet, &ControlObject::valueChanged,
+            this, &CueControl::outroEndSet,
             Qt::DirectConnection);
 
     m_pOutroEndClear = new ControlPushButton(ConfigKey(group, "outro_end_clear"));
-    connect(m_pOutroEndClear, SIGNAL(valueChanged(double)),
-            this, SLOT(outroEndClear(double)),
+    connect(m_pOutroEndClear, &ControlObject::valueChanged,
+            this, &CueControl::outroEndClear,
             Qt::DirectConnection);
 
     m_pVinylControlEnabled = new ControlProxy(group, "vinylcontrol_enabled");
@@ -311,8 +311,8 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
             this, &CueControl::trackCuesUpdated,
             Qt::DirectConnection);
 
-    connect(m_pLoadedTrack.get(), SIGNAL(beatsUpdated()),
-            this, SLOT(trackBeatsUpdated()),
+    connect(m_pLoadedTrack.get(), &Track::beatsUpdated,
+            this, &CueControl::trackBeatsUpdated,
             Qt::DirectConnection);
 
     // Need to unlock before emitting any signals to prevent deadlock.
