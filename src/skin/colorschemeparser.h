@@ -13,12 +13,11 @@ class ColorSchemeParser {
             QDomElement docElem,
             UserSettingsPointer pConfig,
             QString* pStyle,
-            const SkinContext& context);
+            SkinContext& context);
   private:
     static ImgSource* parseFilters(QDomNode filter);
     ColorSchemeParser() { }
     ~ColorSchemeParser() { }
-	SkinContext* m_pContext;
 };
 
 #endif /* COLORSCHEMEPARSER_H */
