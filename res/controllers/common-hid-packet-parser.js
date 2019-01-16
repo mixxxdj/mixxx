@@ -442,9 +442,9 @@ HIDPacket.prototype.addOutput = function(group,name,offset,pack,bitmask,callback
         return;
     }
 
-    // Increase offset by 1 because the reportId was previously considered part of the payload
+    // Adjust offset by 1 because the reportId was previously considered part of the payload
     // but isn't anymore and we can't be bothered to adjust every single script manually
-    offset += 1
+    offset -= 1
 
     // Check if we are adding a Output bit to existing bitvector
     field = this.getFieldByOffset(offset,pack);
@@ -667,13 +667,14 @@ HIDPacket.prototype.send = function(debug) {
         var packet_string = "";
         for (var d in data) {
             if (data[d] < 0x10) {
+                // Add padding for bytes smaller than 10
                 packet_string += "0";
             }
             packet_string += data[d].toString(16) + " ";
         }
-        HIDDebug("Sending packet: " + packet_string + " with Report ID " + this.reportId);
+        HIDDebug("Sending packet with Report ID " + this.reportId + ": " + packet_string);
     }
-    controller.send(data, data.length, 0);
+    controller.send(data, data.length, this.reportId);
 }
 
 /**
