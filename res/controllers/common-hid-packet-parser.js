@@ -649,6 +649,7 @@ HIDPacket.prototype.send = function(debug) {
     var i;
     var data = [];
 
+    data[0] = this.reportId
     if(this.header !== undefined) {
         for (header_byte = 0; header_byte < this.header.length; header_byte++) {
             data[header_byte] = this.header[header_byte];
@@ -672,7 +673,7 @@ HIDPacket.prototype.send = function(debug) {
         }
         HIDDebug("Sending packet: " + packet_string + " with Report ID " + this.reportId);
     }
-    controller.send(data, data.length, this.reportId);
+    controller.send(data, data.length, 0);
 }
 
 /**
