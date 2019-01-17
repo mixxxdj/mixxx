@@ -92,12 +92,11 @@ void AcoustidClient::requestFinished() {
     QXmlStreamReader reader(body);
 
     QString statusText;
-    while (!reader.atEnd()) {
-        if (reader.readNext() == QXmlStreamReader::StartElement) {
+    while (!reader.atEnd() && statusText.isEmpty()) {
+        if (reader.readNextStartElement()) {
             const QStringRef name = reader.name();
             if (name == "status") {
                 statusText = reader.readElementText();
-                break;
             }
         }
     }
@@ -107,7 +106,7 @@ void AcoustidClient::requestFinished() {
         QString message;
         QString code;
         while (!reader.atEnd()) {
-            if (reader.readNext() == QXmlStreamReader::StartElement) {
+            if (reader.readNextStartElement()) {
                 const QStringRef name = reader.name();
                 if (name == "message") {
                     message = reader.readElementText();
@@ -126,7 +125,7 @@ void AcoustidClient::requestFinished() {
 
     QString ID;
     while (!reader.atEnd()) {
-        if (reader.readNext() == QXmlStreamReader::StartElement
+        if (reader.readNextStartElement()
                 && reader.name()== "results") {
             ID = parseResult(reader);
         }
