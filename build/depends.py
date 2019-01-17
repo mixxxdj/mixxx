@@ -682,6 +682,11 @@ class LAME(Dependence):
         if not conf.CheckLib(['libmp3lame', 'libmp3lame-static']):
             raise Exception("Could not find libmp3lame.")
 
+class FdkAac(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib(['libfdk-aac']):
+            raise Exception("Could not find libfdk-aac.")
+
 class MixxxCore(Feature):
 
     def description(self):
