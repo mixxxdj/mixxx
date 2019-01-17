@@ -332,10 +332,9 @@ void EncoderFdkAac::encodeBuffer(const CSAMPLE *samples, const int sampleCount) 
     if (writeCount > 0) {
         // fdk-aac doesn't support float samples, so convert
         // to integers instead
-        SAMPLE* convertedSamples = new SAMPLE[writeCount * m_channels * sizeof(SAMPLE)]();
-        SampleUtil::convertFloat32ToS16(convertedSamples, samples, writeCount);
-        m_pInputFifo->write(convertedSamples, writeCount);
-        delete convertedSamples;
+        SAMPLE convertedSamples[writeCount * m_channels * sizeof(SAMPLE)];
+        SampleUtil::convertFloat32ToS16(&convertedSamples, samples, writeCount);
+        m_pInputFifo->write(&convertedSamples, writeCount);
     }
 
     processFIFO();
