@@ -11,12 +11,22 @@ class Encoder {
   public:
         class Format {
             public:
-              Format(const QString& labelIn, const QString& nameIn, bool losslessIn)
-                      : label(labelIn), internalName(nameIn), lossless(losslessIn) {
+              Format(const QString& labelIn,
+                      const QString& nameIn,
+                      bool losslessIn,
+                      const QString& fileExtIn = QString::null)
+                      : label(labelIn),
+                        internalName(nameIn),
+                        lossless(losslessIn),
+                        fileExtension(fileExtIn) {
+                  if (fileExtension == QString::null) {
+                      fileExtension = label;
+                  }
               }
             QString label;
             QString internalName;
             bool lossless;
+            QString fileExtension;
         };
 
     Encoder() {}

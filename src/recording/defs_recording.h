@@ -7,6 +7,9 @@
 #define ENCODING_OGG  "OGG"
 #define ENCODING_MP3 "MP3"
 #define ENCODING_OPUS "Opus"
+#define ENCODING_AAC "AAC"
+#define ENCODING_HEAAC "HEAAC"
+#define ENCODING_HEAACV2 "HEAACV2"
 
 #define RECORD_OFF 0.0
 #define RECORD_READY 1.0

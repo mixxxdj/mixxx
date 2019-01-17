@@ -61,6 +61,7 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_format_is_mp3(false),
           m_format_is_ov(false),
           m_format_is_opus(false),
+          m_format_is_aac(false),
           m_protocol_is_icecast1(false),
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
@@ -191,6 +192,7 @@ void ShoutConnection::updateFromPreferences() {
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
+    m_format_is_aac = false;
     m_protocol_is_icecast1 = false;
     m_protocol_is_icecast2 = false;
     m_protocol_is_shoutcast = false;
@@ -364,17 +366,27 @@ void ShoutConnection::updateFromPreferences() {
     m_format_is_mp3 = !qstrcmp(baFormat.constData(), ENCODING_MP3);
     m_format_is_ov = !qstrcmp(baFormat.constData(), ENCODING_OGG);
     m_format_is_opus = !qstrcmp(baFormat.constData(), ENCODING_OPUS);
+    m_format_is_aac =
+            (!qstrcmp(baFormat.constData(), ENCODING_AAC) ||
+                    !qstrcmp(baFormat.constData(), ENCODING_HEAAC) ||
+                    !qstrcmp(baFormat.constData(), ENCODING_HEAACV2));
     if (m_format_is_mp3) {
         format = SHOUT_FORMAT_MP3;
     } else if (m_format_is_ov || m_format_is_opus) {
         format = SHOUT_FORMAT_OGG;
+#ifdef SHOUT_FORMAT_AAC
+    } else if (m_format_is_aac) {
+        format = SHOUT_FORMAT_AAC;
+#endif
     } else {
-        qWarning() << "Error: unknown format:" << baFormat.constData();
+        errorDialog(tr("Unknown stream encoding format!"),
+                tr("Use a libshout version with %1 enabled")
+                        .arg(baFormat.constData()));
         return;
     }
 
     if (shout_set_format(m_pShout, format) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting streaming format!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting stream encoding format!"), shout_get_error(m_pShout));
         return;
     }
 

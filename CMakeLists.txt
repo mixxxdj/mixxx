@@ -469,6 +469,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/effectsmanager.cpp
   src/encoder/encoder.cpp
   src/encoder/encoderbroadcastsettings.cpp
+  src/encoder/encoderfdkaac.cpp
+  src/encoder/encoderfdkaacsettings.cpp
   src/encoder/encoderflacsettings.cpp
   src/encoder/encodermp3.cpp
   src/encoder/encodermp3settings.cpp
