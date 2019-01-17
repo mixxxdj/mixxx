@@ -16,23 +16,23 @@ DlgTagFetcher::~DlgTagFetcher() {
 void DlgTagFetcher::init() {
     setupUi(this);
 
-    connect(btnApply, SIGNAL(clicked()),
-            this, SLOT(apply()));
-    connect(btnQuit, SIGNAL(clicked()),
-            this, SLOT(quit()));
-    connect(btnPrev, SIGNAL(clicked()),
-            this, SIGNAL(previous()));
-    connect(btnNext, SIGNAL(clicked()),
-            this, SIGNAL(next()));
-    connect(results, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
-            this, SLOT(resultSelected()));
+    connect(btnApply, &QPushButton::clicked,
+            this, &DlgTagFetcher::apply);
+    connect(btnQuit, &QPushButton::clicked,
+            this, &DlgTagFetcher::quit);
+    connect(btnPrev, &QPushButton::clicked,
+            this, &DlgTagFetcher::previous);
+    connect(btnNext, &QPushButton::clicked,
+            this, &DlgTagFetcher::next);
+    connect(results, &QTreeWidget::currentItemChanged,
+            this, &DlgTagFetcher::resultSelected);
 
-    connect(&m_TagFetcher, SIGNAL(resultAvailable(const TrackPointer,const QList<TrackPointer>&)),
-            this, SLOT(fetchTagFinished(const TrackPointer,const QList<TrackPointer>&)));
-    connect(&m_TagFetcher, SIGNAL(fetchProgress(QString)),
-            this, SLOT(fetchTagProgress(QString)));
-    connect(&m_TagFetcher, SIGNAL(networkError(int, QString, QString, int)),
-            this, SLOT(slotNetworkError(int, QString, QString, int)));
+    connect(&m_TagFetcher, &TagFetcher::resultAvailable,
+            this, &DlgTagFetcher::fetchTagFinished);
+    connect(&m_TagFetcher, &TagFetcher::fetchProgress,
+            this, &DlgTagFetcher::fetchTagProgress);
+    connect(&m_TagFetcher, &TagFetcher::networkError,
+            this, &DlgTagFetcher::slotNetworkError);
 
     // Resize columns, this can't be set in the ui file
     results->setColumnWidth(0, 50);  // Track column
@@ -47,14 +47,16 @@ void DlgTagFetcher::loadTrack(const TrackPointer track) {
         return;
     }
     results->clear();
+    disconnect(track.get(), &Track::changed,
+            this, &DlgTagFetcher::updateTrackMetadata);
+
     m_track = track;
     m_data = Data();
     m_networkError = NOERROR;
     m_TagFetcher.startFetch(m_track);
 
-    disconnect(this, SLOT(updateTrackMetadata(Track*)));
-    connect(track.get(), SIGNAL(changed(Track*)),
-            this, SLOT(updateTrackMetadata(Track*)));
+    connect(track.get(), &Track::changed,
+            this, &DlgTagFetcher::updateTrackMetadata);
 
     updateStack();
 }

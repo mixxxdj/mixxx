@@ -47,7 +47,7 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
     // HTTP request headers must be latin1.
     req.setRawHeader("User-Agent", mixxxMusicBrainzId.toLatin1());
     QNetworkReply* reply = m_network.get(req);
-    connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
+    connect(reply, &QNetworkReply::finished, this, &MusicBrainzClient::requestFinished);
     m_requests[reply] = id;
 
     m_timeouts.addReply(reply);

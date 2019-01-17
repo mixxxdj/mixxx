@@ -53,7 +53,7 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
              << "body:" << body;
 
     QNetworkReply* reply = m_network.post(req, gzipCompress(body));
-    connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
+    connect(reply, &QNetworkReply::finished, this, &AcoustidClient::requestFinished);
     m_requests[reply] = id;
 
     m_timeouts.addReply(reply);
