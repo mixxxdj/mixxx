@@ -123,6 +123,9 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
 #ifdef __OPUS__
      comboBoxEncodingFormat->addItem(tr("Opus"), BROADCAST_FORMAT_OPUS);
 #endif
+     comboBoxEncodingFormat->addItem(tr("AAC"), BROADCAST_FORMAT_AAC);
+     comboBoxEncodingFormat->addItem(tr("HE-AAC"), BROADCAST_FORMAT_HEAAC);
+     comboBoxEncodingFormat->addItem(tr("HE-AACv2"), BROADCAST_FORMAT_HEAACV2);
 
      // Encoding channels combobox
      comboBoxEncodingChannels->addItem(tr("Automatic"),

@@ -20,11 +20,18 @@ class Encoder {
   public:
         class Format {
             public:
-            Format(QString labelIn, QString nameIn, bool losslessIn) :
-                label(labelIn), internalName(nameIn), lossless(losslessIn) {}
+            Format(QString labelIn, QString nameIn, bool losslessIn,
+                    QString fileExtIn = QString::null) :
+                label(labelIn), internalName(nameIn), lossless(losslessIn),
+                    fileExtension(fileExtIn){
+                if(fileExtension == QString::null) {
+                    fileExtension = label;
+                }
+            }
             QString label;
             QString internalName;
             bool lossless;
+            QString fileExtension;
         };
 
     Encoder() {}

@@ -1174,6 +1174,8 @@ class MixxxCore(Feature):
                    "src/encoder/encoderwave.cpp",
                    "src/encoder/encoderwavesettings.cpp",
                    'src/encoder/encoderopussettings.cpp',
+                   "src/encoder/encoderfdkaac.cpp"
+                   "src/encoder/encoderfdkaacsettings.cpp",
 
                    "src/util/sleepableqthread.cpp",
                    "src/util/statsmanager.cpp",
@@ -1507,7 +1509,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp]
+                QueenMaryDsp, FdkAac]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
