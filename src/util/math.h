@@ -75,7 +75,7 @@ inline double roundToFraction(double value, int denominator) {
 }
 
 template <typename T>
-inline const T ratio2db(const T a) {
+inline constexpr T ratio2db(const T a) {
     static_assert(std::is_same<float, T>::value ||
                   std::is_same<double, T>::value ||
                   std::is_same<long double, T>::value,
@@ -84,7 +84,7 @@ inline const T ratio2db(const T a) {
 }
 
 template <typename T>
-inline const T db2ratio(const T a) {
+inline constexpr T db2ratio(const T a) {
     static_assert(std::is_same<float, T>::value ||
                   std::is_same<double, T>::value ||
                   std::is_same<long double, T>::value,

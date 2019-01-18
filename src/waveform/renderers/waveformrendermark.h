@@ -12,6 +12,7 @@
 
 class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
     Q_OBJECT
+
   public:
     explicit WaveformRenderMark(WaveformWidgetRenderer* waveformWidgetRenderer);
 

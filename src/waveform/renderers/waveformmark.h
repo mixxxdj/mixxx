@@ -17,6 +17,7 @@ class WOverview;
 
 class WaveformMark : public QObject {
     Q_OBJECT
+
   public:
     static const int kNoHotCue = -1;
     WaveformMark(

@@ -1,9 +1,12 @@
 #include "analyzer/analyzersilence.h"
+
+#include "analyzer/constants.h"
 #include "engine/engine.h"
 
 namespace {
-    const mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
-    const float kSilenceThreshold = db2ratio(-60.0f);
+
+constexpr float kSilenceThreshold = db2ratio(-60.0f);
+
 }  // anonymous namespace
 
 AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
@@ -13,9 +16,6 @@ AnalyzerSilence::AnalyzerSilence(UserSettingsPointer pConfig)
       m_bPrevSilence(true),
       m_iSignalStart(-1),
       m_iSignalEnd(-1) {
-}
-
-AnalyzerSilence::~AnalyzerSilence() {
 }
 
 bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
@@ -55,10 +55,10 @@ bool AnalyzerSilence::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
 }
 
 void AnalyzerSilence::process(const CSAMPLE* pIn, const int iLen) {
-    for (int i = 0; i < iLen; i += kChannelCount) {
+    for (int i = 0; i < iLen; i += mixxx::kAnalysisChannels) {
         // Compute max of channels in this sample frame
         CSAMPLE fMax = CSAMPLE_ZERO;
-        for (SINT ch = 0; ch < kChannelCount; ++ch) {
+        for (SINT ch = 0; ch < mixxx::kAnalysisChannels; ++ch) {
             CSAMPLE fAbs = fabs(pIn[i + ch]);
             fMax = math_max(fMax, fAbs);
         }
@@ -67,21 +67,21 @@ void AnalyzerSilence::process(const CSAMPLE* pIn, const int iLen) {
 
         if (m_bPrevSilence && !bSilence) {
             if (m_iSignalStart < 0) {
-                m_iSignalStart = m_iFramesProcessed + i / kChannelCount;
+                m_iSignalStart = m_iFramesProcessed + i / mixxx::kAnalysisChannels;
 
                 if (m_pTrack->getCuePoint().getSource() != Cue::MANUAL) {
-                    double position = m_iFramesProcessed * kChannelCount + i;
+                    double position = m_iFramesProcessed * mixxx::kAnalysisChannels + i;
                     m_pTrack->setCuePoint(CuePosition(position, Cue::AUTOMATIC));
                 }
             }
         } else if (!m_bPrevSilence && bSilence) {
-            m_iSignalEnd = m_iFramesProcessed + i / kChannelCount;
+            m_iSignalEnd = m_iFramesProcessed + i / mixxx::kAnalysisChannels;
         }
 
         m_bPrevSilence = bSilence;
     }
 
-    m_iFramesProcessed += iLen / kChannelCount;
+    m_iFramesProcessed += iLen / mixxx::kAnalysisChannels;
 }
 
 void AnalyzerSilence::cleanup(TrackPointer tio) {
@@ -105,10 +105,10 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
     }
 
     if (m_pIntroCue->getSource() != Cue::MANUAL) {
-        m_pIntroCue->setPosition(kChannelCount * m_iSignalStart);
+        m_pIntroCue->setPosition(mixxx::kAnalysisChannels * m_iSignalStart);
     }
 
     if (m_pOutroCue->getSource() != Cue::MANUAL) {
-        m_pOutroCue->setPosition(kChannelCount * m_iSignalEnd);
+        m_pOutroCue->setPosition(mixxx::kAnalysisChannels * m_iSignalEnd);
     }
 }

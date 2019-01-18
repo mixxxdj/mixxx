@@ -8,8 +8,8 @@ class CuePointer;
 
 class AnalyzerSilence : public Analyzer {
   public:
-    AnalyzerSilence(UserSettingsPointer pConfig);
-    virtual ~AnalyzerSilence() override;
+    explicit AnalyzerSilence(UserSettingsPointer pConfig);
+    ~AnalyzerSilence() override = default;
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;

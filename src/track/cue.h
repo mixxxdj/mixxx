@@ -13,7 +13,8 @@ class CueDAO;
 class Track;
 
 class Cue : public QObject {
-  Q_OBJECT
+    Q_OBJECT
+
   public:
     enum CueSource {
         UNKNOWN   = 0,
