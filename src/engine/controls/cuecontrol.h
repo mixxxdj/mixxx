@@ -163,6 +163,12 @@ class CueControl : public EngineControl {
     void outroEndClear(double v);
 
   private:
+    enum class QuantizeMode {
+        ClosestBeat,
+        PreviousBeat,
+        NextBeat,
+    };
+
     enum class TrackAt {
         Cue,
         End,
@@ -173,13 +179,9 @@ class CueControl : public EngineControl {
     void createControls();
     void attachCue(CuePointer pCue, int hotcueNumber);
     void detachCue(int hotcueNumber);
-    void loadMainCue(double position, Cue::CueSource source);
-    void loadIntroStartCue(double position, Cue::CueSource source);
-    void loadIntroEndCue(double position, Cue::CueSource source);
-    void loadOutroStartCue(double position, Cue::CueSource source);
-    void loadOutroEndCue(double position, Cue::CueSource source);
     void loadCuesFromTrack();
     void reloadCuesFromTrack();
+    double quantizeCuePoint(double position, Cue::CueSource source, QuantizeMode mode);
     TrackAt getTrackAt() const;
 
     bool m_bPreviewing;

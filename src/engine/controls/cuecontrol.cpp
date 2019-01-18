@@ -406,35 +406,55 @@ void CueControl::loadCuesFromTrack() {
     }
 
     if (pLoadCue) {
-        loadMainCue(pLoadCue->getPosition(), pLoadCue->getSource());
+        double position = pLoadCue->getPosition();
+        Cue::CueSource source = pLoadCue->getSource();
+
+        m_pCuePoint->set(quantizeCuePoint(position, source, QuantizeMode::ClosestBeat));
+        m_pCueSource->set(source);
     } else {
         m_pCuePoint->set(-1.0);
         m_pCueSource->set(Cue::UNKNOWN);
     }
 
     if (pIntroStartCue) {
-        loadIntroStartCue(pIntroStartCue->getPosition(), pIntroStartCue->getSource());
+        double position = pIntroStartCue->getPosition();
+        Cue::CueSource source = pIntroStartCue->getSource();
+
+        m_pIntroStartPosition->set(quantizeCuePoint(position, source, QuantizeMode::PreviousBeat));
+        m_pIntroStartSource->set(source);
     } else {
         m_pIntroStartPosition->set(-1.0);
         m_pIntroStartSource->set(Cue::UNKNOWN);
     }
 
     if (pIntroEndCue) {
-        loadIntroEndCue(pIntroEndCue->getPosition(), pIntroEndCue->getSource());
+        double position = pIntroEndCue->getPosition();
+        Cue::CueSource source = pIntroEndCue->getSource();
+
+        m_pIntroEndPosition->set(quantizeCuePoint(position, source, QuantizeMode::NextBeat));
+        m_pIntroEndSource->set(source);
     } else {
         m_pIntroEndPosition->set(-1.0);
         m_pIntroEndSource->set(Cue::UNKNOWN);
     }
 
     if (pOutroStartCue) {
-        loadOutroStartCue(pOutroStartCue->getPosition(), pOutroStartCue->getSource());
+        double position = pOutroStartCue->getPosition();
+        Cue::CueSource source = pOutroStartCue->getSource();
+
+        m_pOutroStartPosition->set(quantizeCuePoint(position, source, QuantizeMode::PreviousBeat));
+        m_pOutroStartSource->set(source);
     } else {
         m_pOutroStartPosition->set(-1.0);
         m_pOutroStartSource->set(Cue::UNKNOWN);
     }
 
     if (pOutroEndCue) {
-        loadOutroEndCue(pOutroEndCue->getPosition(), pOutroEndCue->getSource());
+        double position = pOutroEndCue->getPosition();
+        Cue::CueSource source = pOutroEndCue->getSource();
+
+        m_pOutroEndPosition->set(quantizeCuePoint(position, source, QuantizeMode::NextBeat));
+        m_pOutroEndSource->set(source);
     } else {
         m_pOutroEndPosition->set(-1.0);
         m_pOutroEndSource->set(Cue::UNKNOWN);
@@ -493,107 +513,6 @@ void CueControl::quantizeChanged(double v) {
     Q_UNUSED(v);
 
     reloadCuesFromTrack();
-}
-
-void CueControl::loadMainCue(double position, Cue::CueSource source) {
-    // Snap automatically-placed cue point to nearest beat only if quantize is enabled
-    if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
-        BeatsPointer pBeats = m_pLoadedTrack->getBeats();
-        if (pBeats) {
-            double closestBeat = pBeats->findClosestBeat(position);
-            if (closestBeat != -1.0) {
-                position = closestBeat;
-            }
-        }
-    }
-
-    // Update COs
-    m_pCuePoint->set(position);
-    m_pCueSource->set(source);
-}
-
-void CueControl::loadIntroStartCue(double position, Cue::CueSource source) {
-    // Snap automatically-placed intro cue point to nearest previous beat, but
-    // only if quantization is enabled.
-    if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
-        BeatsPointer pBeats = m_pLoadedTrack->getBeats();
-        if (pBeats) {
-            double prevBeat, nextBeat;
-            pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
-            if (prevBeat != -1.0) {
-                position = prevBeat;
-            } else if (nextBeat != -1.0) {
-                position = nextBeat;
-            }
-        }
-    }
-
-    // Update COs.
-    m_pIntroStartPosition->set(position);
-    m_pIntroStartSource->set(source);
-}
-
-void CueControl::loadIntroEndCue(double position, Cue::CueSource source) {
-    // Snap automatically-placed outro cue point to nearest following beat, but
-    // only if quantization is enabled.
-    if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
-        BeatsPointer pBeats = m_pLoadedTrack->getBeats();
-        if (pBeats) {
-            double prevBeat, nextBeat;
-            pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
-            if (nextBeat != -1.0) {
-                position = nextBeat;
-            } else if (prevBeat != -1.0) {
-                position = prevBeat;
-            }
-        }
-    }
-
-    // Update COs.
-    m_pIntroEndPosition->set(position);
-    m_pIntroEndSource->set(source);
-}
-
-void CueControl::loadOutroStartCue(double position, Cue::CueSource source) {
-    // Snap automatically-placed intro cue point to nearest previous beat, but
-    // only if quantization is enabled.
-    if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
-        BeatsPointer pBeats = m_pLoadedTrack->getBeats();
-        if (pBeats) {
-            double prevBeat, nextBeat;
-            pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
-            if (prevBeat != -1.0) {
-                position = prevBeat;
-            } else if (nextBeat != -1.0) {
-                position = nextBeat;
-            }
-        }
-    }
-
-    // Update COs.
-    m_pOutroStartPosition->set(position);
-    m_pOutroStartSource->set(source);
-}
-
-void CueControl::loadOutroEndCue(double position, Cue::CueSource source) {
-    // Snap automatically-placed outro cue point to nearest following beat, but
-    // only if quantization is enabled.
-    if (position != -1.0 && source != Cue::MANUAL && m_pQuantizeEnabled->toBool()) {
-        BeatsPointer pBeats = m_pLoadedTrack->getBeats();
-        if (pBeats) {
-            double prevBeat, nextBeat;
-            pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
-            if (nextBeat != -1.0) {
-                position = nextBeat;
-            } else if (prevBeat != -1.0) {
-                position = prevBeat;
-            }
-        }
-    }
-
-    // Update COs.
-    m_pOutroEndPosition->set(position);
-    m_pOutroEndSource->set(source);
 }
 
 void CueControl::hotcueSet(HotcueControl* pControl, double v) {
@@ -1591,6 +1510,37 @@ CueControl::TrackAt CueControl::getTrackAt() const {
         return TrackAt::Cue;
     }
     return TrackAt::ElseWhere;
+}
+
+double CueControl::quantizeCuePoint(double position, Cue::CueSource source, QuantizeMode mode) {
+    // Don't quantize unset cues, manual cues or when quantization is disabled.
+    if (position == -1.0 || source == Cue::MANUAL || !m_pQuantizeEnabled->toBool()) {
+        return position;
+    }
+
+    BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+    if (!pBeats) {
+        return position;
+    }
+
+    if (mode == QuantizeMode::ClosestBeat) {
+        double closestBeat = pBeats->findClosestBeat(position);
+        return closestBeat != -1.0 ? closestBeat : position;
+    }
+
+    double prevBeat, nextBeat;
+    pBeats->findPrevNextBeats(position, &prevBeat, &nextBeat);
+
+    if (mode == QuantizeMode::PreviousBeat) {
+        // Quantize to previous beat, fall back to next beat.
+        return prevBeat != -1.0 ? prevBeat : (nextBeat != -1.0 ? nextBeat : position);
+    } else if (mode == QuantizeMode::NextBeat) {
+        // Quantize to next beat, fall back to previous beat.
+        return nextBeat != -1.0 ? nextBeat : (prevBeat != -1.0 ? prevBeat : position);
+    } else {
+        qWarning() << "PROGRAMMING ERROR: Invalid quantize mode" << static_cast<int>(mode);
+        return -1.0;
+    }
 }
 
 bool CueControl::isTrackAtZeroPos() {
