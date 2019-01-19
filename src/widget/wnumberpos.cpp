@@ -60,11 +60,11 @@ void WNumberPos::slotSetTimeElapsed(double dTimeElapsed) {
     double dTimeRemaining = m_pTimeRemaining->get();
     QString (*timeFormat)(double dSeconds, mixxx::Duration::Precision precision);
 
-    if (m_displayFormat == TrackTime::DisplayFormat::KILO_SECOND) {
+    if (m_displayFormat == TrackTime::DisplayFormat::KILO_SECONDS) {
         timeFormat = &mixxx::Duration::formatKiloSeconds;
-    } else if (m_displayFormat == TrackTime::DisplayFormat::HECTO_SECOND) {
-        timeFormat = &mixxx::Duration::formatHectoSeconds;
-    } else if (m_displayFormat == TrackTime::DisplayFormat::SECOND) {
+    } else if (m_displayFormat == TrackTime::DisplayFormat::SECONDS_LONG) {
+        timeFormat = &mixxx::Duration::formatSecondsLong;
+    } else if (m_displayFormat == TrackTime::DisplayFormat::SECONDS) {
        timeFormat = &mixxx::Duration::formatSeconds;
     } else {
         timeFormat = &mixxx::Duration::formatTime;

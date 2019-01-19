@@ -78,10 +78,10 @@ class DurationBase {
     static QString formatSeconds(
             double dSeconds,
             Precision precision = Precision::SECONDS);
-    static QString formatKiloSeconds(
+    static QString formatSecondsLong(
             double dSeconds,
             Precision precision = Precision::SECONDS);
-    static QString formatHectoSeconds(
+    static QString formatKiloSeconds(
             double dSeconds,
             Precision precision = Precision::SECONDS);
 

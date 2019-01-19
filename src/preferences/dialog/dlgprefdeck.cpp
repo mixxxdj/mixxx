@@ -130,19 +130,18 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     comboBoxTimeFormat->addItem(tr("s%1zz - Seconds")
                                 .arg(mixxx::DurationBase::kDecimalSeparator),
                                 static_cast<int>
-                                (TrackTime::DisplayFormat::SECOND));
+                                (TrackTime::DisplayFormat::SECONDS));
+
+    comboBoxTimeFormat->addItem(tr("sss%1zz - Seconds (Long)")
+                                .arg(mixxx::DurationBase::kDecimalSeparator),
+                                static_cast<int>
+                                (TrackTime::DisplayFormat::SECONDS_LONG));
 
     comboBoxTimeFormat->addItem(tr("s%1sss%2zz - Kiloseconds")
                                 .arg(QString(mixxx::DurationBase::kDecimalSeparator),
                                      QString(mixxx::DurationBase::kKiloGroupSeparator)),
                                 static_cast<int>
-                                (TrackTime::DisplayFormat::KILO_SECOND));
-
-    comboBoxTimeFormat->addItem(tr("s%1ss%2zz - Hectoseconds")
-                                .arg(QString(mixxx::DurationBase::kDecimalSeparator),
-                                     QString(mixxx::DurationBase::kKiloGroupSeparator)),
-                                static_cast<int>
-                                (TrackTime::DisplayFormat::HECTO_SECOND));
+                                (TrackTime::DisplayFormat::KILO_SECONDS));
 
     double time_format = static_cast<double>(
                                             m_pConfig->getValue(
