@@ -16,7 +16,7 @@
 void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
                                                 UserSettingsPointer pConfig,
                                                 QString* pStyle,
-                                                SkinContext& context) {
+                                                SkinContext* pContext) {
     QDomNode schemesNode = docElem.namedItem("Schemes");
 
     bool bSelectedColorSchemeFound = false;
@@ -49,7 +49,11 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             // ronso0 :: find <SetVariable> nodes, update them.
             // This calls SkinContext::updateVariables in skincontext.cpp which
             // iterates over all <SetVariable> nodes
-            context.updateVariables(schemeNode);
+            // *pContext->updateVariables(schemeNode);  //Fail
+            // (*pContext.updateVariables)(schemeNode);  //Fail
+            // (*pContext->updateVariables)(schemeNode);  //Fail
+            void *pContext->updateVariables(schemeNode);  //Fail
+
 
             if (pStyle) {
                 *pStyle = LegacySkinParser::getStyleFromNode(schemeNode);
