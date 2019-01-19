@@ -52,7 +52,8 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             // *pContext->updateVariables(schemeNode);  //Fail
             // (*pContext.updateVariables)(schemeNode);  //Fail
             // (*pContext->updateVariables)(schemeNode);  //Fail
-            void *pContext->updateVariables(schemeNode);  //Fail
+            // void *pContext->updateVariables(schemeNode);  //Fail
+            pContext->updateVariables(schemeNode);
 
 
             if (pStyle) {
