@@ -18,16 +18,20 @@
 #include "musicbrainz/gzip.h"
 #include "musicbrainz/network.h"
 
+namespace {
+
 // see API-KEY site here http://acoustid.org/application/496
 // I registered the KEY for version 1.12 -- kain88 (may 2013)
 const QString CLIENT_APIKEY = "czKxnkyO";
 const QString ACOUSTID_URL = "http://api.acoustid.org/v2/lookup";
-const int AcoustidClient::m_DefaultTimeout = 5000; // msec
+constexpr int kDefaultTimeout = 5000; // msec
+
+} // anonymous namespace
 
 AcoustidClient::AcoustidClient(QObject* parent)
               : QObject(parent),
                 m_network(this),
-                m_timeouts(m_DefaultTimeout, this) {
+                m_timeouts(kDefaultTimeout, this) {
 }
 
 void AcoustidClient::setTimeout(int msec) {

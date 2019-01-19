@@ -58,8 +58,6 @@ class AcoustidClient : public QObject {
     void requestFinished();
 
   private:
-    static const int m_DefaultTimeout;
-
     QNetworkAccessManager m_network;
     NetworkTimeouts m_timeouts;
     QMap<QNetworkReply*, int> m_requests;

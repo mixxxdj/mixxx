@@ -20,14 +20,31 @@
 #include "util/version.h"
 #include "defs_urls.h"
 
-const QString MusicBrainzClient::m_TrackUrl = "http://musicbrainz.org/ws/2/recording/";
-const QString MusicBrainzClient::m_DateRegex = "^[12]\\d{3}";
-const int MusicBrainzClient::m_DefaultTimeout = 5000; // msec
+
+namespace {
+
+const QString kTrackUrl = "http://musicbrainz.org/ws/2/recording/";
+const QString kDateRegex = "^[12]\\d{3}";
+constexpr int kDefaultTimeout = 5000; // msec
+constexpr int kDefaultErrorCode = 0;
+
+QString decodeText(const QByteArray& data, const QStringRef codecName) {
+    QTextStream textStream(data);
+    if (!codecName.isEmpty()) {
+        textStream.setCodec(QTextCodec::codecForName(codecName.toUtf8()));
+    }
+    return textStream.readAll();
+}
+
+} // anonymous namespace
+
+
+
 
 MusicBrainzClient::MusicBrainzClient(QObject* parent)
                  : QObject(parent),
                    m_network(this),
-                   m_timeouts(m_DefaultTimeout, this) {
+                   m_timeouts(kDefaultTimeout, this) {
 }
 
 void MusicBrainzClient::start(int id, const QString& mbid) {
@@ -38,7 +55,7 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
 
     QUrlQuery query;
     query.setQueryItems(parameters);
-    QUrl url(m_TrackUrl + mbid);
+    QUrl url(kTrackUrl + mbid);
     url.setQuery(query);
     qDebug() << "MusicBrainzClient GET request:" << url.toString();
     QNetworkRequest req(url);
@@ -67,16 +84,6 @@ void MusicBrainzClient::cancelAll() {
         delete it.key();
     }
 }
-
-namespace {
-QString decodeText(const QByteArray& data, const QStringRef codecName) {
-    QTextStream textStream(data);
-    if (!codecName.isEmpty()) {
-        textStream.setCodec(QTextCodec::codecForName(codecName.toUtf8()));
-    }
-    return textStream.readAll();
-}
-} // anonymous namespace
 
 void MusicBrainzClient::requestFinished() {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
@@ -108,7 +115,7 @@ void MusicBrainzClient::requestFinished() {
         QString strReply = (QString)reply->readAll();
         emit(networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "MusicBrainz", message, 0));
+             "MusicBrainz", message, kDefaultErrorCode));
         return;
     }
 
@@ -213,7 +220,7 @@ MusicBrainzClient::Release MusicBrainzClient::parseRelease(QXmlStreamReader& rea
             if (name == "title") {
                 ret.m_album = reader.readElementText();
             } else if (name == "date") {
-                QRegExp regex(m_DateRegex);
+                QRegExp regex(kDateRegex);
                 if (regex.indexIn(reader.readElementText()) == 0) {
                 ret.m_year = regex.cap(0).toInt();
                 }
