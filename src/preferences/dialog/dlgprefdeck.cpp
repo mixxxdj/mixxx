@@ -132,15 +132,15 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
                                 static_cast<int>
                                 (TrackTime::DisplayFormat::SECOND));
 
-    comboBoxTimeFormat->addItem(tr("k%1sss%2zz - Kiloseconds")
-                                .arg(mixxx::DurationBase::kKiloGroupSeparator)
-                                .arg(mixxx::DurationBase::kDecimalSeparator),
+    comboBoxTimeFormat->addItem(tr("s%1sss%2zz - Kiloseconds")
+                                .arg(QString(mixxx::DurationBase::kDecimalSeparator),
+                                     QString(mixxx::DurationBase::kKiloGroupSeparator)),
                                 static_cast<int>
                                 (TrackTime::DisplayFormat::KILO_SECOND));
 
-    comboBoxTimeFormat->addItem(tr("hs%1ss%2zz - Hectoseconds")
-                                .arg(mixxx::DurationBase::kHectoGroupSeparator)
-                                .arg(mixxx::DurationBase::kDecimalSeparator),
+    comboBoxTimeFormat->addItem(tr("s%1ss%2zz - Hectoseconds")
+                                .arg(QString(mixxx::DurationBase::kDecimalSeparator),
+                                     QString(mixxx::DurationBase::kKiloGroupSeparator)),
                                 static_cast<int>
                                 (TrackTime::DisplayFormat::HECTO_SECOND));
 

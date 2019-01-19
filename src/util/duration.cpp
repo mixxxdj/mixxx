@@ -21,8 +21,6 @@ static const qint64 kSecondsPerDay = 24 * kSecondsPerHour;
 const QString DurationBase::kInvalidDurationString = "?";
 // Unicode for thin space
 QChar DurationBase::kKiloGroupSeparator = QChar(0x2009);
-// Unicode for bottom left corner
-QChar DurationBase::kHectoGroupSeparator = QChar(0x231E);
 // Unicode for decimal point
 QChar DurationBase::kDecimalSeparator = QChar(0x002E);
 
@@ -90,9 +88,12 @@ QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
     double subs = fmod(dSeconds, 1);
 
     QString durationString =
-            QString("%1%2%3").arg(kilos, 0, 10).arg(kKiloGroupSeparator).arg(seconds, 3, 'f', 0, QLatin1Char('0'));
+            QString("%1%2%3").arg(
+                    QString::number(kilos),
+                    QString(kDecimalSeparator),
+                    QString::number(seconds).rightJustified(3, QLatin1Char('0')));
     if (Precision::SECONDS != precision) {
-            durationString += kDecimalSeparator % QString::number(subs, 'f', 3).right(3);
+            durationString += kKiloGroupSeparator % QString::number(subs, 'f', 3).right(3);
     }
 
     // The format string gives us milliseconds but we want
@@ -117,11 +118,13 @@ QString DurationBase::formatHectoSeconds(double dSeconds, Precision precision) {
     double subs = fmod(dSeconds, 1);
 
     QString durationString =
-            QString("%1%2%3").arg(hectos, 0, 10).arg(kHectoGroupSeparator).arg(seconds, 2, 'f', 0, QLatin1Char('0'));
+            QString("%1%2%3").arg(
+                    QString::number(hectos),
+                    QString(kDecimalSeparator),
+                    QString::number(seconds).rightJustified(2, QLatin1Char('0')));
     if (Precision::SECONDS != precision) {
-            durationString += kDecimalSeparator % QString::number(subs, 'f', 3).right(3);
+            durationString += kKiloGroupSeparator % QString::number(subs, 'f', 3).right(3);
     }
-
 
     // The format string gives us milliseconds but we want
     // centiseconds. Slice one character off.
