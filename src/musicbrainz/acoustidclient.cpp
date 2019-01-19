@@ -105,12 +105,14 @@ void AcoustidClient::requestFinished() {
         qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body;
         QString message;
         QString code;
-        while (!reader.atEnd()) {
+        while (!reader.atEnd() && (message.isEmpty() || code.isEmpty())) {
             if (reader.readNextStartElement()) {
                 const QStringRef name = reader.name();
                 if (name == "message") {
+                    DEBUG_ASSERT(name.isEmpty()); // fail if we have duplicated message elements. 
                     message = reader.readElementText();
                 } else if (name == "code") {
+                    DEBUG_ASSERT(code.isEmpty()); // fail if we have duplicated code elements. 
                     code = reader.readElementText();
                 }
             }
@@ -123,15 +125,15 @@ void AcoustidClient::requestFinished() {
 
     qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body;
 
-    QString ID;
-    while (!reader.atEnd()) {
+    QString resultId;
+    while (!reader.atEnd() && resultId.isEmpty()) {
         if (reader.readNextStartElement()
                 && reader.name()== "results") {
-            ID = parseResult(reader);
+            resultId = parseResult(reader);
         }
     }
 
-    emit(finished(id, ID));
+    emit(finished(id, resultId));
 }
 
 QString AcoustidClient::parseResult(QXmlStreamReader& reader) {
