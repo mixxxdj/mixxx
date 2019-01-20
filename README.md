@@ -1,4 +1,5 @@
-# Mixxx
+# Mixxx 
+[![Packaging status](https://repology.org/badge/tiny-repos/mixxx.svg)](https://repology.org/metapackage/mixxx/versions)
 
 [Mixxx] is Free DJ software that gives you everything you need to perform live
 DJ mixes. Mixxx works on GNU/Linux, Windows, and macOS.

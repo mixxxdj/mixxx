@@ -382,7 +382,7 @@ void EngineBuffer::requestEnableSync(bool enabled) {
         return;
     }
     SyncRequestQueued enable_request =
-            static_cast<SyncRequestQueued>(load_atomic(m_iEnableSyncQueued));
+            static_cast<SyncRequestQueued>(m_iEnableSyncQueued.load());
     if (enabled) {
         m_iEnableSyncQueued = SYNC_REQUEST_ENABLE;
     } else {
@@ -597,10 +597,10 @@ bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     bool playPossible = true;
-    if ((!m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0) ||
-            (m_pCurrentTrack && load_atomic(m_iTrackLoading) == 0 &&
+    if ((!m_pCurrentTrack && m_iTrackLoading.load() == 0) ||
+            (m_pCurrentTrack && m_iTrackLoading.load() == 0 &&
              m_filepos_play >= m_pTrackSamples->get() &&
-             !load_atomic(m_iSeekQueued))) {
+             !m_iSeekQueued.load())) {
         // play not possible
         playPossible = false;
     }
@@ -1009,7 +1009,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
         m_iSampleRate = sample_rate;
     }
 
-    bool bTrackLoading = load_atomic(m_iTrackLoading) != 0;
+    bool bTrackLoading = m_iTrackLoading.load() != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
         processTrackLocked(pOutput, iBufferSize, sample_rate);
         // release the pauselock

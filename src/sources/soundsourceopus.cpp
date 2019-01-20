@@ -97,7 +97,7 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
 #ifdef _WIN32
     QByteArray qBAFilename = getLocalFileName().toUtf8();
 #else
-    QByteArray qBAFilename = getLocalFileName().toLocal8Bit();
+    QByteArray qBAFilename = QFile::encodeName(getLocalFileName());
 #endif
 
     int errorCode = 0;
@@ -189,7 +189,7 @@ SoundSource::OpenResult SoundSourceOpus::tryOpen(
 #ifdef _WIN32
     QByteArray qBAFilename = getLocalFileName().toUtf8();
 #else
-    QByteArray qBAFilename = getLocalFileName().toLocal8Bit();
+    QByteArray qBAFilename = QFile::encodeName(getLocalFileName());
 #endif
 
     int errorCode = 0;
