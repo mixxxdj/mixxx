@@ -6,14 +6,13 @@
 
 
 KeyboardControllerPresetFileHandler::KeyboardControllerPresetFileHandler() {
-
 }
 
 KeyboardControllerPresetFileHandler::~KeyboardControllerPresetFileHandler() {
-
 }
 
-ControllerPresetPointer KeyboardControllerPresetFileHandler::load(const QDomElement root, const QString deviceName) {
+ControllerPresetPointer KeyboardControllerPresetFileHandler::load(
+        const QDomElement root, const QString deviceName) {
     if (root.isNull()) {
         return ControllerPresetPointer();
     }

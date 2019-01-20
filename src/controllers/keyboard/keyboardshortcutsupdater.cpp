@@ -39,7 +39,6 @@ ShortcutChangeWatcher::ShortcutChangeWatcher(QAction* action, ConfigKey configKe
         m_configKey(configKey),
         m_pAction(action),
         m_defaultKeySeq(defaultKeySeq) {
-
     restoreDefault();
 }
 

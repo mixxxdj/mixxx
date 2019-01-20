@@ -2,7 +2,8 @@
 #include "controllers/keyboard/keyboardcontrollerpreset.h"
 #include "controllers/keyboard/layouts.h"
 
-QString KeyboardControllerPreset::getKeySequencesToString(ConfigKey configKey, QString separator) const {
+QString KeyboardControllerPreset::getKeySequencesToString(
+        ConfigKey configKey, QString separator) const {
     QStringList keyseqs = getKeySequences(configKey);
     QString keySeqsString = "";
 
@@ -29,7 +30,6 @@ QStringList KeyboardControllerPreset::getKeySequences(ConfigKey configKey) const
 
 QMultiHash<QString, ConfigKey> KeyboardControllerPreset::getMappingByGroup(
         const QString& targetGroup) const {
-
     QMultiHash<QString, ConfigKey> filteredKeySequenceHash;
 
     for (auto it = m_mapping.begin(); it != m_mapping.end(); ++it) {
@@ -152,7 +152,6 @@ void KeyboardControllerPreset::translate(QString layoutName) {
         }
 
         if (keyseqNeedsTranslate) {
-
             // Can't happen. Otherwise keyseqNeedsTranslate would be false.
             DEBUG_ASSERT(!keyseqsRawIterator->byPositionOf.isEmpty());
 
@@ -196,7 +195,6 @@ void KeyboardControllerPreset::translate(QString layoutName) {
 
             // Iterate through all found scancodes
             for (const Scancode scancode : scancodes) {
-
                 // Get KbdKeyChar
                 const KbdKeyChar* keyChar = layoutUtils::getKbdKeyChar(layout, scancode, modifier);
                 QChar character(keyChar->character);

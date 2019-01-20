@@ -8,7 +8,6 @@
 Layout::Layout(const QString& variableName, QString name, KeyboardLayoutPointer pData) :
         m_variableName(variableName),
         m_name(name) {
-
     qDebug() << "Loading layout " << name;
 
     // Copy layout m_data
@@ -21,7 +20,6 @@ Layout::Layout(const QString& variableName, QString name, KeyboardLayoutPointer 
 Layout::Layout(const QString& variableName, QString name) :
         m_variableName(variableName),
         m_name(name) {
-
     Display *display = XOpenDisplay(NULL);
 
     // Get keyboard m_data from X
@@ -30,7 +28,6 @@ Layout::Layout(const QString& variableName, QString name) :
     KeySym *syms = map->syms;
 
     for (int keycode = AE01; keycode <= LSGT; keycode++) {
-
         // Skip Backspace and Enter
         if (utils::keycodeToKeyname(keycode).isEmpty()) {
             continue;
@@ -52,7 +49,6 @@ Layout::Layout(const QString& variableName, QString name) :
 
         // Iterate over keysyms of current key
         for (int i = 0; i < keysymMap.width; i++) {
-
             // We are only interested in keysym without any
             // modifier and keysym for shift modifier.
             if (i > 1) {

@@ -13,6 +13,7 @@ class WidgetTooltipWatcher;
 
 class TooltipShortcutUpdater : public QObject {
     Q_OBJECT
+
   public:
     TooltipShortcutUpdater();
     virtual ~TooltipShortcutUpdater();

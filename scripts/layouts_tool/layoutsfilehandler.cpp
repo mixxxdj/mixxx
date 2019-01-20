@@ -150,7 +150,6 @@ void LayoutsFileHandler::prependDefs(QFile& cppFile) {
 void LayoutsFileHandler::appendGetLayoutsFunction(QFile& cppFile,
                                                   const QList<LayoutNamePair>& layoutNames,
                                                   bool forInternUse) {
-
     // Generate new 'getLayout' function definition
     QStringList fnLines;
     fnLines << ""
@@ -189,7 +188,6 @@ QList<LayoutNamePair> LayoutsFileHandler::getLayoutNames(QFile& cppFile) {
 
         QString prevLine;
         while (!in.atEnd()) {
-
             // Get current line and trim to get rid of indentation
             QString line = in.readLine().trimmed();
 
@@ -211,10 +209,8 @@ QList<LayoutNamePair> LayoutsFileHandler::getLayoutNames(QFile& cppFile) {
 
             prevLine = line;
         }
-
         cppFile.close();
     }
-
     return names;
 }
 
@@ -308,7 +304,6 @@ void LayoutsFileHandler::removeSkipParts(QFile& f) {
         }
         f.close();
     }
-
     overwriteFile(f, code);
 }
 
@@ -333,7 +328,6 @@ void LayoutsFileHandler::appendToFile(QFile &file, const QStringList &lines) {
 }
 
 void LayoutsFileHandler::prependToFile(QFile &file, const QStringList &lines) {
-
     // Load each line of file into QStringList
     QStringList codeInFile;
     if (file.open(QIODevice::ReadOnly)) {
@@ -343,7 +337,6 @@ void LayoutsFileHandler::prependToFile(QFile &file, const QStringList &lines) {
         }
         file.close();
     }
-
     overwriteFile(file, lines + codeInFile);
 }
 
@@ -386,10 +379,8 @@ QStringList LayoutsFileHandler::generateCodeForLayout(const Layout &layout) {
         if (i < kLayoutLen - 1) {
             line += ",";
         }
-
         code << line;
     }
-
     code << "};";
     return code;
 }

@@ -108,7 +108,6 @@ void BulkController::visitKeyboard(const KeyboardControllerPreset* preset) {
     Q_UNUSED(preset);
     qWarning() << "ERROR: Attempting to load a KeyboardControllerPreset to a BulkController!";
     // TODO(XXX): throw a hissy fit.
-
 };
 
 void BulkController::visitMidi(const MidiControllerPreset* preset) {

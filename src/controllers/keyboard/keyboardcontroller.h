@@ -9,6 +9,7 @@
 // sent a signal when a new preset --new keyboard mapping-- is loaded.
 class KeyboardController : public Controller {
     Q_OBJECT
+
   public:
     explicit KeyboardController(KeyboardEventFilter* pKbdEventFilter);
     ~KeyboardController() override;

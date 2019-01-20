@@ -3,9 +3,8 @@
 #include <QDebug>
 #include <iostream>
 
-LayoutsToolMain::LayoutsToolMain(QObject* parent) :
-        QObject(parent) {
-
+LayoutsToolMain::LayoutsToolMain(QObject* parent)
+        : QObject(parent) {
     // Find layouts.cpp path (check for Mixxx directory four directories up)
     bool layoutsFound = false;
     QDir cp = QDir::currentPath();
@@ -323,7 +322,6 @@ void LayoutsToolMain::findSharedKeyCharsMenu() {
                 break;
         }
     } while (!backToMain);
-
 }
 
 void LayoutsToolMain::showLayouts() {
