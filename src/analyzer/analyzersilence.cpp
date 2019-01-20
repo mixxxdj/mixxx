@@ -5,7 +5,9 @@
 
 namespace {
 
-constexpr float kSilenceThreshold = db2ratio(-60.0f);
+constexpr float kSilenceThreshold = 0.001;
+// TODO: Change the above line to:
+//constexpr float kSilenceThreshold = db2ratio(-60.0f);
 
 }  // anonymous namespace
 
