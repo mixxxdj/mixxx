@@ -55,7 +55,7 @@ class WSliderComposed : public WWidget  {
             Paintable::DrawMode mode,
             double scaleFactor);
     inline bool isHorizontal() const { return m_bHorizontal; };
-    virtual WidgetTooltipWatcher* createTooltipWatcher(QList<ConfigKey> configKeys) override;
+    WidgetTooltipWatcher* createTooltipWatcher(QList<ConfigKey> configKeys) override;
     void inputActivity();
 
   public slots:

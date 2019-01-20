@@ -13,19 +13,19 @@ class KeyboardControllerPreset : public ControllerPreset {
     KeyboardControllerPreset() {}
     virtual ~KeyboardControllerPreset() {}
 
-    virtual void accept(ControllerPresetVisitor* visitor) override {
+    void accept(ControllerPresetVisitor* visitor) override {
         if (visitor) {
             visitor->visitKeyboard(this);
         }
     }
 
-    virtual void accept(ConstControllerPresetVisitor* visitor) const override {
+    void accept(ConstControllerPresetVisitor* visitor) const override {
         if (visitor) {
             visitor->visitKeyboard(this);
         }
     }
 
-    virtual bool isMappable() const override { return true; }
+    bool isMappable() const override { return true; }
 
     void translate(QString layout);
 
