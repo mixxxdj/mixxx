@@ -25,7 +25,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/engineobject.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/channelhandle.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
@@ -164,8 +164,7 @@ class EngineMaster : public QObject, public AudioSource {
     class TalkoverGainCalculator : public GainCalculator {
       public:
         inline double getGain(ChannelInfo* pChannelInfo) const {
-            Q_UNUSED(pChannelInfo);
-            return 1.0;
+            return pChannelInfo->m_pVolumeControl->get();
         }
     };
     class OrientationVolumeGainCalculator : public GainCalculator {

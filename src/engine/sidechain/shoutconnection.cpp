@@ -22,6 +22,9 @@
 #include "control/controlpushbutton.h"
 #include "encoder/encoder.h"
 #include "encoder/encoderbroadcastsettings.h"
+#ifdef __OPUS__
+#include "encoder/encoderopus.h"
+#endif
 #include "mixer/playerinfo.h"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
@@ -32,13 +35,15 @@
 #include <engine/sidechain/shoutconnection.h>
 
 namespace {
-static const int kConnectRetries = 30;
-static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
+
+const int kConnectRetries = 30;
+const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 // Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
-static const int kMaxShoutFailures = 3;
+const int kMaxShoutFailures = 3;
 
 const mixxx::Logger kLogger("ShoutConnection");
+
 }
 
 ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
@@ -59,6 +64,7 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_firstCall(false),
           m_format_is_mp3(false),
           m_format_is_ov(false),
+          m_format_is_opus(false),
           m_protocol_is_icecast1(false),
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
@@ -340,9 +346,10 @@ void ShoutConnection::updateFromPreferences() {
 
     m_format_is_mp3 = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_MP3);
     m_format_is_ov = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_OV);
+    m_format_is_opus = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_OPUS);
     if (m_format_is_mp3) {
         format = SHOUT_FORMAT_MP3;
-    } else if (m_format_is_ov) {
+    } else if (m_format_is_ov || m_format_is_opus) {
         format = SHOUT_FORMAT_OGG;
     } else {
         qWarning() << "Error: unknown format:" << baFormat.constData();
@@ -360,13 +367,23 @@ void ShoutConnection::updateFromPreferences() {
 
     int iMasterSamplerate = m_pMasterSamplerate->get();
     if (m_format_is_ov && iMasterSamplerate == 96000) {
-        errorDialog(tr("Broadcasting at 96kHz with Ogg Vorbis is not currently "
+        errorDialog(tr("Broadcasting at 96 kHz with Ogg Vorbis is not currently "
                        "supported. Please try a different sample-rate or switch "
                        "to a different encoding."),
                     tr("See https://bugs.launchpad.net/mixxx/+bug/686212 for more "
                        "information."));
         return;
     }
+
+#ifdef __OPUS__
+    if(m_format_is_opus && iMasterSamplerate != EncoderOpus::getMasterSamplerate()) {
+        errorDialog(
+            EncoderOpus::getInvalidSamplerateMessage(),
+            tr("Unsupported samplerate")
+        );
+        return;
+    }
+#endif
 
     if (shout_set_audio_info(
             m_pShout, SHOUT_AI_BITRATE,
@@ -411,7 +428,14 @@ void ShoutConnection::updateFromPreferences() {
         m_encoder = EncoderFactory::getFactory().getNewEncoder(
             EncoderFactory::getFactory().getFormatFor(ENCODING_OGG), m_pConfig, this);
         m_encoder->setEncoderSettings(broadcastSettings);
-    } else {
+    }
+#ifdef __OPUS__
+    else if (m_format_is_opus) {
+        m_encoder = EncoderFactory::getFactory().getNewEncoder(
+            EncoderFactory::getFactory().getFormatFor(ENCODING_OPUS), m_pConfig, this);
+    }
+#endif
+    else {
         kLogger.warning() << "**** Unknown Encoder Format";
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
         m_lastErrorStr = "Encoder format error";
@@ -924,7 +948,7 @@ QSharedPointer<FIFO<CSAMPLE>> ShoutConnection::getOutputFifo() {
 }
 
 bool ShoutConnection::threadWaiting() {
-    return load_atomic(m_threadWaiting);
+    return m_threadWaiting.load();
 }
 
 void ShoutConnection::run() {

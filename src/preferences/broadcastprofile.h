@@ -37,6 +37,8 @@ class BroadcastProfile : public QObject {
     static bool validName(const QString& str);
     static QString stripForbiddenChars(const QString& str);
 
+    QString getLastFilename() const;
+
     void setConnectionStatus(int newState);
     int connectionStatus();
 
@@ -155,6 +157,8 @@ class BroadcastProfile : public QObject {
     void errorDialog(const QString& text, const QString& detailedError);
 
     bool m_secureCredentials;
+
+    QString m_filename;
 
     QString m_profileName;
     bool m_enabled;

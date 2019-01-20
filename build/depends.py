@@ -221,8 +221,6 @@ class Qt(Dependence):
             'QtWidgets',
             'QtXml',
         ]
-        if build.platform_is_linux:
-            build.env.Append(LIBS = ['Qt5X11Extras'] )
         if build.platform_is_windows:
             qt_modules.extend([
                 # Keep alphabetized.
@@ -280,6 +278,9 @@ class Qt(Dependence):
         if build.platform_is_linux:
             if not conf.CheckForPKG('Qt5Core', '5.0'):
                 raise Exception('Qt >= 5.0 not found')
+
+            if not conf.CheckLib('Qt5X11Extras'):
+                raise Exception('Could not find Qt5X11Extras or its development headers')
 
             qt_modules.extend(['QtDBus'])
             # This automatically converts QtXXX to Qt5XXX where appropriate.
@@ -376,6 +377,7 @@ class Qt(Dependence):
                 build.env.Append(LIBS = 'userenv')  # qt5core
                 build.env.Append(LIBS = 'uxtheme')  # ?
                 build.env.Append(LIBS = 'version')  # ?
+                build.env.Append(LIBS = 'wtsapi32') # ?
 
                 build.env.Append(LIBS = 'qtfreetype')
                 build.env.Append(LIBS = 'qtharfbuzz')
@@ -499,7 +501,7 @@ class SoundTouch(Dependence):
 
             build.env.Append(LIBPATH=self.SOUNDTOUCH_INTERNAL_PATH)
             build.env.Append(LIBS=['soundtouch'])
-        return ['src/engine/enginebufferscalest.cpp']
+        return ['src/engine/bufferscalers/enginebufferscalest.cpp']
 
     def configure(self, build, conf, env=None):
         if env is None:
@@ -509,6 +511,9 @@ class SoundTouch(Dependence):
             # Try using system lib
             if conf.CheckForPKG('soundtouch', '2.0.0'):
                 # System Lib found
+                if not conf.CheckLib(['SoundTouch']):
+                    raise Exception(
+                        "Could not find libSoundTouch or its development headers.")
                 build.env.ParseConfig('pkg-config soundtouch --silence-errors --cflags --libs')
                 self.INTERNAL_LINK = False
 
@@ -526,7 +531,7 @@ class SoundTouch(Dependence):
 
 class RubberBand(Dependence):
     def sources(self, build):
-        sources = ['src/engine/enginebufferscalerubberband.cpp', ]
+        sources = ['src/engine/bufferscalers/enginebufferscalerubberband.cpp', ]
         return sources
 
     def configure(self, build, conf, env=None):
@@ -535,6 +540,59 @@ class RubberBand(Dependence):
         if not conf.CheckLib(['rubberband', 'librubberband']):
             raise Exception(
                 "Could not find librubberband or its development headers.")
+
+
+class QueenMaryDsp(Dependence):
+    def sources(self, build):
+        return [
+            #"#lib/qm-dsp/base/KaiserWindow.cpp",
+            "#lib/qm-dsp/base/Pitch.cpp",
+            #"#lib/qm-dsp/base/SincWindow.cpp",
+            "#lib/qm-dsp/dsp/chromagram/CQprecalc.cpp",
+            "#lib/qm-dsp/dsp/chromagram/Chromagram.cpp",
+            "#lib/qm-dsp/dsp/chromagram/ConstantQ.cpp",
+            "#lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp",
+            #"#lib/qm-dsp/dsp/mfcc/MFCC.cpp",
+            "#lib/qm-dsp/dsp/onsets/DetectionFunction.cpp",
+            "#lib/qm-dsp/dsp/onsets/PeakPicking.cpp",
+            "#lib/qm-dsp/dsp/phasevocoder/PhaseVocoder.cpp",
+            "#lib/qm-dsp/dsp/rateconversion/Decimator.cpp",
+            #"#lib/qm-dsp/dsp/rateconversion/DecimatorB.cpp",
+            #"#lib/qm-dsp/dsp/rateconversion/Resampler.cpp",
+            #"#lib/qm-dsp/dsp/rhythm/BeatSpectrum.cpp",
+            #"#lib/qm-dsp/dsp/segmentation/ClusterMeltSegmenter.cpp",
+            #"#lib/qm-dsp/dsp/segmentation/Segmenter.cpp",
+            #"#lib/qm-dsp/dsp/segmentation/cluster_melt.c",
+            #"#lib/qm-dsp/dsp/segmentation/cluster_segmenter.c",
+            "#lib/qm-dsp/dsp/signalconditioning/DFProcess.cpp",
+            "#lib/qm-dsp/dsp/signalconditioning/FiltFilt.cpp",
+            "#lib/qm-dsp/dsp/signalconditioning/Filter.cpp",
+            "#lib/qm-dsp/dsp/signalconditioning/Framer.cpp",
+            "#lib/qm-dsp/dsp/tempotracking/DownBeat.cpp",
+            "#lib/qm-dsp/dsp/tempotracking/TempoTrack.cpp",
+            "#lib/qm-dsp/dsp/tempotracking/TempoTrackV2.cpp",
+            "#lib/qm-dsp/dsp/tonal/ChangeDetectionFunction.cpp",
+            "#lib/qm-dsp/dsp/tonal/TCSgram.cpp",
+            "#lib/qm-dsp/dsp/tonal/TonalEstimator.cpp",
+            "#lib/qm-dsp/dsp/transforms/FFT.cpp",
+            #"#lib/qm-dsp/dsp/wavelet/Wavelet.cpp",
+            "#lib/qm-dsp/ext/kissfft/kiss_fft.c",
+            "#lib/qm-dsp/ext/kissfft/kiss_fftr.c",
+            #"#lib/qm-dsp/hmm/hmm.c",
+            "#lib/qm-dsp/maths/Correlation.cpp",
+            #"#lib/qm-dsp/maths/CosineDistance.cpp",
+            "#lib/qm-dsp/maths/KLDivergence.cpp",
+            "#lib/qm-dsp/maths/MathUtilities.cpp",
+            #"#lib/qm-dsp/maths/pca/pca.c",
+            #"#lib/qm-dsp/thread/Thread.cpp"
+        ]
+
+    def configure(self, build, conf):
+        build.env.Append(CPPPATH="#lib/qm-dsp")
+        build.env.Append(CPPPATH="#lib/qm-dsp/include")
+        build.env.Append(CPPDEFINES='kiss_fft_scalar=double')
+        if not build.platform_is_windows:
+            build.env.Append(CPPDEFINES='USE_PTHREADS')
 
 
 class TagLib(Dependence):
@@ -670,6 +728,8 @@ class MixxxCore(Feature):
                    "src/preferences/dialog/dlgprefsound.cpp",
                    "src/preferences/dialog/dlgprefsounditem.cpp",
                    "src/preferences/dialog/dlgprefwaveform.cpp",
+                   "src/preferences/dialog/dlgprefbeats.cpp",
+                   "src/preferences/dialog/dlgprefkey.cpp",
                    "src/preferences/settingsmanager.cpp",
                    "src/preferences/replaygainsettings.cpp",
                    "src/preferences/broadcastsettings.cpp",
@@ -731,21 +791,24 @@ class MixxxCore(Feature):
                    "src/engine/engineworker.cpp",
                    "src/engine/engineworkerscheduler.cpp",
                    "src/engine/enginebuffer.cpp",
-                   "src/engine/enginebufferscale.cpp",
-                   "src/engine/enginebufferscalelinear.cpp",
-                   "src/engine/enginefilterbiquad1.cpp",
-                   "src/engine/enginefiltermoogladder4.cpp",
-                   "src/engine/enginefilterbessel4.cpp",
-                   "src/engine/enginefilterbessel8.cpp",
-                   "src/engine/enginefilterbutterworth4.cpp",
-                   "src/engine/enginefilterbutterworth8.cpp",
-                   "src/engine/enginefilterlinkwitzriley2.cpp",
-                   "src/engine/enginefilterlinkwitzriley4.cpp",
-                   "src/engine/enginefilterlinkwitzriley8.cpp",
-                   "src/engine/enginefilter.cpp",
+                   "src/engine/bufferscalers/enginebufferscale.cpp",
+                   "src/engine/bufferscalers/enginebufferscalelinear.cpp",
+                   "src/engine/channels/engineaux.cpp",
+                   "src/engine/channels/enginechannel.cpp",
+                   "src/engine/channels/enginedeck.cpp",
+                   "src/engine/channels/enginemicrophone.cpp",
+                   "src/engine/filters/enginefilterbiquad1.cpp",
+                   "src/engine/filters/enginefiltermoogladder4.cpp",
+                   "src/engine/filters/enginefilterbessel4.cpp",
+                   "src/engine/filters/enginefilterbessel8.cpp",
+                   "src/engine/filters/enginefilterbutterworth4.cpp",
+                   "src/engine/filters/enginefilterbutterworth8.cpp",
+                   "src/engine/filters/enginefilterlinkwitzriley2.cpp",
+                   "src/engine/filters/enginefilterlinkwitzriley4.cpp",
+                   "src/engine/filters/enginefilterlinkwitzriley8.cpp",
+                   "src/engine/filters/enginefilter.cpp",
                    "src/engine/engineobject.cpp",
                    "src/engine/enginepregain.cpp",
-                   "src/engine/enginechannel.cpp",
                    "src/engine/enginemaster.cpp",
                    "src/engine/enginedelay.cpp",
                    "src/engine/enginevumeter.cpp",
@@ -754,30 +817,32 @@ class MixxxCore(Feature):
                    "src/engine/sidechain/networkoutputstreamworker.cpp",
                    "src/engine/sidechain/networkinputstreamworker.cpp",
                    "src/engine/enginexfader.cpp",
-                   "src/engine/enginemicrophone.cpp",
-                   "src/engine/enginedeck.cpp",
-                   "src/engine/engineaux.cpp",
                    "src/engine/channelmixer_autogen.cpp",
-
-                   "src/engine/enginecontrol.cpp",
-                   "src/engine/ratecontrol.cpp",
                    "src/engine/positionscratchcontroller.cpp",
-                   "src/engine/loopingcontrol.cpp",
-                   "src/engine/bpmcontrol.cpp",
-                   "src/engine/keycontrol.cpp",
-                   "src/engine/cuecontrol.cpp",
-                   "src/engine/quantizecontrol.cpp",
-                   "src/engine/clockcontrol.cpp",
+                   "src/engine/controls/bpmcontrol.cpp",
+                   "src/engine/controls/clockcontrol.cpp",
+                   "src/engine/controls/cuecontrol.cpp",
+                   "src/engine/controls/enginecontrol.cpp",
+                   "src/engine/controls/keycontrol.cpp",
+                   "src/engine/controls/loopingcontrol.cpp",
+                   "src/engine/controls/quantizecontrol.cpp",
+                   "src/engine/controls/ratecontrol.cpp",
                    "src/engine/readaheadmanager.cpp",
                    "src/engine/enginetalkoverducking.cpp",
-                   "src/engine/cachingreader.cpp",
-                   "src/engine/cachingreaderchunk.cpp",
-                   "src/engine/cachingreaderworker.cpp",
+                   "src/engine/cachingreader/cachingreader.cpp",
+                   "src/engine/cachingreader/cachingreaderchunk.cpp",
+                   "src/engine/cachingreader/cachingreaderworker.cpp",
 
-                   "src/analyzer/analyzerqueue.cpp",
+                   "src/analyzer/trackanalysisscheduler.cpp",
+                   "src/analyzer/analyzerthread.cpp",
                    "src/analyzer/analyzerwaveform.cpp",
                    "src/analyzer/analyzergain.cpp",
+                   "src/analyzer/analyzerbeats.cpp",
+                   "src/analyzer/analyzerkey.cpp",
                    "src/analyzer/analyzerebur128.cpp",
+                   "src/analyzer/plugins/analyzersoundtouchbeats.cpp",
+                   "src/analyzer/plugins/analyzerqueenmarybeats.cpp",
+                   "src/analyzer/plugins/analyzerqueenmarykey.cpp",
 
                    "src/controllers/controller.cpp",
                    "src/controllers/controllerdebug.cpp",
@@ -984,7 +1049,7 @@ class MixxxCore(Feature):
                    "src/library/bpmdelegate.cpp",
                    "src/library/previewbuttondelegate.cpp",
                    "src/library/coverartdelegate.cpp",
-				   "src/library/tableitemdelegate.cpp",
+                   "src/library/tableitemdelegate.cpp",
 
                    "src/library/treeitemmodel.cpp",
                    "src/library/treeitem.cpp",
@@ -1002,6 +1067,7 @@ class MixxxCore(Feature):
                    "src/waveform/waveformwidgetfactory.cpp",
                    "src/waveform/vsyncthread.cpp",
                    "src/waveform/guitick.cpp",
+                   "src/waveform/visualsmanager.cpp",
                    "src/waveform/visualplayposition.cpp",
                    "src/waveform/renderers/waveformwidgetrenderer.cpp",
                    "src/waveform/renderers/waveformrendererabstract.cpp",
@@ -1098,15 +1164,16 @@ class MixxxCore(Feature):
                    "src/soundio/soundmanagerutil.cpp",
 
                    "src/encoder/encoder.cpp",
-                   "src/encoder/encodermp3.cpp",
-                   "src/encoder/encodervorbis.cpp",
-                   "src/encoder/encoderwave.cpp",
-                   "src/encoder/encodersndfileflac.cpp",
-                   "src/encoder/encodermp3settings.cpp",
-                   "src/encoder/encodervorbissettings.cpp",
-                   "src/encoder/encoderwavesettings.cpp",
-                   "src/encoder/encoderflacsettings.cpp",
                    "src/encoder/encoderbroadcastsettings.cpp",
+                   "src/encoder/encoderflacsettings.cpp",
+                   "src/encoder/encodermp3.cpp",
+                   "src/encoder/encodermp3settings.cpp",
+                   "src/encoder/encodersndfileflac.cpp",
+                   "src/encoder/encodervorbis.cpp",
+                   "src/encoder/encodervorbissettings.cpp",
+                   "src/encoder/encoderwave.cpp",
+                   "src/encoder/encoderwavesettings.cpp",
+                   'src/encoder/encoderopussettings.cpp',
 
                    "src/util/sleepableqthread.cpp",
                    "src/util/statsmanager.cpp",
@@ -1155,6 +1222,8 @@ class MixxxCore(Feature):
                    "src/util/indexrange.cpp",
                    "src/util/desktophelper.cpp",
                    "src/util/widgetrendertimer.cpp",
+                   "src/util/workerthread.cpp",
+                   "src/util/workerthreadscheduler.cpp",
                    ]
 
         proto_args = {
@@ -1437,7 +1506,8 @@ class MixxxCore(Feature):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
-                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME]
+                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
+                QueenMaryDsp]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

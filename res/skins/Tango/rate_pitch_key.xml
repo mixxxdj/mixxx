@@ -113,7 +113,7 @@ Variables:
                 <SetVariable name="ObjectName">SyncButtonOverlay</SetVariable>
                 <SetVariable name="Size">50f,18min</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="group"/>,sync_enabled</SetVariable>
-                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_phase</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beatsync_tempo</SetVariable>
               </Template>
               <Number>
                 <ObjectName>BpmLabel</ObjectName>

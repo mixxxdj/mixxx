@@ -31,8 +31,8 @@ DeckAttributes::DeckAttributes(int index,
             this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
     connect(m_pPlayer, SIGNAL(playerEmpty()),
             this, SLOT(slotPlayerEmpty()));
-    m_playPos.connectValueChanged(this, SLOT(slotPlayPosChanged(double)));
-    m_play.connectValueChanged(this, SLOT(slotPlayChanged(double)));
+    m_playPos.connectValueChanged(this, &DeckAttributes::slotPlayPosChanged);
+    m_play.connectValueChanged(this, &DeckAttributes::slotPlayChanged);
 }
 
 DeckAttributes::~DeckAttributes() {

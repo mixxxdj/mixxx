@@ -186,8 +186,10 @@ BPMDetect::BPMDetect(int numChannels, int aSampleRate) :
 
     // choose decimation factor so that result is approx. 1000 Hz
     decimateBy = sampleRate / TARGET_SRATE;
-    assert(decimateBy > 0);
-    assert(INPUT_BLOCK_SIZE < decimateBy * DECIMATED_BLOCK_SIZE);
+    if ((decimateBy <= 0) || (decimateBy * DECIMATED_BLOCK_SIZE < INPUT_BLOCK_SIZE))
+    {
+        ST_THROW_RT_ERROR("Too small samplerate");
+    }
 
     // Calculate window length & starting item according to desired min & max bpms
     windowLen = (60 * sampleRate) / (decimateBy * MIN_BPM);

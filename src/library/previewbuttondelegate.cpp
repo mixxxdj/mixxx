@@ -16,7 +16,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(QTableView* parent, int column)
           m_column(column) {
     m_pPreviewDeckPlay = new ControlProxy(
             PlayerManager::groupForPreviewDeck(0), "play", this);
-    m_pPreviewDeckPlay->connectValueChanged(SLOT(previewDeckPlayChanged(double)));
+    m_pPreviewDeckPlay->connectValueChanged(this, &PreviewButtonDelegate::previewDeckPlayChanged);
 
     m_pCueGotoAndPlay = new ControlProxy(
             PlayerManager::groupForPreviewDeck(0), "cue_gotoandplay", this);

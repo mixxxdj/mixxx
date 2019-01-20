@@ -51,7 +51,6 @@ available_features = [features.Mad,
                       features.WavPack,
                       features.ModPlug,
                       features.TestSuite,
-                      features.Vamp,
                       features.ColorDiagnostics,
                       features.Sanitizers,
                       features.LocaleCompare,
@@ -94,16 +93,10 @@ build.env.Alias("compiledb", build.env.CompilationDatabase('compile_commands.jso
 # Build compile_commands.json by default.
 build.env.Default("compile_commands.json")
 
-# Build VAMP plugins.
-mixxxminimal_plugins = SConscript(
-    'vamp-plugins/SConscript',
-    variant_dir=build.build_dir + "/vamp-plugins",
-    duplicate=0, exports=['build'])
-
 # Setup and build the "mixxx" executable target. Also sets up our install
 # targets for each platform.
 SConscript('SConscript', variant_dir=build.build_dir, duplicate=0,
-           exports=['build', 'sources', 'mixxxminimal_plugins'])
+           exports=['build', 'sources'])
 
 #On OS X, if the bundle has been built, copy it up:
 #Command("Mixxx.app", os.path.join(build.build_dir, "Mixxx.app"), Copy("$TARGET", "$SOURCE"))

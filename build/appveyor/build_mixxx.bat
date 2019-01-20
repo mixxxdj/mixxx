@@ -78,7 +78,7 @@ SET BIN_DIR=%WINLIB_DIR%\bin
 SET LIB_DIR=%WINLIB_DIR%\lib
 SET INCLUDE_DIR=%WINLIB_DIR%\include
 REM TODO(rryan): Remove hard-coding of Qt version.
-set QT_VERSION=5.11.2
+set QT_VERSION=5.12.0
 SET QTDIR=%WINLIB_DIR%\Qt-%QT_VERSION%
 
 if NOT EXIST "%BIN_DIR%\scons.py" (
