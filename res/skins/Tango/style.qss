@@ -1907,10 +1907,6 @@ WTrackProperty#SamplerTitle_mini {
   margin-right: 3px;
 }
 
-#SpinnyMini {
-  background-color: transparent;
-}
-
 /*################################################################
  ######  Preview Deck  ##########################################
 ##############################################################*/
@@ -2338,7 +2334,7 @@ WLibrary QPushButton {
   QPushButton#btnUnhide {
     font-weight: bold;
   }
-  
+
   /* 'Enable AutoDJ' button	*/
   QPushButton#pushButtonAutoDJ:hover,
   QPushButton#pushButtonRecording:hover,
