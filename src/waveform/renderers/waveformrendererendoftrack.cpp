@@ -72,7 +72,7 @@ void WaveformRendererEndOfTrack::onResize() {
 void WaveformRendererEndOfTrack::draw(QPainter* painter,
                                       QPaintEvent* /*event*/) {
 
-    const double trackSamples = m_waveformRenderer->getTrackSamples();
+    const double trackSamples = m_waveformRenderer->getNumberOfSamples();
     const double sampleRate = m_pTrackSampleRate->get();
     /*qDebug() << "WaveformRendererEndOfTrack :: "
              << "trackSamples" << trackSamples

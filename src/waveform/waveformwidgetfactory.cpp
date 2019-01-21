@@ -258,9 +258,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","OverviewNormalized"), ConfigValue(m_overviewNormalized));
     }
 
-    bool showBarAndPhrase = m_config->getValue(ConfigKey("[Waveform]","BarAndPhrase"), m_showBarAndPhrase);
+    int showBarAndPhrase = m_config->getValueString(ConfigKey("[Waveform]","BarAndPhrase")).toInt(&ok);
     if (ok) {
-        setBarAndPhrase(static_cast<bool>(barAndPhrase));
+    	setShowBarAndPhrase(static_cast<bool>(showBarAndPhrase));
     } else {
         m_config->set(ConfigKey("[Waveform]","BarAndPhrase"), ConfigValue(m_showBarAndPhrase));
     }
@@ -488,9 +488,11 @@ void WaveformWidgetFactory::setOverviewNormalized(bool normalize) {
     }
 }
 
-void WaveformWidgetFactory::setBarAndPhrase(bool barAndPhrase) {
-    m_showBarAndPhrase = barAndPhrase;
+void WaveformWidgetFactory::setShowBarAndPhrase(bool showBarAndPhrase) {
+    qDebug() << "JVC setShowBarAndPhrase(" << showBarAndPhrase << ")";
+    m_showBarAndPhrase = showBarAndPhrase;
     if (m_config) {
+        qDebug() << "JVC m_config true";
         m_config->set(ConfigKey("[Waveform]","BarAndPhrase"), ConfigValue(m_showBarAndPhrase));
     }
 }

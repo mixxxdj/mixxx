@@ -7,6 +7,7 @@
 #include "util/class.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "preferences/usersettings.h"
+#include "control/controlproxy.h"
 
 class WaveformRenderBeat : public WaveformRendererAbstract {
   public:
@@ -21,6 +22,7 @@ class WaveformRenderBeat : public WaveformRendererAbstract {
     QColor m_barColor;
     QColor m_phraseColor;
     QVector<QLineF> m_beats;
+    ControlProxy* m_showBarAndPhrase;
 
     const int c_numberOfChannels = 2;
     const int c_secondsPerMinute = 60;

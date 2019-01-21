@@ -11,8 +11,9 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
-WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
-        : WaveformRendererAbstract(waveformWidgetRenderer) {
+WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer) :
+        WaveformRendererAbstract(waveformWidgetRenderer),
+        m_showBarAndPhrase(new ControlProxy("[Waveform]","BarAndPhrase")){
     m_beats.resize(128);
 }
 
@@ -26,10 +27,6 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
     m_barColor = WSkinColor::getCorrectColor(m_barColor).toRgb();
     m_phraseColor.setNamedColor(context.selectString(node, "PhraseColor"));
     m_phraseColor = WSkinColor::getCorrectColor(m_phraseColor).toRgb();
-
-    // trying to get the preferences
-    //ConfigKey prefs = new ConfigKey("[Waveform]", "BarAndPhrase");
-    //m_showBarAndPhrase = prefs->get
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -55,7 +52,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     m_phraseColor.setAlphaF(alpha/100.0);
 
     // Get number of sample in the track
-    const int trackSamples = m_waveformRenderer->getTrackSamples();
+    const int trackSamples = m_waveformRenderer->getNumberOfSamples();
 
     // Empty track, nothing to do - Can happen when track fails to load
     if (trackSamples <= 0) {
@@ -114,10 +111,11 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         long beatNum = round(beatPosition / beatLength);
 
         // Selects the right pen, if we are in phrase also paints the phrase tag
-        bool showBarAndPhrase = true;
+        //bool showBarAndPhrase = true;
+        bool showBarAndPhrase = m_showBarAndPhrase->toBool();
         if(beatNum % (c_beatsPerBar * c_barsPerPhrase) == 0 && beatNum > 0 && showBarAndPhrase) {
-        	// Selects the font
-        	QFont font; // Uses the application default
+            // Selects the font
+            QFont font; // Uses the application default
             font.setPointSizeF(10 * scaleFactor());
             font.setStretch(100);
             font.setWeight(75);
@@ -165,7 +163,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
         if (orientation == Qt::Horizontal) {
             painter->drawLine(xBeatPoint, 0.0f, xBeatPoint, rendererHeight);
         } else {
-        	painter->drawLine(0.0f, xBeatPoint, rendererWidth, xBeatPoint);
+            painter->drawLine(0.0f, xBeatPoint, rendererWidth, xBeatPoint);
         }
     }
 

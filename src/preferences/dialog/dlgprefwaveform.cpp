@@ -73,8 +73,8 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             this, SLOT(slotSetVisualGainHigh(double)));
     connect(normalizeOverviewCheckBox, SIGNAL(toggled(bool)),
             this, SLOT(slotSetNormalizeOverview(bool)));
-    connect(showBarAndPhraseMarksCheckBox, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetBarAndPhrase(bool)));
+    connect(showBarAndPhraseMarksCheckBox, &QCheckBox::toggled,
+            this, &DlgPrefWaveform::slotSetBarAndPhrase);
     connect(factory, SIGNAL(waveformMeasured(float,int)),
             this, SLOT(slotWaveformMeasured(float,int)));
     connect(waveformOverviewComboBox, SIGNAL(currentIndexChanged(int)),
@@ -233,8 +233,9 @@ void DlgPrefWaveform::slotSetNormalizeOverview(bool normalize) {
     WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
 }
 
-void DlgPrefWaveform::slotSetBarAndPhrase(bool barAndPhrase) {
-    WaveformWidgetFactory::instance()->setBarAndPhrase(barAndPhrase);
+void DlgPrefWaveform::slotSetBarAndPhrase(bool showBarAndPhrase) {
+    qDebug() << "slotSetBarAndPhrase(" << showBarAndPhrase << ")";
+    WaveformWidgetFactory::instance()->setShowBarAndPhrase(showBarAndPhrase);
 }
 
 void DlgPrefWaveform::slotWaveformMeasured(float frameRate, int droppedFrames) {
