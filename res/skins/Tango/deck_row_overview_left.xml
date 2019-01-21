@@ -94,6 +94,8 @@ Variables:
           <!-- Small Cover/Spinny when it's actually BIG, but Channel Mixer replaces big Cover/Spinny -->
           <WidgetGroup>
             <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <MaximumSize>50,50</MaximumSize>
             <Children>
               <WidgetGroup>
                 <Layout>horizontal</Layout>

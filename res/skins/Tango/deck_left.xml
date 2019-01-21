@@ -74,6 +74,7 @@ Variables:
 
           <!-- Spinny/Cover if BIG spinny is enabled -->
           <WidgetGroup>
+            <ObjectName>AlignTop</ObjectName>
             <SizePolicy>max,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
