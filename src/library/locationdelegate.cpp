@@ -12,8 +12,9 @@ LocationDelegate::LocationDelegate(QTableView* pTableView)
 
 void LocationDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option,
                          const QModelIndex& index) const {
-    QString elidedLocation = option.fontMetrics.elidedText(index.data().toString(),
-                                                           Qt::ElideLeft,
-                                                           m_pTableView->columnWidth(index.column()));
-    painter->drawText(option.rect, elidedLocation);
+    QString elidedLocation =
+            option.fontMetrics.elidedText(index.data().toString(),
+                                          Qt::ElideLeft,
+                                          m_pTableView->columnWidth(index.column()));
+    painter->drawText(option.rect, Qt::AlignVCenter, elidedLocation);
 }
