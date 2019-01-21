@@ -15,14 +15,14 @@ Variables:
   <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
 
   <SingletonDefinition>
-    <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
+    <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
     <Children>
       <Template src="skin:deck_row_overview_right.xml"/>
     </Children>
   </SingletonDefinition>
 
   <SingletonDefinition>
-    <ObjectName>DeckArtistTitleTime<Variable name="chanNum"/></ObjectName>
+    <ObjectName>DeckTextRow<Variable name="chanNum"/></ObjectName>
     <Children>
       <WidgetGroup>
         <Layout>horizontal</Layout>
@@ -31,7 +31,7 @@ Variables:
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:loop_indicator.xml"/>
-              <Template src="skin:deck_row_artist_title_right.xml"/>
+              <Template src="skin:deck_row_text_right.xml"/>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
@@ -43,7 +43,7 @@ Variables:
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:loop_indicator.xml"/>
-              <Template src="skin:deck_row_artist_title_left.xml"/>
+              <Template src="skin:deck_row_text_left.xml"/>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Tango],symmetric_time</ConfigKey>
@@ -115,7 +115,7 @@ Variables:
             <Layout>horizontal</Layout>
             <Children>
 
-              <Template src="skin:spinnyCover_maxi.xml"/>
+              <Template src="skin:spinny_cover_maxi.xml"/>
 
               <!-- 3px margin to main deck -->
               <WidgetGroup>
@@ -175,7 +175,7 @@ Variables:
         <Layout>vertical</Layout>
         <Children>
 
-          <!-- Packed Waveform & ArtistTitle into a fixed-size container,
+          <!-- Packed Overview & ArtistTitle into a fixed-size container,
           so Deck stays steady while Comment and LoopBeatjump controls can be toggled.
           Symmetrical decks [Waveforn/Artist/Deckbuttons] can be enabled in skin settings.
           1 Waveform
@@ -188,13 +188,13 @@ Variables:
             <Children>
 
               <SingletonContainer>
-                <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
+                <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
               </SingletonContainer>
 
               <Template src="skin:deck_row_comment_right.xml"/>
 
               <SingletonContainer>
-                <ObjectName>DeckArtistTitleTime<Variable name="chanNum"/></ObjectName>
+                <ObjectName>DeckTextRow<Variable name="chanNum"/></ObjectName>
               </SingletonContainer>
 
             </Children>
@@ -210,14 +210,21 @@ Variables:
             <Children>
 
               <SingletonContainer>
-                <ObjectName>DeckArtistTitleTime<Variable name="chanNum"/></ObjectName>
+                <ObjectName>DeckTextRow<Variable name="chanNum"/></ObjectName>
               </SingletonContainer>
 
               <Template src="skin:deck_row_comment_right.xml"/>
 
-              <SingletonContainer>
-                <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
-              </SingletonContainer>
+              <WidgetGroup><!--
+                <ObjectName>DeckOverviewBox<Variable name="chanNum"/></ObjectName> -->
+                <Layout>horizontal</Layout>
+                <Size>0me,50f</Size>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
 
             </Children>
             <Connection>

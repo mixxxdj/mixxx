@@ -1,0 +1,77 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>DecksSizer</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,max</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skin:deck_small.xml">
+            <SetVariable name="channum">1</SetVariable>
+            <SetVariable name="signal_color">#E7C413</SetVariable>
+            <SetVariable name="SignalBgColor">#2f290a</SetVariable>
+            <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+            <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+            <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+          </Template>
+
+          <Template src="skin:deck_small.xml">
+            <SetVariable name="channum">2</SetVariable>
+            <SetVariable name="signal_color">#E7C413</SetVariable>
+            <SetVariable name="SignalBgColor">#2f290a</SetVariable>
+            <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+            <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+            <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+          </Template>
+
+          <WidgetGroup>
+            <Size>5f,1min</Size>
+            <Connection>
+              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skin:deck_small.xml">
+            <SetVariable name="channum">3</SetVariable>
+            <SetVariable name="signal_color">#09B2AE</SetVariable>
+            <SetVariable name="SignalBgColor">#2f290a</SetVariable>
+            <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+            <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+            <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+          </Template>
+
+          <Template src="skin:deck_small.xml">
+            <SetVariable name="channum">4</SetVariable>
+            <SetVariable name="signal_color">#09B2AE</SetVariable>
+            <SetVariable name="SignalBgColor">#2f290a</SetVariable>
+            <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+            <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+            <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+          </Template>
+
+          <WidgetGroup>
+            <Size>5f,1min</Size>
+            <Connection>
+              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>
