@@ -46,13 +46,8 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             WImageStore::setLoader(imsrc);
             WSkinColor::setLoader(imsrc);
 
-            // ronso0 :: find <SetVariable> nodes, update them.
             // This calls SkinContext::updateVariables in skincontext.cpp which
-            // iterates over all <SetVariable> nodes
-            // *pContext->updateVariables(schemeNode);  //Fail
-            // (*pContext.updateVariables)(schemeNode);  //Fail
-            // (*pContext->updateVariables)(schemeNode);  //Fail
-            // void *pContext->updateVariables(schemeNode);  //Fail
+            // iterates over all <SetVariable> nodes in the selected color scheme node
             pContext->updateVariables(schemeNode);
 
 
