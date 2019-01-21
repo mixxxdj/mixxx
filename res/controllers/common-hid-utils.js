@@ -26,7 +26,7 @@ HIDController.prototype.softTakeoverAll = function() {
 }
 
 HIDController.prototype.clearLights = function(packetName) {
-    const groups = this.lightsPacket(packetName).groups
+    const groups = this.getLightsPacket(packetName).groups
     for (var groupName in groups) {
         const group = groups[groupName]
         for (var control in group) {
@@ -37,18 +37,18 @@ HIDController.prototype.clearLights = function(packetName) {
 }
 
 HIDController.prototype.sendLightsUpdate = function (packetName) {
-    this.lightsPacket(packetName).send()
+    this.getLightsPacket(packetName).send()
 }
 
-HIDController.prototype.lightsPacket = function (packetName) {
+HIDController.prototype.getLightsPacket = function (packetName) {
     return this.getOutputPacket(packetName ? packetName : 'lights')
 }
 
 
 HIDController.prototype.connectLight = function (group, name, setter) {
-    setter(engine.getValue(group, name), this.lightsPacket(), group, name)
+    setter(engine.getValue(group, name), this.getLightsPacket(), group, name)
     const fun = function (value, group, name) {
-        setter(value, this.lightsPacket(), group, name)
+        setter(value, this.getLightsPacket(), group, name)
         this.sendLightsUpdate()
     }
     engine.connectControl(group, name, fun)
