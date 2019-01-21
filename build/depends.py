@@ -682,11 +682,6 @@ class LAME(Dependence):
         if not conf.CheckLib(['libmp3lame', 'libmp3lame-static']):
             raise Exception("Could not find libmp3lame.")
 
-class FdkAac(Dependence):
-    def configure(self, build, conf):
-        if not conf.CheckLib(['libfdk-aac']):
-            raise Exception("Could not find libfdk-aac.")
-
 class MixxxCore(Feature):
 
     def description(self):
@@ -1514,7 +1509,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp, FdkAac]
+                QueenMaryDsp]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
