@@ -12,57 +12,22 @@ Variables:
   SignalRGBLowColor   :
   SignalRGBMidColor   :
   SignalRGBHighColor  :
-  SignalBgColor_1     : for hidden scrolling waveform
-  SignalColor_1       :
 -->
 <Template>
   <WidgetGroup>
     <ObjectName>Spacer0f</ObjectName>
-    <Layout>stacked</Layout>
-    <SizePolicy>me,f</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Size>0me,50f</Size>
     <Children>
       <WidgetGroup>
-        <ObjectName>DeckOverview<Variable name="chanNum"/></ObjectName>
+        <ObjectName>DeckOverviewRow<Variable name="chanNum"/></ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>me,f</SizePolicy>
+        <SizePolicy>me,me</SizePolicy>
         <Children>
 
-          <Overview>
-            <TooltipId>waveform_overview</TooltipId>
-            <Channel><Variable name="chanNum"/></Channel>
-            <Size>1me,50f</Size>
-            <BgColor><Variable name="SignalBgColor"/></BgColor>
-            <SignalColor><Variable name="SignalColor"/></SignalColor>
-            <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
-            <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-            <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
-            <PlayPosColor>#FF4300</PlayPosColor>
-            <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
-            <EndOfTrackColor>#EA0085</EndOfTrackColor>
-            <DefaultMark>
-              <Align>bottom|right</Align>
-              <Color>#00FF00</Color>
-              <TextColor>#FFFFFF</TextColor>
-              <Text> %1 </Text>
-            </DefaultMark>
-            <MarkRange>
-              <StartControl>loop_start_position</StartControl>
-              <EndControl>loop_end_position</EndControl>
-              <EnabledControl>loop_enabled</EnabledControl>
-              <Color>#00FF00</Color>
-              <DisabledColor>#FFFFFF</DisabledColor>
-            </MarkRange>
-            <Mark>
-              <Control>cue_point</Control>
-              <Text>Q</Text>
-              <Align>top|right</Align>
-              <Color>#FF0080</Color>
-              <TextColor>#FFFFFF</TextColor>
-            </Mark>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
-            </Connection>
-          </Overview><!-- /Overview -->
+          <SingletonContainer>
+            <ObjectName>DeckOverviewSingleton<Variable name="chanNum"/></ObjectName>
+          </SingletonContainer>
 
           <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1min</Size></WidgetGroup>
 
@@ -109,25 +74,37 @@ Variables:
             </Children>
           </WidgetGroup><!-- /Vinyl Controls toggles -->
 
-          <WidgetGroup><!-- show when Spinny/Cover ON & small selected -->
+          <!-- Small Cover/Spinny when explicitely set 'small' -->
+          <WidgetGroup>
             <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <MaximumSize>50,50</MaximumSize>
             <Children>
-              <Template src="skin:spinnyCover_mini.xml"/>
+              <SingletonContainer>
+                <ObjectName>SpinnyCoverMini_Singleton<Variable name="chanNum"/></ObjectName>
+              </SingletonContainer>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform><Not/></Transform>
             </Connection>
-          </WidgetGroup><!-- Small Cover/Spinny -->
+          </WidgetGroup><!-- Small Cover/Spinny 1 -->
 
-          <WidgetGroup><!-- Small Cover/Spinny when it's actually BIG, but Channel Mixer is visible -->
+          <!-- Small Cover/Spinny when it's actually BIG, but Channel Mixer replaces big Cover/Spinny -->
+          <WidgetGroup>
             <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <MaximumSize>50,50</MaximumSize>
             <Children>
               <WidgetGroup>
                 <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <MaximumSize>50,50</MaximumSize>
                 <Children>
-                  <Template src="skin:spinnyCover_mini.xml"/>
+                  <SingletonContainer>
+                    <ObjectName>SpinnyCoverMini_Singleton<Variable name="chanNum"/></ObjectName>
+                  </SingletonContainer>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
@@ -139,11 +116,11 @@ Variables:
               <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-          </WidgetGroup><!-- / Small Cover/Spinny when it's actually BIG, but Channel Mixer is visible -->
+          </WidgetGroup><!-- / Small Cover/Spinny 2 -->
 
         </Children>
-      </WidgetGroup><!-- /Overview Row -->
+      </WidgetGroup><!-- DeckOverviewRowN -->
 
     </Children>
-  </WidgetGroup><!-- /Overview Row -->
+  </WidgetGroup><!-- Spacer0f -->
 </Template>

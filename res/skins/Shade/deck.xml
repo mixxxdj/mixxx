@@ -140,67 +140,15 @@
                       Visual- Waveform
                       **********************************************
                       -->
-                      <Visual>
-                        <TooltipId>waveform_display</TooltipId>
-                        <Style></Style>
-                        <Channel><Variable name="channum"/></Channel>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
                         <Size>0e,81f</Size>
-                        <!--See comment about <Size> above-->
-                        <!--<Size>415,119</Size>-->
-                        <BgColor>#8D98A3</BgColor>
-                        <!--<BgPixmap>style/style_bg_waveform.png</BgPixmap>-->
-                        <SignalHighColor></SignalHighColor>
-                        <SignalMidColor></SignalMidColor>
-                        <SignalLowColor></SignalLowColor>
-                        <SignalColor>#191F24</SignalColor>
-                        <BeatColor>#FFFFFF</BeatColor>
-                        <PlayPosColor>#00FF00</PlayPosColor>
-                        <EndOfTrackColor>#EA0000</EndOfTrackColor>
-                        <AxesColor>#00FF00</AxesColor>
-                        <Align></Align>
-                        <DefaultMark>
-                          <Align>top</Align>
-                          <Color>#FD0564</Color>
-                          <TextColor>#FFFFFF</TextColor>
-                          <Text> %1 </Text>
-                        </DefaultMark>
-                        <MarkRange>
-                          <StartControl>loop_start_position</StartControl>
-                          <EndControl>loop_end_position</EndControl>
-                          <EnabledControl>loop_enabled</EnabledControl>
-                          <Color>#00FF00</Color>
-                          <DisabledColor>#BCDBFB</DisabledColor>
-                        </MarkRange>
-                        <Mark>
-                          <Control>loop_start_position</Control>
-                          <Text>IN</Text>
-                          <Align>bottom</Align>
-                          <Color>#00FF00</Color>
-                          <TextColor>#FFFFFF</TextColor>
-                        </Mark>
-                        <Mark>
-                          <Control>loop_end_position</Control>
-                          <Text>OUT</Text>
-                          <Align>bottom</Align>
-                          <Color>#00FF00</Color>
-                          <TextColor>#FFFFFF</TextColor>
-                        </Mark>
-                        <!--
-                        The hotcues not represented by a button in the current skin
-                        show only in the waveform under two circumstances:
-                        - if a MIDI device which supports more hotcues than buttons
-                          are in the current skin has them activated
-                        - if you change from a skin which supports more hotcues
-                          than buttons are in the current skin (and has them activated)
-                        -->
-                        <Mark>
-                          <Control>cue_point</Control>
-                          <Text>CUE</Text>
-                          <Align>top</Align>
-                          <Color>#FF001C</Color>
-                          <TextColor>#FFFFFF</TextColor>
-                        </Mark>
-                      </Visual>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>Waveform<Variable name="channum"/></ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                      </WidgetGroup>
 
                       <!-- Spinning Vinyl & VinylControl -->
                       <WidgetGroup>
@@ -253,46 +201,9 @@
                 <BackPath>style/style_bg_deck_woverview.png</BackPath>
                 <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
                 <Children>
-                  <Overview>
-                    <TooltipId>waveform_overview</TooltipId>
-                    <Style></Style>
-                    <Channel><Variable name="channum"/></Channel>
-                    <Size>0e,37f</Size>
-                    <!-- transparent background if no <BgColor> & <BgPixmap> is present -->
-                    <BgColor></BgColor>
-                    <BgPixmap></BgPixmap>
-                    <SignalHighColor></SignalHighColor>
-                    <SignalMidColor></SignalMidColor>
-                    <SignalLowColor></SignalLowColor>
-                    <SignalColor>#191F24</SignalColor>
-                    <PlayPosColor>#00FF00</PlayPosColor>
-                    <EndOfTrackColor>#EA0000</EndOfTrackColor>
-                    <PlayedOverlayColor>#60000000</PlayedOverlayColor>
-                    <DefaultMark>
-                      <Align>bottom|right</Align>
-                      <Color>#FD0564</Color>
-                      <TextColor>#FFFFFF</TextColor>
-                      <Text> %1 </Text>
-                    </DefaultMark>
-                    <MarkRange>
-                      <StartControl>loop_start_position</StartControl>
-                      <EndControl>loop_end_position</EndControl>
-                      <EnabledControl>loop_enabled</EnabledControl>
-                      <Color>#00FF00</Color>
-                      <DisabledColor>#FFFFFF</DisabledColor>
-                    </MarkRange>
-                    <Mark>
-                      <Control>cue_point</Control>
-                      <Text>C</Text>
-                      <Align>top|right</Align>
-                      <Color>#FF001C</Color>
-                      <TextColor>#FFFFFF</TextColor>
-                    </Mark>
-                    <Connection>
-                      <ConfigKey>[Channel<Variable name="channum"/>],playposition</ConfigKey>
-                      <EmitOnDownPress>false</EmitOnDownPress>
-                    </Connection>
-                  </Overview>
+                  <SingletonContainer>
+                    <ObjectName>Overview<Variable name="channum"/></ObjectName>
+                  </SingletonContainer>
                 </Children>
               </WidgetGroup>
               <WidgetGroup>
@@ -453,7 +364,7 @@
               <ButtonState>LeftButton</ButtonState>
             </Connection>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],beatsync_phase</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],beatsync_tempo</ConfigKey>
               <ButtonState>RightButton</ButtonState>
             </Connection>
           </PushButton>

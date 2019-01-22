@@ -792,7 +792,7 @@ void LoopingControl::notifySeek(double dNewPlaypos, bool adjustingPhase) {
 void LoopingControl::setLoopingEnabled(bool enabled) {
     m_bLoopingEnabled = enabled;
     m_pCOLoopEnabled->set(enabled);
-    BeatLoopingControl* pActiveBeatLoop = load_atomic_pointer(m_pActiveBeatLoop);
+    BeatLoopingControl* pActiveBeatLoop = m_pActiveBeatLoop.load();
     if (pActiveBeatLoop != nullptr) {
         if (enabled) {
             pActiveBeatLoop->activate();

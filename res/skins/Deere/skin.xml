@@ -180,6 +180,78 @@
     </SingletonDefinition>
 
     <SingletonDefinition>
+      <ObjectName>DeckCoverArt1</ObjectName>
+      <Children>
+        <Template src="skin:coverart.xml">
+          <SetVariable name="group">[Channel1]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckCoverArt2</ObjectName>
+      <Children>
+        <Template src="skin:coverart.xml">
+          <SetVariable name="group">[Channel2]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckCoverArt3</ObjectName>
+      <Children>
+        <Template src="skin:coverart.xml">
+          <SetVariable name="group">[Channel3]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckCoverArt4</ObjectName>
+      <Children>
+        <Template src="skin:coverart.xml">
+          <SetVariable name="group">[Channel4]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview1</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="group">[Channel1]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview2</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="group">[Channel2]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview3</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="group">[Channel3]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview4</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="group">[Channel4]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
       <ObjectName>Library</ObjectName>
       <Children>
         <Template src="skin:library.xml"/>
@@ -269,12 +341,16 @@
         </Splitter><!-- /Visible when Library is not maximized -->
 
         <WidgetGroup><!-- Maximized Library -->
-          <Layout>horizontal</Layout>
+          <Layout>vertical</Layout>
           <SizePolicy>me,me</SizePolicy>
           <Children>
+
+            <Template src="skin:decks_small.xml"/>
+
             <SingletonContainer>
               <ObjectName>Library</ObjectName>
             </SingletonContainer>
+
           </Children>
           <Connection>
             <ConfigKey>[Master],maximize_library</ConfigKey>
