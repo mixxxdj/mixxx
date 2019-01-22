@@ -379,7 +379,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(pConfig);
 
-    qWarning() << "Creating Idcmp Jucntion";
     m_pIdcmpJunction = new IdcmpJunction(m_pPlayerManager);
 
     launchProgress(47);
