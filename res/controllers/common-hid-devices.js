@@ -1,7 +1,7 @@
 
 
 // Generic HID trackpad implementation
-function HIDTrackpadDevice() {
+HIDTrackpadDevice = function() {
     this.controller = new HIDController();
 
     this.registerInputPackets = function() {
@@ -38,7 +38,7 @@ function HIDTrackpadDevice() {
 }
 
 // Generic HID keyboard implementation 
-function HIDKeyboardDevice() {
+HIDKeyboardDevice = function() {
     this.controller = new HIDController();
 
     this.registerInputPackets = function() {

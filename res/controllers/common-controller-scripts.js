@@ -14,15 +14,15 @@ String.prototype.toInt = function() {
 // ----------------- Function overloads ---------------------
 
 // Causes script print() calls to appear in the log file as well
-function print(string) {
+print = function(string) {
     engine.log(string);
 }
 
-function printObject(obj, maxdepth) {
+printObject = function(obj, maxdepth) {
     print(stringifyObject(obj, maxdepth));
 }
 
-function stringifyObject(obj, maxdepth, checked, prefix) {
+stringifyObject = function(obj, maxdepth, checked, prefix) {
     if (!maxdepth)
         maxdepth = 2;
     try {
@@ -47,7 +47,7 @@ function stringifyObject(obj, maxdepth, checked, prefix) {
     return obj;
 }
 
-function arrayContains(array, elem) {
+arrayContains = function(array, elem) {
     for (var i = 0; i < array.length; i++) {
         if (array[i] === elem)
             return true;
@@ -57,7 +57,7 @@ function arrayContains(array, elem) {
 
 // ----------------- Generic functions ---------------------
 
-function secondstominutes(secs) {
+secondstominutes = function(secs) {
    var m = (secs / 60) | 0;
 
    return (m < 10 ? "0" + m : m)
@@ -65,7 +65,7 @@ function secondstominutes(secs) {
           + ( ( secs %= 60 ) < 10 ? "0" + secs : secs);
 }
 
-function msecondstominutes(msecs) {
+msecondstominutes = function(msecs) {
     var m = (msecs / 60000) | 0;
     msecs %= 60000;
     var secs = (msecs / 1000) | 0;
@@ -81,7 +81,7 @@ function msecondstominutes(msecs) {
         + ( msecs < 10 ? "0" + msecs : msecs);
 }
 
-function script() {}
+script = function() {}
 
 // DEPRECATED -- use script.midiDebug() instead
 script.debug = function (channel, control, value, status, group) {
@@ -401,7 +401,7 @@ script.softStart = function(channel, control, value, status, group, factor) {
 }
 
 // bpm - Used for tapping the desired BPM for a deck
-function bpm() {}
+bpm = function() {}
 
 bpm.tapTime = 0.0;
 bpm.tap = [];   // Tap sample values
@@ -464,7 +464,7 @@ function Controller () {
 Controller.prototype.addButton = function(buttonName, button, eventHandler) {
    if(eventHandler) {
       var executionEnvironment = this;
-      function handler(value) {
+      handler = function(value) {
          button.state = value;
          executionEnvironment[eventHandler](value);
       }
@@ -478,7 +478,7 @@ Controller.prototype.setControlValue = function(control, value) {
 }
 
 //Button
-function Button(controlId) {
+Button = function(controlId) {
    this.controlId = controlId;
    this.state = ButtonState.released;
 }
@@ -487,7 +487,7 @@ Button.prototype.handleEvent = function(value) {
 };
 
 //Control
-function Control(mappedFunction, softMode) {
+Control = function(mappedFunction, softMode) {
    // These defaults are for MIDI controllers
    this.minInput = 0;
    this.midInput = 0x3F;

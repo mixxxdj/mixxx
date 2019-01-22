@@ -8,7 +8,7 @@ HIDDebug = function (message) {
  * Collection of bits in one parsed packet field. These objects are
  * created by HIDPacket addControl and addOutput and should not be
  * created manually. */
-function HIDBitVector() {
+HIDBitVector = function() {
     this.size = 0;
     this.bits = {};
 }
@@ -63,7 +63,7 @@ HIDBitVector.prototype.addOutputMask = function (group, name, bitmask) {
  *
  * Wraps all defined modifiers to one object with uniform API.
  * Don't call directly, this is available as HIDController.modifiers */
-function HIDModifierList() {
+HIDModifierList = function() {
     this.modifiers = Object();
     this.callbacks = Object();
 }
@@ -122,7 +122,7 @@ HIDModifierList.prototype.setCallback = function (name, callback) {
  * @param header   (optional) list of bytes to match from beginning
  *          of packet. Do NOT put the report ID in this; use
  *          the reportId parameter instead. */
-function HIDPacket(name, reportId, callback, header) {
+HIDPacket = function(name, reportId, callback, header) {
     this.name = name;
     this.header = header;
     this.callback = callback;
@@ -707,7 +707,7 @@ HIDPacket.prototype.send = function (debug) {
  * scratchRampOnEnable      If 'ramp' is used when enabling scratch
  * scratchRampOnDisable     If 'ramp' is used when disabling scratch
  */
-function HIDController() {
+HIDController = function() {
     this.initialized = false;
     this.activeDeck = undefined;
 
