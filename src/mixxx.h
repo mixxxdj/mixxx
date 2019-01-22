@@ -51,6 +51,8 @@ class SoundManager;
 class VinylControlManager;
 class WMainMenuBar;
 
+class IdcmpJunction;
+
 typedef QSharedPointer<SettingsManager> SettingsManagerPointer;
 
 // This Class is the base class for Mixxx. It sets up the main
@@ -164,6 +166,8 @@ class MixxxMainWindow : public QMainWindow {
     BroadcastManager* m_pBroadcastManager;
 #endif
     ControllerManager* m_pControllerManager;
+
+    IdcmpJunction *m_pIdcmpJunction;
 
     GuiTick* m_pGuiTick;
 

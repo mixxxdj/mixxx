@@ -73,6 +73,8 @@
 #include "util/logger.h"
 #include "util/db/dbconnectionpooled.h"
 
+#include "idcmp/junction.h"
+
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrolmanager.h"
 #endif
@@ -137,6 +139,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pBroadcastManager(nullptr),
 #endif
           m_pControllerManager(nullptr),
+          m_pIdcmpJunction(nullptr),
           m_pGuiTick(nullptr),
 #ifdef __VINYLCONTROL__
           m_pVCManager(nullptr),
@@ -375,6 +378,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // (long)
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(pConfig);
+
+    qWarning() << "Creating Idcmp Jucntion";
+    m_pIdcmpJunction = new IdcmpJunction(m_pPlayerManager);
 
     launchProgress(47);
 

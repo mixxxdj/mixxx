@@ -1236,6 +1236,8 @@ class MixxxCore(Feature):
                    "util/indexrange.cpp",
                    "util/widgetrendertimer.cpp",
 
+                   "idcmp/junction.cpp",
+
                    '#res/mixxx.qrc'
                    ]
 
