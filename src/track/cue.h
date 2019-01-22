@@ -29,10 +29,8 @@ class Cue : public QObject {
         BEAT    = 3,
         LOOP    = 4,
         JUMP    = 5,
-        INTRO_START = 6,
-        INTRO_END   = 7,
-        OUTRO_START = 8,
-        OUTRO_END   = 9,
+        INTRO   = 6,
+        OUTRO   = 7,
     };
 
     ~Cue() override;
