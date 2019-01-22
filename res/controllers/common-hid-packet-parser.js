@@ -142,7 +142,7 @@ function HIDPacket(name, reportId, callback, header) {
 /** Pack a field value to the packet.
  * Can only pack bits and byte values, patches welcome. */
 HIDPacket.prototype.pack = function (data, field) {
-    var value = 0;
+    var value;
     if (!(field.pack in this.packSizes)) {
         HIDDebug("ERROR parsing packed value: invalid pack format "+field.pack);
         return;
@@ -243,8 +243,8 @@ HIDPacket.prototype.getFieldByOffset = function (offset, pack) {
         return undefined;
     }
     var end_offset = offset+this.packSizes[pack];
-    var group = undefined;
-    var field = undefined;
+    var group;
+    var field;
     for (var group_name in this.groups) {
         group = this.groups[group_name];
         for (var field_id in group) {
@@ -646,8 +646,6 @@ HIDPacket.prototype.parse = function (data) {
  * field object values are packed to the HID packet according to the
  * field type. */
 HIDPacket.prototype.send = function (debug) {
-    var offset = 0;
-    var i;
     var data = [];
 
     if (this.header !== undefined) {
@@ -970,7 +968,6 @@ HIDController.prototype.unlinkControl = function (group, name) {
  * data details. The default control data packet must be named in
  * variable this.defaultPacket to allow automatic processing. */
 HIDController.prototype.registerInputPacket = function (packet) {
-    var name;
     // Find modifiers and other special cases from packet fields
     for (var group_name in packet.groups) {
         var group = packet.groups[group_name];
@@ -1127,8 +1124,6 @@ HIDController.prototype.getActiveFieldControl = function (field) {
 
 /** Process given button field, triggering events */
 HIDController.prototype.processButton = function (field) {
-    var control;
-    var value;
     var group = this.getActiveFieldGroup(field);
     var control = this.getActiveFieldControl(field);
 
@@ -1349,8 +1344,6 @@ HIDController.prototype.stopAutoRepeatTimer = function (timer_id) {
 HIDController.prototype.setAutoRepeat = function (group, name, callback, interval) {
     var packet = this.getInputPacket(this.defaultPacket);
     var field = packet.getField(group, name);
-    if (field != undefined && field.type == "bitvector")
-        var field = packet.lookupBit(group, name);
     if (field == undefined) {
         HIDDebug("setAutoRepeat: field not found "+group+"."+name);
         return;
@@ -1398,7 +1391,6 @@ HIDController.prototype.autorepeatTimer = function () {
 HIDController.prototype.switchDeck = function (deck) {
     var packet;
     var field;
-    var group;
     var controlgroup;
     if (deck == undefined) {
         if (this.activeDeck == undefined) {
@@ -1475,7 +1467,7 @@ HIDController.prototype.switchDeck = function (deck) {
 
 /** Link a virtual HID Output to mixxx control */
 HIDController.prototype.linkOutput = function (group, name, m_group, m_name, callback) {
-    var controlgroup = undefined;
+    var controlgroup;
     var field = this.getOutputField(group, name);
     if (field == undefined) {
         HIDDebug("Linked output not found: "+group+"."+name);
