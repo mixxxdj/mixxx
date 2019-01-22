@@ -130,6 +130,14 @@
   <Children>
     <SetVariable name="PotiMinAngle">-135</SetVariable>
     <SetVariable name="PotiMaxAngle">135</SetVariable>
+
+    <SetVariable name="SignalColor_12">#E7C413</SetVariable>
+    <!-- <SetVariable name="SignalBgColor_12">#2f290a</SetVariable> -->
+    <SetVariable name="SignalColor_34">#09B2AE</SetVariable>
+    <!-- <SetVariable name="SignalBgColor_34">#2f290a</SetVariable> -->
+    <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+    <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+    <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
     <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
     <!-- Define singletons as early in the skin as possible.  Note that the
     library doesn't actually appear here, it's just instantiated and configured.
@@ -138,7 +146,83 @@
     <SingletonDefinition>
       <ObjectName>WaveformsSingleton</ObjectName>
       <Children>
-        <Template src="skin:waveforms_singleton.xml"/>
+        <Template src="skin:waveforms_container.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverart1</ObjectName>
+      <Children>
+        <Template src="skin:spinny_coverart.xml">
+          <SetVariable name="channum">1</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverart2</ObjectName>
+      <Children>
+        <Template src="skin:spinny_coverart.xml">
+          <SetVariable name="channum">2</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverart3</ObjectName>
+      <Children>
+        <Template src="skin:spinny_coverart.xml">
+          <SetVariable name="channum">3</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverart4</ObjectName>
+      <Children>
+        <Template src="skin:spinny_coverart.xml">
+          <SetVariable name="channum">4</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview1</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="channum">1</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview2</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="channum">2</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview3</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="channum">3</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview4</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="channum">4</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+        </Template>
       </Children>
     </SingletonDefinition>
 
@@ -173,7 +257,9 @@
                   <Collapsible>1,0</Collapsible>
                   <Children>
 
-                    <Template src="skin:waveforms.xml"/>
+                    <SingletonContainer>
+                      <ObjectName>WaveformsSingleton</ObjectName>
+                    </SingletonContainer>
 
                     <WidgetGroup>
                       <Layout>vertical</Layout>
@@ -200,22 +286,27 @@
                   </Children>
                 </Splitter><!-- Decks, Effects ... Library -->
 
-                <!-- MAximized Library -->
+                <!-- Maximized Library -->
                 <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
+
+                    <Template src="skin:decks_small.xml"/>
+
                     <SingletonContainer>
                       <ObjectName>LibrarySingleton</ObjectName>
                     </SingletonContainer>
                   </Children>
-                </WidgetGroup>
+                </WidgetGroup><!-- Maximized Library -->
 
               </Children>
             </WidgetStack>
             <Template src="skin:skin_settings.xml"/>
+
           </Children>
         </WidgetGroup>
+
         <Template src="skin:toolbar.xml"/>
       </Children>
     </WidgetGroup>

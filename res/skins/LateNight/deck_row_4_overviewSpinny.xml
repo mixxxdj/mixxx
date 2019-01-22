@@ -5,12 +5,19 @@
     <SizePolicy>me,me</SizePolicy>
     <Children>
       <WidgetGroup>
-        <SizePolicy>max,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <MaximumSize>54,-1</MaximumSize>
         <Layout>horizontal</Layout>
         <Children>
-          <Template src="skin:spinny_small.xml"/>
-          <Template src="skin:deck_coverArt_small.xml"/>
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>SpinnyCoverart<Variable name="channum"/></ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>
@@ -19,59 +26,9 @@
         </Connection>
       </WidgetGroup>
 
-      <Overview>
-        <TooltipId>waveform_overview</TooltipId>
-        <Channel><Variable name="channum"/></Channel>
-        <Size>-1me,50me</Size>
-        <!-- transparent background if no <BgColor> & <BgPixmap> is present
-        <BgColor>#1C1C1C</BgColor>
-        <BgPixmap></BgPixmap>
-        -->
-        <SignalColor><Variable name="signal_color" /></SignalColor>
-        <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
-        <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
-        <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
-        <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
-        <PlayPosColor>#00FF00</PlayPosColor>
-        <EndOfTrackColor>#EA0000</EndOfTrackColor>
-        <DefaultMark>
-          <Align>bottom|right</Align>
-          <Color>#00FF00</Color>
-          <TextColor>#FFFFFF</TextColor>
-          <Text> %1 </Text>
-        </DefaultMark>
-        <MarkRange>
-          <StartControl>loop_start_position</StartControl>
-          <EndControl>loop_end_position</EndControl>
-          <EnabledControl>loop_enabled</EnabledControl>
-          <Color>#00FF00</Color>
-          <DisabledColor>#FFFFFF</DisabledColor>
-        </MarkRange>
-        <Mark>
-          <Control>loop_start_position</Control>
-          <Text>IN</Text>
-          <Align>bottom|right</Align>
-          <Color>#00FF00</Color>
-          <TextColor>#FFFFFF</TextColor>
-        </Mark>
-        <Mark>
-          <Control>loop_end_position</Control>
-          <Text>OUT</Text>
-          <Align>bottom|right</Align>
-          <Color>#00FF00</Color>
-          <TextColor>#FFFFFF</TextColor>
-        </Mark>
-        <Mark>
-          <Control>cue_point</Control>
-          <Text> C </Text>
-          <Align>top|right</Align>
-          <Color>#FF001C</Color>
-          <TextColor>#FFFFFF</TextColor>
-        </Mark>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
-        </Connection>
-      </Overview>
+      <SingletonContainer>
+        <ObjectName>DeckOverview<Variable name="channum"/></ObjectName>
+      </SingletonContainer>
 
       <!-- Deck controls + Star rating -->
       <WidgetGroup>
