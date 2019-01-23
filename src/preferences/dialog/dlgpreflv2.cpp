@@ -6,7 +6,6 @@
 #include <QPushButton>
 
 #include "dlgpreflv2.h"
-#include "engine/enginefilterbessel4.h"
 #include "control/controlobject.h"
 #include "util/math.h"
 #include "effects/effectsmanager.h"

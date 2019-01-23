@@ -6,7 +6,7 @@
 
  ColumnCache::ColumnCache(const QStringList& columns) {
     m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
-    m_pKeyNotationCP->connectValueChanged(SLOT(slotSetKeySortOrder(double)));
+    m_pKeyNotationCP->connectValueChanged(this, &ColumnCache::slotSetKeySortOrder);
 
     // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
     // for again if DlgPrefKey sets the [Library]. key_notation CO to a value other than

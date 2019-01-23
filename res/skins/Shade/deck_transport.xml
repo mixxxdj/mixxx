@@ -219,12 +219,24 @@
       Button- Fast forward and rewind
       **********************************************
       -->
-      <WidgetGroup>
-        <Size>41f,14f</Size>
-        <BackPath>skin:/btn/btn_seek.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+      <PushButton>
+        <Size>54f,14f</Size>
         <Pos>101,0</Pos>
-      </WidgetGroup>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_seek_plus.png</Pressed>
+          <Unpressed>skin:/btn/btn_seek_plus.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_seek_minus.png</Pressed>
+          <Unpressed>skin:/btn/btn_seek_minus.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey>[Skin],show_loop_beatjump_controls</ConfigKey>
+        </Connection>
+      </PushButton>
 
       <PushButton>
         <TooltipId>fwd_end</TooltipId>

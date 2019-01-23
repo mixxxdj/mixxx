@@ -501,7 +501,7 @@ class SoundTouch(Dependence):
 
             build.env.Append(LIBPATH=self.SOUNDTOUCH_INTERNAL_PATH)
             build.env.Append(LIBS=['soundtouch'])
-        return ['src/engine/enginebufferscalest.cpp']
+        return ['src/engine/bufferscalers/enginebufferscalest.cpp']
 
     def configure(self, build, conf, env=None):
         if env is None:
@@ -531,7 +531,7 @@ class SoundTouch(Dependence):
 
 class RubberBand(Dependence):
     def sources(self, build):
-        sources = ['src/engine/enginebufferscalerubberband.cpp', ]
+        sources = ['src/engine/bufferscalers/enginebufferscalerubberband.cpp', ]
         return sources
 
     def configure(self, build, conf, env=None):
@@ -791,21 +791,24 @@ class MixxxCore(Feature):
                    "src/engine/engineworker.cpp",
                    "src/engine/engineworkerscheduler.cpp",
                    "src/engine/enginebuffer.cpp",
-                   "src/engine/enginebufferscale.cpp",
-                   "src/engine/enginebufferscalelinear.cpp",
-                   "src/engine/enginefilterbiquad1.cpp",
-                   "src/engine/enginefiltermoogladder4.cpp",
-                   "src/engine/enginefilterbessel4.cpp",
-                   "src/engine/enginefilterbessel8.cpp",
-                   "src/engine/enginefilterbutterworth4.cpp",
-                   "src/engine/enginefilterbutterworth8.cpp",
-                   "src/engine/enginefilterlinkwitzriley2.cpp",
-                   "src/engine/enginefilterlinkwitzriley4.cpp",
-                   "src/engine/enginefilterlinkwitzriley8.cpp",
-                   "src/engine/enginefilter.cpp",
+                   "src/engine/bufferscalers/enginebufferscale.cpp",
+                   "src/engine/bufferscalers/enginebufferscalelinear.cpp",
+                   "src/engine/channels/engineaux.cpp",
+                   "src/engine/channels/enginechannel.cpp",
+                   "src/engine/channels/enginedeck.cpp",
+                   "src/engine/channels/enginemicrophone.cpp",
+                   "src/engine/filters/enginefilterbiquad1.cpp",
+                   "src/engine/filters/enginefiltermoogladder4.cpp",
+                   "src/engine/filters/enginefilterbessel4.cpp",
+                   "src/engine/filters/enginefilterbessel8.cpp",
+                   "src/engine/filters/enginefilterbutterworth4.cpp",
+                   "src/engine/filters/enginefilterbutterworth8.cpp",
+                   "src/engine/filters/enginefilterlinkwitzriley2.cpp",
+                   "src/engine/filters/enginefilterlinkwitzriley4.cpp",
+                   "src/engine/filters/enginefilterlinkwitzriley8.cpp",
+                   "src/engine/filters/enginefilter.cpp",
                    "src/engine/engineobject.cpp",
                    "src/engine/enginepregain.cpp",
-                   "src/engine/enginechannel.cpp",
                    "src/engine/enginemaster.cpp",
                    "src/engine/enginedelay.cpp",
                    "src/engine/enginevumeter.cpp",
@@ -814,25 +817,21 @@ class MixxxCore(Feature):
                    "src/engine/sidechain/networkoutputstreamworker.cpp",
                    "src/engine/sidechain/networkinputstreamworker.cpp",
                    "src/engine/enginexfader.cpp",
-                   "src/engine/enginemicrophone.cpp",
-                   "src/engine/enginedeck.cpp",
-                   "src/engine/engineaux.cpp",
                    "src/engine/channelmixer_autogen.cpp",
-
-                   "src/engine/enginecontrol.cpp",
-                   "src/engine/ratecontrol.cpp",
                    "src/engine/positionscratchcontroller.cpp",
-                   "src/engine/loopingcontrol.cpp",
-                   "src/engine/bpmcontrol.cpp",
-                   "src/engine/keycontrol.cpp",
-                   "src/engine/cuecontrol.cpp",
-                   "src/engine/quantizecontrol.cpp",
-                   "src/engine/clockcontrol.cpp",
+                   "src/engine/controls/bpmcontrol.cpp",
+                   "src/engine/controls/clockcontrol.cpp",
+                   "src/engine/controls/cuecontrol.cpp",
+                   "src/engine/controls/enginecontrol.cpp",
+                   "src/engine/controls/keycontrol.cpp",
+                   "src/engine/controls/loopingcontrol.cpp",
+                   "src/engine/controls/quantizecontrol.cpp",
+                   "src/engine/controls/ratecontrol.cpp",
                    "src/engine/readaheadmanager.cpp",
                    "src/engine/enginetalkoverducking.cpp",
-                   "src/engine/cachingreader.cpp",
-                   "src/engine/cachingreaderchunk.cpp",
-                   "src/engine/cachingreaderworker.cpp",
+                   "src/engine/cachingreader/cachingreader.cpp",
+                   "src/engine/cachingreader/cachingreaderchunk.cpp",
+                   "src/engine/cachingreader/cachingreaderworker.cpp",
 
                    "src/analyzer/trackanalysisscheduler.cpp",
                    "src/analyzer/analyzerthread.cpp",
@@ -1165,15 +1164,16 @@ class MixxxCore(Feature):
                    "src/soundio/soundmanagerutil.cpp",
 
                    "src/encoder/encoder.cpp",
-                   "src/encoder/encodermp3.cpp",
-                   "src/encoder/encodervorbis.cpp",
-                   "src/encoder/encoderwave.cpp",
-                   "src/encoder/encodersndfileflac.cpp",
-                   "src/encoder/encodermp3settings.cpp",
-                   "src/encoder/encodervorbissettings.cpp",
-                   "src/encoder/encoderwavesettings.cpp",
-                   "src/encoder/encoderflacsettings.cpp",
                    "src/encoder/encoderbroadcastsettings.cpp",
+                   "src/encoder/encoderflacsettings.cpp",
+                   "src/encoder/encodermp3.cpp",
+                   "src/encoder/encodermp3settings.cpp",
+                   "src/encoder/encodersndfileflac.cpp",
+                   "src/encoder/encodervorbis.cpp",
+                   "src/encoder/encodervorbissettings.cpp",
+                   "src/encoder/encoderwave.cpp",
+                   "src/encoder/encoderwavesettings.cpp",
+                   'src/encoder/encoderopussettings.cpp',
 
                    "src/util/sleepableqthread.cpp",
                    "src/util/statsmanager.cpp",

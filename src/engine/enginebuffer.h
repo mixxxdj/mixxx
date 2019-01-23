@@ -22,7 +22,7 @@
 #include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "engine/cachingreader.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "preferences/usersettings.h"
 #include "control/controlvalue.h"
 #include "engine/engineobject.h"
@@ -358,6 +358,7 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineBufferTest, ResetPitchAdjustUsesLinear);
     FRIEND_TEST(EngineBufferTest, VinylScalerRampZero);
     FRIEND_TEST(EngineBufferTest, ReadFadeOut);
+    FRIEND_TEST(EngineBufferTest, RateTempTest);
     EngineBufferScale* m_pScaleVinyl;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.

@@ -31,7 +31,7 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
     m_pControlLinkType->setStates(
         static_cast<double>(EffectManifestParameter::LinkType::NUM_LINK_TYPES));
     m_pControlLinkType->connectValueChangeRequest(
-            this, SLOT(slotLinkTypeChanging(double)));
+            this, &EffectParameterSlot::slotLinkTypeChanging);
 
     m_pControlLinkInverse = new ControlPushButton(
             ConfigKey(m_group, itemPrefix + QString("_link_inverse")));

@@ -8,6 +8,7 @@
 * Unify skin controls for better consistency of settings across skins. [lp:1740513](https://bugs.launchpad.net/mixxx/+bug/1740513)
 * Remove VAMP plugin support. vamp-plugin-sdk and vamp-hostsdk are no longer required dependencies.
 * Remove SoundSource plugin support. [lp:1792747](https://bugs.launchpad.net/mixxx/+bug/1792747)
+* Add Opus streaming and recording support. [lp:1338413](https://bugs.launchpad.net/mixxx/+bug/1338413)
 
 ## [2.2.0](https://launchpad.net/mixxx/+milestone/2.2.0) (2018-12-17)
 

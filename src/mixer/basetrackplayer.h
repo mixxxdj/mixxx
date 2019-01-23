@@ -6,8 +6,8 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
-#include "engine/enginechannel.h"
-#include "engine/enginedeck.h"
+#include "engine/channels/enginechannel.h"
+#include "engine/channels/enginedeck.h"
 #include "mixer/baseplayer.h"
 #include "track/track.h"
 #include "util/memory.h"
@@ -115,7 +115,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
-    std::unique_ptr<ControlProxy> m_pBPM;
+    std::unique_ptr<ControlProxy> m_pFileBPM;
     std::unique_ptr<ControlProxy> m_pKey;
 
     std::unique_ptr<ControlProxy> m_pReplayGain;

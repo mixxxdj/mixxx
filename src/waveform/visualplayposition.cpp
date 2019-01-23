@@ -26,8 +26,7 @@ VisualPlayPosition::VisualPlayPosition(const QString& key)
           m_key(key) {
     m_audioBufferSize = new ControlProxy(
             "[Master]", "audio_buffer_size", this);
-    m_audioBufferSize->connectValueChanged(
-            SLOT(slotAudioBufferSizeChanged(double)));
+    m_audioBufferSize->connectValueChanged(this, &VisualPlayPosition::slotAudioBufferSizeChanged);
     m_audioBufferMicros = static_cast<int>(m_audioBufferSize->get() * kMicrosPerMillis);
 }
 
