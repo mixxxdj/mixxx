@@ -1,0 +1,88 @@
+<Template>
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>SpinnyContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+
+          <Spinny>
+            <TooltipId>spinny</TooltipId>
+            <Size>40me,40me</Size>
+            <Group><Variable name="group"/></Group>
+            <PathBackground scalemode="STRETCH_ASPECT">style/spinny_bg.svg</PathBackground>
+            <PathMask scalemode="STRETCH_ASPECT">style/spinny<Variable name="channum"/>_mask.svg</PathMask>
+            <PathForeground>style/spinny_indicator.svg</PathForeground>
+            <PathGhost>style/spinny_indicator_ghost.svg</PathGhost>
+            <ShowCover>false</ShowCover>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Spinny>
+
+          <Spinny>
+            <TooltipId>spinny</TooltipId>
+            <Size>40me,40me</Size>
+            <Group><Variable name="group"/></Group>
+            <PathBackground scalemode="STRETCH_ASPECT">style/spinny_bg.svg</PathBackground>
+            <PathMask scalemode="STRETCH_ASPECT">style/spinny<Variable name="channum"/>_mask.svg</PathMask>
+            <PathForeground>style/spinny_indicator.svg</PathForeground>
+            <PathGhost>style/spinny_indicator_ghost.svg</PathGhost>
+            <ShowCover>true</ShowCover>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Spinny>
+
+          <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1f,0me</Size></WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>SpinnyContainer</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <CoverArt>
+                <TooltipId>coverart</TooltipId>
+                <Size>40me,40me</Size>
+                <Group><Variable name="group"/></Group>
+                <DefaultCover>style/cover_default.svg</DefaultCover>
+              </CoverArt>
+
+              <WidgetGroup><ObjectName>Spacer58</ObjectName><Size>1f,0me</Size></WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

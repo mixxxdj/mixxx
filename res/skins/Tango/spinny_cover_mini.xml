@@ -7,22 +7,21 @@ Variables:
   group   : [ChannelXY]
 -->
 <Template>
+  <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
+
   <WidgetGroup>
-    <ObjectName>SpinnyCover_Container</ObjectName>
-    <SizePolicy>max,me</SizePolicy>
+    <ObjectName>SpinnyCoverContainer</ObjectName>
     <Layout>vertical</Layout>
     <Children>
 
-      <!-- Spinny with/without Cover Art -->
-      <WidgetGroup>
-        <Size>50f,50f</Size>
+      <WidgetGroup><!-- Spinny -->
         <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
         <Children>
           <!-- no Cover on Spinny -->
           <Spinny>
-            <ObjectName>SpinnyMini</ObjectName>
-            <Size>50f,50f</Size>
             <TooltipId>spinny</TooltipId>
+            <Size>40me,40me</Size>
             <Group><Variable name="group"/></Group>
             <PathBackground scalemode="STRETCH_ASPECT">graphics/spinnyMini_bg.svg</PathBackground>
             <PathForeground scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator.svg</PathForeground>
@@ -37,9 +36,8 @@ Variables:
           </Spinny>
           <!-- Cover on Spinny -->
           <Spinny>
-            <ObjectName>SpinnyMini</ObjectName>
-            <Size>50f,50f</Size>
             <TooltipId>spinny</TooltipId>
+            <Size>40me,40me</Size>
             <Group><Variable name="group"/></Group>
             <PathBackground scalemode="STRETCH_ASPECT">graphics/spinnyMini_bg.svg</PathBackground>
             <PathForeground scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator.svg</PathForeground>
@@ -56,13 +54,12 @@ Variables:
           <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- Spinny -->
 
       <!-- Cover Art only -->
       <WidgetGroup>
         <ObjectName>SpinnyCover</ObjectName>
-        <SizePolicy>max,max</SizePolicy>
-        <MaximumSize>50,50</MaximumSize>
+        <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
           <CoverArt>
