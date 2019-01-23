@@ -25,8 +25,8 @@
 <skin>
   <manifest>
     <title>Tango</title>
-    <author>ronso0</author>
-    <version>2.2.0</version>
+    <author>ronso0@mixxx.org</author>
+    <version>2.3.0</version>
     <description>A controller-focused nighttime skin. Almost all controls can be hidden with skin menu.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
