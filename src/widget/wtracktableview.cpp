@@ -457,9 +457,9 @@ void WTrackTableView::createActions() {
     connect(m_pAutoDJTopAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJTop()));
 
-    m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (Replace)"), this);
-    connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
-            this, SLOT(slotSendToAutoDJReplace()));
+//    m_pAutoDJReplaceAct = new QAction(tr("Add to Auto DJ Queue (Replace)"), this);
+//    connect(m_pAutoDJReplaceAct, SIGNAL(triggered()),
+//            this, SLOT(slotSendToAutoDJReplace()));
 
     m_pImportMetadataFromFileAct = new QAction(tr("Import From File Tags"), this);
     connect(m_pImportMetadataFromFileAct, SIGNAL(triggered()),
@@ -831,7 +831,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->clear();
         m_pMenu->addAction(m_pAutoDJBottomAct);
         m_pMenu->addAction(m_pAutoDJTopAct);
-        m_pMenu->addAction(m_pAutoDJReplaceAct);
+//        m_pMenu->addAction(m_pAutoDJReplaceAct);
         m_pMenu->addSeparator();
     }
 
@@ -1644,6 +1644,10 @@ void WTrackTableView::slotPopulateCrateMenu() {
 
     CrateSummary crate;
     while (allCrates.populateNext(&crate)) {
+
+        // IDCMP - hide crates starting with ~.
+        if (crate.getName().at(0) =='~') continue;
+
         auto pAction = make_parented<QWidgetAction>(m_pCrateMenu);
         auto pCheckBox = make_parented<QCheckBox>(m_pCrateMenu);
 

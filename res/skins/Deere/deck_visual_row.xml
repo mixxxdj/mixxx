@@ -29,7 +29,7 @@
         <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
         <BeatColor>#ffffff</BeatColor>
         <PlayPosColor>#00FF00</PlayPosColor>
-        <EndOfTrackColor>#EA0000</EndOfTrackColor>
+        <EndOfTrackColor>#00EAEA</EndOfTrackColor>
         <AxesColor></AxesColor>
         <Align></Align>
         <DefaultMark>
