@@ -210,19 +210,23 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // averageLength is the average interval in milliseconds tapped over
     // numSamples samples.  Have to convert to BPM now:
 
-    if (averageLength <= 0)
+    if (averageLength <= 0 || numSamples < 4) {
         return;
-
-    if (numSamples < 4)
-        return;
+    }
 
     BeatsPointer pBeats = m_pBeats;
-    if (!pBeats)
+    if (!pBeats) {
         return;
+    }
+
+    double rateRatio = m_pRateRatio->get();
+    if (rateRatio == 0.0) {
+	return;
+    }
 
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
-    double averageBpm = 60.0 * 1000.0 / averageLength / m_pRateRatio->get();
+    double averageBpm = 60.0 * 1000.0 / averageLength / rateRatio;
     pBeats->setBpm(averageBpm);
 }
 
@@ -843,13 +847,17 @@ void BpmControl::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     double dThisBeatLength;
     double dThisBeatFraction;
     if (getBeatContextNoLookup(sot.current,
-                       dThisPrevBeat, dThisNextBeat,
-                       &dThisBeatLength, &dThisBeatFraction)) {
-        pGroupFeatures->has_beat_length_sec = true;
+            dThisPrevBeat, dThisNextBeat,
+            &dThisBeatLength, &dThisBeatFraction)) {
 
         // Note: dThisBeatLength is fractional frames count * 2 (stereo samples)
-        pGroupFeatures->beat_length_sec = dThisBeatLength / kSamplesPerFrame
-                / sot.rate / m_pRateRatio->get();
+	double sotPerSec = kSamplesPerFrame * sot.rate * m_pRateRatio->get();
+	if (sotPerSec != 0.0) { 
+            pGroupFeatures->beat_length_sec = dThisBeatLength / sotPerSec;
+            pGroupFeatures->has_beat_length_sec = true;
+	} else {
+            pGroupFeatures->has_beat_length_sec = false;
+        }
 
         pGroupFeatures->has_beat_fraction = true;
         pGroupFeatures->beat_fraction = dThisBeatFraction;
