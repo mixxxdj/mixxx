@@ -50,9 +50,7 @@ void TagFetcher::startFetch(const TrackPointer track) {
     connect(m_pFingerprintWatcher, &QFutureWatcher<QString>::resultReadyAt,
             this, &TagFetcher::fingerprintFound);
 
-    for (const auto& ptrack: qAsConst(m_tracks)) {
-        emit(fetchProgress(tr("Fingerprinting track")));
-    }
+    emit(fetchProgress(tr("Fingerprinting track")));
 }
 
 void TagFetcher::cancel() {
