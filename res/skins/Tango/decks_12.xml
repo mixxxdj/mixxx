@@ -8,22 +8,21 @@ Variables:
   SignalColor_2
 -->
 <Template>
+  <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+  <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
+  <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_12"/></SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,f</SizePolicy>
     <Children>
       <Template src="skin:deck_left.xml">
         <SetVariable name="chanNum">1</SetVariable>
-        <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_1"/></SetVariable>
-        <SetVariable name="SignalColor"><Variable name="SignalColor_1"/></SetVariable>
       </Template>
 
       <Template src="skin:vumeter_master.xml"/>
 
       <Template src="skin:deck_right.xml">
         <SetVariable name="chanNum">2</SetVariable>
-        <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_2"/></SetVariable>
-        <SetVariable name="SignalColor"><Variable name="SignalColor_2"/></SetVariable>
       </Template>
     </Children>
   </WidgetGroup>

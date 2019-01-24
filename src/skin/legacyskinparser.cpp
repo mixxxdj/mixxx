@@ -378,13 +378,13 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
         }
     }
 
-    ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig, &m_style);
+    ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig, &m_style, m_pContext.get());
 
     // don't parent till here so the first opengl waveform doesn't screw
     // up --bkgood
     // I'm disregarding this return value because I want to return the
-    // created parent so MixxxMainWindow can use it for nefarious purposes (
-    // fullscreen mostly) --bkgood
+    // created parent so MixxxMainWindow can use it for various purposes
+    // (fullscreen mostly) --bkgood
     m_pParent = pParent;
     QList<QWidget*> widgets = parseNode(skinDocument);
 

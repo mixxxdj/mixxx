@@ -30,7 +30,7 @@ Variables:
         <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
         <BeatColor>#ffffff</BeatColor>
         <PlayPosColor>#FF4300</PlayPosColor>
-        <EndOfTrackColor>#EA0085</EndOfTrackColor>
+        <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
         <DefaultMark>
           <Align>bottom|right</Align>
           <Color>#00FF00</Color>
