@@ -120,9 +120,9 @@ void WaveformRenderMark::slotCuesUpdated() {
         }
         WaveformMarkProperties markProperties = pMark->getProperties();
         if (markProperties.m_text.isNull() || newLabel != markProperties.m_text ||
-                !markProperties.m_color.isValid() || newColor != markProperties.m_color) {
+                !markProperties.fillColor().isValid() || newColor != markProperties.fillColor()) {
             markProperties.m_text = newLabel;
-            markProperties.m_color = newColor;
+            markProperties.setBaseColor(newColor);
             pMark->setProperties(markProperties);
             generateMarkImage(pMark.data());
         }
@@ -223,39 +223,32 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
 
         painter.setWorldMatrixEnabled(false);
 
-        // Prepare colors for drawing of marker lines
-        QColor lineColor = markProperties.m_color;
-        lineColor.setAlpha(200);
-        bool markerBrightnessLow= Color::isDimmColor(lineColor);
-        QColor contrastLineColor =  Color::chooseContrastColorB(markerBrightnessLow);
-        contrastLineColor.setAlpha(180);
-
         // Draw marker lines
         if (m_waveformRenderer->getOrientation() == Qt::Horizontal) {
             int middle = width / 2;
             if (markAlignH == Qt::AlignHCenter) {
                 if (labelRect.top() > 0) {
-                    painter.setPen(lineColor);
+                    painter.setPen(markProperties.fillColor());
                     painter.drawLine(middle, 0, middle, labelRect.top());
 
-                    painter.setPen(contrastLineColor);
+                    painter.setPen(markProperties.borderColor());
                     painter.drawLine(middle - 1, 0, middle - 1, labelRect.top());
                     painter.drawLine(middle + 1, 0, middle + 1, labelRect.top());
                 }
 
                 if (labelRect.bottom() < height) {
-                    painter.setPen(lineColor);
+                    painter.setPen(markProperties.fillColor());
                     painter.drawLine(middle, labelRect.bottom(), middle, height);
 
-                    painter.setPen(contrastLineColor);
+                    painter.setPen(markProperties.borderColor());
                     painter.drawLine(middle - 1, labelRect.bottom(), middle - 1, height);
                     painter.drawLine(middle + 1, labelRect.bottom(), middle + 1, height);
                 }
             } else {  // AlignLeft || AlignRight
-                painter.setPen(lineColor);
+                painter.setPen(markProperties.fillColor());
                 painter.drawLine(middle, 0, middle, height);
 
-                painter.setPen(contrastLineColor);
+                painter.setPen(markProperties.borderColor());
                 painter.drawLine(middle - 1, 0, middle - 1, height);
                 painter.drawLine(middle + 1, 0, middle + 1, height);
             }
@@ -263,43 +256,41 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
             int middle = height / 2;
             if (markAlignV == Qt::AlignVCenter) {
                 if (labelRect.left() > 0) {
-                    painter.setPen(lineColor);
+                    painter.setPen(markProperties.fillColor());
                     painter.drawLine(0, middle, labelRect.left(), middle);
 
-                    painter.setPen(contrastLineColor);
+                    painter.setPen(markProperties.borderColor());
                     painter.drawLine(0, middle - 1, labelRect.left(), middle - 1);
                     painter.drawLine(0, middle + 1, labelRect.left(), middle + 1);
                 }
 
                 if (labelRect.right() < width) {
-                    painter.setPen(lineColor);
+                    painter.setPen(markProperties.fillColor());
                     painter.drawLine(labelRect.right(), middle, width, middle);
 
-                    painter.setPen(contrastLineColor);
+                    painter.setPen(markProperties.borderColor());
                     painter.drawLine(labelRect.right(), middle - 1, width, middle - 1);
                     painter.drawLine(labelRect.right(), middle + 1, width, middle + 1);
                 }
             } else {  // AlignTop || AlignBottom
-                painter.setPen(lineColor);
+                painter.setPen(markProperties.fillColor());
                 painter.drawLine(0, middle, width, middle);
 
-                painter.setPen(contrastLineColor);
+                painter.setPen(markProperties.borderColor());
                 painter.drawLine(0, middle - 1, width, middle - 1);
                 painter.drawLine(0, middle + 1, width, middle + 1);
             }
         }
 
         // Draw the label rect
-        QColor rectColor = markProperties.m_color;
-        rectColor.setAlpha(200);
-        painter.setPen(markProperties.m_color);
-        painter.setBrush(QBrush(rectColor));
+        painter.setPen(markProperties.borderColor());
+        painter.setBrush(QBrush(markProperties.fillColor()));
         painter.drawRoundedRect(labelRect, 2.0, 2.0);
 
         // Draw text
         painter.setBrush(QBrush(QColor(0,0,0,0)));
         painter.setFont(font);
-        painter.setPen(Color::chooseContrastColorB(markerBrightnessLow));
+        painter.setPen(markProperties.labelColor());
         painter.drawText(labelRect, Qt::AlignCenter, label);
     }
     else //no text draw triangle
@@ -331,8 +322,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
             painter.setTransform(QTransform(0, 1, 1, 0, 0, 0));
         }
 
-        QColor triangleColor = markProperties.m_color;
-        triangleColor.setAlpha(140);
+        QColor triangleColor = markProperties.fillColor();
         painter.setPen(QColor(0,0,0,0));
         painter.setBrush(QBrush(triangleColor));
 
@@ -355,8 +345,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
 
         //TODO vRince duplicated code make a method
         //draw line
-        QColor lineColor = markProperties.m_color;
-        lineColor.setAlpha(140);
+        QColor lineColor = markProperties.fillColor();
         painter.setPen(lineColor);
 
         float middle = markLength / 2.0;

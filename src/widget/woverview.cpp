@@ -268,8 +268,8 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
             WaveformMarkProperties markProperties = currentMark->getProperties();
             const QColor newColor = m_predefinedColorsRepresentation.map(currentCue->getColor());
 
-            if (newColor != markProperties.m_color || newColor != markProperties.m_textColor) {
-                markProperties.m_color = newColor;
+            if (newColor != markProperties.fillColor() || newColor != markProperties.m_textColor) {
+                markProperties.setBaseColor(newColor);
                 currentMark->setProperties(markProperties);
             }
         }
@@ -463,8 +463,6 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             }
 
             // Draw markers (Cue & hotcues)
-            QPen shadowPen(QBrush(m_qColorBackground), 2.5 * m_scaleFactor);
-
             QFont markerFont = painter.font();
             markerFont.setPixelSize(10 * m_scaleFactor);
 
@@ -481,6 +479,8 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
                     const float markPosition = offset + currentMark->getSamplePosition() * gain;
 
+                    QPen shadowPen(QBrush(markProperties.borderColor()), 2.5 * m_scaleFactor);
+
                     QLineF line;
                     if (m_orientation == Qt::Horizontal) {
                         line.setLine(markPosition, 0.0, markPosition, static_cast<float>(height()));
@@ -490,7 +490,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     painter.setPen(shadowPen);
                     painter.drawLine(line);
 
-                    painter.setPen(markProperties.m_color);
+                    painter.setPen(markProperties.fillColor());
                     painter.drawLine(line);
 
                     if (!markProperties.m_text.isEmpty()) {

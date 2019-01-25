@@ -46,14 +46,14 @@ WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
                                                const SkinContext& context,
                                                const WaveformSignalColors& signalColors,
                                                int hotCue) {
-    m_color = context.selectString(node, "Color");
+    QColor color(context.selectString(node, "Color"));
     // TODO (Swiftb0y): remove context.selectString because the color will be overriden by the cuepoints regardless
-    if (!m_color.isValid()) {
+    if (!color.isValid()) {
         // As a fallback, grab the color from the parent's AxesColor
-        m_color = signalColors.getAxesColor();
-        qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:" << m_color;
+        setBaseColor(signalColors.getAxesColor());
+        qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:" << m_fillColor;
     } else {
-        m_color = WSkinColor::getCorrectColor(m_color);
+        setBaseColor(WSkinColor::getCorrectColor(m_fillColor));
     }
 
     m_textColor = context.selectString(node, "TextColor");
@@ -75,4 +75,21 @@ WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
     if (!m_pixmapPath.isEmpty()) {
         m_pixmapPath = context.makeSkinPath(m_pixmapPath);
     }
+}
+
+void WaveformMarkProperties::setBaseColor(QColor baseColor) {
+    m_fillColor = baseColor;
+    m_borderColor = Color::chooseContrastColor(baseColor);
+    m_labelColor = Color::chooseColorByBrightness(baseColor, QColor(255,255,255,255), QColor(0,0,0,255));
+}
+
+QColor WaveformMarkProperties::fillColor() const {
+    return m_fillColor;
+}
+
+QColor WaveformMarkProperties::borderColor() const {
+    return m_borderColor;
+}
+QColor WaveformMarkProperties::labelColor() const {
+    return m_labelColor;
 }
