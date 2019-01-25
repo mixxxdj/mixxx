@@ -1,6 +1,6 @@
 <!--
 Description:
-  Top bar only displayed in netbook mode (auto or enforced) with
+  Top bar containing
   * Logo
   * Mixer for Master, Booth & Headphone
   * Crossfader (if enabled)
@@ -56,6 +56,13 @@ Description:
                 </Connection>
               </PushButton>
 
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="ObjectName">MasterHeadMixerToggle</SetVariable>
+                <!-- Size needs to be changed in size_detector_stars.xml, too -->
+                <SetVariable name="Size">15f,28f</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],master_mixer</SetVariable>
+              </Template>
+
               <WidgetGroup><!-- Master & Headphone mixer -->
                 <Size>22f,28f</Size>
                 <Layout>horizontal</Layout>
@@ -71,13 +78,6 @@ Description:
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
-
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">MasterHeadMixerToggle</SetVariable>
-                <!-- Size needs to be changed in size_detector_stars.xml, too -->
-                <SetVariable name="Size">15f,28f</SetVariable>
-                <SetVariable name="ConfigKey">[Tango],master_mixer</SetVariable>
-              </Template>
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
 
@@ -98,32 +98,53 @@ Description:
         </Children>
       </WidgetGroup><!-- /Logo + Master, Headphone & Booth Mixer -->
 
-      <WidgetGroup><!-- Crossfader -->
+      <WidgetGroup><!-- Crossfader, hidden with maximized library -->
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <WidgetGroup>
-            <ObjectName>CrossfaderContainer</ObjectName>
-            <SizePolicy>min,f</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children>
-              <SliderComposed>
-                <TooltipId>crossfader</TooltipId>
-                <Handle>knobs_sliders/crossfader_handle.svg</Handle>
-                <Slider>knobs_sliders/crossfader_scale.svg</Slider>
-                <Horizontal>true</Horizontal>
-                <Connection>
-                  <ConfigKey>[Master],crossfader</ConfigKey>
-                </Connection>
-              </SliderComposed>
+		      <WidgetGroup>
+		        <SizePolicy>min,min</SizePolicy>
+		        <Layout>horizontal</Layout>
+		        <Children>
+		          <WidgetGroup>
+		            <SizePolicy>min,min</SizePolicy>
+		            <Layout>horizontal</Layout>
+		            <Children>
+		              <WidgetGroup>
+		                <ObjectName>CrossfaderContainer</ObjectName>
+		                <SizePolicy>min,f</SizePolicy>
+		                <Layout>vertical</Layout>
+		                <Children>
+		                  <SliderComposed>
+		                    <TooltipId>crossfader</TooltipId>
+		                    <Handle>knobs_sliders/crossfader_handle.svg</Handle>
+		                    <Slider>knobs_sliders/crossfader_scale.svg</Slider>
+		                    <Horizontal>true</Horizontal>
+		                    <Connection>
+		                      <ConfigKey>[Master],crossfader</ConfigKey>
+		                    </Connection>
+		                  </SliderComposed>
+		                </Children>
+		              </WidgetGroup>
+		            </Children>
+		            <Connection>
+		              <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
+		              <BindProperty>visible</BindProperty>
+		            </Connection>
+		          </WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
         </Children>
         <Connection>
-          <ConfigKey persist="true">[Master],show_xfader</ConfigKey>
+          <ConfigKey>[Master],maximize_library</ConfigKey>
+          <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup><!-- /Crossfader -->
+      </WidgetGroup><!-- /Crossfader, hidden with maximized library -->
 
       <WidgetGroup><!-- Skin toggles, Rec, Broadcast, Clock, Skin menu toggle -->
         <Layout>horizontal</Layout>
@@ -133,78 +154,91 @@ Description:
 
           <WidgetGroup><Size>10me,1min</Size></WidgetGroup>
 
-          <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">30f,20f</SetVariable>
-            <SetVariable name="state_0_icon">wave_off.svg</SetVariable>
-            <SetVariable name="state_1_icon">wave_on.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Tango],stacked_waveforms</SetVariable>
-          </Template>
+          <WidgetGroup><!-- Skin toggles, hidden with maximized library -->
+            <Layout>horizontal</Layout>
+            <ObjectName>SkinControlsBar</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
 
-          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+              <Template src="skin:button_2state_persist.xml"><!-- Waveforms -->
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">30f,20f</SetVariable>
+                <SetVariable name="state_0_icon">wave_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">wave_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Tango],stacked_waveforms</SetVariable>
+              </Template>
 
-          <Template src="skin:button_2state_persist.xml"><!-- FX -->
-            <SetVariable name="TooltipId">show_effects</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">30f,20f</SetVariable>
-            <SetVariable name="state_0_text">FX</SetVariable>
-            <SetVariable name="state_1_text">FX</SetVariable>
-            <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
-          </Template>
+              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+              <Template src="skin:button_2state_persist.xml"><!-- FX -->
+                <SetVariable name="TooltipId">show_effects</SetVariable>
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">30f,20f</SetVariable>
+                <SetVariable name="state_0_text">FX</SetVariable>
+                <SetVariable name="state_1_text">FX</SetVariable>
+                <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
+              </Template>
 
-          <Template src="skin:button_2state_persist.xml"><!-- Samplers -->
-            <SetVariable name="TooltipId">show_samplers</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">30f,20f</SetVariable>
-            <SetVariable name="state_0_icon">samplers_off.svg</SetVariable>
-            <SetVariable name="state_1_icon">samplers_on.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
-          </Template>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+              <Template src="skin:button_2state_persist.xml"><!-- Samplers -->
+                <SetVariable name="TooltipId">show_samplers</SetVariable>
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">30f,20f</SetVariable>
+                <SetVariable name="state_0_icon">samplers_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">samplers_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
+              </Template>
 
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="TooltipId">show_microphone</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">30f,20f</SetVariable>
-            <SetVariable name="state_0_icon">mic_aux_off.svg</SetVariable>
-            <SetVariable name="state_1_icon">mic_aux_on.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
-          </Template>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="TooltipId">show_microphone</SetVariable>
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">30f,20f</SetVariable>
+                <SetVariable name="state_0_icon">mic_aux_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">mic_aux_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
+              </Template>
 
-          <Template src="skin:button_2state_persist.xml"><!-- Mixer -->
-            <SetVariable name="TooltipId">show_mixer</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="state_0_icon">mixer_off.svg</SetVariable>
-            <SetVariable name="state_1_icon">mixer_on.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
-          </Template>
+              <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+              <Template src="skin:button_2state_persist.xml"><!-- Mixer -->
+                <SetVariable name="TooltipId">show_mixer</SetVariable>
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">20f,20f</SetVariable>
+                <SetVariable name="state_0_icon">mixer_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">mixer_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
+              </Template>
 
-          <Template src="skin:button_2state_persist.xml"><!-- Loop/Beatjump -->
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="state_0_icon">loop_beatjump_off.svg</SetVariable>
-            <SetVariable name="state_1_icon">loop_beatjump_on.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Tango],loop_beatjump_controls</SetVariable>
-          </Template>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
 
-          <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+              <Template src="skin:button_2state_persist.xml"><!-- Loop/Beatjump -->
+                <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+                <SetVariable name="Size">20f,20f</SetVariable>
+                <SetVariable name="state_0_icon">loop_beatjump_off.svg</SetVariable>
+                <SetVariable name="state_1_icon">loop_beatjump_on.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_loop_beatjump_controls</SetVariable>
+              </Template>
 
-          <Template src="skin:button_2state_persist.xml"><!-- 4 Decks -->
-            <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
-            <SetVariable name="Size">20f,20f</SetVariable>
-            <SetVariable name="TooltipId">toggle_4decks</SetVariable>
-            <SetVariable name="state_0_icon">2decks.svg</SetVariable>
-            <SetVariable name="state_1_icon">4decks.svg</SetVariable>
-            <SetVariable name="ConfigKey">[Master],show_4decks</SetVariable>
-          </Template>
+              <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
+
+              <Template src="skin:button_2state_persist.xml"><!-- 4 Decks -->
+                <SetVariable name="ObjectName">GuiToggleButton2</SetVariable>
+                <SetVariable name="Size">20f,20f</SetVariable>
+                <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+                <SetVariable name="state_0_icon">2decks.svg</SetVariable>
+                <SetVariable name="state_1_icon">4decks.svg</SetVariable>
+                <SetVariable name="ConfigKey">[Skin],show_4decks</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
           <WidgetGroup><Size>10f,1min</Size></WidgetGroup>
 
@@ -299,12 +333,24 @@ Description:
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
-              <Template src="skin:button_2state.xml">
-                <SetVariable name="TooltipId">skin_settings</SetVariable>
-                <SetVariable name="ObjectName">SkinSettingsToggler</SetVariable>
-                <SetVariable name="Size">24f,24f</SetVariable>
-                <SetVariable name="ConfigKey">[Master],skin_settings</SetVariable>
-              </Template>
+              <PushButton>
+                <TooltipId>skin_settings</TooltipId>
+                <ObjectName>SkinSettingsToggler</ObjectName>
+                <Size>24f,24f</Size>
+                <!-- This is used to work around Bug 1795663 on OSX -->
+                <EmitOnPressAndRelease>false</EmitOnPressAndRelease>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                </State>
+                <Connection>
+                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
             </Children>
             <Connection>
               <ConfigKey persist="true">[Master],skin_settings</ConfigKey>

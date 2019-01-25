@@ -22,7 +22,7 @@
 
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
-  <String Id="OS2Old">Dit product vereist Windows XP of hoger.</String>
+  <String Id="OS2Old">Dit product vereist Windows 7 of hoger.</String>
   <String Id="NewerInstalled">Dezelfde of een nieuwere versie van dit product is reeds geïnstalleerd.</String>
   <String Id="x64VersionRequired">Je moet de 64-bits versie van dit product installeren op een 64-bits versie van Windows.</String>
   <String Id="x86VersionRequired">Je moet de 32-bits versie van dit product installeren op een 32-bits versie van Windows.</String>
@@ -31,7 +31,7 @@
   <String Id="bitWidthMismatch32">Je wilt de 32-bits versie installeren maar een 64-bits is reeds geïnstalleerd. Dit kan leiden tot ongewenste effecten. Gelieve eerst de bestaande Mixxx te verwijderen, of het 64-bits installatiepakket te downloaden en te upgraden (Tenzij je exact weet waar je aan begint)</String>
   <String Id="bitWidthMismatch64">Je wilt de 64-bits versie installeren maar een 32-bits is reeds geïnstalleerd. Dit kan leiden tot ongewenste effecten. Gelieve eerst de bestaande Mixxx te verwijderen, of het 32-bits installatiepakket te downloaden en te upgraden (Tenzij je exact weet waar je aan begint)</String>
   <String Id="OlderVersionFound">Een oudere versie van Mixxx is gedetecteerd. Door wijziging van de installer is een vlotte bijwerking niet mogelijk. Verwijder de oudere versie voordat u deze versie installeert.</String>
-  <String Id="VCredistNotFound">Installer was not able to find Microsoft Visual C++ 2015 Redistributable on this system. This is likely an installer bug that should be reported to Mixxx developers.</String>
+  <String Id="VCredistNotFound">De installatie heeft Microsoft Visual C++ 2015 Redistributable niet kunnen vinden op uw computer. Dit zou kunnen wijzen op een fout in het installatie bestand. Wilt u dit even doorgeven aan de makers van Mixxx, dat hun dit probleem kunnen oplossen voor u.</String>
 
   <!-- Custom Warning Dialog -->
   <String Id="WarningDlgTitle">{\WixUI_Font_Title}Waarschuwing</String>

@@ -5,27 +5,14 @@
     <SizePolicy>e,min</SizePolicy>
     <Children>
 
-      <PushButton>
-        <Size>84f,24f</Size>
-        <TooltipId>maximize_library</TooltipId>
-        <ObjectName>GuiToggleButton</ObjectName>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>BIG LIBRARY</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>BIG LIBRARY</Text>
-        </State>
-        <Connection>
-          <ConfigKey>[Master],maximize_library</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey>[Master],maximize_library</ConfigKey>
-        </Connection>
-      </PushButton>
+      <Template src="skin:button_2state.xml">
+        <SetVariable name="TooltipId">maximize_library</SetVariable>
+        <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+        <SetVariable name="Size">84f,24f</SetVariable>
+        <SetVariable name="state_0_text">BIG LIBRARY</SetVariable>
+        <SetVariable name="state_1_text">BIG LIBRARY</SetVariable>
+        <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
+      </Template>
 
       <WidgetGroup>
         <SizePolicy>min,min</SizePolicy>
@@ -37,77 +24,41 @@
             <Size>13f,9min</Size>
           </WidgetGroup>
 
-          <PushButton>
-            <Size>48f,24f</Size>
-            <TooltipId>show_mixer</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>MIXER</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>MIXER</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_mixer</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">48f,24f</SetVariable>
+            <SetVariable name="state_0_text">MIXER</SetVariable>
+            <SetVariable name="state_1_text">MIXER</SetVariable>
+            <SetVariable name="ConfigKey">[Master],show_mixer</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>59f,24f</Size>
-            <TooltipId>show_effects</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>EFFECTS</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>EFFECTS</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_effects</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">59f,24f</SetVariable>
+            <SetVariable name="state_0_text">EFFECTS</SetVariable>
+            <SetVariable name="state_1_text">EFFECTS</SetVariable>
+            <SetVariable name="ConfigKey">[EffectRack1],show</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>61f,24f</Size>
-            <TooltipId>show_microphone</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>MIC/AUX</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>MIC/AUX</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_samplers</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">71f,24f</SetVariable>
+            <SetVariable name="state_0_text">SAMPLERS</SetVariable>
+            <SetVariable name="state_1_text">SAMPLERS</SetVariable>
+            <SetVariable name="ConfigKey">[Samplers],show_samplers</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>71f,24f</Size>
-            <TooltipId>show_samplers</TooltipId>
-            <ObjectName>GuiToggleButton</ObjectName>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>SAMPLERS</Text>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>SAMPLERS</Text>
-            </State>
-            <Connection>
-              <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="TooltipId">show_microphone</SetVariable>
+            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
+            <SetVariable name="Size">61f,24f</SetVariable>
+            <SetVariable name="state_0_text">MIC/AUX</SetVariable>
+            <SetVariable name="state_1_text">MIC/AUX</SetVariable>
+            <SetVariable name="ConfigKey">[Microphone],show_microphone</SetVariable>
+          </Template>
 
         </Children>
         <Connection>
@@ -229,7 +180,7 @@
 
       <Label>
         <ObjectName>ToolbarLogo</ObjectName>
-        <Size>78f,24f</Size>
+        <Size>72f,24f</Size>
       </Label>
 
       <WidgetGroup> <!-- Spacer -->

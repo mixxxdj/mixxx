@@ -12,17 +12,13 @@
         <Children>
 
           <!-- Spacer to align with top of channels VUs -->
-          <WidgetGroup>
-            <Size>-1,34f</Size>
-            <Layout>vertical</Layout>
-            <Children/>
-          </WidgetGroup>
+          <WidgetGroup><Size>0min,34f</Size></WidgetGroup>
 
           <Template src="skin:vumeter_master.xml"/>
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform>
             <Not/>
@@ -65,14 +61,12 @@
                         <Children>
                           <Template src="skin:vumeter_master.xml"/>
 
-                          <Template src="skin:spacer_vx.xml">
-                            <SetVariable name="height">10f,136f</SetVariable>
-                          </Template>
+                          <WidgetGroup><Size>10f,136f</Size></WidgetGroup>
                         </Children>
                       </WidgetGroup>
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_faders</ConfigKey>
+                      <ConfigKey>[Skin],show_faders</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- show EQ, show faders -->
@@ -98,14 +92,14 @@
                       </WidgetGroup>
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_faders</ConfigKey>
+                      <ConfigKey>[Skin],show_faders</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- show EQ, no faders -->
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- show EQ -->
@@ -118,9 +112,7 @@
                     <SizePolicy>min,me</SizePolicy>
                     <Layout>vertical</Layout>
                     <Children>
-                      <Template src="skin:spacer_vx.xml">
-                        <SetVariable name="height">10f,34f</SetVariable>
-                      </Template>
+                      <WidgetGroup><Size>10f,34f</Size></WidgetGroup>
 
                       <Template src="skin:vumeter_master.xml"/>
                     </Children>
@@ -132,13 +124,13 @@
                     <Children>
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_faders</ConfigKey>
+                      <ConfigKey>[Skin],show_faders</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- no EQ, show faders -->
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -172,14 +164,12 @@
                     <Children>
                       <Template src="skin:vumeter_master.xml"/>
 
-                      <Template src="skin:spacer_vx.xml">
-                        <SetVariable name="height">10f,28f</SetVariable>
-                      </Template>
+                      <WidgetGroup><Size>10f,28f</Size></WidgetGroup>
                     </Children>
                   </WidgetGroup>
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup><!-- show EQ -->
@@ -192,9 +182,7 @@
                     <SizePolicy>min,me</SizePolicy>
                     <Layout>vertical</Layout>
                     <Children>
-                      <Template src="skin:spacer_vx.xml">
-                        <SetVariable name="height">10f,34f</SetVariable>
-                      </Template>
+                      <WidgetGroup><Size>10f,34f</Size></WidgetGroup>
 
                       <Template src="skin:vumeter_master.xml"/>
                     </Children>
@@ -206,13 +194,13 @@
                     <Children>
                     </Children>
                     <Connection>
-                      <ConfigKey>[Master],show_faders</ConfigKey>
+                      <ConfigKey>[Skin],show_faders</ConfigKey>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup><!-- no EQ, show faders -->
                 </Children>
                 <Connection>
-                  <ConfigKey>[Master],show_eqs</ConfigKey>
+                  <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
                   <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
@@ -226,7 +214,7 @@
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- MasterVu4Deck -->

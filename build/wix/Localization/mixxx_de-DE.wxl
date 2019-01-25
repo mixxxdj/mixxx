@@ -22,15 +22,15 @@
 
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
-  <String Id="OS2Old">Dieses Produkt erfordert Windows XP oder höher.</String>
+  <String Id="OS2Old">Dieses Produkt erfordert Windows 7 oder höher.</String>
   <String Id="NewerInstalled">Die gleiche oder eine neuere Version dieses Produkts ist bereits installiert.</String>
   <String Id="x64VersionRequired">Sie müssen die 64-Bit-Version dieses Produkts auf 64-Bit-Windows installieren.</String>
   <String Id="x86VersionRequired">Sie müssen die 32-Bit-Version dieses Produkts auf 32-Bit-Windows installieren.</String>
-  <String Id="x86VersionWarning">Sie sind dabei, die 32-Bit-Version auf einem 64-Bit-Betriebssystem zu installieren. Wir empfehlen mit der 64-Bit-Version für bessere Performance. Sie können das der 64-Bit-Installationspaket von http://mixxx.org/download/ herunterladen.</String>
+  <String Id="x86VersionWarning">Sie installieren gerade die 32-Bit-Version auf einem 64-Bit-Betriebssystem. Wir empfehlen stattdessen die 64-Bit-Version für eine bessere Performance zu installieren. Sie können das 64-Bit-Installationspaket hier herunterladen: http://mixxx.org/download/</String>
   <String Id="XPWarning">Sie installieren Mixxx auf einem veralteten Betriebssystem. Einige Funktionen arbeiten möglicherweise nicht korrekt oder überhaupt nicht. Wir empfehlen die Aktualisierung Ihres Betriebssystems.</String>
   <String Id="bitWidthMismatch32">Sie sind dabei, die 32-Bit-Version zu installieren, aber eine 64-Bit-Version ist bereits installiert. Dies kann zu unerwünschtem Verhalten führen. Bitte deinstallieren Sie zuerst die vorhandene Mixxx Version oder laden Sie das 64-Bit-Installationspaket zum Aktualisieren (es sei denn, Sie wissen genau was Sie tun.)</String>
   <String Id="bitWidthMismatch64">Sie sind dabei, die 64-Bit-Version zu installieren, aber eine 32-Bit-Version ist bereits installiert. Dies kann zu unerwünschtem Verhalten führen. Bitte deinstallieren Sie zuerst die vorhandene Mixxx Version oder laden Sie das 32-Bit-Installationspaket zum Aktualisieren (es sei denn, Sie wissen genau was Sie tun.)</String>
-  <String Id="OlderVersionFound">Eine ältere Version von Mixxx wurde erkannt. Da wir die Installer-Software geändert haben, können wir nicht problemlos aktualisieren. Bitte deinstallieren Sie ältere Version vor der Installation dieser neuen Version.</String>
+  <String Id="OlderVersionFound">Eine ältere Version von Mixxx wurde erkannt. Da wir die Installer-Software geändert haben, können wir nicht problemlos aktualisieren. Bitte deinstallieren Sie die ältere Version vor der Installation dieser neuen Version.</String>
   <String Id="VCredistNotFound">Das Installationsprogramm war nicht in der Lage Microsoft Visual C ++ 2015 Redistributable auf diesem System zu finden. Dies ist wahrscheinlich ein Bug des Installationsprogramms, der an Mixxx-Entwickler gemeldet werden sollte.</String>
 
   <!-- Custom Warning Dialog -->
@@ -80,7 +80,7 @@
   <String Id="ProgressHeader">Setup-Fortschritt</String>
   <String Id="ProgressLabel">Wird bearbeitet:</String>
   <String Id="OverallProgressPackageText">Initialisiere...</String>
-  <String Id="ProgressCancelButton">&amp;Cancel</String>
+  <String Id="ProgressCancelButton">&amp;Abbrechen</String>
   <String Id="ModifyHeader">Setup ändern</String>
   <String Id="ModifyRepairButton">&amp;Reparieren</String>
   <String Id="ModifyUninstallButton">&amp;Deinstallieren</String>

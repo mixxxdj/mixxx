@@ -11,45 +11,52 @@
 #include "skin/imgcolor.h"
 #include "skin/imginvert.h"
 #include "skin/legacyskinparser.h"
+#include "skin/skincontext.h"
 
 void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
                                                 UserSettingsPointer pConfig,
-                                                QString* pStyle) {
-    QDomNode colsch = docElem.namedItem("Schemes");
+                                                QString* pStyle,
+                                                SkinContext* pContext) {
+    QDomNode schemesNode = docElem.namedItem("Schemes");
 
-    bool found = false;
+    bool bSelectedColorSchemeFound = false;
 
-    if (!colsch.isNull() && colsch.isElement()) {
-        QString schname = pConfig->getValueString(ConfigKey("[Config]","Scheme"));
-        QDomNode sch = colsch.firstChild();
+    if (!schemesNode.isNull() && schemesNode.isElement()) {
+        QString selectedSchemeName = pConfig->getValueString(ConfigKey("[Config]","Scheme"));
+        QDomNode schemeNode = schemesNode.firstChild();
 
-        if (schname.isEmpty()) {
-            // If no scheme stored, accept the first one in the file
-            found = true;
+        if (selectedSchemeName.isEmpty()) {
+            // If no scheme selected, accept the first one in the file
+            bSelectedColorSchemeFound = true;
         }
 
-        while (!sch.isNull() && !found) {
-            QString thisname = XmlParse::selectNodeQString(sch, "Name");
-            if (thisname == schname) {
-                found = true;
+        while (!schemeNode.isNull() && !bSelectedColorSchemeFound) {
+            QString schemeName = XmlParse::selectNodeQString(schemeNode, "Name");
+            if (schemeName == selectedSchemeName) {
+                bSelectedColorSchemeFound = true;
             } else {
-                sch = sch.nextSibling();
+                schemeNode = schemeNode.nextSibling();
             }
         }
 
-        if (found) {
+        if (bSelectedColorSchemeFound) {
             QSharedPointer<ImgSource> imsrc =
-                    QSharedPointer<ImgSource>(parseFilters(sch.namedItem("Filters")));
+                    QSharedPointer<ImgSource>(parseFilters(schemeNode.namedItem("Filters")));
             WPixmapStore::setLoader(imsrc);
             WImageStore::setLoader(imsrc);
             WSkinColor::setLoader(imsrc);
 
+            // This calls SkinContext::updateVariables in skincontext.cpp which
+            // iterates over all <SetVariable> nodes in the selected color scheme node
+            pContext->updateVariables(schemeNode);
+
+
             if (pStyle) {
-                *pStyle = LegacySkinParser::getStyleFromNode(sch);
+                *pStyle = LegacySkinParser::getStyleFromNode(schemeNode);
             }
         }
     }
-    if (!found) {
+    if (!bSelectedColorSchemeFound) {
         QSharedPointer<ImgSource> imsrc =
                 QSharedPointer<ImgSource>(new ImgLoader());
         WPixmapStore::setLoader(imsrc);

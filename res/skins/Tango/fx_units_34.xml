@@ -26,8 +26,8 @@ Description:
       -->
 
       <!-- EffectUnit 3 -->
-      <WidgetStack currentpage="[EffectRack1_EffectUnit3],show_parameters" persist="true"><!-- EffectUnit 1 -->
-        <SizePolicy>me,min</SizePolicy>
+      <WidgetStack currentpage="[EffectRack1_EffectUnit3],show_parameters" persist="true">
+        <Size>502min,-1min</Size>
         <Children>
 
           <!-- EffectUnit 3 mini -->
@@ -61,20 +61,15 @@ Description:
         </Connection>
       </WidgetStack><!-- /EffectUnit 3 -->
 
-      <WidgetGroup><Size>5f,0f</Size></WidgetGroup>
-
       <WidgetGroup>
-        <Size>5f,0min</Size>
-        <Connection>
-          <ConfigKey>[Tango],netbook_mode</ConfigKey>
-          <Transform><Not/></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
+        <MinimumSize>6,0</MinimumSize>
+        <MaximumSize>10,0</MaximumSize>
+        <SizePolicy>me,min</SizePolicy>
       </WidgetGroup>
 
       <!-- EffectUnit 4 -->
       <WidgetStack currentpage="[EffectRack1_EffectUnit4],show_parameters" persist="true">
-        <SizePolicy>me,min</SizePolicy>
+        <Size>502min,-1min</Size>
         <Children>
 
           <!-- EffectUnit 4 mini -->

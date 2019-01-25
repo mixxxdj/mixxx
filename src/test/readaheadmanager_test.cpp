@@ -3,9 +3,9 @@
 #include <QtDebug>
 #include <QScopedPointer>
 
-#include "engine/cachingreader.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "control/controlobject.h"
-#include "engine/loopingcontrol.h"
+#include "engine/controls/loopingcontrol.h"
 #include "engine/readaheadmanager.h"
 #include "test/mixxxtest.h"
 #include "util/assert.h"
@@ -61,10 +61,8 @@ class StubLoopControl : public LoopingControl {
         Q_UNUSED(adjustingPhase);
     }
 
-  public slots:
-    void trackLoaded(TrackPointer pTrack, TrackPointer pOldTrack) override {
+    void trackLoaded(TrackPointer pTrack) override {
         Q_UNUSED(pTrack);
-        Q_UNUSED(pOldTrack);
     }
 
   protected:

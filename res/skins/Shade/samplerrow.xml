@@ -45,17 +45,17 @@
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_big_plus.png</Pressed>
-									<Unpressed>btn_big_plus.png</Unpressed>
+									<Pressed>skin:/btn/btn_big_plus.png</Pressed>
+									<Unpressed>skin:/btn/btn_big_plus.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_big_minus.png</Pressed>
-									<Unpressed>btn_big_minus.png</Unpressed>
+									<Pressed>skin:/btn/btn_big_minus.png</Pressed>
+									<Unpressed>skin:/btn/btn_big_minus.png</Unpressed>
 								</State>
 								<Pos>0,0</Pos>
 								<Connection>
-									<ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
+									<ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
 								</Connection>
 							</PushButton>
 						</Children>
@@ -110,8 +110,8 @@
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_load.png</Pressed>
-									<Unpressed>btn_load.png</Unpressed>
+									<Pressed>skin:/btn/btn_load.png</Pressed>
+									<Unpressed>skin:/btn/btn_load.png</Unpressed>
 								</State>
 								<Pos>0,6</Pos>
 								<Connection>
@@ -124,8 +124,8 @@
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_save.png</Pressed>
-									<Unpressed>btn_save.png</Unpressed>
+									<Pressed>skin:/btn/btn_save.png</Pressed>
+									<Unpressed>skin:/btn/btn_save.png</Unpressed>
 								</State>
 								<Pos>0,20</Pos>
 								<Connection>
@@ -149,7 +149,7 @@
 			</WidgetGroup>	
 		  </Children>
 		  <Connection>
-		    <ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
+		    <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
 		    <BindProperty>visible</BindProperty>
 			 <Transform>
 			   <Not/>
@@ -193,17 +193,17 @@
 								<NumberStates>2</NumberStates>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_big_plus.png</Pressed>
-									<Unpressed>btn_big_plus.png</Unpressed>
+									<Pressed>skin:/btn/btn_big_plus.png</Pressed>
+									<Unpressed>skin:/btn/btn_big_plus.png</Unpressed>
 								</State>
 								<State>
 									<Number>1</Number>
-									<Pressed>btn_big_minus.png</Pressed>
-									<Unpressed>btn_big_minus.png</Unpressed>
+									<Pressed>skin:/btn/btn_big_minus.png</Pressed>
+									<Unpressed>skin:/btn/btn_big_minus.png</Unpressed>
 								</State>
 								<Pos>0,6</Pos>
 								<Connection>
-									<ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
+									<ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
 								</Connection>
 							</PushButton>
 						</Children>
@@ -260,8 +260,8 @@
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_load.png</Pressed>
-									<Unpressed>btn_load.png</Unpressed>
+									<Pressed>skin:/btn/btn_load.png</Pressed>
+									<Unpressed>skin:/btn/btn_load.png</Unpressed>
 								</State>
 								<Pos>0,6</Pos>
 								<Connection>
@@ -274,8 +274,8 @@
 								<NumberStates>1</NumberStates>
 								<State>
 									<Number>0</Number>
-									<Pressed>btn_save.png</Pressed>
-									<Unpressed>btn_save.png</Unpressed>
+									<Pressed>skin:/btn/btn_save.png</Pressed>
+									<Unpressed>skin:/btn/btn_save.png</Unpressed>
 								</State>
 								<Pos>0,20</Pos>
 								<Connection>
@@ -299,7 +299,7 @@
 			</WidgetGroup>	
 		  </Children>
 		  <Connection>
-		    <ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
+		    <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
 		    <BindProperty>visible</BindProperty>
 		  </Connection>
 		</WidgetGroup>

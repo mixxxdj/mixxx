@@ -326,9 +326,8 @@ script.midiPitch = function (LSB, MSB, status) {
    -------- ------------------------------------------------------ */
 script.spinback = function(channel, control, value, status, group, factor, rate) {
     // if brake is called without defined factor and rate, reset to defaults
-    if (factor === undefined && rate === undefined) {
+    if (factor === undefined) {
         factor = 1;
-        rate = -10;
     }
     // if brake is called without defined rate, reset to default
     if (rate === undefined) {

@@ -1,0 +1,85 @@
+<!--
+Description:
+  Container for either CoverArt or Spinny (with or without Cover).
+  Displayed next to overview waveform in decks.
+Variables:
+  chanNum : channel number
+  group   : [ChannelXY]
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>SpinnyCoverContainer</ObjectName>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <WidgetGroup><!-- Spinny -->
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+          <!-- no Cover on Spinny -->
+          <Spinny>
+            <TooltipId>spinny</TooltipId>
+            <Size>40me,40me</Size>
+            <Group><Variable name="group"/></Group>
+            <PathBackground scalemode="STRETCH_ASPECT">graphics/spinnyMini_bg.svg</PathBackground>
+            <PathForeground scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator.svg</PathForeground>
+            <PathMask scalemode="STRETCH_ASPECT">graphics/spinnyMini_mask_<Variable name="SpinnyCoverColor"/>.svg</PathMask>
+            <PathGhost scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator_ghost.svg</PathGhost>
+            <ShowCover>false</ShowCover>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Spinny>
+          <!-- Cover on Spinny -->
+          <Spinny>
+            <TooltipId>spinny</TooltipId>
+            <Size>40me,40me</Size>
+            <Group><Variable name="group"/></Group>
+            <PathBackground scalemode="STRETCH_ASPECT">graphics/spinnyMini_bg.svg</PathBackground>
+            <PathForeground scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator.svg</PathForeground>
+            <PathMask scalemode="STRETCH_ASPECT">graphics/spinnyMini_mask_<Variable name="SpinnyCoverColor"/>.svg</PathMask>
+            <PathGhost scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator_ghost.svg</PathGhost>
+            <ShowCover>true</ShowCover>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </Spinny>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- Spinny -->
+
+      <!-- Cover Art only -->
+      <WidgetGroup>
+        <ObjectName>SpinnyCover</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+          <CoverArt>
+            <TooltipId>coverart</TooltipId>
+            <Size>50f,50f</Size>
+            <Group>[Channel<Variable name="chanNum"/>]</Group>
+            <DefaultCover>skin:/graphics/cover_default_mini_<Variable name="SpinnyCoverColor"/>.svg</DefaultCover>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </CoverArt>
+        </Children>
+        <Connection>
+          <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

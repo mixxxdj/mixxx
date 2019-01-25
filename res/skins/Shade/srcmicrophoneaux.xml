@@ -19,36 +19,37 @@
         <Layout>horizontal</Layout>
         <BackPath>style/style_bg_src.png</BackPath>
         <Children>
-    		<WidgetGroup>
-                <Size>93f,54f</Size>
-                <Children>
-                <Template src="skin:microphone.xml">
-                </Template>
-				</Children>
-                <Connection>
-                    <ConfigKey>[Microphone<Variable name="micnum"/>],enabled</ConfigKey>
-                    <!--BindProperty>visible</BindProperty-->
-                </Connection>
-            </WidgetGroup>
-			<WidgetGroup>
-				<Size>0e,54f</Size>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-			</WidgetGroup>
-    		<WidgetGroup>
-                <Size>108f,54f</Size>
-                <Children>
-                <Template src="skin:auxiliary.xml">
-                </Template>
-				</Children>
-                <Connection>
-                    <ConfigKey>[Auxiliary<Variable name="auxnum"/>],enabled</ConfigKey>
-                    <!--BindProperty>visible</BindProperty-->
-                </Connection>
-            </WidgetGroup>
+          <WidgetGroup>
+            <Size>93f,54f</Size>
+            <Children>
+              <Template src="skin:microphone.xml">
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Microphone<Variable name="micnum"/>],enabled</ConfigKey>
+              <!--BindProperty>visible</BindProperty-->
+            </Connection>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Size>0e,54f</Size>
+            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+          </WidgetGroup>
+          <WidgetGroup>
+            <Size>108f,54f</Size>
+            <Children>
+              <Template src="skin:auxiliary.xml">
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Auxiliary<Variable name="auxnum"/>],enabled</ConfigKey>
+              <!--BindProperty>visible</BindProperty-->
+            </Connection>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
+
       <WidgetGroup>
-            <ObjectName>EffectRightBorder</ObjectName>
+        <ObjectName>EffectRightBorder</ObjectName>
         <Size>5f,60f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
         <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>

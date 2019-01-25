@@ -22,6 +22,7 @@ class WKey : public WLabel  {
   private:
     double m_dOldValue;
     bool m_displayCents;
+    bool m_displayKey;
     ControlProxy m_preferencesUpdated;
     ControlProxy m_engineKeyDistance;
 };

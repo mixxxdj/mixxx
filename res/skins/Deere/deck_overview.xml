@@ -1,0 +1,51 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A deck waveform overview widget.
+  Variables:
+    i: The deck number (1-indexed)
+    DeckBackgroundColor
+    PlayedOverlayColor
+    DeckSignalColor
+-->
+<Template>
+  <Overview>
+    <TooltipId>waveform_overview</TooltipId>
+    <Group><Variable name="group"/></Group>
+    <SizePolicy>me,me</SizePolicy>
+    <BgColor><Variable name="DeckBackgroundColor"/></BgColor>
+    <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+    <SignalHighColor></SignalHighColor>
+    <SignalMidColor></SignalMidColor>
+    <SignalLowColor></SignalLowColor>
+    <SignalRGBHighColor></SignalRGBHighColor>
+    <SignalRGBMidColor></SignalRGBMidColor>
+    <SignalRGBLowColor></SignalRGBLowColor>
+    <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
+    <PlayPosColor>#00FF00</PlayPosColor>
+    <DefaultMark>
+      <Align>bottom|right</Align>
+      <Color>#619dea</Color>
+      <TextColor>#FFFFFF</TextColor>
+      <Text> %1 </Text>
+    </DefaultMark>
+    <MarkRange>
+      <StartControl>loop_start_position</StartControl>
+      <EndControl>loop_end_position</EndControl>
+      <EnabledControl>loop_enabled</EnabledControl>
+      <Color>#00FF00</Color>
+      <DisabledColor>#FFFFFF</DisabledColor>
+    </MarkRange>
+    <Mark>
+      <Control>cue_point</Control>
+      <Align>top|right</Align>
+      <Color>#FF001C</Color>
+      <TextColor>#FFFFFF</TextColor>
+      <Text>C</Text>
+    </Mark>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+    </Connection>
+  </Overview>
+</Template>

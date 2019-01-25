@@ -13,7 +13,7 @@ ControlWidgetConnection::ControlWidgetConnection(
         : m_pWidget(pBaseWidget),
           m_pValueTransformer(pTransformer) {
     m_pControl = new ControlProxy(key, this);
-    m_pControl->connectValueChanged(SLOT(slotControlValueChanged(double)));
+    m_pControl->connectValueChanged(this, &ControlWidgetConnection::slotControlValueChanged);
 }
 
 void ControlWidgetConnection::setControlParameter(double parameter) {
@@ -97,7 +97,7 @@ ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(
         WBaseWidget* pBaseWidget, const ConfigKey& key,
         ValueTransformer* pTransformer, const QString& propertyName)
         : ControlWidgetConnection(pBaseWidget, key, pTransformer),
-          m_propertyName(propertyName.toAscii()) {
+          m_propertyName(propertyName.toLatin1()) {
     slotControlValueChanged(m_pControl->get());
 }
 

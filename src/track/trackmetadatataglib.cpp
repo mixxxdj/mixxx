@@ -822,6 +822,7 @@ bool readAudioProperties(
         TrackMetadata* pTrackMetadata,
         const TagLib::File& file) {
     if (!file.isValid()) {
+        kLogger.warning() << "Cannot read audio properties from inaccessible/unreadable/invalid file:" << file.name();
         return false;
     }
     if (!pTrackMetadata) {
@@ -2259,8 +2260,6 @@ bool exportTrackMetadataIntoMP4Tag(TagLib::MP4::Tag* pTag, const TrackMetadata& 
             WRITE_TAG_OMIT_TRACK_NUMBER | WRITE_TAG_OMIT_YEAR);
 
     // Write track number/total pair
-    QString trackNumberText;
-    QString trackTotalText;
     TrackNumbers parsedTrackNumbers;
     const TrackNumbers::ParseResult parseResult =
             TrackNumbers::parseFromStrings(

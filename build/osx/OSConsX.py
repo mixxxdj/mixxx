@@ -246,6 +246,8 @@ def build_app(target, source, env):
     locals = {} # [ref] => (absolute_path, embedded_path) (ref is the original reference from looking at otool -L; we use this to decide if two libs are the same)
 
     #XXX it would be handy if embed_dependencies returned the otool list for each ref it reads..
+    binary_rpaths = otool.rpaths(str(binary))
+    otool_local_paths = binary_rpaths + otool_local_paths
     for ref, path in otool.embed_dependencies(str(binary), LOCAL=otool_local_paths, SYSTEM=otool_system_paths):
         locals[ref] = (path, embed_lib(path))
 
