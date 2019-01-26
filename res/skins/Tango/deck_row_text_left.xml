@@ -39,54 +39,19 @@ Variables:
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><!-- Time -->
-            <ObjectName>PlayPositionHighlightContainer</ObjectName>
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,me</SizePolicy>
-            <Children>
-              <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-
-            <!-- Elapsed (may include '-' if position is before actual track beginning)
-                or Remaning -->
-              <NumberPos>
-                <ObjectName>PlayPosition</ObjectName>
-                <TooltipId>track_time</TooltipId>
-                <Size>-1min,22f</Size>
-                <Alignment>right</Alignment>
-                <Channel><Variable name="chanNum"/></Channel>
-                <!-- Not respected, see
-                    https://answers.launchpad.net/mixxx/+question/635872
-                <NumberOfDigits>1</NumberOfDigits>-->
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
-                </Connection>
-                <Connection>
-                  <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
-                  <Transform><IsEqual>2</IsEqual><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </NumberPos>
-              
-              <!-- Elapsed & Remaining -->
-              <NumberPos>
-                <ObjectName>PlayPosition</ObjectName>
-                <TooltipId>track_time</TooltipId>
-                <Size>-1min,22f</Size>
-                <Alignment>right</Alignment>
-                <Channel><Variable name="chanNum"/></Channel>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
-                </Connection>
-                <Connection>
-                  <ConfigKey>[Controls],ShowDurationRemaining</ConfigKey>
-                  <Transform><IsEqual>2</IsEqual></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </NumberPos>
-
-              <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
-            </Children>
-          </WidgetGroup><!-- Time -->
+          <NumberPos><!-- Time -->
+            <ObjectName>PlayPosition</ObjectName>
+            <TooltipId>track_time</TooltipId>
+            <Size>-1min,20f</Size>
+            <Alignment>right</Alignment>
+            <Channel><Variable name="chanNum"/></Channel>
+            <!-- Not respected, see
+                https://answers.launchpad.net/mixxx/+question/635872
+            <NumberOfDigits>1</NumberOfDigits>-->
+            <Connection>
+              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+            </Connection>
+          </NumberPos><!-- Time -->
         </Children>
       </WidgetGroup><!-- /Title + Time -->
 

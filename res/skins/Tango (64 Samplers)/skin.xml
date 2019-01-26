@@ -25,8 +25,8 @@
 <skin>
   <manifest>
     <title>Tango</title>
-    <author>ronso0</author>
-    <version>2.2.0</version>
+    <author>ronso0@mixxx.org</author>
+    <version>2.3.0</version>
     <description>A controller-focused nighttime skin. Almost all controls can be hidden with skin menu.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -121,6 +121,62 @@
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
     </attributes>
   </manifest>
+<!--  ################################################################
+       Skin Colour Schemes ##########################################
+     ###############################################################
+-->
+  <Schemes>
+    <Scheme>
+      <Name>Classic</Name>
+      <Filters/>
+      <!-- Colors for waveform & overview -->
+      <SetVariable name="SignalColor_12">#5EBAFF</SetVariable>
+      <SetVariable name="SignalBgColor_12">#001D33</SetVariable>
+      <SetVariable name="SignalColor_34">#DF4DF0</SetVariable>
+      <SetVariable name="SignalBgColor_34">#3A0440</SetVariable>
+      <!-- small Spinny mask and default mini cover should match -->
+      <SetVariable name="SpinnyCoverColor_12">blue</SetVariable>
+      <SetVariable name="SpinnyCoverColor_34">purple</SetVariable>
+      <SetVariable name="EndOfTrackColor">#EA0085</SetVariable>
+      <Style>
+        <!-- All text labels in decks (artist, title, time, BPM, key, ...) -->
+        #Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
+        #Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
+          color: #33a8ff;}
+        #Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
+        #Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
+          color: #d910f0;}
+        <!-- Vinyl Controls toggle is transparent. This sets bg color so it matches those above -->
+        #DeckOverview1, #DeckOverview2 { background-color: #001D33;}
+        #DeckOverview3, #DeckOverview4 { background-color: #3A0440;}
+      </Style>
+    </Scheme>
+    <Scheme>
+      <Name>ClubTwist</Name>
+      <SetVariable name="SignalColor_12">#DF4DF0</SetVariable>
+      <SetVariable name="SignalBgColor_12">#3A0440</SetVariable>
+      <SetVariable name="SignalColor_34">#5EBAFF</SetVariable>
+      <SetVariable name="SignalBgColor_34">#001D33</SetVariable>
+      <SetVariable name="SpinnyCoverColor_12">purple</SetVariable>
+      <SetVariable name="SpinnyCoverColor_34">blue</SetVariable>
+      <!-- Cyan end-of-track warning -->
+      <SetVariable name="EndOfTrackColor">#00ffff</SetVariable>
+      <Style>
+        #Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
+        #Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
+          color: #e145f3;}
+        #Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
+        #Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
+          color: #3693d9;}
+        #DeckOverview1, #DeckOverview2 { background-color: #3A0440;}
+        #DeckOverview3, #DeckOverview4 { background-color: #001D33;}
+        <!-- brighter, broader library focus borders -->
+        QTreeView, QTableView { border-width: 2px;}
+        QTreeView:focus, QTableView:focus, WSearchLineEdit:focus {
+          border-color: #ff8800;}
+      </Style>
+    </Scheme>
+  </Schemes>
 
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:../Tango/style.qss" src-mac="skin:../Tango/style-mac.qss"/>
@@ -132,32 +188,32 @@
        Launch Image  ################################################
      ###############################################################
 -->
-  <LaunchImageStyle>
-    LaunchImage {
-      background-color: #0f0f0f;
-    }
-    QLabel {
-      image: url(skin:../Tango//graphics/logo_160x40.svg);
-      padding: 0;
-      margin: 0px 2px 0px 2px;
-      border: none;
-      min-width: 160px;
-      min-height: 40px;
-      max-width: 160px;
-      max-height: 40px;
-    }
-    QProgressBar {
-      background-color: #333333;
-      border: none;
-      min-width: 164px;
-      min-height: 3px;
-      max-width: 164px;
-      max-height: 3px;
-    }
-    QProgressBar::chunk {
-      background-color: #FF6100;
-    }
-  </LaunchImageStyle>
+    <LaunchImageStyle>
+      LaunchImage {
+        background-color: #0f0f0f;
+      }
+      QLabel {
+        image: url(skin:../Tango//graphics/logo_160x40.svg);
+        padding: 0;
+        margin: 0px 2px 0px 2px;
+        border: none;
+        min-width: 160px;
+        min-height: 40px;
+        max-width: 160px;
+        max-height: 40px;
+      }
+      QProgressBar {
+        background-color: #333333;
+        border: none;
+        min-width: 164px;
+        min-height: 3px;
+        max-width: 164px;
+        max-height: 3px;
+      }
+      QProgressBar::chunk {
+        background-color: #FF6100;
+      }
+    </LaunchImageStyle>
   <Children>
 
 <!--  ################################################################
@@ -166,25 +222,13 @@
       Put these variable definitions at the beginning in order to have
       have all variables available for SingletonDefinitions -->
 
-<!--  Knob range in degrees, 0-360
-      Values beyond -150/150 might interfere with some knob labels -->
+<!--  Knob range in degrees. Values beyond -150/150 might interfere with some knob labels -->
     <SetVariable name="PotiMinAngle">-130</SetVariable>
     <SetVariable name="PotiMaxAngle">130</SetVariable>
-
-    <SetVariable name="SignalBgColor_1">#001D33</SetVariable>
-    <SetVariable name="SignalBgColor_2">#001D33</SetVariable>
-    <SetVariable name="SignalBgColor_3">#3A0440</SetVariable>
-    <SetVariable name="SignalBgColor_4">#3A0440</SetVariable>
-
-    <SetVariable name="SignalColor_1">#5EBAFF</SetVariable>
-    <SetVariable name="SignalColor_2">#5EBAFF</SetVariable>
-    <SetVariable name="SignalColor_3">#DF4DF0</SetVariable>
-    <SetVariable name="SignalColor_4">#DF4DF0</SetVariable>
 
     <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
     <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
     <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
-
     <SetVariable name="PlayedOverlayColor">#99000000</SetVariable>
 
 <!--################################################################
@@ -194,6 +238,87 @@
       <ObjectName>Waveforms_Singleton</ObjectName>
       <Children>
         <Template src="skin:../Tango/waveforms_container.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <!-- Overviews are needed in both regular and minmal decks -->
+    <SingletonDefinition>
+      <ObjectName>DeckOverviewSingleton1</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/deck_overview.xml">
+          <SetVariable name="chanNum">1</SetVariable>
+          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverviewSingleton2</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/deck_overview.xml">
+          <SetVariable name="chanNum">2</SetVariable>
+          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverviewSingleton3</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/deck_overview.xml">
+          <SetVariable name="chanNum">3</SetVariable>
+          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverviewSingleton4</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/deck_overview.xml">
+          <SetVariable name="chanNum">4</SetVariable>
+          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverMini_Singleton1</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/spinny_cover_mini.xml">
+          <SetVariable name="chanNum">1</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverMini_Singleton2</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/spinny_cover_mini.xml">
+          <SetVariable name="chanNum">2</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverMini_Singleton3</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/spinny_cover_mini.xml">
+          <SetVariable name="chanNum">3</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverMini_Singleton4</ObjectName>
+      <Children>
+        <Template src="skin:../Tango/spinny_cover_mini.xml">
+          <SetVariable name="chanNum">4</SetVariable>
+        </Template>
       </Children>
     </SingletonDefinition>
 
@@ -292,25 +417,6 @@
 
                             <Template src="skin:../Tango/decks_12.xml"/>
 
-                        <!-- Load scrolling waveforms Singleton here if the waveforms
-                            in the waveforms/decks Splitter are collapsed.
-                            Otherwise the end-of-track warning would not show up
-                            in overview waveforms. -->
-                            <WidgetGroup>
-                              <Layout>vertical</Layout>
-                              <Size>0me,0f</Size>
-                              <Children>
-                                <SingletonContainer>
-                                  <ObjectName>Waveforms_Singleton</ObjectName>
-                                </SingletonContainer>
-                              </Children>
-                              <Connection>
-                                <ConfigKey persist="true">[Tango],stacked_waveforms</ConfigKey>
-                                <Transform><Not/></Transform>
-                                <BindProperty>visible</BindProperty>
-                              </Connection>
-                            </WidgetGroup>
-
                             <WidgetGroup>
                               <Layout>vertical</Layout>
                               <SizePolicy>me,min</SizePolicy>
@@ -379,6 +485,37 @@
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
                   <Children>
+
+                    <WidgetGroup><!-- Minimal decks 1/2 -->
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Children>
+                        <Template src="skin:../Tango/deck_left_mini.xml">
+                          <SetVariable name="chanNum">1</SetVariable>
+                        </Template>
+                        <Template src="skin:../Tango/deck_right_mini.xml">
+                          <SetVariable name="chanNum">2</SetVariable>
+                        </Template>
+                      </Children>
+                    </WidgetGroup>
+
+                    <WidgetGroup><!-- Minimal decks 3/4 -->
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Children>
+                        <Template src="skin:../Tango/deck_left_mini.xml">
+                          <SetVariable name="chanNum">3</SetVariable>
+                        </Template>
+                        <Template src="skin:../Tango/deck_right_mini.xml">
+                          <SetVariable name="chanNum">4</SetVariable>
+                        </Template>
+                      </Children>
+                      <Connection>
+                        <ConfigKey>[Skin],show_4decks</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                    </WidgetGroup>
+
                     <SingletonContainer>
                       <ObjectName>Library_Singleton</ObjectName>
                     </SingletonContainer>

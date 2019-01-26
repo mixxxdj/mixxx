@@ -11,11 +11,6 @@
         <Children>
           <Template src="skin:deck.xml">
             <SetVariable name="channum">1</SetVariable>
-            <SetVariable name="signal_color">#E7C413</SetVariable>
-            <SetVariable name="SignalBgColor">#2f290a</SetVariable>
-            <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
-            <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
-            <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
           </Template>
 
           <WidgetGroup>
@@ -24,11 +19,6 @@
             <Children>
               <Template src="skin:deck.xml">
                 <SetVariable name="channum">3</SetVariable>
-                <SetVariable name="signal_color">#09B2AE</SetVariable>
-                <SetVariable name="SignalBgColor">#2f290a</SetVariable>
-                <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
-                <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
-                <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
               </Template>
             </Children>
             <Connection>

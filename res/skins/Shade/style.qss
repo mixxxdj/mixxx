@@ -11,6 +11,16 @@
   font-size: 14px;
 }
 
+#DeckRowSmall {
+  padding: 3px 3px 2px 3px;
+}
+
+#DeckSmall {
+  padding: 5px 0px;
+}
+
+
+
 WBeatSpinBox,
 /* For some mysterious reason #DlgAutoDJ QSpinBox
 wouldn't style the respective spinbox in Shade (anymore),
