@@ -94,7 +94,10 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
             m_skin = skinInfo.fileName();
             ComboBoxSkinconf->setCurrentIndex(index);
             // need help here: find configured color scheme and pass it to preview picker
-            skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin));
+            slotUpdateSchemes();
+            qDebug() << "calling slotUpdateSchemes() [1]";
+            //m_colorScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
+            skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
             if (size_ok) {
                 warningLabel->hide();
             } else {
@@ -108,6 +111,8 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
 
     slotUpdateSchemes();
+    qDebug() << "calling slotUpdateSchemes() [2]";
+
 
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
@@ -192,14 +197,19 @@ void DlgPrefInterface::slotUpdateSchemes() {
         ComboBoxSchemeconf->setEnabled(false);
         ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", 0));
         ComboBoxSchemeconf->setCurrentIndex(0);
+        // clear m_colorScheme just in case it's not empty
+        m_colorScheme = QString();
+        qDebug() << "m_colorScheme (= '';) =" << m_colorScheme;
     } else {
         ComboBoxSchemeconf->setEnabled(true);
-        QString selectedScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
+        QString configScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
         for (int i = 0; i < schlist.size(); i++) {
             ComboBoxSchemeconf->addItem(schlist[i]);
 
-            if (schlist[i] == selectedScheme) {
+            if (schlist[i] == configScheme) {
                 ComboBoxSchemeconf->setCurrentIndex(i);
+                m_colorScheme = configScheme;
+                qDebug() << "m_colorScheme =" << m_colorScheme;
             }
         }
     }
@@ -308,6 +318,7 @@ void DlgPrefInterface::notifyRebootNecessary() {
 
 void DlgPrefInterface::slotSetScheme(int) {
     QString newScheme = ComboBoxSchemeconf->currentText();
+    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
     if (m_colorScheme != newScheme) {
         m_colorScheme = newScheme;
         m_bRebootMixxxView = true;
@@ -316,8 +327,7 @@ void DlgPrefInterface::slotSetScheme(int) {
 
 void DlgPrefInterface::slotSetSkin(int) {
     QString newSkin = ComboBoxSkinconf->currentText();
-    QString schemeNameFormatted = ComboBoxSchemeconf->currentText()replace(" ","");
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin, schemeNameFormatted));
+//    m_colorScheme = ComboBoxSchemeconf->currentText();
     if (newSkin != m_skin) {
         m_skin = newSkin;
         m_bRebootMixxxView = newSkin != m_skinOnUpdate;
@@ -325,6 +335,7 @@ void DlgPrefInterface::slotSetSkin(int) {
             ? warningLabel->hide() : warningLabel->show();
         slotUpdateSchemes();
     }
+    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin, m_colorScheme));
 }
 
 void DlgPrefInterface::slotApply() {
