@@ -39,6 +39,8 @@
       <attribute persist="true" config_key="[Skin],sampler_row_2_expanded">0</attribute>
 
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+      <!-- reset ducking mode on start to avoid effect master volume -->
+      <attribute config_key="[Master],talkoverDucking">0</attribute>
       <!-- Library -->
       <attribute config_key="[Skin],show_library">1</attribute>
       <attribute config_key="[Master],maximize_library">0</attribute>
