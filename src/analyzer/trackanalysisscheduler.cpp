@@ -179,6 +179,11 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
         AnalyzerThreadState threadState,
         TrackId trackId,
         AnalyzerProgress analyzerProgress) {
+    kLogger.debug() << "onWorkerThreadProgress"
+            << threadId
+            << int(threadState)
+            << trackId
+            << analyzerProgress;
     auto& worker = m_workers.at(threadId);
     switch (threadState) {
     case AnalyzerThreadState::Void:
@@ -269,21 +274,21 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
                     m_library->trackCollection().getTrackDAO().getTrack(nextTrackId);
             if (nextTrack) {
                 if (m_pendingTrackIds.insert(nextTrackId).second) {
-                    VERIFY_OR_DEBUG_ASSERT(worker->submitNextTrack(std::move(nextTrack))) {
-                        // This will and must never happen! We will only submit the next
-                        // track only after the worker has signaled that it is idle. In
-                        // this case the lock-free FIFO for passing data between threads
-                        // is empty and enqueueing is expected to succeed.
-                        kLogger.critical()
-                                << "Failed to submit next track ...retrying...";
-                        // Undo changes
+                    if (worker->submitNextTrack(std::move(nextTrack))) {
+                        m_queuedTrackIds.pop_front();
+                        ++m_dequeuedTracksCount;
+                        return true;
+                    } else {
+                        // The worker may already have been assigned new tasks
+                        // in the mean time, nothing to worry about.
                         m_pendingTrackIds.erase(nextTrackId);
-                        // Retry to avoid skipping this track
-                        continue;
+                        kLogger.debug()
+                                << "Failed to submit next track - worker thread"
+                                << worker->thread()->id()
+                                << "is busy";
+                        // Early exit to avoid popping the next track from the queue (see below)!
+                        return false;
                     }
-                    m_queuedTrackIds.pop_front();
-                    ++m_dequeuedTracksCount;
-                    return true;
                 } else {
                     // This track is currently analyzed by one of the workers
                     kLogger.debug()

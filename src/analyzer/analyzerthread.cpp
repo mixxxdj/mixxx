@@ -232,6 +232,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     mixxx::IndexRange remainingFrames = audioSource->frameIndexRange();
     auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
     while (result == AnalysisResult::Pending) {
+        DEBUG_ASSERT(!remainingFrames.empty());
         sleepWhileSuspended();
         if (isStopping()) {
             return AnalysisResult::Cancelled;
@@ -290,6 +291,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         const AnalyzerProgress progress =
                 frameProgress *
                 (kAnalyzerProgressFinalizing - kAnalyzerProgressNone);
+        DEBUG_ASSERT(progress > kAnalyzerProgressNone);
+        DEBUG_ASSERT(progress <= kAnalyzerProgressFinalizing);
         emitBusyProgress(progress);
     }
 
