@@ -93,6 +93,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         if (skinInfo.absoluteFilePath() == configuredSkinPath) {
             m_skin = skinInfo.fileName();
             ComboBoxSkinconf->setCurrentIndex(index);
+            // need help here: find configured color scheme and pass it to preview picker
             skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin));
             if (size_ok) {
                 warningLabel->hide();
