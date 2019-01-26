@@ -80,7 +80,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotClearMainCue();
     void slotClearHotCues();
     void slotClearLoop();
-    void slotClearKeys();
+    void slotClearKey();
     void slotClearReplayGain();
     void slotClearWaveform();
     void slotClearAllMetadata();
@@ -194,7 +194,7 @@ class WTrackTableView : public WLibraryTableView {
     QAction* m_pClearHotCuesAction;
     QAction* m_pClearLoopAction;
     QAction* m_pClearWaveformAction;
-    QAction* m_pClearKeysAction;
+    QAction* m_pClearKeyAction;
     QAction* m_pClearReplayGainAction;
     QAction* m_pClearAllMetadataAction;
 

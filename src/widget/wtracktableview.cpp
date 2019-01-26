@@ -503,9 +503,9 @@ void WTrackTableView::createActions() {
     connect(m_pClearLoopAction, SIGNAL(triggered()),
             this, SLOT(slotClearLoop()));
 
-    m_pClearKeysAction = new QAction(tr("Key(s)"), this);
-    connect(m_pClearKeysAction, SIGNAL(triggered()),
-            this, SLOT(slotClearKeys()));
+    m_pClearKeyAction = new QAction(tr("Key"), this);
+    connect(m_pClearKeyAction, SIGNAL(triggered()),
+            this, SLOT(slotClearKey()));
 
     m_pClearReplayGainAction = new QAction(tr("ReplayGain"), this);
     connect(m_pClearReplayGainAction, SIGNAL(triggered()),
@@ -935,7 +935,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         //m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
         m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
         //m_pClearMetadataMenu->addAction(m_pClearLoopAction);
-        m_pClearMetadataMenu->addAction(m_pClearKeysAction);
+        m_pClearMetadataMenu->addAction(m_pClearKeyAction);
         m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
         m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
         m_pClearMetadataMenu->addSeparator();
@@ -1883,7 +1883,7 @@ void WTrackTableView::slotClearLoop() {
     }
 }
 
-void WTrackTableView::slotClearKeys() {
+void WTrackTableView::slotClearKey() {
     QModelIndexList indices = selectionModel()->selectedRows();
     TrackModel* trackModel = getTrackModel();
 
@@ -1939,7 +1939,7 @@ void WTrackTableView::slotClearAllMetadata() {
     slotClearMainCue();
     slotClearHotCues();
     slotClearLoop();
-    slotClearKeys();
+    slotClearKey();
     slotClearReplayGain();
     slotClearWaveform();
 }
