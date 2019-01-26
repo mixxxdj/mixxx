@@ -315,7 +315,8 @@ void DlgPrefInterface::slotSetScheme(int) {
 
 void DlgPrefInterface::slotSetSkin(int) {
     QString newSkin = ComboBoxSkinconf->currentText();
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin));
+    QString schemeNameFormatted = ComboBoxSchemeconf->currentText()replace(" ","");
+    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin, schemeNameFormatted));
     if (newSkin != m_skin) {
         m_skin = newSkin;
         m_bRebootMixxxView = newSkin != m_skinOnUpdate;
