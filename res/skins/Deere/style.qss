@@ -1107,6 +1107,10 @@ WBeatSpinBox,
   border: none;
 }
 
+#EffectEnableButton {
+  image: url(skin:/icon/ic_power_48px.svg) no-repeat center center;
+}
+
 WEffectSelector {
   color: #c1cabe;
   background-color: #444342;
