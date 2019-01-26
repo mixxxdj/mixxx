@@ -494,30 +494,47 @@ void SoundSourceProxy::updateTrackFromSource(
         m_pTrack->setCoverInfo(coverInfoNew);
     }
     // TODO: add loading of cuepoints from textfile here
-   // QList<CuePointer> textCues;
+    QList<CuePointer> textCues = m_pTrack->getCuePoints();
 
     QString cuepath = m_pTrack->getCueFilePath();
     QFile inputFile(cuepath);
-    qDebug() << "Loading Loc: " << cuepath.toStdString();
+    //qDebug() << "Loading Loc: " << cuepath.toStdString();
     if (inputFile.open(QIODevice::ReadOnly)) {
-        //int id_no = 0;
+        int id_no = 0;
         QTextStream in(&inputFile);
         while (!in.atEnd()) {
             QString line = in.readLine();
-            //CuePointer _cuePointer = m_pTrack.createAndAddCue();
-            //_cuePointer.setDuration(m_pTrack->getDuration());
-            //_cuePointer.setPosition(line.toDouble() * ( m_pTrack->getSampleRate() * m_pTrack->getChannels() ));
-            // _cuePointer.setId
-           // textCues += CuePointer(new Cue(id_no, m_pTrack->getId(), Cue::CUE, line.toDouble(), m_pTrack->getDuration(), id_no, "", QColor("#FF0000")));
-           // textCues += _cuePointer;
-            double _cuePoint = line.toDouble() * (m_pTrack->getSampleRate() * m_pTrack->getChannels() );
-            qDebug() << "Setting Cue: " << _cuePoint;
-            m_pTrack->setCuePoint(_cuePoint);
-           // id_no++;
+            double cuePointPos = line.toDouble() * (m_pTrack->getSampleRate() * m_pTrack->getChannels() );
+            bool exists = false;
+            for (CuePointer cue : textCues){
+                if(cue->getPosition() == cuePointPos){
+                    exists = true;
+                    break;
+                }
+            }
+            if(exists == false){
+                CuePointer cuePointer = m_pTrack->createAndAddCue();
+                ////cuePointer->setDuration(m_pTrack->getDuration());
+                cuePointer->setPosition(cuePointPos);
+                //cuePointer->setId(id_no);
+               // textCues += CuePointer(new Cue(id_no, m_pTrack->getId(), Cue::CUE, line.toDouble(), m_pTrack->getDuration(), id_no, "", QColor("#FF0000")));
+                textCues += cuePointer;
+                //qDebug() << "Setting Cue: " << cuePointPos;
+                std::cout << "Setting Cue: " << cuePointPos << std::endl;
+                
+            }
+
+            //m_pTrack->setCuePoint(_cuePoint);
+            id_no++;
         }
         inputFile.close();
     }
-    //m_pTrack->setCuePoints(textCues);
+    m_pTrack->setCuePoints(textCues);
+    emit(m_pTrack->cuesUpdated());
+    QList<CuePointer> textAgain = m_pTrack->getCuePoints();
+    for(CuePointer cue : textAgain){
+        std::cout << "DEBUG: " << cue->getPosition() << std::endl;
+    }
 }
 
 mixxx::MetadataSource::ImportResult SoundSourceProxy::importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const {

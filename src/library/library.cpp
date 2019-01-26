@@ -465,7 +465,7 @@ void Library::saveCuesToFile(const Track* pTrack){
     if ( cueList.size() == 0 )
         return;
     QString cuepath = pTrack->getCueFilePath();
-    qDebug() << "Saving Loc: " << cuepath.toStdString();
+    //qDebug() << "Saving Loc: " << cuepath.toStdString();
     QFile file(cuepath);
     if (file.open(QIODevice::WriteOnly)) {
         QTextStream stream(&file);
