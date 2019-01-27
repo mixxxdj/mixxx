@@ -75,11 +75,9 @@ bool AnalyzerQueenMaryKey::process(const CSAMPLE* pIn, const int iLen) {
     }
 
     const size_t numInputFrames = iLen / kAnalysisChannels;
+    m_currentFrame += numInputFrames;
     QMutexLocker locked(&s_mutex);
-    const size_t numProcessedFrames = m_helper.processStereoSamples(pIn, iLen);
-    m_currentFrame += numProcessedFrames;
-
-    return numProcessedFrames == numInputFrames;
+    return m_helper.processStereoSamples(pIn, iLen);
 }
 
 bool AnalyzerQueenMaryKey::finalize() {
