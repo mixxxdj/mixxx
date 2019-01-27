@@ -179,11 +179,13 @@ void TrackAnalysisScheduler::onWorkerThreadProgress(
         AnalyzerThreadState threadState,
         TrackId trackId,
         AnalyzerProgress analyzerProgress) {
-    kLogger.debug() << "onWorkerThreadProgress"
-            << threadId
-            << int(threadState)
-            << trackId
-            << analyzerProgress;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "onWorkerThreadProgress"
+                << threadId
+                << int(threadState)
+                << trackId
+                << analyzerProgress;
+    }
     auto& worker = m_workers.at(threadId);
     switch (threadState) {
     case AnalyzerThreadState::Void:
