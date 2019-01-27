@@ -57,12 +57,12 @@ struct QOverload : QConstOverload<Args...>, QNonConstOverload<Args...>
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
 inline void invokeDeleteLater(QObject* obj) {
-    // method name
+    // member function name
     QMetaObject::invokeMethod(obj, "deleteLater");
 }
 #else
 inline void invokeDeleteLater(QObject* obj) {
-    // functor
+    // pointer to member function
     QMetaObject::invokeMethod(obj, &QObject::deleteLater);
 }
 #endif
