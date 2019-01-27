@@ -656,7 +656,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = mixxx::Duration::formatSeconds(duration);
+                    value = mixxx::Duration::formatTime(duration);
                 } else {
                     value = QString();
                 }
