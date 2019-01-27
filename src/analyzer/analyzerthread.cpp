@@ -195,8 +195,10 @@ bool AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
             << "Enqueueing next track"
             << nextTrack->getId();
     if (m_nextTrack.enqueue(std::move(nextTrack))) {
-        // Ensure that the submitted track gets processed
-        // eventually by waking the worker thread up!
+        // Ensure that the submitted track gets processed eventually
+        // by waking the worker thread up after adding a new task to
+        // its back queue! Otherwise the thread might not notice if
+        // it is currently idle and has fallen asleep.
         wake();
         return true;
     }
