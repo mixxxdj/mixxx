@@ -41,7 +41,7 @@ class FakeDeck : public BaseTrackPlayer {
             : BaseTrackPlayer(NULL, group),
               duration(ConfigKey(group, "duration")),
               samplerate(ConfigKey(group, "track_samplerate")),
-              playposition(ConfigKey(group, "playposition"), 0.0, 1.0, true),
+              playposition(ConfigKey(group, "playposition"), 0.0, 1.0, 0, 0, true),
               play(ConfigKey(group, "play")),
               repeat(ConfigKey(group, "repeat")),
               seekOnLoadMode(ConfigKey(group, "seekonload_mode")),
@@ -1123,6 +1123,72 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_Long_Transition) {
     deck2.playposition.set(0.5);
 }
 
+TEST_F(AutoDJProcessorTest, FadeToDeck2_Pause_Transition) {
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    // Crossfader starts on the left.
+    master.crossfader.set(-1.0);
+    // Pretend a track is playing on deck 1.
+    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    // Pretend that track is 2 minutes long.
+    pTrack->setDuration(120);
+    // Load track and mark it playing.
+    deck1.slotLoadTrack(pTrack, true);
+    // Indicate the track loaded successfully.
+    deck1.fakeTrackLoadedEvent(pTrack);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+
+    // Enable AutoDJ, we immediately transition into IDLE and request a track
+    // load on deck2.
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+
+    // Pause transition. Set a negative transition time.
+    pProcessor->setTransitionTime(-12);
+
+    // Pretend the track load succeeds.
+    deck2.slotLoadTrack(pTrack, false);
+    deck2.fakeTrackLoadedEvent(pTrack);
+
+    // No change to the mode, crossfader or play states.
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
+
+    // Expect that we will transition into P1FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P1FADING));
+
+    // Seek track in deck1 to its end.
+    deck1.playposition.set(1.0);
+
+    // We should have transitioned into P1FADING.
+    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
+
+    // The track should have been seeked back by the duration of transition.
+    EXPECT_DOUBLE_EQ(-0.1, deck2.playposition.get());
+
+    EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+
+    // Expect that we will transition into IDLE mode and request a track load
+    // on deck1.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+
+    // Advance track to the point where crossfading should be over.
+    deck2.playposition.set(0.0);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
+}
+
 TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
     TrackId testId = addTrackToCollection(kTrackLocationTest);
     ASSERT_TRUE(testId.isValid());
@@ -1176,6 +1242,80 @@ TEST_F(AutoDJProcessorTest, FadeToDeck2_SeekEnd) {
 
     // Deck 2 should been seeked back to a suitable position for crossfade
     EXPECT_GT(0.99, deck2.playposition.get());
+}
+
+TEST_F(AutoDJProcessorTest, FadeToDeck2_RespectIntroCue) {
+    TrackId testId = addTrackToCollection(kTrackLocationTest);
+    ASSERT_TRUE(testId.isValid());
+
+    // Crossfader starts on the left.
+    master.crossfader.set(-1.0);
+    // Pretend a track is playing on deck 1.
+    TrackPointer pTrack(newTestTrack(nextTrackId(testId)));
+    // Pretend that track is 1 minute and 40 seconds long.
+    pTrack->setDuration(100);
+    // Load track and mark it playing.
+    deck1.slotLoadTrack(pTrack, true);
+    // Indicate the track loaded successfully.
+    deck1.fakeTrackLoadedEvent(pTrack);
+
+    PlaylistTableModel* pAutoDJTableModel = pProcessor->getTableModel();
+    pAutoDJTableModel->appendTrack(testId);
+
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel2]"), false));
+
+    // Enable AutoDJ, we immediately transition into IDLE and request a track
+    // load on deck2.
+    AutoDJProcessor::AutoDJError err = pProcessor->toggleAutoDJ(true);
+    EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+
+    // Pause transition. Set a negative transition time.
+    pProcessor->setTransitionTime(-25);
+
+    // Set Intro Start and Outro End cue points.
+    const double kIntroStartPositionSeconds = 10;
+    const double kOutroEndPositionSeconds = 90;
+    const double kSamplesPerSecond = kChannelCount * pTrack->getSampleRate();
+    const double kIntroStartPositionSamples = kIntroStartPositionSeconds * kSamplesPerSecond;
+    const double kOutroEndPositionSamples = kOutroEndPositionSeconds * kSamplesPerSecond;
+    deck1.introStartPos.set(kIntroStartPositionSamples);
+    deck1.outroEndPos.set(kOutroEndPositionSamples);
+    deck2.introStartPos.set(kIntroStartPositionSamples);
+    deck2.outroEndPos.set(kOutroEndPositionSamples);
+
+    // Pretend the track load succeeds.
+    deck2.slotLoadTrack(pTrack, false);
+    deck2.fakeTrackLoadedEvent(pTrack);
+
+    // No change to the mode, crossfader or play states.
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(-1.0, master.crossfader.get());
+    EXPECT_DOUBLE_EQ(1.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(0.0, deck2.play.get());
+
+    // Expect that we will transition into P1FADING mode.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_P1FADING));
+
+    // Seek the outgoing track to where outro end cue is placed. It should fade.
+    deck1.playposition.set(0.9);
+    EXPECT_EQ(AutoDJProcessor::ADJ_P1FADING, pProcessor->getState());
+
+    // The incoming track should have been seeked back.
+    EXPECT_DOUBLE_EQ(-0.15, deck2.playposition.get());
+
+    EXPECT_DOUBLE_EQ(0.0, deck1.play.get());
+    EXPECT_DOUBLE_EQ(1.0, deck2.play.get());
+
+    // Expect that we will transition into IDLE mode and request a track load on deck1.
+    EXPECT_CALL(*pProcessor, emitAutoDJStateChanged(AutoDJProcessor::ADJ_IDLE));
+    EXPECT_CALL(*pProcessor, emitLoadTrackToPlayer(_, QString("[Channel1]"), false));
+
+    // Advance track to the point where crossfading should be over.
+    deck2.playposition.set(0.1);
+    EXPECT_EQ(AutoDJProcessor::ADJ_IDLE, pProcessor->getState());
+    EXPECT_DOUBLE_EQ(1.0, master.crossfader.get());
 }
 
 TEST_F(AutoDJProcessorTest, FadeToDeck2_RespectOutroCue) {
