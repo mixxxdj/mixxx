@@ -55,22 +55,4 @@ struct QOverload : QConstOverload<Args...>, QNonConstOverload<Args...>
 
 #endif
 
-// QObject::deleteLater() is a slot and not explicitly documented to
-// be thread-safe, even if the implementation simply uses postEvent().
-// Respecting the rules of the documentation regarding thread-safety
-// and reentrancy (http://doc.qt.io/qt-5/threads-reentrancy.html)
-// we must ensure not to call this member function from a different
-// thread.
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-inline void invokeDeleteLater(QObject* obj) {
-    // member function name
-    QMetaObject::invokeMethod(obj, "deleteLater");
-}
-#else
-inline void invokeDeleteLater(QObject* obj) {
-    // pointer to member function
-    QMetaObject::invokeMethod(obj, &QObject::deleteLater);
-}
-#endif
-
 #endif /* COMPATABILITY_H */

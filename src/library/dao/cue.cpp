@@ -6,7 +6,6 @@
 
 #include "library/dao/cue.h"
 #include "util/assert.h"
-#include "util/compatibility.h"
 
 namespace {
     const QColor kDefaultColor = QColor("#FF0000");
@@ -16,8 +15,7 @@ namespace {
 //static
 void CuePointer::deleteLater(Cue* pCue) {
     if (pCue) {
-        // QObject::deleteLater() is not thread-safe!
-        invokeDeleteLater(pCue);
+        pCue->deleteLater();
     }
 }
 
