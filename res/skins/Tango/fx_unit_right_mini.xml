@@ -179,7 +179,7 @@ Variables:
         <SizePolicy>max,min</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- EffectSlots, optional focus button -->
+          <WidgetGroup><!-- EffectSlots -->
             <Layout>horizontal</Layout>
             <Size>-1max,-1min</Size>
             <Children>
@@ -191,7 +191,6 @@ Variables:
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">1</SetVariable></Template>
                   <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">1</SetVariable></Template>
-                  <Template src="skin:fx_focus_button.xml"><SetVariable name="FxNum">1</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup>
@@ -204,7 +203,6 @@ Variables:
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">2</SetVariable></Template>
                   <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">2</SetVariable></Template>
-                  <Template src="skin:fx_focus_button.xml"><SetVariable name="FxNum">2</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup>
@@ -217,53 +215,11 @@ Variables:
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                   <Template src="skin:fx_toggle_selector.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <Template src="skin:fx_metaknob.xml"><SetVariable name="FxNum">3</SetVariable></Template>
-                  <Template src="skin:fx_focus_button.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup>
             </Children>
-          </WidgetGroup><!-- /EffectSlots, optional focus button -->
-
-          <WidgetGroup><!-- Underlays, no focus -->
-            <Layout>horizontal</Layout>
-            <SizePolicy>min,min</SizePolicy>
-            <Children>
-              <WidgetGroup><!-- EffectSlot 1 -->
-                <ObjectName>FxFlow_focus_background</ObjectName>
-                <SizePolicy>me,min</SizePolicy>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <ObjectName>FxFlow_mini_separator</ObjectName>
-                <Size>11f,30f</Size>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- EffectSlot 2 -->
-                <ObjectName>FxFlow_focus_background</ObjectName>
-                <SizePolicy>me,min</SizePolicy>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <ObjectName>FxFlow_mini_separator</ObjectName>
-                <Size>11f,30f</Size>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- EffectSlot 3 -->
-                <ObjectName>FxFlow_focus_background</ObjectName>
-                <SizePolicy>me,min</SizePolicy>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <ObjectName>FxFlow_focus_background</ObjectName>
-                <Size>11f,30f</Size>
-              </WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /Underlays, no focus -->
+          </WidgetGroup><!-- /EffectSlots -->
 
           <WidgetGroup><!-- Underlays with focus -->
             <Layout>horizontal</Layout>
@@ -276,10 +232,20 @@ Variables:
               </Template>
 
               <WidgetGroup>
-                <ObjectName>FxFlow_mini_focus_separator1-2</ObjectName>
+                <ObjectName>FxFlow_mini_focusedUnit</ObjectName>
                 <Size>11f,30f</Size>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>FxFlow_mini_focus_separator1-2</ObjectName>
+                    <Size>11f,30f</Size>
+                    <Connection>
+                      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -291,10 +257,20 @@ Variables:
               </Template>
 
               <WidgetGroup>
-                <ObjectName>FxFlow_mini_focus_separator2-3</ObjectName>
+                <ObjectName>FxFlow_mini_focusedUnit</ObjectName>
                 <Size>11f,30f</Size>
+                <Children>
+                  <WidgetGroup>
+                    <ObjectName>FxFlow_mini_focus_separator2-3</ObjectName>
+                    <Size>11f,30f</Size>
+                    <Connection>
+                      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
+                      <BindProperty>highlight</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                </Children>
                 <Connection>
-                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
               </WidgetGroup>
@@ -305,14 +281,10 @@ Variables:
                 <SetVariable name="FxNum">3</SetVariable>
               </Template>
               <Template src="skin:fx_flow_focus_background.xml">
-                <SetVariable name="Size">11f,30f</SetVariable>
+                <SetVariable name="Size">9f,30f</SetVariable>
                 <SetVariable name="FxNum">3</SetVariable>
               </Template>
             </Children>
-            <Connection>
-              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
           </WidgetGroup><!-- /Underlays with focus -->
 
         </Children>

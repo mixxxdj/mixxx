@@ -1475,7 +1475,16 @@ decks, samplers, mic, aux, fx */
   }
   #FxFlow_focus_background[highlight="1"] {
     background-color: transparent;
-  border-radius: 0px;
+    border-radius: 0px;
+  }
+/* flow indicator for un/focused units */
+#FxFlow_mini_focusedUnit[highlight="0"] {
+  background: none;
+  }
+  /* orange arrows when unit has focus */
+  #FxFlow_mini_focusedUnit[highlight="1"] {
+    background-color: transparent;
+    image: url(skin:/graphics/fxFlow_mini_unitHasFocus.svg) no-repeat center center;
   }
 /* collapsed effect slots, horizontal layout */
 #FxFlow_mini_focus_separator1-2[highlight="0"],
@@ -1730,8 +1739,7 @@ decks, samplers, mic, aux, fx */
   #FxSuperLinkButton[value="1"]:hover {
     background-color: #078dcd;
   }
-#FxSuperLinkButton[value="2"] {	/*
-  a simple way to achieve a partitioning in thirds	*/
+#FxSuperLinkButton[value="2"] {
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 #006596,
     stop: 0.33 #006596,
@@ -1759,7 +1767,8 @@ decks, samplers, mic, aux, fx */
       stop: 0.67 #078dcd,
       stop: 1 #078dcd);
     }
-#FxSuperLinkButton[value="4"] {
+#FxSuperLinkButton[value="4"] {	/*
+  a simple way to achieve a partitioning in thirds	*/
   background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
     stop: 0 #006596,
     stop: 0.330000 #006596,
