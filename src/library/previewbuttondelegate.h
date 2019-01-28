@@ -18,7 +18,6 @@ class LibraryPreviewButton : public QPushButton {
     LibraryPreviewButton(QWidget* parent=nullptr) : QPushButton(parent) {
         setObjectName("LibraryPreviewButton");
     }
-    ~LibraryPreviewButton() = default;
 
     void paint(QPainter* painter) {
         // This matches the implementation of QPushButton::paintEvent, except it
