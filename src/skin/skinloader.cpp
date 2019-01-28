@@ -57,20 +57,14 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
 }
 
 QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schemeName) const {
-		qDebug() << "SkinLoader::getSkinPreview  skinName =" << skinName << "schemeName =" << schemeName;
-		QPixmap preview(":/images/skin_preview_placeholder.png");
+	QPixmap preview(":/images/skin_preview_placeholder.png");
     if (!schemeName.isEmpty()) {
     	QString schemeNameUnformatted = schemeName;
-    	qDebug() << "SkinLoader::getSkinPreview  schemeNameUnformatted =" << schemeNameUnformatted;
     	QString schemeNameFormatted = schemeNameUnformatted.replace(" ","");
-    	qDebug() << "SkinLoader::getSkinPreview  schemeNameFormatted =" << schemeNameFormatted;
-    	QPixmap preview(getSkinPath(skinName)+"/skin_preview_"+schemeNameFormatted+".png");
-    	qDebug() << "Looking for: "<<getSkinPath(skinName)<<"/skin_preview_"<<schemeNameFormatted<<".png";
+	preview = (getSkinPath(skinName) + "/skin_preview_" + schemeNameFormatted + ".png");
 
     } else {
-//    	QPixmap preview(getSkinPath(skinName) + "/skin_preview.png");
-    	QPixmap preview("/home/ronso/Downloads/mixxx_source/compiled/color-scheme-preview/share/mixxx/skins/Deere/skin_preview.png");
-    	qDebug() <<"Looking for: "<<getSkinPath(skinName)<<"/skin_preview.png";
+	preview = (getSkinPath(skinName) + "/skin_preview.png");
     }
     if (!preview.isNull()){
         return preview;

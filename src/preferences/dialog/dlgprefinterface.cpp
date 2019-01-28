@@ -94,8 +94,8 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
             m_skin = skinInfo.fileName();
             ComboBoxSkinconf->setCurrentIndex(index);
             // need help here: find configured color scheme and pass it to preview picker
-            slotUpdateSchemes();
-            qDebug() << "calling slotUpdateSchemes() [1]";
+//            slotUpdateSchemes();
+//            qDebug() << "calling slotUpdateSchemes() [1]";
             //m_colorScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
             skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
             if (size_ok) {
@@ -111,7 +111,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
 
     slotUpdateSchemes();
-    qDebug() << "calling slotUpdateSchemes() [2]";
+//    qDebug() << "calling slotUpdateSchemes() [2]";
 
 
 
@@ -199,7 +199,6 @@ void DlgPrefInterface::slotUpdateSchemes() {
         ComboBoxSchemeconf->setCurrentIndex(0);
         // clear m_colorScheme just in case it's not empty
         m_colorScheme = QString();
-        qDebug() << "m_colorScheme (= '';) =" << m_colorScheme;
     } else {
         ComboBoxSchemeconf->setEnabled(true);
         QString configScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
@@ -209,7 +208,6 @@ void DlgPrefInterface::slotUpdateSchemes() {
             if (schlist[i] == configScheme) {
                 ComboBoxSchemeconf->setCurrentIndex(i);
                 m_colorScheme = configScheme;
-                qDebug() << "m_colorScheme =" << m_colorScheme;
             }
         }
     }
@@ -318,11 +316,11 @@ void DlgPrefInterface::notifyRebootNecessary() {
 
 void DlgPrefInterface::slotSetScheme(int) {
     QString newScheme = ComboBoxSchemeconf->currentText();
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
     if (m_colorScheme != newScheme) {
         m_colorScheme = newScheme;
         m_bRebootMixxxView = true;
     }
+    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
 }
 
 void DlgPrefInterface::slotSetSkin(int) {
