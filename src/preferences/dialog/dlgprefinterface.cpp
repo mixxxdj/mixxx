@@ -93,7 +93,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         if (skinInfo.absoluteFilePath() == configuredSkinPath) {
             m_skin = skinInfo.fileName();
             ComboBoxSkinconf->setCurrentIndex(index);
-            // need help here: find configured color scheme and pass it to preview picker
+            // must this be called here already to populate m_colorScheme?
 //            slotUpdateSchemes();
 //            qDebug() << "calling slotUpdateSchemes() [1]";
             //m_colorScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
