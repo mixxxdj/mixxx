@@ -33,12 +33,12 @@ DeckAttributes::DeckAttributes(int index,
           m_sampleRate(group, "track_samplerate"),
           m_duration(group, "duration"),
           m_pPlayer(pPlayer) {
-    connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-            this, SLOT(slotTrackLoaded(TrackPointer)));
-    connect(m_pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
-            this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
-    connect(m_pPlayer, SIGNAL(playerEmpty()),
-            this, SLOT(slotPlayerEmpty()));
+    connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded,
+            this, &DeckAttributes::slotTrackLoaded);
+    connect(m_pPlayer, &BaseTrackPlayer::loadingTrack,
+            this, &DeckAttributes::slotLoadingTrack);
+    connect(m_pPlayer, &BaseTrackPlayer::playerEmpty,
+            this, &DeckAttributes::slotPlayerEmpty);
     m_playPos.connectValueChanged(this, &DeckAttributes::slotPlayPosChanged);
     m_play.connectValueChanged(this, &DeckAttributes::slotPlayChanged);
     m_introStartPos.connectValueChanged(this, &DeckAttributes::slotIntroStartPositionChanged);
@@ -98,24 +98,24 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
 
     m_pShufflePlaylist = new ControlPushButton(
             ConfigKey("[AutoDJ]", "shuffle_playlist"));
-    connect(m_pShufflePlaylist, SIGNAL(valueChanged(double)),
-            this, SLOT(controlShuffle(double)));
+    connect(m_pShufflePlaylist, &ControlPushButton::valueChanged,
+            this, &AutoDJProcessor::controlShuffle);
 
     m_pSkipNext = new ControlPushButton(
             ConfigKey("[AutoDJ]", "skip_next"));
-    connect(m_pSkipNext, SIGNAL(valueChanged(double)),
-            this, SLOT(controlSkipNext(double)));
+    connect(m_pSkipNext, &ControlObject::valueChanged,
+            this, &AutoDJProcessor::controlSkipNext);
 
     m_pFadeNow = new ControlPushButton(
             ConfigKey("[AutoDJ]", "fade_now"));
-    connect(m_pFadeNow, SIGNAL(valueChanged(double)),
-            this, SLOT(controlFadeNow(double)));
+    connect(m_pFadeNow, &ControlObject::valueChanged,
+            this, &AutoDJProcessor::controlFadeNow);
 
     m_pEnabledAutoDJ = new ControlPushButton(
             ConfigKey("[AutoDJ]", "enabled"));
     m_pEnabledAutoDJ->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pEnabledAutoDJ, SIGNAL(valueChanged(double)),
-            this, SLOT(controlEnable(double)));
+    connect(m_pEnabledAutoDJ, &ControlObject::valueChanged,
+            this, &AutoDJProcessor::controlEnable);
 
     // TODO(rryan) listen to signals from PlayerManager and add/remove as decks
     // are created.
@@ -318,40 +318,40 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         deck1.setSeekOnLoadMode(SEEK_ON_LOAD_INTRO_CUE);
         deck2.setSeekOnLoadMode(SEEK_ON_LOAD_INTRO_CUE);
 
-        connect(&deck1, SIGNAL(playPositionChanged(DeckAttributes*, double)),
-                this, SLOT(playerPositionChanged(DeckAttributes*, double)));
-        connect(&deck2, SIGNAL(playPositionChanged(DeckAttributes*, double)),
-                this, SLOT(playerPositionChanged(DeckAttributes*, double)));
+        connect(&deck1, &DeckAttributes::playPositionChanged,
+                this, &AutoDJProcessor::playerPositionChanged);
+        connect(&deck2, &DeckAttributes::playPositionChanged,
+                this, &AutoDJProcessor::playerPositionChanged);
 
-        connect(&deck1, SIGNAL(playChanged(DeckAttributes*, bool)),
-                this, SLOT(playerPlayChanged(DeckAttributes*, bool)));
-        connect(&deck2, SIGNAL(playChanged(DeckAttributes*, bool)),
-                this, SLOT(playerPlayChanged(DeckAttributes*, bool)));
+        connect(&deck1, &DeckAttributes::playChanged,
+                this, &AutoDJProcessor::playerPlayChanged);
+        connect(&deck2, &DeckAttributes::playChanged,
+                this, &AutoDJProcessor::playerPlayChanged);
 
-        connect(&deck1, SIGNAL(introStartPositionChanged(DeckAttributes*, double)),
-                this, SLOT(playerIntroStartChanged(DeckAttributes*, double)));
-        connect(&deck2, SIGNAL(introStartPositionChanged(DeckAttributes*, double)),
-                this, SLOT(playerIntroStartChanged(DeckAttributes*, double)));
+        connect(&deck1, &DeckAttributes::introStartPositionChanged,
+                this, &AutoDJProcessor::playerIntroStartChanged);
+        connect(&deck2, &DeckAttributes::introStartPositionChanged,
+                this, &AutoDJProcessor::playerIntroStartChanged);
 
-        connect(&deck1, SIGNAL(outroEndPositionChanged(DeckAttributes*, double)),
-                this, SLOT(playerOutroEndChanged(DeckAttributes*, double)));
-        connect(&deck2, SIGNAL(outroEndPositionChanged(DeckAttributes*, double)),
-                this, SLOT(playerOutroEndChanged(DeckAttributes*, double)));
+        connect(&deck1, &DeckAttributes::outroEndPositionChanged,
+                this, &AutoDJProcessor::playerOutroEndChanged);
+        connect(&deck2, &DeckAttributes::outroEndPositionChanged,
+                this, &AutoDJProcessor::playerOutroEndChanged);
 
-        connect(&deck1, SIGNAL(trackLoaded(DeckAttributes*, TrackPointer)),
-                this, SLOT(playerTrackLoaded(DeckAttributes*, TrackPointer)));
-        connect(&deck2, SIGNAL(trackLoaded(DeckAttributes*, TrackPointer)),
-                this, SLOT(playerTrackLoaded(DeckAttributes*, TrackPointer)));
+        connect(&deck1, &DeckAttributes::trackLoaded,
+                this, &AutoDJProcessor::playerTrackLoaded);
+        connect(&deck2, &DeckAttributes::trackLoaded,
+                this, &AutoDJProcessor::playerTrackLoaded);
 
-        connect(&deck1, SIGNAL(loadingTrack(DeckAttributes*, TrackPointer, TrackPointer)),
-                this, SLOT(playerLoadingTrack(DeckAttributes*, TrackPointer, TrackPointer)));
-        connect(&deck2, SIGNAL(loadingTrack(DeckAttributes*, TrackPointer, TrackPointer)),
-                this, SLOT(playerLoadingTrack(DeckAttributes*, TrackPointer, TrackPointer)));
+        connect(&deck1, &DeckAttributes::loadingTrack,
+                this, &AutoDJProcessor::playerLoadingTrack);
+        connect(&deck2, &DeckAttributes::loadingTrack,
+                this, &AutoDJProcessor::playerLoadingTrack);
 
-        connect(&deck1, SIGNAL(playerEmpty(DeckAttributes*)),
-                this, SLOT(playerEmpty(DeckAttributes*)));
-        connect(&deck2, SIGNAL(playerEmpty(DeckAttributes*)),
-                this, SLOT(playerEmpty(DeckAttributes*)));
+        connect(&deck1, &DeckAttributes::playerEmpty,
+                this, &AutoDJProcessor::playerEmpty);
+        connect(&deck2, &DeckAttributes::playerEmpty,
+                this, &AutoDJProcessor::playerEmpty);
 
         if (!deck1Playing && !deck2Playing) {
             // Both decks are stopped. Load a track into deck 1 and start it
