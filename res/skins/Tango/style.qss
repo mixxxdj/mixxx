@@ -1506,12 +1506,12 @@ decks, samplers, mic, aux, fx */
   }
 
 /* expanded effect slots, vertical layout */
-#FxFlow_maxi_focus_separator1-2[highlight="0"],
-#FxFlow_maxi_focus_separator1-2[highlight="3"],
-#FxFlow_maxi_focus_separator2-3[highlight="0"],
-#FxFlow_maxi_focus_separator2-3[highlight="1"] {
-  background-color: transparent;
-  image: url(skin:/graphics/fxFlow_maxi_noFocus_Fx1-2-3.svg) no-repeat center center;
+  #FxFlow_maxi_focus_separator1-2[highlight="0"],
+  #FxFlow_maxi_focus_separator2-3[highlight="0"],
+  #FxFlow_maxi_focus_separator1-2[highlight="3"],
+  #FxFlow_maxi_focus_separator2-3[highlight="1"] {
+    background-color: transparent;
+    image: url(skin:/graphics/fxFlow_maxi_unitHasFocus.svg) no-repeat center center;
   }
   #FxFlow_maxi_focus_separator1-2[highlight="1"],
   #FxFlow_maxi_focus_separator2-3[highlight="2"] {

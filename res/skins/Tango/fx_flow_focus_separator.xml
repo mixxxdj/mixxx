@@ -52,7 +52,7 @@ Variables:
 
       <WidgetGroup>
         <ObjectName>FxFlow_maxi_focus_separator<Variable name="FxTop"/>-<Variable name="FxBottom"/></ObjectName>
-        <Size>30f,17f</Size>
+        <Size>70f,17f</Size>
         <Connection>
           <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
           <BindProperty>highlight</BindProperty>

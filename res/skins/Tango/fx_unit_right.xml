@@ -228,7 +228,7 @@ Variables:
               </WidgetGroup>
 
               <Template src="skin:fx_flow_noFocus_separator.xml">
-                <SetVariable name="widthLeft">57f</SetVariable>
+                <SetVariable name="widthLeft">37f</SetVariable>
                 <SetVariable name="widthRight">-1me</SetVariable>
               </Template>
 
@@ -238,7 +238,7 @@ Variables:
               </WidgetGroup>
 
               <Template src="skin:fx_flow_noFocus_separator.xml">
-                <SetVariable name="widthLeft">57f</SetVariable>
+                <SetVariable name="widthLeft">37f</SetVariable>
                 <SetVariable name="widthRight">-1me</SetVariable>
               </Template>
 
@@ -273,7 +273,7 @@ Variables:
               </Template>
 
               <Template src="skin:fx_flow_focus_separator.xml">
-                <SetVariable name="widthLeft">71f</SetVariable>
+                <SetVariable name="widthLeft">51f</SetVariable>
                 <SetVariable name="widthRight">-1me</SetVariable>
                 <SetVariable name="FxTop">1</SetVariable>
                 <SetVariable name="FxBottom">2</SetVariable>
@@ -285,7 +285,7 @@ Variables:
               </Template>
 
               <Template src="skin:fx_flow_focus_separator.xml">
-                <SetVariable name="widthLeft">71f</SetVariable>
+                <SetVariable name="widthLeft">51f</SetVariable>
                 <SetVariable name="widthRight">-1me</SetVariable>
                 <SetVariable name="FxTop">2</SetVariable>
                 <SetVariable name="FxBottom">3</SetVariable>

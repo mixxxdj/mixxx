@@ -23,7 +23,6 @@ Variables:
           <WidgetGroup><!-- EffectSlots -->
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
-            <!--Size>200f,-1min</Size-->
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
                 <ObjectName>AlignRight</ObjectName>
@@ -104,7 +103,7 @@ Variables:
 
               <Template src="skin:fx_flow_noFocus_separator.xml">
                 <SetVariable name="widthLeft">-1me</SetVariable>
-                <SetVariable name="widthRight">65f</SetVariable>
+                <SetVariable name="widthRight">45f</SetVariable>
               </Template>
 
               <WidgetGroup><!-- EffectSlot 2 -->
@@ -114,7 +113,7 @@ Variables:
 
               <Template src="skin:fx_flow_noFocus_separator.xml">
                 <SetVariable name="widthLeft">-1me</SetVariable>
-                <SetVariable name="widthRight">65f</SetVariable>
+                <SetVariable name="widthRight">45f</SetVariable>
               </Template>
 
               <WidgetGroup><!-- EffectSlot 3 -->
@@ -149,7 +148,7 @@ Variables:
 
               <Template src="skin:fx_flow_focus_separator.xml">
                 <SetVariable name="widthLeft">-1me</SetVariable>
-                <SetVariable name="widthRight">80f</SetVariable>
+                <SetVariable name="widthRight">60f</SetVariable>
                 <SetVariable name="FxTop">1</SetVariable>
                 <SetVariable name="FxBottom">2</SetVariable>
               </Template>
@@ -161,7 +160,7 @@ Variables:
 
               <Template src="skin:fx_flow_focus_separator.xml">
                 <SetVariable name="widthLeft">-1me</SetVariable>
-                <SetVariable name="widthRight">80f</SetVariable>
+                <SetVariable name="widthRight">60f</SetVariable>
                 <SetVariable name="FxTop">2</SetVariable>
                 <SetVariable name="FxBottom">3</SetVariable>
               </Template>

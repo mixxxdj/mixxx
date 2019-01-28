@@ -34,7 +34,7 @@ Variables:
 
       <WidgetGroup>
         <ObjectName>FxFlow_maxi_separator</ObjectName>
-        <Size>30f,17f</Size>
+        <Size>70f,17f</Size>
       </WidgetGroup>
 
       <WidgetGroup><!-- Right-hand separator -->
