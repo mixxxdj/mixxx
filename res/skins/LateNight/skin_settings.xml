@@ -218,6 +218,16 @@ Description:
                     </Connection>
                   </WidgetGroup>
 
+                  <WidgetGroup><!-- translucent cover with Small Decks -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],small_decks</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
                   <Template src="skin:skin_settings_button_2state.xml">
                     <SetVariable name="text">EQ Knobs</SetVariable>
                     <SetVariable name="Setting">[Skin],show_eq_knobs</SetVariable>
@@ -232,6 +242,16 @@ Description:
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover with Small Decks -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],small_decks</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
 
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
@@ -258,6 +278,16 @@ Description:
                 <Children>
                   <!-- index 0 due to bug -->
                   <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+                  <WidgetGroup><!-- translucent cover with Small Decks -->
+                    <ObjectName>SubmenuCover</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>190f,17f</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],small_decks</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
 
                   <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
                     <ObjectName>SubmenuCover</ObjectName>
