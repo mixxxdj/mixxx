@@ -57,18 +57,16 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
 }
 
 QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schemeName) const {
-		QPixmap preview;
-//	QPixmap preview(":/images/skin_preview_placeholder.png");
+    QPixmap preview;
     if (!schemeName.isEmpty()) {
-    	QString schemeNameUnformatted = schemeName;
-    	QString schemeNameFormatted = schemeNameUnformatted.replace(" ","");
-	preview.load(getSkinPath(skinName) + "/skin_preview_" + schemeNameFormatted + ".png");
-
+        QString schemeNameUnformatted = schemeName;
+        QString schemeNameFormatted = schemeNameUnformatted.replace(" ","");
+        preview.load(getSkinPath(skinName) + "/skin_preview_" + schemeNameFormatted + ".png");
     } else {
-	preview.load(getSkinPath(skinName) + "/skin_preview.png");
+        preview.load(getSkinPath(skinName) + "/skin_preview.png");
     }
     if (!preview.isNull()){
-    	return preview;
+        return preview;
     }
     preview.load(":/images/skin_preview_placeholder.png");
     return preview;

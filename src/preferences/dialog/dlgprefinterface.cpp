@@ -182,6 +182,7 @@ DlgPrefInterface::~DlgPrefInterface() {
 }
 
 void DlgPrefInterface::slotUpdateSchemes() {
+    // Re-populates the scheme combobox and attempts to pick the color scheme from config file.
     // Since this involves opening a file we won't do this as part of regular slotUpdate
     QList<QString> schlist = LegacySkinParser::getSchemeList(
                 m_pSkinLoader->getSkinPath(m_skin));
@@ -193,8 +194,6 @@ void DlgPrefInterface::slotUpdateSchemes() {
         ComboBoxSchemeconf->setEnabled(false);
         ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", 0));
         ComboBoxSchemeconf->setCurrentIndex(0);
-        // clear m_colorScheme just in case it's not empty
-        m_colorScheme = QString();
     } else {
         ComboBoxSchemeconf->setEnabled(true);
         QString configScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
@@ -212,7 +211,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
         // The combobox would pick the first item then. Also choose this item for
         // m_colorScheme to avoid an empty skin preview.
         if (!foundConfigScheme) {
-		        m_colorScheme = schlist[0];
+            m_colorScheme = schlist[0];
         }
     }
 }
