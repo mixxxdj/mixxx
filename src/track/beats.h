@@ -15,11 +15,18 @@ namespace {
 class Beats;
 typedef QSharedPointer<Beats> BeatsPointer;
 
+struct BeatData {
+    double sample;
+    int beatNumber;
+    int barNumber;
+    int phraseNumber;
+};
+
 class BeatIterator {
   public:
     virtual ~BeatIterator() {}
     virtual bool hasNext() const = 0;
-    virtual double next() = 0;
+    virtual BeatData next() = 0;
 };
 
 // Beats is a pure abstract base class for BPM and beat management classes. It

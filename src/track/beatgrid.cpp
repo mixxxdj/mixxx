@@ -23,8 +23,16 @@ class BeatGridIterator : public BeatIterator {
         return m_dBeatLength > 0 && m_dCurrentSample <= m_dEndSample;
     }
 
-    virtual double next() {
-        double beat = m_dCurrentSample;
+    virtual BeatData next() {
+        BeatData	beat;
+        beat.sample = m_dCurrentSample;
+        if( m_dCurrentSample < 0 or m_dCurrentSample > m_dEndSample) {
+            beat.beatNumber = beat.barNumber = beat.phraseNumber = 0;
+        } else {
+            beat.beatNumber = (m_dCurrentSample / (int)m_dBeatLength);
+            beat.barNumber = (std::remainder(beat.beatNumber, c_beatsPerBar) == 0 ? beat.beatNumber / c_beatsPerBar : 0);
+            beat.phraseNumber = (std::remainder(beat.barNumber, c_barsPerPhrase) == 0 ? beat.barNumber / c_barsPerPhrase : 0);
+        }
         m_dCurrentSample += m_dBeatLength;
         return beat;
     }
@@ -33,34 +41,32 @@ class BeatGridIterator : public BeatIterator {
     double m_dBeatLength;
     double m_dCurrentSample;
     double m_dEndSample;
+    const double c_beatsPerBar = 4;
+    const double c_barsPerPhrase = 4;
+    int m_beatCounter;
 };
 
-BeatGrid::BeatGrid(
-        const Track& track,
-        SINT iSampleRate)
+BeatGrid::BeatGrid(const Track& track, SINT iSampleRate)
         : m_mutex(QMutex::Recursive),
-          m_iSampleRate(iSampleRate > 0 ? iSampleRate : track.getSampleRate()),
-          m_dBeatLength(0.0) {
+        m_iSampleRate(iSampleRate > 0 ? iSampleRate : track.getSampleRate()),
+        m_dBeatLength(0.0) {
     // BeatGrid should live in the same thread as the track it is associated
     // with.
     moveToThread(track.thread());
 }
 
-BeatGrid::BeatGrid(
-        const Track& track,
-        SINT iSampleRate,
-        const QByteArray& byteArray)
+BeatGrid::BeatGrid(const Track& track, SINT iSampleRate, const QByteArray& byteArray)
         : BeatGrid(track, iSampleRate) {
     readByteArray(byteArray);
 }
 
 BeatGrid::BeatGrid(const BeatGrid& other)
         : QObject(),
-          m_mutex(QMutex::Recursive),
-          m_subVersion(other.m_subVersion),
-          m_iSampleRate(other.m_iSampleRate),
-          m_grid(other.m_grid),
-          m_dBeatLength(other.m_dBeatLength) {
+        m_mutex(QMutex::Recursive),
+        m_subVersion(other.m_subVersion),
+        m_iSampleRate(other.m_iSampleRate),
+        m_grid(other.m_grid),
+        m_dBeatLength(other.m_dBeatLength) {
     moveToThread(other.thread());
 }
 
@@ -264,8 +270,7 @@ std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double sto
     if (!isValid() || startSample > stopSample) {
         return std::unique_ptr<BeatIterator>();
     }
-    //qDebug() << "BeatGrid::findBeats startSample" << startSample << "stopSample"
-    //         << stopSample << "beatlength" << m_dBeatLength << "BPM" << bpm();
+
     double curBeat = findNextBeat(startSample);
     if (curBeat == -1.0) {
         return std::unique_ptr<BeatIterator>();

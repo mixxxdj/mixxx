@@ -31,7 +31,6 @@ void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context)
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
-
     // No track, nothing to do
     if (!trackInfo) {
         return;
@@ -51,7 +50,6 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     m_barColor.setAlphaF(alpha/100.0);
     m_phraseColor.setAlphaF(alpha/100.0);
 
-    // Get number of sample in the track
     const int trackSamples = m_waveformRenderer->getNumberOfSamples();
 
     // Empty track, nothing to do - Can happen when track fails to load
@@ -63,9 +61,6 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             m_waveformRenderer->getFirstDisplayedPosition();
     const double lastDisplayedPosition =
             m_waveformRenderer->getLastDisplayedPosition();
-
-    // Calculate beat length
-    double beatLength = (c_secondsPerMinute * trackInfo->getSampleRate() / trackInfo->getBpm()) * c_numberOfChannels;
 
     // Get the visible beats
     std::unique_ptr<BeatIterator> it(trackBeats->findBeats(
@@ -94,26 +89,17 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     const float rendererWidth = m_waveformRenderer->getWidth();
     const float rendererHeight = m_waveformRenderer->getHeight();
 
-    int beatCount = 0;
-
     while (it->hasNext()) {
-        double beatPosition = it->next();
+        BeatData beat = it->next();
         double xBeatPoint =
-                m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
+                m_waveformRenderer->transformSamplePositionInRendererWorld(beat.sample);
         xBeatPoint = qRound(xBeatPoint);
 
-        // If we don't have enough space, double the size.
-        if (beatCount++ >= m_beats.size()) {
-            m_beats.resize(m_beats.size() * 2);
-        }
-
-        // Calculates the beat number for the current beat
-        long beatNum = round(beatPosition / beatLength);
+        bool showBarAndPhrase = true;
+        //bool showBarAndPhrase = m_showBarAndPhrase->toBool();
 
         // Selects the right pen, if we are in phrase also paints the phrase tag
-        //bool showBarAndPhrase = true;
-        bool showBarAndPhrase = m_showBarAndPhrase->toBool();
-        if(beatNum % (c_beatsPerBar * c_barsPerPhrase) == 0 && beatNum > 0 && showBarAndPhrase) {
+        if(beat.phraseNumber && showBarAndPhrase) {
             // Selects the font
             QFont font; // Uses the application default
             font.setPointSizeF(10 * scaleFactor());
@@ -123,7 +109,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             QFontMetrics metrics(font);
 
             // Calculates the size of the box
-            QString label(QString::number(beatNum/16+1));
+            QString label(QString::number(beat.phraseNumber));
             QRect wordRect = metrics.tightBoundingRect(label);
             const int marginX = 1;
             const int marginY = 1;
@@ -152,7 +138,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             painter->drawText(labelRect, Qt::AlignCenter, label);
 
             painter->setPen(phrasePen);
-        } else if(beatNum % c_beatsPerBar == 0 && beatNum > 0 && showBarAndPhrase) {
+        } else if(beat.barNumber && showBarAndPhrase) {
             painter->setPen(barPen);
         }
         else {

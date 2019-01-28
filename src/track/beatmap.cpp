@@ -44,8 +44,9 @@ class BeatMapIterator : public BeatIterator {
         return m_currentBeat != m_endBeat;
     }
 
-    virtual double next() {
-        double beat = framesToSamples(m_currentBeat->frame_position());
+    virtual BeatData next() {
+        BeatData	beat;
+    	beat.sample = framesToSamples(m_currentBeat->frame_position());
         ++m_currentBeat;
         while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
             ++m_currentBeat;
@@ -68,8 +69,7 @@ BeatMap::BeatMap(const Track& track, SINT iSampleRate)
     moveToThread(track.thread());
 }
 
-BeatMap::BeatMap(const Track& track, SINT iSampleRate,
-                 const QByteArray& byteArray)
+BeatMap::BeatMap(const Track& track, SINT iSampleRate, const QByteArray& byteArray)
     : BeatMap(track, iSampleRate) {
     readByteArray(byteArray);
 }
