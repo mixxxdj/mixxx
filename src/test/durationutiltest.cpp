@@ -133,14 +133,14 @@ TEST_F(DurationUtilTest, formatSecondsLong) {
 
 
 TEST_F(DurationUtilTest, FormatKiloSeconds) {
-    formatKiloSeconds(QString::fromUtf8("0.000\u2009000"), 0);
-    formatKiloSeconds(QString::fromUtf8("0.001\u2009000"), 1);
-    formatKiloSeconds(QString::fromUtf8("0.001\u2009490"), 1.49);
-    formatKiloSeconds(QString::fromUtf8("0.059\u2009000"), 59);
-    formatKiloSeconds(QString::fromUtf8("0.061\u2009123"), 61.1234);
-    formatKiloSeconds(QString::fromUtf8("0.999\u2009990"), 999.99);
-    formatKiloSeconds(QString::fromUtf8("1.000\u2009000"), 1000.00);
-    formatKiloSeconds(QString::fromUtf8("86.400\u2009000"), 24 * 3600);
+    formatKiloSeconds(QStringLiteral("0.000\u2009000"), 0);
+    formatKiloSeconds(QStringLiteral("0.001\u2009000"), 1);
+    formatKiloSeconds(QStringLiteral("0.001\u2009490"), 1.49);
+    formatKiloSeconds(QStringLiteral("0.059\u2009000"), 59);
+    formatKiloSeconds(QStringLiteral("0.061\u2009123"), 61.1234);
+    formatKiloSeconds(QStringLiteral("0.999\u2009990"), 999.99);
+    formatKiloSeconds(QStringLiteral("1.000\u2009000"), 1000.00);
+    formatKiloSeconds(QStringLiteral("86.400\u2009000"), 24 * 3600);
 }
 
 
