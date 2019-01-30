@@ -19,59 +19,6 @@
         <SizePolicy>min,min</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-          <WidgetGroup>
-            <ObjectName>ToolbarDivider</ObjectName>
-            <Size>13f,9min</Size>
-          </WidgetGroup>
-
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="TooltipId">toggle_4decks</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">60f,24f</SetVariable>
-            <SetVariable name="state_0_text">4 DECKS</SetVariable>
-            <SetVariable name="state_1_text">4 DECKS</SetVariable>
-            <SetVariable name="ConfigKey">[Skin],show_4decks</SetVariable>
-          </Template>
-
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="TooltipId">show_spinny</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">55f,24f</SetVariable>
-            <SetVariable name="state_0_text">SPINNY</SetVariable>
-            <SetVariable name="state_1_text">SPINNY</SetVariable>
-            <SetVariable name="ConfigKey">[Skin],show_spinnies</SetVariable>
-          </Template>
-
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="TooltipId">coverart</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">75f,24f</SetVariable>
-            <SetVariable name="state_0_text">COVER ART</SetVariable>
-            <SetVariable name="state_1_text">COVER ART</SetVariable>
-            <SetVariable name="ConfigKey">[Skin],show_coverart</SetVariable>
-          </Template>
-
-          <WidgetGroup>
-            <ObjectName>ToolbarDivider</ObjectName>
-            <Size>13f,9min</Size>
-          </WidgetGroup>
-
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="TooltipId">show_previewdeck</SetVariable>
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">95f,24f</SetVariable>
-            <SetVariable name="state_0_text">Preview Deck</SetVariable>
-            <SetVariable name="state_1_text">Preview Deck</SetVariable>
-            <SetVariable name="ConfigKey">[PreviewDeck],show_previewdeck</SetVariable>
-          </Template>
-
-          <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ObjectName">GuiToggleButton</SetVariable>
-            <SetVariable name="Size">95f,24f</SetVariable>
-            <SetVariable name="state_0_text">Cover Art Lib</SetVariable>
-            <SetVariable name="state_1_text">Cover Art Lib</SetVariable>
-            <SetVariable name="ConfigKey">[Library],show_coverart</SetVariable>
-          </Template>
 
           <!-- Spacer -->
           <WidgetGroup>
@@ -86,7 +33,6 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-
 
       <!-- Visible with normal Library -->
       <WidgetGroup>
