@@ -7,7 +7,9 @@
 #include "util/color/predefinedcolor.h"
 #include "util/color/predefinedcolormap.h"
 
-// These methods and properties are not thread-safe, use them only on the GUI thread
+// This class defines a set of predefined colors and provides some handy functions to work with them.
+// A single global instance is create in the Color namespace.
+// This class is thread-safe because all its methods and public properties are const.
 class PredefinedColorSet final {
   public:
     const PredefinedColorPointer noColor = std::make_shared<PredefinedColor>(
@@ -94,7 +96,7 @@ class PredefinedColorSet final {
         }
     }
 
-    // A list with the internal names of the predefined colors.
+    // A list with the names of the predefined colors.
     QList<QString> predefinedColorNames() const { return m_predefinedColorsNames; };
 
     // Returns the position of a PredefinedColor in the allColors list.
@@ -109,7 +111,8 @@ class PredefinedColorSet final {
         return 0;
     };
 
-    // Return a predefined color from its internal name.
+    // Return a predefined color from its name.
+    // Return noColor if there's no color with such name.
     PredefinedColorPointer predefinedColorFromName(QString name) const {
         for (PredefinedColorPointer color : allColors) {
             if (color->m_sName == name) {
@@ -120,6 +123,7 @@ class PredefinedColorSet final {
     };
 
     // Return a predefined color from its id.
+    // Return noColor if there's no color with iId.
     PredefinedColorPointer predefinedColorFromId(int iId) const {
         for (PredefinedColorPointer color : allColors) {
             if (color->m_iId == iId) {
@@ -129,9 +133,7 @@ class PredefinedColorSet final {
         return noColor;
     };
 
-    // The default color map, i.e. maps each predefined color to itself.
-    //
-    // It's fast to copy the default representation. See comment on ColorsRepresentation.
+    // The default color map, i.e. maps each predefined color to its default representation.
     PredefinedColorMap defaultMap() const { return m_defaultMap; };
 
   private:

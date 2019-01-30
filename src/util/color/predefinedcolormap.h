@@ -6,11 +6,14 @@
 
 #include "util/color/predefinedcolor.h"
 
-// Map the predefined colors to another color representation of them.
+// Maps a PredefinedColorMap to an actual QColor (a.k.a its representation).
+//
+// Initially no color has a representation set.
+// Call setRepresentation(PredefinedColorPointer, QColor) to add representations and customize the color map.
 //
 // Uses the color's name() property as key, e.g. "#A9A9A9"
 // Since QHash has copy-on-write, making a copy of ColorsRepresentation is fast.
-// A deep copy of the QHash will be made when the copy is modified.
+// A deep copy of the QHash will be made when a copy is modified.
 class PredefinedColorMap final {
   public:
     // Set a color representation for a given color
@@ -18,7 +21,8 @@ class PredefinedColorMap final {
         m_colorNameMap[color->m_defaultRepresentation.name()] = representation.name();
     }
 
-    // Returns the representation of a color
+    // Returnsthe representation of a color.
+    // If no representation is set for color, returns color->m_defaultRepresentation.
     QColor map(PredefinedColorPointer color) const {
         QColor defaultRepresentation = color->m_defaultRepresentation;
         if (m_colorNameMap.contains(defaultRepresentation.name())) {
