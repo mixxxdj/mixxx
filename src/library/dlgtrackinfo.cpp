@@ -329,7 +329,7 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
             QColor colorRepresentation = color->m_defaultRepresentation;
             colorComboBox->addItem(color->m_sDisplayName, colorRepresentation);
             const QModelIndex idx = colorComboBox->model()->index(i, 0);
-            if (*color != *Color::predefinedColorSet.invalid) {
+            if (*color != *Color::predefinedColorSet.noColor) {
                 colorComboBox->model()->setData(idx, colorRepresentation, Qt::BackgroundColorRole);
             }
             colorComboBox->setItemData(i, Color::chooseContrastColor(colorRepresentation), Qt::TextColorRole);

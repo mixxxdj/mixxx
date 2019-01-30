@@ -25,7 +25,7 @@ Cue::Cue(TrackId trackId)
           m_length(0.0),
           m_iHotCue(-1),
           m_label(kDefaultLabel),
-          m_color(Color::predefinedColorSet.invalid) {
+          m_color(Color::predefinedColorSet.noColor) {
     DEBUG_ASSERT(!m_label.isNull());
 }
 

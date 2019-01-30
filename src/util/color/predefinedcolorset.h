@@ -10,10 +10,10 @@
 // These methods and properties are not thread-safe, use them only on the GUI thread
 class PredefinedColorSet final {
   public:
-    const PredefinedColorPointer invalid = std::make_shared<PredefinedColor>(
+    const PredefinedColorPointer noColor = std::make_shared<PredefinedColor>(
         QColor(),
-        QLatin1String("Invalid Color"),
-        QObject::tr("Invalid Color"),
+        QLatin1String("No Color"),
+        QObject::tr("No Color"),
         0
     );
     const PredefinedColorPointer red = std::make_shared<PredefinedColor>(
@@ -73,7 +73,7 @@ class PredefinedColorSet final {
 
     // The list of the predefined colors.
     const QList<PredefinedColorPointer> allColors {
-        invalid,
+        noColor,
         red,
         green,
         yellow,
@@ -109,7 +109,7 @@ class PredefinedColorSet final {
                 return color;
             }
         }
-        return invalid;
+        return noColor;
     };
 
     // Return a predefined color from its id.
@@ -119,7 +119,7 @@ class PredefinedColorSet final {
                 return color;
             }
         }
-        return invalid;
+        return noColor;
     };
 
     // The default color map, i.e. maps each predefined color to itself.
