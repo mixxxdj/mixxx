@@ -29,6 +29,7 @@ DeckAttributes::DeckAttributes(int index,
           m_repeat(group, "repeat"),
           m_seekOnLoadMode(group, "seekonload_mode"),
           m_introStartPos(group, "intro_start_position"),
+          m_outroStartPos(group, "outro_start_position"),
           m_outroEndPos(group, "outro_end_position"),
           m_sampleRate(group, "track_samplerate"),
           m_duration(group, "duration"),
@@ -42,6 +43,7 @@ DeckAttributes::DeckAttributes(int index,
     m_playPos.connectValueChanged(this, &DeckAttributes::slotPlayPosChanged);
     m_play.connectValueChanged(this, &DeckAttributes::slotPlayChanged);
     m_introStartPos.connectValueChanged(this, &DeckAttributes::slotIntroStartPositionChanged);
+    m_outroStartPos.connectValueChanged(this, &DeckAttributes::slotOutroStartPositionChanged);
     m_outroEndPos.connectValueChanged(this, &DeckAttributes::slotOutroEndPositionChanged);
 }
 
@@ -58,6 +60,10 @@ void DeckAttributes::slotPlayPosChanged(double v) {
 
 void DeckAttributes::slotIntroStartPositionChanged(double v) {
     emit(introStartPositionChanged(this, v));
+}
+
+void DeckAttributes::slotOutroStartPositionChanged(double v) {
+    emit(outroStartPositionChanged(this, v));
 }
 
 void DeckAttributes::slotOutroEndPositionChanged(double v) {
@@ -332,6 +338,11 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
                 this, &AutoDJProcessor::playerIntroStartChanged);
         connect(&deck2, &DeckAttributes::introStartPositionChanged,
                 this, &AutoDJProcessor::playerIntroStartChanged);
+
+        connect(&deck1, &DeckAttributes::outroStartPositionChanged,
+                this, &AutoDJProcessor::playerOutroStartChanged);
+        connect(&deck2, &DeckAttributes::outroStartPositionChanged,
+                this, &AutoDJProcessor::playerOutroStartChanged);
 
         connect(&deck1, &DeckAttributes::outroEndPositionChanged,
                 this, &AutoDJProcessor::playerOutroEndChanged);
@@ -728,10 +739,9 @@ void AutoDJProcessor::playerPlayChanged(DeckAttributes* pAttributes, bool playin
     }
 }
 
-void AutoDJProcessor::playerIntroStartChanged(DeckAttributes* pAttributes,
-                                         double position) {
+void AutoDJProcessor::playerIntroStartChanged(DeckAttributes* pAttributes, double position) {
     if (sDebug) {
-        qDebug() << this << "playerStartChanged" << pAttributes->group << position;
+        qDebug() << this << "playerIntroStartChanged" << pAttributes->group << position;
     }
 
     if (!pAttributes->isPlaying()) {
@@ -739,10 +749,9 @@ void AutoDJProcessor::playerIntroStartChanged(DeckAttributes* pAttributes,
     }
 }
 
-void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes,
-                                       double position) {
+void AutoDJProcessor::playerOutroStartChanged(DeckAttributes* pAttributes, double position) {
     if (sDebug) {
-        qDebug() << this << "playerEndChanged" << pAttributes->group << position;
+        qDebug() << this << "playerOutroStartChanged" << pAttributes->group << position;
     }
 
     if (pAttributes->isPlaying()) {
@@ -750,8 +759,18 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes,
     }
 }
 
-double AutoDJProcessor::getStartPosition(DeckAttributes* pDeck) {
-    double position = pDeck->startPosition() / kChannelCount;
+void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double position) {
+    if (sDebug) {
+        qDebug() << this << "playerOutroEndChanged" << pAttributes->group << position;
+    }
+
+    if (pAttributes->isPlaying()) {
+        calculateTransition(pAttributes, getOtherDeck(pAttributes, false));
+    }
+}
+
+double AutoDJProcessor::getIntroStartPosition(DeckAttributes* pDeck) {
+    double position = pDeck->introStartPosition() / kChannelCount;
     double samplerate = pDeck->sampleRate();
     if (position <= 0.0 || samplerate <= 0.0) {
         return -1.0;
@@ -759,8 +778,17 @@ double AutoDJProcessor::getStartPosition(DeckAttributes* pDeck) {
     return position / samplerate;  // Convert to seconds
 }
 
-double AutoDJProcessor::getEndPosition(DeckAttributes* pDeck) {
-    double position = pDeck->endPosition() / kChannelCount;
+double AutoDJProcessor::getOutroStartPosition(DeckAttributes* pDeck) {
+    double position = pDeck->outroStartPosition() / kChannelCount;
+    double samplerate = pDeck->sampleRate();
+    if (position <= 0.0 || samplerate <= 0.0) {
+        return -1.0;
+    }
+    return position / samplerate;  // Convert to seconds
+}
+
+double AutoDJProcessor::getOutroEndPosition(DeckAttributes* pDeck) {
+    double position = pDeck->outroEndPosition() / kChannelCount;
     double samplerate = pDeck->sampleRate();
     if (position <= 0.0 || samplerate <= 0.0) {
         return -1.0;
@@ -789,24 +817,35 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double fromTrackDuration = pFromDeck->duration();
     double toTrackDuration = pToDeck->duration();
 
-    double fromTrackEnd = getEndPosition(pFromDeck);
-    if (fromTrackEnd <= 0.0) {
-        fromTrackEnd = fromTrackDuration;
+    double fromTrackOutroStart = getOutroStartPosition(pFromDeck);
+    if (fromTrackOutroStart <= 0.0) {
+        fromTrackOutroStart = fromTrackDuration;
     }
 
-    double toTrackStart = getStartPosition(pToDeck);
-    if (toTrackStart <= 0.0) {
-        toTrackStart = 0.0;
+    double fromTrackOutroEnd = getOutroEndPosition(pFromDeck);
+    if (fromTrackOutroEnd <= 0.0) {
+        fromTrackOutroEnd = fromTrackDuration;
+    }
+
+    double toTrackIntroStart = getIntroStartPosition(pToDeck);
+    if (toTrackIntroStart <= 0.0) {
+        toTrackIntroStart = 0.0;
     }
 
     if (m_transitionTime > 0.0) {  // Crossfade transition
-        // Guard against tracks shorter than the transition period. Use a
-        // sensible cap.
-        double nextTransitionTime = math_min3(m_transitionTime,
+        // Make sure length of selected outro is not negative.
+        double desiredTransitionTime = fromTrackOutroEnd - fromTrackOutroStart;
+        if (desiredTransitionTime <= 0.0) {
+            desiredTransitionTime = m_transitionTime;
+        }
+
+        // Guard against tracks shorter than the desired transition period.
+        // Use a sensible cap.
+        double nextTransitionTime = math_min3(desiredTransitionTime,
                                               fromTrackDuration / 2,
                                               toTrackDuration / 2);
 
-        double fromTrackStartFadeOut = fromTrackEnd - nextTransitionTime;
+        double fromTrackStartFadeOut = fromTrackOutroEnd - nextTransitionTime;
 
         if (fromTrackDuration > 0.0) {
             pFromDeck->posThreshold = fromTrackStartFadeOut / fromTrackDuration;
@@ -820,7 +859,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         // for pause transition.
     } else {  // Pause transition (transition time <= 0)
         if (fromTrackDuration > 0.0) {
-            pFromDeck->posThreshold = fromTrackEnd / fromTrackDuration;
+            pFromDeck->posThreshold = fromTrackOutroEnd / fromTrackDuration;
             pFromDeck->fadeDuration = m_transitionTime / fromTrackDuration;
         } else {
             pFromDeck->posThreshold = 1.0;
@@ -829,7 +868,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
         if (toTrackDuration > 0.0) {
             // Transition time is negative here, so we need to add instead of subtract.
-            pToDeck->startPos = (toTrackStart + m_transitionTime) / toTrackDuration;
+            pToDeck->startPos = (toTrackIntroStart + m_transitionTime) / toTrackDuration;
         } else {
             pToDeck->startPos = 0.0;
         }

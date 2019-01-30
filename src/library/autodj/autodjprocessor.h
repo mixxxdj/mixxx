@@ -70,11 +70,15 @@ class DeckAttributes : public QObject {
         m_seekOnLoadMode.set(mode);
     }
 
-    double startPosition() const {
+    double introStartPosition() const {
         return m_introStartPos.get();
     }
 
-    double endPosition() const {
+    double outroStartPosition() const {
+        return m_outroStartPos.get();
+    }
+
+    double outroEndPosition() const {
         return m_outroEndPos.get();
     }
 
@@ -92,6 +96,7 @@ class DeckAttributes : public QObject {
     void playChanged(DeckAttributes* pDeck, bool playing);
     void playPositionChanged(DeckAttributes* pDeck, double playPosition);
     void introStartPositionChanged(DeckAttributes* pDeck, double introStartPosition);
+    void outroStartPositionChanged(DeckAttributes* pDeck, double introStartPosition);
     void outroEndPositionChanged(DeckAttributes* pDeck, double outroEndPosition);
     void trackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void loadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
@@ -101,6 +106,7 @@ class DeckAttributes : public QObject {
     void slotPlayPosChanged(double v);
     void slotPlayChanged(double v);
     void slotIntroStartPositionChanged(double v);
+    void slotOutroStartPositionChanged(double v);
     void slotOutroEndPositionChanged(double v);
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
@@ -120,6 +126,7 @@ class DeckAttributes : public QObject {
     ControlProxy m_repeat;
     ControlProxy m_seekOnLoadMode;
     ControlProxy m_introStartPos;
+    ControlProxy m_outroStartPos;
     ControlProxy m_outroEndPos;
     ControlProxy m_sampleRate;
     ControlProxy m_duration;
@@ -196,6 +203,7 @@ class AutoDJProcessor : public QObject {
     void playerPositionChanged(DeckAttributes* pDeck, double position);
     void playerPlayChanged(DeckAttributes* pDeck, bool playing);
     void playerIntroStartChanged(DeckAttributes* pDeck, double position);
+    void playerOutroStartChanged(DeckAttributes* pDeck, double position);
     void playerOutroEndChanged(DeckAttributes* pDeck, double position);
     void playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void playerLoadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
@@ -216,8 +224,9 @@ class AutoDJProcessor : public QObject {
 
     // Following functions return seconds computed from samples or -1 if
     // track in deck has invalid sample rate (<= 0)
-    double getStartPosition(DeckAttributes* pDeck);
-    double getEndPosition(DeckAttributes* pDeck);
+    double getIntroStartPosition(DeckAttributes* pDeck);
+    double getOutroStartPosition(DeckAttributes* pDeck);
+    double getOutroEndPosition(DeckAttributes* pDeck);
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);

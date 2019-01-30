@@ -46,6 +46,7 @@ class FakeDeck : public BaseTrackPlayer {
               repeat(ConfigKey(group, "repeat")),
               seekOnLoadMode(ConfigKey(group, "seekonload_mode")),
               introStartPos(ConfigKey(group, "intro_start_position")),
+              outroStartPos(ConfigKey(group, "outro_start_position")),
               outroEndPos(ConfigKey(group, "outro_end_position")) {
         play.setButtonMode(ControlPushButton::TOGGLE);
         repeat.setButtonMode(ControlPushButton::TOGGLE);
@@ -96,6 +97,7 @@ class FakeDeck : public BaseTrackPlayer {
     ControlPushButton repeat;
     ControlObject seekOnLoadMode;
     ControlObject introStartPos;
+    ControlObject outroStartPos;
     ControlObject outroEndPos;
 };
 
