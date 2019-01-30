@@ -267,32 +267,32 @@
                       <SizePolicy>me,me</SizePolicy>
                       <Children>
 
-                          <WidgetGroup>
-                            <Layout>horizontal</Layout>
-                            <SizePolicy>me,max</SizePolicy>
-                            <Children>
-                              <Template src="skin:decks_left.xml"/>
-                              <Template src="skin:mixer.xml"/>
-                              <Template src="skin:decks_right.xml"/>
-                            </Children>
-                            <Connection>
-                              <ConfigKey>[Skin],small_decks</ConfigKey>
-                              <Transform><Not/></Transform>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup>
-                  
-                          <WidgetGroup>
+                        <WidgetGroup>
                           <Layout>horizontal</Layout>
                           <SizePolicy>me,max</SizePolicy>
                           <Children>
-                            <Template src="skin:decks_small.xml"/>
-                            </Children>
-                            <Connection>
-                              <ConfigKey>[Skin],small_decks</ConfigKey>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup>
+                            <Template src="skin:decks_left.xml"/>
+                            <Template src="skin:mixer.xml"/>
+                            <Template src="skin:decks_right.xml"/>
+                          </Children>
+                          <Connection>
+                            <ConfigKey>[Skin],small_decks</ConfigKey>
+                            <Transform><Not/></Transform>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
+                
+                        <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <SizePolicy>me,max</SizePolicy>
+                        <Children>
+                          <Template src="skin:decks_small.xml"/>
+                          </Children>
+                          <Connection>
+                            <ConfigKey>[Skin],small_decks</ConfigKey>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup>
                           
                         <Template src="skin:fx_rack.xml"/>
                         <Template src="skin:samplers_rack.xml"/>
