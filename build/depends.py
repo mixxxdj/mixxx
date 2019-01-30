@@ -1225,9 +1225,7 @@ class MixxxCore(Feature):
                    "src/util/widgetrendertimer.cpp",
                    "src/util/workerthread.cpp",
                    "src/util/workerthreadscheduler.cpp",
-                   "src/util/color/predefinedcolor.cpp",
-                   "src/util/color/predefinedcolormap.cpp",
-                   "src/util/color/predefinedcolorset.cpp"
+                   "src/util/color/predefinedcolor.cpp"
                    ]
 
         proto_args = {

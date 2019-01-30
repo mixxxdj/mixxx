@@ -85,7 +85,14 @@ class PredefinedColorSet final {
         grey,
     };
 
-    PredefinedColorSet();
+    PredefinedColorSet()
+        : m_predefinedColorsNames(), m_defaultMap() {
+
+        for (PredefinedColorPointer color : allColors) {
+            m_predefinedColorsNames << color->m_sName;
+            m_defaultMap.setRepresentation(color, color->m_defaultRepresentation);
+        }
+    }
 
     // A list with the internal names of the predefined colors.
     QList<QString> predefinedColorNames() const { return m_predefinedColorsNames; };

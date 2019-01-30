@@ -14,10 +14,18 @@
 class PredefinedColorMap final {
   public:
     // Set a color representation for a given color
-    void setRepresentation(PredefinedColorPointer color, QColor representation);
+    void setRepresentation(PredefinedColorPointer color, QColor representation) {
+        m_colorNameMap[color->m_defaultRepresentation.name()] = representation.name();
+    }
 
     // Returns the representation of a color
-    QColor map(PredefinedColorPointer color) const;
+    QColor map(PredefinedColorPointer color) const {
+        QColor defaultRepresentation = color->m_defaultRepresentation;
+        if (m_colorNameMap.contains(defaultRepresentation.name())) {
+            return QColor(m_colorNameMap[defaultRepresentation.name()]);
+        }
+        return defaultRepresentation;
+    }
 
 
   private:
