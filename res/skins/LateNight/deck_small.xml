@@ -49,7 +49,7 @@
                       <TrackProperty>
                         <TooltipId>track_title</TooltipId>
                         <ObjectName>TitleTextSmall</ObjectName>
-                        <Size>55me,20f</Size>
+                        <Size>100me,20f</Size>
                         <Property>title</Property>
                         <Alignment>left</Alignment>
                         <Elide>right</Elide>
@@ -59,7 +59,7 @@
                       <NumberPos>
                         <TooltipId>track_time</TooltipId>
                         <ObjectName>PlayPositionTextSmall</ObjectName>
-                        <Size>145f,20f</Size>
+                        <Size>e,20f</Size>
                         <Alignment>center</Alignment>
                         <Channel><Variable name="channum"/></Channel>
                         <Connection>
