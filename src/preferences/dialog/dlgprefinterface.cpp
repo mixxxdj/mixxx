@@ -70,6 +70,8 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     warningLabel->setText(warningString);
 
     ComboBoxSkinconf->clear();
+    // align left edge of preview image with comboboxes
+    skinPreviewLabel->setStyleSheet("QLabel { margin-left: 2px; }");
     skinPreviewLabel->setText("");
 
     QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
