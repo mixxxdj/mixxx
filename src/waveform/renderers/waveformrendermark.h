@@ -5,7 +5,7 @@
 
 #include "skin/skincontext.h"
 #include "util/class.h"
-#include "util/color.h"
+#include "util/color/color.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "library/dao/cue.h"

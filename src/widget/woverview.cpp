@@ -27,7 +27,7 @@
 #include "widget/controlwidgetconnection.h"
 #include "track/track.h"
 #include "analyzer/analyzerprogress.h"
-#include "util/color.h"
+#include "util/color/color.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"

@@ -6,7 +6,7 @@
 
 #include "control/controlproxy.h"
 #include "track/track.h"
-#include "util/color.h"
+#include "util/color/color.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "widget/wskincolor.h"

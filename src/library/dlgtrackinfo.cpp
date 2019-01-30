@@ -329,21 +329,20 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
             QColor colorRepresentation = color->m_defaultRepresentation;
             colorComboBox->addItem(color->m_sDisplayName, colorRepresentation);
             const QModelIndex idx = colorComboBox->model()->index(i, 0);
-            colorComboBox->model()->setData(idx, colorRepresentation, Qt::BackgroundColorRole);
+            if (*color != *Color::predefinedColorSet.invalid) {
+                colorComboBox->model()->setData(idx, colorRepresentation, Qt::BackgroundColorRole);
+            }
             colorComboBox->setItemData(i, Color::chooseContrastColor(colorRepresentation), Qt::TextColorRole);
 
         }
         PredefinedColorPointer cueColor = pCue->getColor();
-        colorComboBox->setCurrentIndex(predefinedColors.contains(cueColor)
-                ? predefinedColors.indexOf(cueColor)
-                : 0);
+        colorComboBox->setCurrentIndex(Color::predefinedColorSet.predefinedColorIndex(cueColor));
 
         m_cueMap[row] = pCue;
         cueTable->insertRow(row);
         cueTable->setItem(row, 0, new QTableWidgetItem(rowStr));
         cueTable->setItem(row, 1, durationItem);
         cueTable->setItem(row, 2, new QTableWidgetItem(hotcue));
-        // cueTable->setItem(row, 3, new QTableWidgetItem(cueColor.name().toUpper()));
         cueTable->setCellWidget(row, 3, colorComboBox);
         cueTable->setItem(row, 4, new QTableWidgetItem(pCue->getLabel()));
         row += 1;
@@ -418,9 +417,7 @@ void DlgTrackInfo::saveTrack() {
         auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
         if (colorComboBox) {
             PredefinedColorPointer color = Color::predefinedColorSet.allColors.at(colorComboBox->currentIndex());
-//            if (color.isValid()) {
-                //pCue->setColor(color);
-//            }
+            pCue->setColor(color);
         }
         // do nothing for now.
 

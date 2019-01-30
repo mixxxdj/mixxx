@@ -6,9 +6,9 @@
 
 #include "library/dao/cue.h"
 #include "util/assert.h"
+#include "util/color/color.h"
 
 namespace {
-    const QColor kDefaultColor = QColor("#FF0000");
     const QString kDefaultLabel = ""; // empty string, not null
 }
 
@@ -25,13 +25,13 @@ Cue::Cue(TrackId trackId)
           m_length(0.0),
           m_iHotCue(-1),
           m_label(kDefaultLabel),
-          m_color(kDefaultColor) {
+          m_color(Color::predefinedColorSet.invalid) {
     DEBUG_ASSERT(!m_label.isNull());
 }
 
 
 Cue::Cue(int id, TrackId trackId, Cue::CueType type, double position, double length,
-         int hotCue, QString label, QColor color)
+         int hotCue, QString label, PredefinedColorPointer color)
         : m_bDirty(false),
           m_iId(id),
           m_trackId(trackId),

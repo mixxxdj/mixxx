@@ -12,6 +12,7 @@
 #include "control/controlindicator.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "util/sample.h"
+#include "util/color/color.h"
 
 // TODO: Convert these doubles to a standard enum
 // and convert elseif logic to switch statements
@@ -297,7 +298,7 @@ void CueControl::trackCuesUpdated() {
             } else {
                 // If the old hotcue is the same, then we only need to update
                 pControl->setPosition(pCue->getPosition());
-                pControl->setColor(pCue->getColor());
+                pControl->setColor(pCue->getColor()->m_iId);
             }
             // Add the hotcue to the list of active hotcues
             active_hotcues.insert(hotcue);
@@ -1129,7 +1130,7 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
 }
 
 void HotcueControl::slotHotcueColorChanged(double newColor) {
-    m_pCue->setColor(QColor(static_cast<QRgb>(newColor)));
+    m_pCue->setColor(Color::predefinedColorSet.predefinedColorFromId(newColor));
     emit(hotcueColorChanged(this, newColor));
 }
 

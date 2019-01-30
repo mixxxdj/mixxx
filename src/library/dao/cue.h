@@ -54,7 +54,7 @@ class Cue : public QObject {
   private:
     explicit Cue(TrackId trackId);
     Cue(int id, TrackId trackId, CueType type, double position, double length,
-        int hotCue, QString label, QColor color);
+        int hotCue, QString label, PredefinedColorPointer color);
     void setDirty(bool dirty);
     void setId(int id);
     void setTrackId(TrackId trackId);
@@ -69,7 +69,7 @@ class Cue : public QObject {
     double m_length;
     int m_iHotCue;
     QString m_label;
-    QColor m_color;
+    PredefinedColorPointer m_color;
 
     friend class Track;
     friend class CueDAO;
