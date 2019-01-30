@@ -320,7 +320,7 @@ HerculesMp3.fxbutton = function (fxnumber) {
 
         case "fx 3" :
             return "hotcue_3_";
-            break;	
+            break;    
     }
 
 };
@@ -602,7 +602,7 @@ HerculesMp3.bpconnectA = function (valueA) {
        if(valueA){
         HerculesMp3.controls.outputs[0x0A].beatlen = 6000/valueA;
     }
-    else	{
+    else    {
         HerculesMp3.controls.outputs[0x0A].beatlen=0;
     }
 };
@@ -611,7 +611,7 @@ HerculesMp3.bpconnectB = function (valueB) {
     if(valueB){
         HerculesMp3.controls.outputs[0x04].beatlen = 6000/valueB;
     }
-    else	{
+    else    {
         HerculesMp3.controls.outputs[0x04].beatlen=0;
     }
 };

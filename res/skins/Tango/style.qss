@@ -1933,10 +1933,6 @@ WTrackProperty#SamplerTitle_mini {
   background-color: #1e1e1e;
 }
 
-#SpinnyMini {
-  background-color: transparent;
-}
-
 /*################################################################
  ######  Preview Deck  ##########################################
 ##############################################################*/
@@ -2365,13 +2361,7 @@ WLibrary QPushButton {
     font-weight: bold;
   }
 
-  /* Colored highlight for action buttons:
-  - Purge
-  - Unhide buttons
-  - Enable AutoDJ
-  - Analyze	*/
-  QPushButton#btnPurge:hover,
-  QPushButton#btnUnhide:hover,
+  /* 'Enable AutoDJ' button	*/
   QPushButton#pushButtonAutoDJ:hover,
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #ff6600;
