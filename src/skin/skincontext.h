@@ -14,7 +14,8 @@
 
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
-#include "util/color.h"
+#include "util/color/color.h"
+#include "util/color/predefinedcolormap.h"
 #include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"
 
@@ -267,16 +268,16 @@ class SkinContext {
         return m_scaleFactor;
     }
 
-    ColorsRepresentation getCueColorsRepresentation(const QDomNode& node) const {
-        ColorsRepresentation colorsReprsentation = Color::defaultRepresentation;
-        for (QLatin1String colorName : Color::predefinedColorsNames) {
+    PredefinedColorMap getCueColorMap(const QDomNode& node) const {
+        PredefinedColorMap colorMap = Color::predefinedColorSet.defaultMap();
+        for (QString colorName : Color::predefinedColorSet.predefinedColorNames()) {
             QColor representation = selectColor(node, "Cue" + colorName);
             if (representation.isValid()) {
-                QColor originalColor = Color::predefinedColorFromName(colorName);
-                colorsReprsentation.setRepresentation(originalColor, representation);
+                PredefinedColorPointer originalColor = Color::predefinedColorSet.predefinedColorFromName(colorName);
+                colorMap.setRepresentation(originalColor, representation);
             }
         }
-        return colorsReprsentation;
+        return colorMap;
     }
 
   private:

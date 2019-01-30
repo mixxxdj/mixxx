@@ -22,7 +22,7 @@
 #include "widget/wwidget.h"
 #include "analyzer/analyzerprogress.h"
 
-#include "util/color.h"
+#include "util/color/color.h"
 
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/renderers/waveformmarkset.h"
@@ -130,7 +130,7 @@ class WOverview : public WWidget {
     QColor m_qColorBackground;
     QColor m_endOfTrackColor;
 
-    ColorsRepresentation m_predefinedColorsRepresentation;
+    PredefinedColorMap m_predefinedColorsRepresentation;
     WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;
 

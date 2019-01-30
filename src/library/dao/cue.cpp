@@ -138,12 +138,12 @@ void Cue::setLabel(const QString label) {
     emit(updated());
 }
 
-QColor Cue::getColor() const {
+PredefinedColorPointer Cue::getColor() const {
     QMutexLocker lock(&m_mutex);
     return m_color;
 }
 
-void Cue::setColor(const QColor color) {
+void Cue::setColor(const PredefinedColorPointer color) {
     QMutexLocker lock(&m_mutex);
     m_color = color;
     m_bDirty = true;

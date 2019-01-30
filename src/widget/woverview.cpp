@@ -91,7 +91,7 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     }
 
     // setup hotcues and cue and loop(s)
-    m_predefinedColorsRepresentation = context.getCueColorsRepresentation(node);
+    m_predefinedColorsRepresentation = context.getCueColorMap(node);
     m_marks.setup(m_group, node, context, m_signalColors);
 
     for (const auto& pMark: m_marks) {

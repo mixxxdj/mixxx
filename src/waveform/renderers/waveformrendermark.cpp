@@ -23,7 +23,7 @@ WaveformRenderMark::WaveformRenderMark(
 }
 
 void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
-    m_predefinedColorsRepresentation = context.getCueColorsRepresentation(node);
+    m_predefinedColorsRepresentation = context.getCueColorMap(node);
     m_marks.setup(m_waveformRenderer->getGroup(), node, context,
                   *m_waveformRenderer->getWaveformSignalColors());
 }

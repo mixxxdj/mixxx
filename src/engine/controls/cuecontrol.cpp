@@ -1041,6 +1041,7 @@ HotcueControl::HotcueControl(QString group, int i)
     // the Color is stored as a QRgb (which is just a unsigned int
     // representation of the color (AARRGGBB)
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
+    m_hotcueColor->setReadOnly();
     connect(m_hotcueColor, SIGNAL(valueChanged(double)),
             this, SLOT(slotHotcueColorChanged(double)),
             Qt::DirectConnection);

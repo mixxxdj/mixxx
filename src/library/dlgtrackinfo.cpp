@@ -13,7 +13,7 @@
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "util/duration.h"
-#include "util/color.h"
+#include "util/color/color.h"
 
 const int kFilterLength = 80;
 const int kMinBpm = 30;
@@ -323,16 +323,17 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
 
 
         QComboBox* colorComboBox = new QComboBox();
-        const QList<QColor>& predefinedColors = Color::predefinedColors;
+        QList<PredefinedColorPointer> predefinedColors = Color::predefinedColorSet.allColors;
         for (int i = 0; i < predefinedColors.count(); i++) {
-            QColor color = predefinedColors.at(i);
-            colorComboBox->addItem(Color::displayName(color), color);
+            PredefinedColorPointer color = predefinedColors.at(i);
+            QColor colorRepresentation = color->m_defaultRepresentation;
+            colorComboBox->addItem(color->m_sDisplayName, colorRepresentation);
             const QModelIndex idx = colorComboBox->model()->index(i, 0);
-            colorComboBox->model()->setData(idx, color, Qt::BackgroundColorRole);
-            colorComboBox->setItemData(i, Color::chooseContrastColor(color), Qt::TextColorRole);
+            colorComboBox->model()->setData(idx, colorRepresentation, Qt::BackgroundColorRole);
+            colorComboBox->setItemData(i, Color::chooseContrastColor(colorRepresentation), Qt::TextColorRole);
 
         }
-        const QColor cueColor = pCue->getColor();
+        PredefinedColorPointer cueColor = pCue->getColor();
         colorComboBox->setCurrentIndex(predefinedColors.contains(cueColor)
                 ? predefinedColors.indexOf(cueColor)
                 : 0);
@@ -416,10 +417,10 @@ void DlgTrackInfo::saveTrack() {
 
         auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
         if (colorComboBox) {
-            QColor color = Color::predefinedColors.at(colorComboBox->currentIndex());
-            if (color.isValid()) {
-                pCue->setColor(color);
-            }
+            PredefinedColorPointer color = Color::predefinedColorSet.allColors.at(colorComboBox->currentIndex());
+//            if (color.isValid()) {
+                //pCue->setColor(color);
+//            }
         }
         // do nothing for now.
 
