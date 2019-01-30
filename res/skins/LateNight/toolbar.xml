@@ -90,60 +90,6 @@
                 <Layout>horizontal</Layout>
                 <SizePolicy>me,min</SizePolicy>
                 <Children>
-                  <Template src="skin:knob_textless.xml">
-                    <SetVariable name="Size">28f,24f</SetVariable>
-                    <SetVariable name="Color">green</SetVariable>
-                    <SetVariable name="TooltipId">headMix</SetVariable>
-                    <SetVariable name="group">[Master]</SetVariable>
-                    <SetVariable name="control">headMix</SetVariable>
-                  </Template>
-
-                  <Label>
-                    <SizePolicy>min,min</SizePolicy>
-                     <ObjectName>biglibraryknoblabel</ObjectName>
-                    <Text>head mix</Text>
-                  </Label>
-
-                  <!-- Spacer -->
-                  <WidgetGroup>
-                    <Size>5,5</Size>
-                    <Children/>
-                  </WidgetGroup>
-
-                  <Template src="skin:knob_textless.xml">
-                    <SetVariable name="Size">28f,24f</SetVariable>
-                    <SetVariable name="Color">orange</SetVariable>
-                    <SetVariable name="TooltipId">headphone_gain</SetVariable>
-                    <SetVariable name="group">[Master]</SetVariable>
-                    <SetVariable name="control">headGain</SetVariable>
-                  </Template>
-
-                  <Label>
-                    <SizePolicy>min,min</SizePolicy>
-                     <ObjectName>biglibraryknoblabel</ObjectName>
-                    <Text>head</Text>
-                  </Label>
-
-                  <!-- Spacer -->
-                  <WidgetGroup>
-                    <Size>5,5</Size>
-                    <Children/>
-                  </WidgetGroup>
-
-                  <Template src="skin:button_2state.xml">
-                    <SetVariable name="TooltipId">headSplit</SetVariable>
-                    <SetVariable name="ObjectName">FxAssignButton</SetVariable>
-                    <SetVariable name="Size">64f,20f</SetVariable>
-                    <SetVariable name="state_0_text">Split Cue</SetVariable>
-                    <SetVariable name="state_1_text">Split Cue</SetVariable>
-                    <SetVariable name="ConfigKey">[Master],headSplit</SetVariable>
-                  </Template>
-
-                  <!-- Spacer -->
-                  <WidgetGroup>
-                    <Size>5,5</Size>
-                    <Children/>
-                  </WidgetGroup>
 
                   <Template src="skin:knob_textless.xml">
                     <SetVariable name="Size">28f,24f</SetVariable>
