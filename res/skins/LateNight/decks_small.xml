@@ -4,10 +4,20 @@
     <Layout>vertical</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
+
+      <WidgetGroup>
+        <Size>0me,5f</Size>
+        <Connection>
+          <ConfigKey>[Master],maximize_library</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
       <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+
           <Template src="skin:deck_small.xml">
             <SetVariable name="channum">1</SetVariable>
             <SetVariable name="signal_color">#E7C413</SetVariable>
@@ -37,9 +47,18 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <Size>0me,5f</Size>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+
           <Template src="skin:deck_small.xml">
             <SetVariable name="channum">3</SetVariable>
             <SetVariable name="signal_color">#09B2AE</SetVariable>

@@ -5,8 +5,6 @@
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
-      <WidgetGroup><Size>0me,5f</Size></WidgetGroup>
-
       <WidgetGroup>
         <ObjectName>DeckSmall<Variable name="channum" /></ObjectName>
         <Layout>horizontal</Layout>
