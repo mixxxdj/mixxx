@@ -10,7 +10,7 @@
 // This class defines a set of predefined colors and provides some handy functions to work with them.
 // A single global instance is create in the Color namespace.
 // This class is thread-safe because all its methods and public properties are const.
-class PredefinedColorSet final {
+class PredefinedColorsSet final {
   public:
     const PredefinedColorPointer noColor = std::make_shared<PredefinedColor>(
         QColor(),
@@ -87,7 +87,7 @@ class PredefinedColorSet final {
         grey,
     };
 
-    PredefinedColorSet()
+    PredefinedColorsSet()
         : m_defaultMap() {
 
         for (PredefinedColorPointer color : allColors) {

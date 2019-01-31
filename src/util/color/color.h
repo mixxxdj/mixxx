@@ -4,11 +4,11 @@
 #include <QColor>
 #include <QHash>
 
-#include "util/color/predefinedcolorset.h"
+#include "predefinedcolorsset.h"
 #include "util/math.h"
 
 namespace Color {
-    static const PredefinedColorSet predefinedColorSet = PredefinedColorSet();
+    static const PredefinedColorsSet predefinedColorSet = PredefinedColorsSet();
 
     // algorithm by http://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
     // NOTE(Swiftb0y): please suggest if I should you use other methods
