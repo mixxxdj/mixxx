@@ -371,6 +371,11 @@ void DlgControllerLearning::commitMapping() {
 }
 
 void DlgControllerLearning::visit(MidiController* pMidiController) {
+    // Disconnect everything in both directions so we don't end up with duplicate connections
+    // after pressing the "Learn Another" button
+    pMidiController->disconnect(this);
+    this->disconnect(pMidiController);
+
     m_pMidiController = pMidiController;
 
     connect(m_pMidiController, SIGNAL(messageReceived(unsigned char, unsigned char, unsigned char)),
