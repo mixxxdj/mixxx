@@ -88,16 +88,12 @@ class PredefinedColorSet final {
     };
 
     PredefinedColorSet()
-        : m_predefinedColorsNames(), m_defaultMap() {
+        : m_defaultMap() {
 
         for (PredefinedColorPointer color : allColors) {
-            m_predefinedColorsNames << color->m_sName;
             m_defaultMap.setCustomRgba(color, color->m_defaultRgba);
         }
     }
-
-    // A list with the names of the predefined colors.
-    QList<QString> predefinedColorNames() const { return m_predefinedColorsNames; };
 
     // Returns the position of a PredefinedColor in the allColors list.
     int predefinedColorIndex(PredefinedColorPointer searchedColor) const {
@@ -137,7 +133,6 @@ class PredefinedColorSet final {
     PredefinedColorsMap defaultMap() const { return m_defaultMap; };
 
   private:
-    QList<QString> m_predefinedColorsNames;
     PredefinedColorsMap m_defaultMap;
 };
 #endif /* COLOR_H */
