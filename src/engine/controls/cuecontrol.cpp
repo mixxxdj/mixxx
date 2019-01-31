@@ -1094,9 +1094,6 @@ void CueControl::introStartSet(double v) {
         return;
     }
 
-    m_pIntroStartPosition->set(position);
-    m_pIntroStartSource->set(Cue::MANUAL);
-
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
@@ -1119,8 +1116,6 @@ void CueControl::introStartClear(double v) {
 
     QMutexLocker lock(&m_mutex);
     double introEnd = m_pIntroEndPosition->get();
-    m_pIntroStartPosition->set(-1.0);
-    m_pIntroStartSource->set(Cue::UNKNOWN);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
@@ -1172,9 +1167,6 @@ void CueControl::introEndSet(double v) {
         return;
     }
 
-    m_pIntroEndPosition->set(position);
-    m_pIntroEndSource->set(Cue::MANUAL);
-
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
@@ -1202,8 +1194,6 @@ void CueControl::introEndClear(double v) {
 
     QMutexLocker lock(&m_mutex);
     double introStart = m_pIntroStartPosition->get();
-    m_pIntroEndPosition->set(-1.0);
-    m_pIntroEndSource->set(Cue::UNKNOWN);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
@@ -1256,9 +1246,6 @@ void CueControl::outroStartSet(double v) {
         return;
     }
 
-    m_pOutroStartPosition->set(position);
-    m_pOutroStartSource->set(Cue::MANUAL);
-
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
@@ -1281,8 +1268,6 @@ void CueControl::outroStartClear(double v) {
 
     QMutexLocker lock(&m_mutex);
     double outroEnd = m_pOutroEndPosition->get();
-    m_pOutroStartPosition->set(-1.0);
-    m_pOutroStartSource->set(Cue::UNKNOWN);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
@@ -1329,9 +1314,6 @@ void CueControl::outroEndSet(double v) {
         return;
     }
 
-    m_pOutroEndPosition->set(getSampleOfTrack().current);
-    m_pOutroEndSource->set(Cue::MANUAL);
-
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
@@ -1359,8 +1341,6 @@ void CueControl::outroEndClear(double v) {
 
     QMutexLocker lock(&m_mutex);
     double outroStart = m_pOutroStartPosition->get();
-    m_pOutroEndPosition->set(-1.0);
-    m_pOutroEndSource->set(Cue::UNKNOWN);
     TrackPointer pLoadedTrack = m_pLoadedTrack;
     lock.unlock();
 
