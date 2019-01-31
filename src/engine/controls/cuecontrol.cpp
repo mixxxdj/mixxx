@@ -122,6 +122,9 @@ CueControl::CueControl(QString group,
 
     m_pIntroStartSource = new ControlObject(ConfigKey(group, "intro_start_source"));
 
+    m_pIntroStartEnabled = new ControlObject(ConfigKey(group, "intro_start_enabled"));
+    m_pIntroStartEnabled->setReadOnly();
+
     m_pIntroStartSet = new ControlPushButton(ConfigKey(group, "intro_start_set"));
     connect(m_pIntroStartSet, &ControlObject::valueChanged,
             this, &CueControl::introStartSet,
@@ -136,6 +139,9 @@ CueControl::CueControl(QString group,
     m_pIntroEndPosition->set(-1.0);
 
     m_pIntroEndSource = new ControlObject(ConfigKey(group, "intro_end_source"));
+
+    m_pIntroEndEnabled = new ControlObject(ConfigKey(group, "intro_end_enabled"));
+    m_pIntroEndEnabled->setReadOnly();
 
     m_pIntroEndSet = new ControlPushButton(ConfigKey(group, "intro_end_set"));
     connect(m_pIntroEndSet, &ControlObject::valueChanged,
@@ -152,6 +158,9 @@ CueControl::CueControl(QString group,
 
     m_pOutroStartSource = new ControlObject(ConfigKey(group, "outro_start_source"));
 
+    m_pOutroStartEnabled = new ControlObject(ConfigKey(group, "outro_start_enabled"));
+    m_pOutroStartEnabled->setReadOnly();
+
     m_pOutroStartSet = new ControlPushButton(ConfigKey(group, "outro_start_set"));
     connect(m_pOutroStartSet, &ControlObject::valueChanged,
             this, &CueControl::outroStartSet,
@@ -166,6 +175,9 @@ CueControl::CueControl(QString group,
     m_pOutroEndPosition->set(-1.0);
 
     m_pOutroEndSource = new ControlObject(ConfigKey(group, "outro_end_source"));
+
+    m_pOutroEndEnabled = new ControlObject(ConfigKey(group, "outro_end_enabled"));
+    m_pOutroEndEnabled->setReadOnly();
 
     m_pOutroEndSet = new ControlPushButton(ConfigKey(group, "outro_end_set"));
     connect(m_pOutroEndSet, &ControlObject::valueChanged,
@@ -200,18 +212,22 @@ CueControl::~CueControl() {
     delete m_pPlayIndicator;
     delete m_pIntroStartPosition;
     delete m_pIntroStartSource;
+    delete m_pIntroStartEnabled;
     delete m_pIntroStartSet;
     delete m_pIntroStartClear;
     delete m_pIntroEndPosition;
     delete m_pIntroEndSource;
+    delete m_pIntroEndEnabled;
     delete m_pIntroEndSet;
     delete m_pIntroEndClear;
     delete m_pOutroStartPosition;
     delete m_pOutroStartSource;
+    delete m_pOutroStartEnabled;
     delete m_pOutroStartSet;
     delete m_pOutroStartClear;
     delete m_pOutroEndPosition;
     delete m_pOutroEndSource;
+    delete m_pOutroEndEnabled;
     delete m_pOutroEndSet;
     delete m_pOutroEndClear;
     delete m_pVinylControlEnabled;
@@ -293,12 +309,16 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         m_pCueSource->set(Cue::UNKNOWN);
         m_pIntroStartPosition->set(-1.0);
         m_pIntroStartSource->set(Cue::UNKNOWN);
+        m_pIntroStartEnabled->forceSet(0.0);
         m_pIntroEndPosition->set(-1.0);
         m_pIntroEndSource->set(Cue::UNKNOWN);
+        m_pIntroEndEnabled->forceSet(0.0);
         m_pOutroStartPosition->set(-1.0);
         m_pOutroStartSource->set(Cue::UNKNOWN);
+        m_pOutroStartEnabled->forceSet(0.0);
         m_pOutroEndPosition->set(-1.0);
-        m_pOutroStartSource->set(Cue::UNKNOWN);
+        m_pOutroEndSource->set(Cue::UNKNOWN);
+        m_pOutroEndEnabled->forceSet(0.0);
         m_pLoadedTrack.reset();
     }
 
@@ -417,19 +437,24 @@ void CueControl::loadCuesFromTrack() {
 
         m_pIntroStartPosition->set(quantizeCuePoint(position, source, QuantizeMode::PreviousBeat));
         m_pIntroStartSource->set(source);
+        m_pIntroStartEnabled->forceSet(position == -1.0 ? 0.0 : 1.0);
 
         if (length > 0.0) {
             m_pIntroEndPosition->set(quantizeCuePoint(position + length, source, QuantizeMode::NextBeat));
             m_pIntroEndSource->set(source);
+            m_pIntroEndEnabled->forceSet(1.0);
         } else {
             m_pIntroEndPosition->set(-1.0);
             m_pIntroEndSource->set(Cue::UNKNOWN);
+            m_pIntroEndEnabled->forceSet(0.0);
         }
     } else {
         m_pIntroStartPosition->set(-1.0);
         m_pIntroStartSource->set(Cue::UNKNOWN);
+        m_pIntroStartEnabled->forceSet(0.0);
         m_pIntroEndPosition->set(-1.0);
         m_pIntroEndSource->set(Cue::UNKNOWN);
+        m_pIntroEndEnabled->forceSet(0.0);
     }
 
     if (pOutroCue) {
@@ -440,19 +465,25 @@ void CueControl::loadCuesFromTrack() {
         if (length > 0.0) {
             m_pOutroStartPosition->set(quantizeCuePoint(position, source, QuantizeMode::PreviousBeat));
             m_pOutroStartSource->set(source);
+            m_pOutroStartEnabled->forceSet(1.0);
             m_pOutroEndPosition->set(quantizeCuePoint(position + length, source, QuantizeMode::NextBeat));
             m_pOutroEndSource->set(source);
+            m_pOutroEndEnabled->forceSet(1.0);
         } else {
             m_pOutroStartPosition->set(-1.0);
             m_pOutroStartSource->set(Cue::UNKNOWN);
+            m_pOutroStartEnabled->forceSet(0.0);
             m_pOutroEndPosition->set(quantizeCuePoint(position, source, QuantizeMode::NextBeat));
             m_pOutroEndSource->set(source);
+            m_pOutroEndEnabled->forceSet(1.0);
         }
     } else {
         m_pOutroStartPosition->set(-1.0);
         m_pOutroStartSource->set(Cue::UNKNOWN);
+        m_pOutroStartEnabled->forceSet(0.0);
         m_pOutroEndPosition->set(-1.0);
         m_pOutroEndSource->set(Cue::UNKNOWN);
+        m_pOutroEndEnabled->forceSet(0.0);
     }
 
     // Detach all hotcues that are no longer present

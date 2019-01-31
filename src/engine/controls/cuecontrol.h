@@ -217,21 +217,25 @@ class CueControl : public EngineControl {
 
     ControlObject* m_pIntroStartPosition;
     ControlObject* m_pIntroStartSource;
+    ControlObject* m_pIntroStartEnabled;
     ControlPushButton* m_pIntroStartSet;
     ControlPushButton* m_pIntroStartClear;
 
     ControlObject* m_pIntroEndPosition;
     ControlObject* m_pIntroEndSource;
+    ControlObject* m_pIntroEndEnabled;
     ControlPushButton* m_pIntroEndSet;
     ControlPushButton* m_pIntroEndClear;
 
     ControlObject* m_pOutroStartPosition;
     ControlObject* m_pOutroStartSource;
+    ControlObject* m_pOutroStartEnabled;
     ControlPushButton* m_pOutroStartSet;
     ControlPushButton* m_pOutroStartClear;
 
     ControlObject* m_pOutroEndPosition;
     ControlObject* m_pOutroEndSource;
+    ControlObject* m_pOutroEndEnabled;
     ControlPushButton* m_pOutroEndSet;
     ControlPushButton* m_pOutroEndClear;
 
