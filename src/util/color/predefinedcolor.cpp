@@ -6,6 +6,5 @@ PredefinedColor::PredefinedColor(QColor defaultRepresentation, QString sName, QS
     : m_defaultRepresentation(defaultRepresentation),
       m_sName(sName),
       m_sDisplayName(sDisplayName),
-      m_iId(iId),
-      m_iBrightness(Color::brightness(defaultRepresentation)) {
+      m_iId(iId) {
 }
