@@ -3,6 +3,8 @@
 
 #include <QColor>
 
+#include "util/memory.h"
+
 class PredefinedColor final {
   public:
     PredefinedColor(QColor defaultRepresentation, QString sName, QString sDisplayName, int iId);
