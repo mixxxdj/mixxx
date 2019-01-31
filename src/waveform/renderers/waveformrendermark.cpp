@@ -109,16 +109,23 @@ void WaveformRenderMark::slotCuesUpdated() {
             continue;
         }
 
-        QString newLabel = pCue->getLabel();
-        QColor newColor = m_predefinedColorsRepresentation.map(pCue->getColor());
-
         // Here we assume no two cues can have the same hotcue assigned,
         // because WaveformMarkSet stores one mark for each hotcue.
         WaveformMarkPointer pMark = m_marks.getHotCueMark(hotCue);
         if (pMark.isNull()) {
         	continue;
         }
+
         WaveformMarkProperties markProperties = pMark->getProperties();
+        QString newLabel = pCue->getLabel();
+        QColor newColor;
+        PredefinedColorPointer cueColor = pCue->getColor();
+        if (*cueColor == *Color::predefinedColorSet.noColor) {
+            newColor = markProperties.m_defaultColor;
+        } else {
+            newColor = m_predefinedColorsRepresentation.map(cueColor);
+        }
+
         if (markProperties.m_text.isNull() || newLabel != markProperties.m_text ||
                 !markProperties.fillColor().isValid() || newColor != markProperties.fillColor()) {
             markProperties.m_text = newLabel;

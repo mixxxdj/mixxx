@@ -47,14 +47,14 @@ WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
                                                const WaveformSignalColors& signalColors,
                                                int hotCue) {
     QColor color(context.selectString(node, "Color"));
-    // TODO (Swiftb0y): remove context.selectString because the color will be overriden by the cuepoints regardless
     if (!color.isValid()) {
         // As a fallback, grab the color from the parent's AxesColor
-        setBaseColor(signalColors.getAxesColor());
-        qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:" << m_fillColor;
+        m_defaultColor = signalColors.getAxesColor();
+        qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:" << m_defaultColor;
     } else {
-        setBaseColor(WSkinColor::getCorrectColor(m_fillColor));
+        m_defaultColor = WSkinColor::getCorrectColor(color);
     }
+    setBaseColor(m_defaultColor);
 
     m_textColor = context.selectString(node, "TextColor");
     if (!m_textColor.isValid()) {

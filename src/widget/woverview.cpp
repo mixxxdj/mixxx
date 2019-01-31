@@ -266,8 +266,13 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
 
         if (currentMark && currentMark->isValid()) {
             WaveformMarkProperties markProperties = currentMark->getProperties();
-            const QColor newColor = m_predefinedColorsRepresentation.map(currentCue->getColor());
-
+            QColor newColor;
+            PredefinedColorPointer cueColor = currentCue->getColor();
+            if (*cueColor == *Color::predefinedColorSet.noColor) {
+                newColor = markProperties.m_defaultColor;
+            } else {
+                newColor = m_predefinedColorsRepresentation.map(cueColor);
+            }
             if (newColor != markProperties.fillColor() || newColor != markProperties.m_textColor) {
                 markProperties.setBaseColor(newColor);
                 currentMark->setProperties(markProperties);
