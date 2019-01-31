@@ -298,7 +298,7 @@ void CueControl::trackCuesUpdated() {
             } else {
                 // If the old hotcue is the same, then we only need to update
                 pControl->setPosition(pCue->getPosition());
-                pControl->setColor(pCue->getColor()->m_iId);
+                pControl->setColor(pCue->getColor());
             }
             // Add the hotcue to the list of active hotcues
             active_hotcues.insert(hotcue);
@@ -1040,7 +1040,6 @@ HotcueControl::HotcueControl(QString group, int i)
 
     // The id of the predefined color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
-    m_hotcueColor->setReadOnly();
     connect(m_hotcueColor, SIGNAL(valueChanged(double)),
             this, SLOT(slotHotcueColorChanged(double)),
             Qt::DirectConnection);
@@ -1127,9 +1126,9 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
     emit(hotcuePositionChanged(this, newPosition));
 }
 
-void HotcueControl::slotHotcueColorChanged(double newColor) {
-    m_pCue->setColor(Color::predefinedColorSet.predefinedColorFromId(newColor));
-    emit(hotcueColorChanged(this, newColor));
+void HotcueControl::slotHotcueColorChanged(double newColorId) {
+    m_pCue->setColor(Color::predefinedColorSet.predefinedColorFromId(newColorId));
+    emit(hotcueColorChanged(this, newColorId));
 }
 
 double HotcueControl::getPosition() const {
@@ -1142,12 +1141,12 @@ void HotcueControl::setCue(CuePointer pCue) {
     // because we have a null check for valid data else where in the code
     m_pCue = pCue;
 }
-QColor HotcueControl::getColor() const {
-    return QColor::fromRgb(static_cast<QRgb>(m_hotcueColor->get()));
+PredefinedColorPointer HotcueControl::getColor() const {
+    return Color::predefinedColorSet.predefinedColorFromId(m_hotcueColor->get());
 }
 
-void HotcueControl::setColor(QColor newColor) {
-    m_hotcueColor->set(static_cast<double>(newColor.rgb()));
+void HotcueControl::setColor(PredefinedColorPointer newColor) {
+    m_hotcueColor->set(static_cast<double>(newColor->m_iId));
 }
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
