@@ -1038,9 +1038,7 @@ HotcueControl::HotcueControl(QString group, int i)
     m_hotcueEnabled = new ControlObject(keyForControl(i, "enabled"));
     m_hotcueEnabled->setReadOnly();
 
-    // NOTE(Swiftb0y): since ControlObjects only deal with double values,
-    // the Color is stored as a QRgb (which is just a unsigned int
-    // representation of the color (AARRGGBB)
+    // The id of the predefined color assigned to this color.
     m_hotcueColor = new ControlObject(keyForControl(i, "color"));
     m_hotcueColor->setReadOnly();
     connect(m_hotcueColor, SIGNAL(valueChanged(double)),
@@ -1145,9 +1143,6 @@ void HotcueControl::setCue(CuePointer pCue) {
     m_pCue = pCue;
 }
 QColor HotcueControl::getColor() const {
-    // QRgb is just an unsigned int  representation of the
-    // color components (AARRGGBB) so conversion
-    // from double shouldn't be an issue
     return QColor::fromRgb(static_cast<QRgb>(m_hotcueColor->get()));
 }
 

@@ -326,13 +326,13 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         QList<PredefinedColorPointer> predefinedColors = Color::predefinedColorSet.allColors;
         for (int i = 0; i < predefinedColors.count(); i++) {
             PredefinedColorPointer color = predefinedColors.at(i);
-            QColor colorRepresentation = color->m_defaultRepresentation;
-            colorComboBox->addItem(color->m_sDisplayName, colorRepresentation);
+            QColor defaultRgba = color->m_defaultRgba;
+            colorComboBox->addItem(color->m_sDisplayName, defaultRgba);
             const QModelIndex idx = colorComboBox->model()->index(i, 0);
             if (*color != *Color::predefinedColorSet.noColor) {
-                colorComboBox->model()->setData(idx, colorRepresentation, Qt::BackgroundColorRole);
+                colorComboBox->model()->setData(idx, defaultRgba, Qt::BackgroundColorRole);
             }
-            colorComboBox->setItemData(i, Color::chooseContrastColor(colorRepresentation), Qt::TextColorRole);
+            colorComboBox->setItemData(i, Color::chooseContrastColor(defaultRgba), Qt::TextColorRole);
 
         }
         PredefinedColorPointer cueColor = pCue->getColor();

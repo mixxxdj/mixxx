@@ -23,7 +23,7 @@ WaveformRenderMark::WaveformRenderMark(
 }
 
 void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
-    m_predefinedColorsRepresentation = context.getCueColorMap(node);
+    m_predefinedColorsMap = context.getCueColorMap(node);
     m_marks.setup(m_waveformRenderer->getGroup(), node, context,
                   *m_waveformRenderer->getWaveformSignalColors());
 }
@@ -123,7 +123,7 @@ void WaveformRenderMark::slotCuesUpdated() {
         if (*cueColor == *Color::predefinedColorSet.noColor) {
             newColor = markProperties.m_defaultColor;
         } else {
-            newColor = m_predefinedColorsRepresentation.map(cueColor);
+            newColor = m_predefinedColorsMap.map(cueColor);
         }
 
         if (markProperties.m_text.isNull() || newLabel != markProperties.m_text ||

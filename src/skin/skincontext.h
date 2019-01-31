@@ -12,10 +12,10 @@
 #include <QSharedPointer>
 #include <QRegExp>
 
+#include "../util/color/predefinedcolorsmap.h"
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
 #include "util/color/color.h"
-#include "util/color/predefinedcolormap.h"
 #include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"
 
@@ -268,13 +268,13 @@ class SkinContext {
         return m_scaleFactor;
     }
 
-    PredefinedColorMap getCueColorMap(const QDomNode& node) const {
-        PredefinedColorMap colorMap = Color::predefinedColorSet.defaultMap();
+    PredefinedColorsMap getCueColorMap(const QDomNode& node) const {
+        PredefinedColorsMap colorMap = Color::predefinedColorSet.defaultMap();
         for (QString colorName : Color::predefinedColorSet.predefinedColorNames()) {
-            QColor representation = selectColor(node, "Cue" + colorName);
-            if (representation.isValid()) {
+            QColor skinRgba = selectColor(node, "Cue" + colorName);
+            if (skinRgba.isValid()) {
                 PredefinedColorPointer originalColor = Color::predefinedColorSet.predefinedColorFromName(colorName);
-                colorMap.setRepresentation(originalColor, representation);
+                colorMap.setCustomRgba(originalColor, skinRgba);
             }
         }
         return colorMap;

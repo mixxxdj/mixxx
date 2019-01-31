@@ -7,7 +7,7 @@
 
 class PredefinedColor final {
   public:
-    PredefinedColor(QColor defaultRepresentation, QString sName, QString sDisplayName, int iId);
+    PredefinedColor(QColor defaultRgba, QString sName, QString sDisplayName, int iId);
 
     inline bool operator==(const PredefinedColor& other) const {
         return m_iId == other.m_iId;
@@ -18,7 +18,7 @@ class PredefinedColor final {
     }
 
     // The QColor that is used by default to render this PredefinedColor.
-    const QColor m_defaultRepresentation;
+    const QColor m_defaultRgba;
     // The name of the color used programatically, e.g. on skin files.
     const QString m_sName;
     // The name of the color used on UI.
