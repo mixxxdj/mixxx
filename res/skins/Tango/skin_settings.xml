@@ -155,8 +155,8 @@ Description:
               </WidgetGroup><!-- /HotCue settings -->
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
-                <SetVariable name="text">AutoDJ Cue Buttons</SetVariable>
-                <SetVariable name="Setting">[Skin],show_autodj_cue_buttons</SetVariable>
+                <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>
+                <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
               </Template>
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">

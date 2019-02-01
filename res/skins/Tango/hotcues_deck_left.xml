@@ -50,7 +50,7 @@ Description:
               </Template>
             </Children>
             <Connection>
-              <ConfigKey>[Skin],show_autodj_cue_buttons</ConfigKey>
+              <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>

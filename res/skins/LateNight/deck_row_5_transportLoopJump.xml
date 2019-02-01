@@ -140,12 +140,12 @@
         <SizePolicy>min,min</SizePolicy>
       </WidgetGroup>
 
-      <WidgetGroup><!-- AutoDJ Intro + Outro -->
+      <WidgetGroup><!-- Intro + Outro -->
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <MaximumSize>52,52</MaximumSize>
         <Children>
-          <WidgetGroup><!-- AutoDJ Intro -->
+          <WidgetGroup><!-- Intro -->
             <ObjectName>AlignLeftTop</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
@@ -161,7 +161,7 @@
               </Template>
             </Children>
           </WidgetGroup>
-          <WidgetGroup><!-- AutoDJ Outro -->
+          <WidgetGroup><!-- Outro -->
             <ObjectName>AlignLeftTop</ObjectName>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
@@ -178,7 +178,11 @@
             </Children>
           </WidgetGroup>
         </Children>
-      </WidgetGroup><!-- /AutoDJ Intro + Outro -->
+        <Connection>
+            <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
+            <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup><!-- / Intro + Outro -->
 
       <WidgetGroup>
         <MaximumSize>10,</MaximumSize>

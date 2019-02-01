@@ -159,7 +159,7 @@ Controls:
           <WidgetGroup>
             <Size>64f,20f</Size>
             <Connection>
-              <ConfigKey persist="true">[Skin],show_autodj_cue_buttons</ConfigKey>
+              <ConfigKey persist="true">[Skin],show_intro_outro_cues</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>

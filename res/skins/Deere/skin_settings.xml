@@ -116,9 +116,9 @@
           </Template>
 
           <Template src="skin:skinsettings_button.xml">
-            <SetVariable name="TooltipId">autodj_cue_toggle</SetVariable>
-            <SetVariable name="text">AutoDJ Cue Buttons</SetVariable>
-            <SetVariable name="skinsetting">[Skin],show_autodj_cue_buttons</SetVariable>
+            <SetVariable name="TooltipId">intro_outro_cue_toggle</SetVariable>
+            <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_intro_outro_cues</SetVariable>
           </Template>
 
           <Template src="skin:skinsettings_button.xml">
