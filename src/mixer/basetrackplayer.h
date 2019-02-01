@@ -107,7 +107,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     TrackPointer m_pLoadedTrack;
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
-    EngineChannel* m_cloneFromChannel;
+    EngineChannel* m_pChannelToCloneFrom;
     PerformanceTimer m_cloneTimer;
 
     // Waveform display related controls
