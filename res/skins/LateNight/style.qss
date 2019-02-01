@@ -513,6 +513,7 @@ WEffectButtonParameter*/
 }
 
 #VinylButton,
+#SpecialCueButton,
 #FxAssignButton,
 #GuiToggleButton,
 #BroadcastButton,
@@ -534,6 +535,7 @@ WEffectButtonParameter*/
   }
 
 #VinylButton[displayValue="0"],
+#SpecialCueButton[displayValue="0"],
 #BroadcastButton[displayValue="0"],
 #SettingsButton[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
@@ -545,6 +547,7 @@ WEffectButtonParameter*/
 }
 
 #VinylButton[displayValue="1"],
+#SpecialCueButton[displayValue="1"],
 #VinylButton[displayValue="2"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
@@ -561,6 +564,10 @@ WEffectButtonParameter*/
 
 #SettingsButton[displayValue="0"] {
   image: url(skin:/buttons/btn_settings_off.svg) no-repeat left center;
+}
+
+#SpecialCueButton {
+  margin: 0px 2px 2px 0px;
 }
 
 #SettingsButton[displayValue="1"] {

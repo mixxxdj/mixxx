@@ -10,47 +10,9 @@
         <Size>0min,0min</Size>
       </WidgetGroup>
 
-      <WidgetGroup><!-- Intro + Outro -->
-        <ObjectName>AlignLeftTop</ObjectName>
-        <Layout>horizontal</Layout>
-        <Children>
-          <Template src="skin:button_1state_right.xml">
-            <SetVariable name="Size">26f,52f</SetVariable>
-            <SetVariable name="state_0_pressed">autodj_start_overdown.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">autodj_start.svg</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,intro_start_set</SetVariable>
-            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,intro_start_clear</SetVariable>
-          </Template>
-
-          <Template src="skin:button_1state_right.xml">
-            <SetVariable name="Size">26f,52f</SetVariable>
-            <SetVariable name="state_0_pressed">autodj_start_overdown.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">autodj_start.svg</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,intro_end_set</SetVariable>
-            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,intro_end_clear</SetVariable>
-          </Template>
-
-          <Template src="skin:button_1state_right.xml">
-            <SetVariable name="Size">26f,52f</SetVariable>
-            <SetVariable name="state_0_pressed">autodj_end_overdown.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">autodj_end.svg</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,outro_start_set</SetVariable>
-            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,outro_start_clear</SetVariable>
-          </Template>
-
-          <Template src="skin:button_1state_right.xml">
-            <SetVariable name="Size">26f,52f</SetVariable>
-            <SetVariable name="state_0_pressed">autodj_end_overdown.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">autodj_end.svg</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,outro_end_set</SetVariable>
-            <SetVariable name="ConfigKeyRight"><Variable name="group"/>,outro_end_clear</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup><!-- /Intro + Outro -->
-
       <WidgetGroup>
         <MaximumSize>80,</MaximumSize>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
       </WidgetGroup>
 
       <WidgetGroup><!-- Loop buttons + beatloop size spinbox -->
@@ -123,7 +85,7 @@
 
       <WidgetGroup>
         <MaximumSize>80,</MaximumSize>
-        <SizePolicy>me,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
       </WidgetGroup>
 
       <WidgetGroup><!-- Jump buttons + beatjump size spinbox -->
@@ -175,7 +137,52 @@
 
       <WidgetGroup>
         <MaximumSize>80,</MaximumSize>
+        <SizePolicy>min,min</SizePolicy>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- AutoDJ Intro + Outro -->
+        <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
+        <MaximumSize>52,52</MaximumSize>
+        <Children>
+          <WidgetGroup><!-- AutoDJ Intro -->
+            <ObjectName>AlignLeftTop</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:button_special_cue.xml">
+                <SetVariable name="cue_type">intro_start</SetVariable>
+                <SetVariable name="label">|&#9698;</SetVariable>
+              </Template>
+
+              <Template src="skin:button_special_cue.xml">
+                <SetVariable name="cue_type">intro_end</SetVariable>
+                <SetVariable name="label">&#9698;|</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+          <WidgetGroup><!-- AutoDJ Outro -->
+            <ObjectName>AlignLeftTop</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:button_special_cue.xml">
+                <SetVariable name="cue_type">outro_start</SetVariable>
+                <SetVariable name="label">|&#9699;</SetVariable>
+              </Template>
+
+              <Template src="skin:button_special_cue.xml">
+                <SetVariable name="cue_type">outro_end</SetVariable>
+                <SetVariable name="label">&#9699;|</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- /AutoDJ Intro + Outro -->
+
+      <WidgetGroup>
+        <MaximumSize>10,</MaximumSize>
+        <SizePolicy>min,min</SizePolicy>
       </WidgetGroup>
 
       <WidgetGroup><!-- HotCues, Play, Cue, Reverse -->

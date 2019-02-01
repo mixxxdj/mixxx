@@ -66,6 +66,12 @@ Description:
                 <SetVariable name="Setting">[Skin],show_8_hotcues</SetVariable>
               </Template>
 
+              <Template src="skin:skin_settings_button_2state.xml">
+                <SetVariable name="TooltipId">autodj_cue_toggle</SetVariable>
+                <SetVariable name="text">AutoDJ Cue Buttons</SetVariable>
+                <SetVariable name="Setting">[Skin],show_autodj_cue_buttons</SetVariable>
+              </Template>
+
               <!-- Rate Control toggle -->
               <Template src="skin:skin_settings_button_2state.xml">
                 <SetVariable name="TooltipId">rate_toggle</SetVariable>
