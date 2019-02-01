@@ -1,6 +1,6 @@
 <!--
 Description:
-  Button for setting/clearing cues other than main cue and hotcues (e.g. AutoDJ cues).
+  A special cue button to mark intro and outro sections in a track
 Variables:
   group: The group for the controls.
   cue_type: Prefix for COs.
@@ -8,13 +8,18 @@ Variables:
 -->
 <Template>
   <PushButton>
+    <TooltipId>cue_type</TooltipId>
     <ObjectName>SpecialCueButton</ObjectName>
     <MinimumSize>15,24</MinimumSize>
     <MaximumSize>23,24</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
-    <NumberStates>1</NumberStates>
+    <NumberStates>2</NumberStates>
     <State>
       <Number>0</Number>
+      <Text><Variable name="label"/></Text>
+    </State>
+    <State>
+      <Number>1</Number>
       <Text><Variable name="label"/></Text>
     </State>
     <Connection>
@@ -24,6 +29,10 @@ Variables:
     <Connection>
       <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_clear</ConfigKey>
       <ButtonState>RightButton</ButtonState>
+    </Connection>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_enabled</ConfigKey>
+      <ConnectValueFromWidget>false</ConnectValueFromWidget>
     </Connection>
   </PushButton>
 </Template>

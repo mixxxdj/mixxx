@@ -155,6 +155,11 @@ Description:
               </WidgetGroup><!-- /HotCue settings -->
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
+                <SetVariable name="text">AutoDJ Cue Buttons</SetVariable>
+                <SetVariable name="Setting">[Skin],show_autodj_cue_buttons</SetVariable>
+              </Template>
+
+              <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Loop / Beatjump Buttons</SetVariable>
                 <SetVariable name="Setting">[Skin],show_loop_beatjump_controls</SetVariable>
               </Template>
