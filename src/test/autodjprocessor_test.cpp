@@ -77,13 +77,8 @@ class FakeDeck : public BaseTrackPlayer {
         play.set(bPlay);
     }
 
-    void slotCloneChannel(EngineChannel* pChannel) override {
-        return;
-    }
-
-    void slotCloneDeck(const QString& group) override {
-        return;
-    }
+    MOCK_METHOD1(slotCloneChannel, void(EngineChannel* pChannel));
+    MOCK_METHOD1(slotCloneDeck, void(const QString& group));
 
     TrackPointer loadedTrack;
     ControlLinPotmeter playposition;
