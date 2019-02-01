@@ -100,7 +100,7 @@ class DragAndDropHelper {
     static bool allowDeckCloneAttempt(const QDropEvent& event,
                                    const QString& group) {
         // only allow clones to decks
-        if (!PlayerManager::isDeckGroup(group, NULL)) {
+        if (!PlayerManager::isDeckGroup(group, nullptr)) {
             return false;
         }
 
@@ -113,7 +113,7 @@ class DragAndDropHelper {
                  // prevent cloning to ourself
                  event.mimeData()->text() == group ||
                  // only allow clone from decks
-                 !PlayerManager::isDeckGroup(event.mimeData()->text(), NULL)) {
+                 !PlayerManager::isDeckGroup(event.mimeData()->text(), nullptr)) {
             return false;
         }
 
