@@ -559,7 +559,7 @@ Auxiliary* PlayerManager::getAuxiliary(unsigned int auxiliary) const {
 void PlayerManager::slotCloneDeck(QString source_group, QString target_group) {
     BaseTrackPlayer* pPlayer = getPlayer(target_group);
 
-    if (pPlayer == NULL) {
+    if (pPlayer == nullptr) {
         qWarning() << "Invalid group argument " << target_group << " to slotCloneDeck.";
         return;
     }
