@@ -49,12 +49,12 @@ WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
     QColor color(context.selectString(node, "Color"));
     if (!color.isValid()) {
         // As a fallback, grab the color from the parent's AxesColor
-        m_defaultColor = signalColors.getAxesColor();
-        qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:" << m_defaultColor;
+        color = signalColors.getAxesColor();
+        qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:" << color;
     } else {
-        m_defaultColor = WSkinColor::getCorrectColor(color);
+        color = WSkinColor::getCorrectColor(color);
     }
-    setBaseColor(m_defaultColor);
+    setBaseColor(color);
 
     m_textColor = context.selectString(node, "TextColor");
     if (!m_textColor.isValid()) {

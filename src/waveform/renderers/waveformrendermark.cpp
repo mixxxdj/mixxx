@@ -23,9 +23,13 @@ WaveformRenderMark::WaveformRenderMark(
 }
 
 void WaveformRenderMark::setup(const QDomNode& node, const SkinContext& context) {
-    m_predefinedColorsMap = context.getCueColorMap(node);
-    m_marks.setup(m_waveformRenderer->getGroup(), node, context,
-                  *m_waveformRenderer->getWaveformSignalColors());
+    WaveformSignalColors signalColors = *m_waveformRenderer->getWaveformSignalColors();
+    m_marks.setup(m_waveformRenderer->getGroup(), node, context, signalColors);
+    WaveformMarkPointer defaultMark(m_marks.getDefaultMark());
+    QColor defaultColor = defaultMark
+            ? defaultMark->getProperties().fillColor()
+            : signalColors.getAxesColor();
+    m_predefinedColorsMap = context.getCueColorMap(node, defaultColor);
 }
 
 void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -118,14 +122,7 @@ void WaveformRenderMark::slotCuesUpdated() {
 
         WaveformMarkProperties markProperties = pMark->getProperties();
         QString newLabel = pCue->getLabel();
-        QColor newColor;
-        PredefinedColorPointer cueColor = pCue->getColor();
-        if (*cueColor == *Color::predefinedColorSet.noColor) {
-            newColor = markProperties.m_defaultColor;
-        } else {
-            newColor = m_predefinedColorsMap.map(cueColor);
-        }
-
+        QColor newColor = m_predefinedColorsMap.map(pCue->getColor());
         if (markProperties.m_text.isNull() || newLabel != markProperties.m_text ||
                 !markProperties.fillColor().isValid() || newColor != markProperties.fillColor()) {
             markProperties.m_text = newLabel;

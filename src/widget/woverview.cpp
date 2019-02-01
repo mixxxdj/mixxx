@@ -91,8 +91,12 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     }
 
     // setup hotcues and cue and loop(s)
-    m_predefinedColorsMap = context.getCueColorMap(node);
     m_marks.setup(m_group, node, context, m_signalColors);
+    WaveformMarkPointer defaultMark(m_marks.getDefaultMark());
+    QColor defaultColor = defaultMark
+            ? defaultMark->getProperties().fillColor()
+            : m_signalColors.getAxesColor();
+    m_predefinedColorsMap = context.getCueColorMap(node, defaultColor);
 
     for (const auto& pMark: m_marks) {
         if (pMark->isValid()) {
@@ -266,13 +270,7 @@ void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
 
         if (currentMark && currentMark->isValid()) {
             WaveformMarkProperties markProperties = currentMark->getProperties();
-            QColor newColor;
-            PredefinedColorPointer cueColor = currentCue->getColor();
-            if (*cueColor == *Color::predefinedColorSet.noColor) {
-                newColor = markProperties.m_defaultColor;
-            } else {
-                newColor = m_predefinedColorsMap.map(cueColor);
-            }
+            QColor newColor = m_predefinedColorsMap.map(currentCue->getColor());
             if (newColor != markProperties.fillColor() || newColor != markProperties.m_textColor) {
                 markProperties.setBaseColor(newColor);
                 currentMark->setProperties(markProperties);

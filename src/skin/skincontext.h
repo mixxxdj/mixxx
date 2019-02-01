@@ -268,7 +268,7 @@ class SkinContext {
         return m_scaleFactor;
     }
 
-    PredefinedColorsMap getCueColorMap(const QDomNode& node) const {
+    PredefinedColorsMap getCueColorMap(const QDomNode& node, QColor defaultColor) const {
         PredefinedColorsMap colorMap = Color::predefinedColorSet.defaultMap();
         for (PredefinedColorPointer color : Color::predefinedColorSet.allColors) {
             QString sColorName(color->m_sName);
@@ -278,6 +278,7 @@ class SkinContext {
                 colorMap.setCustomRgba(originalColor, skinRgba);
             }
         }
+        colorMap.setCustomRgba(Color::predefinedColorSet.noColor, defaultColor);
         return colorMap;
     }
 

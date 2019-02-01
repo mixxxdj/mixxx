@@ -21,8 +21,6 @@ class WaveformMarkProperties final {
     QColor borderColor() const;
     QColor labelColor() const;
 
-    // The default color defined by the skin
-    QColor m_defaultColor;
     QColor m_textColor;
     QString m_text;
     Qt::Alignment m_align;
