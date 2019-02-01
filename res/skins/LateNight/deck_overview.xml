@@ -58,7 +58,7 @@
     <Mark>
       <Control>outro_start_position</Control>
       <Text>&#9699;</Text>
-      <Align>top|left</Align>
+      <Align>top|right</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
     </Mark>
