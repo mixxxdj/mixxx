@@ -404,7 +404,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                 ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "play")));
 
             // copy the play position
-            m_pChannel->getEngineBuffer()->requestSyncPosition(m_cloneFromChannel);
+            m_pChannel->getEngineBuffer()->requestClonePosition(m_cloneFromChannel);
 
             // copy the loop state
             if (ControlObject::get(ConfigKey(m_cloneFromChannel->getGroup(), "loop_enabled")) == 1.0) {

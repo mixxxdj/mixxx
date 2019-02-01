@@ -409,7 +409,7 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
     }
 }
 
-void EngineBuffer::requestSyncPosition(EngineChannel* pChannel) {
+void EngineBuffer::requestClonePosition(EngineChannel* pChannel) {
     m_pSyncFromChannel.store(pChannel);
 }
 

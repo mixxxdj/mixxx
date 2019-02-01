@@ -132,7 +132,7 @@ class EngineBuffer : public EngineObject {
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
     void requestSyncMode(SyncMode mode);
-    void requestSyncPosition(EngineChannel* pChannel);
+    void requestClonePosition(EngineChannel* pChannel);
 
     // The process methods all run in the audio callback.
     void process(CSAMPLE* pOut, const int iBufferSize);
