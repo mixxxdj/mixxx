@@ -38,7 +38,7 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
           m_pEngineMaster(pMixingEngine),
           m_pLoadedTrack(),
           m_replaygainPending(false),
-          m_pChannelToCloneFrom(NULL) {
+          m_pChannelToCloneFrom(nullptr) {
     ChannelHandleAndGroup channelGroup =
             pMixingEngine->registerChannelGroup(group);
     m_pChannel = new EngineDeck(channelGroup, pConfig, pMixingEngine,
@@ -303,7 +303,7 @@ void BaseTrackPlayerImpl::slotLoadFailed(TrackPointer pTrack, QString reason) {
     } else {
         qDebug() << "Failed to load track (NULL track object)" << reason;
     }
-    m_pChannelToCloneFrom = NULL;
+    m_pChannelToCloneFrom = nullptr;
     // Alert user.
     QMessageBox::warning(NULL, tr("Couldn't load track."), reason);
 }
@@ -420,7 +420,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
         qDebug() << "stray BaseTrackPlayerImpl::slotTrackLoaded()";
     }
 
-    m_pChannelToCloneFrom = NULL;
+    m_pChannelToCloneFrom = nullptr;
 
     // Update the PlayerInfo class that is used in EngineBroadcast to replace
     // the metadata of a stream
@@ -448,7 +448,7 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
 
     TrackPointer pTrack = m_pChannelToCloneFrom->getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
-        m_pChannelToCloneFrom = NULL;
+        m_pChannelToCloneFrom = nullptr;
         return;
     }
 
