@@ -104,8 +104,8 @@ class DragAndDropHelper {
             return false;
         }
 
-        // only clone if shift is pressed
-        if (!event.keyboardModifiers().testFlag(Qt::ShiftModifier)) {
+        // forbid clone if shift is pressed
+        if (event.keyboardModifiers().testFlag(Qt::ShiftModifier)) {
             return false;
         }
 
