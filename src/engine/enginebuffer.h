@@ -385,7 +385,7 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
     ControlValueAtomic<double> m_queuedSeekPosition;
-    QAtomicPointer<EngineChannel> m_pSyncFromChannel;
+    QAtomicPointer<EngineChannel> m_pChannelToCloneFrom;
 
     // Is true if the previous buffer was silent due to pausing
     QAtomicInt m_iTrackLoading;
