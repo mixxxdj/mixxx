@@ -116,7 +116,13 @@
           </Template>
 
           <Template src="skin:skinsettings_button.xml">
-            <SetVariable name="TooltipId">how_vinylcontrol</SetVariable>
+            <SetVariable name="TooltipId">autodj_cue_toggle</SetVariable>
+            <SetVariable name="text">AutoDJ Cue Buttons</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_autodj_cue_buttons</SetVariable>
+          </Template>
+
+          <Template src="skin:skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
             <SetVariable name="text">Vinyl Control Options</SetVariable>
             <SetVariable name="skinsetting">[VinylControl],show_vinylcontrol</SetVariable>
           </Template>
