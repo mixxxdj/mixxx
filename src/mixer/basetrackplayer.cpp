@@ -390,12 +390,12 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             // perform a clone of the given channel
 
             // copy rate
-            if (m_pRateSlider != NULL) {
+            if (m_pRateSlider != nullptr) {
                 m_pRateSlider->set(ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "rate")));
             }
 
             // copy pitch
-            if (m_pPitchAdjust != NULL) {
+            if (m_pPitchAdjust != nullptr) {
                 m_pPitchAdjust->set(ControlObject::get(ConfigKey(m_pChannelToCloneFrom->getGroup(), "pitch_adjust")));
             }
 
