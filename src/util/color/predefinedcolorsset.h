@@ -97,12 +97,11 @@ class PredefinedColorsSet final {
 
     // Returns the position of a PredefinedColor in the allColors list.
     int predefinedColorIndex(PredefinedColorPointer searchedColor) const {
-        int position = 0;
-        for (PredefinedColorPointer color : allColors) {
+        for (int position = 0; position < allColors.count(); ++position) {
+            PredefinedColorPointer color(allColors.at(position));
             if (*color == *searchedColor) {
                 return position;
             }
-            position++;
         }
         return 0;
     };
