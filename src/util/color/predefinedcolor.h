@@ -5,6 +5,12 @@
 
 #include "util/memory.h"
 
+// The PredefinedColor class is used to represent a Mixxx identificable color.
+// A PredefinedColor can be uniquely identified with its m_iId property.
+//
+// PredefinedColors have a default Rgba value. A PredefinedColorsMap can provide with an alternative
+// Rgba value for each PredefinedColor. Thus, a PredefinedColorsMap defines a particular way to render
+// the PredefinedColors.
 class PredefinedColor final {
   public:
     PredefinedColor(QColor defaultRgba, QString sName, QString sDisplayName, int iId);

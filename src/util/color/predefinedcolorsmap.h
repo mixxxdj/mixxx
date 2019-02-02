@@ -6,8 +6,9 @@
 
 #include "util/color/predefinedcolor.h"
 
-// Maps a PredefinedColor to custom Rgba color.
+// PredefinedColorsMap defines a particular way to render Mixxx PredefinedColors.
 //
+// PredefinedColorsMap maps a PredefinedColor to custom Rgba color.
 // Initially no color has a custom Rgba set.
 // Call setCustomRgba(PredefinedColorPointer, QColor) to add a custom Rgba for a predefined color
 // and customize the color map.
