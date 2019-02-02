@@ -1,3 +1,9 @@
+mixxx (2.2.1-0ubuntu1) bionic; urgency=medium
+
+  * Bugfix release 
+
+ -- Daniel <daniel@mixxx.org>  Sat, 02 Feb 2019 23:26:08 +0100
+
 mixxx (2.1.7-0ubuntu1) bionic; urgency=medium
 
   * New upstream release  
