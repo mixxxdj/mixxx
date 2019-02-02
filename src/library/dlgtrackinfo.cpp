@@ -323,7 +323,7 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
 
 
         QComboBox* colorComboBox = new QComboBox();
-        QList<PredefinedColorPointer> predefinedColors = Color::predefinedColorSet.allColors;
+        const QList<PredefinedColorPointer> predefinedColors = Color::predefinedColorSet.allColors;
         for (int i = 0; i < predefinedColors.count(); i++) {
             PredefinedColorPointer color = predefinedColors.at(i);
             QColor defaultRgba = color->m_defaultRgba;
