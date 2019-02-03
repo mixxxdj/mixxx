@@ -126,7 +126,7 @@ class WOverview : public WWidget {
     QColor m_endOfTrackColor;
 
     WaveformMarkSet m_marks;
-    std::vector<WaveformMarkRange> m_markRanges;
+    std::vector<WaveformMarkRangePointer> m_markRanges;
 
     // Coefficient value-position linear transposition
     double m_a;

@@ -4,6 +4,7 @@
 #include <QImage>
 
 #include "skin/skincontext.h"
+#include "util/memory.h"
 
 class ControlProxy;
 class QDomNode;
@@ -45,5 +46,7 @@ class WaveformMarkRange {
     friend class WaveformRenderMarkRange;
     friend class WOverview;
 };
+
+typedef std::shared_ptr<WaveformMarkRange> WaveformMarkRangePointer;
 
 #endif // WAVEFORMMARKRANGE_H

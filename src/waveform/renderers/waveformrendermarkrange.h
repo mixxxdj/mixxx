@@ -29,7 +29,7 @@ class WaveformRenderMarkRange : public WaveformRendererAbstract {
   private:
     void generateImages();
 
-    std::vector<WaveformMarkRange> m_markRanges;
+    std::vector<WaveformMarkRangePointer> m_markRanges;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMarkRange);
 };

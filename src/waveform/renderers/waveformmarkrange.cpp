@@ -9,9 +9,9 @@
 #include "widget/wskincolor.h"
 
 WaveformMarkRange::WaveformMarkRange()
-        : m_markStartPointControl(NULL),
-          m_markEndPointControl(NULL),
-          m_markEnabledControl(NULL) {
+    : m_markStartPointControl(nullptr),
+      m_markEndPointControl(nullptr),
+      m_markEnabledControl(nullptr) {
 }
 
 WaveformMarkRange::~WaveformMarkRange() {
