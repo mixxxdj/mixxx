@@ -110,13 +110,10 @@ QString ParserM3u::getFilepath(QTextStream* stream, QString basepath)
 
         if (!textline.contains("#")) {
             filename = textline;
+            filename.replace('\\', '/');
             filename.remove("file://");
-            QByteArray strlocbytes = filename.toUtf8();
-            //qDebug() << "QByteArray UTF-8: " << strlocbytes;
-            QUrl location = QUrl::fromEncoded(strlocbytes);
-            //qDebug() << "QURL UTF-8: " << location;
+            QUrl location(filename);
             QString trackLocation = location.toString();
-            //qDebug() << "UTF8 TrackLocation:" << trackLocation;
             if(isFilepath(trackLocation)) {
                 return trackLocation;
             } else {
@@ -126,6 +123,7 @@ QString ParserM3u::getFilepath(QTextStream* stream, QString basepath)
                     return rel;
                 }
                 // We couldn't match this to a real file so ignore it
+                qWarning() << trackLocation << "not found";
             }
         }
         textline = stream->readLine();
