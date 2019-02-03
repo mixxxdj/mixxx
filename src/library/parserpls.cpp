@@ -117,16 +117,16 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
         }
 
         if(textline.contains("File")) {
-            int iPos = textline.indexOf("=",0);
+            int iPos = textline.indexOf("=", 0);
             ++iPos;
 
-            filename = textline.right(textline.length()-iPos);
+            filename = textline.right(textline.length() - iPos);
+            filename.replace('\\', '/');
 
-            //Rythmbox playlists starts with file://<path>
-            //We remove the file protocol if found.
+            // Rythmbox playlists starts with file://<path>
+            // We remove the file protocol if found.
             filename.remove("file://");
-            QByteArray strlocbytes = filename.toUtf8();
-            QUrl location = QUrl::fromEncoded(strlocbytes);
+            QUrl location(filename);
             QString trackLocation = location.toString();
             //qDebug() << trackLocation;
 
