@@ -1,8 +1,8 @@
 # 
 # Translators:
 # Chee Kin Weng <rhytanbernama@gmail.com>, 2016
-# liushuyu011 <liushuyu011@gmail.com>, 2017
-# liushuyu011 <liushuyu011@gmail.com>, 2017
+# shuyu liu <liushuyu011@gmail.com>, 2017
+# shuyu liu <liushuyu011@gmail.com>, 2017
 # Nya Chan (喵酱) <dlj2013@gmail.com>, 2016
 # S.Brandt <s.brandt@mixxx.org>, 2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
