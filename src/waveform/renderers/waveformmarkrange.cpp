@@ -4,37 +4,8 @@
 #include "waveformmarkrange.h"
 
 #include "waveformsignalcolors.h"
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
+#include "skin/skincontext.h"
 #include "widget/wskincolor.h"
-
-bool WaveformMarkRange::active() const {
-    const double startValue = start();
-    const double endValue = end();
-    return startValue != endValue && startValue != -1.0 && endValue != -1.0;
-}
-
-bool WaveformMarkRange::enabled() const {
-    // Default to enabled if there is no enabled control.
-    return !m_markEnabledControl || !m_markEnabledControl->valid() ||
-            m_markEnabledControl->get() > 0.0;
-}
-
-double WaveformMarkRange::start() const {
-    double start = -1.0;
-    if (m_markStartPointControl && m_markStartPointControl->valid()) {
-        start = m_markStartPointControl->get();
-    }
-    return start;
-}
-
-double WaveformMarkRange::end() const {
-    double end = -1.0;
-    if (m_markEndPointControl && m_markEndPointControl->valid()) {
-        end = m_markEndPointControl->get();
-    }
-    return end;
-}
 
 WaveformMarkRange::WaveformMarkRange(
         const QString& group,
@@ -74,6 +45,34 @@ WaveformMarkRange::WaveformMarkRange(
         DEBUG_ASSERT(!m_markEnabledControl); // has not been created yet
         m_markEnabledControl = std::make_unique<ControlProxy>(group, enabledControl);
     }
+}
+
+bool WaveformMarkRange::active() const {
+    const double startValue = start();
+    const double endValue = end();
+    return startValue != endValue && startValue != -1.0 && endValue != -1.0;
+}
+
+bool WaveformMarkRange::enabled() const {
+    // Default to enabled if there is no enabled control.
+    return !m_markEnabledControl || !m_markEnabledControl->valid() ||
+            m_markEnabledControl->get() > 0.0;
+}
+
+double WaveformMarkRange::start() const {
+    double start = -1.0;
+    if (m_markStartPointControl && m_markStartPointControl->valid()) {
+        start = m_markStartPointControl->get();
+    }
+    return start;
+}
+
+double WaveformMarkRange::end() const {
+    double end = -1.0;
+    if (m_markEndPointControl && m_markEndPointControl->valid()) {
+        end = m_markEndPointControl->get();
+    }
+    return end;
 }
 
 void WaveformMarkRange::generateImage(int weidth, int height) {

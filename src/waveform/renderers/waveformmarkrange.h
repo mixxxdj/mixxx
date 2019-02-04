@@ -1,20 +1,23 @@
-#ifndef WAVEFORMMARKRANGE_H
-#define WAVEFORMMARKRANGE_H
+#pragma once
 
+#include <QColor>
 #include <QImage>
+#include <QString>
 
-#include "skin/skincontext.h"
+#include "control/controlproxy.h"
 #include "util/memory.h"
 
-class ControlProxy;
 class QDomNode;
+class SkinContext;
 class WaveformSignalColors;
 
 class WaveformMarkRange {
   public:
-    WaveformMarkRange(const QString &group, const QDomNode& node,
-               const SkinContext& context,
-               const WaveformSignalColors& signalColors);
+    WaveformMarkRange(
+            const QString& group,
+            const QDomNode& node,
+            const SkinContext& context,
+            const WaveformSignalColors& signalColors);
     // This class is only moveable, but not copyable!
     WaveformMarkRange(WaveformMarkRange&&) = default;
     WaveformMarkRange(const WaveformMarkRange&) = delete;
@@ -46,5 +49,3 @@ class WaveformMarkRange {
     friend class WaveformRenderMarkRange;
     friend class WOverview;
 };
-
-#endif // WAVEFORMMARKRANGE_H
