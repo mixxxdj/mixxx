@@ -12,7 +12,9 @@ class WaveformSignalColors;
 
 class WaveformMarkRange {
   public:
-    WaveformMarkRange() = default;
+    WaveformMarkRange(const QString &group, const QDomNode& node,
+               const SkinContext& context,
+               const WaveformSignalColors& signalColors);
     // This class is only moveable, but not copyable!
     WaveformMarkRange(WaveformMarkRange&&) = default;
     WaveformMarkRange(const WaveformMarkRange&) = delete;
@@ -27,10 +29,6 @@ class WaveformMarkRange {
     double start();
     // Returns end value or -1 if the end control doesn't exist.
     double end();
-
-    void setup(const QString &group, const QDomNode& node,
-               const SkinContext& context,
-               const WaveformSignalColors& signalColors);
 
   private:
     void generateImage(int weidth, int height);

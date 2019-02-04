@@ -36,10 +36,13 @@ double WaveformMarkRange::end() {
     return end;
 }
 
-void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
-                              const SkinContext& context,
-                              const WaveformSignalColors& signalColors) {
-    m_activeColor = context.selectString(node, "Color");
+WaveformMarkRange::WaveformMarkRange(
+        const QString& group,
+        const QDomNode& node,
+        const SkinContext& context,
+        const WaveformSignalColors& signalColors)
+        : m_activeColor(context.selectString(node, "Color")),
+          m_disabledColor(context.selectString(node, "DisabledColor")) {
     if (!m_activeColor.isValid()) {
         //vRince kind of legacy fallback ...
         // As a fallback, grab the mark color from the parent's MarkerColor
@@ -49,7 +52,6 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
         m_activeColor = WSkinColor::getCorrectColor(m_activeColor);
     }
 
-    m_disabledColor = context.selectString(node, "DisabledColor");
     if (!m_disabledColor.isValid()) {
         //vRince kind of legacy fallback ...
         // Read the text color, otherwise use the parent's SignalColor.
