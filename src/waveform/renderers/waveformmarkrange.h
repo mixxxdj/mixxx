@@ -4,6 +4,7 @@
 #include <QImage>
 
 #include "skin/skincontext.h"
+#include "util/memory.h"
 
 class ControlProxy;
 class QDomNode;
@@ -11,9 +12,6 @@ class WaveformSignalColors;
 
 class WaveformMarkRange {
   public:
-    WaveformMarkRange();
-    ~WaveformMarkRange();
-
     // If a mark range is active it has valid start/end points so it should be
     // drawn on waveforms.
     bool active();
@@ -32,9 +30,9 @@ class WaveformMarkRange {
   private:
     void generateImage(int weidth, int height);
 
-    ControlProxy* m_markStartPointControl;
-    ControlProxy* m_markEndPointControl;
-    ControlProxy* m_markEnabledControl;
+    std::unique_ptr<ControlProxy> m_markStartPointControl;
+    std::unique_ptr<ControlProxy> m_markEndPointControl;
+    std::unique_ptr<ControlProxy> m_markEnabledControl;
 
     QColor m_activeColor;
     QColor m_disabledColor;

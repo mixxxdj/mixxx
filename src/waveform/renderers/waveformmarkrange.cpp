@@ -8,18 +8,6 @@
 #include "control/controlproxy.h"
 #include "widget/wskincolor.h"
 
-WaveformMarkRange::WaveformMarkRange()
-        : m_markStartPointControl(NULL),
-          m_markEndPointControl(NULL),
-          m_markEnabledControl(NULL) {
-}
-
-WaveformMarkRange::~WaveformMarkRange() {
-    delete m_markStartPointControl;
-    delete m_markEndPointControl;
-    delete m_markEnabledControl;
-}
-
 bool WaveformMarkRange::active() {
     const double startValue = start();
     const double endValue = end();
@@ -71,18 +59,18 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
 
     QString startControl = context.selectString(node, "StartControl");
     if (!startControl.isEmpty()) {
-        m_markStartPointControl =
-                new ControlProxy(group, startControl);
+        DEBUG_ASSERT(!m_markStartPointControl); // has not been created yet
+        m_markStartPointControl = std::make_unique<ControlProxy>(group, startControl);
     }
     QString endControl = context.selectString(node, "EndControl");
     if (!endControl.isEmpty()) {
-        m_markEndPointControl =
-                new ControlProxy(group, endControl);
+        DEBUG_ASSERT(!m_markEndPointControl); // has not been created yet
+        m_markEndPointControl = std::make_unique<ControlProxy>(group, endControl);
     }
     QString enabledControl = context.selectString(node, "EnabledControl");
     if (!enabledControl.isEmpty()) {
-        m_markEnabledControl =
-                new ControlProxy(group, enabledControl);
+        DEBUG_ASSERT(!m_markEnabledControl); // has not been created yet
+        m_markEnabledControl = std::make_unique<ControlProxy>(group, enabledControl);
     }
 }
 
