@@ -12,6 +12,11 @@ class WaveformSignalColors;
 
 class WaveformMarkRange {
   public:
+    WaveformMarkRange() = default;
+    // This class is only moveable, but not copyable!
+    WaveformMarkRange(WaveformMarkRange&&) = default;
+    WaveformMarkRange(const WaveformMarkRange&) = delete;
+
     // If a mark range is active it has valid start/end points so it should be
     // drawn on waveforms.
     bool active();
