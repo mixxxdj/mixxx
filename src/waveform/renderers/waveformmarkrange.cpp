@@ -8,19 +8,19 @@
 #include "control/controlproxy.h"
 #include "widget/wskincolor.h"
 
-bool WaveformMarkRange::active() {
+bool WaveformMarkRange::active() const {
     const double startValue = start();
     const double endValue = end();
     return startValue != endValue && startValue != -1.0 && endValue != -1.0;
 }
 
-bool WaveformMarkRange::enabled() {
+bool WaveformMarkRange::enabled() const {
     // Default to enabled if there is no enabled control.
     return !m_markEnabledControl || !m_markEnabledControl->valid() ||
             m_markEnabledControl->get() > 0.0;
 }
 
-double WaveformMarkRange::start() {
+double WaveformMarkRange::start() const {
     double start = -1.0;
     if (m_markStartPointControl && m_markStartPointControl->valid()) {
         start = m_markStartPointControl->get();
@@ -28,7 +28,7 @@ double WaveformMarkRange::start() {
     return start;
 }
 
-double WaveformMarkRange::end() {
+double WaveformMarkRange::end() const {
     double end = -1.0;
     if (m_markEndPointControl && m_markEndPointControl->valid()) {
         end = m_markEndPointControl->get();

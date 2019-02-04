@@ -21,14 +21,14 @@ class WaveformMarkRange {
 
     // If a mark range is active it has valid start/end points so it should be
     // drawn on waveforms.
-    bool active();
+    bool active() const;
     // If a mark range is enabled that means it should be painted with its
     // active color instead of its disabled color.
-    bool enabled();
+    bool enabled() const;
     // Returns start value or -1 if the start control doesn't exist.
-    double start();
+    double start() const;
     // Returns end value or -1 if the end control doesn't exist.
-    double end();
+    double end() const;
 
   private:
     void generateImage(int weidth, int height);
