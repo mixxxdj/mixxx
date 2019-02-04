@@ -20,6 +20,19 @@ WaveformMarkRange::~WaveformMarkRange() {
     delete m_markEnabledControl;
 }
 
+WaveformMarkRange::WaveformMarkRange(WaveformMarkRange&& obj)
+    : m_markStartPointControl(obj.m_markStartPointControl),
+      m_markEndPointControl(obj.m_markEndPointControl),
+      m_markEnabledControl(obj.m_markEnabledControl),
+      m_activeColor(obj.m_activeColor),
+      m_disabledColor(obj.m_disabledColor),
+      m_activeImage(obj.m_activeImage),
+      m_disabledImage(obj.m_disabledImage) {
+    obj.m_markStartPointControl = nullptr;
+    obj.m_markEndPointControl = nullptr;
+    obj.m_markEnabledControl = nullptr;
+}
+
 bool WaveformMarkRange::active() {
     const double startValue = start();
     const double endValue = end();

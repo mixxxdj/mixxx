@@ -4,7 +4,6 @@
 #include <QImage>
 
 #include "skin/skincontext.h"
-#include "util/memory.h"
 
 class ControlProxy;
 class QDomNode;
@@ -14,6 +13,13 @@ class WaveformMarkRange {
   public:
     WaveformMarkRange();
     ~WaveformMarkRange();
+
+    // Disable copy construction/assignment
+    WaveformMarkRange(const WaveformMarkRange&) = delete;
+    WaveformMarkRange& operator=(const WaveformMarkRange&) = delete;
+
+    // Implement a proper move constructor
+    WaveformMarkRange(WaveformMarkRange&&);
 
     // If a mark range is active it has valid start/end points so it should be
     // drawn on waveforms.
@@ -46,7 +52,5 @@ class WaveformMarkRange {
     friend class WaveformRenderMarkRange;
     friend class WOverview;
 };
-
-typedef std::shared_ptr<WaveformMarkRange> WaveformMarkRangePointer;
 
 #endif // WAVEFORMMARKRANGE_H

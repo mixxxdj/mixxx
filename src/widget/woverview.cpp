@@ -102,24 +102,22 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
         if (child.nodeName() == "MarkRange") {
-            WaveformMarkRangePointer markRange = std::make_shared<WaveformMarkRange>();
+            m_markRanges.push_back(WaveformMarkRange());
+            WaveformMarkRange& markRange = m_markRanges.back();
+            markRange.setup(m_group, child, context, m_signalColors);
 
-            markRange->setup(m_group, child, context, m_signalColors);
-
-            if (markRange->m_markEnabledControl) {
-                markRange->m_markEnabledControl->connectValueChanged(
+            if (markRange.m_markEnabledControl) {
+                markRange.m_markEnabledControl->connectValueChanged(
                         this, &WOverview::onMarkRangeChange);
             }
-            if (markRange->m_markStartPointControl) {
-                markRange->m_markStartPointControl->connectValueChanged(
+            if (markRange.m_markStartPointControl) {
+                markRange.m_markStartPointControl->connectValueChanged(
                         this, &WOverview::onMarkRangeChange);
             }
-            if (markRange->m_markEndPointControl) {
-                markRange->m_markEndPointControl->connectValueChanged(
+            if (markRange.m_markEndPointControl) {
+                markRange.m_markEndPointControl->connectValueChanged(
                         this, &WOverview::onMarkRangeChange);
             }
-
-            m_markRanges.push_back(markRange);
         }
         child = child.nextSibling();
     }
@@ -395,20 +393,16 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             const float gain = static_cast<float>(length() - 2) / trackSamples;
 
             // Draw range (loop)
-            for (auto const& markRange: m_markRanges) {
-                if (!markRange) {
-                    continue;
-                }
-
+            for (auto&& markRange: m_markRanges) {
                 // If the mark range is not active we should not draw it.
-                if (!markRange->active()) {
+                if (!markRange.active()) {
                     continue;
                 }
 
                 // Active mark ranges by definition have starts/ends that are not
                 // disabled.
-                const double startValue = markRange->start();
-                const double endValue = markRange->end();
+                const double startValue = markRange.start();
+                const double endValue = markRange.end();
 
                 const float startPosition = offset + startValue * gain;
                 const float endPosition = offset + endValue * gain;
@@ -417,14 +411,14 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     continue;
                 }
 
-                if (markRange->enabled()) {
+                if (markRange.enabled()) {
                     painter.setOpacity(0.4);
-                    painter.setPen(markRange->m_activeColor);
-                    painter.setBrush(markRange->m_activeColor);
+                    painter.setPen(markRange.m_activeColor);
+                    painter.setBrush(markRange.m_activeColor);
                 } else {
                     painter.setOpacity(0.2);
-                    painter.setPen(markRange->m_disabledColor);
-                    painter.setBrush(markRange->m_disabledColor);
+                    painter.setPen(markRange.m_disabledColor);
+                    painter.setBrush(markRange.m_disabledColor);
                 }
 
                 // let top and bottom of the rect out of the widget
