@@ -25,7 +25,6 @@ class AnalyzerSilence : public Analyzer {
     int m_iSignalStart;
     int m_iSignalEnd;
 
-    TrackPointer m_pTrack;
     CuePointer m_pIntroCue;
     CuePointer m_pOutroCue;
 };
