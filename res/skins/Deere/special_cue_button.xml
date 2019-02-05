@@ -8,19 +8,26 @@ Variables:
 -->
 <Template>
   <PushButton>
-    <TooltipId>cue_type</TooltipId>
+    <TooltipId><Variable name="cue_type"/></TooltipId>
     <ObjectName>SpecialCueButton</ObjectName>
-    <MinimumSize>15,24</MinimumSize>
-    <MaximumSize>23,24</MaximumSize>
+    <MinimumSize>18,22</MinimumSize>
+    <MaximumSize>22,22</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
     <NumberStates>2</NumberStates>
+    <RightClickIsPushButton>true</RightClickIsPushButton>
     <State>
       <Number>0</Number>
       <Text><Variable name="label"/></Text>
+      <Alignment><Variable name="Align"/></Alignment>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_0_unpressed"/></Unpressed>
     </State>
     <State>
       <Number>1</Number>
       <Text><Variable name="label"/></Text>
+      <Alignment><Variable name="Align"/></Alignment>
+      <Pressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_pressed"/></Pressed>
+      <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_unpressed"/></Unpressed>
     </State>
     <Connection>
       <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_set</ConfigKey>

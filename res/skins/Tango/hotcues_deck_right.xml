@@ -100,25 +100,29 @@ Description:
             <Children>
               <Template src="skin:button_specialcue_deck.xml">
                 <SetVariable name="cue_type">intro_start</SetVariable>
-                <SetVariable name="label">IS</SetVariable>
+                <SetVariable name="label">|&#9698;</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_specialcue_deck.xml">
                 <SetVariable name="cue_type">intro_end</SetVariable>
-                <SetVariable name="label">IE</SetVariable>
+                <SetVariable name="label">&#9698;|</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_specialcue_deck.xml">
                 <SetVariable name="cue_type">outro_start</SetVariable>
-                <SetVariable name="label">OS</SetVariable>
+                <SetVariable name="label">|&#9699;</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
               <Template src="skin:button_specialcue_deck.xml">
                 <SetVariable name="cue_type">outro_end</SetVariable>
-                <SetVariable name="label">OE</SetVariable>
+                <SetVariable name="label">&#9699;|</SetVariable>
               </Template>
                 <WidgetGroup><Size>1f,1me</Size></WidgetGroup>
             </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
           </WidgetGroup>
 
       <!-- Qt is fun to design with...not.

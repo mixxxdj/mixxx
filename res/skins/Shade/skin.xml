@@ -272,7 +272,7 @@
     <SingletonDefinition>
       <ObjectName>Overview1</ObjectName>
       <Children>
-        <Template src="skin:overview.xml">
+        <Template src="skin:deck_overview.xml">
           <SetVariable name="channum">1</SetVariable>
         </Template>
       </Children>
@@ -281,7 +281,7 @@
     <SingletonDefinition>
       <ObjectName>Overview2</ObjectName>
       <Children>
-        <Template src="skin:overview.xml">
+        <Template src="skin:deck_overview.xml">
           <SetVariable name="channum">2</SetVariable>
         </Template>
       </Children>

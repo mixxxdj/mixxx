@@ -38,31 +38,31 @@
     </MarkRange>
     <Mark>
       <Control>intro_start_position</Control>
-      <Align>bottom|right</Align>
+      <Text></Text>
+      <Align>top|right</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
-      <Text>IS</Text>
     </Mark>
     <Mark>
       <Control>intro_end_position</Control>
-      <Align>bottom|right</Align>
+      <Text>&#9698;</Text>
+      <Align>top|left</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
-      <Text>IE</Text>
     </Mark>
     <Mark>
       <Control>outro_start_position</Control>
-      <Align>bottom|left</Align>
+      <Text>&#9699;</Text>
+      <Align>top|left</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
-      <Text>OS</Text>
     </Mark>
     <Mark>
       <Control>outro_end_position</Control>
-      <Align>bottom|left</Align>
+      <Text></Text>
+      <Align>top|left</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
-      <Text>OE</Text>
     </Mark>
     <Mark>
       <Control>cue_point</Control>
