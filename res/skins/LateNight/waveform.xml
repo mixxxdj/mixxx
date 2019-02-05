@@ -44,6 +44,16 @@
           <Color>#00FF00</Color>
           <TextColor>#FFFFFF</TextColor>
         </Mark>
+        <MarkRange>
+          <StartControl>intro_start_position</StartControl>
+          <EndControl>intro_end_position</EndControl>
+          <Color>#0000FF</Color>
+        </MarkRange>
+        <MarkRange>
+          <StartControl>outro_start_position</StartControl>
+          <EndControl>outro_end_position</EndControl>
+          <Color>#0000FF</Color>
+        </MarkRange>
         <Mark>
           <Control>intro_start_position</Control>
           <Source>intro_start_source</Source>
