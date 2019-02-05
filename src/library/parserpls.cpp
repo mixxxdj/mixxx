@@ -130,12 +130,12 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
             QString trackLocation = location.toString();
             //qDebug() << trackLocation;
 
-            if(isFilepath(trackLocation)) {
+            if(QFile::exists(trackLocation)) {
                 return trackLocation;
             } else {
-                // Try relative to m3u dir
+                // Try relative to pls dir
                 QString rel = QDir(basepath).filePath(trackLocation);
-                if (isFilepath(rel)) {
+                if (QFile::exists(rel)) {
                     return rel;
                 }
                 // We couldn't match this to a real file so ignore it

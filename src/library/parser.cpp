@@ -42,13 +42,6 @@ long Parser::countParsed()
     return (long)m_sLocations.count();
 }
 
-bool Parser::isFilepath(QString sFilepath) {
-    QFile file(sFilepath);
-    bool exists = file.exists();
-    file.close();
-    return exists;
-}
-
 bool Parser::isBinary(QString filename) {
     QFile file(filename);
 

@@ -44,16 +44,14 @@ class Parser : public QObject {
 
 
 protected:
-    /**Pointer to the parsed Filelocations**/
+    // Pointer to the parsed Filelocations
     QList<QString> m_sLocations;
-    /**Returns the number of parsed locations**/
+    // Returns the number of parsed locations
     long countParsed();
-    /**Clears m_psLocations**/
+    // Clears m_psLocations
     void clearLocations();
-    /**Checks if the file does contain binary content**/
+    // Checks if the file does contain binary content
     bool isBinary(QString);
-    /**Checks if the given string represents a local filepath**/
-    bool isFilepath(QString);
     // check for Utf8 encoding
     static bool isUtf8(const char* string);
 };

@@ -114,12 +114,12 @@ QString ParserM3u::getFilepath(QTextStream* stream, QString basepath)
             filename.remove("file://");
             QUrl location(filename);
             QString trackLocation = location.toString();
-            if(isFilepath(trackLocation)) {
+            if(QFile::exists(trackLocation)) {
                 return trackLocation;
             } else {
                 // Try relative to m3u dir
                 QString rel = QDir(basepath).filePath(trackLocation);
-                if (isFilepath(rel)) {
+                if (QFile::exists(rel)) {
                     return rel;
                 }
                 // We couldn't match this to a real file so ignore it
