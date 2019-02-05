@@ -102,9 +102,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
         if (child.nodeName() == "MarkRange") {
-            m_markRanges.push_back(WaveformMarkRange());
+            m_markRanges.push_back(WaveformMarkRange(m_group, child, context, m_signalColors));
             WaveformMarkRange& markRange = m_markRanges.back();
-            markRange.setup(m_group, child, context, m_signalColors);
 
             if (markRange.m_markEnabledControl) {
                 markRange.m_markEnabledControl->connectValueChanged(
