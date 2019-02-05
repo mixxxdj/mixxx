@@ -448,7 +448,8 @@ void BaseTrackPlayerImpl::slotCloneDeck(const QString& group) {
     slotCloneChannel(pChannel);
 }
 
-void BaseTrackPlayerImpl::slotCloneFromDeck(double deck) {
+void BaseTrackPlayerImpl::slotCloneFromDeck(double d) {
+    int deck = std::lround(d);
     if (deck < 1) {
         slotCloneChannel(m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel));
     } else {
