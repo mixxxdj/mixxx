@@ -2,6 +2,7 @@
 
 #include "mixer/basetrackplayer.h"
 #include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 
 #include "control/controlobject.h"
 #include "control/controlpotmeter.h"
@@ -77,6 +78,13 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = std::make_unique<ControlObject>(
         ConfigKey(getGroup(), "duration"));
+
+    // Deck cloning
+    m_pCloneFromDeck = std::make_unique<ControlObject>(
+        ConfigKey(getGroup(), "CloneFromDeck"),
+        false);
+    connect(m_pCloneFromDeck.get(), &ControlObject::valueChanged,
+        this, &BaseTrackPlayerImpl::slotCloneFromDeck);
 
     // Waveform controls
     // This acts somewhat like a ControlPotmeter, but the normal _up/_down methods
@@ -440,7 +448,20 @@ void BaseTrackPlayerImpl::slotCloneDeck(const QString& group) {
     slotCloneChannel(pChannel);
 }
 
+void BaseTrackPlayerImpl::slotCloneFromDeck(double deck) {
+    if (deck < 1) {
+        slotCloneChannel(m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel));
+    } else {
+        slotCloneDeck(PlayerManager::groupForDeck(deck-1));
+    }
+}
+
 void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
+    // don't clone from ourselves
+    if (pChannel == m_pChannel) {
+        return;
+    }
+
     m_pChannelToCloneFrom = pChannel;
     if (!m_pChannelToCloneFrom) {
         return;

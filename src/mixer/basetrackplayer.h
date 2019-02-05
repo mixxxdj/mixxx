@@ -86,6 +86,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
   private slots:
     void slotLoadTrackInternal(TrackPointer pNewTrack, bool bPlay);
+    void slotCloneFromDeck(double deck);
     void slotPassthroughEnabled(double v);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
@@ -109,6 +110,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     bool m_replaygainPending;
     EngineChannel* m_pChannelToCloneFrom;
     PerformanceTimer m_cloneTimer;
+
+    // Deck clone control
+    std::unique_ptr<ControlObject> m_pCloneFromDeck;
 
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;
