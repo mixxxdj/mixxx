@@ -18,6 +18,8 @@ class AnalyzerSilence : public Analyzer {
     void cleanup(TrackPointer tio) override;
 
   private:
+    static bool shouldUpdateCue(CuePosition cuePosition);
+
     UserSettingsPointer m_pConfig;
     float m_fThreshold;
     int m_iFramesProcessed;

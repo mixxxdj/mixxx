@@ -122,9 +122,6 @@ class CuePosition {
     }
 
     Cue::CueSource getSource() const {
-        if (m_position == 0.0 || m_position == -1.0) {
-            return Cue::UNKNOWN;
-        }
         return m_source;
     }
 

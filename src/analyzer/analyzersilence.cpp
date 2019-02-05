@@ -49,7 +49,7 @@ bool AnalyzerSilence::initialize(TrackPointer tio, int sampleRate, int totalSamp
 }
 
 bool AnalyzerSilence::isDisabledOrLoadStoredSuccess(TrackPointer tio) const {
-    return tio->getCuePoint().getSource() == Cue::MANUAL &&
+    return !shouldUpdateCue(tio->getCuePoint()) &&
             m_pIntroCue->getSource() == Cue::MANUAL &&
             m_pOutroCue->getSource() == Cue::MANUAL;
 }
@@ -97,7 +97,7 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
         m_iSignalEnd = m_iFramesProcessed;
     }
 
-    if (tio->getCuePoint().getSource() != Cue::MANUAL) {
+    if (shouldUpdateCue(tio->getCuePoint())) {
         tio->setCuePoint(CuePosition(mixxx::kAnalysisChannels * m_iSignalStart, Cue::AUTOMATIC));
     }
 
@@ -108,4 +108,8 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
     if (m_pOutroCue->getSource() != Cue::MANUAL) {
         m_pOutroCue->setPosition(mixxx::kAnalysisChannels * m_iSignalEnd);
     }
+}
+
+bool AnalyzerSilence::shouldUpdateCue(CuePosition cue) {
+    return cue.getSource() != Cue::MANUAL || cue.getPosition() == -1.0 || cue.getPosition() == 0.0;
 }

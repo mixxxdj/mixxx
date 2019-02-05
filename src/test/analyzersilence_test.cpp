@@ -52,7 +52,7 @@ TEST_F(AnalyzerSilenceTest, SilenceTrack) {
 
     CuePosition cue = pTrack->getCuePoint();
     EXPECT_DOUBLE_EQ(0.0, cue.getPosition());
-    EXPECT_EQ(Cue::UNKNOWN, cue.getSource());
+    EXPECT_EQ(Cue::AUTOMATIC, cue.getSource());
 
     CuePointer pIntroCue = pTrack->findCueByType(Cue::INTRO);
     EXPECT_DOUBLE_EQ(0.0, pIntroCue->getPosition());
@@ -74,7 +74,7 @@ TEST_F(AnalyzerSilenceTest, EndToEndToneTrack) {
 
     CuePosition cue = pTrack->getCuePoint();
     EXPECT_DOUBLE_EQ(0.0, cue.getPosition());
-    EXPECT_EQ(Cue::UNKNOWN, cue.getSource());
+    EXPECT_EQ(Cue::AUTOMATIC, cue.getSource());
 
     CuePointer pIntroCue = pTrack->findCueByType(Cue::INTRO);
     EXPECT_DOUBLE_EQ(0.0, pIntroCue->getPosition());
