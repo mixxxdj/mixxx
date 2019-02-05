@@ -12,6 +12,7 @@
 #include "library/starrating.h"
 #include "library/bpmdelegate.h"
 #include "library/previewbuttondelegate.h"
+#include "library/locationdelegate.h"
 #include "library/queryutil.h"
 #include "mixer/playermanager.h"
 #include "mixer/playerinfo.h"
@@ -655,7 +656,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = mixxx::Duration::formatSeconds(duration);
+                    value = mixxx::Duration::formatTime(duration);
                 } else {
                     value = QString();
                 }
@@ -1060,6 +1061,8 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
         return new BPMDelegate(pTableView);
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, i);
+    } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION)) {
+        return new LocationDelegate(pTableView);
     } else if (i == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         CoverArtDelegate* pCoverDelegate = new CoverArtDelegate(pTableView);
         connect(pCoverDelegate, SIGNAL(coverReadyForCell(int, int)),

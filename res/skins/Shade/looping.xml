@@ -80,9 +80,10 @@
       </WidgetGroup><!-- beatjump controls -->
 
       <WidgetGroup>
+        <ObjectName>EffectLeftBorder</ObjectName>
         <Size>1f,40f</Size>
-        <Style>QGroupBox {
-              border: 0px solid red; background-color: #626F87; } QWidget { margin: 0px; padding: 0; }</Style>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
       </WidgetGroup>
 
       <WidgetGroup>
@@ -91,9 +92,10 @@
       </WidgetGroup>
 
       <WidgetGroup>
+        <ObjectName>EffectLeftBorder</ObjectName>
         <Size>1f,40f</Size>
-        <Style>QGroupBox {
-              border: 0px solid red; background-color: #626F87; } QWidget { margin: 0px; padding: 0; }</Style>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
       </WidgetGroup>
 
       <WidgetGroup><!-- loop controls -->

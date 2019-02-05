@@ -38,10 +38,10 @@ alpha = .13;
 beta = alpha/32;
 
 // pitch shift mode
-gammaInputRange = 12;	// Max jog speed
-maxOutFraction = 0.5;	// Where on the curve it should peak; 0.5 is half-way
-sensitivity = 0.9;		// .5 Adjustment gamma
-gammaOutputRange = 3;	// Max rate change
+gammaInputRange = 12;    // Max jog speed
+maxOutFraction = 0.5;    // Where on the curve it should peak; 0.5 is half-way
+sensitivity = 0.9;        // .5 Adjustment gamma
+gammaOutputRange = 3;    // Max rate change
 
 
 
@@ -61,13 +61,13 @@ firstmix.init = function (channel, control, value, status, group) {
     engine.connectControl("[Channel2]","beat_active","firstmix.Stutter2Beat");
 
     firstmix.leds = [
-		// Common
-		{ "preview": 0x60 },
-		// Deck 1
-		{ "play": 0x4a, "cue": 0x3b, "efx": 0x43, "scratch": 0x48, "rev": 0x40, "sync": 0x33 },
-		// Deck 2
-		{ "play": 0x4c, "cue": 0x42, "efx": 0x45, "scratch": 0x35, "rev": 0x47, "sync": 0x3c },
-	];
+        // Common
+        { "preview": 0x60 },
+        // Deck 1
+        { "play": 0x4a, "cue": 0x3b, "efx": 0x43, "scratch": 0x48, "rev": 0x40, "sync": 0x33 },
+        // Deck 2
+        { "play": 0x4c, "cue": 0x42, "efx": 0x45, "scratch": 0x35, "rev": 0x47, "sync": 0x3c },
+    ];
 
     // Set controls in Mixxx to reflect settings on the device
     // I've tried both of the following commands but they don't work. Not sure if this is possible.
@@ -96,34 +96,34 @@ firstmix.shutdown = function () {
 // ----------------
 
 firstmix.setLED = function(value, status) {
-	status = status ? 0x64 : 0x00;
-	midi.sendShortMsg(0x90, value, status);
+    status = status ? 0x64 : 0x00;
+    midi.sendShortMsg(0x90, value, status);
 }
 
 firstmix.currentDeck = function (group) {
-	if (group == "[Channel1]")
-		return 1;
-	else if (group == "[Channel2]")
-		return 2;
-	print("Invalid group : " + group);
+    if (group == "[Channel1]")
+        return 1;
+    else if (group == "[Channel2]")
+        return 2;
+    print("Invalid group : " + group);
         midi.sendShortMsg(0x90,0x45,0x7F);    // Turn on right EFX LED
-	return -1; // error
+    return -1; // error
 }
 
 firstmix.Stutter1Beat = function (value) {
-    	var secondsToEnd = engine.getValue("[Channel1]", "duration") * (1-engine.getValue("[Channel1]", "playposition"));
-	if (secondsToEnd < secondsBlink && secondsToEnd > 1 && engine.getValue("[Channel1]", "play")) { // The song is going to end
-		firstmix.setLED(firstmix.leds[1]["cue"], value);
-	}
-	firstmix.setLED(firstmix.leds[1]["play"], value);
+        var secondsToEnd = engine.getValue("[Channel1]", "duration") * (1-engine.getValue("[Channel1]", "playposition"));
+    if (secondsToEnd < secondsBlink && secondsToEnd > 1 && engine.getValue("[Channel1]", "play")) { // The song is going to end
+        firstmix.setLED(firstmix.leds[1]["cue"], value);
+    }
+    firstmix.setLED(firstmix.leds[1]["play"], value);
 }
 
 firstmix.Stutter2Beat = function (value) {
-    	var secondsToEnd = engine.getValue("[Channel2]", "duration") * (1-engine.getValue("[Channel2]", "playposition"));
-	if (secondsToEnd < secondsBlink && secondsToEnd > 1 && engine.getValue("[Channel2]", "play")) { // If song is about to end, blink cue button
-		firstmix.setLED(firstmix.leds[2]["cue"], value);
-	}
-	firstmix.setLED(firstmix.leds[2]["play"], value); // Blink play button on beat
+        var secondsToEnd = engine.getValue("[Channel2]", "duration") * (1-engine.getValue("[Channel2]", "playposition"));
+    if (secondsToEnd < secondsBlink && secondsToEnd > 1 && engine.getValue("[Channel2]", "play")) { // If song is about to end, blink cue button
+        firstmix.setLED(firstmix.leds[2]["cue"], value);
+    }
+    firstmix.setLED(firstmix.leds[2]["play"], value); // Blink play button on beat
 }
 
 // ----------------------
@@ -188,39 +188,39 @@ firstmix.preview = function (channel, control, value, status, group) {
 firstmix.wheelTouch = function (channel, control, value, status, group) {
     if ((value == 0x7F) && (firstmix.scratchButton[firstmix.currentDeck(group)-1] == true)) {
         engine.scratchEnable(firstmix.currentDeck(group), 180, 33+1/3, alpha, beta);
-	firstmix.touchingWheel[firstmix.currentDeck(group)-1] = true;
+    firstmix.touchingWheel[firstmix.currentDeck(group)-1] = true;
     }
     else if ((value == 0x7F) && (firstmix.scratchButton[firstmix.currentDeck(group)-1] == false)) 
-	firstmix.touchingWheel[firstmix.currentDeck(group)-1] = true;
+    firstmix.touchingWheel[firstmix.currentDeck(group)-1] = true;
 
     else if (value == 0x00) {    // If button up
         engine.scratchDisable(firstmix.currentDeck(group));
-	firstmix.touchingWheel[firstmix.currentDeck(group)-1] = false;
+    firstmix.touchingWheel[firstmix.currentDeck(group)-1] = false;
     }
 }
 
 firstmix.jogWheel = function(channel, control, value, status, group) {
-	var deck = firstmix.currentDeck(group);
-	var adjustedJog = parseFloat(value);
-	var posNeg = 1;
-	if (adjustedJog > 63) {	// Counter-clockwise
-		posNeg = -1;
-		adjustedJog = value - 128;
-	}
-	
+    var deck = firstmix.currentDeck(group);
+    var adjustedJog = parseFloat(value);
+    var posNeg = 1;
+    if (adjustedJog > 63) {    // Counter-clockwise
+        posNeg = -1;
+        adjustedJog = value - 128;
+    }
+    
         if ((firstmix.scratchButton[deck-1]) && (firstmix.touchingWheel[deck-1])) { // scratch mode
             var newValue;
             if (value-64 > 0) newValue = value-128;
             else newValue = value;
             engine.scratchTick(firstmix.currentDeck(group),newValue);
-	} else if (firstmix.touchingWheel[deck-1] == true) { // pitch shift mode
-		if (engine.getValue(group,"play")) {
-			adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(adjustedJog) / (gammaInputRange * maxOutFraction), sensitivity);
-		} else {
-			adjustedJog = gammaOutputRange * adjustedJog / (gammaInputRange * maxOutFraction);
-		}
-		engine.setValue(group, "jog", adjustedJog);
-	}
+    } else if (firstmix.touchingWheel[deck-1] == true) { // pitch shift mode
+        if (engine.getValue(group,"play")) {
+            adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(adjustedJog) / (gammaInputRange * maxOutFraction), sensitivity);
+        } else {
+            adjustedJog = gammaOutputRange * adjustedJog / (gammaInputRange * maxOutFraction);
+        }
+        engine.setValue(group, "jog", adjustedJog);
+    }
 }
 
 
