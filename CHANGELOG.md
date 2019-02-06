@@ -42,6 +42,14 @@ Miscellaneous
   scrolling waveforms.
 * Support IRC/AIM/ICQ broadcast metadata.
 
+## [2.1.7](https://launchpad.net/mixxx/+milestone/2.1.7) (2019-01-15)
+
+* Fix syncing to doublespeed [lp:1808697](https://bugs.launchpad.net/mixxx/+bug/1808697)
+* Fix issues when changing beats of a synced track [lp:1808698](https://bugs.launchpad.net/mixxx/+bug/1808698)
+* Fix direction of pitch bend buttons when inverting rate slider [lp:1770745](https://bugs.launchpad.net/mixxx/+bug/1770745)
+* Use first loaded deck if no playing deck is found [lp:1784185](https://bugs.launchpad.net/mixxx/+bug/1784185)
+* Encode file names correctly on macOS [lp:1776949](https://bugs.launchpad.net/mixxx/+bug/1776949)
+
 ## [2.1.6](https://launchpad.net/mixxx/+milestone/2.1.6) (2018-12-23)
 
 * Fix crash when loading a Qt5 Soundsource / Vamp Plug-In. [lp:1774639](https://bugs.launchpad.net/mixxx/+bug/1774639)
