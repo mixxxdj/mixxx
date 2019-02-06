@@ -37,19 +37,31 @@ namespace Color {
     }
 
     // If the baseColor is darker than the global threshold,
-    // returns white, otherwise returns black.
+    // returns a lighter color, otherwise returns a darker color.
     static inline QColor chooseContrastColor(QColor baseColor) {
-        QColor lightColor = baseColor.lighter();
-        QColor darkColor = baseColor.darker();
+        // Will produce a color that is 60% brighter.
+        static const int iLighterFactor = 160;
+        // We consider a hsv color dark if its value is <= 20% of max value
+        static const int iMinimumValue = 20 * 255 / 100;
 
-        // QColor::lighter() multiplies the HSV Value by some factor. When baseColor is black, Value is 0,
-        // thus after multiplication it's still 0 and we get the same color.
-        // We manually set lightColor to darkGray in this case.
-        if (baseColor.toHsv().value() == 0) {
-            lightColor = Qt::darkGray;
-            lightColor.setAlpha(baseColor.alpha());
+        // Convert to Hsv to make sure the conversion only happens once.
+        // QColor::darker() and QColor::lighter() internally convert from and to Hsv if the color is not already in Hsv.
+        baseColor = baseColor.toHsv();
+
+        QColor lightColor;
+        QColor darkColor = baseColor.darker().toRgb();
+        // QColor::lighter() multiplies the HSV Value by some factor. When baseColor is dark, Value is near 0,
+        // thus after multiplication it's still near 0 and we get roughly the same color.
+        // We manually set lightColor in this case.
+        if (baseColor.value() <= iMinimumValue) {
+            lightColor = baseColor;
+            int newValue = iMinimumValue * iLighterFactor / 100;
+            lightColor.setHsl(baseColor.hue(), baseColor.saturation(), newValue);
+        } else {
+            lightColor = baseColor.lighter(iLighterFactor);
         }
-        return chooseColorByBrightness(baseColor, lightColor, darkColor);
+        QColor contrastColor = chooseColorByBrightness(baseColor, lightColor.toRgb(), darkColor.toRgb());
+        return contrastColor;
     }
 }
 #endif /* PREDEFINEDCOLORSET_H */
