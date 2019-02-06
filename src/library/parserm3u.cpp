@@ -96,11 +96,8 @@ QList<QString> ParserM3u::parse(QString sFilename)
 }
 
 
-QString ParserM3u::getFilepath(QTextStream* stream, QString basepath)
-{
-    QString textline,filename = "";
-
-    textline = stream->readLine();
+QString ParserM3u::getFilepath(QTextStream* stream, QString basepath) {
+    QString textline = stream->readLine();
 
     while (!textline.isEmpty()) {
         //qDebug() << "Untransofrmed text: " << textline;
@@ -109,11 +106,7 @@ QString ParserM3u::getFilepath(QTextStream* stream, QString basepath)
         }
 
         if (!textline.contains("#")) {
-            filename = textline;
-            filename.replace('\\', '/');
-            filename.remove("file://");
-            QUrl location(filename);
-            QString trackLocation = location.toString();
+            QString trackLocation = playlistEntrytoLocalFile(textline);
             if(QFile::exists(trackLocation)) {
                 return trackLocation;
             } else {

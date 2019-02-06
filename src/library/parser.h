@@ -25,6 +25,8 @@ it afterwards for proper functioning
 #include <QString>
 #include <QList>
 
+#include <gtest/gtest.h>
+
 class Parser : public QObject {
   public:
     static bool isPlaylistFilenameSupported(const QString& fileName) {
@@ -35,7 +37,7 @@ class Parser : public QObject {
     }
 
     Parser();
-    ~Parser();
+    ~Parser() override;
     /**Can be called to parse a pls file
     Note for developers:
     This function should return an empty PtrList
@@ -54,6 +56,10 @@ protected:
     bool isBinary(QString);
     // check for Utf8 encoding
     static bool isUtf8(const char* string);
+    // reads URLs an plain Parth and retuns a local file path
+    QString playlistEntrytoLocalFile(const QString& playlistEntry);
+
+    FRIEND_TEST(PlaylistTest, Normalize);
 };
 
 #endif

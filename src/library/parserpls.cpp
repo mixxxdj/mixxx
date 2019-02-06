@@ -28,16 +28,13 @@
           not only the filepath;
  **/
 
-ParserPls::ParserPls() : Parser()
-{
+ParserPls::ParserPls() : Parser() {
 }
 
-ParserPls::~ParserPls()
-{
+ParserPls::~ParserPls() {
 }
 
-QList<QString> ParserPls::parse(QString sFilename)
-{
+QList<QString> ParserPls::parse(QString sFilename) {
     //long numEntries =0;
     QFile file(sFilename);
     QString basepath = sFilename.section('/', 0, -2);
@@ -84,9 +81,7 @@ QList<QString> ParserPls::parse(QString sFilename)
     return QList<QString>(); //if we get here something went wrong :D
 }
 
-long ParserPls::getNumEntries(QTextStream *stream)
-{
-
+long ParserPls::getNumEntries(QTextStream *stream) {
     QString textline;
     textline = stream->readLine();
 
@@ -107,10 +102,8 @@ long ParserPls::getNumEntries(QTextStream *stream)
 }
 
 
-QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
-{
-    QString textline,filename = "";
-    textline = stream->readLine();
+QString ParserPls::getFilepath(QTextStream *stream, QString basepath) {
+    QString textline = stream->readLine();
     while (!textline.isEmpty()) {
         if (textline.isNull()) {
             break;
@@ -120,15 +113,8 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
             int iPos = textline.indexOf("=", 0);
             ++iPos;
 
-            filename = textline.right(textline.length() - iPos);
-            filename.replace('\\', '/');
-
-            // Rythmbox playlists starts with file://<path>
-            // We remove the file protocol if found.
-            filename.remove("file://");
-            QUrl location(filename);
-            QString trackLocation = location.toString();
-            //qDebug() << trackLocation;
+            QString filename = textline.right(textline.length() - iPos);
+            QString trackLocation = playlistEntrytoLocalFile(filename);
 
             if(QFile::exists(trackLocation)) {
                 return trackLocation;
@@ -147,8 +133,8 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
 
     // Signal we reached the end
     return 0;
-
 }
+
 bool ParserPls::writePLSFile(const QString &file_str, QList<QString> &items, bool useRelativePath)
 {
     QFile file(file_str);

@@ -14,6 +14,7 @@
 #include <QtDebug>
 #include <QFile>
 #include <QIODevice>
+#include <QUrl>
 
 #include "library/parser.h"
 
@@ -22,23 +23,17 @@
  **/
 
 
-Parser::Parser() : QObject()
-{
+Parser::Parser() {
 }
 
-Parser::~Parser()
-{
-
-
+Parser::~Parser() {
 }
 
-void Parser::clearLocations()
-{
+void Parser::clearLocations() {
     m_sLocations.clear();
 }
 
-long Parser::countParsed()
-{
+long Parser::countParsed() {
     return (long)m_sLocations.count();
 }
 
@@ -152,3 +147,12 @@ bool Parser::isUtf8(const char* string) {
 
     return true;
 }
+
+QString Parser::playlistEntrytoLocalFile(const QString& playlistEntry) {
+    if (playlistEntry.startsWith("file:")) {
+        return QUrl(playlistEntry).toLocalFile();
+    }
+
+    return QString(playlistEntry).replace('\\', '/');
+}
+
