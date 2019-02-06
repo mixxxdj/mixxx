@@ -34,7 +34,7 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
   private:
     void generateMarkImage(WaveformMark* pMark);
 
-    PredefinedColorsMap m_predefinedColorsMap;
+    PredefinedColorsRepresentation m_predefinedColorsRepresentation;
 
     WaveformMarkSet m_marks;
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);

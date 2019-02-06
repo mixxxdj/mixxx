@@ -12,7 +12,7 @@
 #include <QSharedPointer>
 #include <QRegExp>
 
-#include "../util/color/predefinedcolorsmap.h"
+#include "../util/color/predefinedcolorsrepresentation.h"
 #include "preferences/usersettings.h"
 #include "skin/pixmapsource.h"
 #include "util/color/color.h"
@@ -268,18 +268,18 @@ class SkinContext {
         return m_scaleFactor;
     }
 
-    PredefinedColorsMap getCueColorMap(const QDomNode& node, QColor defaultColor) const {
-        PredefinedColorsMap colorMap = Color::predefinedColorSet.defaultMap();
+    PredefinedColorsRepresentation getCueColorRepresentation(const QDomNode& node, QColor defaultColor) const {
+        PredefinedColorsRepresentation colorRepresentation = Color::predefinedColorSet.defaultRepresentation();
         for (PredefinedColorPointer color : Color::predefinedColorSet.allColors) {
             QString sColorName(color->m_sName);
             QColor skinRgba = selectColor(node, "Cue" + sColorName);
             if (skinRgba.isValid()) {
                 PredefinedColorPointer originalColor = Color::predefinedColorSet.predefinedColorFromName(sColorName);
-                colorMap.setCustomRgba(originalColor, skinRgba);
+                colorRepresentation.setCustomRgba(originalColor, skinRgba);
             }
         }
-        colorMap.setCustomRgba(Color::predefinedColorSet.noColor, defaultColor);
-        return colorMap;
+        colorRepresentation.setCustomRgba(Color::predefinedColorSet.noColor, defaultColor);
+        return colorRepresentation;
     }
 
   private:

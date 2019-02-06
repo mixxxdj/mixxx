@@ -4,7 +4,7 @@
 #include <QColor>
 #include <QObject>
 
-#include "predefinedcolorsmap.h"
+#include "predefinedcolorsrepresentation.h"
 #include "util/color/predefinedcolor.h"
 
 // This class defines a set of predefined colors and provides some handy functions to work with them.
@@ -88,10 +88,10 @@ class PredefinedColorsSet final {
     };
 
     PredefinedColorsSet()
-        : m_defaultMap() {
+        : m_defaultRepresentation() {
 
         for (PredefinedColorPointer color : allColors) {
-            m_defaultMap.setCustomRgba(color, color->m_defaultRgba);
+            m_defaultRepresentation.setCustomRgba(color, color->m_defaultRgba);
         }
     }
 
@@ -128,10 +128,10 @@ class PredefinedColorsSet final {
         return noColor;
     };
 
-    // The default color map, i.e. maps each predefined color to its default Rgba.
-    PredefinedColorsMap defaultMap() const { return m_defaultMap; };
+    // The default color representation, i.e. maps each predefined color to its default Rgba.
+    PredefinedColorsRepresentation defaultRepresentation() const { return m_defaultRepresentation; };
 
   private:
-    PredefinedColorsMap m_defaultMap;
+    PredefinedColorsRepresentation m_defaultRepresentation;
 };
 #endif /* COLOR_H */

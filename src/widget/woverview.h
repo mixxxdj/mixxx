@@ -130,7 +130,7 @@ class WOverview : public WWidget {
     QColor m_qColorBackground;
     QColor m_endOfTrackColor;
 
-    PredefinedColorsMap m_predefinedColorsMap;
+    PredefinedColorsRepresentation m_predefinedColorsRepresentation;
     WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;
 
