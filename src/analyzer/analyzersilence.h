@@ -26,9 +26,6 @@ class AnalyzerSilence : public Analyzer {
     bool m_bPrevSilence;
     int m_iSignalStart;
     int m_iSignalEnd;
-
-    CuePointer m_pIntroCue;
-    CuePointer m_pOutroCue;
 };
 
 #endif // ANALYZER_ANALYZERSILENCE_H
