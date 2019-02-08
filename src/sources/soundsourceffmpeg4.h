@@ -1,5 +1,5 @@
-#ifndef MIXXX_SoundSourceFFmpeg31_H
-#define MIXXX_SoundSourceFFmpeg31_H
+#ifndef MIXXX_SoundSourceFFmpeg4_H
+#define MIXXX_SoundSourceFFmpeg4_H
 
 
 extern "C" {
@@ -16,10 +16,10 @@ extern "C" {
 
 namespace mixxx {
 
-class SoundSourceFFmpeg31 : public SoundSource {
+class SoundSourceFFmpeg4 : public SoundSource {
   public:
-    explicit SoundSourceFFmpeg31(const QUrl& url);
-    ~SoundSourceFFmpeg31() override;
+    explicit SoundSourceFFmpeg4(const QUrl& url);
+    ~SoundSourceFFmpeg4() override;
 
     void close() override;
 
@@ -166,9 +166,9 @@ class SoundSourceFFmpeg31 : public SoundSource {
     SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderFFmpeg31: public SoundSourceProvider {
+class SoundSourceProviderFFmpeg4: public SoundSourceProvider {
   public:
-    SoundSourceProviderFFmpeg31();
+    SoundSourceProviderFFmpeg4();
 
     QString getName() const override;
 
@@ -178,11 +178,11 @@ class SoundSourceProviderFFmpeg31: public SoundSourceProvider {
     QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
-        return newSoundSourceFromUrl<SoundSourceFFmpeg31>(url);
+        return newSoundSourceFromUrl<SoundSourceFFmpeg4>(url);
     }
 };
 
 } // namespace mixxx
 
 
-#endif // MIXXX_SoundSourceFFmpeg31_H
+#endif // MIXXX_SoundSourceFFmpeg4_H

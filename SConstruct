@@ -61,9 +61,9 @@ available_features = [features.Mad,
                       features.PerfTools,
                       features.AsmLib,
                       features.FFMPEG,
-                      features.FFMPEG31,
 
                       # Experimental features
+                      features.FFMPEG4,
                       features.OpenGLES,
                       features.QtKeychain
                       ]

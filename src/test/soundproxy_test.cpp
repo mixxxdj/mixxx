@@ -46,9 +46,13 @@ class SoundSourceProxyTest: public MixxxTest {
         availableFileNameSuffixes
                 << ".aiff"
                 << ".flac"
+                // Files encoded with iTunes 12.3.0 caused issues when
+                // decoding with FFMpeg 3.x, because their start_time
+                // was not correctly handled. The actual FFmpeg version
+                // that fixed this bug is unknown.
                 << "-itunes-12.3.0-aac.m4a"
                 << "-itunes-12.7.0-aac.m4a"
-#if defined(__FFMPEG31__) || defined(__COREAUDIO__)
+#if defined(__FFMPEG4__) || defined(__COREAUDIO__)
                 << "-itunes-12.7.0-alac.m4a"
 #endif
                 << "-png.mp3"

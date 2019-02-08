@@ -1,4 +1,4 @@
-#include "sources/soundsourceffmpeg31.h"
+#include "sources/soundsourceffmpeg4.h"
 
 #include "util/sample.h"
 #include "util/logger.h"
@@ -28,7 +28,7 @@ const SINT kSamplesPerMP3Frame = 1152;
 // store decoded data that has not been read/consumed yet.
 const SINT kMinSampleBufferCapacity = 8192;
 
-const Logger kLogger("SoundSourceFFmpeg31");
+const Logger kLogger("SoundSourceFFmpeg4");
 
 std::once_flag initFFmpegLibFlag;
 
@@ -262,7 +262,7 @@ bool openDecodingContext(
 
 } // anonymous namespace
 
-void SoundSourceFFmpeg31::InputAVFormatContextPtr::take(
+void SoundSourceFFmpeg4::InputAVFormatContextPtr::take(
         AVFormatContext** ppavInputFormatContext) {
     DEBUG_ASSERT(ppavInputFormatContext != nullptr);
     if (m_pavInputFormatContext != *ppavInputFormatContext) {
@@ -272,7 +272,7 @@ void SoundSourceFFmpeg31::InputAVFormatContextPtr::take(
     }
 }
 
-void SoundSourceFFmpeg31::InputAVFormatContextPtr::close() {
+void SoundSourceFFmpeg4::InputAVFormatContextPtr::close() {
     if (m_pavInputFormatContext != nullptr) {
         avformat_close_input(&m_pavInputFormatContext);
         DEBUG_ASSERT(m_pavInputFormatContext == nullptr);
@@ -280,8 +280,8 @@ void SoundSourceFFmpeg31::InputAVFormatContextPtr::close() {
 }
 
 //static
-SoundSourceFFmpeg31::AVCodecContextPtr
-SoundSourceFFmpeg31::AVCodecContextPtr::alloc(
+SoundSourceFFmpeg4::AVCodecContextPtr
+SoundSourceFFmpeg4::AVCodecContextPtr::alloc(
         const AVCodec* codec) {
     AVCodecContextPtr context(avcodec_alloc_context3(codec));
     if (!context) {
@@ -292,7 +292,7 @@ SoundSourceFFmpeg31::AVCodecContextPtr::alloc(
     return context;
 }
 
-void SoundSourceFFmpeg31::AVCodecContextPtr::take(AVCodecContext** ppavCodecContext) {
+void SoundSourceFFmpeg4::AVCodecContextPtr::take(AVCodecContext** ppavCodecContext) {
     DEBUG_ASSERT(ppavCodecContext != nullptr);
     if (m_pavCodecContext != *ppavCodecContext) {
         close();
@@ -301,14 +301,14 @@ void SoundSourceFFmpeg31::AVCodecContextPtr::take(AVCodecContext** ppavCodecCont
     }
 }
 
-void SoundSourceFFmpeg31::AVCodecContextPtr::close() {
+void SoundSourceFFmpeg4::AVCodecContextPtr::close() {
     if (m_pavCodecContext != nullptr) {
         avcodec_free_context(&m_pavCodecContext);
         m_pavCodecContext = nullptr;
     }
 }
 
-void SoundSourceFFmpeg31::SwrContextPtr::take(
+void SoundSourceFFmpeg4::SwrContextPtr::take(
         SwrContext** ppSwrContext) {
     DEBUG_ASSERT(m_pSwrContext != nullptr);
     if (m_pSwrContext != *ppSwrContext) {
@@ -318,18 +318,18 @@ void SoundSourceFFmpeg31::SwrContextPtr::take(
     }
 }
 
-void SoundSourceFFmpeg31::SwrContextPtr::close() {
+void SoundSourceFFmpeg4::SwrContextPtr::close() {
     if (m_pSwrContext != nullptr) {
         swr_free(&m_pSwrContext);
         DEBUG_ASSERT(m_pSwrContext == nullptr);
     }
 }
 
-SoundSourceProviderFFmpeg31::SoundSourceProviderFFmpeg31() {
+SoundSourceProviderFFmpeg4::SoundSourceProviderFFmpeg4() {
     std::call_once(initFFmpegLibFlag, initFFmpegLib);
 }
 
-QStringList SoundSourceProviderFFmpeg31::getSupportedFileExtensions() const {
+QStringList SoundSourceProviderFFmpeg4::getSupportedFileExtensions() const {
     QStringList list;
 
     // Collect all supported formats (whitelist)
@@ -382,7 +382,7 @@ QStringList SoundSourceProviderFFmpeg31::getSupportedFileExtensions() const {
             } else if (!strcmp(pavInputFormat->name, "flac")) {
                 // FFmpeg failure causes test failure:
                 // [flac @ 0x2ef2060] read_timestamp() failed in the middle
-                // SoundSourceFFmpeg31 - av_seek_frame() failed: Operation not permitted
+                // SoundSourceFFmpeg4 - av_seek_frame() failed: Operation not permitted
                 list.append("flac");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "ogg")) {
@@ -433,7 +433,7 @@ QStringList SoundSourceProviderFFmpeg31::getSupportedFileExtensions() const {
     return list;
 }
 
-SoundSourceFFmpeg31::SoundSourceFFmpeg31(const QUrl& url)
+SoundSourceFFmpeg4::SoundSourceFFmpeg4(const QUrl& url)
     : SoundSource(url),
       m_pavStream(nullptr),
       m_pavDecodedFrame(nullptr),
@@ -443,11 +443,11 @@ SoundSourceFFmpeg31::SoundSourceFFmpeg31(const QUrl& url)
       m_curFrameIndex(kInvalidFrameIndex) {
 }
 
-SoundSourceFFmpeg31::~SoundSourceFFmpeg31() {
+SoundSourceFFmpeg4::~SoundSourceFFmpeg4() {
     close();
 }
 
-SoundSource::OpenResult SoundSourceFFmpeg31::tryOpen(
+SoundSource::OpenResult SoundSourceFFmpeg4::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& params) {
     // Open input
@@ -662,7 +662,7 @@ SoundSource::OpenResult SoundSourceFFmpeg31::tryOpen(
     return OpenResult::Succeeded;
 }
 
-void SoundSourceFFmpeg31::close() {
+void SoundSourceFFmpeg4::close() {
     av_frame_free(&m_pavResampledFrame);
     DEBUG_ASSERT(!m_pavResampledFrame);
     av_frame_free(&m_pavDecodedFrame);
@@ -716,7 +716,7 @@ namespace {
     }
 }
 
-ReadableSampleFrames SoundSourceFFmpeg31::readSampleFramesClamped(
+ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
     CSAMPLE* pOutputSampleBuffer = writableSampleFrames.writableData();
     auto writableRange =
@@ -1223,11 +1223,11 @@ ReadableSampleFrames SoundSourceFFmpeg31::readSampleFramesClamped(
                     frames2samples(readableRange.length())));
 }
 
-QString SoundSourceProviderFFmpeg31::getName() const {
-    return "FFmpeg31";
+QString SoundSourceProviderFFmpeg4::getName() const {
+    return "FFmpeg4";
 }
 
-SoundSourceProviderPriority SoundSourceProviderFFmpeg31::getPriorityHint(
+SoundSourceProviderPriority SoundSourceProviderFFmpeg4::getPriorityHint(
         const QString& /*supportedFileExtension*/) const {
     // TODO: Increase priority to HIGHER if FFmpeg should be used as the
     // default decoder instead of other SoundSources. Currently it is

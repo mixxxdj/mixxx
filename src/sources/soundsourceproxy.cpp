@@ -21,8 +21,8 @@
 #ifdef __FFMPEGFILE__
 #include "sources/soundsourceffmpeg.h"
 #endif
-#ifdef __FFMPEG31__
-#include "sources/soundsourceffmpeg31.h"
+#ifdef __FFMPEG4__
+#include "sources/soundsourceffmpeg4.h"
 #endif
 #ifdef __MODPLUG__
 #include "sources/soundsourcemodplug.h"
@@ -89,9 +89,9 @@ void SoundSourceProxy::registerSoundSourceProviders() {
     s_soundSourceProviders.registerProvider(
             std::make_shared<mixxx::SoundSourceProviderFFmpeg>());
 #endif
-#ifdef __FFMPEG31__
+#ifdef __FFMPEG4__
     s_soundSourceProviders.registerProvider(
-            std::make_shared<mixxx::SoundSourceProviderFFmpeg31>());
+            std::make_shared<mixxx::SoundSourceProviderFFmpeg4>());
 #endif
 #ifdef __SNDFILE__
     // libsndfile is another fallback
