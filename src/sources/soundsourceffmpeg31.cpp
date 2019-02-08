@@ -88,41 +88,17 @@ int64_t getStreamStartTime(const AVStream& avStream) {
     return fixStartTime(avStream.start_time);
 }
 
+inline
 int64_t getStreamDuration(const AVStream& avStream) {
     DEBUG_ASSERT(avStream.duration >= 0);
-    const auto start_time = getStreamStartTime(avStream);
-    if ((start_time > 0) && (avStream.codecpar->codec_id == AV_CODEC_ID_AAC)) {
-        // NOTE(uklotzde): iTunes 12.3.0 (and maybe other versions) sets the
-        // start_time to 2112 (= seek_preroll). The specified duration of the
-        // stream does not take this into account, see the test file cover-test.m4a
-        // for an example. As a workaround the value in duration must be interpreted
-        // as the end time instead and the actual duration is 2112 samples short!!
-        // This workaround is effective for all AAC files with a start time > 0,
-        // because we are not able to distinguish them properly. The only drawback
-        // is that some samples at the end might be cut off.
-        // Discussion: http://ffmpeg.org/pipermail/libav-user/2017-October/010623.html
-        const auto duration_offset = math_min(start_time, avStream.duration);
-        const auto fixed_duration = avStream.duration - duration_offset;
-        kLogger.info()
-                << "Workaround for bug in iTunes 12.3.0 (and maybe other versions):"
-                << "Reducing stream duration from"
-                << avStream.duration
-                << "to"
-                << fixed_duration;
-        return fixed_duration;
-    } else {
-        return avStream.duration;
-    }
+    return avStream.duration;
 }
 
 inline
 SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts) {
-    // NOTE(uklotzde): A value getStreamStartTime(avStream) > 0 must not
-    // be substracted from pts! Decoding will always start at pts = 0 and
-    // samples until the start_time are silently ignored.
     return kMinFrameIndex +
             av_rescale_q(
-                    pts,
+                    pts - getStreamStartTime(avStream),
                     avStream.time_base,
                     (AVRational) {1, avStream.codecpar->sample_rate});
 }
