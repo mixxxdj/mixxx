@@ -1086,10 +1086,6 @@ void EngineBuffer::processSlip(int iBufferSize) {
 }
 
 void EngineBuffer::processSyncRequests() {
-    EngineChannel* pChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(NULL);
-    if (pChannel) {
-        seekCloneBuffer(pChannel->getEngineBuffer());
-    }
     SyncRequestQueued enable_request =
             static_cast<SyncRequestQueued>(
                     m_iEnableSyncQueued.fetchAndStoreRelease(SYNC_REQUEST_NONE));
@@ -1116,6 +1112,12 @@ void EngineBuffer::processSyncRequests() {
 }
 
 void EngineBuffer::processSeek(bool paused) {
+    // Check if we are cloning another channel before doing any seeking.
+    EngineChannel* pChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(NULL);
+    if (pChannel) {
+        seekCloneBuffer(pChannel->getEngineBuffer());
+    }
+
     // We need to read position just after reading seekType, to ensure that we
     // read the matching position to seek_typ or a position from a new (second)
     // seek just queued from another thread
