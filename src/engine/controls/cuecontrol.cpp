@@ -135,6 +135,11 @@ CueControl::CueControl(QString group,
             this, &CueControl::introStartClear,
             Qt::DirectConnection);
 
+    m_pIntroStartActivate = new ControlPushButton(ConfigKey(group, "intro_start_activate"));
+    connect(m_pIntroStartActivate, &ControlObject::valueChanged,
+            this, &CueControl::introStartActivate,
+            Qt::DirectConnection);
+
     m_pIntroEndPosition = new ControlObject(ConfigKey(group, "intro_end_position"));
     m_pIntroEndPosition->set(-1.0);
 
@@ -151,6 +156,11 @@ CueControl::CueControl(QString group,
     m_pIntroEndClear = new ControlPushButton(ConfigKey(group, "intro_end_clear"));
     connect(m_pIntroEndClear, &ControlObject::valueChanged,
             this, &CueControl::introEndClear,
+            Qt::DirectConnection);
+
+    m_pIntroEndActivate = new ControlPushButton(ConfigKey(group, "intro_end_activate"));
+    connect(m_pIntroEndActivate, &ControlObject::valueChanged,
+            this, &CueControl::introEndActivate,
             Qt::DirectConnection);
 
     m_pOutroStartPosition = new ControlObject(ConfigKey(group, "outro_start_position"));
@@ -171,6 +181,11 @@ CueControl::CueControl(QString group,
             this, &CueControl::outroStartClear,
             Qt::DirectConnection);
 
+    m_pOutroStartActivate = new ControlPushButton(ConfigKey(group, "outro_start_activate"));
+    connect(m_pOutroStartActivate, &ControlObject::valueChanged,
+            this, &CueControl::outroStartActivate,
+            Qt::DirectConnection);
+
     m_pOutroEndPosition = new ControlObject(ConfigKey(group, "outro_end_position"));
     m_pOutroEndPosition->set(-1.0);
 
@@ -187,6 +202,11 @@ CueControl::CueControl(QString group,
     m_pOutroEndClear = new ControlPushButton(ConfigKey(group, "outro_end_clear"));
     connect(m_pOutroEndClear, &ControlObject::valueChanged,
             this, &CueControl::outroEndClear,
+            Qt::DirectConnection);
+
+    m_pOutroEndActivate = new ControlPushButton(ConfigKey(group, "outro_end_activate"));
+    connect(m_pOutroEndActivate, &ControlObject::valueChanged,
+            this, &CueControl::outroEndActivate,
             Qt::DirectConnection);
 
     m_pVinylControlEnabled = new ControlProxy(group, "vinylcontrol_enabled");
@@ -215,21 +235,25 @@ CueControl::~CueControl() {
     delete m_pIntroStartEnabled;
     delete m_pIntroStartSet;
     delete m_pIntroStartClear;
+    delete m_pIntroStartActivate;
     delete m_pIntroEndPosition;
     delete m_pIntroEndSource;
     delete m_pIntroEndEnabled;
     delete m_pIntroEndSet;
     delete m_pIntroEndClear;
+    delete m_pIntroEndActivate;
     delete m_pOutroStartPosition;
     delete m_pOutroStartSource;
     delete m_pOutroStartEnabled;
     delete m_pOutroStartSet;
     delete m_pOutroStartClear;
+    delete m_pOutroStartActivate;
     delete m_pOutroEndPosition;
     delete m_pOutroEndSource;
     delete m_pOutroEndEnabled;
     delete m_pOutroEndSet;
     delete m_pOutroEndClear;
+    delete m_pOutroEndActivate;
     delete m_pVinylControlEnabled;
     delete m_pVinylControlMode;
     qDeleteAll(m_hotcueControls);
@@ -1161,6 +1185,20 @@ void CueControl::introStartClear(double v) {
     }
 }
 
+void CueControl::introStartActivate(double v) {
+    if (v) {
+        QMutexLocker lock(&m_mutex);
+        double introStart = m_pIntroStartPosition->get();
+        lock.unlock();
+
+        if (introStart == -1.0) {
+            introStartSet(1.0);
+        } else {
+            seekAbs(introStart);
+        }
+    }
+}
+
 void CueControl::introEndSet(double v) {
     if (!v) {
         return;
@@ -1239,6 +1277,20 @@ void CueControl::introEndClear(double v) {
     }
 }
 
+void CueControl::introEndActivate(double v) {
+    if (v) {
+        QMutexLocker lock(&m_mutex);
+        double introEnd = m_pIntroEndPosition->get();
+        lock.unlock();
+
+        if (introEnd == -1.0) {
+            introEndSet(1.0);
+        } else {
+            seekAbs(introEnd);
+        }
+    }
+}
+
 void CueControl::outroStartSet(double v) {
     if (!v) {
         return;
@@ -1313,6 +1365,20 @@ void CueControl::outroStartClear(double v) {
     }
 }
 
+void CueControl::outroStartActivate(double v) {
+    if (v) {
+        QMutexLocker lock(&m_mutex);
+        double outroStart = m_pOutroStartPosition->get();
+        lock.unlock();
+
+        if (outroStart == -1.0) {
+            outroStartSet(1.0);
+        } else {
+            seekAbs(outroStart);
+        }
+    }
+}
+
 void CueControl::outroEndSet(double v) {
     if (!v) {
         return;
@@ -1382,6 +1448,20 @@ void CueControl::outroEndClear(double v) {
             pCue->setLength(0.0);
         } else if (pCue) {
             pLoadedTrack->removeCue(pCue);
+        }
+    }
+}
+
+void CueControl::outroEndActivate(double v) {
+    if (v) {
+        QMutexLocker lock(&m_mutex);
+        double outroEnd = m_pOutroEndPosition->get();
+        lock.unlock();
+
+        if (outroEnd == -1.0) {
+            outroEndSet(1.0);
+        } else {
+            seekAbs(outroEnd);
         }
     }
 }

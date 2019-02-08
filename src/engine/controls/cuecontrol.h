@@ -155,12 +155,16 @@ class CueControl : public EngineControl {
 
     void introStartSet(double v);
     void introStartClear(double v);
+    void introStartActivate(double v);
     void introEndSet(double v);
     void introEndClear(double v);
+    void introEndActivate(double v);
     void outroStartSet(double v);
     void outroStartClear(double v);
+    void outroStartActivate(double v);
     void outroEndSet(double v);
     void outroEndClear(double v);
+    void outroEndActivate(double v);
 
   private:
     enum class QuantizeMode {
@@ -220,24 +224,28 @@ class CueControl : public EngineControl {
     ControlObject* m_pIntroStartEnabled;
     ControlPushButton* m_pIntroStartSet;
     ControlPushButton* m_pIntroStartClear;
+    ControlPushButton* m_pIntroStartActivate;
 
     ControlObject* m_pIntroEndPosition;
     ControlObject* m_pIntroEndSource;
     ControlObject* m_pIntroEndEnabled;
     ControlPushButton* m_pIntroEndSet;
     ControlPushButton* m_pIntroEndClear;
+    ControlPushButton* m_pIntroEndActivate;
 
     ControlObject* m_pOutroStartPosition;
     ControlObject* m_pOutroStartSource;
     ControlObject* m_pOutroStartEnabled;
     ControlPushButton* m_pOutroStartSet;
     ControlPushButton* m_pOutroStartClear;
+    ControlPushButton* m_pOutroStartActivate;
 
     ControlObject* m_pOutroEndPosition;
     ControlObject* m_pOutroEndSource;
     ControlObject* m_pOutroEndEnabled;
     ControlPushButton* m_pOutroEndSet;
     ControlPushButton* m_pOutroEndClear;
+    ControlPushButton* m_pOutroEndActivate;
 
     ControlProxy* m_pVinylControlEnabled;
     ControlProxy* m_pVinylControlMode;
