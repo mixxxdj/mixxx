@@ -20,6 +20,7 @@
 #include "library/parsercsv.h"
 #include "util/sandbox.h"
 #include "mixer/playermanager.h"
+#include "widget/trackdroptarget.h"
 
 class DragAndDropHelper {
   public:
@@ -163,6 +164,37 @@ class DragAndDropHelper {
 
     static QUrl urlFromLocation(const QString& trackLocation) {
         return QUrl::fromLocalFile(trackLocation);
+    }
+
+    static void handleTrackDragEnterEvent(QDragEnterEvent* event, const QString& group,
+                                          UserSettingsPointer pConfig) {
+        if (allowLoadToPlayer(group, pConfig) &&
+                dragEnterAccept(*event->mimeData(), group,
+                                true, false)) {
+            event->acceptProposedAction();
+        } else {
+            event->ignore();
+        }
+    }
+
+    static void handleTrackDropEvent(QDropEvent* event, TrackDropTarget& target,
+                                     const QString& group, UserSettingsPointer pConfig) {
+        if (allowLoadToPlayer(group, pConfig)) {
+            if (allowDeckCloneAttempt(*event, group)) {
+                event->accept();
+                emit(target.cloneDeck(event->mimeData()->text(), group));
+                return;
+            } else {
+                QList<QFileInfo> files = dropEventFiles(
+                        *event->mimeData(), group, true, false);
+                if (!files.isEmpty()) {
+                    event->accept();
+                    emit(target.trackDropped(files.at(0).absoluteFilePath(), group));
+                    return;
+                }
+            }
+        }
+        event->ignore();
     }
 
   private:
