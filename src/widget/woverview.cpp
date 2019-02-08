@@ -60,7 +60,6 @@ WOverview::WOverview(
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
     m_trackSamplesControl =
             new ControlProxy(m_group, "track_samples", this);
-    m_playControl = new ControlProxy(m_group, "play", this);
     setAcceptDrops(true);
 
     connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
@@ -585,27 +584,9 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_group,
-                                             m_playControl->get() > 0.0,
-                                             m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
-                                               true, false)) {
-        event->acceptProposedAction();
-    } else {
-        event->ignore();
-    }
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_group, m_playControl->get() > 0.0,
-                                             m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_group, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
-            return;
-        }
-    }
-    event->ignore();
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }

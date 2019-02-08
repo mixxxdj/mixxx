@@ -556,6 +556,17 @@ Auxiliary* PlayerManager::getAuxiliary(unsigned int auxiliary) const {
     return m_auxiliaries[auxiliary - 1];
 }
 
+void PlayerManager::slotCloneDeck(QString source_group, QString target_group) {
+    BaseTrackPlayer* pPlayer = getPlayer(target_group);
+
+    if (pPlayer == nullptr) {
+        qWarning() << "Invalid group argument " << target_group << " to slotCloneDeck.";
+        return;
+    }
+
+    pPlayer->slotCloneDeck(source_group);
+}
+
 void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.

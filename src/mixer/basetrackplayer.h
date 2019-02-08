@@ -11,6 +11,7 @@
 #include "mixer/baseplayer.h"
 #include "track/track.h"
 #include "util/memory.h"
+#include "util/performancetimer.h"
 
 class EngineMaster;
 class ControlObject;
@@ -38,6 +39,8 @@ class BaseTrackPlayer : public BasePlayer {
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
+    virtual void slotCloneChannel(EngineChannel* pChannel) = 0;
+    virtual void slotCloneDeck(const QString& group) = 0;
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -74,12 +77,16 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay) final;
+    void slotCloneChannel(EngineChannel* pChannel) final;
+    void slotCloneDeck(const QString& group) final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, QString reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
     void slotPlayToggled(double);
 
   private slots:
+    void slotLoadTrackInternal(TrackPointer pNewTrack, bool bPlay);
+    void slotCloneFromDeck(double deck);
     void slotPassthroughEnabled(double v);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
@@ -101,6 +108,11 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     TrackPointer m_pLoadedTrack;
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
+    EngineChannel* m_pChannelToCloneFrom;
+    PerformanceTimer m_cloneTimer;
+
+    // Deck clone control
+    std::unique_ptr<ControlObject> m_pCloneFromDeck;
 
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;
