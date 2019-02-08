@@ -318,7 +318,7 @@ class VinylControl(Feature):
                    'src/vinylcontrol/vinylcontrolmanager.cpp',
                    'src/vinylcontrol/vinylcontrolprocessor.cpp',
                    'src/vinylcontrol/steadypitch.cpp',
-                   'src/engine/vinylcontrolcontrol.cpp', ]
+                   'src/engine/controls/vinylcontrolcontrol.cpp', ]
         if build.platform_is_windows:
             sources.append("lib/xwax/timecoder_win32.cpp")
             sources.append("lib/xwax/lut_win32.cpp")
@@ -327,70 +327,6 @@ class VinylControl(Feature):
             sources.append("lib/xwax/lut.c")
 
         return sources
-
-
-class Vamp(Feature):
-    INTERNAL_LINK = False
-    INTERNAL_VAMP_PATH = 'lib/vamp'
-
-    def description(self):
-        return "Vamp Analyzer support"
-
-    def enabled(self, build):
-        build.flags['vamp'] = util.get_flags(build.env, 'vamp', 1)
-        if int(build.flags['vamp']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('vamp', 'Set to 1 to enable vamp analysers', 1)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-
-        build.env.Append(CPPDEFINES='__VAMP__')
-        build.env.Append(CPPDEFINES='kiss_fft_scalar=double')
-
-        # If there is no system vamp-hostsdk is installed or if the version
-        # of the installed vamp-hostsdk is less than the bundled version,
-        # then we'll directly link the bundled vamp-hostsdk
-        if not conf.CheckLib('vamp-hostsdk') or not conf.CheckForPKG('vamp-plugin-sdk', '2.7.1'):
-            self.INTERNAL_LINK = True
-            build.env.Append(CPPPATH=['#' + self.INTERNAL_VAMP_PATH])
-
-        # Needed on Linux at least. Maybe needed elsewhere?
-        if build.platform_is_linux:
-            # Optionally link libdl Required for some distros.
-            conf.CheckLib(['dl', 'libdl'])
-
-        # FFTW3 support
-        have_fftw3_h = conf.CheckHeader('fftw3.h')
-        have_fftw3 = conf.CheckLib('fftw3', autoadd=False)
-        if have_fftw3_h and have_fftw3 and build.platform_is_linux:
-            build.env.Append(CPPDEFINES='HAVE_FFTW3')
-            build.env.ParseConfig(
-                'pkg-config fftw3 --silence-errors --cflags --libs')
-
-    def sources(self, build):
-        if self.INTERNAL_LINK:
-            # Clone our main environment so we don't change any settings in the
-            # Mixxx environment.
-            env = build.env.Clone()
-            vamp_dir = env.Dir(self.INTERNAL_VAMP_PATH)
-            SCons.Export('env')
-            SCons.Export('build')
-            env.SConscript(env.File('SConscript', vamp_dir))
-
-            build.env.Append(LIBPATH=self.INTERNAL_VAMP_PATH)
-            build.env.Append(LIBS=['vamp-hostsdk'])
-
-        return ['src/analyzer/vamp/vampanalyzer.cpp',
-                'src/analyzer/vamp/vamppluginadapter.cpp',
-                'src/analyzer/analyzerbeats.cpp',
-                'src/analyzer/analyzerkey.cpp',
-                'src/preferences/dialog/dlgprefbeats.cpp',
-                'src/preferences/dialog/dlgprefkey.cpp']
 
 
 class ModPlug(Feature):
@@ -811,20 +747,26 @@ class Opus(Feature):
 
         # Support for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
-        if not conf.CheckLib(['opusfile', 'libopusfile']):
+        if not conf.CheckLib(['opusfile', 'libopusfile']) or not conf.CheckLib(['opus', 'libopus']):
             if explicit:
-                raise Exception('Could not find libopusfile.')
+                raise Exception('Could not find opus or libopusfile.')
             else:
                 build.flags['opus'] = 0
             return
 
-        build.env.Append(CPPDEFINES='__OPUS__')
+        if build.platform_is_windows and build.static_dependencies:
+            for opus_lib in ['celt', 'silk_common', 'silk_float']:
+                if not conf.CheckLib(opus_lib):
+                    raise Exception('Missing opus static library %s -- exiting' % opus_lib)
 
         if build.platform_is_linux or build.platform_is_bsd:
             build.env.ParseConfig('pkg-config opusfile opus --silence-errors --cflags --libs')
 
+        build.env.Append(CPPDEFINES='__OPUS__')
+
     def sources(self, build):
-        return ['src/sources/soundsourceopus.cpp']
+        return ['src/sources/soundsourceopus.cpp',
+                'src/encoder/encoderopus.cpp']
 
 
 class FFMPEG(Feature):

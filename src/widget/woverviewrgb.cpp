@@ -6,9 +6,12 @@
 #include "util/math.h"
 #include "waveform/waveform.h"
 
-WOverviewRGB::WOverviewRGB(const char* pGroup,
-                           UserSettingsPointer pConfig, QWidget* parent)
-        : WOverview(pGroup, pConfig, parent)  {
+WOverviewRGB::WOverviewRGB(
+        const char* group,
+        PlayerManager* pPlayerManager,
+        UserSettingsPointer pConfig,
+        QWidget* parent)
+        : WOverview(group, pPlayerManager, pConfig, parent)  {
 }
 
 bool WOverviewRGB::drawNextPixmapPart() {

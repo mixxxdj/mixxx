@@ -34,16 +34,16 @@ HerculesRMX.firstGenerationFirmware = false;
 HerculesRMX.Button = Button;
 
 HerculesRMX.Button.prototype.setLed = function(ledState, blink) {
-	if(ledState == LedState.on) {
-		midi.sendShortMsg(0xB0,this.controlId,LedState.on);
-	} else {
-		midi.sendShortMsg(0xB0,this.controlId,LedState.off);
-	}
-	if(blink) {
-	   engine.beginTimer(20, "midi.sendShortMsg(0xB0," + (this.controlId + 0x30) + ", " + LedState.on + ")", true);
-	} else {
-	   engine.beginTimer(20, "midi.sendShortMsg(0xB0," + (this.controlId + 0x30) + ", " + LedState.off + ")", true);
-	}
+    if(ledState == LedState.on) {
+        midi.sendShortMsg(0xB0,this.controlId,LedState.on);
+    } else {
+        midi.sendShortMsg(0xB0,this.controlId,LedState.off);
+    }
+    if(blink) {
+       engine.beginTimer(20, "midi.sendShortMsg(0xB0," + (this.controlId + 0x30) + ", " + LedState.on + ")", true);
+    } else {
+       engine.beginTimer(20, "midi.sendShortMsg(0xB0," + (this.controlId + 0x30) + ", " + LedState.off + ")", true);
+    }
 };
 
 HerculesRMX.shiftHandler = function(value) {
@@ -151,41 +151,41 @@ HerculesRMX.Deck.prototype.jogMove = function(jogValue) {
          engine.setValue("[Playlist]","SelectPrevTrack", 1);
       }
    } else if(HerculesRMX.scratchMode) {
-		if(!this.scratching) {
-			this.scratching = true;
-			engine.scratchEnable(this.deckNumber, 128, 45, 1.0/8, (1.0/8)/32);
-		} else {
-			engine.stopTimer(this.scratchTimer);
-		}
-		engine.scratchTick(this.deckNumber, jogValue);
-		this.scratchTimer = engine.beginTimer(20, "HerculesRMX.GetDeck('" + this.group + "').stopScratching()", true);
-	} else {
-		engine.setValue(this.group,"jog", jogValue);
-	}
+        if(!this.scratching) {
+            this.scratching = true;
+            engine.scratchEnable(this.deckNumber, 128, 45, 1.0/8, (1.0/8)/32);
+        } else {
+            engine.stopTimer(this.scratchTimer);
+        }
+        engine.scratchTick(this.deckNumber, jogValue);
+        this.scratchTimer = engine.beginTimer(20, "HerculesRMX.GetDeck('" + this.group + "').stopScratching()", true);
+    } else {
+        engine.setValue(this.group,"jog", jogValue);
+    }
 };
 
 HerculesRMX.Deck.prototype.stopScratching = function() {
-	this.scratching = false;
-	engine.scratchDisable(this.deckNumber);
-	this.scratchTimer  = -1;
+    this.scratching = false;
+    engine.scratchDisable(this.deckNumber);
+    this.scratchTimer  = -1;
 };
 
 HerculesRMX.Deck.prototype.pitchResetHandler = function(value) {
-	if(value == ButtonState.pressed) {
-		engine.setValue(this.group,"rate",0);
-	    this.Buttons.PitchReset.setLed(LedState.on);
-	}
+    if(value == ButtonState.pressed) {
+        engine.setValue(this.group,"rate",0);
+        this.Buttons.PitchReset.setLed(LedState.on);
+    }
 };
 
 HerculesRMX.Deck.prototype.syncHandler = function(value) {
-	if(value == ButtonState.pressed) {
-	   if(this.shiftMode) {
-	      engine.setValue(this.group,"bpm_tap",1);
-	   } else {
-	      engine.setValue(this.group,"beatsync",1);
+    if(value == ButtonState.pressed) {
+       if(this.shiftMode) {
+          engine.setValue(this.group,"bpm_tap",1);
+       } else {
+          engine.setValue(this.group,"beatsync",1);
          this.Buttons.Sync.setLed(LedState.on);
-	   }
-	} else if(value == ButtonState.released) {
+       }
+    } else if(value == ButtonState.released) {
       if(!this.shiftMode) {
          engine.setValue(this.group,"beatsync",0);
       }
@@ -455,12 +455,12 @@ HerculesRMX.Deck.prototype.sourceSelectHandler = function(value) {
       var passthroughStatus = engine.getValue(this.group, "passthrough");
       if(passthroughStatus) {
          engine.setValue(this.group, "passthrough", 0);
-		 this.Buttons.SourceSelect.setLed(LedState.off);
+         this.Buttons.SourceSelect.setLed(LedState.off);
       } else {
          engine.setValue(this.group, "passthrough", 1);
-		 this.Buttons.SourceSelect.setLed(LedState.on);
+         this.Buttons.SourceSelect.setLed(LedState.on);
       }
-	}
+    }
 };
 
 HerculesRMX.Deck.prototype.gainHandler = function(value) {

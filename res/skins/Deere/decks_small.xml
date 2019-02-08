@@ -1,0 +1,57 @@
+<Template>
+  <WidgetGroup>
+    <ObjectName>DecksSizer</ObjectName>
+    <SizePolicy>me,max</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>0me,45f</Size>
+        <Children>
+          <Template src="skin:deck_small.xml">
+            <SetVariable name="i">1</SetVariable>
+            <!-- Traditional Blue -->
+            <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
+            <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+            <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
+          </Template>
+
+          <Template src="skin:deck_small.xml">
+            <SetVariable name="i">2</SetVariable>
+            <!-- Traditional Orange -->
+            <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
+            <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+            <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>0me,45f</Size>
+        <Children>
+          <Template src="skin:deck_small.xml">
+            <SetVariable name="i">3</SetVariable>
+            <!-- Violet -->
+            <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
+            <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+            <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
+          </Template>
+
+          <Template src="skin:deck_small.xml">
+            <SetVariable name="i">4</SetVariable>
+            <!-- Lime -->
+            <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
+            <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+            <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

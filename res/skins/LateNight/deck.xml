@@ -20,12 +20,19 @@
             <Layout>horizontal</Layout>
             <Children>
               <WidgetGroup>
-                <SizePolicy>max,min</SizePolicy>
+                <SizePolicy>min,min</SizePolicy>
                 <MaximumSize>103,-1</MaximumSize>
                 <Layout>horizontal</Layout>
                 <Children>
-                  <Template src="skin:spinny.xml"/>
-                  <Template src="skin:deck_coverArt.xml"/>
+                  <WidgetGroup>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>SpinnyCoverart<Variable name="channum"/></ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                  </WidgetGroup>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_big_spinny_coverart</ConfigKey>

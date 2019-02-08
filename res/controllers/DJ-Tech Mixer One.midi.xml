@@ -480,163 +480,163 @@
         </controls>
         <outputs>
 <!--Channel A-->
-			<output>
-				<group>[Channel1]</group>
-				<key>filterLowKill</key>
-				<status>0x95</status>  <!-- First byte sent to device -->
-				<midino>0x08</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
-			<output>
-				<group>[Channel1]</group>
-				<key>filterMidKill</key>
-				<status>0x95</status>  <!-- First byte sent to device -->
-				<midino>0x09</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
-			<output>
-				<group>[Channel1]</group>
-				<key>filterHighKill</key>
-				<status>0x95</status>  <!-- First byte sent to device -->
-				<midino>0x06</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
-			<output>
-				<group>[Channel1]</group>
-				<key>pfl</key>
-				<status>0x95</status>  <!-- First byte sent to device -->
-				<midino>0x07</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
+            <output>
+                <group>[Channel1]</group>
+                <key>filterLowKill</key>
+                <status>0x95</status>  <!-- First byte sent to device -->
+                <midino>0x08</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>filterMidKill</key>
+                <status>0x95</status>  <!-- First byte sent to device -->
+                <midino>0x09</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>filterHighKill</key>
+                <status>0x95</status>  <!-- First byte sent to device -->
+                <midino>0x06</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
+            <output>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <status>0x95</status>  <!-- First byte sent to device -->
+                <midino>0x07</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
 
 
 
 <!--Channel C-->
-			<output>
-				<group>[Channel3]</group>
-				<key>filterLowKill</key>
-				<status>0x97</status>  <!-- First byte sent to device -->
-				<midino>0x08</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
-			<output>
-				<group>[Channel3]</group>
-				<key>filterMidKill</key>
-				<status>0x97</status>  <!-- First byte sent to device -->
-				<midino>0x09</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
-			<output>
-				<group>[Channel3]</group>
-				<key>filterHighKill</key>
-				<status>0x97</status>  <!-- First byte sent to device -->
-				<midino>0x06</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
-			<output>
-				<group>[Channel3]</group>
-				<key>pfl</key>
-				<status>0x97</status>  <!-- First byte sent to device -->
-				<midino>0x07</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
+            <output>
+                <group>[Channel3]</group>
+                <key>filterLowKill</key>
+                <status>0x97</status>  <!-- First byte sent to device -->
+                <midino>0x08</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>filterMidKill</key>
+                <status>0x97</status>  <!-- First byte sent to device -->
+                <midino>0x09</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>filterHighKill</key>
+                <status>0x97</status>  <!-- First byte sent to device -->
+                <midino>0x06</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
+            <output>
+                <group>[Channel3]</group>
+                <key>pfl</key>
+                <status>0x97</status>  <!-- First byte sent to device -->
+                <midino>0x07</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
 
 <!--Channel B-->
-			<output>
-				<group>[Channel2]</group>
-				<key>filterLowKill</key>
-				<status>0x96</status>  <!-- First byte sent to device -->
-				<midino>0x04</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
-			<output>
-				<group>[Channel2]</group>
-				<key>filterMidKill</key>
-				<status>0x96</status>  <!-- First byte sent to device -->
-				<midino>0x01</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
-			<output>
-				<group>[Channel2]</group>
-				<key>filterHighKill</key>
-				<status>0x96</status>  <!-- First byte sent to device -->
-				<midino>0x02</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
-			<output>
-				<group>[Channel2]</group>
-				<key>pfl</key>
-				<status>0x96</status>  <!-- First byte sent to device -->
-				<midino>0x03</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
+            <output>
+                <group>[Channel2]</group>
+                <key>filterLowKill</key>
+                <status>0x96</status>  <!-- First byte sent to device -->
+                <midino>0x04</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>filterMidKill</key>
+                <status>0x96</status>  <!-- First byte sent to device -->
+                <midino>0x01</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>filterHighKill</key>
+                <status>0x96</status>  <!-- First byte sent to device -->
+                <midino>0x02</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
+            <output>
+                <group>[Channel2]</group>
+                <key>pfl</key>
+                <status>0x96</status>  <!-- First byte sent to device -->
+                <midino>0x03</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
 
 
 
 <!--Channel D-->
-			<output>
-				<group>[Channel4]</group>
-				<key>filterLowKill</key>
-				<status>0x98</status>  <!-- First byte sent to device -->
-				<midino>0x04</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
-			<output>
-				<group>[Channel4]</group>
-				<key>filterMidKill</key>
-				<status>0x98</status>  <!-- First byte sent to device -->
-				<midino>0x01</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
-			<output>
-				<group>[Channel4]</group>
-				<key>filterHighKill</key>
-				<status>0x98</status>  <!-- First byte sent to device -->
-				<midino>0x02</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
-			<output>
-				<group>[Channel4]</group>
-				<key>pfl</key>
-				<status>0x98</status>  <!-- First byte sent to device -->
-				<midino>0x03</midino>  <!-- Second byte -->
-				<on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<minimum>.5</minimum>
-			</output>
+            <output>
+                <group>[Channel4]</group>
+                <key>filterLowKill</key>
+                <status>0x98</status>  <!-- First byte sent to device -->
+                <midino>0x04</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>filterMidKill</key>
+                <status>0x98</status>  <!-- First byte sent to device -->
+                <midino>0x01</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>filterHighKill</key>
+                <status>0x98</status>  <!-- First byte sent to device -->
+                <midino>0x02</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
+            <output>
+                <group>[Channel4]</group>
+                <key>pfl</key>
+                <status>0x98</status>  <!-- First byte sent to device -->
+                <midino>0x03</midino>  <!-- Second byte -->
+                <on>0x7F</on>  <!-- Third byte. If not specified, 0x7F is used. -->
+                <off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
+                <minimum>.5</minimum>
+            </output>
 
 
 
-		</outputs>
+        </outputs>
     </controller>
 </MixxxMIDIPreset>

@@ -199,8 +199,7 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
 
     m_pSlipEnabled = new ControlProxy(
             m_group, "slip_enabled", this);
-    m_pSlipEnabled->connectValueChanged(
-            SLOT(updateSlipEnabled(double)));
+    m_pSlipEnabled->connectValueChanged(this, &WSpinny::updateSlipEnabled);
 
 #ifdef __VINYLCONTROL__
     m_pVinylControlSpeedType = new ControlProxy(
@@ -210,18 +209,18 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
 
     m_pVinylControlEnabled = new ControlProxy(
             m_group, "vinylcontrol_enabled", this);
-    m_pVinylControlEnabled->connectValueChanged(
-            SLOT(updateVinylControlEnabled(double)));
+    m_pVinylControlEnabled->connectValueChanged(this,
+            &WSpinny::updateVinylControlEnabled);
 
     m_pSignalEnabled = new ControlProxy(
             m_group, "vinylcontrol_signal_enabled", this);
-    m_pSignalEnabled->connectValueChanged(
-            SLOT(updateVinylControlSignalEnabled(double)));
+    m_pSignalEnabled->connectValueChanged(this,
+            &WSpinny::updateVinylControlSignalEnabled);
 
     // Match the vinyl control's set RPM so that the spinny widget rotates at
     // the same speed as your physical decks, if you're using vinyl control.
-    m_pVinylControlSpeedType->connectValueChanged(
-            SLOT(updateVinylControlSpeed(double)));
+    m_pVinylControlSpeedType->connectValueChanged(this,
+            &WSpinny::updateVinylControlSpeed);
 
 
 #else
@@ -318,13 +317,10 @@ void WSpinny::render() {
                                         &m_dGhostAngleCurrentPlaypos);
     }
 
-    QStyleOption option;
-    option.initFrom(this);
-    QStylePainter p(this);
+    QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
     p.setRenderHint(QPainter::HighQualityAntialiasing);
     p.setRenderHint(QPainter::SmoothPixmapTransform);
-    p.drawPrimitive(QStyle::PE_Widget, option);
 
     if (m_pBgImage) {
         p.drawImage(rect(), *m_pBgImage, m_pBgImage->rect());

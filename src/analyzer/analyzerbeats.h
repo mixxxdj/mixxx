@@ -9,10 +9,13 @@
 #define ANALYZER_ANALYZERBEATS_H
 
 #include <QHash>
+#include <QList>
 
 #include "analyzer/analyzer.h"
-#include "analyzer/vamp/vampanalyzer.h"
+#include "analyzer/plugins/analyzerplugin.h"
+#include "preferences/beatdetectionsettings.h"
 #include "preferences/usersettings.h"
+#include "util/memory.h"
 
 class AnalyzerBeats: public Analyzer {
   public:
@@ -20,6 +23,8 @@ class AnalyzerBeats: public Analyzer {
             UserSettingsPointer pConfig,
             bool enforceBpmDetection = false);
     ~AnalyzerBeats() override = default;
+
+    static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
@@ -30,19 +35,20 @@ class AnalyzerBeats: public Analyzer {
   private:
     static QHash<QString, QString> getExtraVersionInfo(
         QString pluginId, bool bPreferencesFastAnalysis);
-    QVector<double> correctedBeats(QVector<double> rawbeats);
 
-    const UserSettingsPointer m_pConfig;
+    BeatDetectionSettings m_bpmSettings;
+    std::unique_ptr<mixxx::AnalyzerBeatsPlugin> m_pPlugin;
     const bool m_enforceBpmDetection;
-
-    VampAnalyzer* m_pVamp;
     QString m_pluginId;
     bool m_bPreferencesReanalyzeOldBpm;
     bool m_bPreferencesFixedTempo;
     bool m_bPreferencesOffsetCorrection;
     bool m_bPreferencesFastAnalysis;
 
-    int m_iSampleRate, m_iTotalSamples;
+    int m_iSampleRate;
+    int m_iTotalSamples;
+    int m_iMaxSamplesToProcess;
+    int m_iCurrentSample;
     int m_iMinBpm, m_iMaxBpm;
 };
 

@@ -36,11 +36,33 @@
   border-bottom: 0px solid #222;
   padding-left: 3px;
 }
+#DeckTextRowSmall {
+  border: 1px solid #222;
+  border-width: 0px 1px 0px 1px;
+  padding: 0px;
+}
+
+#ArtistKeyBpmGutter {
+  qproperty-layoutAlignment: 'AlignVCenter';
+  border-top: 1px solid #222;
+}
 
 #UpperTextRow {
   /* top 0px seems required for bottom 1px to work O_o */
   border-top: 0px solid #222;
   border-bottom: 0px solid #222;
+}
+
+#DeckSmall {
+  background-color: #333;
+}
+
+#DeckSmall #TitleGutter {
+  padding-left: 2px;
+}
+
+#OverviewGutterSmall {
+  padding: 1px 0px;
 }
 
 #DeckRows {
@@ -75,12 +97,17 @@
   padding: 3px;
   qproperty-layoutAlignment: 'AlignBottom';
 }
+#PlayGutterSmall {
+  padding: 3px;
+  background-color: none;
+  qproperty-layoutAlignment: 'AlignBottom'; /*
+  border-left: 1px solid #222;
+  background-color: #664988;  */
+}
 
 #MixerBorder {
   background-color: #222;
 }
-
-/* Rounded corners to split things up */
 
 #Deck1, #Deck3 {
   border-width: 0px 2.5px 5px 0px;
@@ -101,7 +128,7 @@
 #Sampler {
   border-style: solid;
   border-color: #222;
-  border-width: 0px 1px;
+  border-width: 0px 2px 0px 0px;
 }
 
 #SamplerMiddleSpacer {
@@ -113,6 +140,10 @@
 
 #Spacer22 {
   background-color: #222222;
+}
+
+#Spacer33 {
+  background-color: #333;
 }
 
 #TEST1 {
@@ -131,6 +162,14 @@
 
 #AlignRight {
   qproperty-layoutAlignment: 'AlignRight';
+}
+
+#AlignCenter {
+  qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
+}
+
+#AlignTop {
+  qproperty-layoutAlignment: 'AlignTop | AlignHCenter';
 }
 
 #SampleDecksContainer {
@@ -307,7 +346,7 @@ QHeaderView::down-arrow {
 
 /* library search bar */
 WSearchLineEdit {
-  margin: 0px 0px 0px 1px;
+  margin: 0px 2px 0px 0px;
   padding: 2px;
   border: 1px solid #4B4B4B;
   background-color: #1e1e1e;
@@ -357,7 +396,11 @@ WSearchLineEdit:focus {
 
 /* Spacing between treeview and preview deck/search bar */
 QTreeView {
-  margin: 4px 0px 0px 0px;
+  margin: 0px;
+}
+
+#LibraryCoverArtSplitter {
+  margin-top: 4px;
 }
 
 /* sidebar, as well as root items for playlists, crates, and history */
@@ -456,14 +499,9 @@ WLibrary QLabel, WLibrary QRadioButton {
 }
 
 WLibrary QRadioButton::indicator {
-  margin: 0px 5px 0px 2px;
+  margin: 0px 0px 0px 2px;
   width: 18px;
   height: 18px;
-}
-
-/* Additional space for the first QRadionButton in the row */
-WLibrary QRadioButton#radioButtonRecentlyAdded {
-  margin: 9px 10px 6px 14px;
 }
 
 WLibrary QRadioButton::indicator:checked {
@@ -559,12 +597,8 @@ WLibrary QRadioButton::indicator:unchecked {
   outline: none;
 }
 
-/* Additional space for the first and the last QPushButton in the row */
-#DlgMissing > QPushButton#btnPurge,
-#DlgHidden > QPushButton#btnUnhide,
-#DlgAutoDJ > QPushButton#pushButtonAutoDJ,
-#DlgRecording > QPushButton#pushButtonRecording,
-#DlgAnalysis > QPushButton#pushButtonAnalyze {
+/* Space in between 'Enable AutoDJ' and transition time spinbox */
+#DlgAutoDJ > QPushButton#pushButtonAutoDJ {
   margin: 9px 12px 6px 3px;
 }
 
@@ -866,21 +900,33 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 2px;
 }
+#TitleGutterSmall {
+  padding: 0px;
+}
+
+#ArtistKeyBpmGutterSmall {
+  border-top: 1px solid #222;
+}
 
 #BPMGutter, #PositionGutter {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   qproperty-layoutSpacing: 4;
   padding: 2px;
 }
-
 #PositionGutter {
   margin-right: 4px;
+}
+#PositionGutterSmall {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding: 0px 6px 2px 3px;
 }
 
 /* Start editable widgets in decks */
 #BpmKeyEditRowCollapsed:hover,
 #BpmKeyEditRowExpanded:hover,
-#PositionGutter:hover, #StarratingGutter:hover {
+#PositionGutter:hover,
+#PlayPositionTextSmall:hover,
+#StarratingGutter:hover {
   /* emphasize editable widgets on hover */
   border: 1px solid #FF6600;
   background-color: rgba(255, 102, 0, 128);
@@ -926,21 +972,45 @@ WBeatSpinBox,
 }
 /* End editable widgets in decks */
 
-#DeckTextRow #ArtistGutter WLabel, #DeckTextRow #BPMGutter WLabel, #DeckTextRow #PositionGutter WLabel {
+#DeckTextRow #ArtistGutter WLabel,
+#DeckTextRow #BPMGutter WLabel,
+#DeckTextRow #PositionGutter WLabel,
+#PlayPositionTextSmall,
+#ArtistTextSmall,
+#BpmKeyTextSmall {
   font-weight: bold;
   font-size: 15px;
   text-transform: none;
 }
 
-#BPMGutter WLabel, #PositionGutter WLabel {
+#BpmKeyTextSmall,
+#PlayPositionTextSmall {
   qproperty-alignment: 'AlignRight | AlignVCenter';
 }
 
-#DeckTextRow #TitleGutter WLabel, #EffectRackExpanded #EffectUnitNameContainer WLabel {
+#PlayPositionTextSmall {
+  padding: 0px 1px;
+  border: 1px solid transparent;
+}
+
+#TitleTextSmall,
+#ArtistTextSmall {
+  padding: 0px 1px 0px 1px;
+}
+
+#DeckTextRow #TitleGutter WLabel,
+#TitleTextSmall,
+#EffectRackExpanded #EffectUnitNameContainer WLabel {
   font-weight: bold;
   font-size: 17px;
   text-transform: none;
   text-align: left;
+}
+
+#BpmKeyTextSmall {
+  border: 1px solid #222;
+  border-width: 0px 0px 0px 1px;
+  padding: 0px 2px 0px 2px;
 }
 
 #SamplerTopRowInner WLabel {
@@ -954,7 +1024,7 @@ WBeatSpinBox,
   font-weight: bold;
   font-size: 15px;
   text-transform: none;
-  text-align: left;
+  text-align: center;
 }
 
 #EffectUnitNameRow {
@@ -965,6 +1035,20 @@ WBeatSpinBox,
 
 #EffectUnit1, #EffectUnit2, #EffectUnit3, #EffectUnit4 {
   qproperty-layoutAlignment: 'AlignTop';
+}
+
+#EffectUnitToggle {
+  padding: 0px 0px 0px 27px;
+  font: bold 14px/20px;
+  border: 0px;
+}
+
+#EffectUnitToggle[value="0"] {
+  image: url(skin:icon/ic_unfold_more_48px.svg) no-repeat top right;
+}
+
+#EffectUnitToggle[value="1"] {
+  image: url(skin:icon/ic_unfold_less_48px.svg) no-repeat top right;
 }
 
 #EffectUnitFiller {
@@ -978,12 +1062,12 @@ WBeatSpinBox,
 
 #EffectHighlightable[highlight="0"] {
   border: 0px;
-  padding: 4px;
+  padding: 3px 4px 3px 4px;
 }
 
 #EffectHighlightable[highlight="1"] {
   border: 2px solid #0081bd;
-  padding: 2px;
+  padding: 1px 2px 1px 2px;
 }
 
 #EffectChainGroupControlButton {
@@ -999,17 +1083,22 @@ WBeatSpinBox,
   qproperty-alignment: 'AlignHCenter';
 }
 
-#EffectUnitGroupControls {
+#EffectUnitControls {
   border: 1px solid #222222;
-  border-width: 0px 0px 1px 0px;
+  border-width: 0px 0px 0px 1px;
+  qproperty-layoutSpacing: 2;
+  padding: 0px 0px 3px 0px;
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  background-color: #333; /*
+  background-color: #664971;  */
 }
 
-#EffectUnitGroupControlsLeft {
-  qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
+#EffectUnitHead {
+  padding: 0px 0px 3px 0px;
 }
 
-#EffectUnitGroupControlsRight {
-  qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
+#EffectButtonContainer {
+  qproperty-layoutSpacing: 2;
 }
 
 #EffectMetaKnob, WEffect {
@@ -1122,7 +1211,7 @@ WEffectSelector {
 }
 
 #MasterControls {
-  qproperty-layoutSpacing: 0;
+  qproperty-layoutSpacing: 2;
 }
 
 #DeckControls {
@@ -1358,12 +1447,14 @@ WStarRating {
   border-width: 0px 0px 5px 0px;
 }
 
-#EffectUnitNoParameters {
-  padding-left: 5px;
+#EffectUnitNoParameters { /*
+  padding-left: 5px;  */
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
 }
 
 #EffectUnitEffectsNoParameters {
-  qproperty-layoutSpacing: 28;
+  qproperty-layoutSpacing: 20;
+  padding: 0px 4px;
 }
 
 #EffectUnitEffects {
@@ -1375,18 +1466,6 @@ WStarRating {
 #EffectUnitParameters {
   padding: 0 2px;
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
-  qproperty-layoutSpacing: 2;
-}
-
-#EffectUnitControls {
-  padding: 2px;
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  qproperty-layoutSpacing: 2;
-}
-
-#EffectUnitGroupControlsLeft,
-#EffectUnitGroupControlsRight,
-#EffectUnitGroupControlsInputs {
   qproperty-layoutSpacing: 2;
 }
 
