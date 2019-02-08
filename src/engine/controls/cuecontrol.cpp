@@ -1142,10 +1142,21 @@ void CueControl::introStartSet(double v) {
         position = sampleOfTrack.current;
     }
 
-    // Make sure user is not trying to place intro start cue on or after intro end cue.
+    // Make sure user is not trying to place intro start cue on or after
+    // other intro/outro cues.
     double introEnd = m_pIntroEndPosition->get();
+    double outroStart = m_pOutroStartPosition->get();
+    double outroEnd = m_pOutroEndPosition->get();
     if (introEnd != -1.0 && position >= introEnd) {
         qWarning() << "Trying to place intro start cue on or after intro end cue.";
+        return;
+    }
+    if (outroStart != -1.0 && position >= outroStart) {
+        qWarning() << "Trying to place intro start cue on or after outro start cue.";
+        return;
+    }
+    if (outroEnd != -1.0 && position >= outroEnd) {
+        qWarning() << "Trying to place intro start cue on or after outro end cue.";
         return;
     }
 
@@ -1224,15 +1235,21 @@ void CueControl::introEndSet(double v) {
         position = sampleOfTrack.current;
     }
 
-    // Make sure user is not trying to place intro start cue point outside ...
+    // Make sure user is not trying to place intro end cue on or before
+    // intro start cue, or on or after outro start/end cue.
     double introStart = m_pIntroStartPosition->get();
     double outroStart = m_pOutroStartPosition->get();
+    double outroEnd = m_pOutroEndPosition->get();
     if (introStart != -1.0 && position <= introStart) {
         qWarning() << "Trying to place intro end cue on or before intro start cue.";
         return;
     }
     if (outroStart != -1.0 && position >= outroStart) {
         qWarning() << "Trying to place intro end cue on or after outro start cue.";
+        return;
+    }
+    if (outroEnd != -1.0 && position >= outroEnd) {
+        qWarning() << "Trying to place intro end cue on or after outro end cue.";
         return;
     }
 
@@ -1318,8 +1335,13 @@ void CueControl::outroStartSet(double v) {
 
     // Make sure user is not trying to place outro start cue on or before
     // intro end cue or on or after outro end cue.
+    double introStart = m_pIntroStartPosition->get();
     double introEnd = m_pIntroEndPosition->get();
     double outroEnd = m_pOutroEndPosition->get();
+    if (introStart != -1.0 && position <= introStart) {
+        qWarning() << "Trying to place outro start cue on or before intro start cue.";
+        return;
+    }
     if (introEnd != -1.0 && position <= introEnd) {
         qWarning() << "Trying to place outro start cue on or before intro end cue.";
         return;
@@ -1404,8 +1426,19 @@ void CueControl::outroEndSet(double v) {
         position = sampleOfTrack.current;
     }
 
-    // Make sure user is not trying to place outro end cue on or before outro start cue.
+    // Make sure user is not trying to place outro end cue on or before
+    // other intro/outro cues.
+    double introStart = m_pIntroStartPosition->get();
+    double introEnd = m_pIntroEndPosition->get();
     double outroStart = m_pOutroStartPosition->get();
+    if (introStart != -1.0 && position <= introStart) {
+        qWarning() << "Trying to place outro end cue on or before intro start cue.";
+        return;
+    }
+    if (introEnd != -1.0 && position <= introEnd) {
+        qWarning() << "Trying to place outro end cue on or before intro end cue.";
+        return;
+    }
     if (outroStart != -1.0 && position <= outroStart) {
         qWarning() << "Trying to place outro end cue on or before outro start cue.";
         return;
