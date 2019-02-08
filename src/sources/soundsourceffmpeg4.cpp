@@ -26,7 +26,9 @@ const SINT kSamplesPerMP3Frame = 1152;
 
 // The minimum capacity for the internal sample buffer to
 // store decoded data that has not been read/consumed yet.
-const SINT kMinSampleBufferCapacity = 8192;
+// NOTE(2019-02-08, uklotzde): A capacity of 64 kB seem to
+// be sufficient for most use cases when using FFmpeg 4.0.x.
+const SINT kMinSampleBufferCapacity = 65536;
 
 const Logger kLogger("SoundSourceFFmpeg4");
 
