@@ -486,7 +486,7 @@
             </State>
             <Pos>334,10</Pos>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],intro_start_set</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],intro_start_activate</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
             <Connection>
@@ -505,7 +505,7 @@
             </State>
             <Pos>355,10</Pos>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],intro_end_set</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],intro_end_activate</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
             <Connection>
@@ -524,7 +524,7 @@
             </State>
             <Pos>376,10</Pos>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],outro_start_set</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],outro_start_activate</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
             <Connection>
@@ -543,7 +543,7 @@
             </State>
             <Pos>397,10</Pos>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],outro_end_set</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],outro_end_activate</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
             </Connection>
             <Connection>

@@ -635,7 +635,7 @@
               <Unpressed>skin:/btn/btn_hotcue_4_over.png</Unpressed>
             </State>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],intro_start_set</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],intro_start_activate</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
               <ButtonState>LeftButton</ButtonState>
               <ConnectValueToWidget>false</ConnectValueToWidget>
@@ -669,7 +669,7 @@
               <Unpressed>skin:/btn/btn_hotcue_1_over.png</Unpressed>
             </State>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],intro_end_set</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],intro_end_activate</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
               <ButtonState>LeftButton</ButtonState>
               <ConnectValueToWidget>false</ConnectValueToWidget>
@@ -703,7 +703,7 @@
               <Unpressed>skin:/btn/btn_hotcue_2_over.png</Unpressed>
             </State>
             <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],outro_start_set</ConfigKey>
+              <ConfigKey>[Channel<Variable name="channum"/>],outro_start_activate</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
               <ButtonState>LeftButton</ButtonState>
               <ConnectValueToWidget>false</ConnectValueToWidget>

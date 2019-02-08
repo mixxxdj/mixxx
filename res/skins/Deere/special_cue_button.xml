@@ -30,7 +30,7 @@ Variables:
       <Unpressed scalemode="STRETCH_ASPECT">skin:/buttons/btn_<Variable name="state_1_unpressed"/></Unpressed>
     </State>
     <Connection>
-      <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_set</ConfigKey>
+      <ConfigKey><Variable name="group"/>,<Variable name="cue_type"/>_activate</ConfigKey>
       <ButtonState>LeftButton</ButtonState>
     </Connection>
     <Connection>
