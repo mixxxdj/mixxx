@@ -58,7 +58,7 @@ uint64_t fixChannelLayout(uint64_t channel_layout, int channels) {
                 << fixed_channel_layout
                 << "for"
                 << channels
-                << "channels";
+                << "channel(s)";
         return fixed_channel_layout;
     } else {
         return channel_layout;
@@ -954,9 +954,17 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
                         IndexRange::between(
                                 frameRange.start(),
                                 readFrameIndex);
-                kLogger.warning()
-                        << "Overlapping sample frames in the stream:"
-                        << overlapRange;
+                // NOTE(2019-02-08, uklotzde): Overlapping frames at the
+                // beginning of an audio stream before the first readable
+                // sample frame at kMinFrameIndex are expected. For example
+                // this happens when decoding 320kbps MP3 files where
+                // decoding starts at position -1105 and the first 1105
+                // decoded samples need to be skipped.
+                if (readFrameIndex > kMinFrameIndex) {
+                    kLogger.warning()
+                            << "Overlapping sample frames in the stream:"
+                            << overlapRange;
+                }
                 const auto consumedRange =
                         IndexRange::between(
                                 writableSampleFrames.frameIndexRange().start(),
