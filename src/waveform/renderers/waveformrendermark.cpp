@@ -171,7 +171,7 @@ void WaveformRenderMark::generateMarkImage(WaveformMark* pMark) {
 
         // Visualize cue source (if available)
         if (pMark->hasSource()) {
-            if (pMark->getSource() != Cue::MANUAL) {
+            if (pMark->getSource() == Cue::AUTOMATIC) {
                 label.append("?");
             }
         }
