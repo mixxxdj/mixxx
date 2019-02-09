@@ -1081,7 +1081,7 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
                 }
             }
 
-            // Skip all missing/decoded ranges that do not overlap
+            // Skip all missing and decoded ranges that do not overlap
             // with writableRange, i.e. that precede writableRange.
             DEBUG_ASSERT(pDecodedSampleData);
             const auto preskipMissingFrameCount =
@@ -1105,7 +1105,7 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
                     << "missingFrameCount" << missingFrameCount;
             */
 
-            // Consume all sample data from missing/decoded ranges
+            // Consume all sample data from missing and decoded ranges
             // that overlap with writableRange.
             if (readFrameIndex == writableRange.start()) {
                 const auto writeMissingFrameCount =
@@ -1157,47 +1157,43 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
             */
 
             // Buffer remaining unread sample data from
-            // missing/decoded ranges
-            if (readFrameIndex >= writableRange.start()) {
-                const auto sampleBufferWriteLength =
-                        frames2samples(missingFrameCount + decodedFrameRange.length());
-                if (m_sampleBuffer.writableLength() < sampleBufferWriteLength) {
-                    const auto sampleBufferCapacity =
-                            m_sampleBuffer.readableLength() +
-                            sampleBufferWriteLength;
-                    kLogger.warning()
-                            << "Adjusting capacity of internal sample buffer by reallocation:"
-                            << m_sampleBuffer.capacity()
-                            << "->"
-                            << sampleBufferCapacity;
-                    m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
-                }
-                DEBUG_ASSERT(m_sampleBuffer.writableLength() >= sampleBufferWriteLength);
-                if (missingFrameCount > 0) {
-                    DEBUG_ASSERT(writableRange.empty());
-                    const auto clearSampleCount =
-                            frames2samples(missingFrameCount);
-                    const SampleBuffer::WritableSlice writableSlice(
-                            m_sampleBuffer.growForWriting(clearSampleCount));
-                    DEBUG_ASSERT(writableSlice.length() == clearSampleCount);
-                    SampleUtil::clear(
-                            writableSlice.data(),
-                            clearSampleCount);
-                    readFrameIndex += missingFrameCount;
-                }
-                if (!decodedFrameRange.empty()) {
-                    DEBUG_ASSERT(writableRange.empty());
-                    const auto copySampleCount =
-                            frames2samples(decodedFrameRange.length());
-                    const SampleBuffer::WritableSlice writableSlice(
-                            m_sampleBuffer.growForWriting(copySampleCount));
-                    DEBUG_ASSERT(writableSlice.length() == copySampleCount);
-                    SampleUtil::copy(
-                            writableSlice.data(),
-                            pDecodedSampleData,
-                            copySampleCount);
-                    readFrameIndex += decodedFrameRange.length();
-                }
+            // missing and decoded ranges
+            const auto sampleBufferWriteLength =
+                    frames2samples(missingFrameCount + decodedFrameRange.length());
+            if (m_sampleBuffer.writableLength() < sampleBufferWriteLength) {
+                const auto sampleBufferCapacity =
+                        m_sampleBuffer.readableLength() +
+                        sampleBufferWriteLength;
+                kLogger.warning()
+                        << "Adjusting capacity of internal sample buffer by reallocation:"
+                        << m_sampleBuffer.capacity()
+                        << "->"
+                        << sampleBufferCapacity;
+                m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
+            }
+            DEBUG_ASSERT(m_sampleBuffer.writableLength() >= sampleBufferWriteLength);
+            if (missingFrameCount > 0) {
+                const auto clearSampleCount =
+                        frames2samples(missingFrameCount);
+                const SampleBuffer::WritableSlice writableSlice(
+                        m_sampleBuffer.growForWriting(clearSampleCount));
+                DEBUG_ASSERT(writableSlice.length() == clearSampleCount);
+                SampleUtil::clear(
+                        writableSlice.data(),
+                        clearSampleCount);
+                readFrameIndex += missingFrameCount;
+            }
+            if (!decodedFrameRange.empty()) {
+                const auto copySampleCount =
+                        frames2samples(decodedFrameRange.length());
+                const SampleBuffer::WritableSlice writableSlice(
+                        m_sampleBuffer.growForWriting(copySampleCount));
+                DEBUG_ASSERT(writableSlice.length() == copySampleCount);
+                SampleUtil::copy(
+                        writableSlice.data(),
+                        pDecodedSampleData,
+                        copySampleCount);
+                readFrameIndex += decodedFrameRange.length();
             }
 
             // Housekeeping before next decoding iteration
