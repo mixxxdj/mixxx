@@ -950,23 +950,25 @@ WWidgetGroup {
   font-size: 12px/14px;
   font-weight: bold;
   }
-  #SpecialCueButton,
+  #SpecialCueButton[displayValue="0"],
   #HotcueButton[displayValue="0"],
   #CueUnderlay {
     color: #888;
     background-color: #333;
     }
-  #SpecialCueButton:hover,
+  #SpecialCueButton[displayValue="0"]:hover,
   #HotcueButton[displayValue="0"]:hover,
   #CueButton[displayValue="0"]:hover {
     border: 1px solid #aaaaaa;
     }
+  #SpecialCueButton[displayValue="1"],
   #HotcueButton[displayValue="1"],
   #CueButton[displayValue="1"],
   #CueUnderlay[displayValue="1"] {
     color: #eeeeee;
     background-color: #666;
     }
+  #SpecialCueButton[displayValue="1"]:hover,
   #HotcueButton[displayValue="1"]:hover,
   #CueButton[displayValue="1"]:hover {
     border: 1px solid #eeeeee;
