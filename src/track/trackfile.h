@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QUrl>
+#include <QtDebug>
 
 // Wrapper class for dealing with track files and their
 // path/location, URL, and URI representations.
@@ -99,3 +100,5 @@ class TrackFile {
   private:
     QFileInfo m_fileInfo;
 };
+
+QDebug operator<<(QDebug debug, const TrackFile& trackFile);

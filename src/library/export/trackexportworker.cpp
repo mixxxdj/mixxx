@@ -28,7 +28,7 @@ QMap<QString, TrackFile> createCopylist(const QList<TrackPointer>& tracks) {
         if (it->getCanonicalLocation().isEmpty()) {
             qWarning()
                     << "File not found or inaccessible while exporting"
-                    << it->getLocation();
+                    << it->getFileInfo();
             // Skip file
             continue;
         }
