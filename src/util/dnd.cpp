@@ -3,8 +3,6 @@
 #include <QRegExp>
 
 #include "control/controlobject.h"
-#include "library/parser.h"
-#include "library/parsercsv.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
 #include "mixer/playermanager.h"
@@ -203,7 +201,7 @@ QDrag* DragAndDropHelper::dragTrack(
         QWidget* pDragSource,
         QString sourceIdentifier) {
     QList<QUrl> locationUrls;
-    locationUrls.append(urlFromLocation(pTrack->getLocation()));
+    locationUrls.append(pTrack->getFileInfo().locationUrl());
     return dragUrls(locationUrls, pDragSource, sourceIdentifier);
 }
 
@@ -214,7 +212,7 @@ QDrag* DragAndDropHelper::dragTrackLocations(
         QString sourceIdentifier) {
     QList<QUrl> locationUrls;
     foreach (QString location, locations) {
-        locationUrls.append(urlFromLocation(location));
+        locationUrls.append(TrackFile(location).locationUrl());
     }
     return dragUrls(locationUrls, pDragSource, sourceIdentifier);
 }

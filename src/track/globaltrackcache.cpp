@@ -513,7 +513,7 @@ void GlobalTrackCache::resolve(
     }
     auto deletingPtr = std::unique_ptr<Track, void (&)(Track*)>(
             new Track(
-                    std::move(fileInfo),
+                    TrackFile(std::move(fileInfo)),
                     std::move(pSecurityToken),
                     std::move(trackId)),
             deleteTrack);

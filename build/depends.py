@@ -1159,6 +1159,7 @@ class MixxxCore(Feature):
                    "src/track/replaygain.cpp",
                    "src/track/track.cpp",
                    "src/track/globaltrackcache.cpp",
+                   "src/track/trackfile.cpp",
                    "src/track/trackmetadata.cpp",
                    "src/track/trackmetadatataglib.cpp",
                    "src/track/tracknumbers.cpp",

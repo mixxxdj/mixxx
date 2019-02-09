@@ -33,9 +33,9 @@ class TrackRefTest : public testing::Test {
 
     static void verifyFileInfo(const TrackRef& actual, const QFileInfo& fileInfo) {
         EXPECT_TRUE(actual.hasLocation());
-        EXPECT_EQ(TrackRef::location(fileInfo), actual.getLocation());
+        EXPECT_EQ(TrackFile(fileInfo).location(), actual.getLocation());
         EXPECT_TRUE(actual.hasCanonicalLocation());
-        EXPECT_EQ(TrackRef::canonicalLocation(fileInfo), actual.getCanonicalLocation());
+        EXPECT_EQ(TrackFile(fileInfo).canonicalLocation(), actual.getCanonicalLocation());
     }
 
     const QTemporaryFile m_tempFile;

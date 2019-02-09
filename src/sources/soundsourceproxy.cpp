@@ -180,7 +180,9 @@ SoundSourceProxy::findSoundSourceProviderRegistrations(
 TrackPointer SoundSourceProxy::importTemporaryTrack(
         QFileInfo fileInfo,
         SecurityTokenPointer pSecurityToken) {
-    TrackPointer pTrack = Track::newTemporary(std::move(fileInfo), std::move(pSecurityToken));
+    TrackPointer pTrack = Track::newTemporary(
+            TrackFile(std::move(fileInfo)),
+            std::move(pSecurityToken));
     // Lock the track cache while populating the temporary track
     // object to ensure that no metadata is exported into any file
     // while reading from this file. Since locking individual files
@@ -194,7 +196,9 @@ TrackPointer SoundSourceProxy::importTemporaryTrack(
 QImage SoundSourceProxy::importTemporaryCoverImage(
         QFileInfo fileInfo,
         SecurityTokenPointer pSecurityToken) {
-    TrackPointer pTrack = Track::newTemporary(std::move(fileInfo), std::move(pSecurityToken));
+    TrackPointer pTrack = Track::newTemporary(
+            TrackFile(std::move(fileInfo)),
+            std::move(pSecurityToken));
     // Lock the track cache while populating the temporary track
     // object to ensure that no metadata is exported into any file
     // while reading from this file. Since locking individual files
@@ -207,14 +211,15 @@ QImage SoundSourceProxy::importTemporaryCoverImage(
 Track::ExportMetadataResult
 SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
     DEBUG_ASSERT(pTrack);
+    const auto trackFile = pTrack->getFileInfo();
     mixxx::MetadataSourcePointer pMetadataSource =
-            SoundSourceProxy(pTrack->getCanonicalLocationUrl()).m_pSoundSource;
+            SoundSourceProxy(trackFile.canonicalLocationUrl()).m_pSoundSource;
     if (pMetadataSource) {
         return pTrack->exportMetadata(pMetadataSource);
     } else {
         kLogger.warning()
                 << "Unable to export track metadata into file"
-                << pTrack->getLocation();
+                << trackFile.location();
         return Track::ExportMetadataResult::Skipped;
     }
 }
@@ -222,7 +227,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
 SoundSourceProxy::SoundSourceProxy(
         TrackPointer pTrack)
         : m_pTrack(std::move(pTrack)),
-          m_url(m_pTrack ? m_pTrack->getCanonicalLocationUrl() : QUrl()),
+          m_url(m_pTrack ? m_pTrack->getFileInfo().canonicalLocationUrl() : QUrl()),
           m_soundSourceProviderRegistrations(findSoundSourceProviderRegistrations(m_url)),
           m_soundSourceProviderRegistrationIndex(0) {
     initSoundSource();
@@ -433,11 +438,12 @@ void SoundSourceProxy::updateTrackFromSource(
         kLogger.info()
                 << "Adding missing artist/title from file name"
                 << getUrl().toString();
-        if (parseMetadataFromFileName(&trackMetadata, m_pTrack->getFileInfo().fileName()) &&
+        const auto trackFile = m_pTrack->getFileInfo();
+        if (parseMetadataFromFileName(&trackMetadata, trackFile.fileName()) &&
                 metadataImported.second.isNull()) {
             // Since this is also some kind of metadata import, we mark the
             // track's metadata as synchronized with the time stamp of the file.
-            metadataImported.second = m_pTrack->getFileInfo().lastModified();
+            metadataImported.second = trackFile.fileLastModified();
         }
     }
 

@@ -1,11 +1,7 @@
-#ifndef TRACKREF_H
-#define TRACKREF_H
-
-
-#include <QFileInfo>
-#include <QUrl>
+#pragma once
 
 #include "track/trackid.h"
+#include "track/trackfile.h"
 
 
 // A track in the library is identified by a location and an id.
@@ -16,35 +12,16 @@
 // value object. Only the id can be set once.
 class TrackRef {
 public:
-    // All file-related track properties are snapshots from the provided
-    // QFileInfo. Obtaining them might involve accessing the file system
-    // and should be used consciously! The QFileInfo class does some
-    // caching behind the scenes.
-    // Please note that the canonical location of QFileInfo may change at
-    // any time, when the underlying file system structure is modified.
-    // It becomes empty if the file is deleted.
-    static QString location(const QFileInfo& fileInfo) {
-        return fileInfo.absoluteFilePath();
-    }
-    static QString canonicalLocation(const QFileInfo& fileInfo) {
-        return fileInfo.canonicalFilePath();
-    }
-
-    static QUrl locationUrl(const QFileInfo& fileInfo);
-    static QUrl canonicalLocationUrl(const QFileInfo& fileInfo);
-
-    static QString locationUri(const QFileInfo& fileInfo);
-    static QString canonicalLocationUri(const QFileInfo& fileInfo);
-
     // Converts a QFileInfo and an optional TrackId into a TrackRef. This
     // involves obtaining the file-related track properties from QFileInfo
     // (see above) and should used consciously!
     static TrackRef fromFileInfo(
             const QFileInfo& fileInfo,
             TrackId id = TrackId()) {
+        const TrackFile trackFile(fileInfo);
         return TrackRef(
-                location(fileInfo),
-                canonicalLocation(fileInfo),
+                trackFile.location(),
+                trackFile.canonicalLocation(),
                 id);
     }
 
@@ -135,6 +112,3 @@ Q_DECLARE_METATYPE(TrackRef)
 std::ostream& operator<<(std::ostream& os, const TrackRef& trackRef);
 
 QDebug operator<<(QDebug debug, const TrackRef& trackRef);
-
-
-#endif // TRACKREF_H
