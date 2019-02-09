@@ -17,7 +17,7 @@ Variables:
           <Template src="skin:button_2state_display.xml">
             <SetVariable name="TooltipId">reloop_toggle</SetVariable>
             <SetVariable name="ObjectName">LoopIndicator</SetVariable>
-            <SetVariable name="Size">30f,44me</SetVariable>
+            <SetVariable name="Size">30f,40me</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
             <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
           </Template>

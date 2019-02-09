@@ -57,11 +57,9 @@ WOverview::WOverview(
         m_scaleFactor(1.0) {
     m_endOfTrackControl = new ControlProxy(
             m_group, "end_of_track", this);
-    m_endOfTrackControl->connectValueChanged(
-             SLOT(onEndOfTrackChange(double)));
+    m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
     m_trackSamplesControl =
             new ControlProxy(m_group, "track_samples", this);
-    m_playControl = new ControlProxy(m_group, "play", this);
     setAcceptDrops(true);
 
     connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
@@ -96,28 +94,27 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     for (const auto& pMark: m_marks) {
         if (pMark->isValid()) {
             pMark->connectSamplePositionChanged(this,
-                    SLOT(onMarkChanged(double)));
+                    &WOverview::onMarkChanged);
         }
     }
 
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
         if (child.nodeName() == "MarkRange") {
-            m_markRanges.push_back(WaveformMarkRange());
+            m_markRanges.push_back(WaveformMarkRange(m_group, child, context, m_signalColors));
             WaveformMarkRange& markRange = m_markRanges.back();
-            markRange.setup(m_group, child, context, m_signalColors);
 
             if (markRange.m_markEnabledControl) {
                 markRange.m_markEnabledControl->connectValueChanged(
-                        this, SLOT(onMarkRangeChange(double)));
+                        this, &WOverview::onMarkRangeChange);
             }
             if (markRange.m_markStartPointControl) {
                 markRange.m_markStartPointControl->connectValueChanged(
-                        this, SLOT(onMarkRangeChange(double)));
+                        this, &WOverview::onMarkRangeChange);
             }
             if (markRange.m_markEndPointControl) {
                 markRange.m_markEndPointControl->connectValueChanged(
-                        this, SLOT(onMarkRangeChange(double)));
+                        this, &WOverview::onMarkRangeChange);
             }
         }
         child = child.nextSibling();
@@ -228,6 +225,7 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 
         connect(pNewTrack.get(), SIGNAL(waveformSummaryUpdated()),
                 this, SLOT(slotWaveformSummaryUpdated()));
+        slotWaveformSummaryUpdated();
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
@@ -586,27 +584,9 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_group,
-                                             m_playControl->get() > 0.0,
-                                             m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
-                                               true, false)) {
-        event->acceptProposedAction();
-    } else {
-        event->ignore();
-    }
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_group, m_playControl->get() > 0.0,
-                                             m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_group, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
-            return;
-        }
-    }
-    event->ignore();
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }

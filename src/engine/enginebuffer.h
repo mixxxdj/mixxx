@@ -22,7 +22,7 @@
 #include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "engine/cachingreader.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "preferences/usersettings.h"
 #include "control/controlvalue.h"
 #include "engine/engineobject.h"
@@ -76,8 +76,6 @@ const int kiTempLength = 200000;
 
 // Rate at which the playpos slider is updated
 const int kiPlaypositionUpdateRate = 15; // updates per second
-// Number of kiUpdateRates that go by before we update BPM.
-const int kiBpmUpdateCnt = 4; // about 3.75 updates per sec
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
@@ -113,7 +111,7 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    EngineBuffer(QString _group, UserSettingsPointer pConfig,
+    EngineBuffer(const QString& group, UserSettingsPointer pConfig,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
 
@@ -134,6 +132,7 @@ class EngineBuffer : public EngineObject {
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
     void requestSyncMode(SyncMode mode);
+    void requestClonePosition(EngineChannel* pChannel);
 
     // The process methods all run in the audio callback.
     void process(CSAMPLE* pOut, const int iBufferSize);
@@ -144,6 +143,7 @@ class EngineBuffer : public EngineObject {
     bool isTrackLoaded();
     TrackPointer getLoadedTrack() const;
 
+    double getExactPlayPos();
     double getVisualPlayPos();
     double getTrackSamples();
 
@@ -225,6 +225,9 @@ class EngineBuffer : public EngineObject {
     // for transitioning from one scaler to another, or reseeking a scaler
     // to prevent pops.
     void readToCrossfadeBuffer(const int iBufferSize);
+
+    // Copy the play position from the given buffer
+    void seekCloneBuffer(EngineBuffer* pOtherBuffer);
 
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(double playpos, bool adjustingPhase);
@@ -310,8 +313,7 @@ class EngineBuffer : public EngineObject {
     // during seek and loading of a new track
     QMutex m_pause;
     // Used in update of playpos slider
-    int m_iSamplesCalculated;
-    int m_iUiSlowTick;
+    int m_iSamplesSinceLastIndicatorUpdate;
 
     // The location where the track would have been had slip not been engaged
     double m_dSlipPosition;
@@ -332,12 +334,8 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_backButton;
     ControlPushButton* m_pSlipButton;
 
-    ControlObject* m_visualBpm;
-    ControlObject* m_visualKey;
     ControlObject* m_pQuantize;
     ControlObject* m_pMasterRate;
-    ControlObject* m_timeElapsed;
-    ControlObject* m_timeRemaining;
     ControlPotmeter* m_playposSlider;
     ControlProxy* m_pSampleRate;
     ControlProxy* m_pKeylockEngine;
@@ -365,6 +363,7 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineBufferTest, ResetPitchAdjustUsesLinear);
     FRIEND_TEST(EngineBufferTest, VinylScalerRampZero);
     FRIEND_TEST(EngineBufferTest, ReadFadeOut);
+    FRIEND_TEST(EngineBufferTest, RateTempTest);
     EngineBufferScale* m_pScaleVinyl;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.
@@ -386,6 +385,7 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
     ControlValueAtomic<double> m_queuedSeekPosition;
+    QAtomicPointer<EngineChannel> m_pChannelToCloneFrom;
 
     // Is true if the previous buffer was silent due to pausing
     QAtomicInt m_iTrackLoading;

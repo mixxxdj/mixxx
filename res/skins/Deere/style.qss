@@ -36,11 +36,33 @@
   border-bottom: 0px solid #222;
   padding-left: 3px;
 }
+#DeckTextRowSmall {
+  border: 1px solid #222;
+  border-width: 0px 1px 0px 1px;
+  padding: 0px;
+}
+
+#ArtistKeyBpmGutter {
+  qproperty-layoutAlignment: 'AlignVCenter';
+  border-top: 1px solid #222;
+}
 
 #UpperTextRow {
   /* top 0px seems required for bottom 1px to work O_o */
   border-top: 0px solid #222;
   border-bottom: 0px solid #222;
+}
+
+#DeckSmall {
+  background-color: #333;
+}
+
+#DeckSmall #TitleGutter {
+  padding-left: 2px;
+}
+
+#OverviewGutterSmall {
+  padding: 1px 0px;
 }
 
 #DeckRows {
@@ -75,12 +97,17 @@
   padding: 3px;
   qproperty-layoutAlignment: 'AlignBottom';
 }
+#PlayGutterSmall {
+  padding: 3px;
+  background-color: none;
+  qproperty-layoutAlignment: 'AlignBottom'; /*
+  border-left: 1px solid #222;
+  background-color: #664988;  */
+}
 
 #MixerBorder {
   background-color: #222;
 }
-
-/* Rounded corners to split things up */
 
 #Deck1, #Deck3 {
   border-width: 0px 2.5px 5px 0px;
@@ -113,6 +140,10 @@
 
 #Spacer22 {
   background-color: #222222;
+}
+
+#Spacer33 {
+  background-color: #333;
 }
 
 #TEST1 {
@@ -869,21 +900,33 @@ WBeatSpinBox,
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   padding: 2px;
 }
+#TitleGutterSmall {
+  padding: 0px;
+}
+
+#ArtistKeyBpmGutterSmall {
+  border-top: 1px solid #222;
+}
 
 #BPMGutter, #PositionGutter {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   qproperty-layoutSpacing: 4;
   padding: 2px;
 }
-
 #PositionGutter {
   margin-right: 4px;
+}
+#PositionGutterSmall {
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
+  padding: 0px 6px 2px 3px;
 }
 
 /* Start editable widgets in decks */
 #BpmKeyEditRowCollapsed:hover,
 #BpmKeyEditRowExpanded:hover,
-#PositionGutter:hover, #StarratingGutter:hover {
+#PositionGutter:hover,
+#PlayPositionTextSmall:hover,
+#StarratingGutter:hover {
   /* emphasize editable widgets on hover */
   border: 1px solid #FF6600;
   background-color: rgba(255, 102, 0, 128);
@@ -929,21 +972,45 @@ WBeatSpinBox,
 }
 /* End editable widgets in decks */
 
-#DeckTextRow #ArtistGutter WLabel, #DeckTextRow #BPMGutter WLabel, #DeckTextRow #PositionGutter WLabel {
+#DeckTextRow #ArtistGutter WLabel,
+#DeckTextRow #BPMGutter WLabel,
+#DeckTextRow #PositionGutter WLabel,
+#PlayPositionTextSmall,
+#ArtistTextSmall,
+#BpmKeyTextSmall {
   font-weight: bold;
   font-size: 15px;
   text-transform: none;
 }
 
-#BPMGutter WLabel, #PositionGutter WLabel {
+#BpmKeyTextSmall,
+#PlayPositionTextSmall {
   qproperty-alignment: 'AlignRight | AlignVCenter';
 }
 
-#DeckTextRow #TitleGutter WLabel, #EffectRackExpanded #EffectUnitNameContainer WLabel {
+#PlayPositionTextSmall {
+  padding: 0px 1px;
+  border: 1px solid transparent;
+}
+
+#TitleTextSmall,
+#ArtistTextSmall {
+  padding: 0px 1px 0px 1px;
+}
+
+#DeckTextRow #TitleGutter WLabel,
+#TitleTextSmall,
+#EffectRackExpanded #EffectUnitNameContainer WLabel {
   font-weight: bold;
   font-size: 17px;
   text-transform: none;
   text-align: left;
+}
+
+#BpmKeyTextSmall {
+  border: 1px solid #222;
+  border-width: 0px 0px 0px 1px;
+  padding: 0px 2px 0px 2px;
 }
 
 #SamplerTopRowInner WLabel {

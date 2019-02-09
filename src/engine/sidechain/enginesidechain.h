@@ -49,6 +49,8 @@ class EngineSideChain : public QThread, public AudioDestination {
     // Thread-safe, blocking.
     void addSideChainWorker(SideChainWorker* pWorker);
 
+    static const int SIDECHAIN_BUFFER_SIZE = 65536;
+
   private:
     void run() override;
 

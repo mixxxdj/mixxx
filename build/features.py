@@ -318,7 +318,7 @@ class VinylControl(Feature):
                    'src/vinylcontrol/vinylcontrolmanager.cpp',
                    'src/vinylcontrol/vinylcontrolprocessor.cpp',
                    'src/vinylcontrol/steadypitch.cpp',
-                   'src/engine/vinylcontrolcontrol.cpp', ]
+                   'src/engine/controls/vinylcontrolcontrol.cpp', ]
         if build.platform_is_windows:
             sources.append("lib/xwax/timecoder_win32.cpp")
             sources.append("lib/xwax/lut_win32.cpp")
@@ -747,20 +747,26 @@ class Opus(Feature):
 
         # Support for Opus (RFC 6716)
         # More info http://http://www.opus-codec.org/
-        if not conf.CheckLib(['opusfile', 'libopusfile']):
+        if not conf.CheckLib(['opusfile', 'libopusfile']) or not conf.CheckLib(['opus', 'libopus']):
             if explicit:
-                raise Exception('Could not find libopusfile.')
+                raise Exception('Could not find opus or libopusfile.')
             else:
                 build.flags['opus'] = 0
             return
 
-        build.env.Append(CPPDEFINES='__OPUS__')
+        if build.platform_is_windows and build.static_dependencies:
+            for opus_lib in ['celt', 'silk_common', 'silk_float']:
+                if not conf.CheckLib(opus_lib):
+                    raise Exception('Missing opus static library %s -- exiting' % opus_lib)
 
         if build.platform_is_linux or build.platform_is_bsd:
             build.env.ParseConfig('pkg-config opusfile opus --silence-errors --cflags --libs')
 
+        build.env.Append(CPPDEFINES='__OPUS__')
+
     def sources(self, build):
-        return ['src/sources/soundsourceopus.cpp']
+        return ['src/sources/soundsourceopus.cpp',
+                'src/encoder/encoderopus.cpp']
 
 
 class FFMPEG(Feature):

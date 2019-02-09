@@ -19,6 +19,7 @@
 #include <QList>
 
 #include "track/track.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wwidget.h"
 #include "analyzer/analyzerprogress.h"
 
@@ -29,7 +30,7 @@
 
 class PlayerManager;
 
-class WOverview : public WWidget {
+class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
     void setup(const QDomNode& node, const SkinContext& context);
@@ -42,6 +43,7 @@ class WOverview : public WWidget {
 
   signals:
     void trackDropped(QString filename, QString group);
+    void cloneDeck(QString source_group, QString target_group);
 
   protected:
     WOverview(
@@ -107,7 +109,6 @@ class WOverview : public WWidget {
     ControlProxy* m_endOfTrackControl;
     bool m_endOfTrack;
     ControlProxy* m_trackSamplesControl;
-    ControlProxy* m_playControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;

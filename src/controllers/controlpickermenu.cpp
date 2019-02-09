@@ -2,8 +2,8 @@
 
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "mixer/playermanager.h"
-#include "engine/cuecontrol.h"
-#include "engine/loopingcontrol.h"
+#include "engine/controls/cuecontrol.h"
+#include "engine/controls/loopingcontrol.h"
 #include "effects/effectrack.h"
 #include "effects/effectchainslot.h"
 #include "effects/effectslot.h"
@@ -455,6 +455,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            "super1",
                            tr("Deck %1 Quick Effect Super Knob").arg(i),
                            tr("Quick Effect Super Knob (control linked effect parameters)"),
+                           tr("Quick Effect"),
+                           quickEffectMenu);
+        addPrefixedControl(QString("[QuickEffectRack1_[Channel%1]_Effect1]").arg(i),
+                           "enabled",
+                           tr("Deck %1 Quick Effect Enable Button").arg(i),
+                           tr("Quick Effect Enable Button"),
                            tr("Quick Effect"),
                            quickEffectMenu);
     }

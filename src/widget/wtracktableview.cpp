@@ -122,7 +122,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(updateSelectionCrates(QWidget *)));
 
     m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
-    m_pCOTGuiTick->connectValueChanged(SLOT(slotGuiTick50ms(double)));
+    m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
@@ -502,6 +502,10 @@ void WTrackTableView::createActions() {
     m_pClearLoopAction = new QAction(tr("Loop"), this);
     connect(m_pClearLoopAction, SIGNAL(triggered()),
             this, SLOT(slotClearLoop()));
+
+    m_pClearKeyAction = new QAction(tr("Key"), this);
+    connect(m_pClearKeyAction, SIGNAL(triggered()),
+            this, SLOT(slotClearKey()));
 
     m_pClearReplayGainAction = new QAction(tr("ReplayGain"), this);
     connect(m_pClearReplayGainAction, SIGNAL(triggered()),
@@ -931,6 +935,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         //m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
         m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
         //m_pClearMetadataMenu->addAction(m_pClearLoopAction);
+        m_pClearMetadataMenu->addAction(m_pClearKeyAction);
         m_pClearMetadataMenu->addAction(m_pClearReplayGainAction);
         m_pClearMetadataMenu->addAction(m_pClearWaveformAction);
         m_pClearMetadataMenu->addSeparator();
@@ -1878,6 +1883,22 @@ void WTrackTableView::slotClearLoop() {
     }
 }
 
+void WTrackTableView::slotClearKey() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == nullptr) {
+        return;
+    }
+
+    for (const QModelIndex& index : indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            pTrack->resetKeys();
+        }
+    }
+}
+
 void WTrackTableView::slotClearReplayGain() {
     QModelIndexList indices = selectionModel()->selectedRows();
     TrackModel* trackModel = getTrackModel();
@@ -1918,6 +1939,7 @@ void WTrackTableView::slotClearAllMetadata() {
     slotClearMainCue();
     slotClearHotCues();
     slotClearLoop();
+    slotClearKey();
     slotClearReplayGain();
     slotClearWaveform();
 }

@@ -18,28 +18,30 @@
 					<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
 				</WidgetGroup>
 				<WidgetGroup>
-				    <Layout>vertical</Layout>
-				    <Children>
-						<Template src="skin:srcmicrophoneaux.xml">
-                    		<SetVariable name="micnum"></SetVariable>
-							<SetVariable name="auxnum">1</SetVariable>
-						</Template>
-				    </Children>
+          <Layout>vertical</Layout>
+          <Children>
+            <Template src="skin:srcmicrophoneaux.xml">
+              <SetVariable name="micnum"></SetVariable>
+              <SetVariable name="miclabel">1</SetVariable>
+              <SetVariable name="auxnum">1</SetVariable>
+            </Template>
+          </Children>
 				</WidgetGroup>
 				<WidgetGroup>
-				    <Layout>vertical</Layout>
-				    <Children>
-						<Template src="skin:srcfx.xml"/>
-				    </Children>
+          <Layout>vertical</Layout>
+          <Children>
+            <Template src="skin:srcfx.xml"/>
+          </Children>
 				</WidgetGroup>
 				<WidgetGroup>
-				    <Layout>vertical</Layout>
-				    <Children>
-						<Template src="skin:srcmicrophoneaux.xml">
-                    		<SetVariable name="micnum">2</SetVariable>
-							<SetVariable name="auxnum">2</SetVariable>
-						</Template>
-				    </Children>
+          <Layout>vertical</Layout>
+          <Children>
+          <Template src="skin:srcmicrophoneaux.xml">
+            <SetVariable name="micnum">2</SetVariable>
+            <SetVariable name="miclabel">2</SetVariable>
+            <SetVariable name="auxnum">2</SetVariable>
+          </Template>
+          </Children>
 				</WidgetGroup>
 			  </Children>
 			</WidgetGroup>
@@ -51,11 +53,11 @@
 		</WidgetGroup>
 	  </Children>
 	   <Connection>
-		 <ConfigKey>[Master],maximize_library</ConfigKey>
-		 <BindProperty>visible</BindProperty>
-		 <Transform>
-		   <Not/>
-		 </Transform>
+		   <ConfigKey>[Master],maximize_library</ConfigKey>
+		   <BindProperty>visible</BindProperty>
+		   <Transform>
+		     <Not/>
+		   </Transform>
 	   </Connection>
 	</WidgetGroup>
 </Template>

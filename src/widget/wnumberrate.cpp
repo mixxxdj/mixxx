@@ -19,11 +19,11 @@
 WNumberRate::WNumberRate(const char * group, QWidget * parent)
         : WNumber(parent) {
     m_pRateRangeControl = new ControlProxy(group, "rateRange", this);
-    m_pRateRangeControl->connectValueChanged(SLOT(setValue(double)));
+    m_pRateRangeControl->connectValueChanged(this, &WNumberRate::setValue);
     m_pRateDirControl = new ControlProxy(group, "rate_dir", this);
-    m_pRateDirControl->connectValueChanged(SLOT(setValue(double)));
+    m_pRateDirControl->connectValueChanged(this, &WNumberRate::setValue);
     m_pRateControl = new ControlProxy(group, "rate", this);
-    m_pRateControl->connectValueChanged(SLOT(setValue(double)));
+    m_pRateControl->connectValueChanged(this, &WNumberRate::setValue);
     // Initialize the widget.
     setValue(0);
 }

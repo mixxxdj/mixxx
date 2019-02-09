@@ -207,11 +207,10 @@
   <!--
   ############################################################################################
   ############################################################################################
-  General- Main background picture
+  General - Main skin container
   ############################################################################################
   ############################################################################################
   -->
-
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
   <Size>1008e,500e</Size>
@@ -239,7 +238,55 @@
         QProgressBar::chunk { background-color: #ec4522; }
     </LaunchImageStyle>
 
-  <Children>
+
+    <Children>
+    <!--
+    ############################################################################################
+    ############################################################################################
+    Singletons - create singletons for scrolling waveforms
+        Above the maximized library there are minimal decks which contain overview waveforms.
+        For the end-of-track warning in those overviews to work instances of scrolling waveforms
+        are required. We load in the maximzed library view, as well, but they are invisble as
+        they are 0px tall. 
+    ############################################################################################
+    ############################################################################################
+    -->
+    <SingletonDefinition>
+      <ObjectName>Waveform1</ObjectName>
+      <Children>
+        <Template src="skin:waveform.xml">
+          <SetVariable name="channum">1</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>Waveform2</ObjectName>
+      <Children>
+        <Template src="skin:waveform.xml">
+          <SetVariable name="channum">2</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>Overview1</ObjectName>
+      <Children>
+        <Template src="skin:overview.xml">
+          <SetVariable name="channum">1</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>Overview2</ObjectName>
+      <Children>
+        <Template src="skin:overview.xml">
+          <SetVariable name="channum">2</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
     <WidgetGroup>
       <ObjectName>DecksAndMixer</ObjectName>
       <Layout>horizontal</Layout>
@@ -413,9 +460,7 @@
           <Connection>
             <ConfigKey>[Master],maximize_library</ConfigKey>
             <BindProperty>visible</BindProperty>
-            <Transform>
-              <Not/>
-            </Transform>
+            <Transform><Not/></Transform>
           </Connection>
         </WidgetGroup>
         <Template src="skin:effectrow.xml"/>
@@ -427,7 +472,6 @@
           <SetVariable name="samplernum3">5</SetVariable>
           <SetVariable name="samplernum4">6</SetVariable>
         </Template>
-
         <Template src="skin:samplerrow.xml">
           <SetVariable name="row">2</SetVariable>
           <SetVariable name="samplernum1">3</SetVariable>
@@ -435,6 +479,10 @@
           <SetVariable name="samplernum3">7</SetVariable>
           <SetVariable name="samplernum4">8</SetVariable>
         </Template>
+
+        <!-- minimal decks, visible with maximized library -->
+        <Template src="skin:decks_row_small.xml"/>
+
         <!--
         **********************************************
         Library / Preview Deck / Search / Tree view

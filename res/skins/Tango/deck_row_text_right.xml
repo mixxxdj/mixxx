@@ -1,0 +1,110 @@
+<!--
+Description:
+  Container for:
+  * artist/title
+  * play position (elapsed/remaining/both)
+  * track duration
+  * indicator for enabled loop (if loop controls are hidden)
+  Time/duration can be set to left-hand side so that left and right decks
+  both show time/duration at the inner side.
+Variables:
+  group   : [ChannelN]
+  chanNum : channel number
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>ArtistTitleTime</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>i,me</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- Time + Title (+ Time) -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>i,me</SizePolicy>
+        <Children>
+
+          <NumberPos><!-- Symmetric Time -->
+            <ObjectName>PlayPosition</ObjectName>
+            <TooltipId>track_time</TooltipId>
+            <Size>-1min,20f</Size>
+            <Alignment>left</Alignment>
+            <Channel><Variable name="chanNum"/></Channel>
+            <!-- Not respected, see
+                https://answers.launchpad.net/mixxx/+question/635872
+            <NumberOfDigits>1</NumberOfDigits>-->
+            <Connection>
+              <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+            </Connection>
+          </NumberPos><!-- /Symmetric Time -->
+
+          <WidgetGroup><Size>8f,1min</Size></WidgetGroup>
+
+          <!-- Title
+          Needs to be wrapped in a container with SizePolicy set to 'i'.
+          If track property itself is set to a Size like '1min', or SizePolicy
+          is set to 'min' or 'i', it wouldn't expand correctly on demand -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>i,me</SizePolicy>
+            <Children>
+              <TrackProperty>
+                <TooltipId>track_title</TooltipId>
+                <ObjectName>TrackTitle</ObjectName>
+                <Property>title</Property>
+                <Alignment>right</Alignment>
+                <Elide>right</Elide>
+                <Size>1me,22f</Size>
+                <Channel><Variable name="chanNum"/></Channel>
+              </TrackProperty>
+            </Children>
+          </WidgetGroup>
+
+          <!-- Fixed spacer here. Setting padding in qss yields weird results... -->
+          <WidgetGroup>
+            <Size>2f,0min</Size>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- /Time + Title -->
+
+      <WidgetGroup><!-- Duration + by Artist -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children>
+
+          <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
+
+          <TrackProperty>
+            <ObjectName>Duration</ObjectName>
+            <Size>80me,22f</Size>
+            <TooltipId>track_duration</TooltipId>
+            <Property>durationFormatted</Property>
+            <Alignment>left</Alignment>
+            <Channel><Variable name="chanNum"/></Channel>
+          </TrackProperty>
+
+          <Label>
+            <ObjectName>TrackBy</ObjectName>
+            <Size>22f,22f</Size>
+            <Text>by </Text>
+            <Alignment>left</Alignment>
+          </Label>
+
+          <TrackProperty>
+            <TooltipId>track_artist</TooltipId>
+            <ObjectName>TrackArtist</ObjectName>
+            <SizePolicy>min,f</SizePolicy>
+            <Alignment>right</Alignment>
+            <Property>artist</Property>
+            <Channel><Variable name="chanNum"/></Channel>
+          </TrackProperty>
+
+          <!-- Fixed spacer here. Setting padding in qss yields weird results... -->
+          <WidgetGroup>
+            <Size>2f,0min</Size>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup><!-- /Duration + by Artist -->
+
+    </Children>
+  </WidgetGroup><!-- /Title + Time / by Artist + Duration -->
+</Template>

@@ -190,6 +190,78 @@
     </SingletonDefinition>
 
     <SingletonDefinition>
+      <ObjectName>DeckCoverArt1</ObjectName>
+      <Children>
+        <Template src="skin:../Deere/coverart.xml">
+          <SetVariable name="group">[Channel1]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckCoverArt2</ObjectName>
+      <Children>
+        <Template src="skin:../Deere/coverart.xml">
+          <SetVariable name="group">[Channel2]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckCoverArt3</ObjectName>
+      <Children>
+        <Template src="skin:../Deere/coverart.xml">
+          <SetVariable name="group">[Channel3]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckCoverArt4</ObjectName>
+      <Children>
+        <Template src="skin:../Deere/coverart.xml">
+          <SetVariable name="group">[Channel4]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview1</ObjectName>
+      <Children>
+        <Template src="skin:../Deere/deck_overview.xml">
+          <SetVariable name="group">[Channel1]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview2</ObjectName>
+      <Children>
+        <Template src="skin:../Deere/deck_overview.xml">
+          <SetVariable name="group">[Channel2]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview3</ObjectName>
+      <Children>
+        <Template src="skin:../Deere/deck_overview.xml">
+          <SetVariable name="group">[Channel3]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview4</ObjectName>
+      <Children>
+        <Template src="skin:../Deere/deck_overview.xml">
+          <SetVariable name="group">[Channel4]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
       <ObjectName>Library</ObjectName>
       <Children>
         <Template src="skin:../Deere/library.xml"/>
@@ -280,9 +352,18 @@
         </Splitter><!-- /Visible when Library is not maximized -->
 
         <WidgetGroup><!-- Maximized Library -->
-          <Layout>horizontal</Layout>
+          <Layout>vertical</Layout>
           <SizePolicy>me,me</SizePolicy>
           <Children>
+
+            <WidgetGroup>
+              <SizePolicy>me,max</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Template src="skin:../Deere/decks_small.xml"/>
+              </Children>
+            </WidgetGroup>
+
             <SingletonContainer>
               <ObjectName>Library</ObjectName>
             </SingletonContainer>

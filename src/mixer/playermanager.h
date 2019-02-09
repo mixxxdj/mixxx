@@ -25,6 +25,7 @@ class PreviewDeck;
 class Sampler;
 class SamplerBank;
 class SoundManager;
+class VisualsManager;
 
 // For mocking PlayerManager.
 class PlayerManagerInterface {
@@ -60,6 +61,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     PlayerManager(UserSettingsPointer pConfig,
                   SoundManager* pSoundManager,
                   EffectsManager* pEffectsManager,
+                  VisualsManager* pVisualsManager,
                   EngineMaster* pEngine);
     virtual ~PlayerManager();
 
@@ -180,6 +182,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void slotLoadToPlayer(QString location, QString group);
+    void slotCloneDeck(QString source_group, QString target_group);
 
     // Slots for loading tracks to decks
     void slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack);
@@ -250,6 +253,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     UserSettingsPointer m_pConfig;
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
+    VisualsManager* m_pVisualsManager;
     EngineMaster* m_pEngine;
     SamplerBank* m_pSamplerBank;
     ControlObject* m_pCONumDecks;

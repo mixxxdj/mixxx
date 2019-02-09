@@ -98,35 +98,11 @@ WWidgetGroup {
 ####### Colors ##################################################
 ###############################################################*/
 
-#Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
-#Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
-  color: #33a8ff;
-}
-#Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
-#Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
-  color: #d910f0;
-}
-
-#WaveformContainer1,
-#WaveformContainer2 {
-  background-color: #001D33;
-}
-#WaveformContainer3,
-#WaveformContainer4 {
-  background-color: #3A0440;
-}
-
-/*	Define background-color here to make VinylToggler match
-  the waveforms background-color.
-  spinnyMini_Xmask.svg must match as well. */
-#DeckOverview1,
-#DeckOverview2 {
-  background-color: #001D33;
-}
-#DeckOverview3,
-#DeckOverview4 {
-  background-color: #3A0440;
-}
+/* All deck-specific colors are now defined in <Schemes> in skin.xml.
+  - deck labels
+  - waveform & overview background/signal colors
+  - Spinny mini mask, mini default cover 
+ */
 
 
 
@@ -570,13 +546,42 @@ WWidgetGroup {
 #Deck1,
 #Deck3,
 #Deck2,
-#Deck4 {
+#Deck4
+#DeckMini1,
+#DeckMini2,
+#DeckMini3,
+#DeckMini4 {
   background-color: #0f0f0f;
 }
 
 #DeckContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   padding-bottom: 5px;
+}
+
+#DeckMini1,
+#DeckMini3 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin: 0px 4px 5px 0px;
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px;
+}
+
+#DeckMini2,
+#DeckMini4 {
+  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+  margin: 0px 0px 5px 4px;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+
+#DeckMini_TitlePlayPosKeyBPM {
+  qproperty-layoutAlignment: 'AlignRight | AlignTop';
+  background-color: #1e1e1e;
+  margin: 0px 1px 0px 1px;
+}
+#DeckMini_TitlePlayPosKeyBPM WLabel {
+  background-color: #333;
 }
 
 #DeckOverview {
@@ -699,28 +704,47 @@ WWidgetGroup {
     background-color: #333;
     }
 
+#DeckMini1 WLabel { /*
+  background-color: #121991;  */
+}
+
 #ArtistTitleTime {
   qproperty-layoutAlignment: 'AlignVCenter';
   background-color: #333;
   }
-  WLabel#PlayPosition, WLabel#TrackTitle {
+  #PlayPosition, #TrackTitle {
     font-size: 18px/18px;
     font-weight: bold;
-    }
-  WLabel#Duration, WLabel#TrackBy, WLabel#TrackArtist {
+  }
+  #Duration, #TrackBy, #TrackArtist, #TrackTitleMini, #PlayPositionMini {
     font-size: 16px/16px;
     font-weight: bold;
   }
-  #PlayPositionHighlightContainer {
+  #PlayPosition, #PlayPositionMini {
     /* Draw a border to emphasize that play position display can be changed
     to show both elapsed and remaining time */
-    padding: 0px 1px 0px 1px;
+    border: 1px solid transparent;
     }
-    #PlayPositionHighlightContainer:hover {
+  #PlayPosition {
+    padding: 0px 0px 0px 1px;
+    }
+  #PlayPositionMini {
+    padding: 0px 1px 0px 0px;
+    }
+    #PlayPosition:hover, #PlayPositionMini:hover {
       border: 1px solid #ccc;
     }
-  WLabel#TrackBy {
+  #TrackTitleMini {
+    padding: 0px 0px 0px 1px;
+  }
+  #TrackArtist {
+    padding-top: 2px;
+  }
+  WLabel#TrackBy, WLabel#TrackByMini {
     color: #888;
+  }
+  WLabel#TrackByMini {
+    padding: 2px 6px 0px 6px;
   }
   #LoopIndicator:hover {
     border: 1px solid #fff;
@@ -1133,6 +1157,12 @@ WBeatSpinBox,
   text-align: center;
   padding-top: 1px;
   }
+#BpmLabelMini {
+  font-size: 16px/16px;
+  font-weight: bold;
+  padding: 1px 0px 0px 0px;
+  border-top: 1px solid #1e1e1e;
+  }
   #SyncButtonOverlay[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
     border: 1px solid #ff4800;
@@ -1176,9 +1206,15 @@ WBeatSpinBox,
       image: url(skin:/buttons/btn_rate_down_hover.svg) no-repeat center center;
     }
 
-  #KeyDisplay {
+  #KeyDisplay, #KeyDisplayMini {
     font-size: 14px/14px;
+  }
+  #KeyDisplay {
     padding: 0px;
+  }
+  #KeyDisplayMini {
+    padding: 0px 0px 0px 0px;
+    border-top: 1px solid #1e1e1e;
   }
   #KeyMatch {
     border: 1px solid #444;
@@ -1891,24 +1927,10 @@ WTrackProperty#SamplerTitle_mini {
  ######  Spinnies  ##############################################
 ##############################################################*/
 
-#SpinnyCover_Container {
+#SpinnyCoverContainer {
   margin: 0px;
   padding: 0px;
   background-color: #1e1e1e;
-}
-
-#SpinnyCoverLeft {
-  qproperty-layoutAlignment: 'AlignRight';
-  margin-left: 3px;
-}
-
-#SpinnyCoverRight {
-  qproperty-layoutAlignment: 'AlignLeft';
-  margin-right: 3px;
-}
-
-#SpinnyMini {
-  background-color: transparent;
 }
 
 /*################################################################
@@ -2339,13 +2361,7 @@ WLibrary QPushButton {
     font-weight: bold;
   }
 
-  /* Colored highlight for action buttons:
-  - Purge
-  - Unhide buttons
-  - Enable AutoDJ
-  - Analyze	*/
-  QPushButton#btnPurge:hover,
-  QPushButton#btnUnhide:hover,
+  /* 'Enable AutoDJ' button	*/
   QPushButton#pushButtonAutoDJ:hover,
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #ff6600;

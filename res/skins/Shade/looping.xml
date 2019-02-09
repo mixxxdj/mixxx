@@ -11,9 +11,95 @@
         <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
       </WidgetGroup>
 
+      <WidgetGroup><!-- beatjump controls -->
+        <Size>102f,40f</Size>
+        <Style>QGroupBox {
+          border: 0px solid green;
+          margin: 0px;
+        }
+        </Style>
+        <BackPath>style/style_bg_looping.png</BackPath>
+        <Children>
+          <PushButton>
+            <TooltipId>beatjump_backward</TooltipId>
+            <Style></Style>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>skin:/btn/btn_beatjump_backward_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatjump_backward.png</Unpressed>
+            </State>
+            <Pos>5,10</Pos>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],beatjump_backward</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],beatjump_1_backward</ConfigKey>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
+
+
+          <WidgetGroup>
+            <Size>50f,20f</Size>
+            <Pos>26,10</Pos>
+            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
+            <Layout>horizontal</Layout>
+            <Children>
+              <BeatSpinBox>
+                <Size>50f,20f</Size>
+                <ObjectName>BeatjumpSizeSpinBox</ObjectName>
+                <TooltipId>beatjump_size</TooltipId>
+                <Value>[Channel<Variable name="channum"/>],beatjump_size</Value>
+              </BeatSpinBox>
+            </Children>
+          </WidgetGroup>
+
+          <PushButton>
+            <TooltipId>beatjump_forward</TooltipId>
+            <Style></Style>
+            <NumberStates>1</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>skin:/btn/btn_beatjump_forward_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatjump_forward.png</Unpressed>
+            </State>
+            <Pos>77,10</Pos>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],beatjump_forward</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+            <Connection>
+              <ConfigKey>[Channel<Variable name="channum"/>],beatjump_1_forward</ConfigKey>
+              <ButtonState>RightButton</ButtonState>
+            </Connection>
+          </PushButton>
+
+        </Children>
+      </WidgetGroup><!-- beatjump controls -->
+
       <WidgetGroup>
-        <ObjectName>looooop</ObjectName>
-        <Size>392e,40f</Size>
+        <ObjectName>EffectLeftBorder</ObjectName>
+        <Size>1f,40f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Size>0me,40f</Size>
+        <BackPath>style/style_bg_looping.png</BackPath>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectLeftBorder</ObjectName>
+        <Size>1f,40f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- loop controls -->
+        <Size>332f,40f</Size>
         <Style>QGroupBox {
           border: 0px solid green;
           margin: 0px 0px 0px 0px;
@@ -22,7 +108,7 @@
         <BackPath>style/style_bg_looping.png</BackPath>
         <Children>
           <PushButton>
-            <Pos>4,10</Pos>
+            <Pos>5,10</Pos>
             <TooltipId>reloop_toggle</TooltipId>
             <Style></Style>
             <NumberStates>2</NumberStates>
@@ -56,7 +142,7 @@
           </PushButton>
 
           <PushButton>
-            <Pos>31,10</Pos>
+            <Pos>32,10</Pos>
             <TooltipId>loop_in</TooltipId>
             <Style></Style>
             <NumberStates>1</NumberStates>
@@ -73,7 +159,7 @@
           </PushButton>
 
           <PushButton>
-            <Pos>52,10</Pos>
+            <Pos>53,10</Pos>
             <TooltipId>loop_out</TooltipId>
             <Style></Style>
             <NumberStates>1</NumberStates>
@@ -90,7 +176,7 @@
           </PushButton>
 
           <PushButton>
-            <Pos>79,10</Pos>
+            <Pos>80,10</Pos>
             <TooltipId>beatloop_activate</TooltipId>
             <Style></Style>
             <NumberStates>1</NumberStates>
@@ -110,7 +196,7 @@
           </PushButton>
 
           <WidgetGroup>
-            <Pos>100,10</Pos>
+            <Pos>101,10</Pos>
             <Size>50f,20f</Size>
             <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
             <Layout>horizontal</Layout>
@@ -132,7 +218,7 @@
           **********************************************
           -->
           <PushButton>
-            <Pos>159,10</Pos>
+            <Pos>160,10</Pos>
             <TooltipId>beatloop_activate</TooltipId>
             <Style></Style>
             <NumberStates>2</NumberStates>
@@ -165,7 +251,7 @@
           </PushButton>
 
           <PushButton>
-            <Pos>180,10</Pos>
+            <Pos>181,10</Pos>
             <TooltipId>beatloop_activate</TooltipId>
             <Style></Style>
             <NumberStates>2</NumberStates>
@@ -198,7 +284,7 @@
           </PushButton>
 
           <PushButton>
-            <Pos>201,10</Pos>
+            <Pos>202,10</Pos>
             <TooltipId>beatloop_activate</TooltipId>
             <Style></Style>
             <NumberStates>2</NumberStates>
@@ -245,7 +331,7 @@
               <Pressed>skin:/btn/btn_beatloop_1_overdown.png</Pressed>
               <Unpressed>skin:/btn/btn_beatloop_1_over.png</Unpressed>
             </State>
-            <Pos>222,10</Pos>
+            <Pos>223,10</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_1_toggle</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -277,7 +363,7 @@
               <Pressed>skin:/btn/btn_beatloop_2_overdown.png</Pressed>
               <Unpressed>skin:/btn/btn_beatloop_2_over.png</Unpressed>
             </State>
-            <Pos>243,10</Pos>
+            <Pos>244,10</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_2_toggle</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -309,7 +395,7 @@
               <Pressed>skin:/btn/btn_beatloop_4_overdown.png</Pressed>
               <Unpressed>skin:/btn/btn_beatloop_4_over.png</Unpressed>
             </State>
-            <Pos>264,10</Pos>
+            <Pos>265,10</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_4_toggle</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -341,7 +427,7 @@
               <Pressed>skin:/btn/btn_beatloop_8_overdown.png</Pressed>
               <Unpressed>skin:/btn/btn_beatloop_8_over.png</Unpressed>
             </State>
-            <Pos>285,10</Pos>
+            <Pos>286,10</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_8_toggle</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -373,7 +459,7 @@
               <Pressed>skin:/btn/btn_beatloop_16_overdown.png</Pressed>
               <Unpressed>skin:/btn/btn_beatloop_16_over.png</Unpressed>
             </State>
-            <Pos>306,10</Pos>
+            <Pos>307,10</Pos>
             <Connection>
               <ConfigKey>[Channel<Variable name="channum"/>],beatloop_16_toggle</ConfigKey>
               <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
@@ -390,75 +476,7 @@
             </Connection>
           </PushButton>
         </Children>
-      </WidgetGroup>
-
-      <WidgetGroup>
-        <Size>97f,40f</Size>
-        <Style>QGroupBox {
-          border: 0px solid green;
-          margin: 0px 0px 0px 0px;
-        }
-        </Style>
-        <BackPath>style/style_bg_looping.png</BackPath>
-        <Children>
-          <PushButton>
-            <TooltipId>beatjump_backward</TooltipId>
-            <Style></Style>
-            <NumberStates>1</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Pressed>skin:/btn/btn_beatjump_backward_overdown.png</Pressed>
-              <Unpressed>skin:/btn/btn_beatjump_backward.png</Unpressed>
-            </State>
-            <Pos>0,10</Pos>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],beatjump_backward</ConfigKey>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],beatjump_1_backward</ConfigKey>
-              <ButtonState>RightButton</ButtonState>
-            </Connection>
-          </PushButton>
-
-
-          <WidgetGroup>
-            <Size>50f,20f</Size>
-            <Pos>21,10</Pos>
-            <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
-            <Layout>horizontal</Layout>
-            <Children>
-              <BeatSpinBox>
-                <Size>50f,20f</Size>
-                <ObjectName>BeatjumpSizeSpinBox</ObjectName>
-                <TooltipId>beatjump_size</TooltipId>
-                <Value>[Channel<Variable name="channum"/>],beatjump_size</Value>
-              </BeatSpinBox>
-            </Children>
-          </WidgetGroup>
-
-          <PushButton>
-            <TooltipId>beatjump_forward</TooltipId>
-            <Style></Style>
-            <NumberStates>1</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Pressed>skin:/btn/btn_beatjump_forward_overdown.png</Pressed>
-              <Unpressed>skin:/btn/btn_beatjump_forward.png</Unpressed>
-            </State>
-            <Pos>72,10</Pos>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],beatjump_forward</ConfigKey>
-              <ButtonState>LeftButton</ButtonState>
-            </Connection>
-            <Connection>
-              <ConfigKey>[Channel<Variable name="channum"/>],beatjump_1_forward</ConfigKey>
-              <ButtonState>RightButton</ButtonState>
-            </Connection>
-          </PushButton>
-
-        </Children>
-      </WidgetGroup>
+      </WidgetGroup><!-- loop controls -->
 
       <WidgetGroup>
         <ObjectName>EffectRightBorder</ObjectName>
@@ -468,7 +486,6 @@
       </WidgetGroup>
 
       <WidgetGroup>
-        <ObjectName>EffectRightBorder</ObjectName>
         <Size>3f,40f</Size>
         <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }</Style>
       </WidgetGroup>
