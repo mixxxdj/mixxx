@@ -377,6 +377,10 @@ QStringList SoundSourceProviderFFmpeg4::getSupportedFileExtensions() const {
                 list.append("3g2");
                 list.append("mj2");
                 continue;
+            } else if (!strcmp(pavInputFormat->name, "opus") ||
+                    !strcmp(pavInputFormat->name, "libopus")) {
+                list.append("opus");
+                continue;
             } else if (!strcmp(pavInputFormat->name, "wav")) {
                 list.append("wav");
                 continue;
@@ -414,10 +418,6 @@ QStringList SoundSourceProviderFFmpeg4::getSupportedFileExtensions() const {
                 continue;
             } else if (!strcmp(pavInputFormat->name, "mpeg")) {
                 list.append("mpeg");
-                continue;
-            } else if (!strcmp(pavInputFormat->name, "opus") ||
-                    !strcmp(pavInputFormat->name, "libopus")) {
-                list.append("opus");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "tak")) {
                 list.append("tak");
