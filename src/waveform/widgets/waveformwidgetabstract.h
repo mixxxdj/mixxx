@@ -30,16 +30,16 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
 
     virtual void preRender(mixxx::Duration estimatedTimeUntilSwap);
     virtual mixxx::Duration render();
-    void renderOnNextTick() {
-        m_shouldRenderOnNextTick = true;
-        getWidget()->update();
+    virtual void renderOnNextTick() {
+        // By default, render immediately. Non-QOpenGLWidgets take this path.
+        preRender(mixxx::Duration::fromSeconds(0));
+        render();
     }
     virtual void resize(int width, int height, float devicePixelRatio) override;
 
   protected:
     QWidget* m_widget;
     bool m_initSuccess;
-    bool m_shouldRenderOnNextTick;
 
     //this is the factory resposability to trigger QWidget casting after constructor
     virtual void castToQWidget() = 0;

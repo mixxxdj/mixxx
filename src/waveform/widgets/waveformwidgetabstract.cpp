@@ -8,8 +8,7 @@
 WaveformWidgetAbstract::WaveformWidgetAbstract(const char* group)
     : WaveformWidgetRenderer(group),
       m_widget(nullptr),
-      m_initSuccess(false),
-      m_shouldRenderOnNextTick(false) {
+      m_initSuccess(false) {
 }
 
 WaveformWidgetAbstract::~WaveformWidgetAbstract() {

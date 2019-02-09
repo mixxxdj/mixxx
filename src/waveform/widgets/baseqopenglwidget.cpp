@@ -3,9 +3,13 @@
 #include "util/time.h"
 
 BaseQOpenGLWidget::BaseQOpenGLWidget(const char* group, QWidget* pParent)
-        : QOpenGLWidget(pParent), WaveformWidgetAbstract(group) {
-    connect(this, SIGNAL(aboutToCompose()), this, SLOT(slotAboutToCompose()));
-    connect(this, SIGNAL(frameSwapped()), this, SLOT(slotFrameSwapped()));
+        : QOpenGLWidget(pParent),
+          WaveformWidgetAbstract(group),
+          m_shouldRenderOnNextTick(false) {
+    connect(this, &QOpenGLWidget::aboutToCompose,
+            this, &BaseQOpenGLWidget::slotAboutToCompose);
+    connect(this, &QOpenGLWidget::frameSwapped,
+            this, &BaseQOpenGLWidget::slotFrameSwapped);
 }
 
 void BaseQOpenGLWidget::slotAboutToCompose() {

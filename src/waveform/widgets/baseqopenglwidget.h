@@ -12,9 +12,15 @@ class BaseQOpenGLWidget : public QOpenGLWidget, public WaveformWidgetAbstract {
     BaseQOpenGLWidget(const char* group, QWidget* pParent);
     virtual ~BaseQOpenGLWidget() = default;
 
-    virtual mixxx::Duration render() override {
-        WaveformWidgetAbstract::render();
-        return mixxx::Duration();
+    // Each QOpenGLWidget must define its own render
+    // method. WaveformWidgetAbstract::render must not be called even though it
+    // is defined.
+    virtual mixxx::Duration render() = 0;
+
+    void renderOnNextTick() override {
+        m_shouldRenderOnNextTick = true;
+        // Request a paint event from Qt.
+        update();
     }
 
   private slots:
@@ -22,6 +28,7 @@ class BaseQOpenGLWidget : public QOpenGLWidget, public WaveformWidgetAbstract {
     void slotFrameSwapped();
 
   private:
+    bool m_shouldRenderOnNextTick;
     mixxx::Duration m_lastRender;
     mixxx::Duration m_lastSwapRender;
     mixxx::Duration m_lastSwapDuration;
