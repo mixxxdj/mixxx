@@ -1059,13 +1059,28 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
             //       | missingFrameCount |<- decodedFrameRange ->|
 
             VERIFY_OR_DEBUG_ASSERT(readFrameIndex <= writableRange.start()) {
-                kLogger.critical()
-                    << "Invalid decoding position"
-                    << ": expected frame index =" << writableRange.start()
-                    << ", actual frame index =" << readFrameIndex;
-                m_curFrameIndex = kInvalidFrameIndex;
-                break;
+                // The decoder has skipped some sample data that needs to
+                // be filled with silence to continue decoding!
+                // NOTE(2019-02-09, uklotzde): This should never happen, but
+                // we are seeing this error when decoding our .ogg test file!
+                const auto missingRange = IndexRange::between(writableRange.start(), readFrameIndex);
+                kLogger.warning()
+                        << "Missing sample data"
+                        << missingRange;
+                const auto clearRange = intersect(missingRange, writableRange);
+                if (clearRange.length() > 0) {
+                    const auto clearSampleCount =
+                            frames2samples(clearRange.length());
+                    if (pOutputSampleBuffer) {
+                        SampleUtil::clear(
+                                pOutputSampleBuffer,
+                                clearSampleCount);
+                        pOutputSampleBuffer += clearSampleCount;
+                    }
+                    writableRange.shrinkFront(clearRange.length());
+                }
             }
+
             // Skip all missing/decoded ranges that do not overlap
             // with writableRange, i.e. that precede writableRange.
             DEBUG_ASSERT(pDecodedSampleData);
