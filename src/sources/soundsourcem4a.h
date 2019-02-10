@@ -62,7 +62,7 @@ class SoundSourceM4A: public SoundSource {
 
     SINT m_curFrameIndex;
 
-    LibFaadLoader m_faad;
+    LibFaadLoader* m_pFaad;
 };
 
 class SoundSourceProviderM4A: public SoundSourceProvider {

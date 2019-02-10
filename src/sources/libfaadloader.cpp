@@ -6,6 +6,12 @@ mixxx::Logger kLogger("LibFaadLoader");
 
 } // anonymous namespace
 
+// static
+LibFaadLoader* Instance() {
+    static LibFaadLoader libFaadLoader();
+    return &libFaadLoader;
+}
+
 LibFaadLoader::LibFaadLoader()
         : m_neAACDecOpen(nullptr),
           m_neAACDecGetCurrentConfiguration(nullptr),

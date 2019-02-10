@@ -66,7 +66,7 @@ class LibFaadLoader {
         unsigned char ps;
     } FrameInfo;
 
-    LibFaadLoader();
+    static LibFaadLoader* Instance();
 
     Handle Open();
 
@@ -100,6 +100,8 @@ class LibFaadLoader {
 
 
   private:
+    LibFaadLoader();
+
     std::unique_ptr<QLibrary> m_pLibrary;
 
     typedef Handle (* NeAACDecOpen_t)();
