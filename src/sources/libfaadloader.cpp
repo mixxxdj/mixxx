@@ -1,0 +1,173 @@
+#include "sources/libfaadloader.h"
+
+namespace {
+
+mixxx::Logger kLogger("LibFaadLoader");
+
+} // anonymous namespace
+
+LibFaadLoader::LibFaadLoader()
+        : m_neAACDecOpen(nullptr),
+          m_neAACDecGetCurrentConfiguration(nullptr),
+          m_neAACDecSetConfiguration(nullptr),
+          m_neAACDecInit2(nullptr),
+          m_neAACDecClose(nullptr),
+          m_neAACDecPostSeekReset(nullptr),
+          m_neAACDecDecode2(nullptr),
+          m_neAACDecGetErrorMessage(nullptr) {
+    // Load shared library
+    QStringList libnames;
+#ifdef __LINUX__
+    libnames << "libfaad.so.2";
+#elif __WINDOWS__
+    // http://www.rarewares.org/aac-decoders.php
+    libnames << "libfaad2.dll";
+#elif __APPLE__
+    // Using Homebrew ('brew install faad2' command):
+    libnames << "/usr/local/lib/libfaad2.dylib";
+    // Using MacPorts ('sudo port install faad2' command):
+    libnames << "/opt/local/lib/libfaad2.dylib";
+#endif
+    for (const auto& libname : libnames) {
+        m_pLibrary = std::make_unique<QLibrary>(libname, 0);
+        if (!m_pLibrary->load()) {
+            m_pLibrary.reset();
+        } else {
+            break;
+        }
+    }
+
+    if (!m_pLibrary || !m_pLibrary->isLoaded()) {
+        kLogger.warning() << "Failed to load " << libnames << ", " << m_pLibrary->errorString();
+        return;
+    }
+
+    m_neAACDecOpen = reinterpret_cast<NeAACDecOpen_t>(
+            m_pLibrary->resolve("NeAACDecOpen"));
+    m_neAACDecGetCurrentConfiguration = reinterpret_cast<NeAACDecGetCurrentConfiguration_t>(
+            m_pLibrary->resolve("NeAACDecGetCurrentConfiguration"));
+    m_neAACDecSetConfiguration = reinterpret_cast<NeAACDecSetConfiguration_t>(
+            m_pLibrary->resolve("NeAACDecSetConfiguration"));
+    m_neAACDecInit2 = reinterpret_cast<NeAACDecInit2_t>(
+            m_pLibrary->resolve("NeAACDecInit2"));
+    m_neAACDecClose = reinterpret_cast<NeAACDecClose_t>(
+            m_pLibrary->resolve("NeAACDecClose"));
+    m_neAACDecPostSeekReset = reinterpret_cast<NeAACDecPostSeekReset_t>(
+            m_pLibrary->resolve("NeAACDecPostSeekReset"));
+    m_neAACDecDecode2 = reinterpret_cast<NeAACDecDecode2_t>(
+            m_pLibrary->resolve("NeAACDecDecode2"));
+    m_neAACDecGetErrorMessage = reinterpret_cast<NeAACDecGetErrorMessage_t>(
+            m_pLibrary->resolve("NeAACDecGetErrorMessage"));
+
+    if (    !m_neAACDecOpen ||
+            !m_neAACDecGetCurrentConfiguration ||
+            !m_neAACDecSetConfiguration ||
+            !m_neAACDecInit2 ||
+            !m_neAACDecClose ||
+            !m_neAACDecPostSeekReset ||
+            !m_neAACDecDecode2 ||
+            !m_neAACDecGetErrorMessage
+    ) {
+        kLogger.debug() << "NeAACDecOpen:" << m_neAACDecOpen;
+        kLogger.debug() << "NeAACDecGetCurrentConfiguration:" << m_neAACDecGetCurrentConfiguration;
+        kLogger.debug() << "NeAACDecSetConfiguration:" << m_neAACDecSetConfiguration;
+        kLogger.debug() << "NeAACDecInit2:" << m_neAACDecInit2;
+        kLogger.debug() << "NeAACDecClose:" << m_neAACDecClose;
+        kLogger.debug() << "NeAACDecPostSeekReset:" << m_neAACDecPostSeekReset;
+        kLogger.debug() << "NeAACDecDecode2:" << m_neAACDecDecode2;
+        kLogger.debug() << "NeAACDecGetErrorMessage:" << m_neAACDecGetErrorMessage;
+        m_neAACDecOpen = nullptr;
+        m_neAACDecGetCurrentConfiguration = nullptr;
+        m_neAACDecSetConfiguration = nullptr;
+        m_neAACDecInit2 = nullptr;
+        m_neAACDecClose = nullptr;
+        m_neAACDecPostSeekReset = nullptr;
+        m_neAACDecDecode2 = nullptr;
+        m_neAACDecGetErrorMessage = nullptr;
+        m_pLibrary->unload();
+        m_pLibrary.reset();
+        return;
+    }
+    kLogger.debug() << "Successfully loaded faad2 library " << m_pLibrary->fileName();
+};
+
+LibFaadLoader::NeAACDecHandle LibFaadLoader::NeAACDecOpen() {
+    if (m_neAACDecOpen) {
+        return m_neAACDecOpen();
+    }
+    return nullptr;
+}
+
+LibFaadLoader::NeAACDecConfigurationPtr
+LibFaadLoader::NeAACDecGetCurrentConfiguration(NeAACDecHandle hDecoder) {
+    if (m_neAACDecGetCurrentConfiguration) {
+        return m_neAACDecGetCurrentConfiguration(hDecoder);
+    }
+    return nullptr;
+}
+
+unsigned char LibFaadLoader::NeAACDecSetConfiguration(
+        NeAACDecHandle hDecoder, NeAACDecConfigurationPtr config) {
+    if (m_neAACDecSetConfiguration) {
+        return m_neAACDecSetConfiguration(hDecoder, config);
+    }
+    return 0;
+}
+
+// Init the library using a DecoderSpecificInfo
+char LibFaadLoader::NeAACDecInit2(
+        NeAACDecHandle hDecoder,
+        unsigned char* pBuffer,
+        unsigned long SizeOfDecoderSpecificInfo,
+        unsigned long* pSamplerate,
+        unsigned char* pChannels) {
+    if (m_neAACDecInit2) {
+        return m_neAACDecInit2(hDecoder,
+                pBuffer,
+                SizeOfDecoderSpecificInfo,
+                pSamplerate,
+                pChannels);
+    }
+    return 0;
+
+}
+
+void LibFaadLoader::NeAACDecClose(NeAACDecHandle hDecoder) {
+    if (m_neAACDecClose) {
+        m_neAACDecClose(hDecoder);
+    }
+}
+
+void LibFaadLoader::NeAACDecPostSeekReset(NeAACDecHandle hDecoder, long frame) {
+    if (m_neAACDecPostSeekReset) {
+        m_neAACDecPostSeekReset(hDecoder, frame);
+    }
+}
+
+void* LibFaadLoader::NeAACDecDecode2(
+        NeAACDecHandle hDecoder,
+        NeAACDecFrameInfo* pInfo,
+        unsigned char* pBuffer,
+        unsigned long bufferSize,
+        void** ppSampleBuffer,
+        unsigned long sampleBufferSize) {
+    if (m_neAACDecDecode2) {
+        return m_neAACDecDecode2(
+                hDecoder,
+                pInfo,
+                pBuffer,
+                bufferSize,
+                ppSampleBuffer,
+                sampleBufferSize);
+    }
+    return 0;
+}
+
+char* LibFaadLoader::NeAACDecGetErrorMessage(unsigned char errcode) {
+    if (m_neAACDecGetErrorMessage) {
+        return m_neAACDecGetErrorMessage(errcode);
+    }
+    return nullptr;
+}
+
+
