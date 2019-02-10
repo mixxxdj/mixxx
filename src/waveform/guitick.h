@@ -9,7 +9,7 @@
 #include "util/performancetimer.h"
 
 // A helper class that manages the "guiTickTime" COs, that drive updates of the
-// GUI from the VsyncThread at the user's configured FPS (possibly downsampled).
+// GUI from the RenderThread at the user's configured FPS (possibly downsampled).
 class GuiTick {
   public:
     GuiTick();

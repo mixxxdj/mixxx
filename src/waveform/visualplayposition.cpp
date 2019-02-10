@@ -5,7 +5,6 @@
 #include "control/controlproxy.h"
 #include "control/controlobject.h"
 #include "util/math.h"
-#include "waveform/vsyncthread.h"
 
 namespace {
 // The offset is limited to two callback intervals.

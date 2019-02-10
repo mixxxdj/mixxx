@@ -12,7 +12,6 @@
 #include "util/math.h"
 #include "util/time.h"
 #include "waveform/visualplayposition.h"
-#include "waveform/vsyncthread.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "widget/wspinny.h"

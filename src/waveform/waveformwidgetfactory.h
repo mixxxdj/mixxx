@@ -7,6 +7,7 @@
 
 #include "util/singleton.h"
 #include "preferences/usersettings.h"
+#include "waveform/renderthread.h"
 #include "waveform/widgets/waveformwidgettype.h"
 #include "waveform/waveform.h"
 #include "skin/skincontext.h"
@@ -15,7 +16,6 @@
 class WWaveformViewer;
 class WaveformWidgetAbstract;
 class QTimer;
-class VSyncThread;
 class GuiTick;
 class VisualsManager;
 
@@ -71,7 +71,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void setFrameRate(int frameRate);
     int getFrameRate() const { return m_frameRate;}
-//    bool getVSync() const { return m_vSyncType;}
+
     void setEndOfTrackWarningTime(int endTime);
     int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
 
@@ -100,14 +100,12 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     int isOverviewNormalized() const { return m_overviewNormalized;}
 
     const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
-    void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
     void destroyWidgets();
 
     void addTimerListener(QWidget* pWidget);
 
-    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
-    void setVSyncType(int vsType);
-    int getVSyncType();
+    void setRenderType(int vsType);
+    void startRenderThread(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
 
     void setPlayMarkerPosition(double position);
     double getPlayMarkerPosition() const { return m_playMarkerPosition; }
@@ -164,7 +162,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;
 
-    VSyncThread* m_vsyncThread;
+    RenderThread* m_renderThread;
     GuiTick* m_pGuiTick;  // not owned
     VisualsManager* m_pVisualsManager;  // not owned
 
@@ -172,7 +170,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     PerformanceTimer m_time;
     float m_frameCnt;
     double m_actualFrameRate;
-    int m_vSyncType;
+    int m_renderType;
     double m_playMarkerPosition;
 };
 

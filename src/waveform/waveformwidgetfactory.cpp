@@ -27,7 +27,7 @@
 #include "widget/wwaveformviewer.h"
 #include "waveform/guitick.h"
 #include "waveform/visualsmanager.h"
-#include "waveform/vsyncthread.h"
+#include "waveform/renderthread.h"
 #include "util/cmdlineargs.h"
 #include "util/performancetimer.h"
 #include "util/time.h"
@@ -97,12 +97,12 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_openGLAvailable(false),
         m_openGLShaderAvailable(false),
         m_beatGridAlpha(90),
-        m_vsyncThread(NULL),
+        m_renderThread(NULL),
         m_pGuiTick(nullptr),
         m_pVisualsManager(nullptr),
         m_frameCnt(0),
         m_actualFrameRate(0),
-        m_vSyncType(0),
+        m_renderType(0),
         m_playMarkerPosition(WaveformWidgetRenderer::s_defaultPlayMarkerPosition) {
 
     m_visualGain[All] = 1.0;
@@ -134,8 +134,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
 }
 
 WaveformWidgetFactory::~WaveformWidgetFactory() {
-    if (m_vsyncThread) {
-        delete m_vsyncThread;
+    if (m_renderThread) {
+        delete m_renderThread;
     }
 }
 
@@ -162,8 +162,8 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
                 ConfigValue(m_endOfTrackWarningTime));
     }
 
-    int vsync = m_config->getValue(ConfigKey("[Waveform]","VSync"), 0);
-    setVSyncType(vsync);
+    int render = m_config->getValue(ConfigKey("[Waveform]","Render"), 0);
+    setRenderType(render);
 
     double defaultZoom = m_config->getValueString(ConfigKey("[Waveform]","DefaultZoom")).toDouble(&ok);
     if (ok) {
@@ -273,7 +273,7 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
-    m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
+    m_renderThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
 }
 
 void WaveformWidgetFactory::setEndOfTrackWarningTime(int endTime) {
@@ -283,17 +283,13 @@ void WaveformWidgetFactory::setEndOfTrackWarningTime(int endTime) {
     }
 }
 
-void WaveformWidgetFactory::setVSyncType(int type) {
+void WaveformWidgetFactory::setRenderType(int type) {
     if (m_config) {
-        m_config->set(ConfigKey("[Waveform]","VSync"), ConfigValue((int)type));
+        m_config->set(ConfigKey("[Waveform]","Render"), ConfigValue((int)type));
     }
 
-    m_vSyncType = type;
-    m_vsyncThread->setVSyncType(type);
-}
-
-int WaveformWidgetFactory::getVSyncType() {
-    return m_vSyncType;
+    m_renderType = type;
+    m_renderThread->setRenderType(type);
 }
 
 bool WaveformWidgetFactory::setWidgetType(WaveformWidgetType::Type type) {
@@ -465,8 +461,8 @@ void WaveformWidgetFactory::render() {
 
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform
-            // next rendered frame is displayed after next buffer swap and than after VSync
-            //qDebug() << "prerender" << m_vsyncThread->elapsed();
+            // next rendered frame is displayed after next buffer swap and than after Render
+            //qDebug() << "prerender" << m_renderThread->elapsed();
 
             // It may happen that there is an artificially delayed due to
             // anti tearing driver settings
@@ -477,7 +473,7 @@ void WaveformWidgetFactory::render() {
                     continue;
                 }
                 pWaveformWidget->renderOnNextTick();
-                //qDebug() << "render" << i << m_vsyncThread->elapsed();
+                //qDebug() << "render" << i << m_renderThread->elapsed();
             }
         }
 
@@ -487,16 +483,16 @@ void WaveformWidgetFactory::render() {
 
         // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
         // update.
-        //int t1 = m_vsyncThread->elapsed();
+        //int t1 = m_renderThread->elapsed();
         emit(waveformUpdateTick());
-        //qDebug() << "emit" << m_vsyncThread->elapsed() - t1;
+        //qDebug() << "emit" << m_renderThread->elapsed() - t1;
 
         m_frameCnt += 1.0;
         mixxx::Duration timeCnt = m_time.elapsed();
         if (timeCnt > mixxx::Duration::fromSeconds(1)) {
             m_time.start();
             m_frameCnt = m_frameCnt * 1000 / timeCnt.toIntegerMillis(); // latency correction
-            emit(waveformMeasured(m_frameCnt, m_vsyncThread->droppedFrames()));
+            emit(waveformMeasured(m_frameCnt, m_renderThread->droppedFrames()));
             m_frameCnt = 0.0;
         }
     }
@@ -504,8 +500,8 @@ void WaveformWidgetFactory::render() {
     m_pVisualsManager->process(m_endOfTrackWarningTime);
     m_pGuiTick->process();
 
-    //qDebug() << "refresh end" << m_vsyncThread->elapsed();
-    m_vsyncThread->vsyncSlotFinished();
+    //qDebug() << "refresh end" << m_renderThread->elapsed();
+    m_renderThread->renderSlotFinished();
 }
 
 WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
@@ -708,18 +704,14 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
     return -1;
 }
 
-void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager) {
+void WaveformWidgetFactory::startRenderThread(GuiTick* pGuiTick, VisualsManager* pVisualsManager) {
     m_pGuiTick = pGuiTick;
     m_pVisualsManager = pVisualsManager;
-    m_vsyncThread = new VSyncThread(this);
-    m_vsyncThread->start(QThread::NormalPriority);
+    m_renderThread = new RenderThread(this);
+    m_renderThread->start(QThread::NormalPriority);
 
-    connect(m_vsyncThread, SIGNAL(vsyncRender()),
+    connect(m_renderThread, SIGNAL(render()),
             this, SLOT(render()));
-}
-
-void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString > >* pList) {
-    m_vsyncThread->getAvailableVSyncTypes(pList);
 }
 
 // static
