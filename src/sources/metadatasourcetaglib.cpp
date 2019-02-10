@@ -758,10 +758,7 @@ class SafelyWritableFile final {
             return; // nothing to do
         }
         QFile tempFile(m_tempFileName);
-        if (!tempFile.exists()) {
-            return; // nothing to do
-        }
-        if (!tempFile.remove()) {
+        if (tempFile.exists() && !tempFile.remove()) {
             kLogger.warning()
                     << tempFile.errorString()
                     << "- Failed to remove temporary file:"
