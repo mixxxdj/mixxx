@@ -709,7 +709,7 @@ void BasePlaylistFeature::slotTrackSelected(TrackPointer pTrack) {
     // clear all the bolding).
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
+            it != m_playlistList.end(); ++it, ++row) {
         TreeItem* playlist = rootItem->child(row);
         if (playlist == nullptr) {
             continue;
