@@ -349,6 +349,7 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     }
     cueTable->setSortingEnabled(true);
     cueTable->horizontalHeader()->setStretchLastSection(true);
+    cueTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
 }
 
 void DlgTrackInfo::saveTrack() {
