@@ -118,8 +118,6 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(QObject* pParent,
     m_pPlay->connectValueChanged(this, &BaseTrackPlayerImpl::slotPlayToggled);
 
     pVisualsManager->addDeck(group);
-
-    m_cloneTimer.start();
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
@@ -265,18 +263,6 @@ void BaseTrackPlayerImpl::disconnectLoadedTrack() {
 }
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
-    mixxx::Duration elapsed = m_cloneTimer.restart();
-    if (elapsed < mixxx::Duration::fromSeconds(0.5)) {
-        // load pressed twice quickly, clone instead of loading
-        EngineChannel* pChannel = m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel);
-        slotCloneChannel(pChannel);
-    }
-    else {
-        slotLoadTrackInternal(pNewTrack, bPlay);
-    }
-}
-
-void BaseTrackPlayerImpl::slotLoadTrackInternal(TrackPointer pNewTrack, bool bPlay) {
     qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup();
     // Before loading the track, ensure we have access. This uses lazy
     // evaluation to make sure track isn't NULL before we dereference it.
@@ -439,7 +425,11 @@ TrackPointer BaseTrackPlayerImpl::getLoadedTrack() const {
     return m_pLoadedTrack;
 }
 
-void BaseTrackPlayerImpl::slotCloneDeck(const QString& group) {
+void BaseTrackPlayerImpl::slotCloneDeck() {
+    slotCloneChannel(m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel));
+}
+
+void BaseTrackPlayerImpl::slotCloneFromGroup(const QString& group) {
     EngineChannel* pChannel = m_pEngineMaster->getChannel(group);
     if (!pChannel) {
         return;
@@ -451,9 +441,9 @@ void BaseTrackPlayerImpl::slotCloneDeck(const QString& group) {
 void BaseTrackPlayerImpl::slotCloneFromDeck(double d) {
     int deck = std::lround(d);
     if (deck < 1) {
-        slotCloneChannel(m_pEngineMaster->getEngineSync()->pickNonSyncSyncTarget(m_pChannel));
+        slotCloneDeck();
     } else {
-        slotCloneDeck(PlayerManager::groupForDeck(deck-1));
+        slotCloneFromGroup(PlayerManager::groupForDeck(deck-1));
     }
 }
 
@@ -474,7 +464,7 @@ void BaseTrackPlayerImpl::slotCloneChannel(EngineChannel* pChannel) {
         return;
     }
 
-    slotLoadTrackInternal(pTrack, false);
+    slotLoadTrack(pTrack, false);
 }
 
 void BaseTrackPlayerImpl::slotSetReplayGain(mixxx::ReplayGain replayGain) {
