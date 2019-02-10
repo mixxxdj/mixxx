@@ -18,8 +18,8 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
     QHash<ConfigKey, ConfigKey> controlAliases =
             ControlDoublePrivate::getControlAliases();
 
-    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it = controlsList.begin();
-            it != controlsList.end(); ++it) {
+    for (auto it = controlsList.constBegin();
+            it != controlsList.constEnd(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             m_controlModel.addControl(pControl->getKey(), pControl->name(),
@@ -136,8 +136,7 @@ void DlgDeveloperTools::slotControlDump() {
 
     QList<QSharedPointer<ControlDoublePrivate> > controlsList;
     ControlDoublePrivate::getControls(&controlsList);
-    for (QList<QSharedPointer<ControlDoublePrivate> >::const_iterator it =
-            controlsList.begin(); it != controlsList.end(); ++it) {
+    for (auto it = controlsList.constBegin(); it != controlsList.constEnd(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {
             QString line = pControl->getKey().group + "," +

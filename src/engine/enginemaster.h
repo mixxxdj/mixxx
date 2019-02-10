@@ -25,7 +25,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/engineobject.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/channelhandle.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"

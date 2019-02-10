@@ -4,7 +4,7 @@ BehringerBCD2000.escratch = [false, false];
 
 //sensitivity setting
 BehringerBCD2000.UseAcceleration = true;
-BehringerBCD2000.JogSensivity = 0.2;
+BehringerBCD2000.JogSensitivity = 0.2;
 
 BehringerBCD2000.init = function (id) { // called when the device is opened & set up
 
@@ -73,11 +73,11 @@ else
 
       if (value >= 65)
 
-{jogValue = (value - 0x40) * BehringerBCD2000.JogSensivity;}
+{jogValue = (value - 0x40) * BehringerBCD2000.JogSensitivity;}
 
 else
 
-{jogValue = (value - 0x41) * BehringerBCD2000.JogSensivity;}
+{jogValue = (value - 0x41) * BehringerBCD2000.JogSensitivity;}
       engine.setValue(group, "jog", jogValue);
 
       if (BehringerBCD2000.debug)

@@ -1,0 +1,188 @@
+<!--
+Description:
+  A minmal deck container, visible when the library is maximized 
+  | loop      | Play/ | Cover/ | track title                   |
+  | indicator | Pasue | Spinny | BPM | Key | elapsed/remaining |
+Variables:
+  chanNum : [ChannelN]
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>DeckMini<Variable name="chanNum"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <Size>504me,45f</Size>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <Size>i,40f</Size>
+        <Children>
+    
+          <SingletonContainer>
+            <ObjectName>DeckOverviewSingleton<Variable name="chanNum"/></ObjectName>
+          </SingletonContainer>
+
+          <WidgetGroup>
+            <ObjectName>DeckMini_TitlePlayPosKeyBPM</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>200me,40f</Size>
+            <Children>
+
+              <WidgetGroup><!-- Title + Time -->
+                <Layout>horizontal</Layout>
+                <Size>200me,20f</Size>
+                <Children>
+                  <TrackProperty>
+                    <TooltipId>track_title</TooltipId>
+                    <ObjectName>TrackTitleMini</ObjectName>
+                    <Size>90me,20f</Size>
+                    <Property>title</Property>
+                    <Alignment>left</Alignment>
+                    <Elide>right</Elide>
+                    <Channel><Variable name="chanNum"/></Channel>
+                  </TrackProperty>
+
+                  <NumberPos>
+                    <TooltipId>track_time</TooltipId>
+                    <ObjectName>PlayPositionMini</ObjectName>
+                    <Size>60min,20f</Size>
+                    <Alignment>right</Alignment>
+                    <Channel><Variable name="chanNum"/></Channel>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+                    </Connection>
+                  </NumberPos>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><!-- Key / BPM / PlayPos -->
+                <Layout>horizontal</Layout>
+                <Size>200me,20f</Size>
+                <Children>
+                  <Label>
+                    <ObjectName>TrackBy</ObjectName>
+                    <Size>22f,20f</Size>
+                    <Text>by</Text>
+                    <Alignment>center</Alignment>
+                  </Label>
+
+                  <TrackProperty>
+                    <TooltipId>track_title</TooltipId>
+                    <ObjectName>TrackTitleMini</ObjectName>
+                    <Size>100min,20f</Size>
+                    <Property>artist</Property>
+                    <Alignment>left</Alignment>
+                    <Elide>right</Elide>
+                    <Channel><Variable name="chanNum"/></Channel>
+                  </TrackProperty>
+
+                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+                  <Key>
+                    <TooltipId>visual_key</TooltipId>
+                    <ObjectName>KeyDisplayMini</ObjectName>
+                    <Channel><Variable name="chanNum"/></Channel>
+                    <SizePolicy>e,me</SizePolicy>
+                    <MinimumSize>30,20</MinimumSize>
+                    <MaximumSize>55,20</MaximumSize>
+                    <Alignment>center</Alignment>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                    </Connection>
+                  </Key>
+
+                  <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+                  <Number>
+                    <TooltipId>visual_bpm</TooltipId>
+                    <ObjectName>BpmLabelMini</ObjectName>
+                    <MinimumSize>50,20</MinimumSize>
+                    <MaximumSize>65,20</MaximumSize>
+                    <SizePolicy>min,me</SizePolicy>
+                    <Channel><Variable name="chanNum" /></Channel>
+                    <NumberOfDigits>2</NumberOfDigits>
+                    <Alignment>right</Alignment>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                    </Connection>
+                  </Number>
+
+                </Children>
+              </WidgetGroup><!-- Key / BPM / PlayPos -->
+
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <MaximumSize>40,40</MaximumSize>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>SpinnyCoverMini_Singleton<Variable name="chanNum"/></ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <Template src="skin:loop_indicator.xml"/>
+
+          <WidgetGroup>
+            <Size>1f,1min</Size>
+            <Connection>
+              <ConfigKey>[Tango],show_spinny_cover</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Play button incl. Cue (right click)
+            <ObjectName>Spacer0f</ObjectName> -->
+            <Layout>stacked</Layout>
+            <Size>23f,40f</Size>
+            <Children>
+              <!-- index 0 due to bug -->
+              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
+
+              <!-- Block Play button if passthrough is active,
+                  show speaker icon instead -->
+              <WidgetGroup>
+                <ObjectName>PassthroughPlayCover</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <!-- Play -->
+              <Template src="skin:button_2state_right_display.xml">
+                <SetVariable name="ObjectName">PlayCue</SetVariable>
+                <SetVariable name="TooltipId">play_cue_set</SetVariable>
+                <SetVariable name="Size">23f,40f</SetVariable>
+                <SetVariable name="state_0_icon">play_deck_mini.svg</SetVariable>
+                <SetVariable name="state_1_icon">pause_deck_mini.svg</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
+                <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+              </Template>
+          <!--	Play indicator: turns Orange when playing from Cue/HotCue position.
+              Only visible when play_indicator above is zero0, otherwise it's covered. -->
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">PlayUnderlay</SetVariable>
+                <SetVariable name="Size">23f,40f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+              </Template>
+          <!--	Cue indicator: shows coloured border i.e. if play position is at cue point.
+              See Cue settings in Preferences > Interface > Deck Options -->
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="ObjectName">CueUnderlay</SetVariable>
+                <SetVariable name="Size">23f,40f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,cue_indicator</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+    
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

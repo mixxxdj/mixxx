@@ -2,12 +2,35 @@
 #define PREVIEWBUTTONDELEGATE_H
 
 #include <QPushButton>
+#include <QStyleOptionButton>
 
 #include "library/tableitemdelegate.h"
 #include "track/track.h"
 #include "util/parented_ptr.h"
 
 class ControlProxy;
+
+// A QPushButton for rendering the library preview button within the
+// PreviewButtonDelegate.
+class LibraryPreviewButton : public QPushButton {
+    Q_OBJECT
+  public:
+    LibraryPreviewButton(QWidget* parent=nullptr) : QPushButton(parent) {
+        setObjectName("LibraryPreviewButton");
+    }
+
+    void paint(QPainter* painter) {
+        // This matches the implementation of QPushButton::paintEvent, except it
+        // does not create a new QStylePainter, and it is simpler and more
+        // direct than QWidget::render(QPainter*, ...).
+        QStyleOptionButton option;
+        initStyleOption(&option);
+        auto pStyle = style();
+        if (pStyle) {
+            pStyle->drawControl(QStyle::CE_PushButton, &option, painter, this);
+        }
+    }
+};
 
 class PreviewButtonDelegate : public TableItemDelegate {
   Q_OBJECT
@@ -43,7 +66,7 @@ class PreviewButtonDelegate : public TableItemDelegate {
     QTableView* m_pTableView;
     ControlProxy* m_pPreviewDeckPlay;
     ControlProxy* m_pCueGotoAndPlay;
-    parented_ptr<QPushButton> m_pButton;
+    parented_ptr<LibraryPreviewButton> m_pButton;
     bool m_isOneCellInEditMode;
     QPersistentModelIndex m_currentEditedCellIndex;
     int m_column;

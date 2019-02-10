@@ -17,7 +17,7 @@ Variables:
           <Template src="skin:button_2state_display.xml">
             <SetVariable name="TooltipId">reloop_toggle</SetVariable>
             <SetVariable name="ObjectName">LoopIndicator</SetVariable>
-            <SetVariable name="Size">30f,44me</SetVariable>
+            <SetVariable name="Size">30f,40me</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,reloop_toggle</SetVariable>
             <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,loop_enabled</SetVariable>
           </Template>
@@ -29,7 +29,7 @@ Variables:
       </WidgetGroup>
     </Children>
     <Connection>
-      <ConfigKey persist="true">[Tango],loop_beatjump_controls</ConfigKey>
+      <ConfigKey persist="true">[Skin],show_loop_beatjump_controls</ConfigKey>
       <Transform><Not/></Transform>
       <BindProperty>visible</BindProperty>
     </Connection>

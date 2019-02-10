@@ -40,6 +40,7 @@ class SearchQueryParser {
 
     QRegExp m_fuzzyMatcher;
     QRegExp m_textFilterMatcher;
+    QRegExp m_crateFilterMatcher;
     QRegExp m_numericFilterMatcher;
     QRegExp m_specialFilterMatcher;
 

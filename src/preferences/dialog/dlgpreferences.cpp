@@ -75,6 +75,9 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
         : m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated"), false) {
+#ifndef __LILV__
+    Q_UNUSED(pLV2Backend);
+#endif /* __LILV__ */
     setupUi(this);
 #if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
     contentsTreeWidget->setHeaderHidden(true);
@@ -106,8 +109,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     m_vinylControlPage = new DlgPrefVinyl(this, pVCManager, m_pConfig);
     addPageWidget(m_vinylControlPage);
 #else
-    m_wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, m_pConfig);
-    addPageWidget(m_wnovinylcontrol);
+    m_noVinylControlPage = new DlgPrefNoVinyl(this, soundman, m_pConfig);
+    addPageWidget(m_noVinylControlPage);
 #endif
 
     m_interfacePage = new DlgPrefInterface(this, mixxx, pSkinLoader, m_pConfig);
@@ -138,12 +141,11 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     m_recordingPage = new DlgPrefRecord(this, m_pConfig);
     addPageWidget(m_recordingPage);
 
-#ifdef __VAMP__
     m_beatgridPage = new DlgPrefBeats(this, m_pConfig);
     addPageWidget (m_beatgridPage);
+
     m_musicalKeyPage = new DlgPrefKey(this, m_pConfig);
     addPageWidget(m_musicalKeyPage);
-#endif
 
     m_replayGainPage = new DlgPrefReplayGain(this, m_pConfig);
     addPageWidget(m_replayGainPage);
@@ -276,7 +278,6 @@ void DlgPreferences::createIcons() {
     m_pRecordingButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-#ifdef __VAMP__
     m_pBeatDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pBeatDetectionButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.svg"));
     m_pBeatDetectionButton->setText(0, tr("Beat Detection"));
@@ -288,7 +289,6 @@ void DlgPreferences::createIcons() {
     m_pKeyDetectionButton->setText(0, tr("Key Detection"));
     m_pKeyDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pKeyDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-#endif
 
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.svg"));
@@ -324,7 +324,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_vinylControlPage);
 #else
     } else if (current == m_pVinylControlButton) {
-        switchToPage(m_wnovinylcontrol);
+        switchToPage(m_noVinylControlPage);
 #endif
     } else if (current == m_pInterfaceButton) {
         switchToPage(m_interfacePage);
@@ -413,11 +413,11 @@ void DlgPreferences::onShow() {
     newY = std::max(0, std::min(newY, QApplication::desktop()->screenGeometry().height() - m_geometry[3].toInt()));
     m_geometry[0] = QString::number(newX);
     m_geometry[1] = QString::number(newY);
-    
+
     // Update geometry with last values
 #ifdef __WINDOWS__
     resize(m_geometry[2].toInt(), m_geometry[3].toInt());
-#else 
+#else
     // On linux, when the window is opened for the first time by the window manager, QT does not have
     // information about the frame size so the offset is zero. As such, the first time it opens the window
     // does not include the offset, so it is moved from the last position it had.

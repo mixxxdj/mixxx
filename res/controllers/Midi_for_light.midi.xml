@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MixxxMIDIPreset mixxxVersion="2.0.0+" schemaVersion="1">
-	<info>
-		<name>MIDI for light</name>
-		<author>Michael Stahl / DG3NEC</author>
-		<description>MIDI-output for light control</description>
+    <info>
+        <name>MIDI for light</name>
+        <author>Michael Stahl / DG3NEC</author>
+        <description>MIDI-output for light control</description>
         <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=7746</forums>
         <wiki>http://mixxx.org/wiki/doku.php/midi_for_light</wiki>
-	</info>
-	<controller id="midi_for_light Control">
-		<scriptfiles>
-			<file filename="Midi_for_light-scripts.js" functionprefix="midi_for_light"/>
-		</scriptfiles>
+    </info>
+    <controller id="midi_for_light Control">
+        <scriptfiles>
+            <file filename="Midi_for_light-scripts.js" functionprefix="midi_for_light"/>
+        </scriptfiles>
 
-		<controls>
-		</controls>
+        <controls>
+        </controls>
 
-		<outputs>
-		</outputs>
-	</controller>
+        <outputs>
+        </outputs>
+    </controller>
 </MixxxMIDIPreset>

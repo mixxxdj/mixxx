@@ -55,7 +55,7 @@ VinylControlManager::~VinylControlManager() {
 
 void VinylControlManager::init() {
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
-    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
+    m_pNumDecks->connectValueChanged(this, &VinylControlManager::slotNumDecksChanged);
     slotNumDecksChanged(m_pNumDecks->get());
 }
 
@@ -88,7 +88,7 @@ void VinylControlManager::slotNumDecksChanged(double dNumDecks) {
         QString group = PlayerManager::groupForDeck(i);
         ControlProxy* pEnabled = new ControlProxy(group, "vinylcontrol_enabled", this);
         m_pVcEnabled.push_back(pEnabled);
-        pEnabled->connectValueChanged(&m_vinylControlEnabledMapper, SLOT(map()));
+        pEnabled->connectValueChanged(&m_vinylControlEnabledMapper, QOverload<int>::of(&QSignalMapper::mapped));
         m_vinylControlEnabledMapper.setMapping(pEnabled, i);
 
         // Default cueing should be off.

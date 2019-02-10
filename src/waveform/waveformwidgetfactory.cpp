@@ -25,6 +25,7 @@
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/guitick.h"
+#include "waveform/visualsmanager.h"
 #include "waveform/vsyncthread.h"
 #include "util/cmdlineargs.h"
 #include "util/performancetimer.h"
@@ -103,6 +104,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_beatGridAlpha(90),
         m_vsyncThread(NULL),
         m_pGuiTick(nullptr),
+        m_pVisualsManager(nullptr),
         m_frameCnt(0),
         m_actualFrameRate(0),
         m_vSyncType(0),
@@ -247,7 +249,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
     int vsync = m_config->getValue(ConfigKey("[Waveform]","VSync"), 0);
     setVSyncType(vsync);
 
-    int defaultZoom = m_config->getValueString(ConfigKey("[Waveform]","DefaultZoom")).toInt(&ok);
+    double defaultZoom = m_config->getValueString(ConfigKey("[Waveform]","DefaultZoom")).toDouble(&ok);
     if (ok) {
         setDefaultZoom(defaultZoom);
     } else{
@@ -431,7 +433,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         WaveformWidgetAbstract* previousWidget = holder.m_waveformWidget;
         TrackPointer pTrack = previousWidget->getTrackInfo();
         //previousWidget->hold();
-        int previousZoom = previousWidget->getZoomFactor();
+        double previousZoom = previousWidget->getZoomFactor();
         double previousPlayMarkerPosition = previousWidget->getPlayMarkerPosition();
         delete previousWidget;
         WWaveformViewer* viewer = holder.m_waveformViewer;
@@ -455,7 +457,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     return true;
 }
 
-void WaveformWidgetFactory::setDefaultZoom(int zoom) {
+void WaveformWidgetFactory::setDefaultZoom(double zoom) {
     m_defaultZoom = math_clamp(zoom, WaveformWidgetRenderer::s_waveformMinZoom,
                                WaveformWidgetRenderer::s_waveformMaxZoom);
     if (m_config) {
@@ -477,7 +479,7 @@ void WaveformWidgetFactory::setZoomSync(bool sync) {
         return;
     }
 
-    int refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoomFactor();
+    double refZoom = m_waveformWidgetHolders[0].m_waveformWidget->getZoomFactor();
     for (int i = 1; i < m_waveformWidgetHolders.size(); i++) {
         m_waveformWidgetHolders[i].m_waveformViewer->setZoom(refZoom);
     }
@@ -528,7 +530,7 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
     WaveformWidgetAbstract* pWaveformWidget = viewer->getWaveformWidget();
     if (pWaveformWidget != NULL && isZoomSync()) {
         //qDebug() << "WaveformWidgetFactory::notifyZoomChange";
-        int refZoom = pWaveformWidget->getZoomFactor();
+        double refZoom = pWaveformWidget->getZoomFactor();
 
         for (int i = 0; i < m_waveformWidgetHolders.size(); ++i) {
             WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
@@ -596,6 +598,7 @@ void WaveformWidgetFactory::render() {
         }
     }
 
+    m_pVisualsManager->process(m_endOfTrackWarningTime);
     m_pGuiTick->process();
 
     //qDebug() << "refresh end" << m_vsyncThread->elapsed();
@@ -835,8 +838,9 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
     return -1;
 }
 
-void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick) {
+void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager) {
     m_pGuiTick = pGuiTick;
+    m_pVisualsManager = pVisualsManager;
     m_vsyncThread = new VSyncThread(this);
     m_vsyncThread->start(QThread::NormalPriority);
 

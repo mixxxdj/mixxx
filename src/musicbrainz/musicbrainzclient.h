@@ -82,7 +82,7 @@ class MusicBrainzClient : public QObject {
   signals:
     // Finished signal emitted when fechting songs tags
     void finished(int id, const MusicBrainzClient::ResultList& result);
-    void networkError(int, QString);
+    void networkError(int httpStatus, QString app, QString message, int code);
 
   private slots:
     void requestFinished();
@@ -110,10 +110,6 @@ class MusicBrainzClient : public QObject {
     static ResultList uniqueResults(const ResultList& results);
 
   private:
-    static const QString m_TrackUrl;
-    static const QString m_DateRegex;
-    static const int m_DefaultTimeout;
-
     QNetworkAccessManager m_network;
     NetworkTimeouts m_timeouts;
     QMap<QNetworkReply*, int> m_requests;

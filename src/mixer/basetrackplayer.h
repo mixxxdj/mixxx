@@ -6,8 +6,8 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
-#include "engine/enginechannel.h"
-#include "engine/enginedeck.h"
+#include "engine/channels/enginechannel.h"
+#include "engine/channels/enginedeck.h"
 #include "mixer/baseplayer.h"
 #include "track/track.h"
 #include "util/memory.h"
@@ -17,6 +17,7 @@ class ControlObject;
 class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
+class VisualsManager;
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the
 // rest of Mixxx. Also makes testing a lot easier.
@@ -37,6 +38,8 @@ class BaseTrackPlayer : public BasePlayer {
 
   public slots:
     virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
+    virtual void slotCloneFromGroup(const QString& group) = 0;
+    virtual void slotCloneDeck() = 0;
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -53,6 +56,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
                         UserSettingsPointer pConfig,
                         EngineMaster* pMixingEngine,
                         EffectsManager* pEffectsManager,
+                        VisualsManager* pVisualsManager,
                         EngineChannel::ChannelOrientation defaultOrientation,
                         const QString& group,
                         bool defaultMaster,
@@ -72,12 +76,16 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay) final;
+    void slotCloneFromGroup(const QString& group) final;
+    void slotCloneDeck() final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, QString reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
     void slotPlayToggled(double);
 
   private slots:
+    void slotCloneChannel(EngineChannel* pChannel);
+    void slotCloneFromDeck(double deck);
     void slotPassthroughEnabled(double v);
     void slotVinylControlEnabled(double v);
     void slotWaveformZoomValueChangeRequest(double pressed);
@@ -99,6 +107,10 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     TrackPointer m_pLoadedTrack;
     EngineDeck* m_pChannel;
     bool m_replaygainPending;
+    EngineChannel* m_pChannelToCloneFrom;
+
+    // Deck clone control
+    std::unique_ptr<ControlObject> m_pCloneFromDeck;
 
     // Waveform display related controls
     std::unique_ptr<ControlObject> m_pWaveformZoom;
@@ -110,11 +122,10 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     std::unique_ptr<ControlProxy> m_pLoopInPoint;
     std::unique_ptr<ControlProxy> m_pLoopOutPoint;
     std::unique_ptr<ControlObject> m_pDuration;
-    std::unique_ptr<ControlObject> m_pEndOfTrack;
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
-    std::unique_ptr<ControlProxy> m_pBPM;
+    std::unique_ptr<ControlProxy> m_pFileBPM;
     std::unique_ptr<ControlProxy> m_pKey;
 
     std::unique_ptr<ControlProxy> m_pReplayGain;

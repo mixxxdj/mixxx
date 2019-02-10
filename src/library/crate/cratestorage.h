@@ -150,6 +150,20 @@ class CrateTrackQueryFields {
     DbFieldIndex m_iTrackId;
 };
 
+class TrackQueryFields {
+  public:
+    TrackQueryFields() = default;
+    explicit TrackQueryFields(const FwdSqlQuery& query);
+    virtual ~TrackQueryFields() = default;
+
+    TrackId trackId(const FwdSqlQuery& query) const {
+        return TrackId(query.fieldValue(m_iTrackId));
+    }
+
+  private:
+    DbFieldIndex m_iTrackId;
+};
+
 class CrateTrackSelectResult: public FwdSqlQuerySelectResult {
 public:
     CrateTrackSelectResult(CrateTrackSelectResult&& other)
@@ -174,6 +188,29 @@ private:
     }
 
     CrateTrackQueryFields m_queryFields;
+};
+
+class TrackSelectResult: public FwdSqlQuerySelectResult {
+public:
+    TrackSelectResult(TrackSelectResult&& other)
+        : FwdSqlQuerySelectResult(std::move(other)),
+          m_queryFields(std::move(other.m_queryFields)) {
+    }
+    ~TrackSelectResult() override = default;
+
+    TrackId trackId() const {
+        return m_queryFields.trackId(query());
+    }
+
+private:
+    friend class CrateStorage;
+    TrackSelectResult() = default;
+    explicit TrackSelectResult(FwdSqlQuery&& query)
+        : FwdSqlQuerySelectResult(std::move(query)),
+          m_queryFields(FwdSqlQuerySelectResult::query()) {
+    }
+
+    TrackQueryFields m_queryFields;
 };
 
 class CrateStorage: public virtual /*implements*/ SqlStorage {
@@ -268,6 +305,7 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
 
     QString formatQueryForTrackIdsByCrateNameLike(
             const QString& crateNameLike) const; // no db access
+    static QString formatQueryForTrackIdsWithCrate(); // no db access
     // Select the track ids of a crate or the crate ids of a track respectively.
     // The results are sorted (ascending) by the target id, i.e. the id that is
     // not provided for filtering. This enables the caller to perform efficient
@@ -280,6 +318,7 @@ class CrateStorage: public virtual /*implements*/ SqlStorage {
             const QList<TrackId>& trackIds) const;
     CrateTrackSelectResult selectTracksSortedByCrateNameLike(
             const QString& crateNameLike) const;
+    TrackSelectResult selectAllTracksSorted() const;
 
     // Returns the set of crate ids for crates that contain any of the
     // provided track ids.

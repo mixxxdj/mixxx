@@ -488,7 +488,7 @@ BENCHMARK(BM_SampleUtilCopy)->Range(64, 4096);
 TEST_F(SampleUtilTest, copy3WithGainSpeed) {
     CSAMPLE* buffer = buffers[0];
 
-    int size = sizes[0] - (rand() % 2) * 8; // preven predicting loop size
+    int size = sizes[0] - (rand() % 2) * 8; // prevent predicting loop size
     FillBuffer(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
     FillBuffer(buffer2, 0.0f, size);

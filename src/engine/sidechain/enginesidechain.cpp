@@ -34,8 +34,6 @@
 #include "util/timer.h"
 #include "util/trace.h"
 
-#define SIDECHAIN_BUFFER_SIZE 65536
-
 EngineSideChain::EngineSideChain(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_bStopThread(false),

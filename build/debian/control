@@ -1,7 +1,7 @@
 Source: mixxx
 Section: sound
 Priority: optional
-Maintainer: RJ Ryan <rryan@mixxx.org>
+Maintainer: RJ Skerry-Ryan <rryan@mixxx.org>
 Build-Depends: debhelper (>= 9),
                pkg-config,
                docbook-to-man,
@@ -21,6 +21,8 @@ Build-Depends: debhelper (>= 9),
                qtscript5-dev,
                libqt5opengl5-dev,
                libqt5svg5-dev,
+# Only needed for running tests that use SQLite.
+               libqt5sql5-sqlite,
                libqt5x11extras5-dev,
                scons,
                libjack-dev,
@@ -36,7 +38,6 @@ Build-Depends: debhelper (>= 9),
                libportmidi-dev,
                libtag1-dev,
                libshout-dev,
-               vamp-plugin-sdk,
                libprotobuf-dev,
                protobuf-compiler,
                libusb-1.0-0-dev,
@@ -47,7 +48,10 @@ Build-Depends: debhelper (>= 9),
                libsoundtouch-dev,
                libhidapi-dev,
                libupower-glib-dev,
-               liblilv-dev
+               liblilv-dev,
+               libmp3lame-dev,
+# for running mixxx-test
+               xvfb
 Standards-Version: 3.9.8
 Homepage: http://www.mixxx.org/
 
@@ -60,8 +64,9 @@ Depends: ${shlibs:Depends},
          libqt5svg5,
          libqt5xml5,
          libqt5sql5,
-         libqt5sql5-sqlite
-Recommends: libmp3lame0
+         libqt5sql5-sqlite,
+# for pasuspender
+         pulseaudio-utils
 Suggests: pdf-viewer
 Replaces: mixxx-data
 Description: Free Digital DJ software. Start making live DJ mixes today.
@@ -106,3 +111,15 @@ Description: Free Digital DJ software. Start making live DJ mixes today.
   - Multiple simultaneous MIDI/HID controllers
   - Multi-core CPU support
   - 24-bit/96000 Hz playback and capture
+
+Package: mixxx-test
+Section: sound
+Architecture: linux-any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         libqt5opengl5,
+         libqt5svg5,
+         libqt5xml5,
+         libqt5sql5,
+         libqt5sql5-sqlite
+Description: The Mixxx test suite.

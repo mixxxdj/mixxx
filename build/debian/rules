@@ -1,26 +1,30 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
 
-# no thanks dpkg-buildpackage, we will handle our own C++ optimizations
-DEB_BUILD_OPTIONS= noopt
+# Documentation: https://www.debian.org/doc/debian-policy/ch-source.html#main-building-script-debian-rules
 
-# Build flags are passed in from the SConscript.
+# Build flags are passed in from the SConscript. The following line is replaced
+# via exact-string matching so do not change it!
 MIXXX_SCONS_FLAGS = ""
 
 # If ARCH is set to a different architecture when running pbuilder, pbuilder
 # will be set to create an environment to build packages for the architecture
 # specified in ARCH.
 ifneq (,$(findstring i386,$(ARCH)))
-       MIXXX_SCONS_FLAGS += machine=x86
+  MIXXX_SCONS_FLAGS += machine=x86
 endif
 ifneq (,$(findstring amd64,$(ARCH)))
-       MIXXX_SCONS_FLAGS += machine=x86_64
+  MIXXX_SCONS_FLAGS += machine=x86_64
 endif
 
 # parallel builds for scons
 ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
-NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
-MIXXX_SCONS_FLAGS += -j$(NUMJOBS)
+  NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+  MIXXX_SCONS_FLAGS += -j$(NUMJOBS)
+endif
+
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+  MIXXX_SCONS_FLAGS += test=1
 endif
 
 MIXXX_SCONS_FLAGS += prefix=/usr
@@ -30,8 +34,13 @@ MIXXX_SCONS_FLAGS += install_root=$(CURDIR)/debian/tmp/usr
 	dh $@ --parallel
 
 override_dh_auto_build:
-	scons $(MIXXX_SCONS_FLAGS) w=1
+	scons $(MIXXX_SCONS_FLAGS)
 	docbook-to-man debian/mixxx.sgml > mixxx.1
+
+override_dh_auto_test:
+ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
+	xvfb-run -- ./mixxx-test --gtest_output=xml:test_results.xml
+endif
 
 override_dh_auto_clean:
 	scons $(MIXXX_SCONS_FLAGS) -c || true
@@ -42,6 +51,9 @@ override_dh_auto_clean:
 
 override_dh_auto_install:
 	scons $(MIXXX_SCONS_FLAGS) install
+	mkdir $(CURDIR)/debian/tmp/usr/share/mixxx-test
+	cp test_results.xml $(CURDIR)/debian/tmp/usr/share/mixxx-test/
+	cp mixxx-test $(CURDIR)/debian/tmp/usr/bin
 	find $(CURDIR)/debian/tmp \( -name COPYING -o -name Thumbs.db \
 		-o -name shifter.sh -o -name '*.xsl' -o -name '*.php' \) \
 		-exec rm -f {} \;

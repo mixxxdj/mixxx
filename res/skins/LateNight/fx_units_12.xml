@@ -174,6 +174,7 @@
         <Children>
           <Template src="skin:knob.xml">
             <SetVariable name="Size">35f,30f</SetVariable>
+            <SetVariable name="Color">green</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit1]</SetVariable>
             <SetVariable name="control">super1</SetVariable>
@@ -193,6 +194,7 @@
         <Children>
           <Template src="skin:knob.xml">
             <SetVariable name="Size">35f,30f</SetVariable>
+            <SetVariable name="Color">green</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit2]</SetVariable>
             <SetVariable name="control">super1</SetVariable>
@@ -212,6 +214,7 @@
         <Children>
           <Template src="skin:knob.xml">
             <SetVariable name="Size">35f,30f</SetVariable>
+            <SetVariable name="Color">red</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit1]</SetVariable>
             <SetVariable name="control">mix</SetVariable>
@@ -231,6 +234,7 @@
         <Children>
           <Template src="skin:knob.xml">
             <SetVariable name="Size">35f,30f</SetVariable>
+            <SetVariable name="Color">red</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
             <SetVariable name="group">[EffectRack1_EffectUnit2]</SetVariable>
             <SetVariable name="control">mix</SetVariable>

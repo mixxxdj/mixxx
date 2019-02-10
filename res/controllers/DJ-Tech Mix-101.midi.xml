@@ -6,7 +6,7 @@
       <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=3981</forums>
     </info>
     <controller id="Mix-101 MIDI 1">
-	<scriptfiles/>
+    <scriptfiles/>
         <controls>
             <control>
                 <status>0xb0</status>
@@ -310,16 +310,16 @@
             </control>
         </controls>
         <outputs>
-	    <output>
-		<group>[Channel1]</group>
-		<key>pfl</key>
-		<status>0x90</status>
-		<midino>0x01</midino>
-		<on>0x7F</on>
-		<off>0x00</off>
-		<maximum>1</maximum>
-		<minimum>0.9</minimum>
-	    </output>
+        <output>
+        <group>[Channel1]</group>
+        <key>pfl</key>
+        <status>0x90</status>
+        <midino>0x01</midino>
+        <on>0x7F</on>
+        <off>0x00</off>
+        <maximum>1</maximum>
+        <minimum>0.9</minimum>
+        </output>
             <output>
                 <group>[Channel2]</group>
                 <key>pfl</key>
@@ -350,6 +350,6 @@
                 <maximum>1</maximum>
                 <minimum>0.9</minimum>
             </output>
-	</outputs>
+    </outputs>
     </controller>
 </MixxxMIDIPreset>

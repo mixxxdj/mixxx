@@ -42,7 +42,7 @@
 
             </Children>
             <Connection>
-              <!-- This enables the style with the blue play botton -->
+              <!-- This enables the style with the blue play button -->
               <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
@@ -74,7 +74,7 @@
 
             </Children>
             <Connection>
-              <!-- This enables the style with the violet play botton -->
+              <!-- This enables the style with the violet play button -->
               <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>

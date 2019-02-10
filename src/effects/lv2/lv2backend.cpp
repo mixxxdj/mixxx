@@ -54,7 +54,12 @@ const QList<QString> LV2Backend::getEffectIds() const {
 }
 
 const QSet<QString> LV2Backend::getDiscoveredPluginIds() const {
-    return m_registeredEffects.keys().toSet();
+    QSet<QString> pluginIds;
+    for (auto it = m_registeredEffects.constBegin();
+         it != m_registeredEffects.constEnd(); ++it) {
+        pluginIds.insert(it.key());
+    }
+    return pluginIds;
 }
 
 bool LV2Backend::canInstantiateEffect(const QString& effectId) const {

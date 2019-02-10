@@ -200,7 +200,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                 return;
             }
 
-            // Add every track from right klicked playlist to that with the next smaller ID
+            // Add every track from right-clicked playlist to that with the next smaller ID
             int previousPlaylistId = m_playlistDao.getPreviousPlaylist(currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
             if (previousPlaylistId >= 0) {
 

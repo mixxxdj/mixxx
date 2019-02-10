@@ -16,7 +16,7 @@
         <ObjectName>LibrarySplitter</ObjectName>
         <Orientation>horizontal</Orientation>
         <SizePolicy>me,me</SizePolicy>
-        <SplitSizesConfigKey>[Deere],LibrarySidebarSplitSize</SplitSizesConfigKey>
+        <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
         <SplitSizes>2,8</SplitSizes>
         <Children>
           <WidgetGroup>
@@ -26,13 +26,13 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <Children>
+                  <SearchBox>
+                  </SearchBox>
                   <Template src="skin:hide_show_button.xml">
                     <SetVariable name="TooltipId">maximize_library</SetVariable>
                     <SetVariable name="object_name">LibraryToggle</SetVariable>
                     <SetVariable name="control">[Master],maximize_library</SetVariable>
                   </Template>
-                  <SearchBox>
-                  </SearchBox>
                 </Children>
               </WidgetGroup>
               <!-- QSplitter between LibrarySidebar and CoverArt -->
@@ -41,7 +41,7 @@
                 <Orientation>vertical</Orientation>
                 <SizePolicy>me,me</SizePolicy>
                 <MinimumSize>30,30</MinimumSize>
-                <SplitSizesConfigKey>[Deere],LibraryCoverartSplitSize</SplitSizesConfigKey>
+                <SplitSizesConfigKey>[Skin],coverArt_splitsize</SplitSizesConfigKey>
                 <SplitSizes>2,8</SplitSizes>
                 <Collapsible>0,0</Collapsible>
                 <Children>
@@ -66,7 +66,7 @@
           </Library>
         </Children>
         <Connection>
-          <ConfigKey>[Library],show_library</ConfigKey>
+          <ConfigKey>[Skin],show_library</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </Splitter>
@@ -76,7 +76,7 @@
         <SizePolicy>me,me</SizePolicy>
         <Children/>
         <Connection>
-          <ConfigKey>[Library],show_library</ConfigKey>
+          <ConfigKey>[Skin],show_library</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>

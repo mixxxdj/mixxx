@@ -10,6 +10,7 @@ class Sampler : public BaseTrackPlayerImpl {
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
+            VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             QString group);
     virtual ~Sampler();

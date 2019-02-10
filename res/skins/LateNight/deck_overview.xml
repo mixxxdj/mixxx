@@ -1,0 +1,53 @@
+<Template>
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+  <Overview>
+    <TooltipId>waveform_overview</TooltipId>
+    <Channel><Variable name="channum"/></Channel>
+    <Size>200me,40me</Size>
+    <BgColor>#1E1E1E</BgColor>
+    <SignalColor><Variable name="SignalColor"/></SignalColor>
+    <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
+    <SignalRGBMidColor><Variable name="SignalRGBMidColor"/></SignalRGBMidColor>
+    <SignalRGBHighColor><Variable name="SignalRGBHighColor"/></SignalRGBHighColor>
+    <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
+    <PlayPosColor>#00FF00</PlayPosColor>
+    <EndOfTrackColor>#EA0000</EndOfTrackColor>
+    <DefaultMark>
+      <Align>bottom|right</Align>
+      <Color>#00FF00</Color>
+      <TextColor>#FFFFFF</TextColor>
+      <Text> %1 </Text>
+    </DefaultMark>
+    <MarkRange>
+      <StartControl>loop_start_position</StartControl>
+      <EndControl>loop_end_position</EndControl>
+      <EnabledControl>loop_enabled</EnabledControl>
+      <Color>#00FF00</Color>
+      <DisabledColor>#FFFFFF</DisabledColor>
+    </MarkRange>
+    <Mark>
+      <Control>loop_start_position</Control>
+      <Text>IN</Text>
+      <Align>bottom|right</Align>
+      <Color>#00FF00</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>loop_end_position</Control>
+      <Text>OUT</Text>
+      <Align>bottom|right</Align>
+      <Color>#00FF00</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Mark>
+      <Control>cue_point</Control>
+      <Text> C </Text>
+      <Align>top|right</Align>
+      <Color>#FF001C</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Connection>
+      <ConfigKey><Variable name="group"/>,playposition</ConfigKey>
+    </Connection>
+  </Overview>
+</Template>

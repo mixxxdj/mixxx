@@ -5,8 +5,10 @@
 #include "library/queryutil.h"
 #include "track/keyutils.h"
 #include "library/dao/trackschema.h"
+#include "library/crate/crateschema.h"
 #include "util/db/sqllikewildcards.h"
 #include "util/db/dbconnection.h"
+
 
 QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& column) {
     if (column == LIBRARYTABLE_ARTIST) {
@@ -154,7 +156,7 @@ TextFilterNode::TextFilterNode(const QSqlDatabase& database,
 bool TextFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn: m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
-        if (!value.isValid() || !qVariantCanConvert<QString>(value)) {
+        if (!value.isValid() || !value.canConvert(QMetaType::QString)) {
             continue;
         }
 
@@ -186,6 +188,26 @@ QString TextFilterNode::toSql() const {
     return concatSqlClauses(searchClauses, "OR");
 }
 
+bool NullOrEmptyTextFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_sqlColumns.isEmpty()) {
+        // only use the major column
+        QVariant value = getTrackValueForColumn(pTrack, m_sqlColumns.first());
+        if (!value.isValid() || !value.canConvert(QMetaType::QString)) {
+            return true;
+        }
+        return value.toString().isEmpty();
+    }
+    return false;
+}
+
+QString NullOrEmptyTextFilterNode::toSql() const {
+    if (!m_sqlColumns.isEmpty()) {
+        // only use the major column
+        return QString("%1 IS NULL OR %1 IS ''").arg(m_sqlColumns.first());
+    }
+    return QString();
+}
+
 CrateFilterNode::CrateFilterNode(const CrateStorage* pCrateStorage,
                                  const QString& crateNameLike)
     : m_pCrateStorage(pCrateStorage),
@@ -213,9 +235,37 @@ QString CrateFilterNode::toSql() const {
             m_pCrateStorage->formatQueryForTrackIdsByCrateNameLike(m_crateNameLike));
 }
 
+
+NoCrateFilterNode::NoCrateFilterNode(const CrateStorage* pCrateStorage)
+    : m_pCrateStorage(pCrateStorage),
+      m_matchInitialized(false) {
+}
+
+bool NoCrateFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_matchInitialized) {
+        TrackSelectResult tracks(
+                m_pCrateStorage->selectAllTracksSorted());
+
+        while (tracks.next()) {
+            m_matchingTrackIds.push_back(tracks.trackId());
+        }
+
+        m_matchInitialized = true;
+    }
+
+    return !std::binary_search(m_matchingTrackIds.begin(), m_matchingTrackIds.end(), pTrack->getId());
+}
+
+QString NoCrateFilterNode::toSql() const {
+    return QString("%1 NOT IN (%2)").arg(
+            CRATETABLE_ID,
+            CrateStorage::formatQueryForTrackIdsWithCrate());
+}
+
 NumericFilterNode::NumericFilterNode(const QStringList& sqlColumns)
         : m_sqlColumns(sqlColumns),
           m_bOperatorQuery(false),
+          m_bNullQuery(false),
           m_operator("="),
           m_dOperatorArgument(0.0),
           m_bRangeQuery(false),
@@ -230,6 +280,11 @@ NumericFilterNode::NumericFilterNode(
 }
 
 void NumericFilterNode::init(QString argument) {
+    if (argument == kMissingFieldSearchTerm) {
+        m_bNullQuery = true;
+        return;
+    }
+
     QRegExp operatorMatcher("^(>|>=|=|<|<=)(.*)$");
     if (operatorMatcher.indexIn(argument) != -1) {
         m_operator = operatorMatcher.cap(1);
@@ -263,7 +318,10 @@ double NumericFilterNode::parse(const QString& arg, bool *ok) {
 bool NumericFilterNode::match(const TrackPointer& pTrack) const {
     for (const auto& sqlColumn: m_sqlColumns) {
         QVariant value = getTrackValueForColumn(pTrack, sqlColumn);
-        if (!value.isValid() || !qVariantCanConvert<double>(value)) {
+        if (!value.isValid() || !value.canConvert(QMetaType::Double)) {
+            if (m_bNullQuery) {
+                return true;
+            }
             continue;
         }
 
@@ -285,6 +343,14 @@ bool NumericFilterNode::match(const TrackPointer& pTrack) const {
 }
 
 QString NumericFilterNode::toSql() const {
+    if (m_bNullQuery) {
+        for (const auto& sqlColumn: m_sqlColumns) {
+            // only use the major column
+            return QString("%1 IS NULL").arg(sqlColumn);
+        }
+        return QString();
+    }
+
     if (m_bOperatorQuery) {
         QStringList searchClauses;
         for (const auto& sqlColumn: m_sqlColumns) {
@@ -309,6 +375,30 @@ QString NumericFilterNode::toSql() const {
 
     return QString();
 }
+
+NullNumericFilterNode::NullNumericFilterNode(const QStringList& sqlColumns)
+        : m_sqlColumns(sqlColumns) {
+}
+
+bool NullNumericFilterNode::match(const TrackPointer& pTrack) const {
+    if (!m_sqlColumns.isEmpty()) {
+        // only use the major column
+        QVariant value = getTrackValueForColumn(pTrack, m_sqlColumns.first());
+        if (!value.isValid() || !value.canConvert(QMetaType::Double)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+QString NullNumericFilterNode::toSql() const {
+    if (!m_sqlColumns.isEmpty()) {
+        // only use the major column
+        return QString("%1 IS NULL").arg(m_sqlColumns.first());
+    }
+    return QString();
+}
+
 
 DurationFilterNode::DurationFilterNode(
         const QStringList& sqlColumns, const QString& argument)

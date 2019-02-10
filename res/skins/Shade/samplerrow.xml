@@ -55,7 +55,7 @@
 								</State>
 								<Pos>0,0</Pos>
 								<Connection>
-									<ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
+									<ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
 								</Connection>
 							</PushButton>
 						</Children>
@@ -149,7 +149,7 @@
 			</WidgetGroup>	
 		  </Children>
 		  <Connection>
-		    <ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
+		    <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
 		    <BindProperty>visible</BindProperty>
 			 <Transform>
 			   <Not/>
@@ -203,7 +203,7 @@
 								</State>
 								<Pos>0,6</Pos>
 								<Connection>
-									<ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
+									<ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
 								</Connection>
 							</PushButton>
 						</Children>
@@ -299,7 +299,7 @@
 			</WidgetGroup>	
 		  </Children>
 		  <Connection>
-		    <ConfigKey>[SamplerRow<Variable name="rownum"/>],expanded</ConfigKey>
+		    <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
 		    <BindProperty>visible</BindProperty>
 		  </Connection>
 		</WidgetGroup>

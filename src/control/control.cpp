@@ -84,9 +84,8 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& key) {
     MMutexLocker locker(&s_qCOHashMutex);
 
-    QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it =
-            s_qCOHash.find(key);
-    if (it == s_qCOHash.end()) {
+    auto it = s_qCOHash.constFind(key);
+    if (it == s_qCOHash.constEnd()) {
         qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for null control" << key;
         return;
     }
@@ -118,9 +117,8 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     // Scope for MMutexLocker.
     {
         MMutexLocker locker(&s_qCOHashMutex);
-        QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOHash.find(key);
-
-        if (it != s_qCOHash.end()) {
+        auto it = s_qCOHash.constFind(key);
+        if (it != s_qCOHash.constEnd()) {
             if (pCreatorCO) {
                 if (warn) {
                     qDebug() << "ControlObject" << key.group << key.item << "already created";
@@ -152,8 +150,7 @@ void ControlDoublePrivate::getControls(
         QList<QSharedPointer<ControlDoublePrivate> >* pControlList) {
     s_qCOHashMutex.lock();
     pControlList->clear();
-    for (QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOHash.begin();
-             it != s_qCOHash.end(); ++it) {
+    for (auto it = s_qCOHash.constBegin(); it != s_qCOHash.constEnd(); ++it) {
         QSharedPointer<ControlDoublePrivate> pControl = it.value();
         if (!pControl.isNull()) {
             pControlList->push_back(pControl);
@@ -258,12 +255,4 @@ double ControlDoublePrivate::getMidiParameter() const {
         return 0;
     }
     return pBehavior->valueToMidiParameter(get());
-}
-
-bool ControlDoublePrivate::connectValueChangeRequest(const QObject* receiver,
-        const char* method, Qt::ConnectionType type) {
-    // confirmation is only required if connect was successful
-    m_confirmRequired = connect(this, SIGNAL(valueChangeRequest(double)),
-                receiver, method, type);
-    return m_confirmRequired;
 }
