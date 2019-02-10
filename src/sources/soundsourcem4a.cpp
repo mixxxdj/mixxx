@@ -259,12 +259,12 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
 bool SoundSourceM4A::openDecoder() {
     DEBUG_ASSERT(m_hDecoder == nullptr); // not already opened
 
-    m_hDecoder = m_faad.NeAACDecOpen();
+    m_hDecoder = m_faad.Open();
     if (m_hDecoder == nullptr) {
         kLogger.warning() << "Failed to open the AAC decoder!";
         return false;
     }
-    LibFaadLoader::NeAACDecConfigurationPtr pDecoderConfig = m_faad.NeAACDecGetCurrentConfiguration(
+    LibFaadLoader::Configuration* pDecoderConfig = m_faad.GetCurrentConfiguration(
             m_hDecoder);
     pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
     if ((m_openParams.channelCount() == 1) ||
@@ -275,7 +275,7 @@ bool SoundSourceM4A::openDecoder() {
     }
 
     pDecoderConfig->defObjectType = LC;
-    if (!m_faad.NeAACDecSetConfiguration(m_hDecoder, pDecoderConfig)) {
+    if (!m_faad.SetConfiguration(m_hDecoder, pDecoderConfig)) {
         kLogger.warning() << "Failed to configure AAC decoder!";
         return false;
     }
@@ -292,7 +292,7 @@ bool SoundSourceM4A::openDecoder() {
 
     SAMPLERATE_TYPE sampleRate;
     unsigned char channelCount;
-    if (0 > m_faad.NeAACDecInit2(m_hDecoder, configBuffer, configBufferSize,
+    if (0 > m_faad.Init2(m_hDecoder, configBuffer, configBufferSize,
                     &sampleRate, &channelCount)) {
         free(configBuffer);
         kLogger.warning() << "Failed to initialize the AAC decoder!";
@@ -333,7 +333,7 @@ bool SoundSourceM4A::openDecoder() {
 
 void SoundSourceM4A::closeDecoder() {
     if (m_hDecoder != nullptr) {
-        m_faad.NeAACDecClose(m_hDecoder);
+        m_faad.Close(m_hDecoder);
         m_hDecoder = nullptr;
     }
 }
@@ -361,7 +361,7 @@ bool SoundSourceM4A::isValidSampleBlockId(MP4SampleId sampleBlockId) const {
 void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
     DEBUG_ASSERT(sampleBlockId >= kSampleBlockIdMin);
 
-    m_faad.NeAACDecPostSeekReset(m_hDecoder, sampleBlockId);
+    m_faad.PostSeekReset(m_hDecoder, sampleBlockId);
     m_curSampleBlockId = sampleBlockId;
     m_curFrameIndex = frameIndexMin() +
             (sampleBlockId - kSampleBlockIdMin) * m_framesPerSampleBlock;
@@ -507,8 +507,8 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         }
         DEBUG_ASSERT(decodeBufferCapacityMin <= decodeBufferCapacity);
 
-        LibFaadLoader::NeAACDecFrameInfo decFrameInfo;
-        void* pDecodeResult = m_faad.NeAACDecDecode2(
+        LibFaadLoader::FrameInfo decFrameInfo;
+        void* pDecodeResult = m_faad.Decode2(
                 m_hDecoder, &decFrameInfo,
                 &m_inputBuffer[m_inputBufferOffset],
                 m_inputBufferLength,
@@ -518,7 +518,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         if (0 != decFrameInfo.error) {
             kLogger.warning() << "AAC decoding error:"
                     << decFrameInfo.error
-                    << m_faad.NeAACDecGetErrorMessage(decFrameInfo.error)
+                    << m_faad.GetErrorMessage(decFrameInfo.error)
                     << getUrlString();
             break; // abort
         }

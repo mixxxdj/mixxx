@@ -26,9 +26,9 @@ constexpr unsigned char FAAD_FMT_DOUBLE = 5;
 
 class LibFaadLoader {
   public:
-    typedef void* NeAACDecHandle;
+    typedef void* Handle;
 
-    typedef struct NeAACDecConfiguration
+    typedef struct
     {
         unsigned char defObjectType;
         unsigned long defSampleRate;
@@ -36,9 +36,9 @@ class LibFaadLoader {
         unsigned char downMatrix;
         unsigned char useOldADTSFormat;
         unsigned char dontUpSampleImplicitSBR;
-    } NeAACDecConfiguration, *NeAACDecConfigurationPtr;
+    } Configuration;
 
-    typedef struct NeAACDecFrameInfo
+    typedef struct
     {
         unsigned long bytesconsumed;
         unsigned long samples;
@@ -64,73 +64,72 @@ class LibFaadLoader {
 
         // PS: 0: off, 1: on
         unsigned char ps;
-    } NeAACDecFrameInfo;
+    } FrameInfo;
 
     LibFaadLoader();
 
-    NeAACDecHandle NeAACDecOpen();
+    Handle Open();
 
-    NeAACDecConfigurationPtr NeAACDecGetCurrentConfiguration(
-            NeAACDecHandle hDecoder);
+    Configuration* GetCurrentConfiguration(
+            Handle hDecoder);
 
-    unsigned char NeAACDecSetConfiguration(
-            NeAACDecHandle hDecoder, NeAACDecConfigurationPtr config);
+    unsigned char SetConfiguration(
+            Handle hDecoder, Configuration* config);
 
     // Init the library using a DecoderSpecificInfo
-    char NeAACDecInit2(
-            NeAACDecHandle hDecoder,
+    char Init2(
+            Handle hDecoder,
             unsigned char* pBuffer,
             unsigned long SizeOfDecoderSpecificInfo,
             unsigned long* pSamplerate,
             unsigned char* pChannels);
 
-    void NeAACDecClose(NeAACDecHandle hDecoder);
+    void Close(Handle hDecoder);
 
-    void NeAACDecPostSeekReset(NeAACDecHandle hDecoder, long frame);
+    void PostSeekReset(Handle hDecoder, long frame);
 
-    void* NeAACDecDecode2(
-            NeAACDecHandle hDecoder,
-            NeAACDecFrameInfo* pInfo,
+    void* Decode2(
+            Handle hDecoder,
+            FrameInfo* pInfo,
             unsigned char* pBuffer,
             unsigned long bufferSize,
             void** ppSampleBuffer,
             unsigned long sampleBufferSize);
 
-    char* NeAACDecGetErrorMessage(unsigned char errcode);
+    char* GetErrorMessage(unsigned char errcode);
 
 
   private:
     std::unique_ptr<QLibrary> m_pLibrary;
 
-    typedef NeAACDecHandle (* NeAACDecOpen_t)();
+    typedef Handle (* NeAACDecOpen_t)();
     NeAACDecOpen_t m_neAACDecOpen;
 
-    typedef NeAACDecConfigurationPtr (* NeAACDecGetCurrentConfiguration_t)(NeAACDecHandle);
+    typedef Configuration* (* NeAACDecGetCurrentConfiguration_t)(Handle);
     NeAACDecGetCurrentConfiguration_t m_neAACDecGetCurrentConfiguration;
 
     typedef unsigned char (* NeAACDecSetConfiguration_t)(
-            NeAACDecHandle, NeAACDecConfigurationPtr);
+            Handle, Configuration*);
     NeAACDecSetConfiguration_t m_neAACDecSetConfiguration;
 
     typedef char (* NeAACDecInit2_t)(
-            NeAACDecHandle, unsigned char*,
+            Handle, unsigned char*,
             unsigned long, unsigned long*, unsigned char* );
     NeAACDecInit2_t m_neAACDecInit2;
 
-    typedef void (* NeAACDecClose_t)(NeAACDecHandle);
+    typedef void (* NeAACDecClose_t)(Handle);
     NeAACDecClose_t m_neAACDecClose;
 
-    typedef void (* NeAACDecPostSeekReset_t)(NeAACDecHandle, long);
+    typedef void (* NeAACDecPostSeekReset_t)(Handle, long);
     NeAACDecPostSeekReset_t m_neAACDecPostSeekReset;
 
     typedef void* (* NeAACDecDecode2_t)(
-            NeAACDecHandle, NeAACDecFrameInfo*, unsigned char*,
+            Handle, FrameInfo*, unsigned char*,
             unsigned long, void**, unsigned long);
     NeAACDecDecode2_t m_neAACDecDecode2;
 
     typedef char* (* NeAACDecGetErrorMessage_t)(unsigned char);
     NeAACDecGetErrorMessage_t m_neAACDecGetErrorMessage;
-
 };
 
 

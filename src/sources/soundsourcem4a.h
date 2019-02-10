@@ -54,7 +54,7 @@ class SoundSourceM4A: public SoundSource {
 
     OpenParams m_openParams;
 
-    LibFaadLoader::NeAACDecHandle m_hDecoder;
+    LibFaadLoader::Handle m_hDecoder;
     SINT m_numberOfPrefetchSampleBlocks;
     MP4SampleId m_curSampleBlockId;
 

@@ -91,32 +91,32 @@ LibFaadLoader::LibFaadLoader()
     kLogger.debug() << "Successfully loaded faad2 library " << m_pLibrary->fileName();
 };
 
-LibFaadLoader::NeAACDecHandle LibFaadLoader::NeAACDecOpen() {
+LibFaadLoader::Handle LibFaadLoader::Open() {
     if (m_neAACDecOpen) {
         return m_neAACDecOpen();
     }
     return nullptr;
 }
 
-LibFaadLoader::NeAACDecConfigurationPtr
-LibFaadLoader::NeAACDecGetCurrentConfiguration(NeAACDecHandle hDecoder) {
+LibFaadLoader::Configuration*
+LibFaadLoader::GetCurrentConfiguration(Handle hDecoder) {
     if (m_neAACDecGetCurrentConfiguration) {
         return m_neAACDecGetCurrentConfiguration(hDecoder);
     }
     return nullptr;
 }
 
-unsigned char LibFaadLoader::NeAACDecSetConfiguration(
-        NeAACDecHandle hDecoder, NeAACDecConfigurationPtr config) {
+unsigned char LibFaadLoader::SetConfiguration(
+        Handle hDecoder, Configuration* pConfig) {
     if (m_neAACDecSetConfiguration) {
-        return m_neAACDecSetConfiguration(hDecoder, config);
+        return m_neAACDecSetConfiguration(hDecoder, pConfig);
     }
     return 0;
 }
 
 // Init the library using a DecoderSpecificInfo
-char LibFaadLoader::NeAACDecInit2(
-        NeAACDecHandle hDecoder,
+char LibFaadLoader::Init2(
+        Handle hDecoder,
         unsigned char* pBuffer,
         unsigned long SizeOfDecoderSpecificInfo,
         unsigned long* pSamplerate,
@@ -132,21 +132,21 @@ char LibFaadLoader::NeAACDecInit2(
 
 }
 
-void LibFaadLoader::NeAACDecClose(NeAACDecHandle hDecoder) {
+void LibFaadLoader::Close(Handle hDecoder) {
     if (m_neAACDecClose) {
         m_neAACDecClose(hDecoder);
     }
 }
 
-void LibFaadLoader::NeAACDecPostSeekReset(NeAACDecHandle hDecoder, long frame) {
+void LibFaadLoader::PostSeekReset(Handle hDecoder, long frame) {
     if (m_neAACDecPostSeekReset) {
         m_neAACDecPostSeekReset(hDecoder, frame);
     }
 }
 
-void* LibFaadLoader::NeAACDecDecode2(
-        NeAACDecHandle hDecoder,
-        NeAACDecFrameInfo* pInfo,
+void* LibFaadLoader::Decode2(
+        Handle hDecoder,
+        FrameInfo* pInfo,
         unsigned char* pBuffer,
         unsigned long bufferSize,
         void** ppSampleBuffer,
@@ -163,7 +163,7 @@ void* LibFaadLoader::NeAACDecDecode2(
     return 0;
 }
 
-char* LibFaadLoader::NeAACDecGetErrorMessage(unsigned char errcode) {
+char* LibFaadLoader::GetErrorMessage(unsigned char errcode) {
     if (m_neAACDecGetErrorMessage) {
         return m_neAACDecGetErrorMessage(errcode);
     }
