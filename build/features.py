@@ -367,7 +367,7 @@ class ModPlug(Feature):
 class FAAD(Feature):
     def description(self):
         return "FAAD AAC audio file decoder plugin"
-        
+
     def default(self, build):
         return 1 if build.platform_is_linux else 0
 
