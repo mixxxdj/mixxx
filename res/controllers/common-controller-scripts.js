@@ -442,48 +442,6 @@ bpm.tapButton = function(deck) {
 //     print("Script: BPM="+average+" setting to "+fRateScale);
 }
 
-// color - Basic Object used for convient interface with the hotcue_color ControlObjects
-color = {
-  // member should be set directly but only in the [0;255] range.
-  red: 0,
-  green: 0,
-  blue: 0,
-  alpha: 255,
-}
-
-
-/* -------- ------------------------------------------------------
-      color.fromCO
-   Purpose: Setter that splits the combined colors into their components
-            and sets the color components in the object
-   Input:   combined color value
-   Output:  -
-   -------- ------------------------------------------------------ */
-
-color.fromCO = function(color) {
-    this.alpha = color >> 24 & 0xFF;
-    this.red = color >> 16 & 0xFF;
-    this.green = color >> 8 & 0xFF;
-    this.blue = color & 0xFF;
-}
-/* -------- ------------------------------------------------------
-      color.toCO
-   Purpose: Combines the colors back into a single value that
-            that could be used to set the MixxxControl value
-   Input:   -
-   Output:  struct containing the color components
-   -------- ------------------------------------------------------ */
-color.toCO = function() {
-  // javascript objects don't have "access control" and this object
-  // doesn't provide setters (interaction is supposed to be done via direct access)
-  // so this getter function sanitizes the values on export.
-  return (this.alpha % 255) << 24 +
-         (this.red  % 255) << 16 +
-         (this.green % 255) << 8 +
-         this. blue % 255;
-}
-
-
 // ----------------- Common regular expressions --------------------------
 script.samplerRegEx = /^\[Sampler(\d+)\]$/
 script.channelRegEx = /^\[Channel(\d+)\]$/
