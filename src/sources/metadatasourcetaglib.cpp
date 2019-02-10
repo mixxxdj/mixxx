@@ -787,6 +787,12 @@ MetadataSourceTagLib::exportTrackMetadata(
             << "with type" << m_fileType;
 
     SafelyWritableFile safelyWritableFile(m_fileName, kExportTrackMetadataIntoTemporaryFile);
+    if (safelyWritableFile.fileName().isEmpty()) {
+        kLogger.warning()
+                << "Unable to export track metadata into file"
+                << m_fileName;
+        return afterExport(ExportResult::Failed);
+    }
 
     std::unique_ptr<TagSaver> pTagSaver;
     switch (m_fileType) {
