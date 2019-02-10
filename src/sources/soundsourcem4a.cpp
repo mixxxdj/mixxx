@@ -601,8 +601,10 @@ QString SoundSourceProviderM4A::getName() const {
 
 QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
     QStringList supportedFileExtensions;
-    supportedFileExtensions.append("m4a");
-    supportedFileExtensions.append("mp4");
+    if (LibFaadLoader::Instance()->isLoaded()) {
+        supportedFileExtensions.append("m4a");
+        supportedFileExtensions.append("mp4");
+    }
     return supportedFileExtensions;
 }
 

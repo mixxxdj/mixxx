@@ -68,6 +68,8 @@ class LibFaadLoader {
 
     static LibFaadLoader* Instance();
 
+    bool isLoaded();
+
     Handle Open();
 
     Configuration* GetCurrentConfiguration(

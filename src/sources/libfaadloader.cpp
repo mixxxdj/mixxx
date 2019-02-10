@@ -7,8 +7,8 @@ mixxx::Logger kLogger("LibFaadLoader");
 } // anonymous namespace
 
 // static
-LibFaadLoader* Instance() {
-    static LibFaadLoader libFaadLoader();
+LibFaadLoader* LibFaadLoader::Instance() {
+    static LibFaadLoader libFaadLoader;
     return &libFaadLoader;
 }
 
@@ -96,6 +96,13 @@ LibFaadLoader::LibFaadLoader()
     }
     kLogger.debug() << "Successfully loaded faad2 library " << m_pLibrary->fileName();
 };
+
+bool LibFaadLoader::isLoaded() {
+    if (m_pLibrary) {
+        return m_pLibrary->isLoaded();
+    }
+    return false;
+}
 
 LibFaadLoader::Handle LibFaadLoader::Open() {
     if (m_neAACDecOpen) {
