@@ -328,12 +328,12 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
             PredefinedColorPointer color = predefinedColors.at(i);
             QColor defaultRgba = color->m_defaultRgba;
             colorComboBox->addItem(color->m_sDisplayName, defaultRgba);
-            const QModelIndex idx = colorComboBox->model()->index(i, 0);
             if (*color != *Color::predefinedColorSet.noColor) {
-                colorComboBox->model()->setData(idx, defaultRgba, Qt::BackgroundColorRole);
+                QPixmap pixmap(80,80);
+                pixmap.fill(defaultRgba);
+                QIcon icon(pixmap);
+                colorComboBox->setItemIcon(i, icon);
             }
-            colorComboBox->setItemData(i, Color::chooseContrastColor(defaultRgba), Qt::TextColorRole);
-
         }
         PredefinedColorPointer cueColor = pCue->getColor();
         colorComboBox->setCurrentIndex(Color::predefinedColorSet.predefinedColorIndex(cueColor));
