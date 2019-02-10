@@ -78,6 +78,8 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
 
     // This is parented to the PlayerManager so does not need to be deleted
     m_pSamplerBank = new SamplerBank(this);
+
+    m_cloneTimer.start();
 }
 
 PlayerManager::~PlayerManager() {
@@ -564,7 +566,7 @@ void PlayerManager::slotCloneDeck(QString source_group, QString target_group) {
         return;
     }
 
-    pPlayer->slotCloneDeck(source_group);
+    pPlayer->slotCloneFromGroup(source_group);
 }
 
 void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
@@ -577,7 +579,15 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bo
         return;
     }
 
-    pPlayer->slotLoadTrack(pTrack, play);
+    mixxx::Duration elapsed = m_cloneTimer.restart();
+    if (m_lastLoadedPlayer == group && elapsed < mixxx::Duration::fromSeconds(0.5)) {
+        // load pressed twice quickly, clone instead of loading
+        pPlayer->slotCloneDeck();
+    } else {
+        pPlayer->slotLoadTrack(pTrack, play);
+    }
+
+    m_lastLoadedPlayer = group;
 }
 
 void PlayerManager::slotLoadToPlayer(QString location, QString group) {
