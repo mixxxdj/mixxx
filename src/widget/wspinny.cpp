@@ -91,8 +91,10 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    connect(this, SIGNAL(aboutToCompose()), this, SLOT(slotAboutToCompose()));
-    connect(this, SIGNAL(frameSwapped()), this, SLOT(slotFrameSwapped()));
+    connect(this, &QOpenGLWidget::aboutToCompose,
+            this, &WSpinny::slotAboutToCompose);
+    connect(this, &QOpenGLWidget::frameSwapped,
+            this, &WSpinny::slotFrameSwapped);
 }
 
 WSpinny::~WSpinny() {
