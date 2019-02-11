@@ -24,11 +24,6 @@ class WaveformRenderBeat : public WaveformRendererAbstract {
     QVector<QLineF> m_beats;
     ControlProxy* m_showBarAndPhrase;
 
-    const int c_numberOfChannels = 2;
-    const int c_secondsPerMinute = 60;
-    const int c_beatsPerBar = 4;
-    const int c_barsPerPhrase = 4;
-
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };
 

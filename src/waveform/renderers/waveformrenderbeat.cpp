@@ -122,7 +122,10 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
             int labelRectWidth = wordRect.width() + 2 * marginX + 4;
             int labelRectHeight = wordRect.height() + 2 * marginY + 4 ;
 
-            QRectF labelRect(xBeatPoint-labelRectWidth, rendererHeight-labelRectHeight, (float)labelRectWidth, (float)labelRectHeight);
+            QRectF labelRect(xBeatPoint-labelRectWidth,
+                    rendererHeight-labelRectHeight,
+                    (float)labelRectWidth,
+                    (float)labelRectHeight);
 
             // Draw the label rect
             QColor rectColor = m_phraseColor;
