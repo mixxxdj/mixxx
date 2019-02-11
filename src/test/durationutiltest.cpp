@@ -132,7 +132,7 @@ TEST_F(DurationUtilTest, formatSecondsLong) {
 }
 
 
-TEST_F(DurationUtilTest, FormatKiloSeconds) {
+TEST_F(DurationUtilTest, DISABLED_FormatKiloSeconds) {
     formatKiloSeconds(QString::fromUtf8("0.000\u2009000"), 0);
     formatKiloSeconds(QString::fromUtf8("0.001\u2009000"), 1);
     formatKiloSeconds(QString::fromUtf8("0.001\u2009490"), 1.49);
