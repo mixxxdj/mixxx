@@ -692,6 +692,10 @@ class SafelyWritableFile final {
         }
     }
 
+    bool isReady() const {
+        return !fileName().isEmpty();
+    }
+
     bool commit() {
         if (m_tempFileName.isNull()) {
             return true; // nothing to do
@@ -787,10 +791,11 @@ MetadataSourceTagLib::exportTrackMetadata(
             << "with type" << m_fileType;
 
     SafelyWritableFile safelyWritableFile(m_fileName, kExportTrackMetadataIntoTemporaryFile);
-    if (safelyWritableFile.fileName().isEmpty()) {
+    if (!safelyWritableFile.isReady()) {
         kLogger.warning()
                 << "Unable to export track metadata into file"
-                << m_fileName;
+                << m_fileName
+                << "- Please check file permissions and storage space";
         return afterExport(ExportResult::Failed);
     }
 
