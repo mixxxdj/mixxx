@@ -36,7 +36,6 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
   private slots:
     // Solely for handling control changes
     void slotParameterValueChanged(double value);
-    void slotValueChanged(double v);
 
   private:
     QString debugString() const {

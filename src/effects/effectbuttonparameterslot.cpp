@@ -105,12 +105,6 @@ void EffectButtonParameterSlot::slotParameterValueChanged(double value) {
     m_pControlValue->set(value);
 }
 
-void EffectButtonParameterSlot::slotValueChanged(double v) {
-    if (m_pEffectParameter) {
-        m_pEffectParameter->setValue(v);
-    }
-}
-
 QDomElement EffectButtonParameterSlot::toXml(QDomDocument* doc) const {
     QDomElement parameterElement;
     // if (m_pEffectParameter != nullptr) {

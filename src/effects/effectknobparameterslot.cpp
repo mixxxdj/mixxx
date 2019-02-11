@@ -253,12 +253,6 @@ double EffectKnobParameterSlot::getValueParameter() const {
     return m_pControlValue->getParameter();
 }
 
-void EffectKnobParameterSlot::slotValueChanged(double v) {
-    if (m_pEffectParameter) {
-        m_pEffectParameter->setValue(v);
-    }
-}
-
 QDomElement EffectKnobParameterSlot::toXml(QDomDocument* doc) const {
     QDomElement parameterElement;
     // if (m_pEffectParameter != nullptr) {

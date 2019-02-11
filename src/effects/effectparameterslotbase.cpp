@@ -65,3 +65,9 @@ void EffectParameterSlotBase::syncSofttakeover() {
 
 void EffectParameterSlotBase::onEffectMetaParameterChanged(double parameter, bool force) {
 }
+
+void EffectParameterSlotBase::slotValueChanged(double v) {
+    if (m_pEffectParameter) {
+        m_pEffectParameter->setValue(v);
+    }
+}
