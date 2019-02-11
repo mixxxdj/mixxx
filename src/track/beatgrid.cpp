@@ -16,7 +16,8 @@ class BeatGridIterator : public BeatIterator {
     BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample)
             : m_dBeatLength(dBeatLength),
               m_dCurrentSample(dFirstBeat),
-              m_dEndSample(dEndSample) {
+              m_dEndSample(dEndSample),
+              m_beatCounter(0) {
     }
 
     virtual bool hasNext() const {
