@@ -76,9 +76,6 @@ void EffectButtonParameterSlot::loadParameter(EffectParameter* pEffectParameter)
         m_pControlType->forceSet(static_cast<double>(type));
         // Default loaded parameters to loaded and unlinked
         m_pControlLoaded->forceSet(1.0);
-
-        connect(m_pEffectParameter, &EffectParameter::valueChanged,
-                this, &EffectButtonParameterSlot::slotParameterValueChanged);
     }
 
     emit(updated());
@@ -87,7 +84,6 @@ void EffectButtonParameterSlot::loadParameter(EffectParameter* pEffectParameter)
 void EffectButtonParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
-        m_pEffectParameter->disconnect(this);
         m_pEffectParameter = nullptr;
         m_pManifestParameter.clear();
     }

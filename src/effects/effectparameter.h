@@ -18,8 +18,7 @@ class EngineEffect;
 // from the parameterX ControlObjects in EffectParameterSlot allows for decoupling
 // the state of the parameters from the ControlObject states, which is required for
 // parameter hiding and rearrangement.
-class EffectParameter : public QObject {
-    Q_OBJECT
+class EffectParameter {
   public:
     EffectParameter(EngineEffect* pEngineEffect, EffectsManager* pEffectsManager,
                     int iParameterNumber, EffectManifestParameterPointer pParameter);
@@ -31,9 +30,6 @@ class EffectParameter : public QObject {
     void setValue(double value);
 
     void updateEngineState();
-
-  signals:
-    void valueChanged(double value);
 
   private:
     QString debugString() const {

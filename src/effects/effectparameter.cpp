@@ -6,8 +6,7 @@
 
 EffectParameter::EffectParameter(EngineEffect* pEngineEffect, EffectsManager* pEffectsManager,
                                  int iParameterNumber, EffectManifestParameterPointer pParameter)
-        : QObject(), // no parent
-          m_pEngineEffect(pEngineEffect),
+        : m_pEngineEffect(pEngineEffect),
           m_pEffectsManager(pEffectsManager),
           m_iParameterNumber(iParameterNumber),
           m_pParameter(pParameter) {
@@ -56,7 +55,6 @@ void EffectParameter::setValue(double value) {
     }
 
     updateEngineState();
-    emit(valueChanged(m_value));
 }
 
 void EffectParameter::updateEngineState() {

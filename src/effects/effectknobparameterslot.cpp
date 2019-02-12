@@ -96,9 +96,6 @@ void EffectKnobParameterSlot::loadParameter(EffectParameter* pEffectParameter) {
             static_cast<double>(m_pManifestParameter->defaultLinkType()));
         m_pControlLinkInverse->set(
             static_cast<double>(m_pManifestParameter->defaultLinkInversion()));
-
-        connect(m_pEffectParameter, &EffectParameter::valueChanged,
-                this, &EffectKnobParameterSlot::slotParameterValueChanged);
     }
 
     emit(updated());
@@ -107,7 +104,6 @@ void EffectKnobParameterSlot::loadParameter(EffectParameter* pEffectParameter) {
 void EffectKnobParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
-        m_pEffectParameter->disconnect(this);
         m_pEffectParameter = nullptr;
         m_pManifestParameter.clear();
     }

@@ -39,6 +39,10 @@ class EffectParameterSlotBase : public QObject {
     QString description() const;
     EffectManifestParameter::ParameterType parameterType() const;
     EffectManifestParameterPointer getManifest();
+    inline bool isLoaded() const {
+        return m_pManifestParameter != nullptr;
+    }
+
 
     virtual QDomElement toXml(QDomDocument* doc) const = 0;
     virtual void loadParameterSlotFromXml(const QDomElement& parameterElement) = 0;
@@ -47,8 +51,10 @@ class EffectParameterSlotBase : public QObject {
     // Signal that indicates that the EffectParameterSlotBase has been updated.
     void updated();
 
-  protected slots:
+  public slots:
+    // Solely for handling control changes
     void slotValueChanged(double v);
+    virtual void slotParameterValueChanged(double value) = 0;
 
   protected:
     const unsigned int m_iParameterSlotNumber;

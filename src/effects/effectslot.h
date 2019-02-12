@@ -74,9 +74,6 @@ class EffectSlot : public QObject {
 
     unsigned int numParameters(EffectManifestParameter::ParameterType parameterType) const;
 
-    EffectParameter* getParameterForSlot(EffectManifestParameter::ParameterType parameterType,
-            unsigned int slotNumber);
-
     void setEnabled(bool enabled);
 
     // static EffectPointer createFromXml(EffectsManager* pEffectsManager,

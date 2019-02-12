@@ -202,22 +202,6 @@ unsigned int EffectSlot::numParameters(EffectManifestParameter::ParameterType pa
     return num;
 }
 
-EffectParameter* EffectSlot::getParameterForSlot(EffectManifestParameter::ParameterType parameterType,
-                                                 unsigned int slotNumber) {
-    // It's normal to ask for a parameter that doesn't exist. Callers must check
-    // for NULL.
-    unsigned int num = 0;
-    for (const auto& parameter: m_parameters) {
-        if (parameter->manifest()->showInParameterSlot() && parameter->manifest()->parameterType() == parameterType) {
-            if(num == slotNumber) {
-                return parameter;
-            }
-            ++num;
-        }
-    }
-    return nullptr;
-}
-
 void EffectSlot::setEnabled(bool enabled) {
     m_pControlEnabled->set(enabled);
 }

@@ -496,10 +496,12 @@ void DlgPrefEQ::slotUpdateMasterEQParameter(int value) {
     if (!pEffectSlot.isNull()) {
         QSlider* slider = qobject_cast<QSlider*>(sender());
         int index = slider->property("index").toInt();
-        EffectParameter* param = pEffectSlot->getParameterForSlot(EffectManifestParameter::ParameterType::KNOB, index);
-        if (param) {
+        auto pParameterSlot = pEffectSlot->getEffectParameterSlot(
+                EffectManifestParameter::ParameterType::KNOB, index);
+
+        if (pParameterSlot->isLoaded()) {
             double dValue = value / 100.0;
-            param->setValue(dValue);
+            pParameterSlot->slotParameterValueChanged(dValue);
             QLabel* valueLabel = m_masterEQValues[index];
             QString valueText = QString::number(dValue);
             valueLabel->setText(valueText);
@@ -619,8 +621,10 @@ void DlgPrefEQ::setUpMasterEQ() {
     if (!pEffectSlot.isNull()) {
         int knobNum = pEffectSlot->numParameters(EffectManifestParameter::ParameterType::KNOB);
         for (int i = 0; i < knobNum; i++) {
-            EffectParameter* param = pEffectSlot->getParameterForSlot(EffectManifestParameter::ParameterType::KNOB, i);
-            if (param) {
+            auto pParameterSlot = pEffectSlot->getEffectParameterSlot(
+                    EffectManifestParameter::ParameterType::KNOB, i);
+
+            if (pParameterSlot->isLoaded()) {
                 QString strValue = m_pConfig->getValueString(ConfigKey(kConfigKey,
                         QString("EffectForGroup_[Master]_parameter%1").arg(i + 1)));
                 bool ok;
@@ -668,13 +672,15 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
             // Create and set up Master EQ's sliders
             int i;
             for (i = 0; i < knobNum; i++) {
-                EffectParameter* param = pEffectSlot->getParameterForSlot(EffectManifestParameter::ParameterType::KNOB, i);
-                if (param) {
-                    EffectManifestParameterPointer pManifestParameter = param->manifest();
+                auto pParameterSlot = pEffectSlot->getEffectParameterSlot(
+                        EffectManifestParameter::ParameterType::KNOB, i);
+
+                if (pParameterSlot->isLoaded()) {
+                    EffectManifestParameterPointer pManifestParameter = pParameterSlot->getManifest();
 
                     // Setup Label
                     QLabel* centerFreqLabel = new QLabel(this);
-                    QString labelText = param->manifest()->name();
+                    QString labelText = pParameterSlot->getManifest()->name();
                     m_masterEQLabels.append(centerFreqLabel);
                     centerFreqLabel->setText(labelText);
                     slidersGridLayout->addWidget(centerFreqLabel, 0, i + 1, Qt::AlignCenter);
@@ -753,9 +759,9 @@ void DlgPrefEQ::slotMasterEQToDefault() {
     if (!pEffectSlot.isNull()) {
         int knobNum = pEffectSlot->numParameters(EffectManifestParameter::ParameterType::KNOB);
         for (int i = 0; i < knobNum; i++) {
-            EffectParameter* param = pEffectSlot->getParameterForSlot(EffectManifestParameter::ParameterType::KNOB, i);
-            if (param) {
-                double defaultValue = param->manifest()->getDefault();
+            auto pParameterSlot = pEffectSlot->getEffectParameterSlot(EffectManifestParameter::ParameterType::KNOB, i);
+            if (pParameterSlot->isLoaded()) {
+                double defaultValue = pParameterSlot->getManifest()->getDefault();
                 setMasterEQParameter(i, defaultValue);
             }
         }
@@ -765,9 +771,11 @@ void DlgPrefEQ::slotMasterEQToDefault() {
 void DlgPrefEQ::setMasterEQParameter(int i, double value) {
     EffectSlotPointer pEffectSlot(m_pEffectMasterEQ);
     if (!pEffectSlot.isNull()) {
-        EffectParameter* param = pEffectSlot->getParameterForSlot(EffectManifestParameter::ParameterType::KNOB, i);
-        if (param) {
-            param->setValue(value);
+        auto pParameterSlot = pEffectSlot->getEffectParameterSlot(
+                EffectManifestParameter::ParameterType::KNOB, i);
+
+        if (pParameterSlot->isLoaded()) {
+            pParameterSlot->slotParameterValueChanged(value);
             m_masterEQSliders[i]->setValue(value * 100);
 
             QLabel* valueLabel = m_masterEQValues[i];
