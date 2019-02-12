@@ -26,14 +26,14 @@ Variables:
             <Children>
               <Template src="skin:waveform.xml">
                 <SetVariable name="chanNum">1</SetVariable>
-                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_1"/></SetVariable>
-                <SetVariable name="SignalColor"><Variable name="SignalColor_1"/></SetVariable>
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
+                <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
               </Template>
 
               <Template src="skin:waveform.xml">
                 <SetVariable name="chanNum">2</SetVariable>
-                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_2"/></SetVariable>
-                <SetVariable name="SignalColor"><Variable name="SignalColor_2"/></SetVariable>
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
+                <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
               </Template>
             </Children>
           </WidgetGroup><!-- /1 & 2 -->
@@ -44,14 +44,14 @@ Variables:
             <Children>
               <Template src="skin:waveform.xml">
                 <SetVariable name="chanNum">3</SetVariable>
-                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_3"/></SetVariable>
-                <SetVariable name="SignalColor"><Variable name="SignalColor_3"/></SetVariable>
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
+                <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
               </Template>
 
               <Template src="skin:waveform.xml">
                 <SetVariable name="chanNum">4</SetVariable>
-                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_4"/></SetVariable>
-                <SetVariable name="SignalColor"><Variable name="SignalColor_4"/></SetVariable>
+                <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
+                <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
               </Template>
             </Children>
             <Connection>

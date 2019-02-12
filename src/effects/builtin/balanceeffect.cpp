@@ -5,7 +5,6 @@
 namespace {
     const double kMaxCornerHz = 500;
     const double kMinCornerHz = 16;
-    const unsigned int kStartupSamplerate = 44100;
 } // anonymous namespace
 
 // static

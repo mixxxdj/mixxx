@@ -8,8 +8,8 @@ WKey::WKey(const char* group, QWidget* pParent)
           m_preferencesUpdated("[Preferences]", "updated", this),
           m_engineKeyDistance(group, "visual_key_distance", this) {
     setValue(m_dOldValue);
-    m_preferencesUpdated.connectValueChanged(SLOT(preferencesUpdated(double)));
-    m_engineKeyDistance.connectValueChanged(SLOT(setCents()));
+    m_preferencesUpdated.connectValueChanged(this, &WKey::preferencesUpdated);
+    m_engineKeyDistance.connectValueChanged(this, &WKey::setCents);
 }
 
 void WKey::onConnectedControlChanged(double dParameter, double dValue) {

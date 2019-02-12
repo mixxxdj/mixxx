@@ -8,7 +8,7 @@ WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
         : QObject(pParent),
           m_control(pControl ? pControl->getKey() : ConfigKey(), this),
           m_index(index) {
-    m_control.connectValueChanged(SLOT(slotValueChanged(double)));
+    m_control.connectValueChanged(this, &WidgetStackControlListener::slotValueChanged);
 }
 
 void WidgetStackControlListener::slotValueChanged(double v) {
@@ -34,10 +34,9 @@ WWidgetStack::WWidgetStack(QWidget* pParent, const ConfigKey& nextConfigKey,
           m_nextControl(nextConfigKey, this),
           m_prevControl(prevConfigKey, this),
           m_currentPageControl(currentPageConfigKey, this) {
-    m_nextControl.connectValueChanged(SLOT(onNextControlChanged(double)));
-    m_prevControl.connectValueChanged(SLOT(onPrevControlChanged(double)));
-    m_currentPageControl.connectValueChanged(
-            SLOT(onCurrentPageControlChanged(double)));
+    m_nextControl.connectValueChanged(this, &WWidgetStack::onNextControlChanged);
+    m_prevControl.connectValueChanged(this, &WWidgetStack::onPrevControlChanged);
+    m_currentPageControl.connectValueChanged(this, &WWidgetStack::onCurrentPageControlChanged);
     connect(&m_showMapper, SIGNAL(mapped(int)),
             this, SLOT(showIndex(int)));
     connect(&m_hideMapper, SIGNAL(mapped(int)),

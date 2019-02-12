@@ -6,7 +6,6 @@
 #include <QPushButton>
 
 #include "dlgpreflv2.h"
-#include "engine/enginefilterbessel4.h"
 #include "control/controlobject.h"
 #include "util/math.h"
 #include "effects/effectsmanager.h"
@@ -86,26 +85,29 @@ void DlgPrefLV2::slotDisplayParameters() {
     m_currentEffectId = pluginId;
 
     EffectManifestPointer pCurrentEffectManifest = m_pLV2Backend->getManifest(pluginId);
-    const QList<EffectManifestParameterPointer>& parameterList =
-            pCurrentEffectManifest->parameters();
-    for (const auto& pPrameter: parameterList) {
-        QCheckBox* entry = new QCheckBox(this);
-        entry->setText(pPrameter->name());
-        if (pPrameter->showInParameterSlot()) {
-            entry->setChecked(true);
-        } else {
-            entry->setChecked(false);
-            entry->setEnabled(false);
+    if (pCurrentEffectManifest) {
+        const QList<EffectManifestParameterPointer>& parameterList =
+                pCurrentEffectManifest->parameters();
+        for (const auto& pPrameter: parameterList) {
+            QCheckBox* entry = new QCheckBox(this);
+            entry->setText(pPrameter->name());
+            if (pPrameter->showInParameterSlot()) {
+                entry->setChecked(true);
+            } else {
+                entry->setChecked(false);
+                entry->setEnabled(false);
+            }
+            lv2_vertical_layout_params->addWidget(entry);
+            m_pluginParameters.append(entry);
+            connect(entry, SIGNAL(stateChanged(int)),
+                    this, SLOT(slotUpdateOnParameterCheck(int)));
         }
-        lv2_vertical_layout_params->addWidget(entry);
-        m_pluginParameters.append(entry);
-        connect(entry, SIGNAL(stateChanged(int)),
-                this, SLOT(slotUpdateOnParameterCheck(int)));
+        int parameterListSize = parameterList.size();
+        m_iCheckedParameters = parameterListSize < 8 ? parameterListSize : 8;
+    } else {
+        m_iCheckedParameters = 0;
     }
     lv2_vertical_layout_params->addStretch();
-
-    int parameterListSize = parameterList.size();
-    m_iCheckedParameters = parameterListSize < 8 ? parameterListSize : 8;
 }
 
 void DlgPrefLV2::slotApply() {

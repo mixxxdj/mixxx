@@ -7,7 +7,7 @@
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3907</forums>
     </info>
     <controller id="Hercules DJControl Instinct MID" port="">
-	<scriptfiles>
+    <scriptfiles>
             <file functionprefix="HCInstinct" filename="Hercules-DJ-Control-Instinct-scripts.js"/>
         </scriptfiles>
         <controls>

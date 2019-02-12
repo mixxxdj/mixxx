@@ -7,7 +7,7 @@
 
 #include "engine/sync/clock.h"
 #include "engine/sync/syncable.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 
 class ControlObject;
 class ControlLinPotmeter;

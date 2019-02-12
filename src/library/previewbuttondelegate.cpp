@@ -16,7 +16,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(QTableView* parent, int column)
           m_column(column) {
     m_pPreviewDeckPlay = new ControlProxy(
             PlayerManager::groupForPreviewDeck(0), "play", this);
-    m_pPreviewDeckPlay->connectValueChanged(SLOT(previewDeckPlayChanged(double)));
+    m_pPreviewDeckPlay->connectValueChanged(this, &PreviewButtonDelegate::previewDeckPlayChanged);
 
     m_pCueGotoAndPlay = new ControlProxy(
             PlayerManager::groupForPreviewDeck(0), "cue_gotoandplay", this);
@@ -25,17 +25,13 @@ PreviewButtonDelegate::PreviewButtonDelegate(QTableView* parent, int column)
     connect(this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             parent, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
-    // The button needs to be parented to receive the parent styles
-    m_pButton = make_parented<QPushButton>(parent);
-    m_pButton->setObjectName("LibraryPreviewButton");
+    // The button needs to be parented to receive the parent styles.
+    m_pButton = make_parented<LibraryPreviewButton>(m_pTableView);
     m_pButton->setCheckable(true);
     m_pButton->setChecked(false);
-    // We need to hide the button that it is not painted by the QObject tree    
+
+    // We need to hide the button that it is not painted by the QObject tree
     m_pButton->hide();
-    // Set visible to stop resizing in the background 
-    // which may lead to a crash when already referenced by a painter obeject 
-    // during the render() call. 
-    m_pButton->setAttribute(Qt::WA_WState_Visible);
 
     connect(m_pTableView, SIGNAL(entered(QModelIndex)),
             this, SLOT(cellEntered(QModelIndex)));
@@ -48,8 +44,7 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget* parent,
                                              const QStyleOptionViewItem& option,
                                              const QModelIndex& index) const {
     Q_UNUSED(option);
-    QPushButton* btn = new QPushButton(parent);
-    btn->setObjectName("LibraryPreviewButton");
+    QPushButton* btn = new LibraryPreviewButton(parent);
     btn->setCheckable(true);
     bool playing = m_pPreviewDeckPlay->toBool();
     // Check-state is whether the track is loaded (index.data()) and whether
@@ -77,8 +72,8 @@ void PreviewButtonDelegate::setModelData(QWidget* editor,
 }
 
 void PreviewButtonDelegate::paintItem(QPainter* painter,
-                                  const QStyleOptionViewItem& option,
-                                  const QModelIndex& index) const {
+                                      const QStyleOptionViewItem& option,
+                                      const QModelIndex& index) const {
     // Let the editor paint in this case
     if (index == m_currentEditedCellIndex) {
         return;
@@ -88,15 +83,24 @@ void PreviewButtonDelegate::paintItem(QPainter* painter,
         return;
     }
 
-    m_pButton->setGeometry(option.rect);
-    bool playing = m_pPreviewDeckPlay->toBool();
+    // We only need m_pButton to have the right width/height, since we are
+    // calling its render method directly. Every resize/translate of a widget
+    // causes Qt to flush the backing store, so we need to avoid this whenever
+    // possible.
+    if (option.rect.size() != m_pButton->size()) {
+        m_pButton->setFixedSize(option.rect.size());
+    }
+
     // Check-state is whether the track is loaded (index.data()) and whether
     // it's playing.
-    m_pButton->setChecked(index.data().toBool() && playing);
+    m_pButton->setChecked(index.data().toBool() && m_pPreviewDeckPlay->toBool());
 
-    // Render button at the desired position
+    // Render button at the desired position.
     painter->translate(option.rect.topLeft());
-    m_pButton->render(painter);
+
+    // Avoid QWidget::render and call the equivalent of QPushButton::paintEvent
+    // directly.
+    m_pButton->paint(painter);
 }
 
 void PreviewButtonDelegate::updateEditorGeometry(QWidget* editor,

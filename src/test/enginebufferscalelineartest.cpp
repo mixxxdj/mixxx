@@ -4,7 +4,7 @@
 #include <QtDebug>
 #include <QVector>
 
-#include "engine/enginebufferscalelinear.h"
+#include "engine/bufferscalers/enginebufferscalelinear.h"
 #include "engine/readaheadmanager.h"
 #include "test/mixxxtest.h"
 #include "util/math.h"

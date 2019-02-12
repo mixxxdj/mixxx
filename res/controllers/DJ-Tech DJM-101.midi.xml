@@ -1,18 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.11+">
-	<info>
-		<name>DJ-Tech DJM-101</name>
-		<author>zestoi</author>
-		<description>Mapping with full led feedback for the DJ-Tech DJM-101</description>
-		<forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3693</forums>
-	</info>
+    <info>
+        <name>DJ-Tech DJM-101</name>
+        <author>zestoi</author>
+        <description>Mapping with full led feedback for the DJ-Tech DJM-101</description>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3693</forums>
+    </info>
     <controller id="DJM-101">
-		<scriptfiles>
-			<file filename="DJ-Tech-DJM-101-scripts.js" functionprefix="DJTechDJM101"/>
-		</scriptfiles>
+        <scriptfiles>
+            <file filename="DJ-Tech-DJM-101-scripts.js" functionprefix="DJTechDJM101"/>
+        </scriptfiles>
         <controls>
 
-			<!-- global controls -->
+            <!-- global controls -->
 
             <control>
                 <group>[Master]</group>
@@ -33,26 +33,26 @@
                 </options>
             </control>
 
-			<!-- master/pfl vumeter select -->
+            <!-- master/pfl vumeter select -->
 
             <control>
                 <group>[Master]</group>
                 <status>0x90</status>
                 <midino>0x24</midino>
-				<key>DJTechDJM101.vumeter_select_master</key>
-				<options>
-					<Script-Binding/>
-				</options>
+                <key>DJTechDJM101.vumeter_select_master</key>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
 
             <control>
                 <group>[Master]</group>
                 <status>0x90</status>
                 <midino>0x23</midino>
-				<key>DJTechDJM101.vumeter_select_pfl</key>
-				<options>
-					<Script-Binding/>
-				</options>
+                <key>DJTechDJM101.vumeter_select_pfl</key>
+                <options>
+                    <Script-Binding/>
+                </options>
             </control>
 
             <control>
@@ -75,7 +75,7 @@
                 </options>
             </control>
 
-			<!-- channel 1 -->
+            <!-- channel 1 -->
 
             <control>
                 <group>[Channel1]</group>
@@ -107,7 +107,7 @@
                 </options>
             </control>
 
-			<!-- channel 1 eq -->
+            <!-- channel 1 eq -->
 
             <control>
                 <group>[Channel1]</group>
@@ -137,7 +137,7 @@
                 </options>
             </control>
 
-			<!-- channel 2 -->
+            <!-- channel 2 -->
 
             <control>
                 <group>[Channel2]</group>
@@ -169,7 +169,7 @@
                 </options>
             </control>
 
-			<!-- channel 2 eq -->
+            <!-- channel 2 eq -->
 
             <control>
                 <group>[Channel2]</group>
@@ -200,6 +200,6 @@
             </control>
 
         </controls>
-		<outputs/>
+        <outputs/>
     </controller>
 </MixxxMIDIPreset>

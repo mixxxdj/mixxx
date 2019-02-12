@@ -270,13 +270,20 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         }
 
         const ChannelCount madChannelCount(MAD_NCHANNELS(&madHeader));
-        if (maxChannelCount.valid() && (madChannelCount != maxChannelCount)) {
-            kLogger.warning() << "Differing number of channels"
-                    << madChannelCount << "<>" << maxChannelCount
-                    << "in some MP3 frame headers:"
+        if (madChannelCount.valid()) {
+            if (maxChannelCount.valid() && (madChannelCount != maxChannelCount)) {
+                kLogger.warning()
+                        << "Differing number of channels"
+                        << madChannelCount << "<>" << maxChannelCount
+                        << "in MP3 frame headers:"
+                        << m_file.fileName();
+            }
+            maxChannelCount = math_max(madChannelCount, maxChannelCount);
+        } else {
+            kLogger.warning()
+                    << "Missing number of channels in MP3 frame header:"
                     << m_file.fileName();
         }
-        maxChannelCount = math_max(madChannelCount, maxChannelCount);
 
         const int sampleRateIndex = getIndexBySampleRate(SampleRate(madSampleRate));
         if (sampleRateIndex >= kSampleRateCount) {
@@ -321,7 +328,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
 
     if (m_seekFrameList.empty()) {
         // This is not a working MP3 file.
-        kLogger.warning() << "SSMP3: This is not a working MP3 file:"
+        kLogger.warning() << "This is not a working MP3 file:"
                 << m_file.fileName();
         // Abort
         return OpenResult::Failed;
@@ -354,15 +361,24 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         kLogger.warning() << "Mixxx tries to plays it with the most common sample rate for this file";
     }
 
-    if (mostCommonSampleRateIndex < kSampleRateCount) {
-        setSampleRate(getSampleRateByIndex(mostCommonSampleRateIndex));
-    } else {
-        kLogger.warning() << "No single valid sample rate in header";
+    // Initialize the AudioSource
+    if (mostCommonSampleRateIndex > kSampleRateCount) {
+        kLogger.warning()
+                << "Unknown sample rate in MP3 file:"
+                << m_file.fileName();
         // Abort
         return OpenResult::Failed;
     }
-
-    // Initialize the AudioSource
+    setSampleRate(getSampleRateByIndex(mostCommonSampleRateIndex));
+    if (!maxChannelCount.valid() || (maxChannelCount > kChannelCountMax)) {
+        kLogger.warning()
+                << "Invalid number of channels"
+                << maxChannelCount
+                << "in MP3 file:"
+                << m_file.fileName();
+        // Abort
+        return OpenResult::Failed;
+    }
     setChannelCount(maxChannelCount);
     initFrameIndexRangeOnce(IndexRange::forward(0, m_curFrameIndex));
 

@@ -3,6 +3,7 @@
 
 #include <QUrl>
 #include <QDrag>
+#include <QDropEvent>
 #include <QMimeData>
 #include <QList>
 #include <QString>
@@ -19,6 +20,7 @@
 #include "library/parsercsv.h"
 #include "util/sandbox.h"
 #include "mixer/playermanager.h"
+#include "widget/trackdroptarget.h"
 
 class DragAndDropHelper {
   public:
@@ -96,6 +98,29 @@ class DragAndDropHelper {
                           "AllowTrackLoadToPlayingDeck")).toInt();
     }
 
+    static bool allowDeckCloneAttempt(const QDropEvent& event,
+                                   const QString& group) {
+        // only allow clones to decks
+        if (!PlayerManager::isDeckGroup(group, nullptr)) {
+            return false;
+        }
+
+        // forbid clone if shift is pressed
+        if (event.keyboardModifiers().testFlag(Qt::ShiftModifier)) {
+            return false;
+        }
+
+        if (!event.mimeData()->hasText() ||
+                 // prevent cloning to ourself
+                 event.mimeData()->text() == group ||
+                 // only allow clone from decks
+                 !PlayerManager::isDeckGroup(event.mimeData()->text(), nullptr)) {
+            return false;
+        }
+
+        return true;
+    }
+
     static bool dragEnterAccept(const QMimeData& mimeData,
                                 const QString& sourceIdentifier,
                                 bool firstOnly,
@@ -139,6 +164,37 @@ class DragAndDropHelper {
 
     static QUrl urlFromLocation(const QString& trackLocation) {
         return QUrl::fromLocalFile(trackLocation);
+    }
+
+    static void handleTrackDragEnterEvent(QDragEnterEvent* event, const QString& group,
+                                          UserSettingsPointer pConfig) {
+        if (allowLoadToPlayer(group, pConfig) &&
+                dragEnterAccept(*event->mimeData(), group,
+                                true, false)) {
+            event->acceptProposedAction();
+        } else {
+            event->ignore();
+        }
+    }
+
+    static void handleTrackDropEvent(QDropEvent* event, TrackDropTarget& target,
+                                     const QString& group, UserSettingsPointer pConfig) {
+        if (allowLoadToPlayer(group, pConfig)) {
+            if (allowDeckCloneAttempt(*event, group)) {
+                event->accept();
+                emit(target.cloneDeck(event->mimeData()->text(), group));
+                return;
+            } else {
+                QList<QFileInfo> files = dropEventFiles(
+                        *event->mimeData(), group, true, false);
+                if (!files.isEmpty()) {
+                    event->accept();
+                    emit(target.trackDropped(files.at(0).absoluteFilePath(), group));
+                    return;
+                }
+            }
+        }
+        event->ignore();
     }
 
   private:

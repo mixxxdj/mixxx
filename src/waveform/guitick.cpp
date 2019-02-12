@@ -3,8 +3,7 @@
 #include "waveform/guitick.h"
 #include "control/controlobject.h"
 
-GuiTick::GuiTick(QObject* pParent)
-        : QObject(pParent) {
+GuiTick::GuiTick() {
     m_pCOGuiTickTime = std::make_unique<ControlObject>(ConfigKey("[Master]", "guiTickTime"));
     m_pCOGuiTick50ms = std::make_unique<ControlObject>(ConfigKey("[Master]", "guiTick50ms"));
     m_cpuTimer.start();

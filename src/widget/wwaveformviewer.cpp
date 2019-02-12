@@ -27,7 +27,7 @@ WWaveformViewer::WWaveformViewer(const char *group, UserSettingsPointer pConfig,
     setAcceptDrops(true);
 
     m_pZoom = new ControlProxy(group, "waveform_zoom", this);
-    m_pZoom->connectValueChanged(SLOT(onZoomChange(double)));
+    m_pZoom->connectValueChanged(this, &WWaveformViewer::onZoomChange);
 
     m_pScratchPositionEnable = new ControlProxy(
             group, "scratch_position_enable", this);
@@ -150,26 +150,11 @@ void WWaveformViewer::wheelEvent(QWheelEvent *event) {
 }
 
 void WWaveformViewer::dragEnterEvent(QDragEnterEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_pGroup,
-                                               true, false)) {
-        event->acceptProposedAction();
-    } else {
-        event->ignore();
-    }
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_pGroup, m_pConfig);
 }
 
 void WWaveformViewer::dropEvent(QDropEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_pGroup, m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_pGroup, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_pGroup));
-            return;
-        }
-    }
-    event->ignore();
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_pGroup, m_pConfig);
 }
 
 void WWaveformViewer::slotTrackLoaded(TrackPointer track) {

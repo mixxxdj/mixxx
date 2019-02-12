@@ -1,0 +1,91 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup><!-- Waveforms -->
+        <Layout>vertical</Layout>
+        <Size>100me,40me</Size>
+        <Children>
+
+          <WidgetGroup><!-- Waveform 3 -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+              <Template src="skin:waveform.xml">
+                <SetVariable name="channum">3</SetVariable>
+                <SetVariable name="signal_color">#09B2AE</SetVariable>
+                <SetVariable name="SignalBgColor">#012322</SetVariable>
+                <SetVariable name="SignalRGBLowColor">#cb3433</SetVariable>
+                <SetVariable name="SignalRGBMidColor">#00ff33</SetVariable>
+                <SetVariable name="SignalRGBHighColor">#0034fe</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- Waveform 3 -->
+
+          <WidgetGroup><!-- Waveform 1 -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+              <Template src="skin:waveform.xml">
+                <SetVariable name="channum">1</SetVariable>
+                <SetVariable name="signal_color">#E7C413</SetVariable>
+                <SetVariable name="SignalBgColor">#2f290a</SetVariable>
+                <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+                <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+                <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Waveform 2 -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+              <Template src="skin:waveform.xml">
+                <SetVariable name="channum">2</SetVariable>
+                <SetVariable name="signal_color">#E7C413</SetVariable>
+                <SetVariable name="SignalBgColor">#2f290a</SetVariable>
+                <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+                <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+                <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- Waveform 2 -->
+
+          <WidgetGroup><!-- Waveform 4 -->
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,me</SizePolicy>
+            <Children>
+              <Template src="skin:waveform.xml">
+                <SetVariable name="channum">4</SetVariable>
+                <SetVariable name="signal_color">#09B2AE</SetVariable>
+                <SetVariable name="SignalBgColor">#012322</SetVariable>
+                <SetVariable name="SignalRGBLowColor">#cb3433</SetVariable>
+                <SetVariable name="SignalRGBMidColor">#00ff33</SetVariable>
+                <SetVariable name="SignalRGBHighColor">#0034fe</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup><!-- Waveform 4 -->
+
+        </Children>
+      </WidgetGroup><!-- /Waveforms -->
+
+      <Template src="skin:button_2state_persist.xml">
+        <SetVariable name="ObjectName">BeatgridButtonsToggle</SetVariable>
+        <SetVariable name="Size">28f,40me</SetVariable>
+        <SetVariable name="ConfigKey">[Skin],beatgrid_buttons</SetVariable>
+      </Template>
+
+    </Children>
+  </WidgetGroup>
+</Template>

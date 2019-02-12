@@ -2,7 +2,7 @@
 
 #include "control/controlproxy.h"
 #include "engine/enginemaster.h"
-#include "engine/enginemicrophone.h"
+#include "engine/channels/enginemicrophone.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 
@@ -19,7 +19,7 @@ Microphone::Microphone(QObject* pParent, const QString& group, int index,
 
     m_pInputConfigured.reset(new ControlProxy(group, "input_configured", this));
     m_pTalkoverEnabled.reset(new ControlProxy(group, "talkover", this));
-    m_pTalkoverEnabled->connectValueChanged(SLOT(slotTalkoverEnabled(double)));
+    m_pTalkoverEnabled->connectValueChanged(this, &Microphone::slotTalkoverEnabled);
 }
 
 Microphone::~Microphone() {

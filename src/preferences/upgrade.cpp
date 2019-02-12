@@ -24,12 +24,12 @@
 #include <QScopedPointer>
 
 #include "preferences/usersettings.h"
+#include "preferences/beatdetectionsettings.h"
 #include "database/mixxxdb.h"
 #include "controllers/defs_controllers.h"
 #include "defs_version.h"
 #include "library/library_preferences.h"
 #include "library/trackcollection.h"
-#include "track/beat_preferences.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 #include "util/db/dbconnectionpooler.h"
@@ -342,9 +342,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         }
 
         bool reanalyze_choice = askReanalyzeBeats();
-        config->set(ConfigKey(BPM_CONFIG_KEY,
-                              BPM_REANALYZE_WHEN_SETTINGS_CHANGE),
-                    ConfigValue(reanalyze_choice));
+        BeatDetectionSettings bpmSettings(config);
+        bpmSettings.setReanalyzeWhenSettingsChange(reanalyze_choice);
 
         if (successful) {
             qDebug() << "Upgrade Successful";
