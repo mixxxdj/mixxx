@@ -74,7 +74,7 @@
         <Mark>
           <Control>intro_start_position</Control>
           <Source>intro_start_source</Source>
-          <Text>INTRO START</Text>
+          <Text>|&#9698;</Text>
           <Align>bottom</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
@@ -82,7 +82,7 @@
         <Mark>
           <Control>intro_end_position</Control>
           <Source>intro_end_source</Source>
-          <Text>INTRO END</Text>
+          <Text>&#9698;|</Text>
           <Align>bottom</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
@@ -90,7 +90,7 @@
         <Mark>
           <Control>outro_start_position</Control>
           <Source>outro_start_source</Source>
-          <Text>OUTRO START</Text>
+          <Text>|&#9699;</Text>
           <Align>bottom</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
@@ -98,7 +98,7 @@
         <Mark>
           <Control>outro_end_position</Control>
           <Source>outro_end_source</Source>
-          <Text>OUTRO END</Text>
+          <Text>&#9699;|</Text>
           <Align>bottom</Align>
           <Color>#0000FF</Color>
           <TextColor>#FFFFFF</TextColor>
