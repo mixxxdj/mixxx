@@ -274,7 +274,8 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     QListIterator<CuePointer> it(cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        if (pCue->getType() == Cue::CUE || pCue->getType() == Cue::LOAD) {
+        Cue::CueType type = pCue->getType();
+        if (type == Cue::CUE || type == Cue::LOAD || type == Cue::INTRO || type == Cue::OUTRO) {
             listPoints.push_back(pCue);
         }
     }
