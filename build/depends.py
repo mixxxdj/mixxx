@@ -871,6 +871,7 @@ class MixxxCore(Feature):
                    "src/controllers/midi/midioutputhandler.cpp",
                    "src/controllers/softtakeover.cpp",
                    "src/controllers/keyboard/keyboardeventfilter.cpp",
+                   "src/controllers/colorjsproxy.cpp",
 
                    "src/main.cpp",
                    "src/mixxx.cpp",
