@@ -33,18 +33,22 @@ LibFaadLoader::LibFaadLoader()
     libnames << "/usr/local/lib/libfaad2.dylib";
     // Using MacPorts ('sudo port install faad2' command):
     libnames << "/opt/local/lib/libfaad2.dylib";
+#else
+    DEBUG_ASSERT(!"OS not implementet");
+    return;
 #endif
+
     for (const auto& libname : libnames) {
+        m_pLibrary.reset();
         m_pLibrary = std::make_unique<QLibrary>(libname, 0);
-        if (!m_pLibrary->load()) {
-            m_pLibrary.reset();
-        } else {
+        if (m_pLibrary->load()) {
             break;
         }
     }
 
-    if (!m_pLibrary || !m_pLibrary->isLoaded()) {
+    if (!m_pLibrary->isLoaded()) {
         kLogger.warning() << "Failed to load " << libnames << ", " << m_pLibrary->errorString();
+        m_pLibrary.reset();
         return;
     }
 
