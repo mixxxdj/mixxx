@@ -60,6 +60,11 @@ namespace Color {
         } else {
             lightColor = baseColor.lighter(iLighterFactor);
         }
+
+        // Even though we have the HSV representation fo the color here, the "value" component alone is
+        // not a good indicator of a color brightness (saturation comes into play too).
+        // That's why we call chooseColorByBrightness so the proper brightness of the color is used
+        // to choose between the light and the dark colors.
         QColor contrastColor = chooseColorByBrightness(baseColor, lightColor.toRgb(), darkColor.toRgb());
         return contrastColor;
     }
