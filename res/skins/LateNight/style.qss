@@ -173,13 +173,6 @@ WSpinny {/*
   background: none;*/
 }
 
-#VisualizationContainer {
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-right: 0px;
-  border-left: 0px;
-}
-
 #ClockWidget {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
   margin-bottom: 2px;
