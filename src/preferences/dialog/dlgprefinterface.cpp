@@ -188,7 +188,6 @@ void DlgPrefInterface::slotUpdateSchemes() {
     // Since this involves opening a file we won't do this as part of regular slotUpdate
     QList<QString> schlist = LegacySkinParser::getSchemeList(
                 m_pSkinLoader->getSkinPath(m_skin));
-    bool foundConfigScheme = false;
 
     ComboBoxSchemeconf->clear();
 
@@ -201,6 +200,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
     } else {
         ComboBoxSchemeconf->setEnabled(true);
         QString configScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
+        bool foundConfigScheme = false;
         for (int i = 0; i < schlist.size(); i++) {
             ComboBoxSchemeconf->addItem(schlist[i]);
 
