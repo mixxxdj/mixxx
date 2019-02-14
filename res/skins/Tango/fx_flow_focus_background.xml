@@ -18,5 +18,18 @@ Variables:
       <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
       <BindProperty>highlight</BindProperty>
     </Connection>
+    <Connection>
+      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+  <WidgetGroup>
+    <ObjectName>FxFlow_focus_background</ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <Connection>
+      <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
   </WidgetGroup>
 </Template>

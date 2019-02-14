@@ -95,6 +95,20 @@ Variables:
                   <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
                   <BindProperty>highlight</BindProperty>
                 </Connection>
+                <Connection>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>FxFlow_mini_focus_separator</ObjectName>
+                <Size>11f,30f</Size>
+                <Connection>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup>
 
               <!-- EffectSlot 2 -->
@@ -119,6 +133,20 @@ Variables:
                 <Connection>
                   <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
                   <BindProperty>highlight</BindProperty>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>FxFlow_mini_focus_separator</ObjectName>
+                <Size>11f,30f</Size>
+                <Connection>
+                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
 

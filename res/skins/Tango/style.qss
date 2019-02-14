@@ -1487,6 +1487,7 @@ decks, samplers, mic, aux, fx */
     image: url(skin:/graphics/fxFlow_mini_unitHasFocus.svg) no-repeat center center;
   }
 /* collapsed effect slots, horizontal layout */
+#FxFlow_mini_focus_separator,
 #FxFlow_mini_focus_separator1-2[highlight="0"],
 #FxFlow_mini_focus_separator1-2[highlight="3"],
 #FxFlow_mini_focus_separator2-3[highlight="0"],
