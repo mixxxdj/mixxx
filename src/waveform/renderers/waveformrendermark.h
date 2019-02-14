@@ -5,6 +5,7 @@
 
 #include "skin/skincontext.h"
 #include "util/class.h"
+#include "util/color/color.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "track/cue.h"
@@ -38,6 +39,8 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
 
   private:
     void generateMarkImage(WaveformMark* pMark);
+
+    PredefinedColorsRepresentation m_predefinedColorsRepresentation;
 
     WaveformMarkSet m_marks;
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);

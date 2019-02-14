@@ -27,6 +27,7 @@
 #include "widget/controlwidgetconnection.h"
 #include "track/track.h"
 #include "analyzer/analyzerprogress.h"
+#include "util/color/color.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"
@@ -90,6 +91,11 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
     // setup hotcues and cue and loop(s)
     m_marks.setup(m_group, node, context, m_signalColors);
+    WaveformMarkPointer defaultMark(m_marks.getDefaultMark());
+    QColor defaultColor = defaultMark
+            ? defaultMark->getProperties().fillColor()
+            : m_signalColors.getAxesColor();
+    m_predefinedColorsRepresentation = context.getCueColorRepresentation(node, defaultColor);
 
     for (const auto& pMark: m_marks) {
         if (pMark->isValid()) {
@@ -200,6 +206,9 @@ void WOverview::onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyz
 void WOverview::slotTrackLoaded(TrackPointer pTrack) {
     DEBUG_ASSERT(m_pCurrentTrack == pTrack);
     m_trackLoaded = true;
+    if (m_pCurrentTrack) {
+        updateCues(m_pCurrentTrack->getCuePoints());
+    }
     update();
 }
 
@@ -226,6 +235,8 @@ void WOverview::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
         connect(pNewTrack.get(), SIGNAL(waveformSummaryUpdated()),
                 this, SLOT(slotWaveformSummaryUpdated()));
         slotWaveformSummaryUpdated();
+        connect(pNewTrack.get(), SIGNAL(cuesUpdated()),
+                this, SLOT(receiveCuesUpdated()));
     } else {
         m_pCurrentTrack.reset();
         m_pWaveform.clear();
@@ -241,12 +252,35 @@ void WOverview::onEndOfTrackChange(double v) {
 
 void WOverview::onMarkChanged(double /*v*/) {
     //qDebug() << "WOverview::onMarkChanged()" << v;
+    updateCues(m_pCurrentTrack->getCuePoints());
     update();
 }
 
 void WOverview::onMarkRangeChange(double /*v*/) {
     //qDebug() << "WOverview::onMarkRangeChange()" << v;
     update();
+}
+
+// currently only updates the mark color but it could be easily extended.
+void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
+    for (CuePointer currentCue: loadedCues) {
+        const WaveformMarkPointer currentMark = m_marks.getHotCueMark(currentCue->getHotCue());
+
+        if (currentMark && currentMark->isValid()) {
+            WaveformMarkProperties markProperties = currentMark->getProperties();
+            QColor newColor = m_predefinedColorsRepresentation.representationFor(currentCue->getColor());
+            if (newColor != markProperties.fillColor() || newColor != markProperties.m_textColor) {
+                markProperties.setBaseColor(newColor);
+                currentMark->setProperties(markProperties);
+            }
+        }
+    }
+}
+
+// connecting the tracks cuesUpdated and onMarkChanged is not possible
+// due to the incompatible signatures. This is a "wrapper" workaround
+void WOverview::receiveCuesUpdated() {
+    onMarkChanged(0);
 }
 
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
@@ -430,8 +464,6 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             }
 
             // Draw markers (Cue & hotcues)
-            QPen shadowPen(QBrush(m_qColorBackground), 2.5 * m_scaleFactor);
-
             QFont markerFont = painter.font();
             markerFont.setPixelSize(10 * m_scaleFactor);
 
@@ -448,6 +480,8 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
                     const float markPosition = offset + currentMark->getSamplePosition() * gain;
 
+                    QPen shadowPen(QBrush(markProperties.borderColor()), 2.5 * m_scaleFactor);
+
                     QLineF line;
                     if (m_orientation == Qt::Horizontal) {
                         line.setLine(markPosition, 0.0, markPosition, static_cast<float>(height()));
@@ -457,7 +491,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     painter.setPen(shadowPen);
                     painter.drawLine(line);
 
-                    painter.setPen(markProperties.m_color);
+                    painter.setPen(markProperties.fillColor());
                     painter.drawLine(line);
 
                     if (!markProperties.m_text.isEmpty()) {

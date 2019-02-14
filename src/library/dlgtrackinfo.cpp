@@ -1,6 +1,7 @@
 #include <QDesktopServices>
 #include <QtDebug>
 #include <QStringBuilder>
+#include <QComboBox>
 
 #include "util/desktophelper.h"
 #include "library/dlgtrackinfo.h"
@@ -12,9 +13,11 @@
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "util/duration.h"
+#include "util/color/color.h"
 
 const int kFilterLength = 80;
 const int kMinBpm = 30;
+
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
 
@@ -275,7 +278,7 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     while (it.hasNext()) {
         CuePointer pCue = it.next();
         Cue::CueType type = pCue->getType();
-        if (type == Cue::CUE || type == Cue::LOAD || type == Cue::INTRO || type == Cue::OUTRO) {
+        if (type == Cue::CUE || type == Cue::INTRO || type == Cue::OUTRO) {
             listPoints.push_back(pCue);
         }
     }
@@ -322,9 +325,6 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Decode cue type to display text
         QString cueType;
         switch (pCue->getType()) {
-            case Cue::LOAD:
-                cueType = "Main";
-                break;
             case Cue::CUE:
                 cueType = "Hotcue";
                 break;
@@ -334,11 +334,29 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
             case Cue::OUTRO:
                 cueType = "Outro";
                 break;
+            default:
+                break;
         }
 
         QTableWidgetItem* typeItem = new QTableWidgetItem(cueType);
         // Make the type read only
         typeItem->setFlags(Qt::NoItemFlags);
+
+        QComboBox* colorComboBox = new QComboBox();
+        const QList<PredefinedColorPointer> predefinedColors = Color::predefinedColorSet.allColors;
+        for (int i = 0; i < predefinedColors.count(); i++) {
+            PredefinedColorPointer color = predefinedColors.at(i);
+            QColor defaultRgba = color->m_defaultRgba;
+            colorComboBox->addItem(color->m_sDisplayName, defaultRgba);
+            if (*color != *Color::predefinedColorSet.noColor) {
+                QPixmap pixmap(80,80);
+                pixmap.fill(defaultRgba);
+                QIcon icon(pixmap);
+                colorComboBox->setItemIcon(i, icon);
+            }
+        }
+        PredefinedColorPointer cueColor = pCue->getColor();
+        colorComboBox->setCurrentIndex(Color::predefinedColorSet.predefinedColorIndex(cueColor));
 
         m_cueMap[row] = pCue;
         cueTable->insertRow(row);
@@ -346,11 +364,13 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         cueTable->setItem(row, 1, durationItem);
         cueTable->setItem(row, 2, typeItem);
         cueTable->setItem(row, 3, new QTableWidgetItem(hotcue));
-        cueTable->setItem(row, 4, new QTableWidgetItem(pCue->getLabel()));
+        cueTable->setCellWidget(row, 4, colorComboBox);
+        cueTable->setItem(row, 5, new QTableWidgetItem(pCue->getLabel()));
         row += 1;
     }
     cueTable->setSortingEnabled(true);
     cueTable->horizontalHeader()->setStretchLastSection(true);
+    cueTable->horizontalHeader()->setSectionResizeMode(3, QHeaderView::ResizeToContents);
 }
 
 void DlgTrackInfo::saveTrack() {
@@ -390,10 +410,13 @@ void DlgTrackInfo::saveTrack() {
     for (int row = 0; row < cueTable->rowCount(); ++row) {
         QTableWidgetItem* rowItem = cueTable->item(row, 0);
         QTableWidgetItem* hotcueItem = cueTable->item(row, 3);
-        QTableWidgetItem* labelItem = cueTable->item(row, 4);
+        QWidget* colorWidget = cueTable->cellWidget(row, 4);
+        QTableWidgetItem* labelItem = cueTable->item(row, 5);
 
-        if (!rowItem || !hotcueItem || !labelItem)
+        VERIFY_OR_DEBUG_ASSERT(rowItem && hotcueItem && colorWidget && labelItem) {
+            qWarning() << "unable to retrieve cells from cueTable row";
             continue;
+        }
 
         int oldRow = rowItem->data(Qt::DisplayRole).toInt();
         CuePointer pCue(m_cueMap.value(oldRow, CuePointer()));
@@ -412,6 +435,13 @@ void DlgTrackInfo::saveTrack() {
         } else {
             pCue->setHotCue(-1);
         }
+
+        auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
+        if (colorComboBox) {
+            PredefinedColorPointer color = Color::predefinedColorSet.allColors.at(colorComboBox->currentIndex());
+            pCue->setColor(color);
+        }
+        // do nothing for now.
 
         QString label = labelItem->data(Qt::DisplayRole).toString();
         pCue->setLabel(label);
@@ -453,7 +483,6 @@ void DlgTrackInfo::unloadTrack(bool save) {
 }
 
 void DlgTrackInfo::clear() {
-
     disconnect(this, SLOT(updateTrackMetadata()));
     m_pLoadedTrack.reset();
 

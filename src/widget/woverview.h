@@ -23,6 +23,8 @@
 #include "widget/wwidget.h"
 #include "analyzer/analyzerprogress.h"
 
+#include "util/color/color.h"
+
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformmarkrange.h"
@@ -90,6 +92,7 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
+    void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
 
@@ -103,6 +106,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     inline double positionToValue(int position) const {
         return (static_cast<double>(position) + m_b) / m_a;
     }
+
+    void updateCues(const QList<CuePointer> &loadedCues);
 
     const QString m_group;
     UserSettingsPointer m_pConfig;
@@ -126,6 +131,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     QColor m_qColorBackground;
     QColor m_endOfTrackColor;
 
+    PredefinedColorsRepresentation m_predefinedColorsRepresentation;
     WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;
 

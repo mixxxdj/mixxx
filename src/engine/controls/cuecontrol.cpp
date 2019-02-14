@@ -12,6 +12,7 @@
 #include "control/controlindicator.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "util/sample.h"
+#include "util/color/color.h"
 
 // TODO: Convert these doubles to a standard enum
 // and convert elseif logic to switch statements
@@ -437,6 +438,7 @@ void CueControl::loadCuesFromTrack() {
             } else {
                 // If the old hotcue is the same, then we only need to update
                 pControl->setPosition(pCue->getPosition());
+                pControl->setColor(pCue->getColor());
             }
             // Add the hotcue to the list of active hotcues
             active_hotcues.insert(hotcue);
@@ -1736,6 +1738,12 @@ HotcueControl::HotcueControl(QString group, int i)
     m_hotcueEnabled = new ControlObject(keyForControl(i, "enabled"));
     m_hotcueEnabled->setReadOnly();
 
+    // The id of the predefined color assigned to this color.
+    m_hotcueColor = new ControlObject(keyForControl(i, "color_id"));
+    connect(m_hotcueColor, SIGNAL(valueChanged(double)),
+            this, SLOT(slotHotcueColorChanged(double)),
+            Qt::DirectConnection);
+
     m_hotcueSet = new ControlPushButton(keyForControl(i, "set"));
     connect(m_hotcueSet, &ControlObject::valueChanged,
             this, &HotcueControl::slotHotcueSet,
@@ -1775,6 +1783,7 @@ HotcueControl::HotcueControl(QString group, int i)
 HotcueControl::~HotcueControl() {
     delete m_hotcuePosition;
     delete m_hotcueEnabled;
+    delete m_hotcueColor;
     delete m_hotcueSet;
     delete m_hotcueGoto;
     delete m_hotcueGotoAndPlay;
@@ -1817,6 +1826,11 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
     emit(hotcuePositionChanged(this, newPosition));
 }
 
+void HotcueControl::slotHotcueColorChanged(double newColorId) {
+    m_pCue->setColor(Color::predefinedColorSet.predefinedColorFromId(newColorId));
+    emit(hotcueColorChanged(this, newColorId));
+}
+
 double HotcueControl::getPosition() const {
     return m_hotcuePosition->get();
 }
@@ -1827,7 +1841,13 @@ void HotcueControl::setCue(CuePointer pCue) {
     // because we have a null check for valid data else where in the code
     m_pCue = pCue;
 }
+PredefinedColorPointer HotcueControl::getColor() const {
+    return Color::predefinedColorSet.predefinedColorFromId(m_hotcueColor->get());
+}
 
+void HotcueControl::setColor(PredefinedColorPointer newColor) {
+    m_hotcueColor->set(static_cast<double>(newColor->m_iId));
+}
 void HotcueControl::resetCue() {
     // clear pCue first because we have a null check for valid data else where
     // in the code
