@@ -13,6 +13,7 @@
 #include "skin/skincontext.h"
 #include "track/track.h"
 #include "vinylcontrol/vinylsignalquality.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
 #include "widget/wwidget.h"
@@ -21,7 +22,8 @@ class ControlProxy;
 class VisualPlayPosition;
 class VinylControlManager;
 
-class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener {
+class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener,
+                public TrackDropTarget {
     Q_OBJECT
   public:
     WSpinny(QWidget* parent, const QString& group,
@@ -56,6 +58,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
   signals:
     void trackDropped(QString filename, QString group);
+    void cloneDeck(QString source_group, QString target_group);
 
   protected:
     //QWidget:
@@ -82,7 +85,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     QImage m_fgImageScaled;
     std::shared_ptr<QImage> m_pGhostImage;
     QImage m_ghostImageScaled;
-    ControlProxy* m_pPlay;
     ControlProxy* m_pPlayPos;
     QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
     ControlProxy* m_pTrackSamples;

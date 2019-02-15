@@ -33,14 +33,21 @@ Variables:
             <Size>250me,111f</Size>
             <Children>
 
-              <Template src="skin:deck_row_overview_left.xml"/>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Size>0me,50f</Size>
+                <Children>
+                  <Template src="skin:deck_row_overview_left.xml"/>
+                </Children>
+              </WidgetGroup>
 
               <Template src="skin:deck_row_comment_left.xml"/>
 
               <WidgetGroup><!-- Parallel Artist + Time -->
                 <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
                 <Children>
-                  <Template src="skin:deck_row_artist_title_left.xml"/>
+                  <Template src="skin:deck_row_text_left.xml"/>
                   <Template src="skin:loop_indicator.xml"/>
                 </Children>
               </WidgetGroup>
@@ -67,6 +74,7 @@ Variables:
 
           <!-- Spinny/Cover if BIG spinny is enabled -->
           <WidgetGroup>
+            <ObjectName>AlignTop</ObjectName>
             <SizePolicy>max,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
@@ -80,7 +88,7 @@ Variables:
                 </Connection>
               </WidgetGroup>
 
-              <Template src="skin:spinnyCover_maxi.xml"/>
+              <Template src="skin:spinny_cover_maxi.xml"/>
 
             </Children>
             <Connection>

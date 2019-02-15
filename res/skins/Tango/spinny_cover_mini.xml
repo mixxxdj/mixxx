@@ -7,27 +7,26 @@ Variables:
   group   : [ChannelXY]
 -->
 <Template>
+  <SetVariable name="group">[Channel<Variable name="chanNum"/>]</SetVariable>
+
   <WidgetGroup>
-    <ObjectName>SpinnyCover_Container</ObjectName>
-    <SizePolicy>max,me</SizePolicy>
+    <ObjectName>SpinnyCoverContainer</ObjectName>
     <Layout>vertical</Layout>
     <Children>
 
-      <!-- Spinny with/without Cover Art -->
-      <WidgetGroup>
-        <Size>50f,50f</Size>
+      <WidgetGroup><!-- Spinny -->
         <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
         <Children>
           <!-- no Cover on Spinny -->
           <Spinny>
-            <ObjectName>SpinnyMini</ObjectName>
-            <Size>50f,50f</Size>
             <TooltipId>spinny</TooltipId>
+            <Size>40me,40me</Size>
             <Group><Variable name="group"/></Group>
-            <PathBackground scalemode="STRETCH_ASPECT">graphics/spinnyMini_bg.svg</PathBackground>
-            <PathForeground scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator.svg</PathForeground>
-            <PathMask scalemode="STRETCH_ASPECT">graphics/spinnyMini_<Variable name="chanNum"/>_mask.svg</PathMask>
-            <PathGhost scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator_ghost.svg</PathGhost>
+            <PathBackground scalemode="STRETCH_ASPECT">graphics/spinny_mini_bg.svg</PathBackground>
+            <PathForeground scalemode="STRETCH_ASPECT">graphics/spinny_mini_indicator.svg</PathForeground>
+            <PathMask scalemode="STRETCH_ASPECT">graphics/spinny_mini_mask_<Variable name="SpinnyCoverColor"/>.svg</PathMask>
+            <PathGhost scalemode="STRETCH_ASPECT">graphics/spinny_mini_indicator_ghost.svg</PathGhost>
             <ShowCover>false</ShowCover>
             <Connection>
               <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
@@ -37,14 +36,13 @@ Variables:
           </Spinny>
           <!-- Cover on Spinny -->
           <Spinny>
-            <ObjectName>SpinnyMini</ObjectName>
-            <Size>50f,50f</Size>
             <TooltipId>spinny</TooltipId>
+            <Size>40me,40me</Size>
             <Group><Variable name="group"/></Group>
-            <PathBackground scalemode="STRETCH_ASPECT">graphics/spinnyMini_bg.svg</PathBackground>
-            <PathForeground scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator.svg</PathForeground>
-            <PathMask scalemode="STRETCH_ASPECT">graphics/spinnyMini_<Variable name="chanNum"/>_mask.svg</PathMask>
-            <PathGhost scalemode="STRETCH_ASPECT">graphics/spinnyMini_indicator_ghost.svg</PathGhost>
+            <PathBackground scalemode="STRETCH_ASPECT">graphics/spinny_mini_bg.svg</PathBackground>
+            <PathForeground scalemode="STRETCH_ASPECT">graphics/spinny_mini_indicator.svg</PathForeground>
+            <PathMask scalemode="STRETCH_ASPECT">graphics/spinny_mini_mask_<Variable name="SpinnyCoverColor"/>.svg</PathMask>
+            <PathGhost scalemode="STRETCH_ASPECT">graphics/spinny_mini_indicator_ghost.svg</PathGhost>
             <ShowCover>true</ShowCover>
             <Connection>
               <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
@@ -56,20 +54,19 @@ Variables:
           <ConfigKey persist="true">[Skin],show_spinnies</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
-      </WidgetGroup>
+      </WidgetGroup><!-- Spinny -->
 
       <!-- Cover Art only -->
       <WidgetGroup>
         <ObjectName>SpinnyCover</ObjectName>
-        <SizePolicy>max,max</SizePolicy>
-        <MaximumSize>50,50</MaximumSize>
+        <SizePolicy>min,min</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
           <CoverArt>
             <TooltipId>coverart</TooltipId>
             <Size>50f,50f</Size>
             <Group>[Channel<Variable name="chanNum"/>]</Group>
-            <DefaultCover>skin:/graphics/cover_default_mini_<Variable name="chanNum"/>.svg</DefaultCover>
+            <DefaultCover>skin:/graphics/cover_default_mini_<Variable name="SpinnyCoverColor"/>.svg</DefaultCover>
             <Connection>
               <ConfigKey persist="true">[Skin],show_coverart</ConfigKey>
               <BindProperty>visible</BindProperty>

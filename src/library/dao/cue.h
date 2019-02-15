@@ -6,6 +6,7 @@
 #include <QColor>
 
 #include "track/trackid.h"
+#include "util/color/predefinedcolor.h"
 #include "util/memory.h"
 
 class CueDAO;
@@ -44,8 +45,8 @@ class Cue : public QObject {
     QString getLabel() const;
     void setLabel(QString label);
 
-    QColor getColor() const;
-    void setColor(QColor color);
+    PredefinedColorPointer getColor() const;
+    void setColor(PredefinedColorPointer color);
 
   signals:
     void updated();
@@ -53,7 +54,7 @@ class Cue : public QObject {
   private:
     explicit Cue(TrackId trackId);
     Cue(int id, TrackId trackId, CueType type, double position, double length,
-        int hotCue, QString label, QColor color);
+        int hotCue, QString label, PredefinedColorPointer color);
     void setDirty(bool dirty);
     void setId(int id);
     void setTrackId(TrackId trackId);
@@ -68,7 +69,7 @@ class Cue : public QObject {
     double m_length;
     int m_iHotCue;
     QString m_label;
-    QColor m_color;
+    PredefinedColorPointer m_color;
 
     friend class Track;
     friend class CueDAO;

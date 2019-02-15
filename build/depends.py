@@ -871,6 +871,7 @@ class MixxxCore(Feature):
                    "src/controllers/midi/midioutputhandler.cpp",
                    "src/controllers/softtakeover.cpp",
                    "src/controllers/keyboard/keyboardeventfilter.cpp",
+                   "src/controllers/colorjsproxy.cpp",
 
                    "src/main.cpp",
                    "src/mixxx.cpp",
@@ -1049,6 +1050,7 @@ class MixxxCore(Feature):
                    "src/library/bpmdelegate.cpp",
                    "src/library/previewbuttondelegate.cpp",
                    "src/library/coverartdelegate.cpp",
+                   "src/library/locationdelegate.cpp",
                    "src/library/tableitemdelegate.cpp",
 
                    "src/library/treeitemmodel.cpp",
@@ -1224,6 +1226,7 @@ class MixxxCore(Feature):
                    "src/util/widgetrendertimer.cpp",
                    "src/util/workerthread.cpp",
                    "src/util/workerthreadscheduler.cpp",
+                   "src/util/color/predefinedcolor.cpp"
                    ]
 
         proto_args = {

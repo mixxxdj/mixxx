@@ -7,15 +7,17 @@
 
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
-class WTrackText : public WLabel {
+class WTrackText : public WLabel, public TrackDropTarget {
     Q_OBJECT
   public:
     WTrackText(const char* group, UserSettingsPointer pConfig, QWidget *pParent);
 
   signals:
     void trackDropped(QString fileName, QString group);
+    void cloneDeck(QString source_group, QString target_group);
 
   public slots:
     void slotTrackLoaded(TrackPointer track);

@@ -409,6 +409,10 @@ void EngineBuffer::requestSyncMode(SyncMode mode) {
     }
 }
 
+void EngineBuffer::requestClonePosition(EngineChannel* pChannel) {
+    m_pChannelToCloneFrom.store(pChannel);
+}
+
 void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
     if (!m_bCrossfadeReady) {
         // Read buffer, as if there where no parameter change
@@ -418,6 +422,10 @@ void EngineBuffer::readToCrossfadeBuffer(const int iBufferSize) {
         m_pReadAheadManager->notifySeek(m_filepos_play);
         m_bCrossfadeReady = true;
      }
+}
+
+void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
+    doSeekPlayPos(pOtherBuffer->getExactPlayPos(), SEEK_EXACT);
 }
 
 // WARNING: This method is not thread safe and must not be called from outside
@@ -1104,6 +1112,12 @@ void EngineBuffer::processSyncRequests() {
 }
 
 void EngineBuffer::processSeek(bool paused) {
+    // Check if we are cloning another channel before doing any seeking.
+    EngineChannel* pChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(NULL);
+    if (pChannel) {
+        seekCloneBuffer(pChannel->getEngineBuffer());
+    }
+
     // We need to read position just after reading seekType, to ensure that we
     // read the matching position to seek_typ or a position from a new (second)
     // seek just queued from another thread
@@ -1279,6 +1293,10 @@ void EngineBuffer::slotEjectTrack(double v) {
         }
         ejectTrack();
     }
+}
+
+double EngineBuffer::getExactPlayPos() {
+    return getVisualPlayPos() * getTrackSamples();
 }
 
 double EngineBuffer::getVisualPlayPos() {

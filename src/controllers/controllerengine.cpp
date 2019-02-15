@@ -185,6 +185,7 @@ void ControllerEngine::gracefulShutdown() {
         ++it;
     }
 
+    m_pColorJSProxy.reset();
     delete m_pBaClass;
     m_pBaClass = nullptr;
 }
@@ -211,6 +212,9 @@ void ControllerEngine::initializeScriptEngine() {
         // ...under the legacy name as well
         engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pController));
     }
+
+    m_pColorJSProxy = std::make_unique<ColorJSProxy>(m_pEngine);
+    engineGlobalObject.setProperty("color", m_pEngine->newQObject(m_pColorJSProxy.get()));
 
     m_pBaClass = new ByteArrayClass(m_pEngine);
     engineGlobalObject.setProperty("ByteArray", m_pBaClass->constructor());

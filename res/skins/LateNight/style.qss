@@ -21,8 +21,10 @@ QToolTip {/*
 
 #KeyText,
 #PlayPositionText,
+#PlayPositionTextSmall,
 #DurationText,
 #BpmText,
+#BpmTextSmall,
 #RateText,
 WBeatSpinBox,
 QSpinBox,
@@ -72,19 +74,32 @@ WTime {
   background-color: #1e1e1e;
 }
 
-#Deck1, #Deck2, #Deck3, #Deck4 {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+#Deck1, #DeckSmall1,
+#Deck3, #DeckSmall3 {
+  border: 1px solid #585858;
+  margin-right: 5px;
+}
+#Deck2, #DeckSmall2,
+#Deck4, #DeckSmall4 {
+  border: 1px solid #585858;
+  margin-left: 5px;
 }
 
-#Deck1, #Deck2,
-#NoMixer12 {
+#Deck1, #Deck2 {
   margin-bottom: 5px;
 }
-
-#Deck3, #Deck4,
-#NoMixer34 {
+#Deck3, #Deck4 {
   margin-top: 2px;
   margin-bottom: 3px;
+}
+#DeckSmall1, #DeckSmall2,
+#DeckSmall3, #DeckSmall4 {
+  margin-bottom: 3px;
+  background-color: #585858;
+}
+
+#DeckContainer {
+  background-color: #0f0f0f;
 }
 
 #DecksSizer {
@@ -138,22 +153,17 @@ WTime {
   padding: 3px 1px 1px 3px;
 }
 
+#PlayContainerSmall {
+  padding: 2px 0px 0px 2px;
+}
+
 #DecksAndMixer {
   background-color: #1e1e1e;
 }
 
 #SpinnyContainer {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';/*
-  background: transparent;*/
+  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   background-color: #1e1e1e;
-  border-right: 1px solid #585858;
-}
-
-WSpinny {/*
-  This produces artifacts in spinny bg
-  background-color: rgba(1, 1, 1, 10);
-  This makes no difference, the spinny loads some default grey bg
-  background: none;*/
 }
 
 #VisualizationContainer {
@@ -161,24 +171,6 @@ WSpinny {/*
   border-top: 0px;
   border-right: 0px;
   border-left: 0px;
-}
-
-#Deck1,
-#Deck3 {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  border: 1px solid #585858;
-  margin-right: 5px;
-
-}
-#Deck2,
-#Deck4 {
-  qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
-  border: 1px solid #585858;
-  margin-left: 5px;
-}
-
-#DeckContainer {
-  background-color: #0f0f0f;
 }
 
 #ClockWidget {
@@ -362,17 +354,57 @@ WTime {
   border: 1px solid #585858;
   border-radius: 3px;
   margin: 0px 1px;
-}
+  }
 
 #ArtistText,
 #TitleText,
 #PlayPositionText {
   font-size: 18px/20px;
-}
+  }
+  #TitleTextSmall,
+  #ArtistTextSmall,
+  #PlayPositionTextSmall,
+  #BpmTextSmall {
+    font-size: 16px/16px;
+    text-transform: none;
+  }
+  #TitleTextSmall,
+  #ArtistTextSmall {
+    font-weight: bold;
+  }
+  #TitleTextSmall,
+  #ArtistTextSmall,
+  #PlayPositionTextSmall,
+  #BpmTextSmall,
+  #KeyTextSmall {
+    background-color: #1e1e1e;
+  }
+  #TitleTextSmall {
+    margin: 0px 1px 1px 1px;
+    padding: 0px 2px 0px 0px;
+  }
+  #ArtistTextSmall {
+    margin: 0px 1px 0px 1px;
+    padding: 0px 2px 0px 0px;
+  }
+  #PlayPositionTextSmall {
+    margin: 0px 1px 1px 0px;
+    padding: 0px 2px 0px 2px;
+  }
+  #KeyTextSmall {
+    font-size: 13px/13px;
+    margin: 0px 1px 0px 0px;
+    text-transform: none;
+  }
+  #BpmTextSmall {
+    margin: 0px 1px 0px 0px;
+  }
+  
 
 #ArtistText,
 #TitleText,
 #PlayPositionText,
+#PlayPositionTextSmall,
 #KeyText,
 #PreviewTitle {
   text-transform: none;
@@ -957,7 +989,7 @@ border: 0px;
   text-align: center;
   padding: 0px;
   margin: 0px;
-}
+  }
 
 #RateText {
   qproperty-alignment: 'AlignCenter';

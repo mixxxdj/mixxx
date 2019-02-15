@@ -6,7 +6,7 @@
 
       <WidgetGroup><!-- Waveforms -->
         <Layout>vertical</Layout>
-        <SizePolicy>me,min</SizePolicy>
+        <Size>100me,40me</Size>
         <Children>
 
           <WidgetGroup><!-- Waveform 3 -->
@@ -79,6 +79,12 @@
 
         </Children>
       </WidgetGroup><!-- /Waveforms -->
+
+      <Template src="skin:button_2state_persist.xml">
+        <SetVariable name="ObjectName">BeatgridButtonsToggle</SetVariable>
+        <SetVariable name="Size">28f,40me</SetVariable>
+        <SetVariable name="ConfigKey">[Skin],beatgrid_buttons</SetVariable>
+      </Template>
 
     </Children>
   </WidgetGroup>

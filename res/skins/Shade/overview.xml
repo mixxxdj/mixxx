@@ -1,0 +1,42 @@
+<Template>
+  <Overview>
+    <TooltipId>waveform_overview</TooltipId>
+    <Style></Style>
+    <Channel><Variable name="channum"/></Channel>
+    <Size>220e,30me</Size>
+    <!-- transparent background if no <BgColor> & <BgPixmap> is present -->
+    <BgColor></BgColor>
+    <BgPixmap></BgPixmap>
+    <SignalHighColor></SignalHighColor>
+    <SignalMidColor></SignalMidColor>
+    <SignalLowColor></SignalLowColor>
+    <SignalColor>#191F24</SignalColor>
+    <PlayPosColor>#00FF00</PlayPosColor>
+    <EndOfTrackColor>#EA0000</EndOfTrackColor>
+    <PlayedOverlayColor>#60000000</PlayedOverlayColor>
+    <DefaultMark>
+      <Align>bottom|right</Align>
+      <Color>#FD0564</Color>
+      <TextColor>#FFFFFF</TextColor>
+      <Text> %1 </Text>
+    </DefaultMark>
+    <MarkRange>
+      <StartControl>loop_start_position</StartControl>
+      <EndControl>loop_end_position</EndControl>
+      <EnabledControl>loop_enabled</EnabledControl>
+      <Color>#00FF00</Color>
+      <DisabledColor>#FFFFFF</DisabledColor>
+    </MarkRange>
+    <Mark>
+      <Control>cue_point</Control>
+      <Text>C</Text>
+      <Align>top|right</Align>
+      <Color>#FF001C</Color>
+      <TextColor>#FFFFFF</TextColor>
+    </Mark>
+    <Connection>
+      <ConfigKey>[Channel<Variable name="channum"/>],playposition</ConfigKey>
+      <EmitOnDownPress>false</EmitOnDownPress>
+    </Connection>
+  </Overview>
+</Template>
