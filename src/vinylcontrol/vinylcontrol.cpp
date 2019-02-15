@@ -42,12 +42,6 @@ VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
 
     //Enabled or not -- load from saved value in case vinyl control is restarting
     m_bIsEnabled = wantenabled->get() > 0.0;
-
-    // Load VC pre-amp gain from the config.
-    // TODO(rryan): Should probably live in VinylControlManager since it's not
-    // specific to a VC deck.
-    ControlObject::set(ConfigKey(VINYL_PREF_KEY, "gain"),
-        m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY,"gain")).toInt());
 }
 
 bool VinylControl::isEnabled() {

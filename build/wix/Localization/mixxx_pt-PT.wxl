@@ -22,11 +22,11 @@
 
   <!-- Error messages -->
   <!-- DO NOT BREAK LINES BECAUSE LINE BREAKS WILL SHOW UP AS-IS IN THE INTERFACE -->
-  <String Id="OS2Old">Este produto requer o Windows 7 ou superior.</String>
+  <String Id="OS2Old">Este produto necessita do Windows 7 ou superior.</String>
   <String Id="NewerInstalled">Já está instalada esta versão ou uma mais recente deste programa.</String>
   <String Id="x64VersionRequired">Tem de instalar a versão 64-bit deste produto no Windows de 64-bit.</String>
   <String Id="x86VersionRequired">Tem de instalar a versão 32-bit deste produto no Windows de 32-bit.</String>
-  <String Id="x86VersionWarning">Está prestes a instalar a versão 32-bit num sistema operativo de 64-bit.&#13;&#10;É recomendável usar a versão 64-bit para obter um melhor desempenho.&#13;&#10;Pode transferir o pacote de instalação de 64-bit a partir de http://mixxx.org/download/</String>
+  <String Id="x86VersionWarning">Está prestes a instalar a versão 32-bit num sistema operativo de 64-bit. Recomendamos a utilização da versão de 64-bit para um melhor desempenho. Pode descarregar o pacote de instalação de 64-bit em http://mixxx.org/download/</String>
   <String Id="XPWarning">Está a instalar o Mixxx num sistema operativo desatualizado. Algumas funcionalidade poderão não funcionar corretamente. É recomendável atualizar o seu sistema operativo.</String>
   <String Id="bitWidthMismatch32">Está prestes a instalar a versão de 32-bit mas a de 64-bit já está instalada. Isto pode resultar num comportamento indesejado. Por favor, desinstale a versão do Mixxx existente primeiro, ou transfira a versão de 64-bit para atualizar (a não ser que realmente saiba o que está a fazer.)</String>
   <String Id="bitWidthMismatch64">Está prestes a instalar a versão de 64-bit mas a de 32-bit já está instalada. Isto pode resultar num comportamento indesejado. Por favor, desinstale a versão do Mixxx existente primeiro, ou transfira a versão de 32-bit para atualizar (a não ser que realmente saiba o que está a fazer.)</String>

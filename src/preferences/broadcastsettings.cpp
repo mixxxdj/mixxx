@@ -95,24 +95,29 @@ bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
     return true;
 }
 
-BroadcastProfilePtr BroadcastSettings::createProfile(const QString& profileName) {
-    QFileInfo xmlFile(filePathForProfile(profileName));
-
-    if (!xmlFile.exists()) {
-        BroadcastProfilePtr profile(new BroadcastProfile(profileName));
-        if (addProfile(profile)) {
-            saveProfile(profile);
-            return profile;
-        }
-    }
-    return BroadcastProfilePtr(nullptr);
-}
-
 bool BroadcastSettings::saveProfile(BroadcastProfilePtr profile) {
     if (!profile)
         return false;
 
-    return profile->save(filePathForProfile(profile));
+    QString filename = profile->getLastFilename();
+    if (filename.isEmpty()) {
+        // there was no previous filename, find an unused filename
+        for (int index = 0;; ++index) {
+            if (index > 0) {
+                // add an index to the file name to make it unique
+                filename = filePathForProfile(profile->getProfileName() + QString::number(index));
+            } else {
+                filename = filePathForProfile(profile->getProfileName());
+            }
+
+            QFileInfo fileInfo(filename);
+            if (!fileInfo.exists()) {
+                break;
+            }
+        }
+    }
+
+    return profile->save(filename);
 }
 
 QString BroadcastSettings::filePathForProfile(const QString& profileName) {
@@ -132,11 +137,13 @@ bool BroadcastSettings::deleteFileForProfile(BroadcastProfilePtr profile) {
     if (!profile)
         return false;
 
-    return deleteFileForProfile(profile->getProfileName());
-}
+    QString filename = profile->getLastFilename();
+    if (filename.isEmpty()) {
+        // no file was saved, there is no file to delete
+        return false;
+    }
 
-bool BroadcastSettings::deleteFileForProfile(const QString& profileName) {
-    QFileInfo xmlFile(filePathForProfile(profileName));
+    QFileInfo xmlFile(filename);
     if (xmlFile.exists()) {
         return QFile::remove(xmlFile.absoluteFilePath());
     }
@@ -156,15 +163,6 @@ void BroadcastSettings::saveAll() {
     emit(profilesChanged());
 }
 
-void BroadcastSettings::deleteProfile(BroadcastProfilePtr profile) {
-    if (!profile)
-        return;
-
-    deleteFileForProfile(profile);
-    m_profiles.remove(profile->getProfileName());
-    emit(profileRemoved(profile));
-}
-
 void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
     if (!m_profiles.contains(oldName))
         return;
@@ -174,7 +172,7 @@ void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
         m_profiles.insert(newName, profile);
         emit(profileRenamed(oldName, profile));
 
-        deleteFileForProfile(oldName);
+        deleteFileForProfile(profile);
         saveProfile(profile);
     }
 }
@@ -199,12 +197,17 @@ void BroadcastSettings::applyModel(BroadcastSettingsModel* pModel) {
     // TODO(Palakis): lock both lists against modifications while syncing
 
     // Step 1: find profiles to delete from the settings
-    for(const auto& actualProfile : m_profiles) {
-        QString profileName = actualProfile->getProfileName();
+    for (auto profileIter = m_profiles.begin(); profileIter != m_profiles.end();) {
+        QString profileName = (*profileIter)->getProfileName();
         if (!pModel->getProfileByName(profileName)) {
             // If profile exists in settings but not in the model,
             // remove the profile from the settings
-            deleteProfile(actualProfile);
+            const auto removedProfile = *profileIter;
+            deleteFileForProfile(removedProfile);
+            profileIter = m_profiles.erase(profileIter);
+            emit(profileRemoved(removedProfile));
+        } else {
+            ++profileIter;
         }
     }
 

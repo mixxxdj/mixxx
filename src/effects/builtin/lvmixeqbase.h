@@ -2,7 +2,7 @@
 #define BESSELLVMIXEQBASE_H
 
 #include "effects/effectprocessor.h"
-#include "engine/enginefilterdelay.h"
+#include "engine/filters/enginefilterdelay.h"
 #include "util/defs.h"
 #include "util/math.h"
 #include "util/sample.h"

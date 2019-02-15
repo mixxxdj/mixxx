@@ -14,1692 +14,1692 @@
     <controls>
       <!-- Deck A -->
       <control>
-	<group>[Channel1]</group>
-	<key>VMS2.pitch</key>
-	<status>0xE0</status>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Channel1]</group>
+    <key>VMS2.pitch</key>
+    <status>0xE0</status>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>VMS2.pitchCenter</key>
-	<status>0x90</status>
-	<midino>0x51</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>VMS2.pitchCenter</key>
+    <status>0x90</status>
+    <midino>0x51</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>VMS2.pitchCenter</key>
-	<status>0x80</status>
-	<midino>0x51</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>VMS2.pitchCenter</key>
+    <status>0x80</status>
+    <midino>0x51</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>rate_temp_up</key>
-	<status>0x90</status>
-	<midino>0x0F</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>rate_temp_up</key>
+    <status>0x90</status>
+    <midino>0x0F</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>rate_temp_up</key>
-	<status>0x80</status>
-	<midino>0x0F</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>rate_temp_up</key>
+    <status>0x80</status>
+    <midino>0x0F</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>rate_temp_down</key>
-	<status>0x90</status>
-	<midino>0x10</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>rate_temp_down</key>
+    <status>0x90</status>
+    <midino>0x10</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>rate_temp_down</key>
-	<status>0x80</status>
-	<midino>0x10</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>rate_temp_down</key>
+    <status>0x80</status>
+    <midino>0x10</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>beatsync</key>
-	<status>0x90</status>
-	<midino>0x11</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>beatsync</key>
+    <status>0x90</status>
+    <midino>0x11</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>beatsync</key>
-	<status>0x80</status>
-	<midino>0x11</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>beatsync</key>
+    <status>0x80</status>
+    <midino>0x11</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>VMS2.rate_range</key>
-	<status>0x90</status>
-	<midino>0x16</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>VMS2.rate_range</key>
+    <status>0x90</status>
+    <midino>0x16</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>VMS2.rate_range</key>
-	<status>0x80</status>
-	<midino>0x16</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>VMS2.rate_range</key>
+    <status>0x80</status>
+    <midino>0x16</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>cue_default</key>
-	<status>0x90</status>
-	<midino>0x0C</midino>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>cue_default</key>
+    <status>0x90</status>
+    <midino>0x0C</midino>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>cue_default</key>
-	<status>0x80</status>
-	<midino>0x0C</midino>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>cue_default</key>
+    <status>0x80</status>
+    <midino>0x0C</midino>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>play</key>
-	<status>0x90</status>
-	<midino>0x0D</midino>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>play</key>
+    <status>0x90</status>
+    <midino>0x0D</midino>
       </control>
       <control>
-	<!-- Shifted Play -->
-	<group>[Channel1]</group>
-	<key>start_play</key>
-	<status>0x91</status>
-	<midino>0x0D</midino>
+    <!-- Shifted Play -->
+    <group>[Channel1]</group>
+    <key>start_play</key>
+    <status>0x91</status>
+    <midino>0x0D</midino>
       </control>
       <control>
-	<!-- Shifted Play -->
-	<group>[Channel1]</group>
-	<key>start_play</key>
-	<status>0x81</status>
-	<midino>0x0D</midino>
+    <!-- Shifted Play -->
+    <group>[Channel1]</group>
+    <key>start_play</key>
+    <status>0x81</status>
+    <midino>0x0D</midino>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>VMS2.pause</key>
-	<status>0x90</status>
-	<midino>0x0E</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>VMS2.pause</key>
+    <status>0x90</status>
+    <midino>0x0E</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>VMS2.pause</key>
-	<status>0x80</status>
-	<midino>0x0E</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>VMS2.pause</key>
+    <status>0x80</status>
+    <midino>0x0E</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <!-- Hot Cues, deck 1 -->
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x90</status>
-	<midino>0x12</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x90</status>
+    <midino>0x12</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x80</status>
-	<midino>0x12</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x80</status>
+    <midino>0x12</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x90</status>
-	<midino>0x13</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x90</status>
+    <midino>0x13</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x80</status>
-	<midino>0x13</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x80</status>
+    <midino>0x13</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x90</status>
-	<midino>0x14</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x90</status>
+    <midino>0x14</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x80</status>
-	<midino>0x14</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x80</status>
+    <midino>0x14</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x90</status>
-	<midino>0x15</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x90</status>
+    <midino>0x15</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x80</status>
-	<midino>0x15</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x80</status>
+    <midino>0x15</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x90</status>
-	<midino>0x17</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x90</status>
+    <midino>0x17</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x80</status>
-	<midino>0x17</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x80</status>
+    <midino>0x17</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x90</status>
-	<midino>0x19</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x90</status>
+    <midino>0x19</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x80</status>
-	<midino>0x19</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x80</status>
+    <midino>0x19</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <!-- kill switches deck 1 -->
       <control>
-	<group>[Channel1]</group>
-	<key>VMS2.killLow</key>
-	<status>0x90</status>
-	<midino>0x23</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Channel1]</group>
+    <key>VMS2.killLow</key>
+    <status>0x90</status>
+    <midino>0x23</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<group>[Channel1]</group>
-	<key>VMS2.killMid</key>
-	<status>0x90</status>
-	<midino>0x24</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Channel1]</group>
+    <key>VMS2.killMid</key>
+    <status>0x90</status>
+    <midino>0x24</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<group>[Channel1]</group>
-	<key>VMS2.killHigh</key>
-	<status>0x90</status>
-	<midino>0x25</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Channel1]</group>
+    <key>VMS2.killHigh</key>
+    <status>0x90</status>
+    <midino>0x25</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>loop_in</key>
-	<status>0x90</status>
-	<midino>0x1F</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>loop_in</key>
+    <status>0x90</status>
+    <midino>0x1F</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>loop_in</key>
-	<status>0x80</status>
-	<midino>0x1F</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>loop_in</key>
+    <status>0x80</status>
+    <midino>0x1F</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>loop_out</key>
-	<status>0x90</status>
-	<midino>0x20</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>loop_out</key>
+    <status>0x90</status>
+    <midino>0x20</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>loop_out</key>
-	<status>0x80</status>
-	<midino>0x20</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>loop_out</key>
+    <status>0x80</status>
+    <midino>0x20</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>reloop_exit</key>
-	<status>0x90</status>
-	<midino>0x21</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>reloop_exit</key>
+    <status>0x90</status>
+    <midino>0x21</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>reloop_exit</key>
-	<status>0x80</status>
-	<midino>0x21</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>reloop_exit</key>
+    <status>0x80</status>
+    <midino>0x21</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>beatloop_4</key>
-	<status>0x90</status>
-	<midino>0x22</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>beatloop_4</key>
+    <status>0x90</status>
+    <midino>0x22</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>quantize</key>
-	<status>0x90</status>
-	<midino>0x26</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>quantize</key>
+    <status>0x90</status>
+    <midino>0x26</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>quantize</key>
-	<status>0x80</status>
-	<midino>0x26</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>quantize</key>
+    <status>0x80</status>
+    <midino>0x26</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>back</key>
-	<status>0x90</status>
-	<midino>0x28</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>back</key>
+    <status>0x90</status>
+    <midino>0x28</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>back</key>
-	<status>0x80</status>
-	<midino>0x28</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>back</key>
+    <status>0x80</status>
+    <midino>0x28</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>fwd</key>
-	<status>0x90</status>
-	<midino>0x29</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>fwd</key>
+    <status>0x90</status>
+    <midino>0x29</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>fwd</key>
-	<status>0x80</status>
-	<midino>0x29</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>fwd</key>
+    <status>0x80</status>
+    <midino>0x29</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>loop_halve</key>
-	<status>0x91</status>
-	<midino>0x28</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>loop_halve</key>
+    <status>0x91</status>
+    <midino>0x28</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>loop_halve</key>
-	<status>0x81</status>
-	<midino>0x28</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>loop_halve</key>
+    <status>0x81</status>
+    <midino>0x28</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>loop_double</key>
-	<status>0x91</status>
-	<midino>0x29</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>loop_double</key>
+    <status>0x91</status>
+    <midino>0x29</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>loop_double</key>
-	<status>0x81</status>
-	<midino>0x29</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>loop_double</key>
+    <status>0x81</status>
+    <midino>0x29</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>VMS2.keylock</key>
-	<status>0x91</status>
-	<midino>0x27</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>VMS2.keylock</key>
+    <status>0x91</status>
+    <midino>0x27</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>VMS2.keylock</key>
-	<status>0x81</status>
-	<midino>0x27</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>VMS2.keylock</key>
+    <status>0x81</status>
+    <midino>0x27</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>VMS2.vinyl</key>
-	<status>0x90</status>
-	<midino>0x27</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>VMS2.vinyl</key>
+    <status>0x90</status>
+    <midino>0x27</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>VMS2.vinyl</key>
-	<status>0x80</status>
-	<midino>0x27</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>VMS2.vinyl</key>
+    <status>0x80</status>
+    <midino>0x27</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>LoadSelectedTrack</key>
-	<status>0x90</status>
-	<midino>0x65</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>LoadSelectedTrack</key>
+    <status>0x90</status>
+    <midino>0x65</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>LoadSelectedTrack</key>
-	<status>0x80</status>
-	<midino>0x65</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>LoadSelectedTrack</key>
+    <status>0x80</status>
+    <midino>0x65</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>VMS2.jog_touch</key>
-	<status>0x90</status>
-	<midino>0x4F</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>VMS2.jog_touch</key>
+    <status>0x90</status>
+    <midino>0x4F</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>VMS2.jog_touch</key>
-	<status>0x80</status>
-	<midino>0x4F</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>VMS2.jog_touch</key>
+    <status>0x80</status>
+    <midino>0x4F</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<group>[Channel1]</group>
-	<key>VMS2.jog_move_lsb</key>
-	<status>0xB0</status>
-	<midino>0x30</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Channel1]</group>
+    <key>VMS2.jog_move_lsb</key>
+    <status>0xB0</status>
+    <midino>0x30</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<group>[Channel1]</group>
-	<key>VMS2.jog_move_msb</key>
-	<status>0xB0</status>
-	<midino>0x31</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Channel1]</group>
+    <key>VMS2.jog_move_msb</key>
+    <status>0xB0</status>
+    <midino>0x31</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<group>[Channel1]</group>
-	<key>playposition</key>
-	<status>0xB0</status>
-	<midino>0x28</midino>
+    <group>[Channel1]</group>
+    <key>playposition</key>
+    <status>0xB0</status>
+    <midino>0x28</midino>
       </control>
       <!-- Deck B -->
       <control>
-	<group>[Channel2]</group>
-	<key>VMS2.pitch</key>
-	<status>0xE1</status>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Channel2]</group>
+    <key>VMS2.pitch</key>
+    <status>0xE1</status>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>VMS2.pitchCenter</key>
-	<status>0x90</status>
-	<midino>0x52</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>VMS2.pitchCenter</key>
+    <status>0x90</status>
+    <midino>0x52</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>VMS2.pitchCenter</key>
-	<status>0x80</status>
-	<midino>0x52</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>VMS2.pitchCenter</key>
+    <status>0x80</status>
+    <midino>0x52</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>rate_temp_up</key>
-	<status>0x90</status>
-	<midino>0x31</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>rate_temp_up</key>
+    <status>0x90</status>
+    <midino>0x31</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>rate_temp_up</key>
-	<status>0x80</status>
-	<midino>0x31</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>rate_temp_up</key>
+    <status>0x80</status>
+    <midino>0x31</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>rate_temp_down</key>
-	<status>0x90</status>
-	<midino>0x32</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>rate_temp_down</key>
+    <status>0x90</status>
+    <midino>0x32</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>rate_temp_down</key>
-	<status>0x80</status>
-	<midino>0x32</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>rate_temp_down</key>
+    <status>0x80</status>
+    <midino>0x32</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>beatsync</key>
-	<status>0x90</status>
-	<midino>0x33</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>beatsync</key>
+    <status>0x90</status>
+    <midino>0x33</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>beatsync</key>
-	<status>0x80</status>
-	<midino>0x33</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>beatsync</key>
+    <status>0x80</status>
+    <midino>0x33</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>VMS2.rate_range</key>
-	<status>0x90</status>
-	<midino>0x38</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>VMS2.rate_range</key>
+    <status>0x90</status>
+    <midino>0x38</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>VMS2.rate_range</key>
-	<status>0x80</status>
-	<midino>0x38</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>VMS2.rate_range</key>
+    <status>0x80</status>
+    <midino>0x38</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>cue_default</key>
-	<status>0x90</status>
-	<midino>0x2E</midino>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>cue_default</key>
+    <status>0x90</status>
+    <midino>0x2E</midino>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>cue_default</key>
-	<status>0x80</status>
-	<midino>0x2E</midino>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>cue_default</key>
+    <status>0x80</status>
+    <midino>0x2E</midino>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>play</key>
-	<status>0x90</status>
-	<midino>0x2F</midino>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>play</key>
+    <status>0x90</status>
+    <midino>0x2F</midino>
       </control>
       <control>
-	<!-- Shifted Play -->
-	<group>[Channel2]</group>
-	<key>start_play</key>
-	<status>0x91</status>
-	<midino>0x2F</midino>
+    <!-- Shifted Play -->
+    <group>[Channel2]</group>
+    <key>start_play</key>
+    <status>0x91</status>
+    <midino>0x2F</midino>
       </control>
       <control>
-	<!-- Shifted Play -->
-	<group>[Channel2]</group>
-	<key>start_play</key>
-	<status>0x81</status>
-	<midino>0x2F</midino>
+    <!-- Shifted Play -->
+    <group>[Channel2]</group>
+    <key>start_play</key>
+    <status>0x81</status>
+    <midino>0x2F</midino>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>VMS2.pause</key>
-	<status>0x90</status>
-	<midino>0x30</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>VMS2.pause</key>
+    <status>0x90</status>
+    <midino>0x30</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>VMS2.pause</key>
-	<status>0x80</status>
-	<midino>0x30</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>VMS2.pause</key>
+    <status>0x80</status>
+    <midino>0x30</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <!-- Hot Cues, deck 2 -->
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x90</status>
-	<midino>0x34</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x90</status>
+    <midino>0x34</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x80</status>
-	<midino>0x34</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x80</status>
+    <midino>0x34</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x90</status>
-	<midino>0x35</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x90</status>
+    <midino>0x35</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x80</status>
-	<midino>0x35</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x80</status>
+    <midino>0x35</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x90</status>
-	<midino>0x36</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x90</status>
+    <midino>0x36</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x80</status>
-	<midino>0x36</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x80</status>
+    <midino>0x36</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x90</status>
-	<midino>0x37</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x90</status>
+    <midino>0x37</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x80</status>
-	<midino>0x37</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x80</status>
+    <midino>0x37</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x90</status>
-	<midino>0x39</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x90</status>
+    <midino>0x39</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x80</status>
-	<midino>0x39</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x80</status>
+    <midino>0x39</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x90</status>
-	<midino>0x3A</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x90</status>
+    <midino>0x3A</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>VMS2.hotCue</key>
-	<status>0x80</status>
-	<midino>0x3A</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>VMS2.hotCue</key>
+    <status>0x80</status>
+    <midino>0x3A</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <!-- kill switches deck 2 -->
       <control>
-	<group>[Channel2]</group>
-	<key>VMS2.killLow</key>
-	<status>0x90</status>
-	<midino>0x45</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Channel2]</group>
+    <key>VMS2.killLow</key>
+    <status>0x90</status>
+    <midino>0x45</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<group>[Channel2]</group>
-	<key>VMS2.killMid</key>
-	<status>0x90</status>
-	<midino>0x46</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Channel2]</group>
+    <key>VMS2.killMid</key>
+    <status>0x90</status>
+    <midino>0x46</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<group>[Channel2]</group>
-	<key>VMS2.killHigh</key>
-	<status>0x90</status>
-	<midino>0x47</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Channel2]</group>
+    <key>VMS2.killHigh</key>
+    <status>0x90</status>
+    <midino>0x47</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>loop_in</key>
-	<status>0x90</status>
-	<midino>0x41</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>loop_in</key>
+    <status>0x90</status>
+    <midino>0x41</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>loop_in</key>
-	<status>0x80</status>
-	<midino>0x41</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>loop_in</key>
+    <status>0x80</status>
+    <midino>0x41</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>loop_out</key>
-	<status>0x90</status>
-	<midino>0x42</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>loop_out</key>
+    <status>0x90</status>
+    <midino>0x42</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>loop_out</key>
-	<status>0x80</status>
-	<midino>0x42</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>loop_out</key>
+    <status>0x80</status>
+    <midino>0x42</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>reloop_exit</key>
-	<status>0x90</status>
-	<midino>0x43</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>reloop_exit</key>
+    <status>0x90</status>
+    <midino>0x43</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>reloop_exit</key>
-	<status>0x80</status>
-	<midino>0x43</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>reloop_exit</key>
+    <status>0x80</status>
+    <midino>0x43</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>beatloop_4</key>
-	<status>0x90</status>
-	<midino>0x44</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>beatloop_4</key>
+    <status>0x90</status>
+    <midino>0x44</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>quantize</key>
-	<status>0x90</status>
-	<midino>0x48</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>quantize</key>
+    <status>0x90</status>
+    <midino>0x48</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>quantize</key>
-	<status>0x80</status>
-	<midino>0x48</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>quantize</key>
+    <status>0x80</status>
+    <midino>0x48</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>back</key>
-	<status>0x90</status>
-	<midino>0x4A</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>back</key>
+    <status>0x90</status>
+    <midino>0x4A</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>back</key>
-	<status>0x80</status>
-	<midino>0x4A</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>back</key>
+    <status>0x80</status>
+    <midino>0x4A</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>fwd</key>
-	<status>0x90</status>
-	<midino>0x4B</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>fwd</key>
+    <status>0x90</status>
+    <midino>0x4B</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>fwd</key>
-	<status>0x80</status>
-	<midino>0x4B</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>fwd</key>
+    <status>0x80</status>
+    <midino>0x4B</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>loop_halve</key>
-	<status>0x91</status>
-	<midino>0x4A</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>loop_halve</key>
+    <status>0x91</status>
+    <midino>0x4A</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>loop_halve</key>
-	<status>0x81</status>
-	<midino>0x4A</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>loop_halve</key>
+    <status>0x81</status>
+    <midino>0x4A</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>loop_double</key>
-	<status>0x91</status>
-	<midino>0x4B</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>loop_double</key>
+    <status>0x91</status>
+    <midino>0x4B</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>loop_double</key>
-	<status>0x81</status>
-	<midino>0x4B</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>loop_double</key>
+    <status>0x81</status>
+    <midino>0x4B</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>VMS2.keylock</key>
-	<status>0x91</status>
-	<midino>0x49</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>VMS2.keylock</key>
+    <status>0x91</status>
+    <midino>0x49</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>VMS2.keylock</key>
-	<status>0x81</status>
-	<midino>0x49</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>VMS2.keylock</key>
+    <status>0x81</status>
+    <midino>0x49</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>VMS2.vinyl</key>
-	<status>0x90</status>
-	<midino>0x49</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>VMS2.vinyl</key>
+    <status>0x90</status>
+    <midino>0x49</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>VMS2.vinyl</key>
-	<status>0x80</status>
-	<midino>0x49</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>VMS2.vinyl</key>
+    <status>0x80</status>
+    <midino>0x49</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>LoadSelectedTrack</key>
-	<status>0x90</status>
-	<midino>0x66</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>LoadSelectedTrack</key>
+    <status>0x90</status>
+    <midino>0x66</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>LoadSelectedTrack</key>
-	<status>0x80</status>
-	<midino>0x66</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>LoadSelectedTrack</key>
+    <status>0x80</status>
+    <midino>0x66</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>VMS2.jog_touch</key>
-	<status>0x90</status>
-	<midino>0x50</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>VMS2.jog_touch</key>
+    <status>0x90</status>
+    <midino>0x50</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>VMS2.jog_touch</key>
-	<status>0x80</status>
-	<midino>0x50</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>VMS2.jog_touch</key>
+    <status>0x80</status>
+    <midino>0x50</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<group>[Channel2]</group>
-	<key>VMS2.jog_move_lsb</key>
-	<status>0xB0</status>
-	<midino>0x32</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Channel2]</group>
+    <key>VMS2.jog_move_lsb</key>
+    <status>0xB0</status>
+    <midino>0x32</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<group>[Channel2]</group>
-	<key>VMS2.jog_move_msb</key>
-	<status>0xB0</status>
-	<midino>0x33</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Channel2]</group>
+    <key>VMS2.jog_move_msb</key>
+    <status>0xB0</status>
+    <midino>0x33</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<group>[Channel2]</group>
-	<key>playposition</key>
-	<status>0xB0</status>
-	<midino>0x2D</midino>
+    <group>[Channel2]</group>
+    <key>playposition</key>
+    <status>0xB0</status>
+    <midino>0x2D</midino>
       </control>
       <!-- Navigation -->
       <control>
-	<group>[Playlist]</group>
-	<key>VMS2.switchSelect</key>
-	<status>0x90</status>
-	<midino>0x6B</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <group>[Playlist]</group>
+    <key>VMS2.switchSelect</key>
+    <status>0x90</status>
+    <midino>0x6B</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- select knob -->
-	<group>[Playlist]</group>
-	<key>VMS2.trackSelect</key>
-	<status>0xB0</status>
-	<midino>0x34</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- select knob -->
+    <group>[Playlist]</group>
+    <key>VMS2.trackSelect</key>
+    <status>0xB0</status>
+    <midino>0x34</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- shift left jog wheel -->
-	<group>[Playlist]</group>
-	<key>VMS2.trackSelect</key>
-	<status>0xB1</status>
-	<midino>0x30</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- shift left jog wheel -->
+    <group>[Playlist]</group>
+    <key>VMS2.trackSelect</key>
+    <status>0xB1</status>
+    <midino>0x30</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- shift right jog wheel -->
-	<group>[Playlist]</group>
-	<key>VMS2.trackSelect</key>
-	<status>0xB1</status>
-	<midino>0x32</midino>
-	<options>
-	  <Script-Binding/>
-	</options>
+    <!-- shift right jog wheel -->
+    <group>[Playlist]</group>
+    <key>VMS2.trackSelect</key>
+    <status>0xB1</status>
+    <midino>0x32</midino>
+    <options>
+      <Script-Binding/>
+    </options>
       </control>
       <control>
-	<!-- up button -->
-	<group>[Playlist]</group>
-	<key>SelectPrevTrack</key>
-	<status>0x90</status>
-	<midino>0x69</midino>
-	<options>
-	  <normal/>
-	</options>
+    <!-- up button -->
+    <group>[Playlist]</group>
+    <key>SelectPrevTrack</key>
+    <status>0x90</status>
+    <midino>0x69</midino>
+    <options>
+      <normal/>
+    </options>
       </control>
       <control>
-	<!-- down button -->
-	<group>[Playlist]</group>
-	<key>SelectNextTrack</key>
-	<status>0x90</status>
-	<midino>0x6A</midino>
-	<options>
-	  <normal/>
-	</options>
+    <!-- down button -->
+    <group>[Playlist]</group>
+    <key>SelectNextTrack</key>
+    <status>0x90</status>
+    <midino>0x6A</midino>
+    <options>
+      <normal/>
+    </options>
       </control>
       <control>
-	<!-- left button -->
-	<group>[Playlist]</group>
-	<key>SelectPrevPlaylist</key>
-	<status>0x90</status>
-	<midino>0x67</midino>
-	<options>
-	  <normal/>
-	</options>
+    <!-- left button -->
+    <group>[Playlist]</group>
+    <key>SelectPrevPlaylist</key>
+    <status>0x90</status>
+    <midino>0x67</midino>
+    <options>
+      <normal/>
+    </options>
       </control>
       <control>
-	<!-- right button -->
-	<group>[Playlist]</group>
-	<key>SelectNextPlaylist</key>
-	<status>0x90</status>
-	<midino>0x68</midino>
-	<options>
-	  <normal/>
-	</options>
+    <!-- right button -->
+    <group>[Playlist]</group>
+    <key>SelectNextPlaylist</key>
+    <status>0x90</status>
+    <midino>0x68</midino>
+    <options>
+      <normal/>
+    </options>
       </control>
       <!-- Mixer main-->
       <control>
-	<group>[Master]</group>
-	<key>headMix</key>
-	<status>0xB0</status>
-	<midino>0x22</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
+    <group>[Master]</group>
+    <key>headMix</key>
+    <status>0xB0</status>
+    <midino>0x22</midino>
+    <options>
+      <!-- soft-takeover /-->
+    </options>
       </control>
       <control>
-	<group>[Master]</group>
-	<key>headVolume</key>
-	<status>0xB0</status>
-	<midino>0x23</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
+    <group>[Master]</group>
+    <key>headVolume</key>
+    <status>0xB0</status>
+    <midino>0x23</midino>
+    <options>
+      <!-- soft-takeover /-->
+    </options>
       </control>
       <control>
-	<group>[Master]</group>
-	<key>volume</key>
-	<status>0xB0</status>
-	<midino>0x1C</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
+    <group>[Master]</group>
+    <key>volume</key>
+    <status>0xB0</status>
+    <midino>0x1C</midino>
+    <options>
+      <!-- soft-takeover /-->
+    </options>
       </control>
       <control>
-	<group>[Master]</group>
-	<key>balance</key>
-	<status>0xB0</status>
-	<midino>0x1D</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
+    <group>[Master]</group>
+    <key>balance</key>
+    <status>0xB0</status>
+    <midino>0x1D</midino>
+    <options>
+      <!-- soft-takeover /-->
+    </options>
       </control>
       <!-- Mixer channel 1 -->
       <control>
-	<group>[Channel1]</group>
-	<key>pregain</key>
-	<status>0xB0</status>
-	<midino>0x00</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
+    <group>[Channel1]</group>
+    <key>pregain</key>
+    <status>0xB0</status>
+    <midino>0x00</midino>
+    <options>
+      <!-- soft-takeover /-->
+    </options>
       </control>
       <control>
-	<group>[Channel1]</group>
-	<key>filterHigh</key>
-	<status>0xB0</status>
-	<midino>0x01</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
+    <group>[Channel1]</group>
+    <key>filterHigh</key>
+    <status>0xB0</status>
+    <midino>0x01</midino>
+    <options>
+      <!-- soft-takeover /-->
+    </options>
       </control>
       <control>
-	<group>[Channel1]</group>
-	<key>filterMid</key>
-	<status>0xB0</status>
-	<midino>0x02</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
+    <group>[Channel1]</group>
+    <key>filterMid</key>
+    <status>0xB0</status>
+    <midino>0x02</midino>
+    <options>
+      <!-- soft-takeover /-->
+    </options>
       </control>
       <control>
-	<group>[Channel1]</group>
-	<key>filterLow</key>
-	<status>0xB0</status>
-	<midino>0x03</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
+    <group>[Channel1]</group>
+    <key>filterLow</key>
+    <status>0xB0</status>
+    <midino>0x03</midino>
+    <options>
+      <!-- soft-takeover /-->
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel1]</group>
-	<key>pfl</key>
-	<status>0x90</status>
-	<midino>0x2A</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel1]</group>
+    <key>pfl</key>
+    <status>0x90</status>
+    <midino>0x2A</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel1]</group>
-	<key>pfl</key>
-	<status>0x80</status>
-	<midino>0x2A</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel1]</group>
+    <key>pfl</key>
+    <status>0x80</status>
+    <midino>0x2A</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
       <!-- Mixer channel 2 -->
       <control>
-	<group>[Channel2]</group>
-	<key>pregain</key>
-	<status>0xB0</status>
-	<midino>0x05</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
+    <group>[Channel2]</group>
+    <key>pregain</key>
+    <status>0xB0</status>
+    <midino>0x05</midino>
+    <options>
+      <!-- soft-takeover /-->
+    </options>
       </control>
       <control>
-	<group>[Channel2]</group>
-	<key>filterHigh</key>
-	<status>0xB0</status>
-	<midino>0x06</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
+    <group>[Channel2]</group>
+    <key>filterHigh</key>
+    <status>0xB0</status>
+    <midino>0x06</midino>
+    <options>
+      <!-- soft-takeover /-->
+    </options>
       </control>
       <control>
-	<group>[Channel2]</group>
-	<key>filterMid</key>
-	<status>0xB0</status>
-	<midino>0x07</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
+    <group>[Channel2]</group>
+    <key>filterMid</key>
+    <status>0xB0</status>
+    <midino>0x07</midino>
+    <options>
+      <!-- soft-takeover /-->
+    </options>
       </control>
       <control>
-	<group>[Channel2]</group>
-	<key>filterLow</key>
-	<status>0xB0</status>
-	<midino>0x08</midino>
-	<options>
-	  <!-- soft-takeover /-->
-	</options>
+    <group>[Channel2]</group>
+    <key>filterLow</key>
+    <status>0xB0</status>
+    <midino>0x08</midino>
+    <options>
+      <!-- soft-takeover /-->
+    </options>
       </control>
       <control>
-	<!-- on -->
-	<group>[Channel2]</group>
-	<key>pfl</key>
-	<status>0x90</status>
-	<midino>0x2B</midino>
-	<options>
-	  <Button/>
-	</options>
+    <!-- on -->
+    <group>[Channel2]</group>
+    <key>pfl</key>
+    <status>0x90</status>
+    <midino>0x2B</midino>
+    <options>
+      <Button/>
+    </options>
       </control>
       <control>
-	<!-- off -->
-	<group>[Channel2]</group>
-	<key>pfl</key>
-	<status>0x80</status>
-	<midino>0x2B</midino>
-	<options>
-	  <Spread64/>
-	</options>
+    <!-- off -->
+    <group>[Channel2]</group>
+    <key>pfl</key>
+    <status>0x80</status>
+    <midino>0x2B</midino>
+    <options>
+      <Spread64/>
+    </options>
       </control>
     </controls>
     <outputs>
       <output>
-	<group>[Channel1]</group>
-	<key>cue_default</key>
-	<status>0x90</status>
-	<midino>0x0C</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>cue_default</key>
+    <status>0x90</status>
+    <midino>0x0C</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>cue_default</key>
-	<status>0x90</status>
-	<midino>0x2E</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>cue_default</key>
+    <status>0x90</status>
+    <midino>0x2E</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>pfl</key>
-	<status>0x90</status>
-	<midino>0x2B</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>pfl</key>
+    <status>0x90</status>
+    <midino>0x2B</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>pfl</key>
-	<status>0x90</status>
-	<midino>0x2C</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>pfl</key>
+    <status>0x90</status>
+    <midino>0x2C</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>rate_temp_down</key>
-	<status>0x90</status>
-	<midino>0x0F</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>rate_temp_down</key>
+    <status>0x90</status>
+    <midino>0x0F</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>rate_temp_down</key>
-	<status>0x90</status>
-	<midino>0x31</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>rate_temp_down</key>
+    <status>0x90</status>
+    <midino>0x31</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>rate_temp_up</key>
-	<status>0x90</status>
-	<midino>0x10</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>rate_temp_up</key>
+    <status>0x90</status>
+    <midino>0x10</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>rate_temp_up</key>
-	<status>0x90</status>
-	<midino>0x32</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>rate_temp_up</key>
+    <status>0x90</status>
+    <midino>0x32</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>beatsync</key>
-	<status>0x90</status>
-	<midino>0x16</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>beatsync</key>
+    <status>0x90</status>
+    <midino>0x16</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>beatsync</key>
-	<status>0x90</status>
-	<midino>0x38</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>beatsync</key>
+    <status>0x90</status>
+    <midino>0x38</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>back</key>
-	<status>0x90</status>
-	<midino>0x28</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>back</key>
+    <status>0x90</status>
+    <midino>0x28</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>fwd</key>
-	<status>0x90</status>
-	<midino>0x29</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>fwd</key>
+    <status>0x90</status>
+    <midino>0x29</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>back</key>
-	<status>0x90</status>
-	<midino>0x4A</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>back</key>
+    <status>0x90</status>
+    <midino>0x4A</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>fwd</key>
-	<status>0x90</status>
-	<midino>0x4B</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>fwd</key>
+    <status>0x90</status>
+    <midino>0x4B</midino>
+    <minimum>0.5</minimum>
       </output>
       <!-- Hot cues -->
       <output>
-	<group>[Channel1]</group>
-	<key>hotcue_1_enabled</key>
-	<status>0x90</status>
-	<midino>0x12</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>hotcue_1_enabled</key>
+    <status>0x90</status>
+    <midino>0x12</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>hotcue_2_enabled</key>
-	<status>0x90</status>
-	<midino>0x13</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>hotcue_2_enabled</key>
+    <status>0x90</status>
+    <midino>0x13</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>hotcue_3_enabled</key>
-	<status>0x90</status>
-	<midino>0x14</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>hotcue_3_enabled</key>
+    <status>0x90</status>
+    <midino>0x14</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>hotcue_4_enabled</key>
-	<status>0x90</status>
-	<midino>0x15</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>hotcue_4_enabled</key>
+    <status>0x90</status>
+    <midino>0x15</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>hotcue_5_enabled</key>
-	<status>0x90</status>
-	<midino>0x17</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>hotcue_5_enabled</key>
+    <status>0x90</status>
+    <midino>0x17</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>hotcue_6_enabled</key>
-	<status>0x90</status>
-	<midino>0x18</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>hotcue_6_enabled</key>
+    <status>0x90</status>
+    <midino>0x18</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>hotcue_1_enabled</key>
-	<status>0x90</status>
-	<midino>0x34</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>hotcue_1_enabled</key>
+    <status>0x90</status>
+    <midino>0x34</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>hotcue_2_enabled</key>
-	<status>0x90</status>
-	<midino>0x35</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>hotcue_2_enabled</key>
+    <status>0x90</status>
+    <midino>0x35</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>hotcue_3_enabled</key>
-	<status>0x90</status>
-	<midino>0x36</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>hotcue_3_enabled</key>
+    <status>0x90</status>
+    <midino>0x36</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>hotcue_4_enabled</key>
-	<status>0x90</status>
-	<midino>0x37</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>hotcue_4_enabled</key>
+    <status>0x90</status>
+    <midino>0x37</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>hotcue_5_enabled</key>
-	<status>0x90</status>
-	<midino>0x39</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>hotcue_5_enabled</key>
+    <status>0x90</status>
+    <midino>0x39</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>hotcue_6_enabled</key>
-	<status>0x90</status>
-	<midino>0x3A</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>hotcue_6_enabled</key>
+    <status>0x90</status>
+    <midino>0x3A</midino>
+    <minimum>0.5</minimum>
       </output>
       <!-- Looping -->
       <output>
-	<group>[Channel1]</group>
-	<key>loop_in</key>
-	<status>0x90</status>
-	<midino>0x1F</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>loop_in</key>
+    <status>0x90</status>
+    <midino>0x1F</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>loop_out</key>
-	<status>0x90</status>
-	<midino>0x20</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>loop_out</key>
+    <status>0x90</status>
+    <midino>0x20</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>loop_enabled</key>
-	<status>0x90</status>
-	<midino>0x21</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>loop_enabled</key>
+    <status>0x90</status>
+    <midino>0x21</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>loop_halve</key>
-	<status>0x90</status>
-	<midino>0x28</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>loop_halve</key>
+    <status>0x90</status>
+    <midino>0x28</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>loop_double</key>
-	<status>0x90</status>
-	<midino>0x29</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>loop_double</key>
+    <status>0x90</status>
+    <midino>0x29</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>beatloop_4</key>
-	<status>0x90</status>
-	<midino>0x22</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>beatloop_4</key>
+    <status>0x90</status>
+    <midino>0x22</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel1]</group>
-	<key>quantize</key>
-	<status>0x90</status>
-	<midino>0x26</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel1]</group>
+    <key>quantize</key>
+    <status>0x90</status>
+    <midino>0x26</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>loop_in</key>
-	<status>0x90</status>
-	<midino>0x41</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>loop_in</key>
+    <status>0x90</status>
+    <midino>0x41</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>loop_out</key>
-	<status>0x90</status>
-	<midino>0x42</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>loop_out</key>
+    <status>0x90</status>
+    <midino>0x42</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>loop_enabled</key>
-	<status>0x90</status>
-	<midino>0x43</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>loop_enabled</key>
+    <status>0x90</status>
+    <midino>0x43</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>loop_halve</key>
-	<status>0x90</status>
-	<midino>0x4A</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>loop_halve</key>
+    <status>0x90</status>
+    <midino>0x4A</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>loop_double</key>
-	<status>0x90</status>
-	<midino>0x4B</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>loop_double</key>
+    <status>0x90</status>
+    <midino>0x4B</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>beatloop_4</key>
-	<status>0x90</status>
-	<midino>0x44</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>beatloop_4</key>
+    <status>0x90</status>
+    <midino>0x44</midino>
+    <minimum>0.5</minimum>
       </output>
       <output>
-	<group>[Channel2]</group>
-	<key>quantize</key>
-	<status>0x90</status>
-	<midino>0x48</midino>
-	<minimum>0.5</minimum>
+    <group>[Channel2]</group>
+    <key>quantize</key>
+    <status>0x90</status>
+    <midino>0x48</midino>
+    <minimum>0.5</minimum>
       </output>
     </outputs>
   </controller>

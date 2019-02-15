@@ -3276,7 +3276,7 @@ string.js - Copyright (C) 2012-2014, JP Richardson <jprichardson@gmail.com>
   }
 
   function S(s) {
-  	initialize(this, s);
+      initialize(this, s);
   }
 
   var __nsp = String.prototype;
@@ -3617,8 +3617,8 @@ string.js - Copyright (C) 2012-2014, JP Richardson <jprichardson@gmail.com>
     },
 
     setValue: function (s) {
-	  initialize(this, s);
-	  return this;
+      initialize(this, s);
+      return this;
     },
 
     slugify: function() {

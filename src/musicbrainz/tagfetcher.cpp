@@ -23,14 +23,14 @@ TagFetcher::TagFetcher(QObject* parent)
             m_pFingerprintWatcher(NULL),
             m_AcoustidClient(this),
             m_MusicbrainzClient(this) {
-    connect(&m_AcoustidClient, SIGNAL(finished(int,QString)),
-            this, SLOT(mbidFound(int,QString)));
-    connect(&m_MusicbrainzClient, SIGNAL(finished(int,MusicBrainzClient::ResultList)),
-            this, SLOT(tagsFetched(int,MusicBrainzClient::ResultList)));
-    connect(&m_AcoustidClient, SIGNAL(networkError(int, QString)),
-            this, SIGNAL(networkError(int, QString)));
-    connect(&m_MusicbrainzClient, SIGNAL(networkError(int, QString)),
-            this, SIGNAL(networkError(int, QString)));
+    connect(&m_AcoustidClient, &AcoustidClient::finished,
+            this, &TagFetcher::mbidFound);
+    connect(&m_MusicbrainzClient, &MusicBrainzClient::finished,
+            this, &TagFetcher::tagsFetched);
+    connect(&m_AcoustidClient, &AcoustidClient::networkError,
+            this, &TagFetcher::networkError);
+    connect(&m_MusicbrainzClient, &MusicBrainzClient::networkError,
+            this, &TagFetcher::networkError);
 }
 
 QString TagFetcher::getFingerprint(const TrackPointer tio) {
@@ -47,12 +47,10 @@ void TagFetcher::startFetch(const TrackPointer track) {
     QFuture<QString> future = QtConcurrent::mapped(m_tracks, getFingerprint);
     m_pFingerprintWatcher = new QFutureWatcher<QString>(this);
     m_pFingerprintWatcher->setFuture(future);
-    connect(m_pFingerprintWatcher, SIGNAL(resultReadyAt(int)),
-            SLOT(fingerprintFound(int)));
+    connect(m_pFingerprintWatcher, &QFutureWatcher<QString>::resultReadyAt,
+            this, &TagFetcher::fingerprintFound);
 
-    foreach (const TrackPointer ptrack, m_tracks) {
-        emit(fetchProgress(tr("Fingerprinting track")));
-    }
+    emit(fetchProgress(tr("Fingerprinting track")));
 }
 
 void TagFetcher::cancel() {

@@ -1,14 +1,14 @@
 # 
 # Translators:
 # Laur Pärn <parnlaur@gmail.com>, 2016
-# S.Brandt <s.brandt@mixxx.org>, 2016
+# S.Brandt <s.brandt@mixxx.org>, 2016,2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-09-22 19:10+0000\n"
-"Last-Translator: Sebastien BLAISOT <sebastien@blaisot.org>\n"
+"PO-Revision-Date: 2018-12-16 20:46+0000\n"
+"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: Estonian (Estonia) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/et_EE/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -59,10 +59,10 @@ msgstr "Sul tuleb paigaldada 32-bitine versioon sellest tootest 32-bitisele Wind
 
 msgctxt "x86VersionWarning"
 msgid ""
-"You are about to install the 32-bit version on a 64-bit operating system.\r\n"
-"We recommend using the 64-bit version for better performance.\r\n"
-"You can download the 64-bit installation package from http://mixxx.org/download/"
-msgstr "Sa soovid paigaldada 32-bitist versiooni 64-bitisele operatsioonisüsteemile.\nSoovitame kasutada 64-bitist versiooni parema jõudluse jaoks.\nSaate 64-bitise paigalduspaketi alla laadida aadressilt http://mixxx.org/download/"
+"You are about to install the 32-bit version on a 64-bit operating system. We"
+" recommend using the 64-bit version for better performance. You can download"
+" the 64-bit installation package from http://mixxx.org/download/"
+msgstr "Sa soovid paigaldada 32-bitist versiooni 64-bitisele operatsioonisüsteemile. Soovitame kasutada 64-bitist versiooni parema jõudluse jaoks. Saate 64-bitise paigalduspaketi alla laadida aadressilt http://mixxx.org/download/"
 
 msgctxt "XPWarning"
 msgid ""
