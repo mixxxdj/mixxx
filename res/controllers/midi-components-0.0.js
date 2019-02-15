@@ -290,28 +290,6 @@
             print('ERROR: No hotcue number specified for new HotcueButton.');
             return;
         }
-        if (options.sendRGB !== undefined || options.colors !== undefined) {
-            print("COLORS ENABLED for component "+options.number);
-            this.colorIdKey = 'hotcue_' + this.number + '_color_id';
-            if (options.colors === undefined) {
-                options.colors = color.predefinedColorsList();
-            }
-            this.output = function (value, group, control) {
-                this.colorOutput(value)
-            };
-            this.connect = function () {
-              print("CALLED CONNECT");
-              if (undefined !== this.group &&
-                  undefined !== this.outKey &&
-                  undefined !== this.output &&
-                  typeof this.output === 'function') {
-                  this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output);
-              }
-              if (undefined !== this.group) {
-                  this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, this.output);
-              }
-            };
-        }
         this.number = options.number;
         this.outKey = 'hotcue_' + this.number + '_enabled';
         Button.call(this, options);
@@ -323,33 +301,57 @@
         shift: function () {
             this.inKey = 'hotcue_' + this.number + '_clear';
         },
-        getColor: function () {
-          return color.jsColorFrom(engine.getValue(this.group,this.colorIdKey))
-        },
-        colorOutput: function (value) {
-            print("called colorOutput with "+value);
-            if (value > 0) {
-                var id = engine.getValue(this.group,this.colorIdKey)
-                var color = options.colors[id]
-                if (color instanceof Array) {
-                    if (color.length !== 3) {
-                        print("invalid color array for id: "+id);
-                        return;
-                    }
-                    if (this.sendRGB === undefined) {
-                        print("no custom method for sending rgb defined!");
-                        return;
-                    }
-                    this.sendRGB(color);
-                } else if (typeof color === 'number') {
-                    this.send(color);
-                }
-            } else {
-              this.send(this.off);
-            }
-        },
     });
 
+    var HotcueColorButton = function (options) {
+      if (options.sendRGB === undefined && options.colors === undefined) {
+        print("ERROR: no color palette or sendRGB method defined");
+        return;
+      }
+      if (options.colors === undefined) {
+          options.colors = color.predefinedColorsList();
+      }
+      this.colorIdKey = 'hotcue_' + options.number + '_color_id';
+      print(this.colorIdKey);
+      HotcueButton.call(this, options);
+    }
+    HotcueColorButton.prototype = new HotcueButton({
+      getColor: function () {
+        return color.jsColorFrom(engine.getValue(this.group,this.colorIdKey))
+      },
+      output: function (value) {
+        if (value > 0) {
+            var id = engine.getValue(this.group,this.colorIdKey)
+            var color = options.colors[id]
+            if (color instanceof Array) {
+                if (color.length !== 3) {
+                    print("invalid color array for id: "+id);
+                    return;
+                }
+                if (this.sendRGB === undefined) {
+                    print("no custom method for sending rgb defined!");
+                    return;
+                }
+                this.sendRGB(color);
+            } else if (typeof color === 'number') {
+                this.send(color);
+            }
+        } else {
+          this.send(this.off);
+        }
+      },
+      connect: function () {
+        if (undefined !== this.group &&
+            undefined !== this.outKey &&
+            undefined !== this.output &&
+            typeof this.output === 'function') {
+            this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output);
+        }
+        if (undefined !== this.group) {
+            this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, this.output);
+        }
+      },
+    });
     var SamplerButton = function (options) {
         if (options.number === undefined) {
             print('ERROR: No sampler number specified for new SamplerButton.');
@@ -1093,6 +1095,7 @@
     exports.SyncButton = SyncButton;
     exports.LoopToggleButton = LoopToggleButton;
     exports.HotcueButton = HotcueButton;
+    exports.HotcueColorButton = HotcueColorButton;
     exports.SamplerButton = SamplerButton;
     exports.EffectAssignmentButton = EffectAssignmentButton;
     exports.Pot = Pot;
