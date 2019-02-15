@@ -312,7 +312,6 @@
           options.colors = color.predefinedColorsList();
       }
       this.colorIdKey = 'hotcue_' + options.number + '_color_id';
-      print(this.colorIdKey);
       HotcueButton.call(this, options);
     }
     HotcueColorButton.prototype = new HotcueButton({
@@ -322,14 +321,14 @@
       output: function (value) {
         if (value > 0) {
             var id = engine.getValue(this.group,this.colorIdKey)
-            var color = options.colors[id]
+            var color = this.colors[id]
             if (color instanceof Array) {
                 if (color.length !== 3) {
-                    print("invalid color array for id: "+id);
+                    print("ERROR: invalid color array for id: "+id);
                     return;
                 }
                 if (this.sendRGB === undefined) {
-                    print("no custom method for sending rgb defined!");
+                    print("ERROR: no custom method for sending rgb defined!");
                     return;
                 }
                 this.sendRGB(color);
