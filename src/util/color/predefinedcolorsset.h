@@ -60,17 +60,11 @@ class PredefinedColorsSet final {
         QObject::tr("Pink"),
         7
     );
-    const PredefinedColorPointer teal = std::make_shared<PredefinedColor>(
-        QColor("#469990"),
-        QLatin1String("Teal"),
-        QObject::tr("Teal"),
+    const PredefinedColorPointer white = std::make_shared<PredefinedColor>(
+        QColor("#FFFFFF"),
+        QLatin1String("White"),
+        QObject::tr("White"),
         8
-    );
-    const PredefinedColorPointer grey = std::make_shared<PredefinedColor>(
-        QColor("#A9A9A9"),
-        QLatin1String("Grey"),
-        QObject::tr("Grey"),
-        9
     );
 
     // The list of the predefined colors.
@@ -83,8 +77,7 @@ class PredefinedColorsSet final {
         cyan,
         magenta,
         pink,
-        teal,
-        grey,
+        white,
     };
 
     PredefinedColorsSet()
