@@ -463,7 +463,7 @@
         </State>
         <Pos>196,0</Pos>
         <Connection>
-          <ConfigKey>[Skin],show_autodj_cues</ConfigKey>
+          <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
         </Connection>
       </PushButton>
       <WidgetGroup><!-- Hotcues 1-4 -->
@@ -608,7 +608,7 @@
           </PushButton>
         </Children>
         <Connection>
-          <ConfigKey>[Skin],show_autodj_cues</ConfigKey>
+          <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
         </Connection>
@@ -755,7 +755,7 @@
           </PushButton>
         </Children>
         <Connection>
-          <ConfigKey>[Skin],show_autodj_cues</ConfigKey>
+          <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
