@@ -46,11 +46,13 @@
       <StartControl>intro_start_position</StartControl>
       <EndControl>intro_end_position</EndControl>
       <Color>#0000FF</Color>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </MarkRange>
     <MarkRange>
       <StartControl>outro_start_position</StartControl>
       <EndControl>outro_end_position</EndControl>
       <Color>#0000FF</Color>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </MarkRange>
     <Mark>
       <Control>intro_start_position</Control>
@@ -59,6 +61,7 @@
       <Align>bottom</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
     <Mark>
       <Control>intro_end_position</Control>
@@ -67,6 +70,7 @@
       <Align>bottom</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
     <Mark>
       <Control>outro_start_position</Control>
@@ -75,6 +79,7 @@
       <Align>bottom</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
     <Mark>
       <Control>outro_end_position</Control>
@@ -83,6 +88,7 @@
       <Align>bottom</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
     <!--
     The hotcues not represented by a button in the current skin

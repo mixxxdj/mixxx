@@ -55,11 +55,13 @@ Variables:
       <StartControl>intro_start_position</StartControl>
       <EndControl>intro_end_position</EndControl>
       <Color>#0000FF</Color>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </MarkRange>
     <MarkRange>
       <StartControl>outro_start_position</StartControl>
       <EndControl>outro_end_position</EndControl>
       <Color>#0000FF</Color>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </MarkRange>
     <Mark>
       <Control>intro_start_position</Control>
@@ -67,6 +69,7 @@ Variables:
       <Align>top|right</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
     <Mark>
       <Control>intro_end_position</Control>
@@ -74,6 +77,7 @@ Variables:
       <Align>top|left</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
     <Mark>
       <Control>outro_start_position</Control>
@@ -81,6 +85,7 @@ Variables:
       <Align>top|right</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
     <Mark>
       <Control>outro_end_position</Control>
@@ -88,6 +93,7 @@ Variables:
       <Align>top|left</Align>
       <Color>#0000FF</Color>
       <TextColor>#FFFFFF</TextColor>
+      <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
     </Mark>
     <Mark>
       <Control>cue_point</Control>
