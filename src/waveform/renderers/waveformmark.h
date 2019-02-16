@@ -61,6 +61,15 @@ class WaveformMark : public QObject {
     bool hasSource() const { return m_pSourceCos && m_pSourceCos->valid(); }
     double getSource() const { return m_pSourceCos->get(); }
 
+    // The m_pVisibleCos related function
+    bool hasVisible() const { return m_pVisibleCos && m_pVisibleCos->valid(); }
+    bool isVisible() const { return m_pVisibleCos->get(); }
+
+    template <typename Receiver, typename Slot>
+    void connectVisibleChanged(Receiver receiver, Slot slot) const {
+        m_pVisibleCos->connectValueChanged(receiver, slot, Qt::AutoConnection);
+    }
+
   signals:
     void sourceChanged(WaveformMark* pMark);
 
@@ -70,6 +79,7 @@ class WaveformMark : public QObject {
   private:
     std::unique_ptr<ControlProxy> m_pPointCos;
     std::unique_ptr<ControlProxy> m_pSourceCos;
+    std::unique_ptr<ControlProxy> m_pVisibleCos;
     WaveformMarkProperties m_properties;
     int m_iHotCue;
     QImage m_image;

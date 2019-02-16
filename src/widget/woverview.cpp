@@ -102,6 +102,10 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
             pMark->connectSamplePositionChanged(this,
                     &WOverview::onMarkChanged);
         }
+        if (pMark->hasVisible()) {
+            pMark->connectVisibleChanged(this,
+                    &WOverview::onMarkChanged);
+        }
     }
 
     QDomNode child = node.firstChild();
@@ -112,6 +116,10 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
             if (markRange.m_markEnabledControl) {
                 markRange.m_markEnabledControl->connectValueChanged(
+                        this, &WOverview::onMarkRangeChange);
+            }
+            if (markRange.m_markVisibleControl) {
+                markRange.m_markVisibleControl->connectValueChanged(
                         this, &WOverview::onMarkRangeChange);
             }
             if (markRange.m_markStartPointControl) {
@@ -252,7 +260,9 @@ void WOverview::onEndOfTrackChange(double v) {
 
 void WOverview::onMarkChanged(double /*v*/) {
     //qDebug() << "WOverview::onMarkChanged()" << v;
-    updateCues(m_pCurrentTrack->getCuePoints());
+    if (m_pCurrentTrack) {
+        updateCues(m_pCurrentTrack->getCuePoints());
+    }
     update();
 }
 
@@ -431,6 +441,11 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     continue;
                 }
 
+                // If the mark range is not visible we should not draw it.
+                if (!markRange.visible()) {
+                    continue;
+                }
+
                 // Active mark ranges by definition have starts/ends that are not
                 // disabled.
                 const double startValue = markRange.start();
@@ -475,7 +490,8 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
             for (const auto& currentMark: m_marks) {
                 const WaveformMarkProperties& markProperties = currentMark->getProperties();
-                if (currentMark->isValid() && currentMark->getSamplePosition() >= 0.0) {
+                if (currentMark->isValid() && currentMark->getSamplePosition() >= 0.0 &&
+                        currentMark->hasVisible() && currentMark->isVisible()) {
                     //const float markPosition = 1.0 +
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
                     const float markPosition = offset + currentMark->getSamplePosition() * gain;

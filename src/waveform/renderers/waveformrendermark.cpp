@@ -54,6 +54,10 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
         if (!pMark->isValid())
             continue;
 
+        if (pMark->hasVisible() && !pMark->isVisible()) {
+            continue;
+        }
+
         // Generate image on first paint can't be done in setup since we need
         // render widget to be resized yet ...
         if (pMark->m_image.isNull()) {

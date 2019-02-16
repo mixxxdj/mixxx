@@ -22,6 +22,11 @@ WaveformMark::WaveformMark(const QString& group,
         m_pSourceCos = std::make_unique<ControlProxy>(group, source);
         m_pSourceCos->connectValueChanged(this, &WaveformMark::slotCueSourceChanged);
     }
+    QString visibilityControl = context.selectString(node, "VisibilityControl");
+    if (!visibilityControl.isEmpty()) {
+        ConfigKey key = ConfigKey::parseCommaSeparated(visibilityControl);
+        m_pVisibleCos = std::make_unique<ControlProxy>(key);
+    }
     m_properties = WaveformMarkProperties(node, context, signalColors, m_iHotCue);
 }
 

@@ -51,6 +51,11 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
             continue;
         }
 
+        // If the mark range is not visible we should not draw it.
+        if (!markRange.visible()) {
+            continue;
+        }
+
         // Active mark ranges by definition have starts/ends that are not
         // disabled so no need to check.
         int startSample = markRange.start();
