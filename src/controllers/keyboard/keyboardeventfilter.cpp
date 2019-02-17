@@ -1,6 +1,7 @@
 #include <QList>
 #include <QtDebug>
 #include <QKeyEvent>
+#include <QInputMethod>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "util/cmdlineargs.h"

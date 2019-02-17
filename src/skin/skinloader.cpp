@@ -56,12 +56,21 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
     return QString();
 }
 
-QPixmap SkinLoader::getSkinPreview(const QString& skinName) const {
-    QPixmap preview(getSkinPath(skinName) + "/preferences_preview_screenshot.png");
+QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schemeName) const {
+    qDebug() << "schemeName =" << schemeName;
+    QPixmap preview;
+    if (!schemeName.isEmpty()) {
+        QString schemeNameUnformatted = schemeName;
+        QString schemeNameFormatted = schemeNameUnformatted.replace(" ","");
+        preview.load(getSkinPath(skinName) + "/skin_preview_" + schemeNameFormatted + ".png");
+    } else {
+        preview.load(getSkinPath(skinName) + "/skin_preview.png");
+    }
     if (!preview.isNull()){
         return preview;
     }
-    return QPixmap(":/images/skin_preview_placeholder.png");
+    preview.load(":/images/skin_preview_placeholder.png");
+    return preview;
 }
 
 QString SkinLoader::getConfiguredSkinPath() const {

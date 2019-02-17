@@ -105,14 +105,10 @@ namespace utils {
     }
 
     QString inputLocaleName() {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        return QApplication::keyboardInputLocale().name();
-#else
         // Use the default config for local keyboard
         QInputMethod* pInputMethod = QGuiApplication::inputMethod();
         return pInputMethod ? pInputMethod->locale().name() :
                 QLocale(QLocale::English).name();
-#endif
     }
 
     KeysymUnicodePair keySymTable[] = {

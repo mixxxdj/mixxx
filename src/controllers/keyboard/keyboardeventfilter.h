@@ -5,6 +5,7 @@
 #include <QEvent>
 #include <QKeyEvent>
 #include <QMultiHash>
+#include <QGuiApplication>
 
 #include "controllers/keyboard/keyboardcontrollerpreset.h"
 
@@ -17,6 +18,12 @@ class KeyboardEventFilter : public QObject {
     explicit KeyboardEventFilter(QObject* parent = nullptr, const char* name = nullptr);
     virtual ~KeyboardEventFilter();
     bool eventFilter(QObject* obj, QEvent* e);
+    static QLocale inputLocale() {
+        // Use the default config for local keyboard
+        QInputMethod* pInputMethod = QGuiApplication::inputMethod();
+        return pInputMethod ? pInputMethod->locale() :
+                QLocale(QLocale::English);
+    }
 
   public slots:
     void slotSetKeyboardMapping(KeyboardControllerPresetPointer presetPointer) {

@@ -39,7 +39,7 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(
         SFM_READ,
         &sfInfo);
 #else
-    m_pSndFile = sf_open(getLocalFileName().toLocal8Bit(), SFM_READ, &sfInfo);
+    m_pSndFile = sf_open(QFile::encodeName(getLocalFileName()), SFM_READ, &sfInfo);
 #endif
 
     switch (sf_error(m_pSndFile)) {

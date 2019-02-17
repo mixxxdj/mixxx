@@ -1,5 +1,7 @@
 # 
 # Translators:
+# Artem, 2018
+# S.Brandt <s.brandt@mixxx.org>, 2018
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Sebastien BLAISOT <sebastien@blaisot.org>, 2016
 # Владимир Новиков <dancenoise1@gmail.com>, 2016
@@ -8,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx DJ Windows installer\n"
-"PO-Revision-Date: 2017-09-23 22:04+0000\n"
-"Last-Translator: Владимир Новиков <dancenoise1@gmail.com>\n"
+"PO-Revision-Date: 2018-12-16 18:34+0000\n"
+"Last-Translator: S.Brandt <s.brandt@mixxx.org>\n"
 "Language-Team: Russian (Russia) (http://www.transifex.com/mixxx-dj-software/mixxxdj-windows-installer/language/ru_RU/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -60,10 +62,10 @@ msgstr "Вам необходимо установить 32-битную вер�
 
 msgctxt "x86VersionWarning"
 msgid ""
-"You are about to install the 32-bit version on a 64-bit operating system.\r\n"
-"We recommend using the 64-bit version for better performance.\r\n"
-"You can download the 64-bit installation package from http://mixxx.org/download/"
-msgstr "Вы пытаетесь установить 32-битную версию на 64-битную версию операционной системы.\nМы рекомендуем использовать 64-битную версию для увеличения производительности.\nВы можете скачать 64-битную версию программы на http://mixxx.org/download/."
+"You are about to install the 32-bit version on a 64-bit operating system. We"
+" recommend using the 64-bit version for better performance. You can download"
+" the 64-bit installation package from http://mixxx.org/download/"
+msgstr "Вы пытаетесь установить 32-битную версию на 64-битную версию операционной системы. Мы рекомендуем использовать 64-битную версию для увеличения производительности.Вы можете скачать 64-битную версию программы на http://mixxx.org/download/."
 
 msgctxt "XPWarning"
 msgid ""
@@ -165,11 +167,11 @@ msgstr "Файлы, позволяющие Mixxx отображать интер
 #.  Bootstrapper
 msgctxt "Caption"
 msgid "[WixBundleName] Setup"
-msgstr ""
+msgstr "[WixBundleName] Установка"
 
 msgctxt "Title"
 msgid "[WixBundleName]"
-msgstr ""
+msgstr "[WixBundleName]"
 
 msgctxt "ConfirmCancelMessage"
 msgid "Are you sure you want to cancel?"
@@ -210,19 +212,19 @@ msgid ""
 "Setup will install Mixxx on your computer.\n"
 "It will first install required third party libraries, then Mixxx itself.\n"
 "Click Install to continue or Close to exit."
-msgstr ""
+msgstr "Программа установки установит Mixxx на ваш компьютер.\nСначала он установит необходимые сторонние библиотеки, а затем сам Mixxx.\nНажмите кнопку Установить для продолжения или закрыть для выхода."
 
 msgctxt "InstallVersion"
 msgid "Version [WixBundleVersion]"
-msgstr ""
+msgstr "Версия [WixBundleVersion]"
 
 msgctxt "InstallOptionsButton"
 msgid "&Options"
-msgstr ""
+msgstr "&Параметры"
 
 msgctxt "InstallInstallButton"
 msgid "&Install"
-msgstr ""
+msgstr "&Установить"
 
 msgctxt "InstallCloseButton"
 msgid "&Close"
@@ -230,75 +232,75 @@ msgstr "&Закрыть"
 
 msgctxt "OptionsHeader"
 msgid "Setup Options"
-msgstr ""
+msgstr "Параметры установки"
 
 msgctxt "OptionsLocationLabel"
 msgid "Install location:"
-msgstr ""
+msgstr "Место установки:"
 
 msgctxt "OptionsBrowseButton"
 msgid "&Browse"
-msgstr ""
+msgstr "&Просмотреть"
 
 msgctxt "OptionsOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&ОК"
 
 msgctxt "OptionsCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Отмена"
 
 msgctxt "FilesInUseHeader"
 msgid "Files In Use"
-msgstr ""
+msgstr "Используемые файлы"
 
 msgctxt "FilesInUseLabel"
 msgid "The following applications are using files that need to be updated:"
-msgstr ""
+msgstr "Следующие приложения используют файлы, которые необходимо обновить:"
 
 msgctxt "FilesInUseCloseRadioButton"
 msgid "Close the &applications and attempt to restart them."
-msgstr ""
+msgstr "Закройте &приложения и попытайтесь перезапустить их."
 
 msgctxt "FilesInUseDontCloseRadioButton"
 msgid "&Do not close applications. A reboot will be required."
-msgstr ""
+msgstr "&Не закрывайте приложение. Потребуется перезагрузка."
 
 msgctxt "FilesInUseOkButton"
 msgid "&OK"
-msgstr ""
+msgstr "&ОК"
 
 msgctxt "FilesInUseCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Отмена"
 
 msgctxt "ProgressHeader"
 msgid "Setup Progress"
-msgstr ""
+msgstr "Процесс установки"
 
 msgctxt "ProgressLabel"
 msgid "Processing:"
-msgstr ""
+msgstr "Обработка:"
 
 msgctxt "OverallProgressPackageText"
 msgid "Initializing..."
-msgstr ""
+msgstr "Инициализация..."
 
 msgctxt "ProgressCancelButton"
 msgid "&Cancel"
-msgstr ""
+msgstr "&Отмена"
 
 msgctxt "ModifyHeader"
 msgid "Modify Setup"
-msgstr ""
+msgstr "Изменить установку"
 
 msgctxt "ModifyRepairButton"
 msgid "&Repair"
-msgstr ""
+msgstr "&Восстановление "
 
 msgctxt "ModifyUninstallButton"
 msgid "&Uninstall"
-msgstr ""
+msgstr "&Удалить"
 
 msgctxt "ModifyCloseButton"
 msgid "&Close"
@@ -306,31 +308,31 @@ msgstr "&Закрыть"
 
 msgctxt "SuccessHeader"
 msgid "Setup Successful"
-msgstr ""
+msgstr "Успешная установка"
 
 msgctxt "SuccessInstallHeader"
 msgid "Mixxx installation has been successful"
-msgstr ""
+msgstr "Установка Mixxx прошло успешно"
 
 msgctxt "SuccessRepairHeader"
 msgid "Mixxx repair has been successful"
-msgstr ""
+msgstr "Восстановление Mixxx прошло успешно"
 
 msgctxt "SuccessUninstallHeader"
 msgid "Mixxx uninstall has been successful"
-msgstr ""
+msgstr "Удаление Mixxx прошло успешно"
 
 msgctxt "SuccessLaunchButton"
 msgid "&Launch"
-msgstr ""
+msgstr "&Запуск"
 
 msgctxt "SuccessRestartText"
 msgid "You must restart your computer before you can use the software."
-msgstr ""
+msgstr "Перед использованием программного обеспечения необходимо перезагрузить компьютер."
 
 msgctxt "SuccessRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&Перезапуск"
 
 msgctxt "SuccessCloseButton"
 msgid "&Close"
@@ -338,34 +340,34 @@ msgstr "&Закрыть"
 
 msgctxt "FailureHeader"
 msgid "Setup Failed"
-msgstr ""
+msgstr "Ошибка установки"
 
 msgctxt "FailureInstallHeader"
 msgid "Mixxx installation failed"
-msgstr ""
+msgstr "Установки программы Mixxx не удалось"
 
 msgctxt "FailureRepairHeader"
 msgid "Mixxx repair failed"
-msgstr ""
+msgstr "Восстановление программы Mixxx не удалось"
 
 msgctxt "FailureUninstallHeader"
 msgid "Mixxx uninstall failed"
-msgstr ""
+msgstr "Удалить программу Mixxx не удалось"
 
 msgctxt "FailureHyperlinkLogText"
 msgid ""
 "One or more issues caused the setup to fail. Please fix the issues and then "
 "retry setup. For more information see the <a href=\"#\">log file</a>."
-msgstr ""
+msgstr "Одна или несколько проблем вызвали сбой установки. Устраните неполадки и повторите попытку установки. Для получения дополнительной информации см. <a href=\"#\"> файл лога</a>."
 
 msgctxt "FailureRestartText"
 msgid ""
 "You must restart your computer to complete the rollback of the software."
-msgstr ""
+msgstr "Необходимо перезагрузить компьютер для завершения возврата программного обеспечения."
 
 msgctxt "FailureRestartButton"
 msgid "&Restart"
-msgstr ""
+msgstr "&Перезапуск"
 
 msgctxt "FailureCloseButton"
 msgid "&Close"

@@ -1,3 +1,15 @@
+mixxx (2.1.7-0ubuntu1) bionic; urgency=medium
+
+  * New upstream release  
+
+ -- Daniel Schürmann <daschuer@mixxx.org>  Mon, 14 Jan 2019 00:08:23 +0100
+
+mixxx (2.1.6-0ubuntu1) bionic; urgency=medium
+
+  * New upstream release
+
+ -- Daniel Schürmann <daschuer@mixxx.org>  Sun, 23 Dec 2018 11:01:23 +0100
+
 mixxx (2.1.4-0ubuntu1) bionic; urgency=medium
 
   * New upstream release.

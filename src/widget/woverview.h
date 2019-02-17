@@ -19,33 +19,41 @@
 #include <QList>
 
 #include "track/track.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wwidget.h"
+#include "analyzer/analyzerprogress.h"
+
+#include "util/color/color.h"
 
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "skin/skincontext.h"
 
-// Waveform overview display
-// @author Tue Haste Andersen
-class Waveform;
+class PlayerManager;
 
-class WOverview : public WWidget {
+class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
-    WOverview(const char* pGroup, UserSettingsPointer pConfig, QWidget* parent=nullptr);
-
     void setup(const QDomNode& node, const SkinContext& context);
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void onTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
 
   signals:
     void trackDropped(QString filename, QString group);
+    void cloneDeck(QString source_group, QString target_group);
 
   protected:
+    WOverview(
+            const char* group,
+            PlayerManager* pPlayerManager,
+            UserSettingsPointer pConfig,
+            QWidget* parent = nullptr);
+
     void mouseMoveEvent(QMouseEvent *e) override;
     void mouseReleaseEvent(QMouseEvent *e) override;
     void mousePressEvent(QMouseEvent *e) override;
@@ -84,9 +92,9 @@ class WOverview : public WWidget {
 
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
+    void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
-    void slotAnalyzerProgress(int progress);
 
   private:
     // Append the waveform overview pixmap according to available data in waveform
@@ -99,12 +107,13 @@ class WOverview : public WWidget {
         return (static_cast<double>(position) + m_b) / m_a;
     }
 
+    void updateCues(const QList<CuePointer> &loadedCues);
+
     const QString m_group;
     UserSettingsPointer m_pConfig;
     ControlProxy* m_endOfTrackControl;
     bool m_endOfTrack;
     ControlProxy* m_trackSamplesControl;
-    ControlProxy* m_playControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
@@ -122,6 +131,7 @@ class WOverview : public WWidget {
     QColor m_qColorBackground;
     QColor m_endOfTrackColor;
 
+    PredefinedColorsRepresentation m_predefinedColorsRepresentation;
     WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;
 
@@ -129,8 +139,7 @@ class WOverview : public WWidget {
     double m_a;
     double m_b;
 
-    double m_dAnalyzerProgress;
-    bool m_bAnalyzerFinalizing;
+    AnalyzerProgress m_analyzerProgress;
     bool m_trackLoaded;
     double m_scaleFactor;
 };

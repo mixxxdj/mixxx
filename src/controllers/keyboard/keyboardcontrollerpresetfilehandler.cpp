@@ -2,6 +2,7 @@
 #include "util/compatibility.h"
 #include "control/controlobject.h"
 #include "controllers/keyboard/keyboardcontrollerpresetfilehandler.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "controllers/keyboard/layoututils.h"
 
 
@@ -70,7 +71,7 @@ ControllerPresetPointer KeyboardControllerPresetFileHandler::load(
     }
 
     // Translate preset to current keyboard layout
-    preset->translate(inputLocale().name());
+    preset->translate(KeyboardEventFilter::inputLocale().name());
 
     return ControllerPresetPointer(preset);
 }

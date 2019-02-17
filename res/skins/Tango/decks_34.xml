@@ -8,6 +8,9 @@ Variables:
   SignalColor_4
 -->
 <Template>
+  <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+  <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
+  <SetVariable name="SpinnyCoverColor"><Variable name="SpinnyCoverColor_34"/></SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,f</SizePolicy>
@@ -15,16 +18,12 @@ Variables:
 
       <Template src="skin:deck_left.xml">
         <SetVariable name="chanNum">3</SetVariable>
-        <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_3"/></SetVariable>
-        <SetVariable name="SignalColor"><Variable name="SignalColor_3"/></SetVariable>
       </Template>
 
       <Template src="skin:spacer_center.xml"/>
 
       <Template src="skin:deck_right.xml">
         <SetVariable name="chanNum">4</SetVariable>
-        <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_4"/></SetVariable>
-        <SetVariable name="SignalColor"><Variable name="SignalColor_4"/></SetVariable>
       </Template>
 
     </Children>
