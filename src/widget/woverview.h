@@ -19,8 +19,11 @@
 #include <QList>
 
 #include "track/track.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wwidget.h"
 #include "analyzer/analyzerprogress.h"
+
+#include "util/color/color.h"
 
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "waveform/renderers/waveformmarkset.h"
@@ -29,7 +32,7 @@
 
 class PlayerManager;
 
-class WOverview : public WWidget {
+class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
     void setup(const QDomNode& node, const SkinContext& context);
@@ -42,6 +45,7 @@ class WOverview : public WWidget {
 
   signals:
     void trackDropped(QString filename, QString group);
+    void cloneDeck(QString source_group, QString target_group);
 
   protected:
     WOverview(
@@ -88,6 +92,7 @@ class WOverview : public WWidget {
 
     void onMarkChanged(double v);
     void onMarkRangeChange(double v);
+    void receiveCuesUpdated();
 
     void slotWaveformSummaryUpdated();
 
@@ -102,12 +107,13 @@ class WOverview : public WWidget {
         return (static_cast<double>(position) + m_b) / m_a;
     }
 
+    void updateCues(const QList<CuePointer> &loadedCues);
+
     const QString m_group;
     UserSettingsPointer m_pConfig;
     ControlProxy* m_endOfTrackControl;
     bool m_endOfTrack;
     ControlProxy* m_trackSamplesControl;
-    ControlProxy* m_playControl;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
@@ -125,6 +131,7 @@ class WOverview : public WWidget {
     QColor m_qColorBackground;
     QColor m_endOfTrackColor;
 
+    PredefinedColorsRepresentation m_predefinedColorsRepresentation;
     WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;
 

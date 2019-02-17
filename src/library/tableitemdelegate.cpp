@@ -14,7 +14,7 @@ TableItemDelegate::~TableItemDelegate() {
 }
 
 void TableItemDelegate::paint(QPainter* painter,const QStyleOptionViewItem& option,
-                        const QModelIndex& index) const {
+                              const QModelIndex& index) const {
 
     painter->save();
 

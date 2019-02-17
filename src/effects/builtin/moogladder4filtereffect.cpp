@@ -4,7 +4,6 @@
 
 static const double kMinCorner = 0.0003; // 13 Hz @ 44100
 static const double kMaxCorner = 0.5; // 22050 Hz @ 44100
-static const unsigned int kStartupSamplerate = 44100;
 
 // static
 QString MoogLadder4FilterEffect::getId() {

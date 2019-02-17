@@ -9,6 +9,7 @@
 #include "controllers/engine/controllerengine.h"
 
 #include "controllers/engine/controllerenginejsproxy.h"
+#include "controllers/engine/colorjsproxy.h"
 #include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "control/controlobject.h"
@@ -219,6 +220,9 @@ void ControllerEngine::initializeScriptEngine() {
     }
 
     m_byteArrayToScriptValueJSFunction = evaluateCodeString("(function(arg1) { return new Uint8Array(arg1) })");
+
+    ColorJSProxy* pColorProxy = new ColorJSProxy(m_pEngine);
+    engineGlobalObject.setProperty("color", m_pEngine->newQObject(pColorProxy));
 }
 
 /* -------- ------------------------------------------------------

@@ -12,6 +12,7 @@
 #include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "util/performancetimer.h"
 
 class Auxiliary;
 class BaseTrackPlayer;
@@ -182,6 +183,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void slotLoadToPlayer(QString location, QString group);
+    void slotCloneDeck(QString source_group, QString target_group);
 
     // Slots for loading tracks to decks
     void slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack);
@@ -248,6 +250,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Used to protect access to PlayerManager state across threads.
     mutable QMutex m_mutex;
+
+    PerformanceTimer m_cloneTimer;
+    QString m_lastLoadedPlayer;
 
     UserSettingsPointer m_pConfig;
     SoundManager* m_pSoundManager;

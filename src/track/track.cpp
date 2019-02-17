@@ -459,7 +459,7 @@ QString Track::getDurationText(mixxx::Duration::Precision precision) const {
     } else {
         duration = getDuration(DurationRounding::NONE);
     }
-    return mixxx::Duration::formatSeconds(duration, precision);
+    return mixxx::Duration::formatTime(duration, precision);
 }
 
 QString Track::getTitle() const {

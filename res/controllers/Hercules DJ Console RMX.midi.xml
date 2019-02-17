@@ -530,21 +530,21 @@
             </control>
     </controls>
     <outputs>
-		<output>
-		    <group>[Channel1]</group>
-		    <key>play</key>
-		    <status>0xB0</status>
-		    <midino>0x0B</midino>
-		    <minimum>0.5</minimum>
-		</output>
-		<output>
-		    <group>[Channel2]</group>
-		    <key>play</key>
-		    <status>0xB0</status>
-		    <midino>0x23</midino>
-		    <minimum>0.5</minimum>
-		</output>
-		    <output>
+        <output>
+            <group>[Channel1]</group>
+            <key>play</key>
+            <status>0xB0</status>
+            <midino>0x0B</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel2]</group>
+            <key>play</key>
+            <status>0xB0</status>
+            <midino>0x23</midino>
+            <minimum>0.5</minimum>
+        </output>
+            <output>
           <group>[Channel1]</group>
           <key>cue_default</key>
           <status>0xB0</status>
@@ -576,20 +576,20 @@
       </output>
 
 <!-- Headphone Cue -->
-		<output>
-		    <group>[Channel1]</group>
-		    <key>pfl</key>
-		    <status>0xB0</status>
-		    <midino>0x14</midino>
-		    <minimum>0.5</minimum>
-		</output>
-		<output>
-		    <group>[Channel2]</group>
-		    <key>pfl</key>
-		    <status>0xB0</status>
-		    <midino>0x18</midino>
-		    <minimum>0.5</minimum>
-		</output>
+        <output>
+            <group>[Channel1]</group>
+            <key>pfl</key>
+            <status>0xB0</status>
+            <midino>0x14</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel2]</group>
+            <key>pfl</key>
+            <status>0xB0</status>
+            <midino>0x18</midino>
+            <minimum>0.5</minimum>
+        </output>
     </outputs>
   </controller>
 </MixxxMIDIPreset>

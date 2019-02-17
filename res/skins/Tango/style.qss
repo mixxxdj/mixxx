@@ -98,39 +98,11 @@ WWidgetGroup {
 ####### Colors ##################################################
 ###############################################################*/
 
-#Deck1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
-#DeckMini1 WLabel,
-#Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton,
-#DeckMini2 WLabel {
-  color: #33a8ff;
-}
-#Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
-#DeckMini3 WLabel,
-#Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton,
-#DeckMini4 WLabel {
-  color: #d910f0;
-}
-
-#WaveformContainer1,
-#WaveformContainer2 {
-  background-color: #001D33;
-}
-#WaveformContainer3,
-#WaveformContainer4 {
-  background-color: #3A0440;
-}
-
-/*	Define background-color here to make VinylToggler match
-  the waveforms background-color.
-  spinnyMini_Xmask.svg must match as well. */
-#DeckOverviewRow1,
-#DeckOverviewRow2 {
-  background-color: #001D33;
-}
-#DeckOverviewRow3,
-#DeckOverviewRow4 {
-  background-color: #3A0440;
-}
+/* All deck-specific colors are now defined in <Schemes> in skin.xml.
+  - deck labels
+  - waveform & overview background/signal colors
+  - Spinny mini mask, mini default cover 
+ */
 
 
 
@@ -1961,10 +1933,6 @@ WTrackProperty#SamplerTitle_mini {
   background-color: #1e1e1e;
 }
 
-#SpinnyMini {
-  background-color: transparent;
-}
-
 /*################################################################
  ######  Preview Deck  ##########################################
 ##############################################################*/
@@ -2393,13 +2361,7 @@ WLibrary QPushButton {
     font-weight: bold;
   }
 
-  /* Colored highlight for action buttons:
-  - Purge
-  - Unhide buttons
-  - Enable AutoDJ
-  - Analyze	*/
-  QPushButton#btnPurge:hover,
-  QPushButton#btnUnhide:hover,
+  /* 'Enable AutoDJ' button	*/
   QPushButton#pushButtonAutoDJ:hover,
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #ff6600;

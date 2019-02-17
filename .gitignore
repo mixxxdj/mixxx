@@ -58,5 +58,6 @@ lib/*/lib/*.lib
 
 lib/qtscript-bytearray/*.cc
 
+.idea
 *.vscode
 compile_commands.json

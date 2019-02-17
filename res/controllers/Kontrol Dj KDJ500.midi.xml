@@ -39,7 +39,7 @@
                     <normal/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0x90</status>
                 <midino>0x19</midino>
                 <group>[Channel2]</group>
@@ -99,7 +99,7 @@
                     <Script-Binding/>
                 </options>
             </control>
-			<control>
+            <control>
                 <status>0xb0</status>
                 <midino>0x2e</midino>
                 <group>[Playlist]</group>
