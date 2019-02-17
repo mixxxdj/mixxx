@@ -303,53 +303,53 @@
         },
     });
 
-    var HotcueColorButton = function (options) {
-      if (options.sendRGB === undefined && options.colors === undefined) {
-        print("ERROR: no color palette or sendRGB method defined");
-        return;
-      }
-      if (options.colors === undefined) {
-          options.colors = color.predefinedColorsList();
-      }
-      this.colorIdKey = 'hotcue_' + options.number + '_color_id';
-      HotcueButton.call(this, options);
+    var HotcueColorButton = function(options) {
+        if (options.sendRGB === undefined && options.colors === undefined) {
+            print("ERROR: no color palette or sendRGB method defined");
+            return;
+        }
+        if (options.colors === undefined) {
+            options.colors = color.predefinedColorsList();
+        }
+        this.colorIdKey = 'hotcue_' + options.number + '_color_id';
+        HotcueButton.call(this, options);
     }
     HotcueColorButton.prototype = new HotcueButton({
-      getColor: function () {
-        return color.jsColorFrom(engine.getValue(this.group,this.colorIdKey))
-      },
-      output: function (value) {
-        if (value > 0) {
-            var id = engine.getValue(this.group,this.colorIdKey)
-            var color = this.colors[id]
-            if (color instanceof Array) {
-                if (color.length !== 3) {
-                    print("ERROR: invalid color array for id: "+id);
-                    return;
+        getColor: function() {
+            return color.jsColorFrom(engine.getValue(this.group, this.colorIdKey))
+        },
+        output: function(value) {
+            if (value > 0) {
+                var id = engine.getValue(this.group, this.colorIdKey)
+                var color = this.colors[id]
+                if (color instanceof Array) {
+                    if (color.length !== 3) {
+                        print("ERROR: invalid color array for id: " + id);
+                        return;
+                    }
+                    if (this.sendRGB === undefined) {
+                        print("ERROR: no custom method for sending rgb defined!");
+                        return;
+                    }
+                    this.sendRGB(color);
+                } else if (typeof color === 'number') {
+                    this.send(color);
                 }
-                if (this.sendRGB === undefined) {
-                    print("ERROR: no custom method for sending rgb defined!");
-                    return;
-                }
-                this.sendRGB(color);
-            } else if (typeof color === 'number') {
-                this.send(color);
+            } else {
+                this.send(this.off);
             }
-        } else {
-          this.send(this.off);
-        }
-      },
-      connect: function () {
-        if (undefined !== this.group &&
-            undefined !== this.outKey &&
-            undefined !== this.output &&
-            typeof this.output === 'function') {
-            this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output);
-        }
-        if (undefined !== this.group) {
-            this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, this.output);
-        }
-      },
+        },
+        connect: function() {
+            if (undefined !== this.group &&
+                undefined !== this.outKey &&
+                undefined !== this.output &&
+                typeof this.output === 'function') {
+                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output);
+            }
+            if (undefined !== this.group) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, this.output);
+            }
+        },
     });
     var SamplerButton = function (options) {
         if (options.number === undefined) {
