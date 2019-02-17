@@ -53,7 +53,6 @@ class EffectsManager : public QObject {
 
     // NOTE(Kshitij) : New functions for saving and loading
     // bool saveEffectChains();
-    // void loadEffectChains();
 
     static const int kNumStandardEffectChains = 4;
 
@@ -104,8 +103,7 @@ class EffectsManager : public QObject {
     void addEqualizerEffectChainSlot(const QString& deckGroupName);
     void addQuickEffectChainSlot(const QString& deckGroupName);
 
-    // NOTE(Kshitij) : Use new functions
-    // void loadEffectChains();
+    void loadEffectChainPresets();
 
     // TODO: Remove these methods to reduce coupling between GUI and
     // effects system implementation details.
@@ -186,6 +184,8 @@ class EffectsManager : public QObject {
     OutputEffectChainSlotPointer m_outputEffectChainSlot;
     QHash<QString, EqualizerEffectChainSlotPointer> m_equalizerEffectChainSlots;
     QHash<QString, QuickEffectChainSlotPointer> m_quickEffectChainSlots;
+
+    QHash<QString, EffectChainPresetPointer> m_effectChainPresets;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

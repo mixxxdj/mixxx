@@ -1,11 +1,13 @@
 #include "effects/effectsmanager.h"
 
+#include <QDir>
 #include <QMetaType>
 #include <QtAlgorithms>
 
 #include <algorithm>
 
 #include "engine/effects/engineeffectsmanager.h"
+#include "effects/effectchainpreset.h"
 #include "effects/effectsbackend.h"
 #include "effects/effectslot.h"
 #include "effects/effectxmlelements.h"
@@ -328,7 +330,8 @@ void EffectsManager::addQuickEffectChainSlot(const QString& deckGroupName) {
     m_effectChainSlotsByGroup.insert(pChainSlot->group(), pChainSlot);
 }
 
-EffectChainSlotPointer EffectsManager::getEffectChainSlot(const QString& group) const {
+EffectChainSlotPointer EffectsManager::getEffectChainSlot(
+        const QString& group) const {
     return m_effectChainSlotsByGroup.value(group);
 }
 
@@ -384,16 +387,11 @@ bool EffectsManager::getEffectVisibility(EffectManifestPointer pManifest) {
 }
 
 void EffectsManager::setup() {
+    loadEffectChainPresets();
     // Add postfader effect chain slots
     addStandardEffectChainSlots();
     addOutputEffectChainSlot();
 }
-
-// NOTE(Kshitij) : Use new functions for effect loading using Effect Preset
-// void EffectsManager::loadEffectChains() {
-//     // populate rack and restore state from effects.xml
-//     m_pEffectChainManager->loadEffectChains();
-// }
 
 void EffectsManager::setEffectParameterPosition(EffectManifestPointer pManifest,
         const unsigned int parameterId, const unsigned int position) {
@@ -496,5 +494,34 @@ void EffectsManager::collectGarbage(const EffectsRequest* pRequest) {
         }
         pRequest->pTargetChain->deleteStatesForInputChannel(
                 pRequest->DisableInputChannelForChain.pChannelHandle);
+    }
+}
+
+void EffectsManager::loadEffectChainPresets() {
+    QDir settingsPath(m_pConfig->getSettingsPath());
+    QFile file(settingsPath.absoluteFilePath("effects.xml"));
+    QDomDocument doc;
+
+    if (!file.open(QIODevice::ReadOnly)) {
+        return;
+    } else if (!doc.setContent(&file)) {
+        file.close();
+        return;
+    }
+    file.close();
+
+    QDomElement root = doc.documentElement();
+    QDomElement rackElement = XmlParse::selectElement(root, EffectXml::Rack);
+    QDomElement chainsElement = XmlParse::selectElement(rackElement, EffectXml::ChainsRoot);
+    QDomNodeList chainsList = chainsElement.elementsByTagName(EffectXml::Chain);
+
+    for (int i=0; i<chainsList.count(); ++i) {
+        QDomNode chainNode = chainsList.at(i);
+
+        if (chainNode.isElement()) {
+            QDomElement chainElement = chainNode.toElement();
+            EffectChainPresetPointer pPreset(new EffectChainPreset(chainElement));
+            m_effectChainPresets.insert(pPreset->name(), pPreset);
+        }
     }
 }

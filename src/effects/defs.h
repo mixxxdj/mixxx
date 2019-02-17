@@ -73,6 +73,12 @@ typedef QSharedPointer<EffectParameterSlotBase> EffectParameterSlotBasePointer;
 class EffectChainSlot;
 typedef QSharedPointer<EffectChainSlot> EffectChainSlotPointer;
 
+class EffectChainPreset;
+typedef QSharedPointer<EffectChainPreset> EffectChainPresetPointer;
+
+class EffectPreset;
+typedef QSharedPointer<EffectPreset> EffectPresetPointer;
+
 class StandardEffectChainSlot;
 typedef QSharedPointer<StandardEffectChainSlot> StandardEffectChainSlotPointer;
 

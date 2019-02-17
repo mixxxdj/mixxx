@@ -745,6 +745,8 @@ class MixxxCore(Feature):
 
                    "src/effects/effectparameter.cpp",
 
+                   "src/effects/effectchainpreset.cpp",
+                   "src/effects/effectpreset.cpp",
                    "src/effects/effectchainslot.cpp",
                    "src/effects/specialeffectchainslots.cpp",
                    "src/effects/effectslot.cpp",
