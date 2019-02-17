@@ -2,26 +2,26 @@
 #define COLORJSPROXY_H
 
 #include <QObject>
-#include <QScriptEngine>
-#include <QScriptValue>
+#include <QJSEngine>
+#include <QJSValue>
 
 #include "util/color/color.h"
 
 class ColorJSProxy: public QObject {
     Q_OBJECT
   public:
-    ColorJSProxy(QScriptEngine* pScriptEngine);
+    ColorJSProxy(QJSEngine* pScriptEngine);
 
     virtual ~ColorJSProxy();
 
-    Q_INVOKABLE QScriptValue predefinedColorFromId(int iId);
-    Q_INVOKABLE QScriptValue predefinedColorsList();
+    Q_INVOKABLE QJSValue predefinedColorFromId(int iId);
+    Q_INVOKABLE QJSValue predefinedColorsList();
 
   private:
-    QScriptValue jsColorFrom(PredefinedColorPointer predefinedColor);
-    QScriptValue makePredefinedColorsList(QScriptEngine* pScriptEngine);
-    QScriptEngine* m_pScriptEngine;
-    QScriptValue m_predefinedColorsList;
+    QJSValue jsColorFrom(PredefinedColorPointer predefinedColor);
+    QJSValue makePredefinedColorsList(QJSEngine* pScriptEngine);
+    QJSEngine* m_pScriptEngine;
+    QJSValue m_predefinedColorsList;
 };
 
 #endif /* COLORJSPROXY_H */

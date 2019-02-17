@@ -857,6 +857,7 @@ class MixxxCore(Feature):
                    "src/controllers/learningutils.cpp",
                    "src/controllers/engine/controllerengine.cpp",
                    "src/controllers/engine/controllerenginejsproxy.cpp",
+                   "src/controllers/engine/colorjsproxy.cpp",
                    "src/controllers/midi/midimessage.cpp",
                    "src/controllers/midi/midiutils.cpp",
                    "src/controllers/midi/midicontroller.cpp",
@@ -865,7 +866,6 @@ class MixxxCore(Feature):
                    "src/controllers/midi/midioutputhandler.cpp",
                    "src/controllers/softtakeover.cpp",
                    "src/controllers/keyboard/keyboardeventfilter.cpp",
-                   "src/controllers/colorjsproxy.cpp",
 
                    "src/main.cpp",
                    "src/mixxx.cpp",

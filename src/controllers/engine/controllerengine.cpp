@@ -221,8 +221,8 @@ void ControllerEngine::initializeScriptEngine() {
 
     m_byteArrayToScriptValueJSFunction = evaluateCodeString("(function(arg1) { return new Uint8Array(arg1) })");
 
-    ColorJSProxy* pColorProxy = new ColorJSProxy(m_pEngine);
-    engineGlobalObject.setProperty("color", m_pEngine->newQObject(pColorProxy));
+    ColorJSProxy* pColorProxy = new ColorJSProxy(m_pScriptEngine);
+    engineGlobalObject.setProperty("color", m_pScriptEngine->newQObject(pColorProxy));
 }
 
 /* -------- ------------------------------------------------------
