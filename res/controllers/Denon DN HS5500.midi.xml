@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset mixxxVersion="" schemaVersion="1">
     <info>
-		<name>Denon HS5500</name>
-		<author>Owen Williams</author>
-		<forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=6547</forums>
-		<wiki></wiki>
-	</info>
+        <name>Denon HS5500</name>
+        <author>Owen Williams</author>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=6547</forums>
+        <wiki></wiki>
+    </info>
     <controller id="DN-HS5500">
         <scriptfiles>
             <file functionprefix="DNHS5500" filename="Denon-DN-HS5500-scripts.js"/>

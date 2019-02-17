@@ -642,10 +642,7 @@ double BpmControl::getNearestPositionInPhase(
             return dThisPosition;
         }
 
-        double dOtherLength = ControlObject::getControl(
-                ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
-        double dOtherEnginePlayPos = pOtherEngineBuffer->getVisualPlayPos();
-        double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
+        double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
 
         if (!BpmControl::getBeatContext(otherBeats, dOtherPosition,
                                         NULL, NULL, NULL, &dOtherBeatFraction)) {

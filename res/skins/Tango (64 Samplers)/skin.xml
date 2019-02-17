@@ -147,8 +147,8 @@
         #Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
           color: #d910f0;}
         <!-- Vinyl Controls toggle is transparent. This sets bg color so it matches those above -->
-        #DeckOverview1, #DeckOverview2 { background-color: #001D33;}
-        #DeckOverview3, #DeckOverview4 { background-color: #3A0440;}
+        #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #001D33;}
+        #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #3A0440;}
       </Style>
     </Scheme>
     <Scheme>
@@ -168,8 +168,8 @@
         #Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
         #Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
           color: #3693d9;}
-        #DeckOverview1, #DeckOverview2 { background-color: #3A0440;}
-        #DeckOverview3, #DeckOverview4 { background-color: #001D33;}
+        #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #3A0440;}
+        #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #001D33;}
         <!-- brighter, broader library focus borders -->
         QTreeView, QTableView { border-width: 2px;}
         QTreeView:focus, QTableView:focus, WSearchLineEdit:focus {

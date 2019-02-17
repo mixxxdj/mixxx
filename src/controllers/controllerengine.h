@@ -16,9 +16,11 @@
 #include "bytearrayclass.h"
 #include "preferences/usersettings.h"
 #include "controllers/controllerpreset.h"
+#include "controllers/colorjsproxy.h"
 #include "controllers/softtakeover.h"
 #include "util/alphabetafilter.h"
 #include "util/duration.h"
+#include "util/memory.h"
 
 // Forward declaration(s)
 class Controller;
@@ -204,6 +206,7 @@ class ControllerEngine : public QObject {
     QHash<int, TimerInfo> m_timers;
     SoftTakeoverCtrl m_st;
     ByteArrayClass* m_pBaClass;
+    std::unique_ptr<ColorJSProxy> m_pColorJSProxy;
     // 256 (default) available virtual decks is enough I would think.
     //  If more are needed at run-time, these will move to the heap automatically
     QVarLengthArray<int> m_intervalAccumulator;
