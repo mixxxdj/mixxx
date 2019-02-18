@@ -56,7 +56,6 @@
     </MarkRange>
     <Mark>
       <Control>intro_start_position</Control>
-      <Source>intro_start_source</Source>
       <Text>|&#9698;</Text>
       <Align>bottom</Align>
       <Color>#0000FF</Color>
@@ -65,7 +64,6 @@
     </Mark>
     <Mark>
       <Control>intro_end_position</Control>
-      <Source>intro_end_source</Source>
       <Text>&#9698;|</Text>
       <Align>bottom</Align>
       <Color>#0000FF</Color>
@@ -74,7 +72,6 @@
     </Mark>
     <Mark>
       <Control>outro_start_position</Control>
-      <Source>outro_start_source</Source>
       <Text>|&#9699;</Text>
       <Align>bottom</Align>
       <Color>#0000FF</Color>
@@ -83,7 +80,6 @@
     </Mark>
     <Mark>
       <Control>outro_end_position</Control>
-      <Source>outro_end_source</Source>
       <Text>&#9699;|</Text>
       <Align>bottom</Align>
       <Color>#0000FF</Color>
@@ -100,7 +96,6 @@
     -->
     <Mark>
       <Control>cue_point</Control>
-      <Source>cue_source</Source>
       <Text>CUE</Text>
       <Align>top</Align>
       <Color>#FF001C</Color>
