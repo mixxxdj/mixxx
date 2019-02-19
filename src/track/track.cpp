@@ -353,7 +353,7 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
     }
 
     if (m_pBeats) {
-        disconnect(m_pBeats.get(), &Beats::updated, this, &Track::slotBeatsUpdated);
+        disconnect(m_pBeats.data(), &Beats::updated, this, &Track::slotBeatsUpdated);
     }
 
     m_pBeats = std::move(pBeats);
@@ -361,7 +361,7 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
     auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
         bpmValue = m_pBeats->getBpm();
-        connect(m_pBeats.get(), &Beats::updated, this, &Track::slotBeatsUpdated);
+        connect(m_pBeats.data(), &Beats::updated, this, &Track::slotBeatsUpdated);
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 
