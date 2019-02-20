@@ -13,6 +13,8 @@ AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 ConstructorInitializerIndentWidth: 8
 ContinuationIndentWidth: 8
+IndentCaseLabels: false
+ReflowComments: false
 SpacesBeforeTrailingComments: 1
 ---
 Language: JavaScript
