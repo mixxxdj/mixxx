@@ -55,8 +55,7 @@ BeatGrid::BeatGrid(
 }
 
 BeatGrid::BeatGrid(const BeatGrid& other)
-        : QObject(),
-          m_mutex(QMutex::Recursive),
+        : m_mutex(QMutex::Recursive),
           m_subVersion(other.m_subVersion),
           m_iSampleRate(other.m_iSampleRate),
           m_grid(other.m_grid),
