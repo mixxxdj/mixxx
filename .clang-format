@@ -1,0 +1,23 @@
+---
+BasedOnStyle: Google
+IndentWidth:  4
+TabWidth:     8
+UseTab:       Never
+ColumnLimit:  100
+---
+Language:     Cpp
+AccessModifierOffset: -2
+AlignAfterOpenBracket: AlwaysBreak
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+ConstructorInitializerIndentWidth: 8
+ContinuationIndentWidth: 8
+SpacesBeforeTrailingComments: 1
+---
+Language: JavaScript
+---
+Language: Proto
+# Don't format .proto files.
+DisableFormat: true
+...
