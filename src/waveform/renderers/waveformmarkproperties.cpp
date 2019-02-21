@@ -46,14 +46,15 @@ WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
                                                const SkinContext& context,
                                                const WaveformSignalColors& signalColors,
                                                int hotCue) {
-    m_color = context.selectString(node, "Color");
-    if (!m_color.isValid()) {
+    QColor color(context.selectString(node, "Color"));
+    if (!color.isValid()) {
         // As a fallback, grab the color from the parent's AxesColor
-        m_color = signalColors.getAxesColor();
-        qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:" << m_color;
+        color = signalColors.getAxesColor();
+        qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:" << color;
     } else {
-        m_color = WSkinColor::getCorrectColor(m_color);
+        color = WSkinColor::getCorrectColor(color);
     }
+    setBaseColor(color);
 
     m_textColor = context.selectString(node, "TextColor");
     if (!m_textColor.isValid()) {
@@ -74,4 +75,21 @@ WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
     if (!m_pixmapPath.isEmpty()) {
         m_pixmapPath = context.makeSkinPath(m_pixmapPath);
     }
+}
+
+void WaveformMarkProperties::setBaseColor(QColor baseColor) {
+    m_fillColor = baseColor;
+    m_borderColor = Color::chooseContrastColor(baseColor);
+    m_labelColor = Color::chooseColorByBrightness(baseColor, QColor(255,255,255,255), QColor(0,0,0,255));
+}
+
+QColor WaveformMarkProperties::fillColor() const {
+    return m_fillColor;
+}
+
+QColor WaveformMarkProperties::borderColor() const {
+    return m_borderColor;
+}
+QColor WaveformMarkProperties::labelColor() const {
+    return m_labelColor;
 }

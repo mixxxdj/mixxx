@@ -224,13 +224,8 @@ HerculesMk4.pfl = function (midino, control, value, status, group) {
 
 
 HerculesMk4.pitchbend = function (midino, control, value, status, group) {
-<<<<<<< HEAD
-	// Pitch - : set pitch sensitivity
-	// Pitch +:  set jog fast position
-=======
     // Pitch - : set pitch sensivity
     // Pitch +:  set jog fast position
->>>>>>> upstream/2.2
 
     //ignore when releasing the button
     if(value==0x00) return;
@@ -240,16 +235,6 @@ HerculesMk4.pitchbend = function (midino, control, value, status, group) {
 
         HerculesMk4.jogFastPosition[HerculesMk4.deck(group)]=newValue;
 
-<<<<<<< HEAD
-		if(newValue==1){
-			midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,11), 0x7f);
-		}else{
-			midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,11), 0x00);
-		}
-	}
-	else { // Pitchbend -
-		HerculesMk4.sensitivityPitch[HerculesMk4.deck(group)]=HerculesMk4.toglePitchSensitivity(group,HerculesMk4.sensitivityPitch[HerculesMk4.deck(group)]);
-=======
         if(newValue==1){
             midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,11), 0x7f);
         }else{
@@ -258,34 +243,12 @@ HerculesMk4.pitchbend = function (midino, control, value, status, group) {
     }
     else { // Pitchbend -
         HerculesMk4.sensivityPitch[HerculesMk4.deck(group)]=HerculesMk4.toglePitchSensivity(group,HerculesMk4.sensivityPitch[HerculesMk4.deck(group)]);
->>>>>>> upstream/2.2
-
     }
 
 };
 
 
 HerculesMk4.toglePitchSensitivity=function (group,sensitivity) {
-
-<<<<<<< HEAD
-	sensitivity=sensitivity+2;
-
-	if(sensitivity>5){
-		sensitivity=1;
-	}
-
-
-
-	if(sensitivity==1){
-		//pitch very fine
-		midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,10), 0x00);	// minus led off
-		midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,58), 0x7F);	// Blink minus led
-
-	} else if (sensitivity==3){
-		//pitch fine
-		midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,58), 0x00);	// Blink minus led off
-		midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,10), 0x7F);	// minus led
-=======
     sensivity=sensivity+2;
 
     if(sensivity>5){
@@ -303,20 +266,13 @@ HerculesMk4.toglePitchSensitivity=function (group,sensitivity) {
         //pitch fine
         midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,58), 0x00);    // Blink minus led off
         midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,10), 0x7F);    // minus led
->>>>>>> upstream/2.2
-
     } else {
         //pitch coarse
         midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,58), 0x00);    // Blink minus led off
         midi.sendShortMsg(0x90, HerculesMk4.selectLed(group,10), 0x00);    // minus led off
     }
 
-<<<<<<< HEAD
-	return sensitivity;
-=======
     return sensivity;
->>>>>>> upstream/2.2
-
 }
 
 HerculesMk4.cue = function (midino, control, value, status, group) {

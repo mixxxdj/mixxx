@@ -27,7 +27,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
     QDomNode defaultChild;
     while (!child.isNull()) {
         if (child.nodeName() == "DefaultMark") {
-            m_pDefaultMark = std::make_unique<WaveformMark>(group, child, context, signalColors);
+            m_pDefaultMark = WaveformMarkPointer(new WaveformMark(group, child, context, signalColors));
             hasDefaultMark = true;
             defaultChild = child;
         } else if (child.nodeName() == "Mark") {
@@ -64,4 +64,8 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
 
 WaveformMarkPointer WaveformMarkSet::getHotCueMark(int hotCue) const {
     return m_hotCueMarks.value(hotCue);
+}
+
+WaveformMarkPointer WaveformMarkSet::getDefaultMark() const {
+    return m_pDefaultMark;
 }

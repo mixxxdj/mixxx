@@ -12,6 +12,7 @@
 #include "analyzer/trackanalysisscheduler.h"
 #include "preferences/usersettings.h"
 #include "track/track.h"
+#include "util/performancetimer.h"
 
 class Auxiliary;
 class BaseTrackPlayer;
@@ -249,6 +250,9 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
     // Used to protect access to PlayerManager state across threads.
     mutable QMutex m_mutex;
+
+    PerformanceTimer m_cloneTimer;
+    QString m_lastLoadedPlayer;
 
     UserSettingsPointer m_pConfig;
     SoundManager* m_pSoundManager;
