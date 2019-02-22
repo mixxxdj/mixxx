@@ -341,7 +341,7 @@
                           </StarRating>
                         </Children>
                         <Connection>
-                          <ConfigKey>[Deere],show_starrating</ConfigKey>
+                          <ConfigKey>[Skin],show_starrating</ConfigKey>
                           <BindProperty>visible</BindProperty>
                         </Connection>
                       </WidgetGroup>
