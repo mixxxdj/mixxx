@@ -2,7 +2,6 @@
 #define BEATGRID_H
 
 #include <QMutex>
-#include <QObject>
 
 #include "track/track.h"
 #include "track/beats.h"
@@ -14,8 +13,7 @@
 // BeatGrid is an implementation of the Beats interface that implements an
 // infinite grid of beats, aligned to a song simply by a starting offset of the
 // first beat and the song's average beats-per-minute.
-class BeatGrid : public QObject, public virtual Beats {
-    Q_OBJECT
+class BeatGrid final : public Beats {
   public:
     // Construct a BeatGrid. If a more accurate sample rate is known, provide it
     // in the iSampleRate parameter -- otherwise pass 0.
@@ -72,9 +70,6 @@ class BeatGrid : public QObject, public virtual Beats {
     virtual void translate(double dNumSamples);
     virtual void scale(enum BPMScale scale);
     virtual void setBpm(double dBpm);
-
-  signals:
-    void updated();
 
   private:
     BeatGrid(const BeatGrid& other);
