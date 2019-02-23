@@ -8,7 +8,7 @@ Variables:
 -->
 <Template>
   <PushButton>
-    <TooltipId>cue_type</TooltipId>
+    <TooltipId><Variable name="cue_type"/></TooltipId>
     <ObjectName>SpecialCueButton</ObjectName>
     <MinimumSize>15,24</MinimumSize>
     <MaximumSize>23,24</MaximumSize>

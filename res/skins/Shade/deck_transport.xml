@@ -449,6 +449,7 @@
       **********************************************
       -->
       <PushButton>
+        <TooltipId>show_intro_outro_cues</TooltipId>
         <Size>44f,14f</Size>
         <NumberStates>2</NumberStates>
         <State>
@@ -618,7 +619,7 @@
         <Size>43f,43f</Size>
         <Children>
           <PushButton>
-            <TooltipId>hotcue</TooltipId>
+            <TooltipId>intro_start</TooltipId>
             <Pos>0,0</Pos>
             <Style></Style>
             <NumberStates>2</NumberStates>
@@ -652,7 +653,7 @@
             </Connection>
           </PushButton>
           <PushButton>
-            <TooltipId>hotcue</TooltipId>
+            <TooltipId>intro_end</TooltipId>
             <Pos>21,0</Pos>
             <Style></Style>
             <NumberStates>2</NumberStates>
@@ -686,7 +687,7 @@
             </Connection>
           </PushButton>
           <PushButton>
-            <TooltipId>hotcue</TooltipId>
+            <TooltipId>outro_start</TooltipId>
             <Pos>0,21</Pos>
             <Style></Style>
             <NumberStates>2</NumberStates>
@@ -720,7 +721,7 @@
             </Connection>
           </PushButton>
           <PushButton>
-            <TooltipId>hotcue</TooltipId>
+            <TooltipId>outro_end</TooltipId>
             <Pos>21,21</Pos>
             <Style></Style>
             <NumberStates>2</NumberStates>
