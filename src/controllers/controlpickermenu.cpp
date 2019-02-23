@@ -808,8 +808,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QString starsUpDescription = tr("Increase the track rating by one star");
     QString starsDownTitle = tr("Star Rating Down");
     QString starsDownDescription = tr("Decrease the track rating by one star");
-    QString starsChangeTitle = tr("Star Rating Up/Down");
-    QString starsChangeDescription = tr("Change the track rating by +/- one star");
     for (int i = 1; i <= iNumDecks; ++i) {
         addControl(QString("[Deck%1]").arg(i), "stars_up",
                    QString("%1: %2").arg(m_deckStr.arg(i), starsUpTitle),
@@ -817,9 +815,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         addControl(QString("[Deck%1]").arg(i), "stars_down",
                    QString("%1: %2").arg(m_deckStr.arg(i), starsDownTitle),
                    QString("%1: %2").arg(m_deckStr.arg(i), starsDownDescription), guiMenu);
-        addControl(QString("[Deck%1]").arg(i), "stars_change",
-                   QString("%1: %2").arg(m_deckStr.arg(i), starsChangeTitle),
-                   QString("%1: %2").arg(m_deckStr.arg(i), starsChangeDescription), guiMenu);
     }
 }
 
