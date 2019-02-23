@@ -274,7 +274,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="78"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>그룹핑</translation>
     </message>
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="80"/>
@@ -604,7 +604,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="45"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>그룹핑</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="46"/>
@@ -2967,7 +2967,7 @@
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="65"/>
         <source>All</source>
-        <translation type="unfinished"/>
+        <translation>전체</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="85"/>
@@ -4080,7 +4080,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="20"/>
         <source>Controller Preferences</source>
-        <translation type="unfinished"/>
+        <translation>컨트롤러 설정</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="30"/>
@@ -4111,12 +4111,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="407"/>
         <source>Output Mappings</source>
-        <translation type="unfinished"/>
+        <translation>출력 맵핑</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="470"/>
         <source>Scripts</source>
-        <translation type="unfinished"/>
+        <translation>스크립트</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="512"/>
@@ -4129,7 +4129,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="14"/>
         <source>Controller Preferences</source>
-        <translation type="unfinished"/>
+        <translation>컨트롤러 설정</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="20"/>
@@ -4144,7 +4144,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="79"/>
         <source>Presets</source>
-        <translation type="unfinished"/>
+        <translation>프리셋</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="110"/>
@@ -4277,7 +4277,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="33"/>
         <source>Screen saver</source>
-        <translation type="unfinished"/>
+        <translation>화면보호기</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="125"/>
@@ -4302,7 +4302,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="173"/>
         <source>Library and Skin</source>
-        <translation type="unfinished"/>
+        <translation>라이브러리와 스킨</translation>
     </message>
 </context>
 <context>
@@ -4310,7 +4310,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="20"/>
         <source>Crossfader Preferences</source>
-        <translation type="unfinished"/>
+        <translation>크로스페이더 설정</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="26"/>
@@ -6641,7 +6641,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="674"/>
         <source>3/4 BPM</source>
-        <translation type="unfinished"/>
+        <translation>3/4 BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="687"/>
@@ -6681,7 +6681,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="174"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>그룹핑</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="216"/>
@@ -8978,7 +8978,7 @@ Fully right: Sine wave</source>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="71"/>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="72"/>
         <source>Waveform</source>
-        <translation type="unfinished"/>
+        <translation>웨이브폼</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/tremoloeffect.cpp" line="87"/>
@@ -12435,12 +12435,12 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="481"/>
         <source>Play Count</source>
-        <translation type="unfinished"/>
+        <translation>재생 횟수</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="485"/>
         <source>Cue Point</source>
-        <translation type="unfinished"/>
+        <translation>큐포인트</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="489"/>
@@ -12450,7 +12450,7 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="493"/>
         <source>Loop</source>
-        <translation type="unfinished"/>
+        <translation>루프</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="497"/>
@@ -12460,12 +12460,12 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="501"/>
         <source>Waveform</source>
-        <translation type="unfinished"/>
+        <translation>웨이브폼</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="505"/>
         <source>All</source>
-        <translation type="unfinished"/>
+        <translation>전체</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="843"/>
@@ -12527,7 +12527,7 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="521"/>
         <source>3/4 BPM</source>
-        <translation type="unfinished"/>
+        <translation>3/4 BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="863"/>

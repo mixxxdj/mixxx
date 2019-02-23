@@ -377,7 +377,7 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="105"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Actie mislukt</translation>
     </message>
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="106"/>
@@ -400,7 +400,7 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="468"/>
         <source>Settings error</source>
-        <translation type="unfinished"/>
+        <translation>Instellingen fout</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="469"/>
@@ -423,7 +423,7 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="130"/>
         <source>Status</source>
-        <translation type="unfinished"/>
+        <translation>Status</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="176"/>
@@ -443,7 +443,7 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="182"/>
         <source>Failed</source>
-        <translation type="unfinished"/>
+        <translation>Mislukt</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="185"/>
@@ -2390,7 +2390,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="420"/>
         <source>Go to the currently selected item</source>
-        <translation type="unfinished"/>
+        <translation>Ga naar het op dit moment geselecteerde item</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="421"/>
@@ -2446,7 +2446,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="522"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="523"/>
         <source>Show Effect Parameters</source>
-        <translation type="unfinished"/>
+        <translation>Toon Effect Parameters</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="623"/>
@@ -2934,7 +2934,7 @@
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="130"/>
         <source>License</source>
-        <translation type="unfinished"/>
+        <translation>Licentie</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="152"/>
@@ -3617,7 +3617,7 @@ Je probeerde %1,%2 aan te leren.</translation>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="500"/>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="534"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Actie mislukt</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="178"/>
@@ -3633,7 +3633,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="251"/>
         <source>Source connection %1</source>
-        <translation type="unfinished"/>
+        <translation>Bron connectie %1</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="501"/>
@@ -3649,22 +3649,22 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="507"/>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="544"/>
         <source>Confirmation required</source>
-        <translation type="unfinished"/>
+        <translation>Confirmatie vereist</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="508"/>
         <source>Are you sure you want to delete &apos;%1&apos;?</source>
-        <translation type="unfinished"/>
+        <translation>Ben je er zeker van dat je %1&apos; wilt verwijderen?</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="523"/>
         <source>Renaming &apos;%1&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Hernoem &apos;%1&apos;</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="524"/>
         <source>New name for &apos;%1&apos;:</source>
-        <translation type="unfinished"/>
+        <translation>Nieuwe naam voor &apos;%1&apos;:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="535"/>
@@ -3712,17 +3712,17 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="65"/>
         <source>Delete selected</source>
-        <translation type="unfinished"/>
+        <translation>Verwijder selectie</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="92"/>
         <source>Create new connection</source>
-        <translation type="unfinished"/>
+        <translation>Creëer nieuwe connectie</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="115"/>
         <source>Rename selected</source>
-        <translation type="unfinished"/>
+        <translation>Hernoem geselecteerde</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="72"/>
@@ -3737,7 +3737,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="153"/>
         <source>Settings for %1</source>
-        <translation type="unfinished"/>
+        <translation>Instellingen voor %1</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="455"/>
@@ -3762,7 +3762,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="786"/>
         <source>Password storage</source>
-        <translation type="unfinished"/>
+        <translation>Wachtwoord opslag</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="793"/>
@@ -4239,7 +4239,7 @@ Wil je je instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="20"/>
         <source>Interface options</source>
-        <translation type="unfinished"/>
+        <translation>Interface opties</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="185"/>
@@ -4264,12 +4264,12 @@ Wil je je instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="252"/>
         <source>Effect options</source>
-        <translation type="unfinished"/>
+        <translation>Effect opties</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="258"/>
         <source>Load behavior</source>
-        <translation type="unfinished"/>
+        <translation>Laad gedrag</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="267"/>
@@ -4438,12 +4438,12 @@ Wil je je instellingen toepassen en doorgaan?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="14"/>
         <source>Deck Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Deck Voorkeuren</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="20"/>
         <source>Deck options</source>
-        <translation type="unfinished"/>
+        <translation>Deck opties</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="26"/>
@@ -4509,7 +4509,7 @@ CUP-modus:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="105"/>
         <source>Elapsed and Remaining</source>
-        <translation type="unfinished"/>
+        <translation>Voorbij en Resterend</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="117"/>
@@ -5601,22 +5601,22 @@ en stelt je in staat de toonhoogte aan te passen voor harmonisch mixen.</transla
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="148"/>
         <source>Compression</source>
-        <translation type="unfinished"/>
+        <translation>Compressie</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="161"/>
         <source>Lossy</source>
-        <translation type="unfinished"/>
+        <translation>Lossy</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="168"/>
         <source>Compression Level</source>
-        <translation type="unfinished"/>
+        <translation>Compressie Niveau</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="178"/>
         <source>Lossless</source>
-        <translation type="unfinished"/>
+        <translation>Lossless</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="239"/>
@@ -5779,17 +5779,17 @@ De doel-loudness is bij benadering en veronderstelt dat de track-voorregeling en
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="77"/>
         <source>Soundcard Clock</source>
-        <translation type="unfinished"/>
+        <translation>Geluidskaart Klok</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="78"/>
         <source>Network Clock</source>
-        <translation type="unfinished"/>
+        <translation>Netwerk Klok</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="111"/>
         <source>Master output only</source>
-        <translation type="unfinished"/>
+        <translation>Hoofduitgang alleen</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="113"/>
@@ -5835,7 +5835,7 @@ De doel-loudness is bij benadering en veronderstelt dat de track-voorregeling en
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="702"/>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="709"/>
         <source>Refer to the Mixxx User Manual for details.</source>
-        <translation type="unfinished"/>
+        <translation>Ga naar de Mixxx Gebruikers Handleiding voor details.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="707"/>
@@ -6685,7 +6685,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="54"/>
         <source>Details</source>
-        <translation type="unfinished"/>
+        <translation>Details</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="88"/>
@@ -6811,12 +6811,12 @@ Meestal is de kwaliteit van de beat-roosters beter, maar dit werkt niet goed bij
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="351"/>
         <source>Import Metadata from MusicBrainz</source>
-        <translation type="unfinished"/>
+        <translation>Importeer Metadata van uit MusicBrainz</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="358"/>
         <source>Import Metadata from File</source>
-        <translation type="unfinished"/>
+        <translation>Importeer Metadata van uit Bestand</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="547"/>
@@ -7428,7 +7428,7 @@ Even geduld a.u.b. ...</translation>
     <message>
         <location filename="../../src/library/mixxxlibraryfeature.cpp" line="139"/>
         <source>Tracks</source>
-        <translation type="unfinished"/>
+        <translation>Tracks</translation>
     </message>
 </context>
 <context>
@@ -7955,7 +7955,7 @@ Wil je je bibliotheek nu scannen op hoezen?</translation>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
         <source>Record/Broadcast</source>
-        <translation type="unfinished"/>
+        <translation>Opnemen/Uitzenden</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
@@ -8067,13 +8067,13 @@ Om deze actie af te breken, druk op Annuleren in de bestandendialoog.</translati
         <location filename="../../src/effects/native/echoeffect.cpp" line="41"/>
         <location filename="../../src/effects/native/echoeffect.cpp" line="42"/>
         <source>Time</source>
-        <translation type="unfinished"/>
+        <translation>Tijd</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/echoeffect.cpp" line="69"/>
         <location filename="../../src/effects/native/echoeffect.cpp" line="70"/>
         <source>Ping Pong</source>
-        <translation type="unfinished"/>
+        <translation>Ping Pong</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/echoeffect.cpp" line="82"/>
@@ -8221,7 +8221,7 @@ Default: flat top</source>
         <location filename="../../src/effects/native/flangereffect.cpp" line="37"/>
         <location filename="../../src/effects/native/flangereffect.cpp" line="38"/>
         <source>Speed</source>
-        <translation type="unfinished"/>
+        <translation>Snelheid</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/flangereffect.cpp" line="64"/>
@@ -8283,7 +8283,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
         <location filename="../../src/effects/native/flangereffect.cpp" line="91"/>
         <location filename="../../src/effects/native/flangereffect.cpp" line="92"/>
         <source>Mix</source>
-        <translation type="unfinished"/>
+        <translation>Mix</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/autopaneffect.cpp" line="65"/>
@@ -8298,7 +8298,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
     <message>
         <location filename="../../src/effects/native/metronomeeffect.cpp" line="20"/>
         <source>Metronome</source>
-        <translation type="unfinished"/>
+        <translation>Metronoom</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/metronomeeffect.cpp" line="23"/>
@@ -8635,7 +8635,7 @@ Higher values result in less attenuation of high frequencies.</source>
     <message>
         <location filename="../../src/effects/native/phasereffect.cpp" line="72"/>
         <source>Number of stages</source>
-        <translation type="unfinished"/>
+        <translation>Aantal stadia.</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/phasereffect.cpp" line="112"/>
@@ -8740,7 +8740,7 @@ Higher values result in less attenuation of high frequencies.</source>
     <message>
         <location filename="../../src/effects/native/threebandbiquadeqeffect.cpp" line="58"/>
         <source>BQ EQ</source>
-        <translation type="unfinished"/>
+        <translation>BQ EQ</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/threebandbiquadeqeffect.cpp" line="61"/>
@@ -8760,7 +8760,7 @@ Higher values result in less attenuation of high frequencies.</source>
     <message>
         <location filename="../../src/effects/native/biquadfullkilleqeffect.cpp" line="60"/>
         <source>BQ EQ/ISO</source>
-        <translation type="unfinished"/>
+        <translation>BQ EQ/ISO</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/biquadfullkilleqeffect.cpp" line="63"/>
@@ -8836,7 +8836,7 @@ Higher values result in less attenuation of high frequencies.</source>
     <message>
         <location filename="../../src/encoder/encoderwavesettings.cpp" line="27"/>
         <source>32 bits float</source>
-        <translation type="unfinished"/>
+        <translation>32 bits float</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/balanceeffect.cpp" line="21"/>
@@ -8874,7 +8874,7 @@ Higher values result in less attenuation of high frequencies.</source>
     <message>
         <location filename="../../src/effects/native/balanceeffect.cpp" line="20"/>
         <source>Stereo Balance</source>
-        <translation type="unfinished"/>
+        <translation>Stereo Balans</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/balanceeffect.cpp" line="46"/>
@@ -8920,7 +8920,7 @@ It is designed as a complement to the steep mixing equalizers.</source>
         <location filename="../../src/effects/native/parametriceqeffect.cpp" line="45"/>
         <location filename="../../src/effects/native/parametriceqeffect.cpp" line="46"/>
         <source>Q 1</source>
-        <translation type="unfinished"/>
+        <translation>Q 1</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/parametriceqeffect.cpp" line="47"/>
@@ -8955,7 +8955,7 @@ a higher Q affects a narrower band of frequencies.</source>
         <location filename="../../src/effects/native/parametriceqeffect.cpp" line="89"/>
         <location filename="../../src/effects/native/parametriceqeffect.cpp" line="90"/>
         <source>Q 2</source>
-        <translation type="unfinished"/>
+        <translation>Q 2</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/parametriceqeffect.cpp" line="91"/>
@@ -9325,7 +9325,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="812"/>
         <source>Connection error</source>
-        <translation type="unfinished"/>
+        <translation>Connectie fout</translation>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="813"/>
@@ -9813,12 +9813,12 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="242"/>
         <source>Show Effects</source>
-        <translation type="unfinished"/>
+        <translation>Toon Effecten</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="243"/>
         <source>Show or hide the effects.</source>
-        <translation type="unfinished"/>
+        <translation>Toon of verberg de effecten.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="250"/>
@@ -9873,7 +9873,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="270"/>
         <source>Off: Do not reduce music volume</source>
-        <translation type="unfinished"/>
+        <translation>Uit: Verlaag het muziek volume niet</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="271"/>
@@ -9893,7 +9893,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="277"/>
         <source>Off: Does nothing</source>
-        <translation type="unfinished"/>
+        <translation>Uit: Doet niets</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="278"/>
@@ -10145,7 +10145,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="433"/>
         <source>Plays track from the cue point.</source>
-        <translation type="unfinished"/>
+        <translation>Speelt track vanaf het cue punt.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="491"/>
@@ -10160,7 +10160,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="544"/>
         <source>Displays the duration of the running recording.</source>
-        <translation type="unfinished"/>
+        <translation>Toont de duur van de lopende opname.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="587"/>
@@ -10365,7 +10365,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="733"/>
         <source>Show Effect Parameters</source>
-        <translation type="unfinished"/>
+        <translation>Toon Effect Parameters</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="816"/>
@@ -10471,7 +10471,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="738"/>
         <source>Enable or disable this whole effect unit.</source>
-        <translation type="unfinished"/>
+        <translation>Activeer of deactiveer deze hele effecten unit.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="741"/>
@@ -10594,12 +10594,12 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="838"/>
         <source>Focuses this effect.</source>
-        <translation type="unfinished"/>
+        <translation>Focust dit effect.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="839"/>
         <source>Unfocuses this effect.</source>
-        <translation type="unfinished"/>
+        <translation>Ontfocust dit effect.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="840"/>
@@ -11552,7 +11552,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/trackcollection.cpp" line="119"/>
         <source>Hiding tracks</source>
-        <translation type="unfinished"/>
+        <translation>Verbergen tracks</translation>
     </message>
     <message>
         <location filename="../../src/library/trackcollection.cpp" line="120"/>
@@ -12412,7 +12412,7 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="76"/>
         <source>Load to</source>
-        <translation type="unfinished"/>
+        <translation>Laad naar</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="78"/>
@@ -12432,7 +12432,7 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="95"/>
         <source>Change BPM</source>
-        <translation type="unfinished"/>
+        <translation>Wijzig BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="99"/>
@@ -12463,7 +12463,7 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="460"/>
         <source>Import From MusicBrainz</source>
-        <translation type="unfinished"/>
+        <translation>Importeer Van MusicBrainz</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="464"/>
@@ -12478,17 +12478,17 @@ Text on waveform overview when file is cached from source</extracomment>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="477"/>
         <source>BPM and Beatgrid</source>
-        <translation type="unfinished"/>
+        <translation>BPM en Beatgrid</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="481"/>
         <source>Play Count</source>
-        <translation type="unfinished"/>
+        <translation>Afspeel Teller</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="485"/>
         <source>Cue Point</source>
-        <translation type="unfinished"/>
+        <translation>Cue Punt</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtracktableview.cpp" line="489"/>
