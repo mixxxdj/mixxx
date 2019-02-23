@@ -308,7 +308,7 @@
             print('ERROR: No sampler number specified for new SamplerButton.');
             return;
         }
-        this.velocity = options.velocity;
+        this.volumeByVelocity = options.volumeByVelocity;
         this.number = options.number;
         this.group = '[Sampler' + this.number + ']';
         Button.call(this, options);
@@ -320,7 +320,7 @@
                     if (engine.getValue(this.group, 'track_loaded') === 0) {
                         engine.setValue(this.group, 'LoadSelectedTrack', 1);
                     } else {
-                        if (this.velocity) {
+                        if (this.volumeByVelocity) {
                             engine.setValue(this.group, 'volume', this.inValueScale(value));
                         }
                         engine.setValue(this.group, 'cue_gotoandplay', 1);
