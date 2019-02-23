@@ -6,8 +6,11 @@
 #include <QGLFormat>
 #include <QOpenGLShaderProgram>
 #include <QGuiApplication>
+#include <QApplication>
 #include <QWindow>
 #include <QOpenGLContext>
+#include <QOpenGLFunctions>
+#include <QOpenGLShaderProgram>
 
 #include "waveform/waveformwidgetfactory.h"
 
@@ -33,6 +36,7 @@
 #include "util/time.h"
 #include "util/timer.h"
 #include "util/math.h"
+#include "util/memory.h"
 
 namespace {
 // Returns true if the given waveform should be rendered.
@@ -117,14 +121,51 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_openGLVersion = tr("Safe Mode");
     } else if (pWindow && pWindow->supportsOpenGL()) {
         m_openGLAvailable = true;
-        const auto format = pWindow->format();
-        const auto major_minor = format.version();
-        m_openGLVersion = QString("%1 %2.%3").arg(
-            format.renderableType() == QSurfaceFormat::OpenGL ? "OpenGL" : "OpenGLES",
-            QString::number(major_minor.first),
-            QString::number(major_minor.second));
-        // Mixxx requires GLSL 1.20, which corresponds to OpenGL version 2.1.
-        m_openGLShaderAvailable = major_minor.first > 2 || (major_minor.first == 2 && major_minor.second >= 1);
+
+        QWidget* w = nullptr;
+        foreach(QWidget* widget, QApplication::topLevelWidgets())
+        if (widget->inherits("QMainWindow")) {
+            w = widget;
+            break;
+        }
+        std::unique_ptr<QOpenGLWidget> pGlW = std::make_unique<QOpenGLWidget>(w);
+        //glw->makeCurrent(); // does not work here
+        pGlW->show(); // the context is only valid if the wiget is shown.
+        QOpenGLContext* pContext = pGlW->context();
+
+        QString version;
+        QString renderer;
+        if (pContext) {
+            version = QString::fromUtf8(reinterpret_cast<const char*>(
+                    pContext->functions()->glGetString(GL_VERSION)));
+            renderer = QString::fromUtf8(reinterpret_cast<const char*>(
+                    pContext->functions()->glGetString(GL_RENDERER)));
+        }
+
+        m_openGLShaderAvailable = QOpenGLShaderProgram::hasOpenGLShaderPrograms(pContext);
+
+        const QSurfaceFormat format = pWindow->format();
+
+        const QSurfaceFormat::RenderableType renderableType = format.renderableType();
+        QString strRenderableType;
+        switch (renderableType) {
+        case QSurfaceFormat::DefaultRenderableType:
+            strRenderableType = "DefaultRenderableType";
+            break;
+        case QSurfaceFormat::OpenGL:
+            strRenderableType = "OpenGL";
+            break;
+        case QSurfaceFormat::OpenGLES:
+            strRenderableType = "OpenGLES";
+            break;
+        case QSurfaceFormat::OpenVG:
+            strRenderableType = "OpenVG";
+            break;
+        default:
+            strRenderableType = "Unknown Type";
+            break;
+        }
+        m_openGLVersion = strRenderableType + ": " + version + " (" + renderer + ")";
     } else {
         m_openGLVersion = tr("None");
     }
