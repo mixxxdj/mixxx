@@ -30,6 +30,7 @@
 #include "util/performancetimer.h"
 #include "util/timer.h"
 #include "util/math.h"
+#include "util/memory.h"
 
 namespace {
 // Returns true if the given waveform should be rendered.
@@ -137,6 +138,11 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
+        std::unique_ptr<QGLWidget> pGlWidget = std::make_unique<QGLWidget>(); // create paint device
+        // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
+        // and QGLFormat::openGLVersionFlags() returns the maximum known version
+        pGlWidget->context()->makeCurrent();
+
         QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
 
         int majorVersion = 0;
@@ -201,14 +207,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         }
 
         m_openGLAvailable = true;
-
-        QGLWidget* glWidget = new QGLWidget(); // create paint device
-        // QGLShaderProgram::hasOpenGLShaderPrograms(); valgind error
-        // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
-        glWidget->context()->makeCurrent();
         m_openGLShaderAvailable =
-                QGLShaderProgram::hasOpenGLShaderPrograms(glWidget->context());
-        delete glWidget;
+                QGLShaderProgram::hasOpenGLShaderPrograms(pGlWidget->context());
     }
 
     evaluateWidgets();
