@@ -98,7 +98,6 @@ void WStarRating::slotStarsUp(double v) {
     }
     if (v > 0 && m_starRating.starCount() < m_starRating.maxStarCount()) {
         int star = m_starRating.starCount() + 1;
-        qDebug() << "   stars " << m_starRating.starCount() << " > " << star;
         m_starRating.setStarCount(star);
         update();
         m_pCurrentTrack->setRating(star);
@@ -111,7 +110,6 @@ void WStarRating::slotStarsDown(double v) {
     }
     if (v > 0 && m_starRating.starCount() > 0) {
         int star = m_starRating.starCount() - 1;
-        qDebug() << "   stars " << m_starRating.starCount() << " > " << star;
         m_starRating.setStarCount(star);
         update();
         m_pCurrentTrack->setRating(star);

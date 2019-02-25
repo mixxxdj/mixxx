@@ -34,9 +34,6 @@ StarRating::StarRating(int starCount, int maxStarCount)
         //
         // understand those equations
         m_starPolygon << QPointF(0.5 + 0.5 * cos(0.8 * i * 3.14), 0.5 + 0.5 * sin(0.8 * i * 3.14));
-        float QPointFx = 0.5 + 0.5 * cos(0.8 * i * 3.14);
-        float QPointFy = 0.5 + 0.5 * sin(0.8 * i * 3.14);
-//        qDebug() << "Debug: star point #" << i << ": " << QPointFx << ", " << QPointFy;
     }
     // creates 5 points for a tiny diamond/rhombe (square turned by 45°)
     // why do we need 5 cusps here? 4 should suffice as the polygon is closed automatically for the star above..
