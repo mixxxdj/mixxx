@@ -1,3 +1,8 @@
+==== 2.1.8 2019-02-23 ====
+
+* Fix a rare chance for a corrupt track file while writing metadata in out of disk situations. lp:1815305
+* Fix export of BPM track file metadata. lp:1816490  
+
 ==== 2.1.7 2019-01-15 ====
 
 * Fix syncing to doublespeed lp:1808697

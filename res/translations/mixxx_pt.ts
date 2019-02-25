@@ -2927,7 +2927,7 @@
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="104"/>
         <source>Credits</source>
-        <translation type="unfinished"/>
+        <translation>Créditos</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="130"/>
@@ -8184,7 +8184,7 @@ Default: flat top</source>
         <location filename="../../src/effects/native/flangereffect.cpp" line="64"/>
         <location filename="../../src/effects/native/flangereffect.cpp" line="65"/>
         <source>Manual</source>
-        <translation type="unfinished"/>
+        <translation>Manual</translation>
     </message>
     <message>
         <location filename="../../src/effects/native/flangereffect.cpp" line="31"/>
