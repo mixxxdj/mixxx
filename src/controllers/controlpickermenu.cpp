@@ -153,6 +153,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* eqMenu = addSubmenu(tr("Equalizers"));
     const int kNumEqRacks = 1;
     const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
+    const int iNumPreviewDecks = ControlObject::get(ConfigKey("[Master]", "num_preview_decks"));
     for (int iRackNumber = 0; iRackNumber < kNumEqRacks; ++iRackNumber) {
         // TODO: Although there is a mode with 4-band EQs, it's not feasible
         // right now to add support for learning both it and regular 3-band eqs.
@@ -813,6 +814,14 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                    QString("%1: %2").arg(m_deckStr.arg(i), starsUpTitle),
                    QString("%1: %2").arg(m_deckStr.arg(i), starsUpDescription), guiMenu);
         addControl(QString("[Deck%1]").arg(i), "stars_down",
+                   QString("%1: %2").arg(m_deckStr.arg(i), starsDownTitle),
+                   QString("%1: %2").arg(m_deckStr.arg(i), starsDownDescription), guiMenu);
+    }
+    for (int i = 1; i <= iNumPreviewDecks; ++i) {
+        addControl(QString("[PreviewDeck%1]").arg(i), "stars_up",
+                   QString("%1: %2").arg(m_deckStr.arg(i), starsUpTitle),
+                   QString("%1: %2").arg(m_deckStr.arg(i), starsUpDescription), guiMenu);
+        addControl(QString("[PreviewDeck%1]").arg(i), "stars_down",
                    QString("%1: %2").arg(m_deckStr.arg(i), starsDownTitle),
                    QString("%1: %2").arg(m_deckStr.arg(i), starsDownDescription), guiMenu);
     }
