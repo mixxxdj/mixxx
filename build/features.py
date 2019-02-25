@@ -810,15 +810,28 @@ class LiveBroadcasting(Feature):
             return True
         return False
 
+    def internal_link(self, build):
+        build.flags['shoutcast_internal'] = util.get_flags(build.env, 'shoutcast_internal', 1)
+        if int(build.flags['shoutcast_internal']):
+            return True
+        return False
+
     def add_options(self, build, vars):
         vars.Add('shoutcast', 'Set to 1 to enable live broadcasting support', 1)
+	vars.Add('shoutcast_internal', 'Set to 1 to use internal libshout', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
-        libshout_found = conf.CheckLib(['libshout', 'shout'])
         build.env.Append(CPPDEFINES='__BROADCAST__')
+
+	if self.internal_link(build):
+            build.env.Append(CPPPATH='include')
+            build.env.Append(CPPPATH='src')
+            return
+
+        libshout_found = conf.CheckLib(['libshout', 'shout'])
 
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
@@ -829,6 +842,26 @@ class LiveBroadcasting(Feature):
             conf.CheckLib('gdi32')
 
     def sources(self, build):
+        if self.internal_link(build):
+	    # Clone our main environment so we don't change any settings in the
+            # Mixxx environment
+            libshout_env = build.env.Clone()
+
+            if build.toolchain_is_gnu:
+                libshout_env.Append(CCFLAGS='-pthread')
+                libshout_env.Append(LINKFLAGS='-pthread')
+
+            libshout_env.Append(CPPPATH="#lib/libshout")
+            libshout_dir = libshout_env.Dir("#lib/libshout")
+
+            env = libshout_env
+            SCons.Export('env')
+            SCons.Export('build')
+            env.SConscript(env.File('SConscript', libshout_dir))
+
+            build.env.Append(LIBPATH=libshout_dir)
+            build.env.Append(LIBS=['libshout_mixxx', 'libogg', 'vorbis', 'theora', 'speex', 'ssl', 'crypto'])
+
         depends.Qt.uic(build)('preferences/dialog/dlgprefbroadcastdlg.ui')
         return ['preferences/dialog/dlgprefbroadcast.cpp',
                 'broadcast/broadcastmanager.cpp',
