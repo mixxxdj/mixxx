@@ -30,9 +30,9 @@ StarRating::StarRating(int starCount, int maxStarCount)
     m_starPolygon << QPointF(1.0, 0.5);
     for (int i = 1; i < 5; ++i) {
         // add QPointF 2-5 to polygon point array, equally distributed on a circumference.
-        // To create a star (not a pentagon) we need to connect every second point.
-        //
-        // understand those equations
+        // To create a star (not a pentagon) we need to connect every second of those points.
+        // This should actually give us a star that points up, but the drawn result points right.
+        // x-y axes are swapped?
         m_starPolygon << QPointF(0.5 + 0.5 * cos(0.8 * i * 3.14), 0.5 + 0.5 * sin(0.8 * i * 3.14));
     }
     // creates 5 points for a tiny diamond/rhombe (square turned by 45°)

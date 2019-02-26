@@ -805,26 +805,10 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("waveform_zoom_up", tr("Waveform Zoom Out"), tr("Zoom waveform out"), guiMenu);
 
     // Controls to change a deck's star rating
-    QString starsUpTitle = tr("Star Rating Up");
-    QString starsUpDescription = tr("Increase the track rating by one star");
-    QString starsDownTitle = tr("Star Rating Down");
-    QString starsDownDescription = tr("Decrease the track rating by one star");
-    for (int i = 1; i <= iNumDecks; ++i) {
-        addControl(QString("[Deck%1]").arg(i), "stars_up",
-                   QString("%1: %2").arg(m_deckStr.arg(i), starsUpTitle),
-                   QString("%1: %2").arg(m_deckStr.arg(i), starsUpDescription), guiMenu);
-        addControl(QString("[Deck%1]").arg(i), "stars_down",
-                   QString("%1: %2").arg(m_deckStr.arg(i), starsDownTitle),
-                   QString("%1: %2").arg(m_deckStr.arg(i), starsDownDescription), guiMenu);
-    }
-    for (int i = 1; i <= iNumPreviewDecks; ++i) {
-        addControl(QString("[PreviewDeck%1]").arg(i), "stars_up",
-                   QString("%1: %2").arg(m_deckStr.arg(i), starsUpTitle),
-                   QString("%1: %2").arg(m_deckStr.arg(i), starsUpDescription), guiMenu);
-        addControl(QString("[PreviewDeck%1]").arg(i), "stars_down",
-                   QString("%1: %2").arg(m_deckStr.arg(i), starsDownTitle),
-                   QString("%1: %2").arg(m_deckStr.arg(i), starsDownDescription), guiMenu);
-    }
+    addDeckAndPreviewDeckControl("stars_up", tr("Star Rating Up"),
+        tr("Increase the track rating by one star"), guiMenu);
+    addDeckAndPreviewDeckControl("stars_down", tr("Star Rating Down"),
+        tr("Decrease the track rating by one star"), guiMenu);
 }
 
 ControlPickerMenu::~ControlPickerMenu() {
