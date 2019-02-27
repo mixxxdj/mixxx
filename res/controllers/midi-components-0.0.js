@@ -320,9 +320,13 @@
                     if (engine.getValue(this.group, 'track_loaded') === 0) {
                         engine.setValue(this.group, 'LoadSelectedTrack', 1);
                     } else {
-                        if (this.volumeByVelocity) {
-                            engine.setValue(this.group, 'volume', this.inValueScale(value));
-                        }
+                        engine.setValue(
+                            this.group, 
+                            'volume',
+                            this.volumeByVelocity ?
+                                this.inValueScale(value) :
+                                1
+                        );
                         engine.setValue(this.group, 'cue_gotoandplay', 1);
                     }
                 }
