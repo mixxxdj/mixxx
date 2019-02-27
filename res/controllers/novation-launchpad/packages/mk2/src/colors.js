@@ -1,3 +1,4 @@
+/* @flow */
 'use strict'
 module.exports = {
   black: 0,
