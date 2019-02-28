@@ -1,4 +1,5 @@
 #include <QStringList>
+#include <QScopedPointer>
 #include <QTime>
 #include <QTimer>
 #include <QWidget>
@@ -30,7 +31,6 @@
 #include "util/performancetimer.h"
 #include "util/timer.h"
 #include "util/math.h"
-#include "util/memory.h"
 
 namespace {
 // Returns true if the given waveform should be rendered.
@@ -138,7 +138,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
-        std::unique_ptr<QGLWidget> pGlWidget = std::make_unique<QGLWidget>(); // create paint device
+        QScopedPointer<QGLWidget> pGlWidget(new QGLWidget()); // create paint device
         // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
         // and QGLFormat::openGLVersionFlags() returns the maximum known version
         pGlWidget->context()->makeCurrent();
