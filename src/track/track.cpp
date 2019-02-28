@@ -1025,20 +1025,18 @@ Track::ExportMetadataResult Track::exportMetadata(
             // not stored in the library, yet. We have done the same with the track's
             // current metadata to make the tags comparable (see above).
             importedFromFile.resetUnsupportedValues();
-            // Before comparison: Adjust imported bpm values that might be imprecise,
-            // e.g. integer values from ID3v2. The same strategy has is used when
-            // importing the track's metadata in order to preserve the more accurate
-            // bpm value stored by Mixxx. Again, this is necessary to make the tags
-            // comparable.
-            auto actualBpm =
-                    getActualBpm(importedFromFile.getTrackInfo().getBpm(), m_pBeats);
-            // All imported floating point values are already properly rounded, because
-            // they have just been imported. But the imported bpm value might have been
-            // replaced by a more accurate bpm value, that also needs to be rounded before
-            // comparison.
-            actualBpm.normalizeBeforeExport();
-            // Replace the imported with the actual bpm value managed by Mixxx.
-            importedFromFile.refTrackInfo().setBpm(actualBpm);
+            // Account for floating-point rounding errors before exporting
+            // the BPM value. The imported value must be compared to the
+            // pre-normalized value for valid results.
+            // NOTE(2019-02-19, uklotzde): The pre-normalization cannot prevent
+            // repeated export of metadata for files with ID3 tags that are only
+            // able to store the BPM value with integer precision! In case of a
+            // fractional value the ID3 metadata is always detected as modified
+            // and will be exported regardless if it has actually been modified
+            // or not.
+            auto currentBpm = m_record.getMetadata().getTrackInfo().getBpm();
+            currentBpm.normalizeBeforeExport();
+            m_record.refMetadata().refTrackInfo().setBpm(currentBpm);
             // Finally the track's current metadata and the imported/adjusted metadata
             // can be compared for differences to decide whether the tags in the file
             // would change if we perform the write operation. We are using a special
