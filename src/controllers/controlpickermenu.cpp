@@ -153,7 +153,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QMenu* eqMenu = addSubmenu(tr("Equalizers"));
     const int kNumEqRacks = 1;
     const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
-    const int iNumPreviewDecks = ControlObject::get(ConfigKey("[Master]", "num_preview_decks"));
     for (int iRackNumber = 0; iRackNumber < kNumEqRacks; ++iRackNumber) {
         // TODO: Although there is a mode with 4-band EQs, it's not feasible
         // right now to add support for learning both it and regular 3-band eqs.
