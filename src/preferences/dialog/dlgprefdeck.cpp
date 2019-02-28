@@ -166,6 +166,17 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     connect(checkBoxSeekToCue, SIGNAL(toggled(bool)),
             this, SLOT(slotJumpToCueOnTrackLoadCheckbox(bool)));
 
+    // Double-tap Load to clone a deck via keyboard or controller ([ChannelN],LoadSelectedTrack)
+    // If not present in the config, set the default value
+    if (!m_pConfig->exists(ConfigKey("[Controls]","CloneDeckOnLoadDoubleTap"))) {
+        m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true);
+    }
+    m_bCloneDeckOnLoadDoubleTap = m_pConfig->getValue(
+            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true);
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_bCloneDeckOnLoadDoubleTap);
+    connect(checkBoxCloneDeckOnLoadDoubleTap, SIGNAL(toggled(bool)),
+            this, SLOT(slotCloneDeckOnLoadDoubleTapCheckbox(bool)));
+
     m_bRateInverted = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), false);
     setRateDirectionForAllDecks(m_bRateInverted);
     checkBoxInvertSpeedSlider->setChecked(m_bRateInverted);
@@ -332,6 +343,9 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxDisallowLoadToPlayingDeck->setChecked(!m_pConfig->getValue(
             ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false));
 
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_pConfig->getValue(
+            ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true));
+
     checkBoxSeekToCue->setChecked(!m_pConfig->getValue(
             ConfigKey("[Controls]", "CueRecall"), false));
 
@@ -405,6 +419,8 @@ void DlgPrefDeck::slotResetToDefaults() {
     // Don't load tracks into playing decks.
     checkBoxDisallowLoadToPlayingDeck->setChecked(true);
 
+    // Clone decks by double-tapping Load button.
+    checkBoxCloneDeckOnLoadDoubleTap->setChecked(true);
     // Mixxx cue mode
     ComboBoxCueMode->setCurrentIndex(0);
 
@@ -490,6 +506,10 @@ void DlgPrefDeck::slotJumpToCueOnTrackLoadCheckbox(bool checked) {
     m_bJumpToCueOnTrackLoad = checked;
 }
 
+void DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox(bool checked) {
+    m_bCloneDeckOnLoadDoubleTap = checked;
+}
+
 void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
     if (b == radioButtonRemaining) {
         m_timeDisplayMode = TrackTime::DisplayMode::REMAINING;
@@ -565,6 +585,9 @@ void DlgPrefDeck::slotApply() {
 
     m_pConfig->setValue(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
                         !m_bDisallowTrackLoadToPlayingDeck);
+
+    m_pConfig->setValue(ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"),
+                        m_bCloneDeckOnLoadDoubleTap);
 
     m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), !m_bJumpToCueOnTrackLoad);
 
