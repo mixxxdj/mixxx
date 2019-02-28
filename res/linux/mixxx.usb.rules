@@ -20,6 +20,8 @@ SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="057e", GROUP="us
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="054c", GROUP="users", MODE="0660"
 # Gemini
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="23c7", GROUP="users", MODE="0660"
+# Focusrite (Novation)
+SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1235", GROUP="users", MODE="0660"
 
 # Only some distribuions require the below
 KERNEL=="hiddev*", NAME="usb/%k", GROUP="users"
