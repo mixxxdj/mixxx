@@ -320,13 +320,6 @@
                     if (engine.getValue(this.group, 'track_loaded') === 0) {
                         engine.setValue(this.group, 'LoadSelectedTrack', 1);
                     } else {
-                        engine.setValue(
-                            this.group, 
-                            'volume',
-                            this.volumeByVelocity ?
-                                this.inValueScale(value) :
-                                1
-                        );
                         engine.setValue(this.group, 'cue_gotoandplay', 1);
                     }
                 }
@@ -378,6 +371,15 @@
             }
             if (this.looping !== undefined) {
                 this.connections[2] = engine.connectControl(this.group, 'repeat', this.output);
+            }
+        },
+        disconnect: function () {
+            // reset volume to initial volume
+            engine.setParameter(this.group,"volume",1);
+            if (this.connections[0] !== undefined) {
+                this.connections.forEach(function (conn) {
+                    conn.disconnect();
+                });
             }
         },
         outKey: null, // hack to get Component constructor to call connect()
