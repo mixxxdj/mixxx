@@ -1,14 +1,11 @@
-// flow-typed signature: 387da750d53949f008879696a6ac8c16
-// flow-typed version: 4f1664c1ac/eventemitter3_v2.x.x/flow_>=v0.38.x
-
 declare module 'eventemitter3' {
   declare type ListenerFn = (...args: any[]) => void
   declare class EventEmitter {
     static constructor(): EventEmitter,
     static prefixed: string | boolean,
     eventNames(): (string | Symbol)[],
-    listeners(event: string | Symbol, existence?: false): ListenerFn[],
-    listeners(event: string | Symbol, existence: true): boolean,
+    listeners(event: string | Symbol): ListenerFn[],
+    listenerCount(event: string | Symbol): number,
     on(event: string | Symbol, listener: ListenerFn, context?: any): this,
     addListener(event: string | Symbol, listener: ListenerFn, context?: any): this,
     once(event: string | Symbol, listener: ListenerFn, context?: any): this,
