@@ -116,7 +116,7 @@
           </Template>
 
           <Template src="skin:skinsettings_button.xml">
-            <SetVariable name="TooltipId">how_vinylcontrol</SetVariable>
+            <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
             <SetVariable name="text">Vinyl Control Options</SetVariable>
             <SetVariable name="skinsetting">[VinylControl],show_vinylcontrol</SetVariable>
           </Template>
