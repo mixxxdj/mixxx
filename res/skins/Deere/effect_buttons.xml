@@ -10,6 +10,7 @@ Variables:
 <Template>
   <WidgetGroup>
     <ObjectName>EffectButtonControls</ObjectName>
+    <SizePolicy><Variable name="SizePolicy"/></SizePolicy>
     <Layout>horizontal</Layout>
     <Children>
       <Template src="skin:effect_focus_button.xml"/>
@@ -18,8 +19,8 @@ Variables:
         <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
         <SetVariable name="ObjectName">EffectEnableButton</SetVariable>
         <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-        <SetVariable name="MaximumSize">60,22</SetVariable>
-        <SetVariable name="SizePolicy">me,f</SetVariable>
+        <SetVariable name="MaximumSize"><Variable name="EnableButtonMaxSize"/></SetVariable>
+        <SetVariable name="SizePolicy">me,me</SetVariable>
         <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],enabled</SetVariable>
       </Template>
 
