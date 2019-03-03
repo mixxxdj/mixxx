@@ -39,7 +39,7 @@ class CrateTableModel : public BaseSqlTableModel {
 
         // The default value is the top-level crate setting, which gets updated
         // every time a change is made, so that newly-seen crates will look like
-        // the last-edited crate.  We also update the default.
+        // the last-edited crate.
         QString defaultVal = settings.getValue(key);
         key = m_settingsNamespace + "." + m_selectedCrate.toString() + "." + name;
         return settings.getValue(key, defaultVal);
