@@ -316,7 +316,7 @@
     }
     HotcueColorButton.prototype = new HotcueButton({
         getColor: function() {
-            return color.jsColorFrom(engine.getValue(this.group, this.colorIdKey))
+            return color.predefinedColorFromId(engine.getValue(this.group, this.colorIdKey));
         },
         output: function(value) {
             if (value > 0) {
