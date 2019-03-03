@@ -241,8 +241,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 }
 
 void WTrackTableView::unloadTrackModel() {
-    // When a track model is going away, we should save the header state.
-    qDebug() << "unload track model plz";
+    // We save the header state when a track model is going away.
     WTrackTableViewHeader* pHeader =
             dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (pHeader) {
@@ -273,7 +272,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
             dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (getTrackModel() == trackModel) {
         // Call select() on the table so it refreshes if it's dirty.
-        qDebug() << "~~~~~~~~~~~ doing the force select thing";
         getTrackModel()->select();
         // Also restore the header state, which may be different than for
         // the previously-loaded table for this model. (Different crates).
@@ -282,7 +280,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         }
         return;
     } else {
-        qDebug() << "~~~~~~~~~~~ new model, full reset";
         newModel = trackModel;
         saveVScrollBarPos(getTrackModel());
         //saving current vertical bar position
@@ -375,7 +372,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     }
 
     if (m_sorting) {
-        qDebug() << "m_sorting is true so we are sorting";
         // NOTE: Should be a UniqueConnection but that requires Qt 4.6
         connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
                 this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
@@ -392,7 +388,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
             doSortByColumn(horizontalHeader()->sortIndicatorSection());
 #endif
         } else {
-            qDebug() << "no sorting!";
             // No saved order is present. Use the TrackModel's default sort order.
             int sortColumn = trackModel->defaultSortColumn();
             Qt::SortOrder sortOrder = trackModel->defaultSortOrder();
@@ -1749,7 +1744,6 @@ void WTrackTableView::addSelectionToNewCrate() {
 }
 
 void WTrackTableView::doSortByColumn(int headerSection) {
-    qDebug() << "doing the sort!!!!! " << headerSection;
     TrackModel* trackModel = getTrackModel();
     QAbstractItemModel* itemModel = model();
 

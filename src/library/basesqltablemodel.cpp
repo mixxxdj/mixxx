@@ -24,7 +24,7 @@
 #include "util/assert.h"
 #include "util/performancetimer.h"
 
-static const bool sDebug = true;
+static const bool sDebug = false;
 
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
@@ -434,12 +434,9 @@ void BaseSqlTableModel::search(const QString& searchText, const QString& extraFi
 }
 
 void BaseSqlTableModel::loadSavedSorting() {
-    qDebug() << "LOAD SAVED SORTING";
     m_sortColumns.clear();
     QString val = getModelSetting(COLUMNS_SORTING);
     QTextStream in(&val);
-
-    qDebug() << "loading sorting" << val;
 
     while (!in.atEnd()) {
         int ordI = -1;

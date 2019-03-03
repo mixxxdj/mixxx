@@ -151,7 +151,7 @@ void ITunesFeature::activate() {
 void ITunesFeature::activate(bool forceReload) {
     //qDebug("ITunesFeature::activate()");
     if (!m_isActivated || forceReload) {
-
+        emit(unshowTrackModel());
         //Delete all table entries of iTunes feature
         ScopedTransaction transaction(m_database);
         clearTable("itunes_playlist_tracks");
@@ -212,6 +212,7 @@ void ITunesFeature::activate(bool forceReload) {
         // calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit(featureIsLoading(this, true));
     } else {
+        emit(unshowTrackModel());
         emit(showTrackModel(m_pITunesTrackModel));
     }
     emit(enableCoverArtDisplay(false));
@@ -219,6 +220,7 @@ void ITunesFeature::activate(bool forceReload) {
 
 void ITunesFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "ITunesFeature::activateChild()" << index;
+    emit(unshowTrackModel());
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);
@@ -807,6 +809,7 @@ void ITunesFeature::clearTable(QString table_name) {
 void ITunesFeature::onTrackCollectionLoaded() {
     std::unique_ptr<TreeItem> root(m_future.result());
     if (root) {
+        emit(unshowTrackModel());
         m_childModel.setRootItem(std::move(root));
 
         // Tell the rhythmbox track source that it should re-build its index.

@@ -18,7 +18,7 @@ CrateTableModel::~CrateTableModel() {
 }
 
 void CrateTableModel::selectCrate(CrateId crateId) {
-    qDebug() << "CrateTableModel::setCrate()!!!" << crateId;
+    //qDebug() << "CrateTableModel::setCrate()" << crateId;
     if (crateId == m_selectedCrate) {
         qDebug() << "Already focused on crate " << crateId;
         return;
@@ -55,10 +55,6 @@ void CrateTableModel::selectCrate(CrateId crateId) {
              m_pTrackCollection->getTrackSource());
     setSearch("");
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
-    // Each crate has its own sorting so we reload the sort.
-    // loadSavedSorting();
-    // activateSort();
-    // loadTrackModel causes a select to happen so no need to do it here.
 }
 
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {

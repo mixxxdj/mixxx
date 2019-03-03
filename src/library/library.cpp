@@ -249,7 +249,6 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this, SIGNAL(showTrackModel(QAbstractItemModel*)),
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
-    qDebug() << "======================= connect unshow to unload";
     connect(this, SIGNAL(unshowTrackModel()),
             pTrackTableView, SLOT(unloadTrackModel()));
     connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
@@ -326,7 +325,7 @@ void Library::onPlayerManagerTrackAnalyzerIdle() {
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
-    qDebug() << "Library::slotShowTrackModel" << model;
+    //qDebug() << "Library::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
@@ -337,7 +336,7 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
 }
 
 void Library::slotUnshowTrackModel() {
-    qDebug() << "Library::slotUnshowTrackModel";
+    //qDebug() << "Library::slotUnshowTrackModel";
     emit(unshowTrackModel());
 }
 

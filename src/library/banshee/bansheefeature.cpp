@@ -63,7 +63,7 @@ QIcon BansheeFeature::getIcon() {
 
 void BansheeFeature::activate() {
     //qDebug("BansheeFeature::activate()");
-
+    emit(unshowTrackModel());
     if (!m_isActivated) {
         if (!QFile::exists(m_databaseFile)) {
             // Fall back to default
@@ -117,6 +117,7 @@ void BansheeFeature::activate() {
 }
 
 void BansheeFeature::activateChild(const QModelIndex& index) {
+    emit(unshowTrackModel());
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     int playlistID = item->getData().toInt();
     if (playlistID > 0) {
