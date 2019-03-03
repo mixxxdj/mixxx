@@ -240,6 +240,16 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
     }
 }
 
+void WTrackTableView::unloadTrackModel() {
+    // When a track model is going away, we should save the header state.
+    qDebug() << "unload track model plz";
+    WTrackTableViewHeader* pHeader =
+            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
+    if (pHeader) {
+        pHeader->saveHeaderState();
+    }
+}
+
 // slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     qDebug() << "WTrackTableView::loadTrackModel()" << model;
@@ -1788,15 +1798,7 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 
     scrollTo(first, QAbstractItemView::EnsureVisible);
     horizontalScrollBar()->setValue(savedHScrollBarPos);
-    WTrackTableViewHeader* pHeader =
-            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
-    if (pHeader) {
-        pHeader->saveHeaderState();
-    }
 }
-
-// void WTrackTableView::slotSaveHeaderState() {
-// }
 
 void WTrackTableView::slotLockBpm() {
     lockBpm(true);

@@ -197,6 +197,7 @@ void WTrackTableViewHeader::saveHeaderState() {
     TrackModel* track_model = getTrackModel();
     qDebug() << "!!!!!!!!!!!!!!!1save header state asking for pb";
     if (!track_model) {
+        qDebug() << "no track model so ignore";
         return;
     }
     // Convert the QByteArray to a Base64 string and save it.
