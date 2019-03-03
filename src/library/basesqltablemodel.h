@@ -91,12 +91,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
                   QSharedPointer<BaseTrackCache> trackSource);
     void initHeaderData();
 
-    // Clear current sorting and load from settings into m_sortColumns.
-    void loadSavedSorting();
-
-    // Activate the sorting currently stored in m_sortColumns.  Does not call select().
-    void activateSort();
-
     // Use this if you want a model that is read-only.
     virtual Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
     // Use this if you want a model that can be changed
