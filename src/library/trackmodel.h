@@ -146,9 +146,11 @@ class TrackModel {
     virtual void select() {
     }
 
-  private:
+  protected:
     QSqlDatabase m_db;
     QString m_settingsNamespace;
+
+  private:
     QList<int> m_emptyColumns;
     int m_iDefaultSortColumn;
     Qt::SortOrder m_eDefaultSortOrder;

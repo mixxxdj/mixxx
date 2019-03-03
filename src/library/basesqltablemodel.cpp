@@ -24,7 +24,7 @@
 #include "util/assert.h"
 #include "util/performancetimer.h"
 
-static const bool sDebug = false;
+static const bool sDebug = true;
 
 // The logic in the following code relies to a track column = 0
 // Do not change it without changing the logic
@@ -433,6 +433,30 @@ void BaseSqlTableModel::search(const QString& searchText, const QString& extraFi
     select();
 }
 
+void BaseSqlTableModel::loadSavedSorting() {
+    qDebug() << "LOAD SAVED SORTING";
+    m_sortColumns.clear();
+    QString val = getModelSetting(COLUMNS_SORTING);
+    QTextStream in(&val);
+
+    qDebug() << "loading sorting" << val;
+
+    while (!in.atEnd()) {
+        int ordI = -1;
+        QString name;
+
+        in >> name >> ordI;
+
+        int col = fieldIndex(name);
+        if (col < 0) continue;
+
+        Qt::SortOrder ord;
+        ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
+
+        m_sortColumns << SortColumn(col, ord);
+    }
+}
+
 void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
     if (sDebug) {
         qDebug() << this << "setSort()" << column << order << m_tableColumns;
@@ -449,23 +473,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
 
     // There's no item to sort already, load from Settings last sort
     if (m_sortColumns.isEmpty()) {
-        QString val = getModelSetting(COLUMNS_SORTING);
-        QTextStream in(&val);
-
-        while (!in.atEnd()) {
-            int ordI = -1;
-            QString name;
-
-            in >> name >> ordI;
-
-            int col = fieldIndex(name);
-            if (col < 0) continue;
-
-            Qt::SortOrder ord;
-            ord = ordI > 0 ? Qt::AscendingOrder : Qt::DescendingOrder;
-
-            m_sortColumns << SortColumn(col, ord);
-        }
+        loadSavedSorting();
     }
     if (m_sortColumns.size() > 0 && m_sortColumns.at(0).m_column == column) {
          // Only the order has changed
@@ -538,36 +546,42 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
         m_sortColumns.clear();
         m_sortColumns.prepend(SortColumn(column, order));
     } else if (m_trackSource) {
-        bool first = true;
-        for (const SortColumn &sc : m_sortColumns) {
-            QString sort_field;
-            if (sc.m_column < m_tableColumns.size()) {
-                if (sc.m_column == kIdColumn) {
-                    sort_field = m_trackSource->columnSortForFieldIndex(kIdColumn);
-                } else if (sc.m_column ==
-                        fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
-                    sort_field = "RANDOM()";
-                } else {
-                    // we can't sort by other table columns here since primary sort is a track
-                    // column: skip
-                    continue;
-                }
+        activateSort();
+    }
+}
+
+void BaseSqlTableModel::activateSort() {
+    m_trackSourceOrderBy.clear();
+    m_tableOrderBy.clear();
+    bool first = true;
+    for (const SortColumn &sc : m_sortColumns) {
+        QString sort_field;
+        if (sc.m_column < m_tableColumns.size()) {
+            if (sc.m_column == kIdColumn) {
+                sort_field = m_trackSource->columnSortForFieldIndex(kIdColumn);
+            } else if (sc.m_column ==
+                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
+                sort_field = "RANDOM()";
             } else {
-                // + 1 to skip id column
-                int ccColumn = sc.m_column - m_tableColumns.size() + 1;
-                sort_field = m_trackSource->columnSortForFieldIndex(ccColumn);
-            }
-            VERIFY_OR_DEBUG_ASSERT(!sort_field.isEmpty()) {
+                // we can't sort by other table columns here since primary sort is a track
+                // column: skip
                 continue;
             }
-
-            m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
-            m_trackSourceOrderBy.append(mixxx::DbConnection::collateLexicographically(sort_field));
-            m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ?
-                    " ASC" : " DESC");
-            //qDebug() << m_trackSourceOrderBy;
-            first = false;
+        } else {
+            // + 1 to skip id column
+            int ccColumn = sc.m_column - m_tableColumns.size() + 1;
+            sort_field = m_trackSource->columnSortForFieldIndex(ccColumn);
         }
+        VERIFY_OR_DEBUG_ASSERT(!sort_field.isEmpty()) {
+            continue;
+        }
+
+        m_trackSourceOrderBy.append(first ? "ORDER BY ": ", ");
+        m_trackSourceOrderBy.append(mixxx::DbConnection::collateLexicographically(sort_field));
+        m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ?
+                " ASC" : " DESC");
+        //qDebug() << m_trackSourceOrderBy;
+        first = false;
     }
 }
 

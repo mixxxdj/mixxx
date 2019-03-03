@@ -263,6 +263,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return;
     }
+    qDebug() << "activating child";
     m_crateTableModel.selectCrate(crateId);
     emit(showTrackModel(&m_crateTableModel));
     emit(enableCoverArtDisplay(true));

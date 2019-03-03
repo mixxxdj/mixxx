@@ -259,12 +259,20 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
      * there's no need to exchange the headers
      * this will cause a small GUI freeze
      */
+    WTrackTableViewHeader* oldHeader =
+            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (getTrackModel() == trackModel) {
-        // Re-sort the table even if the track model is the same. This triggers
-        // a select() if the table is dirty.
-        doSortByColumn(horizontalHeader()->sortIndicatorSection());
+        // Call select() on the table so it refreshes if it's dirty.
+        qDebug() << "~~~~~~~~~~~ doing the force select thing";
+        getTrackModel()->select();
+        // Also restore the header state, which may be different than for
+        // the previously-loaded table for this model. (Different crates).
+        if (oldHeader != nullptr) {
+            oldHeader->restoreHeaderState();
+        }
         return;
-    }else{
+    } else {
+        qDebug() << "~~~~~~~~~~~ new model, full reset";
         newModel = trackModel;
         saveVScrollBarPos(getTrackModel());
         //saving current vertical bar position
@@ -285,9 +293,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     setVisible(false);
 
     // Save the previous track model's header state
-    WTrackTableViewHeader* oldHeader =
-            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
-    if (oldHeader) {
+    if (oldHeader != nullptr) {
         oldHeader->saveHeaderState();
     }
 
@@ -359,6 +365,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
     }
 
     if (m_sorting) {
+        qDebug() << "m_sorting is true so we are sorting";
         // NOTE: Should be a UniqueConnection but that requires Qt 4.6
         connect(horizontalHeader(), SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
                 this, SLOT(doSortByColumn(int)), Qt::AutoConnection);
@@ -375,6 +382,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
             doSortByColumn(horizontalHeader()->sortIndicatorSection());
 #endif
         } else {
+            qDebug() << "no sorting!";
             // No saved order is present. Use the TrackModel's default sort order.
             int sortColumn = trackModel->defaultSortColumn();
             Qt::SortOrder sortOrder = trackModel->defaultSortOrder();
@@ -1731,6 +1739,7 @@ void WTrackTableView::addSelectionToNewCrate() {
 }
 
 void WTrackTableView::doSortByColumn(int headerSection) {
+    qDebug() << "doing the sort!!!!! " << headerSection;
     TrackModel* trackModel = getTrackModel();
     QAbstractItemModel* itemModel = model();
 
@@ -1779,7 +1788,15 @@ void WTrackTableView::doSortByColumn(int headerSection) {
 
     scrollTo(first, QAbstractItemView::EnsureVisible);
     horizontalScrollBar()->setValue(savedHScrollBarPos);
+    WTrackTableViewHeader* pHeader =
+            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
+    if (pHeader) {
+        pHeader->saveHeaderState();
+    }
 }
+
+// void WTrackTableView::slotSaveHeaderState() {
+// }
 
 void WTrackTableView::slotLockBpm() {
     lockBpm(true);
