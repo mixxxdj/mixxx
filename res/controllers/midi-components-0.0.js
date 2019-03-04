@@ -290,6 +290,14 @@
             print('ERROR: No hotcue number specified for new HotcueButton.');
             return;
         }
+        if (options.colors !== undefined || options.sendRGB !== undefined) {
+
+            this.colorIdKey = 'hotcue_' + options.number + '_color_id';
+
+            if (options.colors === undefined) {
+                options.colors = color.predefinedColorsList();
+            }
+        }
         this.number = options.number;
         this.outKey = 'hotcue_' + this.number + '_enabled';
         Button.call(this, options);
@@ -301,53 +309,45 @@
         shift: function () {
             this.inKey = 'hotcue_' + this.number + '_clear';
         },
-    });
-
-    var HotcueColorButton = function(options) {
-        if (options.sendRGB === undefined && options.colors === undefined) {
-            print("ERROR: no color palette or sendRGB method defined");
-            return;
-        }
-        if (options.colors === undefined) {
-            options.colors = color.predefinedColorsList();
-        }
-        this.colorIdKey = 'hotcue_' + options.number + '_color_id';
-        HotcueButton.call(this, options);
-    }
-    HotcueColorButton.prototype = new HotcueButton({
         getColor: function() {
-            return color.predefinedColorFromId(engine.getValue(this.group, this.colorIdKey));
+            if (this.colorIdKey !== undefined) {
+                return color.predefinedColorFromId(engine.getValue(this.group,this.colorIdKey));
+            } else {
+                return false;
+            }
         },
         output: function(value) {
-            if (value > 0) {
-                var id = engine.getValue(this.group, this.colorIdKey)
-                var color = this.colors[id]
-                if (color instanceof Array) {
-                    if (color.length !== 3) {
-                        print("ERROR: invalid color array for id: " + id);
-                        return;
-                    }
-                    if (this.sendRGB === undefined) {
-                        print("ERROR: no custom method for sending rgb defined!");
-                        return;
-                    }
-                    this.sendRGB(color);
-                } else if (typeof color === 'number') {
-                    this.send(color);
-                }
+            var outval = this.outValueScale(value);
+            if (this.colorIdKey !== undefined && outval !== this.off) {
+                this.outputColor(engine.getValue(this.group, this.colorIdKey));
             } else {
-                this.send(this.off);
+                this.send(outval);
+            }
+        },
+        outputColor: function (id) {
+            var color = this.colors[id];
+            if (color instanceof Array) {
+                if (color.length !== 3) {
+                    print("ERROR: invalid color array for id: " + id);
+                    return;
+                }
+                if (this.sendRGB === undefined) {
+                    print("ERROR: no custom method for sending rgb defined!");
+                    return;
+                }
+                this.sendRGB(color);
+            } else if (typeof color === 'number') {
+                this.send(color);
             }
         },
         connect: function() {
-            if (undefined !== this.group &&
-                undefined !== this.outKey &&
-                undefined !== this.output &&
-                typeof this.output === 'function') {
-                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output);
-            }
-            if (undefined !== this.group) {
-                this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, this.output);
+            Button.prototype.connect.call(this); // call parent connect
+            if (undefined !== this.group && this.colorIdKey !== undefined) {
+                this.connections.push(engine.makeConnection(this.group, this.colorIdKey, function (id) {
+                    if (engine.getValue(this.group,this.outKey)) {
+                        this.outputColor(id);
+                    }
+                }));
             }
         },
     });
@@ -1094,7 +1094,6 @@
     exports.SyncButton = SyncButton;
     exports.LoopToggleButton = LoopToggleButton;
     exports.HotcueButton = HotcueButton;
-    exports.HotcueColorButton = HotcueColorButton;
     exports.SamplerButton = SamplerButton;
     exports.EffectAssignmentButton = EffectAssignmentButton;
     exports.Pot = Pot;
