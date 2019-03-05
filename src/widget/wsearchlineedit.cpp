@@ -211,7 +211,7 @@ void WSearchLineEdit::showPlaceholder() {
     setToolTip(tr("Search", "noun") + "\n" +
             tr("Enter a string to search for") + "\n" +
             tr("Use operators like bpm:115-128, artist:BooFar, -year:1990") + "\n" +
-            tr("See chapter 4.4.1 in the Manual for more information") + "\n\n" +
+            tr("For more information see User Manual > Mixxx Library") + "\n\n" +
 
             tr("Shortcut") + ": \n" +
             tr("Ctrl+F") + "  " + tr("Focus", "Give search bar input focus") + "\n" +
