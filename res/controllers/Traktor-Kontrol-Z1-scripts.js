@@ -7,7 +7,7 @@ function KontrolZ1Controller() {
 
     // region CONTROLS
 
-    this.registerInputPackets = function () {
+    this.registerInputPackets = function() {
         var packet = new HIDPacket('control', 0x1)
 
         for (var c = 1; c < 3; c++) {
@@ -23,7 +23,7 @@ function KontrolZ1Controller() {
         packet.addControl('hid', '2_vol', 25, 'H')
         packet.addControl('hid', 'crossfader', 27, 'H')
 
-        var button = function (name, code) {
+        var button = function(name, code) {
             packet.addControl('hid', name, 29, 'B', code)
         }
         button('mode', 0x2)
@@ -35,7 +35,7 @@ function KontrolZ1Controller() {
         this.controller.registerInputPacket(packet)
     }
 
-    this.registerCallbacks = function () {
+    this.registerCallbacks = function() {
         HIDDebug('Registering HID callbacks')
 
         var controller = this.controller
@@ -43,7 +43,7 @@ function KontrolZ1Controller() {
         controller.linkModifier('hid', 'mode', 'mode')
 
         for (var channel = 1; channel < 3; channel++) {
-            controller.setCallback('control', 'hid', channel + '_headphone', function (button) {
+            controller.setCallback('control', 'hid', channel + '_headphone', function(button) {
                 var ch = button.name.substr(0, 1)
                 if (controller.modifiers.get('mode')) {
                     engine.setParameter('[Channel' + ch + ']', 'cue_default', button.value === controller.buttonStates.pressed)
@@ -53,7 +53,7 @@ function KontrolZ1Controller() {
                     }
                 }
             })
-            controller.setCallback('control', 'hid', channel + '_button_fx', function (button) {
+            controller.setCallback('control', 'hid', channel + '_button_fx', function(button) {
                 var ch = button.name.substr(0, 1)
                 if (button.value === controller.buttonStates.pressed) {
                     if (controller.modifiers.get('mode')) {
@@ -92,7 +92,7 @@ function KontrolZ1Controller() {
 
     // region LIGHTS
 
-    this.registerOutputPackets = function () {
+    this.registerOutputPackets = function() {
         var packet = new HIDPacket('lights', 0x80)
 
         for (var c = 1; c < 3; c++) {
@@ -108,13 +108,13 @@ function KontrolZ1Controller() {
         this.controller.registerOutputPacket(packet)
     }
 
-    this.sendLightsUpdate = function () {
+    this.sendLightsUpdate = function() {
         this.controller.getLightsPacket().send()
     }
 
     this.brightness = 0x7f
     this.brightnessRange = 1.0 / 7
-    this.refreshVolumeLights = function (value, group, key) {
+    this.refreshVolumeLights = function(value, group, key) {
         var packet = this.controller.getLightsPacket()
         var channel = group.substr(8, 1)
         for (var i = 0; i < 7; i++) {
@@ -130,7 +130,7 @@ function KontrolZ1Controller() {
 
 var KontrolZ1 = new KontrolZ1Controller()
 
-KontrolZ1.init = function (id) {
+KontrolZ1.init = function(id) {
     KontrolZ1.id = id
 
     KontrolZ1.registerInputPackets()
@@ -139,11 +139,11 @@ KontrolZ1.init = function (id) {
 
     for (var c = 1; c < 3; c++) {
         engine.makeConnection('[Channel' + c + ']', 'VuMeter', KontrolZ1.refreshVolumeLights)
-        KontrolZ1.controller.connectLight('[Channel' + c + ']', 'pfl', function (value, packet, group, name) {
+        KontrolZ1.controller.connectLight('[Channel' + c + ']', 'pfl', function(value, packet, group, name) {
             var channel = group.substr(8, 1)
             packet.getField('hid', channel + '_headphone').value = value * 0x7F
         })
-        KontrolZ1.controller.connectLight('[QuickEffectRack1_[Channel' + c + ']_Effect1]', 'enabled', function (value, packet, group, name) {
+        KontrolZ1.controller.connectLight('[QuickEffectRack1_[Channel' + c + ']_Effect1]', 'enabled', function(value, packet, group, name) {
             var channel = group.substr(26, 1)
             packet.getField('hid', channel + '_button_fx_red').value = value * 0x7F
             packet.getField('hid', channel + '_button_fx_blue').value = value * 0x7F
@@ -157,7 +157,7 @@ KontrolZ1.init = function (id) {
 // region knobs
 
 KontrolZ1.knobs = {}
-KontrolZ1.linkKnob = function (mode, knob, group, name) {
+KontrolZ1.linkKnob = function(mode, knob, group, name) {
     if (!(mode in KontrolZ1.knobs))
         KontrolZ1.knobs[mode] = {}
     KontrolZ1.knobs[mode][knob] = {
@@ -168,7 +168,7 @@ KontrolZ1.linkKnob = function (mode, knob, group, name) {
     }
 }
 
-KontrolZ1.control = function (control, field) {
+KontrolZ1.control = function(control, field) {
     if (control.callback !== undefined) {
         control.callback(control, field)
         return
@@ -176,7 +176,7 @@ KontrolZ1.control = function (control, field) {
     engine.setParameter(control.group, control.name, field.value / 4096)
 }
 
-KontrolZ1.knob = function (field) {
+KontrolZ1.knob = function(field) {
     var mode = KontrolZ1.knobs[KontrolZ1.mode]
     if (mode === undefined) {
         HIDDebug('Knob group not mapped in mode ' + KontrolZ1.mode)
@@ -192,11 +192,11 @@ KontrolZ1.knob = function (field) {
 
 // endregion
 
-KontrolZ1.shutdown = function () {
-    KontrolZ1.controller.clearLights()
+KontrolZ1.shutdown = function() {
+    KontrolZ1.controller.getLightsPacket().clearControls()
     print('NI Traktor Kontrol Z1 ' + KontrolZ1.id + ' shut down!')
 }
 
-KontrolZ1.incomingData = function (data, length) {
+KontrolZ1.incomingData = function(data, length) {
     KontrolZ1.controller.parsePacket(data, length)
 }

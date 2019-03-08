@@ -16,15 +16,14 @@ HIDController.prototype.softTakeoverAll = function() {
     this.softTakeover('[Master]', 'headMix', 'crossfader')
 }
 
-HIDController.prototype.clearLights = function(packetName) {
-    var groups = this.getLightsPacket(packetName).groups
-    for (var groupName in groups) {
-        var group = groups[groupName]
+HIDPacket.prototype.clearControls = function() {
+    for (var groupName in  this.groups) {
+        var group = this.groups[groupName]
         for (var control in group) {
             group[control].value = 0
         }
     }
-    this.sendLightsUpdate()
+    this.send()
 }
 
 HIDController.prototype.sendLightsUpdate = function(packetName) {
