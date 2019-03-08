@@ -24,6 +24,7 @@
 #endif
 
 #include <shout/shout.h>
+#include <string.h>
 #include "shout_private.h"
 
 #ifndef XXX_HAVE_X509_check_host
@@ -61,14 +62,17 @@ shout_tls_t *shout_tls_new(shout_t *self, sock_t socket)
 
 static inline int tls_setup(shout_tls_t *tls)
 {
-	SSL_METHOD *meth;
-
+	const SSL_METHOD *meth;
+#if (OPENSSL_VERSION_NUMBER < 0x10100000L) || defined(LIBRESSL_VERSION_NUMBER)
 	SSL_library_init();
 	SSL_load_error_strings();
 	SSLeay_add_all_algorithms();
- 	SSLeay_add_ssl_algorithms();
+	SSLeay_add_ssl_algorithms();
 
-	meth = TLSv1_client_method();
+	meth = SSLv23_client_method();
+#else
+	meth = TLS_client_method();
+#endif
 	if (!meth)
 		goto error;
 

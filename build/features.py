@@ -860,7 +860,7 @@ class LiveBroadcasting(Feature):
             env.SConscript(env.File('SConscript', libshout_dir))
 
             build.env.Append(LIBPATH=libshout_dir)
-            build.env.Append(LIBS=['shout_mixxx', 'ogg', 'vorbis', 'theora', 'speex', ':libssl.so.1.0.0', ':libcrypto.so.1.0.0'])
+            build.env.Append(LIBS=['shout_mixxx', 'ogg', 'vorbis', 'theora', 'speex', 'ssl', 'crypto'])
 
         depends.Qt.uic(build)('preferences/dialog/dlgprefbroadcastdlg.ui')
         return ['preferences/dialog/dlgprefbroadcast.cpp',
