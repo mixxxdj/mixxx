@@ -14,6 +14,8 @@ AlignAfterOpenBracket: AlwaysBreak
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
+BinPackArguments: false
+BinPackParameters: false
 ConstructorInitializerIndentWidth: 8
 ContinuationIndentWidth: 8
 IndentCaseLabels: false
