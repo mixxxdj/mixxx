@@ -1,11 +1,10 @@
 #include "sources/soundsourceffmpeg4.h"
 
-#include "util/sample.h"
 #include "util/logger.h"
+#include "util/sample.h"
 
 #include <limits>
 #include <mutex>
-
 
 namespace mixxx {
 
@@ -49,8 +48,7 @@ void initFFmpegLib() {
 #endif
 }
 
-inline
-uint64_t getStreamChannelLayout(const AVStream& avStream) {
+inline uint64_t getStreamChannelLayout(const AVStream& avStream) {
     auto channel_layout = avStream.codecpar->channel_layout;
     if (channel_layout == kavChannelLayoutUndefined) {
         // Workaround: FFmpeg sometimes fails to determine the channel
@@ -66,8 +64,7 @@ uint64_t getStreamChannelLayout(const AVStream& avStream) {
     return channel_layout;
 }
 
-inline
-int64_t getStreamStartTime(const AVStream& avStream) {
+inline int64_t getStreamStartTime(const AVStream& avStream) {
     auto start_time = avStream.start_time;
     if (start_time == AV_NOPTS_VALUE) {
         // This case is not unlikely, e.g. happens when decoding WAV files.
@@ -89,8 +86,7 @@ int64_t getStreamStartTime(const AVStream& avStream) {
     return start_time;
 }
 
-inline
-int64_t getStreamEndTime(const AVStream& avStream) {
+inline int64_t getStreamEndTime(const AVStream& avStream) {
     auto start_time = avStream.start_time;
     if (start_time == AV_NOPTS_VALUE) {
         // This case is not unlikely, e.g. happens when decoding WAV files.
@@ -104,23 +100,21 @@ int64_t getStreamEndTime(const AVStream& avStream) {
     return start_time + avStream.duration;
 }
 
-inline
-SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts) {
+inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts) {
     return kMinFrameIndex +
-            av_rescale_q(
-                    pts - getStreamStartTime(avStream),
-                    avStream.time_base,
-                    (AVRational) {1, avStream.codecpar->sample_rate});
+           av_rescale_q(
+                   pts - getStreamStartTime(avStream),
+                   avStream.time_base,
+                   (AVRational){1, avStream.codecpar->sample_rate});
 }
 
-inline
-int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT frameIndex) {
+inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT frameIndex) {
     // See also: convertStreamTimeToFrameIndex(), e.g. pts = 0 at
     // frameIndex = kMinFrameIndex!
     return av_rescale_q(
-                frameIndex - kMinFrameIndex,
-                (AVRational) {1, avStream.codecpar->sample_rate},
-                avStream.time_base);
+            frameIndex - kMinFrameIndex,
+            (AVRational){1, avStream.codecpar->sample_rate},
+            avStream.time_base);
 }
 
 IndexRange getStreamFrameIndexRange(const AVStream& avStream) {
@@ -137,8 +131,7 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
     DEBUG_ASSERT(defaultSeekPrerollFrameCount >= 0);
     switch (avStream.codecpar->codec_id) {
     case AV_CODEC_ID_MP3:
-    case AV_CODEC_ID_MP3ON4:
-    {
+    case AV_CODEC_ID_MP3ON4: {
         // In the worst case up to 29 MP3 frames need to be prerolled
         // for accurate seeking:
         // http://www.mars.org/mailman/public/mad-dev/2002-May/000634.html
@@ -152,8 +145,7 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
         return math_max(mp3SeekPrerollFrameCount, defaultSeekPrerollFrameCount);
     }
     case AV_CODEC_ID_AAC:
-    case AV_CODEC_ID_AAC_LATM:
-    {
+    case AV_CODEC_ID_AAC_LATM: {
         // "AAC Audio - Encoder Delay and Synchronization: The 2112 Sample Assumption"
         // https://developer.apple.com/library/ios/technotes/tn2258/_index.html
         // "It must also be assumed that without an explicit value, the playback
@@ -176,10 +168,10 @@ QString formatErrorMessage(int errnum) {
     }
 }
 
-inline
-void avTrace(const char* preamble, const AVStream& avStream) {
+inline void avTrace(const char* preamble, const AVStream& avStream) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << preamble
+        kLogger.trace()
+                << preamble
                 << "{ index" << avStream.index
                 << "| id" << avStream.id
                 << "| codec_type" << avStream.codecpar->codec_type
@@ -377,8 +369,7 @@ QStringList SoundSourceProviderFFmpeg4::getSupportedFileExtensions() const {
                 list.append("3g2");
                 list.append("mj2");
                 continue;
-            } else if (!strcmp(pavInputFormat->name, "opus") ||
-                    !strcmp(pavInputFormat->name, "libopus")) {
+            } else if (!strcmp(pavInputFormat->name, "opus") || !strcmp(pavInputFormat->name, "libopus")) {
                 list.append("opus");
                 continue;
             } else if (!strcmp(pavInputFormat->name, "wav")) {
@@ -387,10 +378,10 @@ QStringList SoundSourceProviderFFmpeg4::getSupportedFileExtensions() const {
             } else if (!strcmp(pavInputFormat->name, "wv")) {
                 list.append("wv");
                 continue;
-            ///////////////////////////////////////////////////////////
-            // Codecs with failing tests
-            ///////////////////////////////////////////////////////////
-            /*
+                ///////////////////////////////////////////////////////////
+                // Codecs with failing tests
+                ///////////////////////////////////////////////////////////
+                /*
             } else if (!strcmp(pavInputFormat->name, "flac")) {
                 // FFmpeg failure causes test failure:
                 // [flac @ 0x2ef2060] read_timestamp() failed in the middle
@@ -403,10 +394,10 @@ QStringList SoundSourceProviderFFmpeg4::getSupportedFileExtensions() const {
                 list.append("ogg");
                 continue;
             */
-            ///////////////////////////////////////////////////////////
-            // Untested codecs
-            ///////////////////////////////////////////////////////////
-            /*
+                ///////////////////////////////////////////////////////////
+                // Untested codecs
+                ///////////////////////////////////////////////////////////
+                /*
             } else if (!strcmp(pavInputFormat->name, "ac3")) {
                 list.append("ac3");
                 continue;
@@ -442,13 +433,13 @@ QStringList SoundSourceProviderFFmpeg4::getSupportedFileExtensions() const {
 }
 
 SoundSourceFFmpeg4::SoundSourceFFmpeg4(const QUrl& url)
-    : SoundSource(url),
-      m_pavStream(nullptr),
-      m_pavDecodedFrame(nullptr),
-      m_pavResampledFrame(nullptr),
-      m_sampleBuffer(kMinSampleBufferCapacity),
-      m_seekPrerollFrameCount(0),
-      m_curFrameIndex(kFrameIndexInvalid) {
+        : SoundSource(url),
+          m_pavStream(nullptr),
+          m_pavDecodedFrame(nullptr),
+          m_pavResampledFrame(nullptr),
+          m_sampleBuffer(kMinSampleBufferCapacity),
+          m_seekPrerollFrameCount(0),
+          m_curFrameIndex(kFrameIndexInvalid) {
 }
 
 SoundSourceFFmpeg4::~SoundSourceFFmpeg4() {
@@ -523,7 +514,7 @@ SoundSource::OpenResult SoundSourceFFmpeg4::tryOpen(
 
     // Configure decoding context
     const int avcodec_parameters_to_context_result =
-        avcodec_parameters_to_context(pavCodecContext, pavStream->codecpar);
+            avcodec_parameters_to_context(pavCodecContext, pavStream->codecpar);
     if (avcodec_parameters_to_context_result != 0) {
         DEBUG_ASSERT(avcodec_parameters_to_context_result < 0);
         kLogger.warning()
@@ -591,8 +582,8 @@ SoundSource::OpenResult SoundSourceFFmpeg4::tryOpen(
     // the channels and to transform the decoded audio data into the sample
     // format that is used by Mixxx.
     if ((resampledChannelCount != streamChannelCount) ||
-            (m_avResampledChannelLayout != m_avStreamChannelLayout) ||
-            (avResampledSampleFormat != avStreamSampleFormat)) {
+        (m_avResampledChannelLayout != m_avStreamChannelLayout) ||
+        (avResampledSampleFormat != avStreamSampleFormat)) {
         /*
         kLogger.trace()
                 << "Decoded stream needs to be resampled"
@@ -681,48 +672,48 @@ void SoundSourceFFmpeg4::close() {
 }
 
 namespace {
-    SINT readNextPacket(
-            AVFormatContext* pavFormatContext,
-            AVStream* pavStream,
-            AVPacket* pavPacket,
-            SINT flushFrameIndex) {
-        while (true) {
-            const auto av_read_frame_result =
-                    av_read_frame(
-                            pavFormatContext,
-                            pavPacket);
-            if (av_read_frame_result < 0) {
-                if (av_read_frame_result == AVERROR_EOF) {
-                    // Enter drain mode: Flush the decoder with a final empty packet
-                    kLogger.debug()
-                            << "EOF: Entering drain mode";
-                    pavPacket->stream_index = pavStream->index;
-                    pavPacket->data = nullptr;
-                    pavPacket->size = 0;
-                    return flushFrameIndex;
-                } else {
-                    kLogger.warning()
-                            << "av_read_frame() failed:"
-                            << formatErrorMessage(av_read_frame_result).toLocal8Bit().constData();
-                    return kFrameIndexInvalid;
-                }
-            }
-            //avTrace("Packet read from stream", *pavPacket);
-            DEBUG_ASSERT(pavPacket->data);
-            DEBUG_ASSERT(pavPacket->size > 0);
-            if (pavPacket->stream_index == pavStream->index) {
-                // Found a packet for the stream
-                break;
+SINT readNextPacket(
+        AVFormatContext* pavFormatContext,
+        AVStream* pavStream,
+        AVPacket* pavPacket,
+        SINT flushFrameIndex) {
+    while (true) {
+        const auto av_read_frame_result =
+                av_read_frame(
+                        pavFormatContext,
+                        pavPacket);
+        if (av_read_frame_result < 0) {
+            if (av_read_frame_result == AVERROR_EOF) {
+                // Enter drain mode: Flush the decoder with a final empty packet
+                kLogger.debug()
+                        << "EOF: Entering drain mode";
+                pavPacket->stream_index = pavStream->index;
+                pavPacket->data = nullptr;
+                pavPacket->size = 0;
+                return flushFrameIndex;
             } else {
-                av_packet_unref(pavPacket);
+                kLogger.warning()
+                        << "av_read_frame() failed:"
+                        << formatErrorMessage(av_read_frame_result).toLocal8Bit().constData();
+                return kFrameIndexInvalid;
             }
         }
-        DEBUG_ASSERT(pavPacket->stream_index == pavStream->index);
-        return (pavPacket->pts != AV_NOPTS_VALUE)
-                ? convertStreamTimeToFrameIndex(*pavStream, pavPacket->pts)
-                : kFrameIndexUnknown;
+        //avTrace("Packet read from stream", *pavPacket);
+        DEBUG_ASSERT(pavPacket->data);
+        DEBUG_ASSERT(pavPacket->size > 0);
+        if (pavPacket->stream_index == pavStream->index) {
+            // Found a packet for the stream
+            break;
+        } else {
+            av_packet_unref(pavPacket);
+        }
     }
+    DEBUG_ASSERT(pavPacket->stream_index == pavStream->index);
+    return (pavPacket->pts != AV_NOPTS_VALUE)
+                   ? convertStreamTimeToFrameIndex(*pavStream, pavPacket->pts)
+                   : kFrameIndexUnknown;
 }
+} // namespace
 
 ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
         WritableSampleFrames writableSampleFrames) {
@@ -742,7 +733,7 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
                 intersect(bufferedRange, writableRange);
         DEBUG_ASSERT(consumableRange.length() <= writableRange.length());
         if (!consumableRange.empty() &&
-                (consumableRange.start() == writableRange.start())) {
+            (consumableRange.start() == writableRange.start())) {
             // Drop and skip preceding buffered samples
             DEBUG_ASSERT(m_curFrameIndex <= writableRange.start());
             const auto skippableRange =
@@ -757,8 +748,7 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
             const SampleBuffer::ReadableSlice consumableSlice =
                     m_sampleBuffer.shrinkForReading(
                             frames2samples(consumableRange.length()));
-            DEBUG_ASSERT(consumableSlice.length() ==
-                    frames2samples(consumableRange.length()));
+            DEBUG_ASSERT(consumableSlice.length() == frames2samples(consumableRange.length()));
             //kLogger.trace() << "Consuming buffered samples" << consumableRange;
             if (pOutputSampleBuffer) {
                 SampleUtil::copy(
@@ -790,8 +780,8 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
         DEBUG_ASSERT(seekFrameIndex >= kMinFrameIndex);
         DEBUG_ASSERT(seekFrameIndex <= writableRange.start());
         if ((m_curFrameIndex == kFrameIndexInvalid) ||
-                (m_curFrameIndex > writableRange.start()) ||
-                (m_curFrameIndex < seekFrameIndex)) {
+            (m_curFrameIndex > writableRange.start()) ||
+            (m_curFrameIndex < seekFrameIndex)) {
             // Flush internal decoder state
             avcodec_flush_buffers(m_pavCodecContext);
             // Invalidate current position
@@ -824,7 +814,7 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
     AVPacket* pavNextPacket = nullptr;
     auto readFrameIndex = m_curFrameIndex;
     while ((pavNextPacket || !writableRange.empty()) &&
-            (m_curFrameIndex != kFrameIndexInvalid)) {
+           (m_curFrameIndex != kFrameIndexInvalid)) {
         // Read next packet from stream
         if (!pavNextPacket) {
             const SINT packetFrameIndex =
@@ -888,8 +878,8 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
             // Decode next frame
             IndexRange decodedFrameRange;
             avcodec_receive_frame_result = avcodec_receive_frame(
-                   m_pavCodecContext,
-                   m_pavDecodedFrame);
+                    m_pavCodecContext,
+                    m_pavDecodedFrame);
             if (avcodec_receive_frame_result == 0) {
                 //avTrace("Received decoded frame", *m_pavDecodedFrame);
                 DEBUG_ASSERT(m_pavDecodedFrame->pts != AV_NOPTS_VALUE);
@@ -902,9 +892,9 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
                     readFrameIndex = decodedFrameRange.start();
                 }
             } else if (avcodec_receive_frame_result == AVERROR(EAGAIN)) {
-               //kLogger.trace() << "No more frames available until decoder is fed with more packets from stream";
-               DEBUG_ASSERT(!pavNextPacket);
-               break;
+                //kLogger.trace() << "No more frames available until decoder is fed with more packets from stream";
+                DEBUG_ASSERT(!pavNextPacket);
+                break;
             } else if (avcodec_receive_frame_result == AVERROR_EOF) {
                 DEBUG_ASSERT(!pavNextPacket);
                 if (!writableRange.empty()) {

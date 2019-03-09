@@ -1,6 +1,4 @@
-#ifndef MIXXX_SoundSourceFFmpeg4_H
-#define MIXXX_SoundSourceFFmpeg4_H
-
+#pragma once
 
 extern "C" {
 
@@ -37,13 +35,13 @@ class SoundSourceFFmpeg4 : public SoundSource {
     // or implicitly by the destructor. The wrapper can only be
     // moved, copying is disabled.
     class InputAVFormatContextPtr final {
-    public:
+      public:
         explicit InputAVFormatContextPtr(AVFormatContext* pavInputFormatContext = nullptr)
-            : m_pavInputFormatContext(pavInputFormatContext) {
+                : m_pavInputFormatContext(pavInputFormatContext) {
         }
         InputAVFormatContextPtr(const InputAVFormatContextPtr&) = delete;
         InputAVFormatContextPtr(InputAVFormatContextPtr&& that)
-            : m_pavInputFormatContext(that.m_pavInputFormatContext) {
+                : m_pavInputFormatContext(that.m_pavInputFormatContext) {
             that.m_pavInputFormatContext = nullptr;
         }
         ~InputAVFormatContextPtr() {
@@ -64,14 +62,17 @@ class SoundSourceFFmpeg4 : public SoundSource {
             return *this;
         }
 
-        AVFormatContext* operator->() { return m_pavInputFormatContext; }
-        operator AVFormatContext*() { return m_pavInputFormatContext; }
+        AVFormatContext* operator->() {
+            return m_pavInputFormatContext;
+        }
+        operator AVFormatContext*() {
+            return m_pavInputFormatContext;
+        }
 
-    private:
+      private:
         AVFormatContext* m_pavInputFormatContext;
     };
     InputAVFormatContextPtr m_pavInputFormatContext;
-
 
     AVStream* m_pavStream;
 
@@ -80,15 +81,15 @@ class SoundSourceFFmpeg4 : public SoundSource {
     // implicitly by the destructor. The wrapper can only be moved,
     // copying is disabled.
     class AVCodecContextPtr final {
-    public:
+      public:
         static AVCodecContextPtr alloc(const AVCodec* codec);
 
         explicit AVCodecContextPtr(AVCodecContext* pavCodecContext = nullptr)
-            : m_pavCodecContext(pavCodecContext) {
+                : m_pavCodecContext(pavCodecContext) {
         }
         AVCodecContextPtr(const AVCodecContextPtr&) = delete;
         AVCodecContextPtr(AVCodecContextPtr&& that)
-            : m_pavCodecContext(that.m_pavCodecContext) {
+                : m_pavCodecContext(that.m_pavCodecContext) {
             that.m_pavCodecContext = nullptr;
         }
         ~AVCodecContextPtr() {
@@ -108,23 +109,27 @@ class SoundSourceFFmpeg4 : public SoundSource {
             return *this;
         }
 
-        AVCodecContext* operator->() { return m_pavCodecContext; }
-        operator AVCodecContext*() { return m_pavCodecContext; }
+        AVCodecContext* operator->() {
+            return m_pavCodecContext;
+        }
+        operator AVCodecContext*() {
+            return m_pavCodecContext;
+        }
 
-    private:
+      private:
         AVCodecContext* m_pavCodecContext;
     };
     AVCodecContextPtr m_pavCodecContext;
 
     // Resampler
     class SwrContextPtr final {
-    public:
+      public:
         explicit SwrContextPtr(SwrContext* m_pSwrContext = nullptr)
-            : m_pSwrContext(m_pSwrContext) {
+                : m_pSwrContext(m_pSwrContext) {
         }
         SwrContextPtr(const SwrContextPtr&) = delete;
         SwrContextPtr(SwrContextPtr&& that)
-            : m_pSwrContext(that.m_pSwrContext) {
+                : m_pSwrContext(that.m_pSwrContext) {
             that.m_pSwrContext = nullptr;
         }
         ~SwrContextPtr() {
@@ -145,10 +150,14 @@ class SoundSourceFFmpeg4 : public SoundSource {
             return *this;
         }
 
-        SwrContext* operator->() { return m_pSwrContext; }
-        operator SwrContext*() { return m_pSwrContext; }
+        SwrContext* operator->() {
+            return m_pSwrContext;
+        }
+        operator SwrContext*() {
+            return m_pSwrContext;
+        }
 
-    private:
+      private:
         SwrContext* m_pSwrContext;
     };
     SwrContextPtr m_pSwrContext;
@@ -166,7 +175,7 @@ class SoundSourceFFmpeg4 : public SoundSource {
     SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderFFmpeg4: public SoundSourceProvider {
+class SoundSourceProviderFFmpeg4 : public SoundSourceProvider {
   public:
     SoundSourceProviderFFmpeg4();
 
@@ -183,6 +192,3 @@ class SoundSourceProviderFFmpeg4: public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-
-#endif // MIXXX_SoundSourceFFmpeg4_H
