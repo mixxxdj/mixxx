@@ -291,10 +291,12 @@ NS6II.Deck = function(channel_offset) {
         unshift: function() {
             this.inKey = "reverseroll";
             this.outKey = this.inKey;
+            this.type = components.Button.prototype.push;
         },
         shift: function() {
             this.inKey = "keylock";
             this.outKey = this.inKey;
+            this.type = components.Button.prototype.toggle;
         },
     });
     // features 14-bit precision
