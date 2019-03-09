@@ -1227,7 +1227,6 @@ NS6II.navBar = function() {
     });
     this.btn_view = new components.Button({
         midi: [0x9F, 0x0E], // shift: [0x9F,0x13],
-        type: components.Button.prototype.types.push,
         group: "[Master]",
         inKey: "maximize_library",
         type: components.Button.prototype.types.toggle,
