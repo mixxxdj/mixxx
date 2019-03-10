@@ -631,7 +631,7 @@ NS6II.Display = function(channel_offset) {
             // send absolute bpm
             NS6II.send_syx_message(channel,
                 0x01,
-                NS6II.number_to_syx_payload(value * 1000)
+                NS6II.number_to_syx_payload(value * 100)
             );
     });
     // manages everything related to the rate/pitch feedback
