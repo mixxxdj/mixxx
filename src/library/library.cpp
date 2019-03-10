@@ -462,8 +462,9 @@ void Library::saveCachedTrack(Track* pTrack) noexcept {
 // Write Cuepoints to *.cue file if at least one cuepoint is set
 void Library::saveCuesToFile(const Track* pTrack){
     QList<CuePointer> cueList = pTrack->getCuePoints();
-    if ( cueList.size() == 0 )
+    if (cueList.isEmpty()){
         return;
+    }
     QString cuepath = pTrack->getCueFilePath();
     //qDebug() << "Saving Loc: " << cuepath.toStdString();
     QFile file(cuepath);

@@ -513,28 +513,19 @@ void SoundSourceProxy::updateTrackFromSource(
                 }
             }
             if(exists == false){
-                CuePointer cuePointer = m_pTrack->createAndAddCue();
-                ////cuePointer->setDuration(m_pTrack->getDuration());
+                CuePointer cuePointer(m_pTrack->createAndAddCue());
                 cuePointer->setPosition(cuePointPos);
-                //cuePointer->setId(id_no);
-               // textCues += CuePointer(new Cue(id_no, m_pTrack->getId(), Cue::CUE, line.toDouble(), m_pTrack->getDuration(), id_no, "", QColor("#FF0000")));
+                cuePointer->setHotCue(id_no);
+                cuePointer->setType(Cue::CUE);
                 textCues += cuePointer;
                 //qDebug() << "Setting Cue: " << cuePointPos;
-                std::cout << "Setting Cue: " << cuePointPos << std::endl;
-                
             }
-
-            //m_pTrack->setCuePoint(_cuePoint);
             id_no++;
         }
         inputFile.close();
     }
     m_pTrack->setCuePoints(textCues);
     emit(m_pTrack->cuesUpdated());
-    QList<CuePointer> textAgain = m_pTrack->getCuePoints();
-    for(CuePointer cue : textAgain){
-        std::cout << "DEBUG: " << cue->getPosition() << std::endl;
-    }
 }
 
 mixxx::MetadataSource::ImportResult SoundSourceProxy::importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const {
