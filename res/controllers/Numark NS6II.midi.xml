@@ -1887,15 +1887,6 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>NS6II.Mixer_instance.knob_split_cue.input</key>
-                <status>0xBF</status>
-                <midino>0x0D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel1]</group>
                 <key>NS6II.Decks[1].cont_pad_unit.input</key>
                 <status>0x84</status>
