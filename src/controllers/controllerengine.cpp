@@ -764,19 +764,24 @@ void ScriptConnection::executeCallback(double value) const {
    Purpose: (Dis)connects a ScriptConnection
    Input:   the ScriptConnection to disconnect
    -------- ------------------------------------------------------ */
-void ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
+bool ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
     ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
                                                            connection.key.item);
 
     if (m_pEngine == nullptr || coScript == nullptr) {
-        return;
+        return false;
     }
 
-    coScript->removeScriptConnection(connection);
+    return coScript->removeScriptConnection(connection);
 }
 
-void ScriptConnectionInvokableWrapper::disconnect() {
-    m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+bool ScriptConnectionInvokableWrapper::disconnect() {
+    bool success = m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+    // set id to empty (falsy) string to indicate that the connection has been disconnected
+    if (success) {
+    	m_idString = "";
+    }
+    return success;
 }
 
 /* -------- ------------------------------------------------------

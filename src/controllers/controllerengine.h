@@ -65,7 +65,7 @@ class ScriptConnectionInvokableWrapper : public QObject {
         m_idString = conn.id.toString();
     }
     const QString& readId() const { return m_idString; }
-    Q_INVOKABLE void disconnect();
+    Q_INVOKABLE bool disconnect();
     Q_INVOKABLE void trigger();
 
   private:
@@ -99,7 +99,7 @@ class ControllerEngine : public QObject {
     const QList<QString>& getScriptFunctionPrefixes() { return m_scriptFunctionPrefixes; };
 
     // Disconnect a ScriptConnection
-    void removeScriptConnection(const ScriptConnection conn);
+    bool removeScriptConnection(const ScriptConnection conn);
     void triggerScriptConnection(const ScriptConnection conn);
 
   protected:
