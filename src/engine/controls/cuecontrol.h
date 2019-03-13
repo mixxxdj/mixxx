@@ -191,6 +191,7 @@ class CueControl : public EngineControl {
     void loadCuesFromTrack();
     void reloadCuesFromTrack();
     double quantizeCuePoint(double position, Cue::CueSource source, QuantizeMode mode);
+    double quantizeCurrentPosition(QuantizeMode mode);
     TrackAt getTrackAt() const;
 
     bool m_bPreviewing;

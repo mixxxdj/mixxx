@@ -1077,24 +1077,10 @@ void CueControl::introStartSet(double v) {
     }
 
     QMutexLocker lock(&m_mutex);
-    SampleOfTrack sampleOfTrack = getSampleOfTrack();
 
     // Quantize cue point to nearest beat before current position.
     // Fall back to nearest beat after or current position.
-    double position;
-    if (m_pQuantizeEnabled->toBool()) {
-        double prevBeat = m_pPrevBeat->get();
-        double nextBeat = m_pNextBeat->get();
-        if (prevBeat != -1.0) {
-            position = prevBeat;
-        } else if (nextBeat != -1.0) {
-            position = nextBeat;
-        } else {
-            position = sampleOfTrack.current;
-        }
-    } else {
-        position = sampleOfTrack.current;
-    }
+    double position = quantizeCurrentPosition(QuantizeMode::PreviousBeat);
 
     // Make sure user is not trying to place intro start cue on or after
     // other intro/outro cues.
@@ -1170,24 +1156,10 @@ void CueControl::introEndSet(double v) {
     }
 
     QMutexLocker lock(&m_mutex);
-    SampleOfTrack sampleOfTrack = getSampleOfTrack();
 
     // Quantize cue point to nearest beat after current position.
     // Fall back to nearest beat before or current position.
-    double position;
-    if (m_pQuantizeEnabled->toBool()) {
-        double prevBeat = m_pPrevBeat->get();
-        double nextBeat = m_pNextBeat->get();
-        if (nextBeat != -1.0) {
-            position = nextBeat;
-        } else if (prevBeat != -1.0) {
-            position = prevBeat;
-        } else {
-            position = sampleOfTrack.current;
-        }
-    } else {
-        position = sampleOfTrack.current;
-    }
+    double position = quantizeCurrentPosition(QuantizeMode::NextBeat);
 
     // Make sure user is not trying to place intro end cue on or before
     // intro start cue, or on or after outro start/end cue.
@@ -1268,24 +1240,10 @@ void CueControl::outroStartSet(double v) {
     }
 
     QMutexLocker lock(&m_mutex);
-    SampleOfTrack sampleOfTrack = getSampleOfTrack();
 
     // Quantize cue point to nearest beat before current position.
     // Fall back to nearest beat after or current position.
-    double position;
-    if (m_pQuantizeEnabled->toBool()) {
-        double prevBeat = m_pPrevBeat->get();
-        double nextBeat = m_pNextBeat->get();
-        if (prevBeat != -1.0) {
-            position = prevBeat;
-        } else if (nextBeat != -1.0) {
-            position = nextBeat;
-        } else {
-            position = sampleOfTrack.current;
-        }
-    } else {
-        position = sampleOfTrack.current;
-    }
+    double position = quantizeCurrentPosition(QuantizeMode::PreviousBeat);
 
     // Make sure user is not trying to place outro start cue on or before
     // intro end cue or on or after outro end cue.
@@ -1361,24 +1319,10 @@ void CueControl::outroEndSet(double v) {
     }
 
     QMutexLocker lock(&m_mutex);
-    SampleOfTrack sampleOfTrack = getSampleOfTrack();
 
     // Quantize cue point to nearest beat after current position.
     // Fall back to nearest beat before or current position.
-    double position;
-    if (m_pQuantizeEnabled->toBool()) {
-        double prevBeat = m_pPrevBeat->get();
-        double nextBeat = m_pNextBeat->get();
-        if (nextBeat != -1.0) {
-            position = nextBeat;
-        } else if (prevBeat != -1.0) {
-            position = prevBeat;
-        } else {
-            position = sampleOfTrack.current;
-        }
-    } else {
-        position = sampleOfTrack.current;
-    }
+    double position = quantizeCurrentPosition(QuantizeMode::NextBeat);
 
     // Make sure user is not trying to place outro end cue on or before
     // other intro/outro cues.
@@ -1613,6 +1557,34 @@ CueControl::TrackAt CueControl::getTrackAt() const {
         return TrackAt::Cue;
     }
     return TrackAt::ElseWhere;
+}
+
+double CueControl::quantizeCurrentPosition(QuantizeMode mode) {
+    SampleOfTrack sampleOfTrack = getSampleOfTrack();
+
+    // Don't quantize if quantization is disabled.
+    if (!m_pQuantizeEnabled->toBool()) {
+        return sampleOfTrack.current;
+    }
+
+    if (mode == QuantizeMode::ClosestBeat) {
+        double closestBeat = m_pClosestBeat->get();
+        return closestBeat != -1.0 ? closestBeat : sampleOfTrack.current;
+    }
+
+    double prevBeat = m_pPrevBeat->get();
+    double nextBeat = m_pNextBeat->get();
+
+    if (mode == QuantizeMode::PreviousBeat) {
+        // Quantize to previous beat, fall back to next beat.
+        return prevBeat != -1.0 ? prevBeat : (nextBeat != -1.0 ? nextBeat : sampleOfTrack.current);
+    } else if (mode == QuantizeMode::NextBeat) {
+        // Quantize to next beat, fall back to previous beat.
+        return nextBeat != -1.0 ? nextBeat : (prevBeat != -1.0 ? prevBeat : sampleOfTrack.current);
+    } else {
+        qWarning() << "PROGRAMMING ERROR: Invalid quantize mode" << static_cast<int>(mode);
+        return -1.0;
+    }
 }
 
 double CueControl::quantizeCuePoint(double position, Cue::CueSource source, QuantizeMode mode) {
