@@ -59,18 +59,22 @@ class ScriptConnectionInvokableWrapper : public QObject {
     //Q_PROPERTY(ConfigKey key READ key)
     // There's little use in exposing the function...
     //Q_PROPERTY(QScriptValue function READ function)
+    Q_PROPERTY(bool isConnected READ readIsConnected)
   public:
     ScriptConnectionInvokableWrapper(ScriptConnection conn) {
         m_scriptConnection = conn;
         m_idString = conn.id.toString();
+        m_isConnected = true;
     }
     const QString& readId() const { return m_idString; }
+    bool readIsConnected() const { return m_isConnected; }
     Q_INVOKABLE bool disconnect();
     Q_INVOKABLE void trigger();
 
   private:
     ScriptConnection m_scriptConnection;
     QString m_idString;
+    bool m_isConnected;
 };
 
 class ControllerEngine : public QObject {

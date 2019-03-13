@@ -776,12 +776,9 @@ bool ControllerEngine::removeScriptConnection(const ScriptConnection connection)
 }
 
 bool ScriptConnectionInvokableWrapper::disconnect() {
-    bool success = m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
-    // set id to empty (falsy) string to indicate that the connection has been disconnected
-    if (success) {
-    	m_idString = "";
-    }
-    return success;
+    // if the removeScriptConnection succeeded, the connection has been successfully disconnected
+    m_isConnected = !m_scriptConnection.controllerEngine->removeScriptConnection(m_scriptConnection);
+    return m_isConnected;
 }
 
 /* -------- ------------------------------------------------------
