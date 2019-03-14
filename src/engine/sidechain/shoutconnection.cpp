@@ -186,16 +186,18 @@ void ShoutConnection::updateFromPreferences() {
     // strings to pass to libshout.
 
     QString codec = m_pProfile->getMetadataCharset();
-    QByteArray baCodec = codec.toLatin1();
-    m_pTextCodec = QTextCodec::codecForName(baCodec);
-    if (!m_pTextCodec) {
-        kLogger.warning()
-                << "Couldn't find broadcast metadata codec for codec:" << codec
-                << " defaulting to ISO-8859-1.";
+    if (!codec.isEmpty()) {
+        QByteArray baCodec = codec.toLatin1();
+        m_pTextCodec = QTextCodec::codecForName(baCodec);
+        if (!m_pTextCodec) {
+            kLogger.warning()
+                    << "Couldn't find broadcast metadata codec for codec:" << codec
+                    << " defaulting to ISO-8859-1.";
+        } else {
+            // Indicates our metadata is in the provided charset.
+            insertMetaData("charset",  baCodec.constData());
+        }
     }
-
-    // Indicates our metadata is in the provided charset.
-    shout_metadata_add(m_pShoutMetaData, "charset",  baCodec.constData());
 
     QString serverType = m_pProfile->getServertype();
 
