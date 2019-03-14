@@ -194,6 +194,8 @@ NS6II.use_button_backlight = true;
 
 NS6II.hide_killswitches_when_unused = true;
 
+NS6II.soft_takeover_led_ignore_time = 100; //milliseconds
+
 // Globals
 
 NS6II.scratch_settings = {
@@ -305,19 +307,33 @@ NS6II.Deck = function(channel_offset) {
         // LSB: [0x90+channel_offset,0x29]
         group: theDeck.group,
         inKey: "rate",
+        timer: 0,
         // using inSetParameter to hook into the the high-res value
         inSetParameter: function(value) {
             engine.setParameter(this.group, this.inKey, value);
+            if (this.timer) {
+                engine.stopTimer(this.timer);
+            } else {
+                // call function do disconnect conn_rate_diff callback.
+                // if (!theDeck.cont_display.dont_disconnect_until_callback_called) {
+                    theDeck.cont_display.handle_rate_feedback_connection(false);
+                // }
+            }
+            this.timer = engine.beginTimer(NS6II.soft_takeover_led_ignore_time,function () {
+                // reset timer
+                this.timer = 0;
+                // bind connection again.
+                // theDeck.cont_display.dont_disconnect_until_callback_called = true;
+                theDeck.cont_display.handle_rate_feedback_connection(true);
+            }, true);
             switch (channel_offset) {
                 case 0:
                 case 2:
-                    // round values by decreasing the resolution.
-                    // still good enough for the LED indicator.
-                    NS6II.slider_pitch_physical_left_val = value*50 | 0;
+                    NS6II.slider_pitch_physical_left_val = value;
                     break;
                 case 1:
                 case 3:
-                    NS6II.slider_pitch_physical_right_val = value*50 | 0;
+                    NS6II.slider_pitch_physical_right_val = value;
                     break;
             }
         },
@@ -456,7 +472,7 @@ NS6II.Deck = function(channel_offset) {
         },
     });
 
-    this.cont_display = new NS6II.Display(channel_offset);
+    this.cont_display = new NS6II.Display(channel_offset, this);
 
     this.cont_pad_unit = new NS6II.cont_pad_mode_selector(channel_offset+4,this.group);
 
@@ -551,7 +567,7 @@ NS6II.send_syx_message = function(channel, location, payload) {
     midi.sendSysexMsg(msg,msg.length);
 };
 // Display might be unique per physical Deck which would mean that it would have to interface with the Deck
-NS6II.Display = function(channel_offset) {
+NS6II.Display = function(channel_offset, deck_reference) {
     var channel = (channel_offset + 1);
     var deck = "[Channel" + channel + "]";
     var theDisplay = this;
@@ -647,27 +663,54 @@ NS6II.Display = function(channel_offset) {
             )
         );
     });
+    this.soft_takeover_enabled = false;
     // gets called whenever the user switches the deck on the controller
     this.mngr_deck_watcher = function () {
         engine.softTakeoverIgnoreNextValue(deck,"rate");
-        this.conn_rate_diff.trigger();
+        this.soft_takeover_enabled = true;
+        this.handle_rate_feedback_connection(true);
+        // this.conn_rate_diff.trigger();
     }
-    this.conn_rate_diff = engine.makeConnection(deck, "rate", function(value) {
-        // scale value from [-1;1] value to [0,50] parameter format
-        value = ((value + 1)*25) | 0;
-        switch (channel_offset) {
-            case 0:
-            case 2:
-                midi.sendShortMsg(0x90 + channel_offset, 0x09, NS6II.slider_pitch_physical_left_val > value ? 0x7F : 0x00);
-                midi.sendShortMsg(0x90 + channel_offset, 0x0A, NS6II.slider_pitch_physical_left_val < value ? 0x7F : 0x00);
-                break;
-            case 1:
-            case 3:
-                midi.sendShortMsg(0x90 + channel_offset, 0x09, NS6II.slider_pitch_physical_right_val > value ? 0x7F : 0x00);
-                midi.sendShortMsg(0x90 + channel_offset, 0x0A, NS6II.slider_pitch_physical_right_val < value ? 0x7F : 0x00);
-                break;
+    this.handle_rate_feedback_connection = function (bind) {
+        print("connected: "+this.conn_rate_diff.isConnected);
+        print("soft_takeover_enabled: "+this.soft_takeover_enabled);
+        if (bind) {
+            if (!this.conn_rate_diff.isConnected) {
+                this.conn_rate_diff = engine.makeConnection(deck, "rate", function(value) {
+                    // checks if callback was invoked because of physical slider movement
+                    if (deck_reference.slider_pitch.timer && this.soft_takeover_enabled)  {
+                        // print("DISABLING");
+                        this.soft_takeover_enabled = false;
+                        this.handle_rate_feedback_connection(false);
+                    }
+                    // scale value from [-1;1] value to [0,1] parameter format
+                    value = (value + 1)/2;
+                    switch (channel_offset) {
+                        case 0:
+                        case 2:
+                            midi.sendShortMsg(0x90 + channel_offset, 0x09, NS6II.slider_pitch_physical_left_val > value ? 0x7F : 0x00);
+                            midi.sendShortMsg(0x90 + channel_offset, 0x0A, NS6II.slider_pitch_physical_left_val < value ? 0x7F : 0x00);
+                            break;
+                        case 1:
+                        case 3:
+                            midi.sendShortMsg(0x90 + channel_offset, 0x09, NS6II.slider_pitch_physical_right_val > value ? 0x7F : 0x00);
+                            midi.sendShortMsg(0x90 + channel_offset, 0x0A, NS6II.slider_pitch_physical_right_val < value ? 0x7F : 0x00);
+                            break;
+                    }
+                });
+            }
+            this.conn_rate_diff.trigger();
+        } else {
+            if (!this.soft_takeover_enabled) {
+                this.conn_rate_diff.disconnect();
+            }
         }
-    });
+    }
+    // create placeholder object so QtScript doesnt fail when accessing
+    // property of an undefined project
+    this.conn_rate_diff = {};
+    // bind feedback leds
+    this.handle_rate_feedback_connection(true);
 
     this.conn_keylock = engine.makeConnection(deck, "keylock", function(value) {
         midi.sendShortMsg(0x90 + channel_offset, 0x0D, value);
