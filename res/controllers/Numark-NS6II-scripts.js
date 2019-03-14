@@ -1363,8 +1363,8 @@ NS6II.init = function() {
     // insert it and then sets the index accordingly
     NS6II.pot_caps_active = true; // handle by touch fx button later
 
-    // force headMix to 1 because it is managed by the controller hardware mixer.
-    engine.setParameter("[Master]","headMix",1);
+    // force headMix to 0 because it is managed by the controller hardware mixer.
+    engine.setParameter("[Master]","headMix",0);
 
     var default_rate_range = engine.getValue("[Channel1]", "rateRange");
     NS6II.current_rate_range_index = NS6II.rate_ranges.indexOf(default_rate_range);
