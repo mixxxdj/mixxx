@@ -89,6 +89,16 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
         errorDialog(tr("Error setting non-blocking mode:"),
                 shout_get_error(m_pShout));
     }
+
+#ifdef SHOUT_TLS
+    // Libshout defaults to SHOUT_TLS_AUTO if build with SHOUT_TLS
+    // Sometimes autodetection fails, resulting into no metadata send
+    // https://bugs.launchpad.net/mixxx/+bug/1817395
+    if (shout_set_tls(m_pShout, SHOUT_TLS_DISABLED) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting tls mode:"),
+                shout_get_error(m_pShout));
+    }
+#endif
 }
 
 ShoutConnection::~ShoutConnection() {
