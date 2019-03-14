@@ -147,6 +147,13 @@ QByteArray ShoutConnection::encodeString(const QString& string) {
     return string.toLatin1();
 }
 
+void ShoutConnection::insertMetaData(const char *pName, const char *pValue) {
+    int ret = shout_metadata_add(m_pShoutMetaData, pName, pValue);
+    if (ret != SHOUTERR_SUCCESS) {
+        kLogger.warning() << "shout_metadata_add" << pName << "fails with error code" << ret;
+    }
+}
+
 void ShoutConnection::updateFromPreferences() {
     kLogger.debug() << m_pProfile->getProfileName()
                     << ": updating from preferences";
@@ -705,8 +712,14 @@ bool ShoutConnection::metaDataHasChanged() {
 
 void ShoutConnection::updateMetaData() {
     setFunctionCode(5);
-    if (!m_pShout || !m_pShoutMetaData)
+    if (!m_pShout) {
+        kLogger.debug() << "updateMetaData failed, invalid m_pShout";
         return;
+    }
+    if (!m_pShoutMetaData) {
+        kLogger.debug() << "updateMetaData failed, invalid m_pShoutMetaData";
+        return;
+    }
 
     /**
      * If track has changed and static metadata is disabled
@@ -742,8 +755,8 @@ void ShoutConnection::updateMetaData() {
             // old way for those use cases.
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
             	setFunctionCode(9);
-                shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
-                shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
+            	insertMetaData("artist", encodeString(artist).constData());
+            	insertMetaData("title", encodeString(title).constData());
             } else {
                 // we are going to take the metadata format and replace all
                 // the references to $title and $artist by doing a single
@@ -775,10 +788,13 @@ void ShoutConnection::updateMetaData() {
 
                 QByteArray baSong = encodeString(metadataFinal);
                 setFunctionCode(10);
-                shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
+                insertMetaData("song",  baSong.constData());
             }
             setFunctionCode(11);
-            shout_set_metadata(m_pShout, m_pShoutMetaData);
+            int ret = shout_set_metadata(m_pShout, m_pShoutMetaData);
+            if (ret != SHOUTERR_SUCCESS) {
+                kLogger.warning() << "shout_set_metadata fails with error code" << ret;
+            }
         }
     } else {
         // Otherwise we might use static metadata
@@ -788,14 +804,11 @@ void ShoutConnection::updateMetaData() {
             // see comment above...
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
             	setFunctionCode(12);
-                shout_metadata_add(
-                        m_pShoutMetaData,"artist",encodeString(m_customArtist).constData());
-
-                shout_metadata_add(
-                        m_pShoutMetaData,"title",encodeString(m_customTitle).constData());
+                insertMetaData("artist", encodeString(m_customArtist).constData());
+                insertMetaData("title", encodeString(m_customTitle).constData());
             } else {
                 QByteArray baCustomSong = encodeString(m_customArtist.isEmpty() ? m_customTitle : m_customArtist + " - " + m_customTitle);
-                shout_metadata_add(m_pShoutMetaData, "song", baCustomSong.constData());
+                insertMetaData("song", baCustomSong.constData());
             }
 
             setFunctionCode(13);
