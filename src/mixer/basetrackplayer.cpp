@@ -371,7 +371,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
                 // are playing, as this would change the speed of already playing decks.
                 if (!m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
                     if (m_pRateRatio != NULL) {
-                        m_pRateRatio->set(0.0);
+                        m_pRateRatio->set(1.0);
                     }
                 }
             }

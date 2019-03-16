@@ -632,7 +632,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         //if it hasn't been long,
         //let the track play a wee bit more before deciding we've stopped
 
-        m_pRateRatio->set(0.0);
+        m_pRateRatio->set(1.0);
 
         if (m_iVCMode == MIXXX_VCMODE_ABSOLUTE &&
                 fabs(m_dVinylPosition - filePosition) >= 0.1) {
