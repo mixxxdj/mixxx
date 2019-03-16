@@ -103,6 +103,10 @@ class LibFaadLoader {
   private:
     LibFaadLoader();
 
+    LibFaadLoader(const LibFaadLoader &) = delete;
+    LibFaadLoader &operator=(const LibFaadLoader &) = delete;
+
+    // QLibrary is not copy-able
     std::unique_ptr<QLibrary> m_pLibrary;
 
     typedef Handle (* NeAACDecOpen_t)();
