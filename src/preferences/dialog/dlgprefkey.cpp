@@ -106,13 +106,13 @@ void DlgPrefKey::loadSettings() {
     if (notation == KEY_NOTATION_OPEN_KEY) {
         radioNotationOpenKey->setChecked(true);
         setNotationOpenKey(true);
-    } else if (notation == KEY_NOTATION_OPEN_KEY_TRADITIONAL) {
+    } else if (notation == KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL) {
         radioNotationOpenKeyTraditional->setChecked(true);
         setNotationOpenKeyTraditional(true);
     } else if (notation == KEY_NOTATION_LANCELOT) {
         radioNotationLancelot->setChecked(true);
         setNotationLancelot(true);
-    } else if (notation == KEY_NOTATION_LANCELOT_TRADITIONAL) {
+    } else if (notation == KEY_NOTATION_LANCELOT_AND_TRADITIONAL) {
         radioNotationLancelotTraditional->setChecked(true);
         setNotationLancelotTraditional(true);
     } else if (notation == KEY_NOTATION_TRADITIONAL) {
@@ -203,11 +203,11 @@ void DlgPrefKey::slotApply() {
             notation_name = KEY_NOTATION_OPEN_KEY;
             notation_type = KeyUtils::OPEN_KEY;
         } else if (radioNotationOpenKeyTraditional->isChecked()) {
-            notation_name = KEY_NOTATION_OPEN_KEY_TRADITIONAL;
-            notation_type = KeyUtils::OPEN_KEY_TRADITIONAL;
+            notation_name = KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL;
+            notation_type = KeyUtils::OPEN_KEY_AND_TRADITIONAL;
         } else if (radioNotationLancelotTraditional->isChecked()) {
-            notation_name = KEY_NOTATION_LANCELOT_TRADITIONAL;
-            notation_type = KeyUtils::LANCELOT_TRADITIONAL;
+            notation_name = KEY_NOTATION_LANCELOT_AND_TRADITIONAL;
+            notation_type = KeyUtils::LANCELOT_AND_TRADITIONAL;
         } else if (radioNotationTraditional->isChecked()) {
             notation_name = KEY_NOTATION_TRADITIONAL;
             notation_type = KeyUtils::TRADITIONAL;
@@ -287,7 +287,7 @@ void DlgPrefKey::setNotationOpenKey(bool active) {
 
 void DlgPrefKey::setNotationOpenKeyTraditional(bool active) {
     if (active) {
-        setNotation(KeyUtils::OPEN_KEY_TRADITIONAL);
+        setNotation(KeyUtils::OPEN_KEY_AND_TRADITIONAL);
     }
 }
 
@@ -299,6 +299,6 @@ void DlgPrefKey::setNotationLancelot(bool active) {
 
 void DlgPrefKey::setNotationLancelotTraditional(bool active) {
     if (active) {
-        setNotation(KeyUtils::LANCELOT_TRADITIONAL);
+        setNotation(KeyUtils::LANCELOT_AND_TRADITIONAL);
     }
 }

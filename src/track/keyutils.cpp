@@ -215,7 +215,7 @@ QString KeyUtils::keyToString(ChromaticKey key,
         bool major = keyIsMajor(key);
         int number = keyToOpenKeyNumber(key);
         return QString::number(number) + (major ? "d" : "m");
-    } else if (notation == OPEN_KEY_TRADITIONAL) {
+    } else if (notation == OPEN_KEY_AND_TRADITIONAL) {
         bool major = keyIsMajor(key);
         int number = keyToOpenKeyNumber(key);
         QString trad = s_traditionalKeyNames[static_cast<int>(key)];
@@ -224,7 +224,7 @@ QString KeyUtils::keyToString(ChromaticKey key,
         bool major = keyIsMajor(key);
         int number = openKeyNumberToLancelotNumber(keyToOpenKeyNumber(key));
         return QString::number(number) + (major ? "B" : "A");
-    } else if (notation == LANCELOT_TRADITIONAL) {
+    } else if (notation == LANCELOT_AND_TRADITIONAL) {
         bool major = keyIsMajor(key);
         int number = openKeyNumberToLancelotNumber(keyToOpenKeyNumber(key));
         QString trad = s_traditionalKeyNames[static_cast<int>(key)];
