@@ -35,9 +35,11 @@ LibFaadLoader::LibFaadLoader()
     // Using MacPorts ('sudo port install faad2' command):
     libnames << "/opt/local/lib/libfaad2.dylib";
 #else
-    DEBUG_ASSERT(!"OS not implementet");
+    DEBUG_ASSERT(!"OS not implemented");
     return;
 #endif
+
+
 
     for (const auto& libname : libnames) {
         m_pLibrary.reset();
