@@ -128,6 +128,9 @@ unsigned char LibFaadLoader::SetConfiguration(
     if (m_neAACDecSetConfiguration) {
         return m_neAACDecSetConfiguration(hDecoder, pConfig);
     }
+    // Return values:
+    // 0 – Error, invalid configuration.
+    // 1 – OK
     return 0;
 }
 
@@ -177,7 +180,7 @@ void* LibFaadLoader::Decode2(
                 ppSampleBuffer,
                 sampleBufferSize);
     }
-    return 0;
+    return nullptr;
 }
 
 char* LibFaadLoader::GetErrorMessage(unsigned char errcode) {
