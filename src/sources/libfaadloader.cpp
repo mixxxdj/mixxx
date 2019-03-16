@@ -101,7 +101,7 @@ LibFaadLoader::LibFaadLoader()
         m_pLibrary.reset();
         return;
     }
-    kLogger.debug() << "Successfully loaded faad2 library " << m_pLibrary->fileName();
+    kLogger.info() << "Successfully loaded library" << m_pLibrary->fileName();
 };
 
 bool LibFaadLoader::isLoaded() {
