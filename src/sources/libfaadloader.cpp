@@ -1,4 +1,5 @@
 #include "sources/libfaadloader.h"
+#include "util/logger.h"
 
 namespace {
 

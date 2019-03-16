@@ -3,7 +3,6 @@
 #include <QLibrary>
 
 #include "util/memory.h"
-#include "util/logger.h"
 
 // object types for AAC
 constexpr unsigned char MAIN = 1;
