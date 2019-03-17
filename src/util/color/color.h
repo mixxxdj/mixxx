@@ -38,7 +38,7 @@ namespace Color {
 
     // If the baseColor is darker than the global threshold,
     // returns a lighter color, otherwise returns a darker color.
-    static inline QColor chooseContrastColor(QColor baseColor) {
+    static QColor chooseContrastColor(QColor baseColor) {
         // Will produce a color that is 60% brighter.
         static const int iLighterFactor = 160;
         // We consider a hsv color dark if its value is <= 20% of max value
