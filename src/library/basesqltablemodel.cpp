@@ -656,7 +656,7 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
                 int duration = value.toInt();
                 if (duration > 0) {
-                    value = mixxx::Duration::formatSeconds(duration);
+                    value = mixxx::Duration::formatTime(duration);
                 } else {
                     value = QString();
                 }
@@ -676,6 +676,11 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 QDateTime gmtDate = value.toDateTime();
                 gmtDate.setTimeSpec(Qt::UTC);
                 value = gmtDate.toLocalTime();
+            } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+                if (role == Qt::DisplayRole) {
+                    value = value.toDouble() == 0.0
+                            ? "-" : QString("%1").arg(value.toDouble(), 0, 'f', 1);
+                }
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {

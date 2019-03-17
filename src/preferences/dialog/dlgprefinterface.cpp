@@ -70,6 +70,8 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     warningLabel->setText(warningString);
 
     ComboBoxSkinconf->clear();
+    // align left edge of preview image with comboboxes
+    skinPreviewLabel->setStyleSheet("QLabel { margin-left: 2px; }");
     skinPreviewLabel->setText("");
 
     QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
@@ -93,7 +95,9 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         if (skinInfo.absoluteFilePath() == configuredSkinPath) {
             m_skin = skinInfo.fileName();
             ComboBoxSkinconf->setCurrentIndex(index);
-            skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin));
+            // schemes must be updated here to populate the drop-down box and set m_colorScheme
+            slotUpdateSchemes();
+            skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
             if (size_ok) {
                 warningLabel->hide();
             } else {
@@ -106,7 +110,6 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
     connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
 
-    slotUpdateSchemes();
 
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
@@ -181,6 +184,7 @@ DlgPrefInterface::~DlgPrefInterface() {
 }
 
 void DlgPrefInterface::slotUpdateSchemes() {
+    // Re-populates the scheme combobox and attempts to pick the color scheme from config file.
     // Since this involves opening a file we won't do this as part of regular slotUpdate
     QList<QString> schlist = LegacySkinParser::getSchemeList(
                 m_pSkinLoader->getSkinPath(m_skin));
@@ -191,15 +195,27 @@ void DlgPrefInterface::slotUpdateSchemes() {
         ComboBoxSchemeconf->setEnabled(false);
         ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", 0));
         ComboBoxSchemeconf->setCurrentIndex(0);
+        // clear m_colorScheme so that SkinLoader::getSkinPreview returns the correct preview
+        m_colorScheme = QString();
     } else {
         ComboBoxSchemeconf->setEnabled(true);
-        QString selectedScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
+        QString configScheme = m_pConfig->getValueString(ConfigKey("[Config]", "Scheme"));
+        bool foundConfigScheme = false;
         for (int i = 0; i < schlist.size(); i++) {
             ComboBoxSchemeconf->addItem(schlist[i]);
 
-            if (schlist[i] == selectedScheme) {
+            if (schlist[i] == configScheme) {
                 ComboBoxSchemeconf->setCurrentIndex(i);
+                m_colorScheme = configScheme;
+                foundConfigScheme = true;
             }
+        }
+        // There might be a skin configured that has color schemes but none of them
+        // matches the configured color scheme.
+        // The combobox would pick the first item then. Also choose this item for
+        // m_colorScheme to avoid an empty skin preview.
+        if (!foundConfigScheme) {
+            m_colorScheme = schlist[0];
         }
     }
 }
@@ -311,11 +327,11 @@ void DlgPrefInterface::slotSetScheme(int) {
         m_colorScheme = newScheme;
         m_bRebootMixxxView = true;
     }
+    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
 }
 
 void DlgPrefInterface::slotSetSkin(int) {
     QString newSkin = ComboBoxSkinconf->currentText();
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin));
     if (newSkin != m_skin) {
         m_skin = newSkin;
         m_bRebootMixxxView = newSkin != m_skinOnUpdate;
@@ -323,6 +339,7 @@ void DlgPrefInterface::slotSetSkin(int) {
             ? warningLabel->hide() : warningLabel->show();
         slotUpdateSchemes();
     }
+    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkin, m_colorScheme));
 }
 
 void DlgPrefInterface::slotApply() {

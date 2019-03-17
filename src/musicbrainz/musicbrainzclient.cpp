@@ -14,19 +14,37 @@
 #include <QTextStream>
 #include <QXmlStreamReader>
 #include <QUrl>
+#include <QJsonDocument>
 
 #include "musicbrainz/musicbrainzclient.h"
 #include "util/version.h"
 #include "defs_urls.h"
 
-const QString MusicBrainzClient::m_TrackUrl = "http://musicbrainz.org/ws/2/recording/";
-const QString MusicBrainzClient::m_DateRegex = "^[12]\\d{3}";
-const int MusicBrainzClient::m_DefaultTimeout = 5000; // msec
+
+namespace {
+
+const QString kTrackUrl = "http://musicbrainz.org/ws/2/recording/";
+const QString kDateRegex = "^[12]\\d{3}";
+constexpr int kDefaultTimeout = 5000; // msec
+constexpr int kDefaultErrorCode = 0;
+
+QString decodeText(const QByteArray& data, const QStringRef codecName) {
+    QTextStream textStream(data);
+    if (!codecName.isEmpty()) {
+        textStream.setCodec(QTextCodec::codecForName(codecName.toUtf8()));
+    }
+    return textStream.readAll();
+}
+
+} // anonymous namespace
+
+
+
 
 MusicBrainzClient::MusicBrainzClient(QObject* parent)
                  : QObject(parent),
                    m_network(this),
-                   m_timeouts(m_DefaultTimeout, this) {
+                   m_timeouts(kDefaultTimeout, this) {
 }
 
 void MusicBrainzClient::start(int id, const QString& mbid) {
@@ -37,7 +55,7 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
 
     QUrlQuery query;
     query.setQueryItems(parameters);
-    QUrl url(m_TrackUrl + mbid);
+    QUrl url(kTrackUrl + mbid);
     url.setQuery(query);
     qDebug() << "MusicBrainzClient GET request:" << url.toString();
     QNetworkRequest req(url);
@@ -46,7 +64,7 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
     // HTTP request headers must be latin1.
     req.setRawHeader("User-Agent", mixxxMusicBrainzId.toLatin1());
     QNetworkReply* reply = m_network.get(req);
-    connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
+    connect(reply, &QNetworkReply::finished, this, &MusicBrainzClient::requestFinished);
     m_requests[reply] = id;
 
     m_timeouts.addReply(reply);
@@ -67,16 +85,6 @@ void MusicBrainzClient::cancelAll() {
     }
 }
 
-namespace {
-QString decodeText(const QByteArray& data, const QStringRef codecName) {
-    QTextStream textStream(data);
-    if (!codecName.isEmpty()) {
-        textStream.setCodec(QTextCodec::codecForName(codecName.toUtf8()));
-    }
-    return textStream.readAll();
-}
-} // anonymous namespace
-
 void MusicBrainzClient::requestFinished() {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     if (!reply)
@@ -90,21 +98,27 @@ void MusicBrainzClient::requestFinished() {
     ResultList ret;
 
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    qDebug() << "MusicBrainzClient GET reply status:" << status;
+    QTextStream textReader(reply);
+    const QByteArray body(reply->readAll());
+    QXmlStreamReader reader(body);
 
     // MusicBrainz returns 404 when the MBID is not in their database. We treat
     // a status of 404 the same as a 200 but it will produce an empty list of
     // results.
     if (status != 200 && status != 404) {
+        qDebug() << "MusicBrainzClient POST reply status:" << status << "body:" << body;
+        QJsonDocument jsonResponse = QJsonDocument::fromJson(body);
+        QJsonObject jsonObject = jsonResponse.object();
+        QString message = jsonObject["error"].toString();
+        QStringList propertyNames;
+        QStringList propertyKeys;
+        QString strReply = (QString)reply->readAll();
         emit(networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "MusicBrainz"));
+             "MusicBrainz", message, kDefaultErrorCode));
         return;
     }
 
-    const QByteArray body(reply->readAll());
-
-    QXmlStreamReader reader(body);
     QStringRef codecName;
     while (!reader.atEnd()) {
         switch (reader.readNext()) {
@@ -206,7 +220,7 @@ MusicBrainzClient::Release MusicBrainzClient::parseRelease(QXmlStreamReader& rea
             if (name == "title") {
                 ret.m_album = reader.readElementText();
             } else if (name == "date") {
-                QRegExp regex(m_DateRegex);
+                QRegExp regex(kDateRegex);
                 if (regex.indexIn(reader.readElementText()) == 0) {
                 ret.m_year = regex.cap(0).toInt();
                 }

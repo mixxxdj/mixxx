@@ -169,7 +169,7 @@ Variables:
                     <ObjectName>TrackTitleMini</ObjectName>
                     <Size>100min,20f</Size>
                     <Property>artist</Property>
-                    <Alignment>right</Alignment>
+                    <Alignment>left</Alignment>
                     <Elide>right</Elide>
                     <Channel><Variable name="chanNum"/></Channel>
                   </TrackProperty>

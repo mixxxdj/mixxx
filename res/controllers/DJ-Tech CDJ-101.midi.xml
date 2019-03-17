@@ -7,15 +7,15 @@
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3693</forums>
     </info>
     <controller id="DJ-Tech CDJ-101">
-		<scriptfiles>
-			<file filename="DJ-Tech-CDJ-101-scripts.js" functionprefix="DJTechCDJ101"/>
-		</scriptfiles>
+        <scriptfiles>
+            <file filename="DJ-Tech-CDJ-101-scripts.js" functionprefix="DJTechCDJ101"/>
+        </scriptfiles>
 
         <controls>
 
-			<!-- midi channel 1 for deck 1 -->
+            <!-- midi channel 1 for deck 1 -->
 
-			<!-- play/cue -->
+            <!-- play/cue -->
 
             <control>
                 <group>[Channel1]</group>
@@ -37,13 +37,13 @@
                 </options>
             </control>
 
-			<!-- jog -->
+            <!-- jog -->
 
             <control>
                 <group>[Channel1]</group>
                 <status>0x90</status>
                 <midino>0x20</midino>
-				<key>DJTechCDJ101.jogtouch</key>
+                <key>DJTechCDJ101.jogtouch</key>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -53,7 +53,7 @@
                 <group>[Channel1]</group>
                 <status>0xb0</status>
                 <midino>0x35</midino>
-				<key>DJTechCDJ101.jogouter</key>
+                <key>DJTechCDJ101.jogouter</key>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -63,24 +63,24 @@
                 <group>[Channel1]</group>
                 <status>0xb0</status>
                 <midino>0x36</midino>
-				<key>DJTechCDJ101.jogtop</key>
+                <key>DJTechCDJ101.jogtop</key>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
 
-			<!-- pitch -->
+            <!-- pitch -->
 
             <control>
                 <status>0xe0</status>
                 <group>[Channel1]</group>
-				<key>DJTechCDJ101.pitch</key>
+                <key>DJTechCDJ101.pitch</key>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
 
-			<!-- track browse/load -->
+            <!-- track browse/load -->
 
             <control>
                 <group>[Channel1]</group>
@@ -102,9 +102,9 @@
                 </options>
             </control>
 
-			<!-- midi channel 2 for deck 2 -->
+            <!-- midi channel 2 for deck 2 -->
 
-			<!-- play/cue -->
+            <!-- play/cue -->
 
             <control>
                 <group>[Channel2]</group>
@@ -126,13 +126,13 @@
                 </options>
             </control>
 
-			<!-- jog -->
+            <!-- jog -->
 
             <control>
                 <group>[Channel2]</group>
                 <status>0x91</status>
                 <midino>0x20</midino>
-				<key>DJTechCDJ101.jogtouch</key>
+                <key>DJTechCDJ101.jogtouch</key>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -142,7 +142,7 @@
                 <group>[Channel2]</group>
                 <status>0xb1</status>
                 <midino>0x35</midino>
-				<key>DJTechCDJ101.jogouter</key>
+                <key>DJTechCDJ101.jogouter</key>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -152,24 +152,24 @@
                 <group>[Channel2]</group>
                 <status>0xb1</status>
                 <midino>0x36</midino>
-				<key>DJTechCDJ101.jogtop</key>
+                <key>DJTechCDJ101.jogtop</key>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
 
-			<!-- pitch -->
+            <!-- pitch -->
 
             <control>
                 <status>0xe1</status>
                 <group>[Channel2]</group>
-				<key>DJTechCDJ101.pitch</key>
+                <key>DJTechCDJ101.pitch</key>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
 
-			<!-- track browse/load -->
+            <!-- track browse/load -->
 
             <control>
                 <group>[Channel2]</group>

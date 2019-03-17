@@ -77,6 +77,9 @@ class FakeDeck : public BaseTrackPlayer {
         play.set(bPlay);
     }
 
+    MOCK_METHOD1(slotCloneFromGroup, void(const QString& group));
+    MOCK_METHOD0(slotCloneDeck, void());
+
     TrackPointer loadedTrack;
     ControlLinPotmeter playposition;
     ControlPushButton play;

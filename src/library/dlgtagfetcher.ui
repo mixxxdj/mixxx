@@ -17,7 +17,7 @@
    <item>
     <widget class="QStackedWidget" name="stack">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="results_page">
       <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -39,12 +39,6 @@
          <property name="rootIsDecorated">
           <bool>false</bool>
          </property>
-         <attribute name="headerDefaultSectionSize">
-          <number>150</number>
-         </attribute>
-         <attribute name="headerMinimumSectionSize">
-          <number>50</number>
-         </attribute>
          <attribute name="headerDefaultSectionSize">
           <number>150</number>
          </attribute>
@@ -253,8 +247,20 @@
          </item>
          <item>
           <widget class="QLabel" name="httpStatus">
+           <property name="maximumSize">
+            <size>
+             <width>600</width>
+             <height>300</height>
+            </size>
+           </property>
            <property name="text">
             <string notr="true">HTTP Status: %1</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::TextSelectableByMouse</set>
            </property>
           </widget>
          </item>
