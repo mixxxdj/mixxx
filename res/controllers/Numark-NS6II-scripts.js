@@ -243,6 +243,7 @@ NS6II.hotcue_colors = {
 };
 
 NS6II.serato_syx_prefix = [0x00, 0x20, 0x7f];
+NS6II.controller_status_sysex = [0xF0, 0x00, 0x20, 0x7F, 0x03, 0x01, 0xF7];
 
 components.Button.prototype.off = NS6II.use_button_backlight ? 0x01 : 0x00;
 
@@ -1384,6 +1385,8 @@ NS6II.init = function() {
     print("created decks");
     NS6II.Mixer_instance = new NS6II.Mixer();
     print("constructed mixer");
+    midi.sendSysexMsg(NS6II.controller_status_sysex,NS6II.controller_status_sysex.length);
+    print("sent controller status request");
 };
 
 
