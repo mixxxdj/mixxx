@@ -79,12 +79,12 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
 
     connect(radioNotationOpenKey, SIGNAL(toggled(bool)),
             this, SLOT(setNotationOpenKey(bool)));
-    connect(radioNotationOpenKeyTraditional, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationOpenKeyTraditional(bool)));
+    connect(radioNotationOpenKeyAndTraditional, SIGNAL(toggled(bool)),
+            this, SLOT(setNotationOpenKeyAndTraditional(bool)));
     connect(radioNotationLancelot, SIGNAL(toggled(bool)),
             this, SLOT(setNotationLancelot(bool)));
-    connect(radioNotationLancelotTraditional, SIGNAL(toggled(bool)),
-            this, SLOT(setNotationLancelotTraditional(bool)));
+    connect(radioNotationLancelotAndTraditional, SIGNAL(toggled(bool)),
+            this, SLOT(setNotationLancelotAndTraditional(bool)));
     connect(radioNotationTraditional, SIGNAL(toggled(bool)),
             this, SLOT(setNotationTraditional(bool)));
     connect(radioNotationCustom, SIGNAL(toggled(bool)),
@@ -107,14 +107,14 @@ void DlgPrefKey::loadSettings() {
         radioNotationOpenKey->setChecked(true);
         setNotationOpenKey(true);
     } else if (notation == KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL) {
-        radioNotationOpenKeyTraditional->setChecked(true);
-        setNotationOpenKeyTraditional(true);
+        radioNotationOpenKeyAndTraditional->setChecked(true);
+        setNotationOpenKeyAndTraditional(true);
     } else if (notation == KEY_NOTATION_LANCELOT) {
         radioNotationLancelot->setChecked(true);
         setNotationLancelot(true);
     } else if (notation == KEY_NOTATION_LANCELOT_AND_TRADITIONAL) {
-        radioNotationLancelotTraditional->setChecked(true);
-        setNotationLancelotTraditional(true);
+        radioNotationLancelotAndTraditional->setChecked(true);
+        setNotationLancelotAndTraditional(true);
     } else if (notation == KEY_NOTATION_TRADITIONAL) {
         radioNotationTraditional->setChecked(true);
         setNotationTraditional(true);
@@ -202,10 +202,10 @@ void DlgPrefKey::slotApply() {
         if (radioNotationOpenKey->isChecked()) {
             notation_name = KEY_NOTATION_OPEN_KEY;
             notation_type = KeyUtils::OPEN_KEY;
-        } else if (radioNotationOpenKeyTraditional->isChecked()) {
+        } else if (radioNotationOpenKeyAndTraditional->isChecked()) {
             notation_name = KEY_NOTATION_OPEN_KEY_AND_TRADITIONAL;
             notation_type = KeyUtils::OPEN_KEY_AND_TRADITIONAL;
-        } else if (radioNotationLancelotTraditional->isChecked()) {
+        } else if (radioNotationLancelotAndTraditional->isChecked()) {
             notation_name = KEY_NOTATION_LANCELOT_AND_TRADITIONAL;
             notation_type = KeyUtils::LANCELOT_AND_TRADITIONAL;
         } else if (radioNotationTraditional->isChecked()) {
@@ -285,7 +285,7 @@ void DlgPrefKey::setNotationOpenKey(bool active) {
     }
 }
 
-void DlgPrefKey::setNotationOpenKeyTraditional(bool active) {
+void DlgPrefKey::setNotationOpenKeyAndTraditional(bool active) {
     if (active) {
         setNotation(KeyUtils::OPEN_KEY_AND_TRADITIONAL);
     }
@@ -297,7 +297,7 @@ void DlgPrefKey::setNotationLancelot(bool active) {
     }
 }
 
-void DlgPrefKey::setNotationLancelotTraditional(bool active) {
+void DlgPrefKey::setNotationLancelotAndTraditional(bool active) {
     if (active) {
         setNotation(KeyUtils::LANCELOT_AND_TRADITIONAL);
     }
