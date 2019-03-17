@@ -153,8 +153,10 @@ char LibFaadLoader::Init2(
                 pSamplerate,
                 pChannels);
     }
-    return 0;
-
+    // Return values:
+    // < 0 – Error
+    // 0 - OK
+    return -1;
 }
 
 void LibFaadLoader::Close(Handle hDecoder) {
