@@ -91,21 +91,11 @@ BrowseFeature::BrowseFeature(QObject* parent,
     pRootItem->appendChild(tr("Devices"), "/Volumes/");
 #else  // LINUX
     TreeItem* devices_link = pRootItem->appendChild(tr("Removable Devices"), DEVICE_NODE);
-    // Look for directories under /media and /run/media/$USER.
-    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
-    qWarning() << "kerrick gah";
-    QFileInfoList devices =
-            QDir("/media").entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot)
-            + run_media_user_dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
-
-    foreach(QFileInfo device, devices) {
-        qWarning() << "kerrick device " << device;
-        qWarning() << "kerrick fileName " << device.fileName();
-        qWarning() << "kerrick filePath " << device.filePath() + "/";
-        devices_link->appendChild(device.fileName(), device.filePath() + "/");
+    if (!getLinuxDevices().isEmpty()) {
+        devices_link->appendChild("dummy", "/dummy/");
     }
 
-    // show root directory on UNIX-based operating systems
+    // show root directory on Linux.
     pRootItem->appendChild(QDir::rootPath(), QDir::rootPath());
 #endif
 
