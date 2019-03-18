@@ -90,7 +90,13 @@ BrowseFeature::BrowseFeature(QObject* parent,
     // /Volumes
     pRootItem->appendChild(tr("Devices"), "/Volumes/");
 #else  // LINUX
-    pRootItem->appendChild(tr("Removable Devices"), "/media/");
+    // On Linux, we look for files in /media and in /run/media/$USER.
+    TreeItem* devices_link = pRootItem->appendChild(tr("Removable Devices"), DEVICE_NODE);
+    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
+    QFileInfoList devices = QDir("/media").entryInfoList() + run_media_user_dir.entryInfoList();
+    foreach(QFileInfo device, devices) {
+        devices_link->appendChild(device.fileName(), device.filePath());
+    }
 
     // show root directory on UNIX-based operating systems
     pRootItem->appendChild(QDir::rootPath(), QDir::rootPath());
