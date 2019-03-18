@@ -63,6 +63,8 @@ class BrowseFeature : public LibraryFeature {
     QStringList getDefaultQuickLinks() const;
     void saveQuickLinks();
     void loadQuickLinks();
+    // Get the list of devices (under "Removable Devices" section) on Linux.
+    QList<TreeItem*> getLinuxDevices();
 
     UserSettingsPointer m_pConfig;
     BrowseTableModel m_browseModel;

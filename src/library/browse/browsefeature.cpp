@@ -361,23 +361,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 #elif defined(__APPLE__)
         qWarning() << "Trying to process DEVICE_NODE on macOS; we shouldn't reach this point!";
 #else // LINUX
-        // Look for directories under /media and /run/media/$USER.
-        QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
-        qWarning() << "kerrick gah";
-        QFileInfoList devices =
-                QDir("/media").entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot)
-                + run_media_user_dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
-
-        foreach(QFileInfo device, devices) {
-            qWarning() << "kerrick device " << device;
-            qWarning() << "kerrick fileName " << device.fileName();
-            qWarning() << "kerrick filePath " << device.filePath() + "/";
-            TreeItem* folder = new TreeItem(
-                this,
-                device.fileName(),
-                device.filePath() + "/");
-            folders << folder;
-        }
+        folders += getLinuxDevices();
 #endif
     } else {
         // we assume that the path refers to a folder in the file system
@@ -508,4 +492,31 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
 
     qDebug() << "Default quick links:" << result;
     return result;
+}
+
+QList<TreeItem*> BrowseFeature::getLinuxDevices() {
+    // To get devices on Linux, we look for directories under /media and
+    // /run/media/$USER.
+    QFileInfoList devices;
+
+    // Add folders under /media to devices.
+    devices += QDir("/media").entryInfoList(
+        QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    // Add folders under /run/media/$USER to devices.
+    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
+    devices += run_media_user_dir.entryInfoList(
+        QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    // Convert devices into a QList<TreeItem*> for display.
+    QList<TreeItem*> ret;
+    foreach(QFileInfo device, devices) {
+        TreeItem* folder = new TreeItem(
+            this,
+            device.fileName(),
+            device.filePath() + "/");
+        ret << folder;
+    }
+
+    return ret;
 }
