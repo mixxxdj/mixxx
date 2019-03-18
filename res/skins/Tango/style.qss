@@ -1301,24 +1301,22 @@ WBeatSpinBox,
   background: url(skin:/knobs_sliders/knob_bg_disabled.svg) no-repeat center center;
 }
 
-#QuickFxEnableButton_Side {
-  background-color: #585858;
-  margin: 2px 0px 2px 0px;
+#QuickFXSide {
+  padding: 0px;
 }
-#QuickFxEnableButton_Bottom {
-  background-color: #585858;
-  margin: 2px 4px 2px 4px;
+#QuickFXBottom {
+  padding: 4px 2px 4px 2px;
 }
-  #QuickFxEnableButton_Side[displayValue="0"]:hover,
-  #QuickFxEnableButton_Bottom[displayValue="0"]:hover {
+#QuickFXButton {
+  background-color: #585858;
+}
+  #QuickFXButton[displayValue="0"]:hover {
     border: 1px solid #ff8f00;
     }
-  #QuickFxEnableButton_Side[displayValue="1"],
-  #QuickFxEnableButton_Bottom[displayValue="1"] {
+  #QuickFXButton[displayValue="1"] {
     border: 1px solid #ff8f00;
     }
-    #QuickFxEnableButton_Side[displayValue="1"]:hover,
-    #QuickFxEnableButton_Bottom[displayValue="1"]:hover {
+    #QuickFXButton[displayValue="1"]:hover {
       border: 1px solid #eeeeee;
     }
 
