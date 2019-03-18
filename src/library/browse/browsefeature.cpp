@@ -90,12 +90,19 @@ BrowseFeature::BrowseFeature(QObject* parent,
     // /Volumes
     pRootItem->appendChild(tr("Devices"), "/Volumes/");
 #else  // LINUX
-    // On Linux, we look for files in /media and in /run/media/$USER.
     TreeItem* devices_link = pRootItem->appendChild(tr("Removable Devices"), DEVICE_NODE);
+    // Look for directories under /media and /run/media/$USER.
     QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
-    QFileInfoList devices = QDir("/media").entryInfoList() + run_media_user_dir.entryInfoList();
+    qWarning() << "kerrick gah";
+    QFileInfoList devices =
+            QDir("/media").entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot)
+            + run_media_user_dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+
     foreach(QFileInfo device, devices) {
-        devices_link->appendChild(device.fileName(), device.filePath());
+        qWarning() << "kerrick device " << device;
+        qWarning() << "kerrick fileName " << device.fileName();
+        qWarning() << "kerrick filePath " << device.filePath() + "/";
+        devices_link->appendChild(device.fileName(), device.filePath() + "/");
     }
 
     // show root directory on UNIX-based operating systems
@@ -328,6 +335,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 
     // If we are on the special device node
     if (path == DEVICE_NODE) {
+#if defined(__WINDOWS__)
         // Repopulate drive list
         QFileInfoList drives = QDir::drives();
         // show drive letters
@@ -350,6 +358,27 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
                 drive.filePath()); // Displays C:/
             folders << driveLetter;
         }
+#elif defined(__APPLE__)
+        qWarning() << "Trying to process DEVICE_NODE on macOS; we shouldn't reach this point!";
+#else // LINUX
+        // Look for directories under /media and /run/media/$USER.
+        QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
+        qWarning() << "kerrick gah";
+        QFileInfoList devices =
+                QDir("/media").entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot)
+                + run_media_user_dir.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
+
+        foreach(QFileInfo device, devices) {
+            qWarning() << "kerrick device " << device;
+            qWarning() << "kerrick fileName " << device.fileName();
+            qWarning() << "kerrick filePath " << device.filePath() + "/";
+            TreeItem* folder = new TreeItem(
+                this,
+                device.fileName(),
+                device.filePath() + "/");
+            folders << folder;
+        }
+#endif
     } else {
         // we assume that the path refers to a folder in the file system
         // populate childs
