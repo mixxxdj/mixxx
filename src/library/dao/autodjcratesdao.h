@@ -2,12 +2,15 @@
 #define AUTODJCRATESDAO_H
 
 #include <QObject>
+#include <QString>
+#include <QList>
 #include <QSqlDatabase>
 
 #include "preferences/usersettings.h"
 #include "library/crate/crateid.h"
 #include "track/track.h"
 #include "util/class.h"
+#include "library/autodj/audioscrobbler.h"
 
 class TrackCollection;
 
@@ -24,7 +27,10 @@ class AutoDJCratesDAO : public QObject {
     TrackId getRandomTrackId();
 
     // Get random track Id from library
-    TrackId getRandomTrackIdFromLibrary(int iPlaylistId);
+    TrackId getRandomTrackIdFromLibrary(int iPlaylistId, QString sArtist = "");
+
+    bool existsArtist(const QString sArtist);
+    QList<int> getAllUnplayedTracks(const QString sArtist);
 
   private:
 
@@ -119,6 +125,8 @@ class AutoDJCratesDAO : public QObject {
 
     // The ID of every set-log playlist.
     QList<int> m_lstSetLogPlaylistIds;
+
+    CAudioscrobbler m_scobler;
 };
 
 #endif // AUTODJCRATESDAO_H

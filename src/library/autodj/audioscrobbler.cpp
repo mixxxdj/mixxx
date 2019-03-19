@@ -7,6 +7,8 @@
 #include "audioscrobbler.h"
 #include "library/dao/autodjcratesdao.h"
 
+/* Large parts of this code are copied from the https://sayonara-player.com/ project */
+
 /*
 https://www.last.fm/api
 
@@ -35,7 +37,7 @@ CAudioscrobbler::~CAudioscrobbler()
 
 void CAudioscrobbler::search_similar_artists(const QString& sArtist, AutoDJCratesDAO *dao, UserSettingsPointer pConfig)
 {
-    qWarning() << "search_similar_artists:" << sArtist;
+    qInfo() << "search_similar_artists:" << sArtist;
     m_autoDjCratesDao = dao;
     m_pConfig = pConfig;
     m_sArtist = sArtist;
@@ -45,7 +47,7 @@ void CAudioscrobbler::search_similar_artists(const QString& sArtist, AutoDJCrate
     QFile f(legalFilename(m_sArtist));
 
     if (!f.open(QIODevice::ReadOnly)) {
-         qWarning() << "Could not open " << legalFilename(m_sArtist) << ", try audioscrobbler....";
+         qInfo() << "Could not open " << legalFilename(m_sArtist) << ", try audioscrobbler....";
 
          QString url = 	QString("http://ws.audioscrobbler.com/2.0/?");
          QString encoded = QUrl::toPercentEncoding( sArtist );
@@ -67,7 +69,7 @@ void CAudioscrobbler::search_similar_artists(const QString& sArtist, AutoDJCrate
          manager->get(request);
     }
     else {
-        qWarning() << "Opened " << legalFilename(m_sArtist) << ", do it offline....";
+        qInfo() << "Opened " << legalFilename(m_sArtist) << ", do it offline....";
         QByteArray data = qUncompress(f.readAll());
         f.close();
         evaluate(data);
@@ -76,11 +78,14 @@ void CAudioscrobbler::search_similar_artists(const QString& sArtist, AutoDJCrate
 
 void CAudioscrobbler::slotReplyFinished(QNetworkReply *reply)
 {
-    qWarning() << "CAudioscrobbler slotReplyFinished:" << reply->error();
+
     if (reply->error() != QNetworkReply::NoError) {
+        qError() << "CAudioscrobbler slotReplyFinished:" << reply->error();
         m_bWorking = false;
         return;
     }
+
+    qInfo() << "CAudioscrobbler slotReplyFinished successful.";
 
     /*
      * Parse Result
