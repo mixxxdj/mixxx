@@ -32,11 +32,6 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
     // This method is used for hotcues.
     void slotCuesUpdated();
 
-    // Called when source of cue has changed.
-    // This updates marks' labels.
-    // This method is used for main cue point as well as AutoDJ start/end points.
-    void slotCueSourceUpdated(WaveformMark* pMark);
-
   private:
     void generateMarkImage(WaveformMark* pMark);
 

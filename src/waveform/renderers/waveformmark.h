@@ -15,9 +15,7 @@ class WaveformSignalColors;
 
 class WOverview;
 
-class WaveformMark : public QObject {
-    Q_OBJECT
-
+class WaveformMark {
   public:
     static const int kNoHotCue = -1;
     WaveformMark(
@@ -57,10 +55,6 @@ class WaveformMark : public QObject {
     double getSamplePosition() const { return m_pPointCos->get(); }
     QString getItem() const { return m_pPointCos->getKey().item; }
 
-    // The m_pSourceCos related function
-    bool hasSource() const { return m_pSourceCos && m_pSourceCos->valid(); }
-    double getSource() const { return m_pSourceCos->get(); }
-
     // The m_pVisibleCos related function
     bool hasVisible() const { return m_pVisibleCos && m_pVisibleCos->valid(); }
     bool isVisible() const { return m_pVisibleCos->get(); }
@@ -70,15 +64,8 @@ class WaveformMark : public QObject {
         m_pVisibleCos->connectValueChanged(receiver, slot, Qt::AutoConnection);
     }
 
-  signals:
-    void sourceChanged(WaveformMark* pMark);
-
-  private slots:
-    void slotCueSourceChanged();
-
   private:
     std::unique_ptr<ControlProxy> m_pPointCos;
-    std::unique_ptr<ControlProxy> m_pSourceCos;
     std::unique_ptr<ControlProxy> m_pVisibleCos;
     WaveformMarkProperties m_properties;
     int m_iHotCue;
