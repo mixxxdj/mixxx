@@ -80,7 +80,7 @@ void CAudioscrobbler::slotReplyFinished(QNetworkReply *reply)
 {
 
     if (reply->error() != QNetworkReply::NoError) {
-        qError() << "CAudioscrobbler slotReplyFinished:" << reply->error();
+        qCritical() << "CAudioscrobbler slotReplyFinished:" << reply->error();
         m_bWorking = false;
         return;
     }
