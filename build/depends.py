@@ -982,6 +982,7 @@ class MixxxCore(Feature):
                    "src/library/libraryfeature.cpp",
                    "src/library/analysisfeature.cpp",
                    "src/library/autodj/autodjfeature.cpp",
+                   "src/library/autodj/audioscrobbler.cpp",
                    "src/library/autodj/autodjprocessor.cpp",
                    "src/library/dao/directorydao.cpp",
                    "src/library/mixxxlibraryfeature.cpp",
