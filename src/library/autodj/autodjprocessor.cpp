@@ -962,6 +962,7 @@ bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
 }
 
 void AutoDJProcessor::maybeFillRandomTracks() {
+#if 0 //got 2 events for 1 title - see AutoDJProcessor::getNextTrackFromQueue()
     int minAutoDJCrateTracks = m_pConfig->getValueString(
             ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
     bool randomQueueEnabled = (((m_pConfig->getValueString(
@@ -972,6 +973,7 @@ void AutoDJProcessor::maybeFillRandomTracks() {
         qDebug() << "Randomly adding tracks";
         emit randomTrackRequested(tracksToAdd);
     }
+#endif
 }
 
 void AutoDJProcessor::playerPlayChanged(DeckAttributes* thisDeck, bool playing) {
