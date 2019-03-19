@@ -1200,14 +1200,32 @@ NS6II.Channel = function(channel_offset) {
         midi: [0x90 + channel_offset, 0x1A],
         group: "[QuickEffectRack1_" + deck + "_Effect1]",
         inKey: "enabled",
-        isPress: function (channel, control, value, status) {
-            // always press cap in state0
-            return NS6II.btn_filter_knob_behavior.state === 0 ||
-                // respond to value in state1
-                ((NS6II.btn_filter_knob_behavior.state === 1) && value > 0);
-                // always ignore press in state2
-                // state2 is used for moving the knob after it had been left
-                // off-center in state1
+        input: function(channelmidi, control, value, status, group) {
+            this.inSetter(value, channelmidi, control, status)
+        },
+        // extra function because it gets called from NS6II.btn_filter_knob_behavior as well
+        inSetter: function (value, channelmidi, control, status) {
+            if (NS6II.btn_knob_cap_behavior.state > 1) {
+                switch (NS6II.btn_filter_knob_behavior.state) {
+                    case 0:
+                    if (!this.inGetParameter()) {
+                        this.inSetValue(true);
+                    }
+                    break;
+                    case 1:
+                    this.inSetParameter(this.isPress(channelmidi, control, value, status));
+                    break;
+                    case 2:
+                    if (this.inGetParameter()) {
+                        this.inSetValue(false);
+                    }
+                    break;
+                }
+            } else {
+                if (!this.inGetParameter()) {
+                    this.inSetValue(true);
+                }
+            }
         }
     });
     this.btn_pfl = new components.Button({
@@ -1293,7 +1311,7 @@ NS6II.navBar.prototype = new components.ComponentContainer();
 
 NS6II.btn_knob_cap_behavior = new components.Button({
     midi: [0x9F,0x59],
-    state: 2,
+    state: 0,
     input: function (channel, control, value, status, group) {
         this.state = value/63 | 0;
         if (NS6II.hide_killswitches_when_unused) {
@@ -1322,8 +1340,10 @@ for (var i = 1; i <= 2; i++) {
                 '_Effect' + (ii+1) + ']',
             inKey: "enabled",
             shifted: false, // custom static property; used to disable fx input while selecting
-            isPress: function (channel, control, value, status) {
-                return !this.shifted && NS6II.btn_knob_cap_behavior.state > 0 && value > 0;
+            input: function (midichannel, control, value, status, group) {
+                if (NS6II.btn_knob_cap_behavior.state > 0) {
+                    this.inSetParameter(this.isPress(midichannel, control, value, status) && !this.shifted);
+                }
             },
             unshift: function () {
                 this.shifted = false;
