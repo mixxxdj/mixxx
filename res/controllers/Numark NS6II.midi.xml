@@ -1770,15 +1770,6 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>NS6II.Mixer_instance.knob_head_gain.input</key>
-                <status>0xBF</status>
-                <midino>0x0C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel1]</group>
                 <key>NS6II.Decks[1].btn_bleep.input</key>
                 <status>0x80</status>

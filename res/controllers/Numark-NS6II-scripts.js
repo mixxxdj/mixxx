@@ -524,11 +524,6 @@ NS6II.Mixer = function() {
         },
     });
     print("print created knob_cfContour");
-    this.knob_head_gain = new components.Pot({
-        midi: [0xBF,0x0D],
-        group: "[Master]",
-        inKey: "headGain",
-    });
     this.switch_ext_input_left = new components.Button({
         midi: [0x9F, 0x57],
         group: "[Channel3]",
