@@ -47,6 +47,7 @@ DJCStarlight.baseLEDUpdate = function(value, group, control){
     }
 };
 
+
 DJCStarlight.init = function() {
     // Turn off base LED default behavior
     midi.sendShortMsg(0x90,0x24,0x00);
@@ -75,7 +76,6 @@ DJCStarlight.init = function() {
 
 
 // The Vinyl button, used to enable or disable scratching on the jog wheels (The Vinyl button enables both deck).
-
 DJCStarlight.vinylButton = function(channel, control, value, status, group) {
     if (value) {
         if (DJCStarlight.scratchButtonState) {
@@ -89,8 +89,8 @@ DJCStarlight.vinylButton = function(channel, control, value, status, group) {
     }
 };
 
-// The touch action over the jog wheel
 
+// The touch action on the jog wheel's top surface
 DJCStarlight.wheelTouchA = function(channel, control, value, status, group) {
     if (value > 0 && (engine.getValue("[Channel1]", "play") != 1 || DJCStarlight.scratchButtonState)){
         //  Touching the wheel.
@@ -103,6 +103,8 @@ DJCStarlight.wheelTouchA = function(channel, control, value, status, group) {
     }
 };
 
+
+// The touch action on the jog wheel's top surface
 DJCStarlight.wheelTouchB = function(channel, control, value, status, group) {
     if (value > 0 && (engine.getValue("[Channel2]", "play") != 1 || DJCStarlight.scratchButtonState)) {
         // Touching the wheel.
@@ -115,7 +117,8 @@ DJCStarlight.wheelTouchB = function(channel, control, value, status, group) {
     }
 };
 
-// The wheel that actually controls the scratching
+
+// Scratching on the jog wheel (rotating it while pressing the top surface)
 DJCStarlight.scratchWheelA = function(channel, control, value, status, group) {
     var newValue;
     if (value < 64) {
@@ -132,7 +135,7 @@ DJCStarlight.scratchWheelA = function(channel, control, value, status, group) {
 };
 
 
-// The wheel that actually controls the bending
+// Bending on the jog wheel (rotating using the edge)
 DJCStarlight.bendWheelA = function(channel, control, value, status, group) {
     var newValue;
     if (value < 64) {
@@ -143,8 +146,9 @@ DJCStarlight.bendWheelA = function(channel, control, value, status, group) {
     engine.setValue('[Channel1]', 'jog', newValue); // Pitch bend
 };
 
-DJCStarlight.scratchWheelB = function(channel, control, value, status, group) {
 
+// Scratching on the jog wheel (rotating it while pressing the touch surface)
+DJCStarlight.scratchWheelB = function(channel, control, value, status, group) {
     var newValue;
     if (value < 64) {
         newValue = value;
@@ -160,7 +164,7 @@ DJCStarlight.scratchWheelB = function(channel, control, value, status, group) {
 };
 
 
-// The wheel that actually controls the bending
+// Bending on the jog wheel (rotating using the edge)
 DJCStarlight.bendWheelB = function(channel, control, value, status, group) {
     var newValue;
     if (value < 64) {
@@ -170,7 +174,6 @@ DJCStarlight.bendWheelB = function(channel, control, value, status, group) {
     }
     engine.setValue('[Channel2]', 'jog', newValue); // Pitch bend
 };
-
 
 
 DJCStarlight.shutdown = function() {
