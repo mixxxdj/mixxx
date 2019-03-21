@@ -130,7 +130,7 @@ DJCStarlight.scratchWheelA = function(channel, control, value, status, group) {
     if (engine.isScratching(1)) {
         engine.scratchTick(1, newValue); // Scratch!
     } else {
-        engine.setValue('[Channel'+1+']', 'jog', newValue); // Pitch bend
+        engine.setValue('[Channel1]', 'jog', newValue); // Pitch bend
     }
 };
 
@@ -143,7 +143,7 @@ DJCStarlight.bendWheelA = function(channel, control, value, status, group) {
     } else {
         newValue = value - 128;
     }
-    engine.setValue('[Channel'+1+']', 'jog', newValue); // Pitch bend
+    engine.setValue('[Channel1]', 'jog', newValue); // Pitch bend
 };
 
 DJCStarlight.scratchWheelB = function(channel, control, value, status, group) {
@@ -158,7 +158,7 @@ DJCStarlight.scratchWheelB = function(channel, control, value, status, group) {
     if (engine.isScratching(2)) {
         engine.scratchTick(2, newValue); // Scratch!
     } else {
-        engine.setValue('[Channel'+2+']', 'jog', newValue); // Pitch bend
+        engine.setValue('[Channel2]', 'jog', newValue); // Pitch bend
     }
 };
 
@@ -171,7 +171,7 @@ DJCStarlight.bendWheelB = function(channel, control, value, status, group) {
     } else {
         newValue = value - 128;
     }
-    engine.setValue('[Channel'+2+']', 'jog', newValue); // Pitch bend
+    engine.setValue('[Channel2]', 'jog', newValue); // Pitch bend
 };
 
 
