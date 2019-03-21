@@ -174,7 +174,7 @@
         // CUE
             <control>
                 <group>[Channel1]</group>
-                <key>start_play</key>
+                <key>start</key>
                 <description>SHIFT + Cue: REWIND to beginning</description>
                 <status>0x94</status>
                 <midino>0x06</midino>
@@ -226,7 +226,7 @@
         // CUE
             <control>
                 <group>[Channel2]</group>
-                <key>start_play</key>
+                <key>start</key>
                 <description>SHIFT + Cue: REWIND to beginning</description>
                 <status>0x95</status>
                 <midino>0x06</midino>
