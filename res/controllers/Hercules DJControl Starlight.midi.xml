@@ -875,6 +875,17 @@
 
             <control>
                 <group>[Channel1]</group>
+                <key>DJCStarlight.scratchWheelAShift</key>
+                <description> Jog-Wheel Seek (Held down + Shift)</description>
+                <status>0xB4</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
                 <key>DJCStarlight.bendWheelA</key>
                 <description>Jog-Wheel Pitch Bend</description>
                 <status>0xB1</status>
@@ -951,6 +962,17 @@
                 <key>DJCStarlight.scratchWheelB</key>
                 <description> Jog-Wheel Scratch (Held down)</description>
                 <status>0xB2</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCStarlight.scratchWheelBShift</key>
+                <description> Jog-Wheel Seek (Held down + Shift)</description>
+                <status>0xB5</status>
                 <midino>0x0A</midino>
                 <options>
                     <script-binding />

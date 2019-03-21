@@ -30,6 +30,8 @@
 function DJCStarlight() {};
 var DJCStarlight = {};
 
+DJCStarlight.jogwheelShiftMultiplier = 100;
+
 DJCStarlight.scratchButtonState = true;
 
 
@@ -135,6 +137,26 @@ DJCStarlight.scratchWheelA = function(channel, control, value, status, group) {
 };
 
 
+// Seeking on the jog wheel (rotating it while pressing the top surface and holding Shift)
+DJCStarlight.scratchWheelAShift = function(channel, control, value, status, group) {
+    var newValue;
+    if (value < 64) {
+        newValue = value;
+    } else {
+        newValue = value - 128;
+    }
+
+    if (engine.isScratching(1)) {
+        // Pressing [Shift] while we're already scratching has no effect, we
+        // continue to scratch at normal speed.
+        engine.scratchTick(1, newValue);
+    } else {
+        // Seek forward
+        engine.setValue('[Channel1]', 'jog', newValue * DJCStarlight.jogwheelShiftMultiplier); // Pitch bend
+    }
+};
+
+
 // Bending on the jog wheel (rotating using the edge)
 DJCStarlight.bendWheelA = function(channel, control, value, status, group) {
     var newValue;
@@ -163,6 +185,25 @@ DJCStarlight.scratchWheelB = function(channel, control, value, status, group) {
     }
 };
 
+
+// Seeking on the jog wheel (rotating it while pressing the top surface and holding Shift)
+DJCStarlight.scratchWheelBShift = function(channel, control, value, status, group) {
+    var newValue;
+    if (value < 64) {
+        newValue = value;
+    } else {
+        newValue = value - 128;
+    }
+
+    if (engine.isScratching(1)) {
+        // Pressing [Shift] while we're already scratching has no effect, we
+        // continue to scratch at normal speed.
+        engine.scratchTick(1, newValue);
+    } else {
+        // Seek forward
+        engine.setValue('[Channel2]', 'jog', newValue * DJCStarlight.jogwheelShiftMultiplier); // Pitch bend
+    }
+};
 
 // Bending on the jog wheel (rotating using the edge)
 DJCStarlight.bendWheelB = function(channel, control, value, status, group) {
