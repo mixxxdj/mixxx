@@ -11,7 +11,7 @@
         <scriptfiles>
             <file filename="lodash.mixxx.js"/>
             <file filename="midi-components-0.0.js"/>
-            <file functionprefix="DJCStarlight" filename="DJControl_Starlight_script.js" />
+            <file functionprefix="DJCStarlight" filename="Hercules-DJControl-Starlight-scripts.js" />
         </scriptfiles>
         <controls>
 
