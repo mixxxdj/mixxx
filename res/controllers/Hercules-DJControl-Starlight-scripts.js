@@ -95,7 +95,6 @@ DJCStarlight.vinylButton = function(channel, control, value, status, group) {
 // The touch action over the jog wheel
 
 DJCStarlight.wheelTouchA = function (channel, control, value, status, group) {
-    channel = channel+1;
     if (value > 0 && (engine.getValue("[Channel1]", "play") != 1 || DJCStarlight.scratchButtonState)){
         //  Touching the wheel.
         var alpha = 1.0/8;
@@ -108,7 +107,6 @@ DJCStarlight.wheelTouchA = function (channel, control, value, status, group) {
 };
 
 DJCStarlight.wheelTouchB = function (channel, control, value, status, group) {
-    channel = channel+2;
     if (value > 0 && (engine.getValue("[Channel2]", "play") != 1 || DJCStarlight.scratchButtonState)) {
         // Touching the wheel.
         var alpha = 1.0/8;
