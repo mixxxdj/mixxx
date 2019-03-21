@@ -34,7 +34,7 @@ DJCStarlight.scratchButtonState = true;
 
 
 // The base LED are mapped to the VU Meter for light show.
-DJCStarlight.baseLEDUpdate = function (value, group, control){
+DJCStarlight.baseLEDUpdate = function(value, group, control){
     value = (value*127);
     switch(control) {
     case "VuMeterL":
@@ -94,7 +94,7 @@ DJCStarlight.vinylButton = function(channel, control, value, status, group) {
 
 // The touch action over the jog wheel
 
-DJCStarlight.wheelTouchA = function (channel, control, value, status, group) {
+DJCStarlight.wheelTouchA = function(channel, control, value, status, group) {
     if (value > 0 && (engine.getValue("[Channel1]", "play") != 1 || DJCStarlight.scratchButtonState)){
         //  Touching the wheel.
         var alpha = 1.0/8;
@@ -106,7 +106,7 @@ DJCStarlight.wheelTouchA = function (channel, control, value, status, group) {
     }
 };
 
-DJCStarlight.wheelTouchB = function (channel, control, value, status, group) {
+DJCStarlight.wheelTouchB = function(channel, control, value, status, group) {
     if (value > 0 && (engine.getValue("[Channel2]", "play") != 1 || DJCStarlight.scratchButtonState)) {
         // Touching the wheel.
         var alpha = 1.0/8;
@@ -119,8 +119,7 @@ DJCStarlight.wheelTouchB = function (channel, control, value, status, group) {
 };
 
 // The wheel that actually controls the scratching
-DJCStarlight.scratchWheelA = function (channel, control, value, status, group) {
-
+DJCStarlight.scratchWheelA = function(channel, control, value, status, group) {
     var newValue;
     if (value < 64) {
         newValue = value;
@@ -137,20 +136,17 @@ DJCStarlight.scratchWheelA = function (channel, control, value, status, group) {
 
 
 // The wheel that actually controls the bending
-DJCStarlight.bendWheelA = function (channel, control, value, status, group) {
-
+DJCStarlight.bendWheelA = function(channel, control, value, status, group) {
     var newValue;
     if (value < 64) {
         newValue = value;
     } else {
         newValue = value - 128;
     }
-{
-        engine.setValue('[Channel'+1+']', 'jog', newValue); // Pitch bend
-    }
+    engine.setValue('[Channel'+1+']', 'jog', newValue); // Pitch bend
 };
 
-DJCStarlight.scratchWheelB = function (channel, control, value, status, group) {
+DJCStarlight.scratchWheelB = function(channel, control, value, status, group) {
 
     var newValue;
     if (value < 64) {
@@ -168,25 +164,19 @@ DJCStarlight.scratchWheelB = function (channel, control, value, status, group) {
 
 
 // The wheel that actually controls the bending
-DJCStarlight.bendWheelB = function (channel, control, value, status, group) {
-
+DJCStarlight.bendWheelB = function(channel, control, value, status, group) {
     var newValue;
     if (value < 64) {
         newValue = value;
     } else {
         newValue = value - 128;
     }
-
- {
-        engine.setValue('[Channel'+2+']', 'jog', newValue); // Pitch bend
-    }
+    engine.setValue('[Channel'+2+']', 'jog', newValue); // Pitch bend
 };
 
 
 
 DJCStarlight.shutdown = function() {
-
     // Reset base LED
     midi.sendShortMsg(0x90,0x24,0x7F);
-
 };
