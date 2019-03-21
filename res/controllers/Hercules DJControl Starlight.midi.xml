@@ -356,8 +356,8 @@
         // LOOP
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_0.5_toggle</key>
-                <description>Loop 1/2 Beat (Pad 1)</description>
+                <key>beatloop_1_toggle</key>
+                <description>Loop 1 Beat (Pad 1)</description>
                 <status>0x96</status>
                 <midino>0x10</midino>
                 <options>
@@ -367,8 +367,8 @@
 
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_1_toggle</key>
-                <description>Loop 1 Beat (Pad 2)</description>
+                <key>beatloop_2_toggle</key>
+                <description>Loop 2 Beat (Pad 2)</description>
                 <status>0x96</status>
                 <midino>0x11</midino>
                 <options>
@@ -378,8 +378,8 @@
 
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_2_toggle</key>
-                <description>Loop 2 Beat (Pad 3)</description>
+                <key>beatloop_4_toggle</key>
+                <description>Loop 4 Beat (Pad 3)</description>
                 <status>0x96</status>
                 <midino>0x12</midino>
                 <options>
@@ -389,8 +389,8 @@
 
             <control>
                 <group>[Channel1]</group>
-                <key>beatloop_4_toggle</key>
-                <description>Loop 4 Beat (Pad 4)</description>
+                <key>beatloop_8_toggle</key>
+                <description>Loop 8 Beat (Pad 4)</description>
                 <status>0x96</status>
                 <midino>0x13</midino>
                 <options>
@@ -618,8 +618,8 @@
         // LOOP
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_0.5_toggle</key>
-                <description>Loop 1/2 Beat (Pad 1)</description>
+                <key>beatloop_1_toggle</key>
+                <description>Loop 1 Beat (Pad 1)</description>
                 <status>0x97</status>
                 <midino>0x10</midino>
                 <options>
@@ -629,8 +629,8 @@
 
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_1_toggle</key>
-                <description>Loop 1 Beat (Pad 2)</description>
+                <key>beatloop_2_toggle</key>
+                <description>Loop 2 Beat (Pad 2)</description>
                 <status>0x97</status>
                 <midino>0x11</midino>
                 <options>
@@ -640,8 +640,8 @@
 
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_2_toggle</key>
-                <description>Loop 2 Beat (Pad 3)</description>
+                <key>beatloop_4_toggle</key>
+                <description>Loop 4 Beat (Pad 3)</description>
                 <status>0x97</status>
                 <midino>0x12</midino>
                 <options>
@@ -651,8 +651,8 @@
 
             <control>
                 <group>[Channel2]</group>
-                <key>beatloop_4_toggle</key>
-                <description>Loop 4 Beat (Pad 4)</description>
+                <key>beatloop_8_toggle</key>
+                <description>Loop 8 Beat (Pad 4)</description>
                 <status>0x97</status>
                 <midino>0x13</midino>
                 <options>
@@ -956,7 +956,6 @@
                     <script-binding />
                 </options>
             </control>
-
 
             <control>
                 <group>[Channel2]</group>
@@ -1279,8 +1278,8 @@
         // LED LOOP
             <output>
                 <group>[Channel1]</group>
-                <key>beatloop_0.5_enabled</key>
-                <description>Loop 1/2 Beat (Pad 1)</description>
+                <key>beatloop_1_enabled</key>
+                <description>Loop 1 Beat (Pad 1)</description>
                 <status>0x96</status>
                 <midino>0x10</midino>
                 <on>0x7F</on>
@@ -1289,8 +1288,8 @@
 
             <output>
                 <group>[Channel1]</group>
-                <key>beatloop_1_enabled</key>
-                <description>Loop 1 Beat (Pad 2)</description>
+                <key>beatloop_2_enabled</key>
+                <description>Loop 2 Beat (Pad 2)</description>
                 <status>0x96</status>
                 <midino>0x11</midino>
                 <on>0x7F</on>
@@ -1299,8 +1298,8 @@
 
             <output>
                 <group>[Channel1]</group>
-                <key>beatloop_2_enabled</key>
-                <description>Loop 2 Beat (Pad 3)</description>
+                <key>beatloop_4_enabled</key>
+                <description>Loop 4 Beat (Pad 3)</description>
                 <status>0x96</status>
                 <midino>0x12</midino>
                 <on>0x7F</on>
@@ -1309,8 +1308,8 @@
 
             <output>
                 <group>[Channel1]</group>
-                <key>beatloop_4_enabled</key>
-                <description>Loop 4 Beat (Pad 4)</description>
+                <key>beatloop_8_enabled</key>
+                <description>Loop 8 Beat (Pad 4)</description>
                 <status>0x96</status>
                 <midino>0x13</midino>
                 <on>0x7F</on>
@@ -1320,8 +1319,8 @@
 
             <output>
                 <group>[Channel2]</group>
-                <key>beatloop_0.5_enabled</key>
-                <description>Loop 1/2 Beat (Pad 1)</description>
+                <key>beatloop_1_enabled</key>
+                <description>Loop 1 Beat (Pad 1)</description>
                 <status>0x97</status>
                 <midino>0x10</midino>
                 <on>0x7F</on>
@@ -1330,8 +1329,8 @@
 
             <output>
                 <group>[Channel2]</group>
-                <key>beatloop_1_enabled</key>
-                <description>Loop 1 Beat (Pad 2)</description>
+                <key>beatloop_2_enabled</key>
+                <description>Loop 2 Beat (Pad 2)</description>
                 <status>0x97</status>
                 <midino>0x11</midino>
                 <on>0x7F</on>
@@ -1340,8 +1339,8 @@
 
             <output>
                 <group>[Channel2]</group>
-                <key>beatloop_2_enabled</key>
-                <description>Loop 2 Beat (Pad 3)</description>
+                <key>beatloop_4_enabled</key>
+                <description>Loop 4 Beat (Pad 3)</description>
                 <status>0x97</status>
                 <midino>0x12</midino>
                 <on>0x7F</on>
@@ -1350,8 +1349,8 @@
 
             <output>
                 <group>[Channel2]</group>
-                <key>beatloop_4_enabled</key>
-                <description>Loop 4 Beat (Pad 4)</description>
+                <key>beatloop_8_enabled</key>
+                <description>Loop 8 Beat (Pad 4)</description>
                 <status>0x97</status>
                 <midino>0x13</midino>
                 <on>0x7F</on>
