@@ -48,8 +48,6 @@ DJCStarlight.baseLEDUpdate = function(value, group, control){
 };
 
 DJCStarlight.init = function() {
-
-
     // Turn off base LED default behavior
     midi.sendShortMsg(0x90,0x24,0x00);
 
@@ -59,7 +57,6 @@ DJCStarlight.init = function() {
     // Connect the base LEDs
     engine.connectControl("[Channel1]","VuMeterL","DJCStarlight.baseLEDUpdate");
     engine.connectControl("[Channel2]","VuMeterR","DJCStarlight.baseLEDUpdate");
-
 
     //Set effects Levels - Dry/Wet
     engine.setParameter("[EffectRack1_EffectUnit1_Effect1]", "meta", 0.6);
