@@ -15,21 +15,11 @@
         </scriptfiles>
         <controls>
 
-
-    /****************************************************************************************************/
-    // NN's MIDI Channel 1 (0x90)
-    /****************************************************************************************************/
-
-
-
-
     /****************************************************************************************************/
     // NN's MIDI Channel 2 (0x91 Deck A - Standard MODE)
     /****************************************************************************************************/
 
-
-
-        //Play
+        // Play
             <control>
                 <group>[Channel1]</group>
                 <key>play</key>
@@ -41,7 +31,7 @@
                 </options>
             </control>
 
-        //CUE
+        // CUE
             <control>
                 <group>[Channel1]</group>
                 <key>cue_default</key>
@@ -53,7 +43,7 @@
                 </options>
             </control>
 
-        //Sync
+        // Sync
             <control>
                 <group>[Channel1]</group>
                 <key>sync_enabled</key>
@@ -64,7 +54,6 @@
                     <normal/>
                 </options>
             </control>
-
 
         // PFL
             <control>
@@ -78,9 +67,7 @@
                 </options>
             </control>
 
-
-
-        //Vinyl button
+        // Vinyl button
             <control>
                 <group>[Master]</group>
                 <key>DJCStarlight.vinylButton</key>
@@ -92,7 +79,7 @@
                 </options>
             </control>
 
-        //Jog Touch A
+        // Jog Touch A
             <control>
                 <group>[Channel1]</group>
                 <key>DJCStarlight.wheelTouchA</key>
@@ -104,17 +91,11 @@
                 </options>
             </control>
 
-
-
-
     /****************************************************************************************************/
     // NN's MIDI Channel 3 (0x92 Deck B - Standard MODE)
     /****************************************************************************************************/
 
-
-
-
-        //Play
+        // Play
             <control>
                 <group>[Channel2]</group>
                 <key>play</key>
@@ -126,7 +107,7 @@
                 </options>
             </control>
 
-        //CUE
+        // CUE
             <control>
                 <group>[Channel2]</group>
                 <key>cue_default</key>
@@ -138,7 +119,7 @@
                 </options>
             </control>
 
-        //Sync
+        // Sync
             <control>
                 <group>[Channel2]</group>
                 <key>sync_enabled</key>
@@ -149,7 +130,6 @@
                     <normal/>
                 </options>
             </control>
-
 
         // PFL
             <control>
@@ -163,9 +143,7 @@
                 </options>
             </control>
 
-
-
-        //Jog Touch B
+        // Jog Touch B
             <control>
                 <group>[Channel1]</group>
                 <key>DJCStarlight.wheelTouchB</key>
@@ -177,15 +155,11 @@
                 </options>
             </control>
 
-
-
-
     /****************************************************************************************************/
     // NN's MIDI Channel 5 (0x94 Deck A - SHIFT MODE)
     /****************************************************************************************************/
 
-
-        //Play
+        // Play
             <control>
                 <group>[Channel1]</group>
                 <key>play_stutter</key>
@@ -197,7 +171,7 @@
                 </options>
             </control>
 
-        //CUE
+        // CUE
             <control>
                 <group>[Channel1]</group>
                 <key>start_play</key>
@@ -209,7 +183,7 @@
                 </options>
             </control>
 
-        //Sync
+        // Sync
             <control>
                 <group>[Channel1]</group>
                 <key>sync_master</key>
@@ -221,7 +195,7 @@
                 </options>
             </control>
 
-        //PFL
+        // PFL
             <control>
                 <group>[Master]</group>
                 <key>headMix</key>
@@ -233,15 +207,11 @@
                 </options>
             </control>
 
-
-
-
     /****************************************************************************************************/
     // NN's MIDI Channel 6 (0x95 Deck B - SHIFT MODE)
     /****************************************************************************************************/
 
-
-        //Play
+        // Play
             <control>
                 <group>[Channel2]</group>
                 <key>play_stutter</key>
@@ -253,7 +223,7 @@
                 </options>
             </control>
 
-        //CUE
+        // CUE
             <control>
                 <group>[Channel2]</group>
                 <key>start_play</key>
@@ -265,7 +235,7 @@
                 </options>
             </control>
 
-        //Sync
+        // Sync
             <control>
                 <group>[Channel2]</group>
                 <key>sync_master</key>
@@ -277,8 +247,7 @@
                 </options>
             </control>
 
-
-        //PFL
+        // PFL
             <control>
                 <group>[Master]</group>
                 <key>headSplit</key>
@@ -290,13 +259,11 @@
                 </options>
             </control>
 
-
     /****************************************************************************************************/
-    // NN's MIDI Channel 7 (0x96  Deck A - Pads)
+    // NN's MIDI Channel 7 (0x96 Deck A - Pads)
     /****************************************************************************************************/
 
-
-        //Hot Cues (SET)
+        // Hot Cues (SET)
             <control>
                 <group>[Channel1]</group>
                 <key>hotcue_1_activate</key>
@@ -341,11 +308,7 @@
                 </options>
             </control>
 
-
-
-
-
-        //Hot-Cue buttons (SHIFT mode)
+        // Hot-Cue buttons (SHIFT mode)
             <control>
                 <group>[Channel1]</group>
                 <key>hotcue_1_clear</key>
@@ -390,10 +353,7 @@
                 </options>
             </control>
 
-
-
-        //LOOP
-
+        // LOOP
             <control>
                 <group>[Channel1]</group>
                 <key>beatloop_0.5_toggle</key>
@@ -438,10 +398,7 @@
                 </options>
             </control>
 
-
-        //FX
-
-
+        // FX
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
                 <key>enabled</key>
@@ -489,7 +446,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
                 <key>effect_selector</key>
-                <description>SHIFT +(Pad 1)</description>
+                <description>SHIFT + (Pad 1)</description>
                 <status>0x96</status>
                 <midino>0x28</midino>
                 <options>
@@ -500,7 +457,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect2]</group>
                 <key>effect_selector</key>
-                <description>SHIFT +(Pad 2)</description>
+                <description>SHIFT + (Pad 2)</description>
                 <status>0x96</status>
                 <midino>0x29</midino>
                 <options>
@@ -511,7 +468,7 @@
             <control>
                 <group>[EffectRack1_EffectUnit1_Effect3]</group>
                 <key>effect_selector</key>
-                <description>SHIFT +(Pad 3)</description>
+                <description>SHIFT + (Pad 3)</description>
                 <status>0x96</status>
                 <midino>0x2A</midino>
                 <options>
@@ -519,7 +476,7 @@
                 </options>
             </control>
 
-        //Sampler
+        // Sampler
             <control>
                 <group>[Sampler1]</group>
                 <key>cue_gotoandplay</key>
@@ -564,14 +521,11 @@
                 </options>
             </control>
 
-
-
     /****************************************************************************************************/
     // NN's MIDI Channel 8 (0x97 Deck B - Pads)
     /****************************************************************************************************/
 
-
-        //Hot Cues (SET)
+        // Hot Cues (SET)
             <control>
                 <group>[Channel2]</group>
                 <key>hotcue_1_activate</key>
@@ -616,9 +570,7 @@
                 </options>
             </control>
 
-
-
-        //Hot-Cue buttons (SHIFT mode)
+        // Hot-Cue buttons (SHIFT mode)
             <control>
                 <group>[Channel2]</group>
                 <key>hotcue_1_clear</key>
@@ -663,9 +615,7 @@
                 </options>
             </control>
 
-
-
-        //LOOP
+        // LOOP
             <control>
                 <group>[Channel2]</group>
                 <key>beatloop_0.5_toggle</key>
@@ -710,7 +660,7 @@
                 </options>
             </control>
 
-        //FX
+        // FX
             <control>
                 <group>[EffectRack1_EffectUnit2_Effect1]</group>
                 <key>enabled</key>
@@ -787,7 +737,8 @@
                     <normal/>
                 </options>
             </control>
-        //Sampler
+
+        // Sampler
             <control>
                 <group>[Sampler5]</group>
                 <key>cue_gotoandplay</key>
@@ -832,17 +783,11 @@
                 </options>
             </control>
 
+    /****************************************************************************************************/
+    // CC's MIDI Channel 1 (0xB0 Standard mode)
+    /***************************************************************************************************/
 
-
-
-
-        // CC's
-        /****************************************************************************************************/
-        // CC's MIDI Channel 1 (0xB0 Standard mode)
-        /***************************************************************************************************/
-
-
-            //Crossfader
+        // Crossfader
             <control>
                 <group>[Master]</group>
                 <key>crossfader</key>
@@ -854,11 +799,9 @@
                 </options>
             </control>
 
-
-
-        /****************************************************************************************************/
-        // CC's MIDI Channel 2 (0xB1 Deck A - Standard mode)
-        /***************************************************************************************************/
+    /****************************************************************************************************/
+    // CC's MIDI Channel 2 (0xB1 Deck A - Standard mode)
+    /***************************************************************************************************/
 
 
         // Volume
@@ -873,8 +816,7 @@
                 </options>
             </control>
 
-        //EQ
-
+        // EQ
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
                 <key>parameter1</key>
@@ -886,9 +828,7 @@
                 </options>
             </control>
 
-
-
-        //Filter
+        // Filter
             <control>
                 <group>[QuickEffectRack1_[Channel1]]</group>
                 <key>super1</key>
@@ -900,7 +840,7 @@
                 </options>
             </control>
 
-        //Pitch sliders
+        // Pitch slider
             <control>
                 <group>[Channel1]</group>
                 <key>rate</key>
@@ -921,7 +861,7 @@
                 </options>
             </control>
 
-
+        // Jog wheel
             <control>
                 <group>[Channel1]</group>
                 <key>DJCStarlight.scratchWheelA</key>
@@ -933,11 +873,10 @@
                 </options>
             </control>
 
-
             <control>
                 <group>[Channel1]</group>
                 <key>DJCStarlight.bendWheelA</key>
-                <description>Jog-Wheel Pitch Bend (Held down)</description>
+                <description>Jog-Wheel Pitch Bend</description>
                 <status>0xB1</status>
                 <midino>0x09</midino>
                 <options>
@@ -945,12 +884,9 @@
                 </options>
             </control>
 
-
-
-        /****************************************************************************************************/
-        // CC's MIDI Channel 3 (0xB2  Deck B - Standard mode)
-        /***************************************************************************************************/
-
+    /****************************************************************************************************/
+    // CC's MIDI Channel 3 (0xB2  Deck B - Standard mode)
+    /***************************************************************************************************/
 
         // Volume
             <control>
@@ -964,8 +900,7 @@
                 </options>
             </control>
 
-        //EQ
-
+        // EQ
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>parameter1</key>
@@ -977,9 +912,7 @@
                 </options>
             </control>
 
-
-
-        //Filter
+        // Filter
             <control>
                 <group>[QuickEffectRack1_[Channel2]]</group>
                 <key>super1</key>
@@ -991,7 +924,7 @@
                 </options>
             </control>
 
-        //Pitch sliders
+        // Pitch slider
             <control>
                 <group>[Channel2]</group>
                 <key>rate</key>
@@ -1012,6 +945,7 @@
                 </options>
             </control>
 
+        // Jog wheel
             <control>
                 <group>[Channel2]</group>
                 <key>DJCStarlight.scratchWheelB</key>
@@ -1027,7 +961,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJCStarlight.bendWheelB</key>
-                <description>Jog-Wheel Pitch Bend (Held down)</description>
+                <description>Jog-Wheel Pitch Bend</description>
                 <status>0xB2</status>
                 <midino>0x09</midino>
                 <options>
@@ -1037,13 +971,13 @@
 
         </controls>
 
-        /****************************************************************************************************/
-        //LED output
-        /***************************************************************************************************/
+    /****************************************************************************************************/
+    //LED output
+    /***************************************************************************************************/
+
         <outputs>
 
-
-        //LED Transport
+        // LED Transport
             <output>
                 <group>[Channel1]</group>
                 <key>play_indicator</key>
@@ -1178,7 +1112,7 @@
                 <off>0x0</off>
             </output>
 
-        //LED HOT CUE (Normal Mode)
+        // LED HOT CUE (Normal Mode)
             <output>
                 <group>[Channel1]</group>
                 <key>hotcue_1_enabled</key>
@@ -1220,7 +1154,6 @@
             </output>
 
 
-
             <output>
                 <group>[Channel2]</group>
                 <key>hotcue_1_enabled</key>
@@ -1261,8 +1194,7 @@
                 <minimum>0.5</minimum>
             </output>
 
-
-        //LED HOT CUE (SHIFT Mode)
+        // LED HOT CUE (SHIFT Mode)
             <output>
                 <group>[Channel1]</group>
                 <key>hotcue_1_enabled</key>
@@ -1304,7 +1236,6 @@
             </output>
 
 
-
             <output>
                 <group>[Channel2]</group>
                 <key>hotcue_1_enabled</key>
@@ -1345,8 +1276,7 @@
                 <minimum>0.5</minimum>
             </output>
 
-
-        //LED LOOP
+        // LED LOOP
             <output>
                 <group>[Channel1]</group>
                 <key>beatloop_0.5_enabled</key>
@@ -1377,7 +1307,6 @@
                 <minimum>0.5</minimum>
             </output>
 
-
             <output>
                 <group>[Channel1]</group>
                 <key>beatloop_4_enabled</key>
@@ -1387,6 +1316,7 @@
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
+
 
             <output>
                 <group>[Channel2]</group>
@@ -1510,7 +1440,7 @@
                 <minimum>0.5</minimum>
             </output>
 
-        //LED SAMPLE
+        // LED SAMPLE
             <output>
                 <group>[Sampler1]</group>
                 <key>play_indicator</key>
@@ -1590,9 +1520,6 @@
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
-
-
-
 
         </outputs>
     </controller>
