@@ -6,11 +6,10 @@
 
 #include "track/track.h"
 #include "track/trackref.h"
-
 #include "track/beatfactory.h"
+
 #include "util/assert.h"
 #include "util/logger.h"
-#include "util/compatibility.h"
 
 
 namespace {
@@ -69,8 +68,7 @@ Track::Track(
           m_pSecurityToken(openSecurityToken(m_fileInfo, std::move(pSecurityToken))),
           m_record(trackId),
           m_bDirty(false),
-          m_bMarkedForMetadataExport(false),
-          m_analyzerProgress(-1) {
+          m_bMarkedForMetadataExport(false) {
     if (kLogStats && kLogger.debugEnabled()) {
         long numberOfInstancesBefore = s_numberOfInstances.fetch_add(1);
         kLogger.debug()
@@ -204,7 +202,24 @@ QString Track::getCanonicalLocation() const {
     // (copy-on write). But operating on a single instance of QFileInfo
     // might not be thread-safe due to internal caching!
     QMutexLocker lock(&m_qMutex);
-    return TrackRef::canonicalLocation(m_fileInfo);
+
+    // Note: We return here the cached value, that was calculated just after 
+    // init this Track object. This will avoid repeated use of the time 
+    // consuming file IO.
+    // We ignore the case when the user changes a symbolic link to 
+    // point a file to an other location, since this is a user action.
+    // We also don't care if a file disappears while Mixxx is running. Opening 
+    // a non-existent file is already handled and doesn't cause any malfunction.
+    QString loc = TrackRef::canonicalLocation(m_fileInfo);
+    if (loc.isEmpty()) {
+        // we see here an empty path because the file did not exist  
+        // when creating the track object.
+        // The user might have restored the track in the meanwhile.
+        // So try again it again. 
+        m_fileInfo.refresh();
+        loc = TrackRef::canonicalLocation(m_fileInfo);
+    }
+    return loc;
 }
 
 QString Track::getDirectory() const {
@@ -338,23 +353,15 @@ void Track::setBeatsAndUnlock(QMutexLocker* pLock, BeatsPointer pBeats) {
     }
 
     if (m_pBeats) {
-        auto pObject = dynamic_cast<QObject*>(m_pBeats.data());
-        if (pObject) {
-            disconnect(pObject, SIGNAL(updated()),
-                       this, SLOT(slotBeatsUpdated()));
-        }
+        disconnect(m_pBeats.data(), &Beats::updated, this, &Track::slotBeatsUpdated);
     }
 
-    m_pBeats = pBeats;
+    m_pBeats = std::move(pBeats);
 
     auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
         bpmValue = m_pBeats->getBpm();
-        auto pObject = dynamic_cast<QObject*>(m_pBeats.data());
-        if (pObject) {
-            connect(pObject, SIGNAL(updated()),
-                    this, SLOT(slotBeatsUpdated()));
-        }
+        connect(m_pBeats.data(), &Beats::updated, this, &Track::slotBeatsUpdated);
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
 
@@ -444,7 +451,7 @@ QString Track::getDurationText(mixxx::Duration::Precision precision) const {
     } else {
         duration = getDuration(DurationRounding::NONE);
     }
-    return mixxx::Duration::formatSeconds(duration, precision);
+    return mixxx::Duration::formatTime(duration, precision);
 }
 
 QString Track::getTitle() const {
@@ -709,19 +716,6 @@ ConstWaveformPointer Track::getWaveformSummary() const {
 void Track::setWaveformSummary(ConstWaveformPointer pWaveform) {
     m_waveformSummary = pWaveform;
     emit(waveformSummaryUpdated());
-}
-
-void Track::setAnalyzerProgress(int progress) {
-    // progress in 0 .. 1000. QAtomicInt so no need for lock.
-    int oldProgress = m_analyzerProgress.fetchAndStoreAcquire(progress);
-    if (progress != oldProgress) {
-        emit(analyzerProgress(progress));
-    }
-}
-
-int Track::getAnalyzerProgress() const {
-    // QAtomicInt so no need for lock.
-    return load_atomic(m_analyzerProgress);
 }
 
 void Track::setCuePoint(double cue) {
@@ -1031,20 +1025,18 @@ Track::ExportMetadataResult Track::exportMetadata(
             // not stored in the library, yet. We have done the same with the track's
             // current metadata to make the tags comparable (see above).
             importedFromFile.resetUnsupportedValues();
-            // Before comparison: Adjust imported bpm values that might be imprecise,
-            // e.g. integer values from ID3v2. The same strategy has is used when
-            // importing the track's metadata in order to preserve the more accurate
-            // bpm value stored by Mixxx. Again, this is necessary to make the tags
-            // comparable.
-            auto actualBpm =
-                    getActualBpm(importedFromFile.getTrackInfo().getBpm(), m_pBeats);
-            // All imported floating point values are already properly rounded, because
-            // they have just been imported. But the imported bpm value might have been
-            // replaced by a more accurate bpm value, that also needs to be rounded before
-            // comparison.
-            actualBpm.normalizeBeforeExport();
-            // Replace the imported with the actual bpm value managed by Mixxx.
-            importedFromFile.refTrackInfo().setBpm(actualBpm);
+            // Account for floating-point rounding errors before exporting
+            // the BPM value. The imported value must be compared to the
+            // pre-normalized value for valid results.
+            // NOTE(2019-02-19, uklotzde): The pre-normalization cannot prevent
+            // repeated export of metadata for files with ID3 tags that are only
+            // able to store the BPM value with integer precision! In case of a
+            // fractional value the ID3 metadata is always detected as modified
+            // and will be exported regardless if it has actually been modified
+            // or not.
+            auto currentBpm = m_record.getMetadata().getTrackInfo().getBpm();
+            currentBpm.normalizeBeforeExport();
+            m_record.refMetadata().refTrackInfo().setBpm(currentBpm);
             // Finally the track's current metadata and the imported/adjusted metadata
             // can be compared for differences to decide whether the tags in the file
             // would change if we perform the write operation. We are using a special

@@ -23,20 +23,20 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
     // bpm_up_small / bpm_down_small steps by 0.1
     m_pClockBpm.reset(new ControlLinPotmeter(ConfigKey(m_group, "bpm"),
                                           1, 200, 1, 0.1, true));
-    connect(m_pClockBpm.data(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotBpmChanged(double)),
+    connect(m_pClockBpm.data(), &ControlObject::valueChanged,
+            this, &InternalClock::slotBpmChanged,
             Qt::DirectConnection);
 
     m_pClockBeatDistance.reset(new ControlObject(ConfigKey(m_group, "beat_distance")));
-    connect(m_pClockBeatDistance.data(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatDistanceChanged(double)),
+    connect(m_pClockBeatDistance.data(), &ControlObject::valueChanged,
+            this, &InternalClock::slotBeatDistanceChanged,
             Qt::DirectConnection);
 
     m_pSyncMasterEnabled.reset(
         new ControlPushButton(ConfigKey(pGroup, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMasterEnabled->connectValueChangeRequest(
-        this, SLOT(slotSyncMasterEnabledChangeRequest(double)),
+        this, &InternalClock::slotSyncMasterEnabledChangeRequest,
         Qt::DirectConnection);
 }
 
@@ -131,6 +131,9 @@ void InternalClock::setMasterParams(double beatDistance, double baseBpm, double 
 
 void InternalClock::slotBpmChanged(double bpm) {
     updateBeatLength(m_iOldSampleRate, bpm);
+    if (!isSynchronized()) {
+        return;
+    }
     m_pEngineSync->notifyBpmChanged(this, bpm);
 }
 

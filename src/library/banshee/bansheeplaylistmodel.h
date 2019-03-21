@@ -20,6 +20,8 @@ class BansheePlaylistModel : public BaseSqlTableModel {
     void setTableModel(int playlistId);
 
     TrackPointer getTrack(const QModelIndex& index) const final;
+    TrackId getTrackId(const QModelIndex& index) const final;
+
     QString getTrackLocation(const QModelIndex& index) const final;
     bool isColumnInternal(int column) final;
 
@@ -41,9 +43,11 @@ class BansheePlaylistModel : public BaseSqlTableModel {
   private:
     QString getFieldString(const QModelIndex& index, const QString& fieldName) const;
     QVariant getFieldVariant(const QModelIndex& index, const QString& fieldName) const;
+    void dropTempTable();
 
     BansheeDbConnection* m_pConnection;
     int m_playlistId;
+    QString m_tempTableName;
 };
 
 #endif // BANSHEEPLAYLISTMODEL_H

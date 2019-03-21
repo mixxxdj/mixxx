@@ -13,7 +13,8 @@
 RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
-          m_cancelImport(false) {
+          m_cancelImport(false),
+          m_icon(":/images/library/ic_library_rhythmbox.svg") {
     QString tableName = "rhythmbox_library";
     QString idColumn = "id";
     QStringList columns;
@@ -100,7 +101,7 @@ QVariant RhythmboxFeature::title() {
 }
 
 QIcon RhythmboxFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_rhythmbox.svg");
+    return m_icon;
 }
 
 TreeItemModel* RhythmboxFeature::getChildModel() {
@@ -324,7 +325,7 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 continue;
             }
             if (xml.name() == "location") {
-                locationUrl = QUrl::fromEncoded(xml.readElementText().toUtf8());
+                locationUrl = QUrl(xml.readElementText());
                 continue;
             }
         }
@@ -376,8 +377,7 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
         if (xml.isStartElement() && xml.name() == "location") {
             QString location = xml.readElementText();
             location.remove("file://");
-            QByteArray strlocbytes = location.toUtf8();
-            QUrl locationUrl = QUrl::fromEncoded(strlocbytes);
+            QUrl locationUrl = QUrl(location);
             location = locationUrl.toLocalFile();
 
             //get the ID of the file in the rhythmbox_library table

@@ -2,8 +2,8 @@
 
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "mixer/playermanager.h"
-#include "engine/cuecontrol.h"
-#include "engine/loopingcontrol.h"
+#include "engine/controls/cuecontrol.h"
+#include "engine/controls/loopingcontrol.h"
 #include "effects/effectrack.h"
 #include "effects/effectchainslot.h"
 #include "effects/effectslot.h"
@@ -432,7 +432,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Replace Auto DJ Queue with selected tracks"),
                        m_libraryStr, libraryMenu);
 
-            
+
     // Load track (these can be loaded into any channel)
     addDeckAndSamplerControl("LoadSelectedTrack",
                              tr("Load Track"),
@@ -455,6 +455,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            "super1",
                            tr("Deck %1 Quick Effect Super Knob").arg(i),
                            tr("Quick Effect Super Knob (control linked effect parameters)"),
+                           tr("Quick Effect"),
+                           quickEffectMenu);
+        addPrefixedControl(QString("[QuickEffectRack1_[Channel%1]_Effect1]").arg(i),
+                           "enabled",
+                           tr("Deck %1 Quick Effect Enable Button").arg(i),
+                           tr("Quick Effect Enable Button"),
                            tr("Quick Effect"),
                            quickEffectMenu);
     }
@@ -541,7 +547,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                effectUnitGroups);
 
             const int iNumDecks = ControlObject::get(
-                ConfigKey("[Master]", "num_decks"));
+                    ConfigKey("[Master]", "num_decks"));
             for (int iDeckNumber = 1; iDeckNumber <= iNumDecks; ++iDeckNumber) {
                 // PlayerManager::groupForDeck is 0-indexed.
                 QString playerGroup = PlayerManager::groupForDeck(iDeckNumber - 1);
@@ -796,6 +802,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("waveform_zoom", tr("Waveform Zoom"), tr("Waveform zoom"), guiMenu);
     addDeckControl("waveform_zoom_down", tr("Waveform Zoom In"), tr("Zoom waveform in"), guiMenu);
     addDeckControl("waveform_zoom_up", tr("Waveform Zoom Out"), tr("Zoom waveform out"), guiMenu);
+
+    // Controls to change a deck's star rating
+    addDeckAndPreviewDeckControl("stars_up", tr("Star Rating Up"),
+        tr("Increase the track rating by one star"), guiMenu);
+    addDeckAndPreviewDeckControl("stars_down", tr("Star Rating Down"),
+        tr("Decrease the track rating by one star"), guiMenu);
 }
 
 ControlPickerMenu::~ControlPickerMenu() {
@@ -1072,10 +1084,6 @@ void ControlPickerMenu::addAvailableControl(ConfigKey key,
 }
 
 bool ControlPickerMenu::controlExists(ConfigKey key) const {
-    qDebug() << "LOOKING FOR KEY " << key;
-    foreach(const ConfigKey& key, m_titlesByKey.keys()) {
-        qDebug() << "key: " << key;
-    }
     return m_titlesByKey.contains(key);
 }
 

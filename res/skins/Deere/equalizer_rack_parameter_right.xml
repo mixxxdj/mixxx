@@ -61,7 +61,7 @@
           <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey>[Master],show_killswitches</ConfigKey>
+          <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </EffectPushButton>
@@ -70,7 +70,7 @@
         <Size>0me,1min</Size>
         <Children/>
         <Connection>
-          <ConfigKey>[Master],show_killswitches</ConfigKey>
+          <ConfigKey>[Skin],show_eq_kill_buttons</ConfigKey>
           <Transform><Not/></Transform>
           <BindProperty>visible</BindProperty>
         </Connection>

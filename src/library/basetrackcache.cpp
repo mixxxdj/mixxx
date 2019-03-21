@@ -235,7 +235,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
         // m_trackInfo[id] will insert a QVector<QVariant> into the
         // m_trackInfo HashTable with the key "id"
         QVector<QVariant>& record = m_trackInfo[trackId];
-        // prealocate memory for all columns at once
+        // preallocate memory for all columns at once
         record.resize(numColumns);
         for (int i = 0; i < numColumns; ++i) {
             getTrackValueForColumn(pTrack, i, record[i]);
@@ -452,9 +452,8 @@ QVariant BaseTrackCache::data(TrackId trackId, int column) const {
     // metadata. Currently the upper-levels will not delegate row-specific
     // columns to this method, but there should still be a check here I think.
     if (!result.isValid()) {
-        QHash<TrackId, QVector<QVariant> >::const_iterator it =
-                m_trackInfo.find(trackId);
-        if (it != m_trackInfo.end()) {
+        auto it = m_trackInfo.constFind(trackId);
+        if (it != m_trackInfo.constEnd()) {
             const QVector<QVariant>& fields = it.value();
             result = fields.value(column, result);
         }
@@ -730,7 +729,7 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
             result = 0;
         }
     } else {
-        result = val1.toString().localeAwareCompare(val2.toString());
+        result = m_collator.compare(val1.toString(), val2.toString());
     }
 
     // If we're in descending order, flip the comparison.

@@ -249,11 +249,8 @@ void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
 void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
-    if (!m_group.isEmpty() &&
-            DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
-                                               true, false)) {
-        event->acceptProposedAction();
+    if (!m_group.isEmpty()) {
+        DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
     } else {
         event->ignore();
     }
@@ -262,15 +259,9 @@ void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
 void WCoverArt::dropEvent(QDropEvent *event) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
-    if (!m_group.isEmpty() &&
-            DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_group, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
-            return;
-        }
+    if (!m_group.isEmpty()) {
+        DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+    } else {
+        event->ignore();
     }
-    event->ignore();
 }

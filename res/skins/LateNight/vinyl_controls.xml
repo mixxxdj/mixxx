@@ -29,101 +29,43 @@
         </Connection>
       </WidgetGroup>
 
-      <PushButton>
-        <Size>39f,22f</Size>
-        <TooltipId>vinylcontrol_enabled</TooltipId>
-        <ObjectName>VinylButton</ObjectName>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>VINYL</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>VINYL</Text>
-        </State>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,vinylcontrol_enabled</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,vinylcontrol_enabled</ConfigKey>
-        </Connection>
-      </PushButton>
+      <Template src="skin:button_2state.xml">
+        <SetVariable name="TooltipId">vinylcontrol_enabled</SetVariable>
+        <SetVariable name="ObjectName">VinylButton</SetVariable>
+        <SetVariable name="Size">39f,22f</SetVariable>
+        <SetVariable name="state_0_text">VINYL</SetVariable>
+        <SetVariable name="state_1_text">VINYL</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_enabled</SetVariable>
+      </Template>
 
-      <PushButton>
-        <Size>44f,22f</Size>
-        <TooltipId>vinylcontrol_mode</TooltipId>
-        <ObjectName>TristateButton</ObjectName>
-        <NumberStates>3</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>ABS</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>REL</Text>
-        </State>
-        <State>
-          <Number>2</Number>
-          <Text>CONST</Text>
-        </State>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_mode</ConfigKey>
-        </Connection>
-      </PushButton>
+      <Template src="skin:button_3state_persist.xml">
+        <SetVariable name="TooltipId">vinylcontrol_mode</SetVariable>
+        <SetVariable name="ObjectName">TristateButton</SetVariable>
+        <SetVariable name="Size">44f,22f</SetVariable>
+        <SetVariable name="state_0_text">ABS</SetVariable>
+        <SetVariable name="state_1_text">REL</SetVariable>
+        <SetVariable name="state_2_text">CONST</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_mode</SetVariable>
+      </Template>
 
-      <PushButton>
-        <Size>28f,22f</Size>
-        <TooltipId>vinylcontrol_cueing</TooltipId>
-        <ObjectName>VinylButton</ObjectName>
-        <NumberStates>3</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>CUE</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>CUE</Text>
-        </State>
-        <State>
-          <Number>2</Number>
-          <Text>HOT</Text>
-        </State>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_cueing</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey persist="true"><Variable name="group"/>,vinylcontrol_cueing</ConfigKey>
-        </Connection>
-      </PushButton>
+      <Template src="skin:button_3state_persist.xml">
+        <SetVariable name="TooltipId">vinylcontrol_cueing</SetVariable>
+        <SetVariable name="ObjectName">VinylButton</SetVariable>
+        <SetVariable name="Size">28f,22f</SetVariable>
+        <SetVariable name="state_0_text">CUE</SetVariable>
+        <SetVariable name="state_1_text">CUE</SetVariable>
+        <SetVariable name="state_2_text">HOT</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,vinylcontrol_cueing</SetVariable>
+      </Template>
 
-      <PushButton>
-        <Size>34f,22f</Size>
-        <ObjectName>VinylButton</ObjectName>
-        <TooltipId>passthrough_enabled</TooltipId>
-        <NumberStates>2</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Text>PASS</Text>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Text>PASS</Text>
-        </State>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey><Variable name="group"/>,passthrough</ConfigKey>
-        </Connection>
-      </PushButton>
+      <Template src="skin:button_2state.xml">
+        <SetVariable name="TooltipId">passthrough_enabled</SetVariable>
+        <SetVariable name="ObjectName">VinylButton</SetVariable>
+        <SetVariable name="Size">34f,22f</SetVariable>
+        <SetVariable name="state_0_text">PASS</SetVariable>
+        <SetVariable name="state_1_text">PASS</SetVariable>
+        <SetVariable name="ConfigKey"><Variable name="group"/>,passthrough</SetVariable>
+      </Template>
 
     </Children>
     <Connection>

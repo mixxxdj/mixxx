@@ -19,23 +19,12 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
-              <PushButton>
-                <TooltipId>pfl</TooltipId>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Pressed>buttons/btn_pfl_down.svg</Pressed>
-                  <Unpressed>buttons/btn_pfl.svg</Unpressed>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Pressed>buttons/btn_pfl_overdown.svg</Pressed>
-                  <Unpressed>buttons/btn_pfl_over.svg</Unpressed>
-                </State>
-                <Connection>
-                  <ConfigKey><Variable name="group"/>,pfl</ConfigKey>
-                </Connection>
-              </PushButton>
+              <Template src="skin:button_2state.xml">
+                <SetVariable name="TooltipId">pfl</SetVariable>
+                <SetVariable name="icon">pfl</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="group"/>,pfl</SetVariable>
+                <SetVariable name="Size">26,26</SetVariable>
+              </Template>
 
               <!-- Spacer -->
               <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
@@ -84,7 +73,7 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
             <Children>
               <Template src="skin:knob_textless.xml">
                 <SetVariable name="Size">40f,34f</SetVariable>
-                <SetVariable name="group"><Variable name="group"/></SetVariable>
+                <SetVariable name="Color">orange</SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
                 <SetVariable name="TooltipId">pregain</SetVariable>
               </Template>
@@ -94,7 +83,7 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
 
               <SliderComposed><!-- Volume -->
                 <TooltipId>channel_volume</TooltipId>
-                <Handle>knob_volume_deck.svg</Handle>
+                <Handle scalemode="STRETCH_ASPECT">knob_volume_deck.svg</Handle>
                 <Slider>slider_volume_deck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
@@ -161,7 +150,7 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
 
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
           <Transform><Not/></Transform>
         </Connection>
@@ -174,7 +163,7 @@ vertical layout and a reversed side-by-side layout for two-deck mode -->
           <Template src="skin:mixer_channel_4decks.xml"/>
         </Children>
         <Connection>
-          <ConfigKey>[Master],show_4decks</ConfigKey>
+          <ConfigKey>[Skin],show_4decks</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>

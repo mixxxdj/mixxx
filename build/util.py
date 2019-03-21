@@ -204,3 +204,26 @@ def get_osx_min_version():
     result_code = p.close()
     assert result_code is None, "Can't read macOS min version: %s" % min_version
     return min_version
+
+
+def find_d3dcompiler_dll(env):
+    """Returns the path to d3dcompiler_xx.dll for bundling with Mixxx."""
+    # On our Windows 7 build environment, d3dcompiler_xx.dll lives next to our
+    # cl.exe for MSVC 14.0.
+    #
+    # https://code.woboq.org/qt5/qttools/src/shared/winutils/utils.cpp.html#924
+    # windeployqt checks for d3dcompiler_xx.dll in:
+    #
+    # - The %SDK%/redist/D3D folder (Windows 8 SDK and above).
+    # - The Qt SDK bin folder (Not present for our builds of Qt).
+    # - The first folder in the %PATH% containing a file matching the pattern.
+    #
+    # Since we currently use the Windows 7 SDK, and the Qt SDK folder does not
+    # have this DLL, let's search the path.
+    paths = env['ENV']['PATH'].split(';')
+    for path in paths:
+        for version in range(47, 40, -1):
+            dll_path = os.path.join(path, 'd3dcompiler_%d.dll' % version)
+            if os.path.exists(dll_path):
+                return dll_path
+    return None

@@ -89,8 +89,8 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
 
     m_pBroadcastEnabled = new ControlProxy(
             BROADCAST_PREF_KEY, "enabled", this);
-    m_pBroadcastEnabled->connectValueChanged(
-            SLOT(broadcastEnabledChanged(double)));
+    m_pBroadcastEnabled->connectValueChanged(this,
+            &DlgPrefBroadcast::broadcastEnabledChanged);
 
     //Server type combobox
     comboBoxServerType->addItem(tr("Icecast 2"), BROADCAST_SERVER_ICECAST2);
@@ -120,6 +120,9 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      // Encoding format combobox
      comboBoxEncodingFormat->addItem(tr("MP3"), BROADCAST_FORMAT_MP3);
      comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), BROADCAST_FORMAT_OV);
+#ifdef __OPUS__
+     comboBoxEncodingFormat->addItem(tr("Opus"), BROADCAST_FORMAT_OPUS);
+#endif
 
      // Encoding channels combobox
      comboBoxEncodingChannels->addItem(tr("Automatic"),
@@ -188,22 +191,25 @@ void DlgPrefBroadcast::slotApply() {
 
         QString profileName = profile->getProfileName();
         QString profileMountpoint = profile->getMountpoint();
-        if (mountpoints.values().contains(profileMountpoint)) {
-            QString profileNameWithSameMountpoint = mountpoints.key(profileMountpoint);
-            BroadcastProfilePtr profileWithSameMountpoint =
-                m_pSettingsModel->getProfileByName(profileNameWithSameMountpoint);
 
-            if (!profileWithSameMountpoint.isNull()
-                && profileWithSameMountpoint->getHost().toLower()
+        for (auto it = mountpoints.constBegin(); it != mountpoints.constEnd(); ++it) {
+            if (it.value() == profileMountpoint) {
+                QString profileNameWithSameMountpoint = it.key();
+                BroadcastProfilePtr profileWithSameMountpoint =
+                        m_pSettingsModel->getProfileByName(profileNameWithSameMountpoint);
+
+                if (!profileWithSameMountpoint.isNull()
+                    && profileWithSameMountpoint->getHost().toLower()
                     == profile->getHost().toLower()
-                && profileWithSameMountpoint->getPort()
+                    && profileWithSameMountpoint->getPort()
                     == profile->getPort() ) {
-                QMessageBox::warning(
-                    this, tr("Action failed"),
-                    tr("'%1' has the same Icecast mountpoint as '%2'.\n"
-                       "Two source connections to the same server can't have the same mountpoint.")
-                       .arg(profileName).arg(profileNameWithSameMountpoint));
-                return;
+                    QMessageBox::warning(
+                        this, tr("Action failed"),
+                        tr("'%1' has the same Icecast mountpoint as '%2'.\n"
+                           "Two source connections to the same server can't have the same mountpoint.")
+                        .arg(profileName).arg(profileNameWithSameMountpoint));
+                    return;
+                }
             }
         }
 
@@ -264,7 +270,7 @@ void DlgPrefBroadcast::btnCreateConnectionClicked() {
                 .arg(BROADCAST_MAX_CONNECTIONS));
         return;
     }
-  
+
     int profileNumber = m_pSettingsModel->rowCount();
 
     // Generate a new profile name based on the current profile count.
@@ -598,4 +604,3 @@ void DlgPrefBroadcast::onSectionResized() {
     // the remaining width, thanks to stretchLastSection set to true.
     sender()->blockSignals(false);
 }
-

@@ -4,7 +4,7 @@
 #include <QScopedPointer>
 #include <gtest/gtest_prod.h>
 
-#include "engine/enginecontrol.h"
+#include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
 
 class EngineChannel;
@@ -57,9 +57,7 @@ class SyncControl : public EngineControl, public Syncable {
 
     void reportTrackPosition(double fractionalPlaypos);
     void reportPlayerSpeed(double speed, bool scratching);
-
-  public slots:
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
+    void trackLoaded(TrackPointer pNewTrack) override;
 
   private slots:
     // Fired by changes in play.
@@ -115,7 +113,7 @@ class SyncControl : public EngineControl, public Syncable {
     // multiplier changes and we need to recalculate the target distance.
     double m_unmultipliedTargetBeatDistance;
     double m_beatDistance;
-    double m_prevLocalBpm;
+    ControlValueAtomic<double> m_prevLocalBpm;
 
     QScopedPointer<ControlPushButton> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;

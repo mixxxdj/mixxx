@@ -36,6 +36,7 @@
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wsearchlineedit.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 
@@ -63,7 +64,7 @@ Library::Library(
         QObject* parent,
         UserSettingsPointer pConfig,
         mixxx::DbConnectionPoolPtr pDbConnectionPool,
-        PlayerManagerInterface* pPlayerManager,
+        PlayerManager* pPlayerManager,
         RecordingManager* pRecordingManager)
     : m_pConfig(pConfig),
       m_pDbConnectionPool(pDbConnectionPool),
@@ -124,12 +125,20 @@ Library::Library(
     addFeature(browseFeature);
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
-    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
-    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
-    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
+
+    m_pAnalysisFeature = new AnalysisFeature(this, pConfig);
+    connect(m_pPlaylistFeature, &PlaylistFeature::analyzeTracks,
+            m_pAnalysisFeature, &AnalysisFeature::analyzeTracks);
+    connect(m_pCrateFeature, &CrateFeature::analyzeTracks,
+            m_pAnalysisFeature, &AnalysisFeature::analyzeTracks);
     addFeature(m_pAnalysisFeature);
+    // Suspend a batch analysis while an ad-hoc analysis of
+    // loaded tracks is in progress and resume it afterwards.
+    connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
+            this, &Library::onPlayerManagerTrackAnalyzerProgress);
+    connect(pPlayerManager, &PlayerManager::trackAnalyzerIdle,
+            this, &Library::onPlayerManagerTrackAnalyzerIdle);
+
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
@@ -202,6 +211,14 @@ Library::~Library() {
     delete m_pTrackCollection;
 }
 
+void Library::stopFeatures() {
+    if (m_pAnalysisFeature) {
+        m_pAnalysisFeature->stop();
+        m_pAnalysisFeature = nullptr;
+    }
+    m_scanner.slotCancel();
+}
+
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
 
@@ -251,11 +268,6 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     connect(this, SIGNAL(setSelectedClick(bool)),
             pTrackTableView, SLOT(setSelectedClick(bool)));
 
-    connect(this, SIGNAL(searchStarting()),
-            pTrackTableView, SLOT(onSearchStarting()));
-    connect(this, SIGNAL(searchCleared()),
-            pTrackTableView, SLOT(onSearchCleared()));
-
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
     QListIterator<LibraryFeature*> feature_it(m_features);
@@ -287,10 +299,25 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
+    connect(feature, SIGNAL(disableSearch()),
+            this, SLOT(slotDisableSearch()));
     connect(feature, SIGNAL(enableCoverArtDisplay(bool)),
             this, SIGNAL(enableCoverArtDisplay(bool)));
     connect(feature, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+}
+
+void Library::onPlayerManagerTrackAnalyzerProgress(
+        TrackId /*trackId*/,AnalyzerProgress /*analyzerProgress*/) {
+    if (m_pAnalysisFeature) {
+        m_pAnalysisFeature->suspendAnalysis();
+    }
+}
+
+void Library::onPlayerManagerTrackAnalyzerIdle() {
+    if (m_pAnalysisFeature) {
+        m_pAnalysisFeature->resumeAnalysis();
+    }
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
@@ -326,7 +353,11 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
 }
 
 void Library::slotRestoreSearch(const QString& text) {
-    emit(restoreSearch(text));
+    emit restoreSearch(text);
+}
+
+void Library::slotDisableSearch() {
+    emit disableSearch();
 }
 
 void Library::slotRefreshLibraryModels() {

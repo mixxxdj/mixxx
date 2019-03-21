@@ -20,13 +20,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_src_plus.png</Pressed>
-          <Unpressed>btn_src_plus.png</Unpressed>
+          <Pressed>skin:/btn/btn_src_plus.png</Pressed>
+          <Unpressed>skin:/btn/btn_src_plus.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_src_minus.png</Pressed>
-          <Unpressed>btn_src_minus.png</Unpressed>
+          <Pressed>skin:/btn/btn_src_minus.png</Pressed>
+          <Unpressed>skin:/btn/btn_src_minus.png</Unpressed>
         </State>
         <Pos>5,0</Pos>
         <Connection>
@@ -40,13 +40,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_microphone_talkover_overdown.png</Pressed>
-          <Unpressed>btn_microphone_talkover.png</Unpressed>
+          <Pressed>skin:/btn/btn_microphone_talkover_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_microphone_talkover.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_microphone_talkover_overdown.png</Pressed>
-          <Unpressed>btn_microphone_talkover_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_microphone_talkover_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_microphone_talkover_over.png</Unpressed>
         </State>
         <Pos>5,14</Pos>
         <Connection>
@@ -62,13 +62,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_aux_mute_overdown.png</Pressed>
-          <Unpressed>btn_aux_mute_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_aux_mute_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_aux_mute_over.png</Unpressed>
         </State>				
         <State>
           <Number>1</Number>
-          <Pressed>btn_aux_mute_overdown.png</Pressed>
-          <Unpressed>btn_aux_mute.png</Unpressed>
+          <Pressed>skin:/btn/btn_aux_mute_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_aux_mute.png</Unpressed>
         </State>
         <Pos>5,35</Pos>
         <Connection>
@@ -88,13 +88,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_sampler_plus.png</Pressed>
-          <Unpressed>btn_sampler_plus.png</Unpressed>
+          <Pressed>skin:/btn/btn_sampler_plus.png</Pressed>
+          <Unpressed>skin:/btn/btn_sampler_plus.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_sampler_minus.png</Pressed>
-          <Unpressed>btn_sampler_minus.png</Unpressed>
+          <Pressed>skin:/btn/btn_sampler_minus.png</Pressed>
+          <Unpressed>skin:/btn/btn_sampler_minus.png</Unpressed>
         </State>
         <Pos>53,0</Pos>
         <Connection>
@@ -108,13 +108,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_play_sampler_down.png</Pressed>
-          <Unpressed>btn_play_sampler.png</Unpressed>
+          <Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_play_sampler_overdown.png</Pressed>
-          <Unpressed>btn_play_sampler_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_play_sampler_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_play_sampler_over.png</Unpressed>
         </State>
         <Pos>53,14</Pos>
         <Connection>
@@ -136,13 +136,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_play_sampler_down.png</Pressed>
-          <Unpressed>btn_play_sampler.png</Unpressed>
+          <Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_play_sampler_overdown.png</Pressed>
-          <Unpressed>btn_play_sampler_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_play_sampler_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_play_sampler_over.png</Unpressed>
         </State>
         <Pos>74,14</Pos>
         <Connection>
@@ -164,13 +164,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_play_sampler_down.png</Pressed>
-          <Unpressed>btn_play_sampler.png</Unpressed>
+          <Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_play_sampler_overdown.png</Pressed>
-          <Unpressed>btn_play_sampler_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_play_sampler_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_play_sampler_over.png</Unpressed>
         </State>
         <Pos>53,35</Pos>
         <Connection>
@@ -192,13 +192,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_play_sampler_down.png</Pressed>
-          <Unpressed>btn_play_sampler.png</Unpressed>
+          <Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_play_sampler_overdown.png</Pressed>
-          <Unpressed>btn_play_sampler_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_play_sampler_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_play_sampler_over.png</Unpressed>
         </State>
         <Pos>74,35</Pos>
         <Connection>
@@ -219,12 +219,24 @@
       Button- Fast forward and rewind
       **********************************************
       -->
-      <WidgetGroup>
-        <Size>41f,14f</Size>
-        <BackPath>btn_seek.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+      <PushButton>
+        <Size>54f,14f</Size>
         <Pos>101,0</Pos>
-      </WidgetGroup>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_seek_plus.png</Pressed>
+          <Unpressed>skin:/btn/btn_seek_plus.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_seek_minus.png</Pressed>
+          <Unpressed>skin:/btn/btn_seek_minus.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey>[Skin],show_loop_beatjump_controls</ConfigKey>
+        </Connection>
+      </PushButton>
 
       <PushButton>
         <TooltipId>fwd_end</TooltipId>
@@ -232,8 +244,8 @@
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_forward1_overdown.png</Pressed>
-          <Unpressed>btn_forward1.png</Unpressed>
+          <Pressed>skin:/btn/btn_forward_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_forward.png</Unpressed>
         </State>
         <Pos>122,14</Pos>
         <Connection>
@@ -253,8 +265,8 @@
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_rewind1_overdown.png</Pressed>
-          <Unpressed>btn_rewind1.png</Unpressed>
+          <Pressed>skin:/btn/btn_rewind_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_rewind.png</Unpressed>
         </State>
         <Pos>101,14</Pos>
         <Connection>
@@ -281,13 +293,13 @@
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed>btn_reverse1_overdown.png</Pressed>
-          <Unpressed>btn_reverse1.png</Unpressed>
+          <Pressed>skin:/btn/btn_reverse_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_reverse.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_reverse1_overdown.png</Pressed>
-          <Unpressed>btn_reverse1_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_reverse_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_reverse_over.png</Unpressed>
         </State>
         <Pos>101,35</Pos>
         <Connection>
@@ -315,13 +327,13 @@
         <RightClickIsPushButton>true</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed>btn_beatloop1_4_down.png</Pressed>
-          <Unpressed>btn_beatloop1_4.png</Unpressed>
+          <Pressed>skin:/btn/btn_beatloop_4_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatloop_4.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_beatloop1_4_overdown.png</Pressed>
-          <Unpressed>btn_beatloop1_4_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_beatloop_4_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatloop_4_over.png</Unpressed>
         </State>
         <Pos>149,35</Pos>
         <Connection>
@@ -351,17 +363,17 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_loop_plus.png</Pressed>
-          <Unpressed>btn_loop_plus.png</Unpressed>
+          <Pressed>skin:/btn/btn_loop_plus.png</Pressed>
+          <Unpressed>skin:/btn/btn_loop_plus.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_loop_minus.png</Pressed>
-          <Unpressed>btn_loop_minus.png</Unpressed>
+          <Pressed>skin:/btn/btn_loop_minus.png</Pressed>
+          <Unpressed>skin:/btn/btn_loop_minus.png</Unpressed>
         </State>
         <Pos>149,0</Pos>
         <Connection>
-          <ConfigKey>[Shade],looping</ConfigKey>
+          <ConfigKey>[Skin],show_loop_beatjump_controls</ConfigKey>
         </Connection>
       </PushButton>
       <PushButton>
@@ -370,8 +382,8 @@
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_beatloop1_halve_overdown.png</Pressed>
-          <Unpressed>btn_beatloop1_halve.png</Unpressed>
+          <Pressed>skin:/btn/btn_beatloop_halve_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatloop_halve.png</Unpressed>
         </State>
         <Pos>149,14</Pos>
         <Connection>
@@ -386,8 +398,8 @@
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>btn_beatloop1_double_overdown.png</Pressed>
-          <Unpressed>btn_beatloop1_double.png</Unpressed>
+          <Pressed>skin:/btn/btn_beatloop_double_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatloop_double.png</Unpressed>
         </State>
         <Pos>170,14</Pos>
         <Connection>
@@ -405,13 +417,13 @@
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed>btn_reloop1_down.png</Pressed>
-          <Unpressed>btn_reloop1.png</Unpressed>
+          <Pressed>skin:/btn/btn_reloop_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_reloop.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_reloop1_overdown.png</Pressed>
-          <Unpressed>btn_reloop1_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_reloop_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_reloop_over.png</Unpressed>
         </State>
         <Connection>
           <ConfigKey>[Channel<Variable name="channum"/>],reloop_toggle</ConfigKey>
@@ -438,7 +450,7 @@
       -->
       <WidgetGroup>
         <Size>41f,14f</Size>
-        <BackPath>btn_hotcues.png</BackPath>
+        <BackPath>skin:/btn/btn_hotcues.png</BackPath>
         <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
         <Pos>197,0</Pos>
       </WidgetGroup>
@@ -450,13 +462,13 @@
         <RightClickIsPushButton>true</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed>btn_hotcue1_1_down.png</Pressed>
-          <Unpressed>btn_hotcue1_1.png</Unpressed>
+          <Pressed>skin:/btn/btn_hotcue_1_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_hotcue_1.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_hotcue1_1_overdown.png</Pressed>
-          <Unpressed>btn_hotcue1_1_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_hotcue_1_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_hotcue_1_over.png</Unpressed>
         </State>
         <Pos>197,14</Pos>
         <Connection>
@@ -484,13 +496,13 @@
         <RightClickIsPushButton>true</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed>btn_hotcue1_2_down.png</Pressed>
-          <Unpressed>btn_hotcue1_2.png</Unpressed>
+          <Pressed>skin:/btn/btn_hotcue_2_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_hotcue_2.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_hotcue1_2_overdown.png</Pressed>
-          <Unpressed>btn_hotcue1_2_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_hotcue_2_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_hotcue_2_over.png</Unpressed>
         </State>
         <Pos>218,14</Pos>
         <Connection>
@@ -518,13 +530,13 @@
         <RightClickIsPushButton>true</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed>btn_hotcue1_3_down.png</Pressed>
-          <Unpressed>btn_hotcue1_3.png</Unpressed>
+          <Pressed>skin:/btn/btn_hotcue_3_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_hotcue_3.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_hotcue1_3_overdown.png</Pressed>
-          <Unpressed>btn_hotcue1_3_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_hotcue_3_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_hotcue_3_over.png</Unpressed>
         </State>
         <Pos>197,35</Pos>
         <Connection>
@@ -552,13 +564,13 @@
         <RightClickIsPushButton>true</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed>btn_hotcue1_4_down.png</Pressed>
-          <Unpressed>btn_hotcue1_4.png</Unpressed>
+          <Pressed>skin:/btn/btn_hotcue_4_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_hotcue_4.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>btn_hotcue1_4_overdown.png</Pressed>
-          <Unpressed>btn_hotcue1_4_over.png</Unpressed>
+          <Pressed>skin:/btn/btn_hotcue_4_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_hotcue_4_over.png</Unpressed>
         </State>
         <Pos>218,35</Pos>
         <Connection>

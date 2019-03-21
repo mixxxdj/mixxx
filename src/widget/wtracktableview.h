@@ -47,8 +47,6 @@ class WTrackTableView : public WLibraryTableView {
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
-    void onSearchStarting();
-    void onSearchCleared();
     void slotSendToAutoDJBottom() override;
     void slotSendToAutoDJTop() override;
     void slotSendToAutoDJReplace() override;
@@ -82,6 +80,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotClearMainCue();
     void slotClearHotCues();
     void slotClearLoop();
+    void slotClearKey();
     void slotClearReplayGain();
     void slotClearWaveform();
     void slotClearAllMetadata();
@@ -195,6 +194,7 @@ class WTrackTableView : public WLibraryTableView {
     QAction* m_pClearHotCuesAction;
     QAction* m_pClearLoopAction;
     QAction* m_pClearWaveformAction;
+    QAction* m_pClearKeyAction;
     QAction* m_pClearReplayGainAction;
     QAction* m_pClearAllMetadataAction;
 

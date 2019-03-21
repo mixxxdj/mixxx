@@ -1,16 +1,20 @@
 <!DOCTYPE template>
 <!--
   Description:
-    An effect unit widget.
+    An effect unit widget hosting all effect controls for both collapsed
+    and expanded state ([FxUnitN],show_parameters)
   Variables:
     group: The group for the controls.
+    FxRack
+    FxUnit
+    FxNum
 -->
 <Template>
   <SetVariable name="FxRack_FxUnit_FxNum">[EffectRack1_EffectUnit<Variable name="FxUnit"/>_Effect<Variable name="FxNum"/>]</SetVariable>
   <SetVariable name="FxRack_FxUnit">[EffectRack1_EffectUnit<Variable name="FxUnit"/>]</SetVariable>
 
   <WidgetGroup>
-    <Size>-1me,52min</Size>
+    <Size>-1me,52me</Size>
     <Layout>stacked</Layout>
     <Children>
 
@@ -81,12 +85,12 @@
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
-            <MinimumSize>95,26</MinimumSize>
+            <MinimumSize>85,26</MinimumSize>
             <MaximumSize>150,26</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <Children>
               <EffectSelector>
-                <MinimumSize>95,26</MinimumSize>
+                <MinimumSize>85,26</MinimumSize>
                 <MaximumSize>150,26</MaximumSize>
                 <SizePolicy>me,f</SizePolicy>
                 <EffectRack><Variable name="FxRack"/></EffectRack>

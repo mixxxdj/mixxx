@@ -113,10 +113,8 @@ QScriptValue ControllerEngine::wrapFunctionCode(const QString& codeSnippet,
                                                 int numberOfArgs) {
     QScriptValue wrappedFunction;
 
-    QHash<QString, QScriptValue>::const_iterator i =
-            m_scriptWrappedFunctionCache.find(codeSnippet);
-
-    if (i != m_scriptWrappedFunctionCache.end()) {
+    auto i = m_scriptWrappedFunctionCache.constFind(codeSnippet);
+    if (i != m_scriptWrappedFunctionCache.constEnd()) {
         wrappedFunction = i.value();
     } else {
         QStringList wrapperArgList;
@@ -187,6 +185,7 @@ void ControllerEngine::gracefulShutdown() {
         ++it;
     }
 
+    m_pColorJSProxy.reset();
     delete m_pBaClass;
     m_pBaClass = nullptr;
 }
@@ -213,6 +212,9 @@ void ControllerEngine::initializeScriptEngine() {
         // ...under the legacy name as well
         engineGlobalObject.setProperty("midi", m_pEngine->newQObject(m_pController));
     }
+
+    m_pColorJSProxy = std::make_unique<ColorJSProxy>(m_pEngine);
+    engineGlobalObject.setProperty("color", m_pEngine->newQObject(m_pColorJSProxy.get()));
 
     m_pBaClass = new ByteArrayClass(m_pEngine);
     engineGlobalObject.setProperty("ByteArray", m_pBaClass->constructor());
@@ -1104,8 +1106,8 @@ void ControllerEngine::timerEvent(QTimerEvent *event) {
         return;
     }
 
-    QHash<int, TimerInfo>::const_iterator it = m_timers.find(timerId);
-    if (it == m_timers.end()) {
+    auto it = m_timers.constFind(timerId);
+    if (it == m_timers.constEnd()) {
         qWarning() << "Timer" << timerId << "fired but there's no function mapped to it!";
         return;
     }

@@ -14,8 +14,8 @@
 #include "engine/effects/engineeffectsmanager.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginebuffer.h"
-#include "engine/enginechannel.h"
-#include "engine/enginedeck.h"
+#include "engine/channels/enginechannel.h"
+#include "engine/channels/enginedeck.h"
 #include "engine/enginedelay.h"
 #include "engine/enginetalkoverducking.h"
 #include "engine/enginevumeter.h"
@@ -289,7 +289,8 @@ void EngineMaster::processChannels(int iBufferSize) {
             continue;
         }
 
-        if (pChannel->isTalkoverEnabled()) {
+        if (pChannel->isTalkoverEnabled() &&
+                !pChannelInfo->m_pMuteControl->toBool()) {
             // talkover is an exclusive channel
             // once talkover is enabled it is not used in
             // xFader-Mix
@@ -449,10 +450,10 @@ void EngineMaster::process(const int iBufferSize) {
     // Mix all the talkover enabled channels together.
     // Effects processing is done in place to avoid unnecessary buffer copying.
     ChannelMixer::applyEffectsInPlaceAndMixChannels(
-        m_talkoverGain, &m_activeTalkoverChannels,
-        &m_channelTalkoverGainCache,
-        m_pTalkover, m_masterHandle.handle(),
-        m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
+            m_talkoverGain, &m_activeTalkoverChannels,
+            &m_channelTalkoverGainCache,
+            m_pTalkover, m_masterHandle.handle(),
+            m_iBufferSize, m_iSampleRate, m_pEngineEffectsManager);
 
     // Process effects on all microphones mixed together
     // We have no metadata for mixed effect buses, so use an empty GroupFeatureState.

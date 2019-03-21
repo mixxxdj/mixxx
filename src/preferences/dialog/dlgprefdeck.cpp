@@ -13,12 +13,13 @@
 #include "control/controlproxy.h"
 #include "widget/wnumberpos.h"
 #include "engine/enginebuffer.h"
-#include "engine/ratecontrol.h"
+#include "engine/controls/ratecontrol.h"
 #include "mixer/playermanager.h"
 #include "mixer/playerinfo.h"
 #include "control/controlobject.h"
 #include "mixxx.h"
 #include "defs_urls.h"
+#include "util/duration.h"
 
 namespace {
 constexpr int kDefaultRateRangePercent = 8;
@@ -43,11 +44,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     setupUi(this);
 
     m_pNumDecks = new ControlProxy("[Master]", "num_decks", this);
-    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)));
+    m_pNumDecks->connectValueChanged(this, [=](double value){slotNumDecksChanged(value);});
     slotNumDecksChanged(m_pNumDecks->get(), true);
 
     m_pNumSamplers = new ControlProxy("[Master]", "num_samplers", this);
-    m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)));
+    m_pNumSamplers->connectValueChanged(this, [=](double value){slotNumSamplersChanged(value);});
     slotNumSamplersChanged(m_pNumSamplers->get(), true);
 
     // Set default value in config file and control objects, if not present
@@ -82,29 +83,73 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     // If not present in the config, set the default value
     if (!m_pConfig->exists(ConfigKey("[Controls]","PositionDisplay"))) {
         m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"),
-          QString::number(static_cast<int>(TrackTime::DisplayMode::Remaining)));
+          QString::number(static_cast<int>(TrackTime::DisplayMode::REMAINING)));
     }
 
     double positionDisplayType = m_pConfig->getValue(
             ConfigKey("[Controls]", "PositionDisplay"),
-            static_cast<double>(TrackTime::DisplayMode::Elapsed));
+            static_cast<double>(TrackTime::DisplayMode::ELAPSED));
     if (positionDisplayType ==
-            static_cast<double>(TrackTime::DisplayMode::Remaining)) {
+            static_cast<double>(TrackTime::DisplayMode::REMAINING)) {
         radioButtonRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(TrackTime::DisplayMode::Remaining));
+            static_cast<double>(TrackTime::DisplayMode::REMAINING));
     } else if (positionDisplayType ==
-                   static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining)) {
+                   static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING)) {
         radioButtonElapsedAndRemaining->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(TrackTime::DisplayMode::ElapsedAndRemaining));
+            static_cast<double>(TrackTime::DisplayMode::ELAPSED_AND_REMAINING));
     } else {
         radioButtonElapsed->setChecked(true);
         m_pControlTrackTimeDisplay->set(
-            static_cast<double>(TrackTime::DisplayMode::Elapsed));
+            static_cast<double>(TrackTime::DisplayMode::ELAPSED));
     }
     connect(buttonGroupTrackTime, SIGNAL(buttonClicked(QAbstractButton*)),
             this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
+
+    // display time format
+
+    m_pControlTrackTimeFormat = new ControlObject(
+            ConfigKey("[Controls]", "TimeFormat"));
+    connect(m_pControlTrackTimeDisplay, SIGNAL(valueChanged(double)),
+            this, SLOT(slotTimeFormatChanged(double)));
+
+    QLocale locale;
+    // Track Display model
+    comboBoxTimeFormat->clear();
+
+    comboBoxTimeFormat->addItem(tr("mm:ss%1zz - Traditional")
+                                .arg(mixxx::DurationBase::kDecimalSeparator),
+                                static_cast<int>
+                                (TrackTime::DisplayFormat::TRADITIONAL));
+
+    comboBoxTimeFormat->addItem(tr("mm:ss - Traditional (Coarse)"),
+                                static_cast<int>
+                                (TrackTime::DisplayFormat::TRADITIONAL_COARSE));
+
+    comboBoxTimeFormat->addItem(tr("s%1zz - Seconds")
+                                .arg(mixxx::DurationBase::kDecimalSeparator),
+                                static_cast<int>
+                                (TrackTime::DisplayFormat::SECONDS));
+
+    comboBoxTimeFormat->addItem(tr("sss%1zz - Seconds (Long)")
+                                .arg(mixxx::DurationBase::kDecimalSeparator),
+                                static_cast<int>
+                                (TrackTime::DisplayFormat::SECONDS_LONG));
+
+    comboBoxTimeFormat->addItem(tr("s%1sss%2zz - Kiloseconds")
+                                .arg(QString(mixxx::DurationBase::kDecimalSeparator),
+                                     QString(mixxx::DurationBase::kKiloGroupSeparator)),
+                                static_cast<int>
+                                (TrackTime::DisplayFormat::KILO_SECONDS));
+
+    double time_format = static_cast<double>(
+                                            m_pConfig->getValue(
+                                            ConfigKey("[Controls]", "TimeFormat"),
+                                            static_cast<int>(TrackTime::DisplayFormat::TRADITIONAL)));
+    m_pControlTrackTimeFormat->set(time_format);
+    comboBoxTimeFormat->setCurrentIndex(
+                comboBoxTimeFormat->findData(time_format));
 
     // Override Playing Track on Track Load
     // The check box reflects the opposite of the config value
@@ -447,20 +492,20 @@ void DlgPrefDeck::slotJumpToCueOnTrackLoadCheckbox(bool checked) {
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
     if (b == radioButtonRemaining) {
-        m_timeDisplayMode = TrackTime::DisplayMode::Remaining;
+        m_timeDisplayMode = TrackTime::DisplayMode::REMAINING;
     } else if (b == radioButtonElapsedAndRemaining) {
-        m_timeDisplayMode = TrackTime::DisplayMode::ElapsedAndRemaining;
+        m_timeDisplayMode = TrackTime::DisplayMode::ELAPSED_AND_REMAINING;
     } else {
-        m_timeDisplayMode = TrackTime::DisplayMode::Elapsed;
+        m_timeDisplayMode = TrackTime::DisplayMode::ELAPSED;
     }
 }
 
 void DlgPrefDeck::slotSetTrackTimeDisplay(double v) {
     m_timeDisplayMode = static_cast<TrackTime::DisplayMode>(static_cast<int>(v));
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(v));
-    if (m_timeDisplayMode == TrackTime::DisplayMode::Remaining) {
+    if (m_timeDisplayMode == TrackTime::DisplayMode::REMAINING) {
         radioButtonRemaining->setChecked(true);
-    } else if (m_timeDisplayMode == TrackTime::DisplayMode::ElapsedAndRemaining) {
+    } else if (m_timeDisplayMode == TrackTime::DisplayMode::ELAPSED_AND_REMAINING) {
         radioButtonElapsedAndRemaining->setChecked(true);
     } else { // Elapsed
         radioButtonElapsed->setChecked(true);
@@ -495,10 +540,22 @@ void DlgPrefDeck::slotRateRampingModeLinearButton(bool checked) {
     }
 }
 
+void DlgPrefDeck::slotTimeFormatChanged(double v) {
+    int i = static_cast<int>(v);
+    m_pConfig->set(ConfigKey("[Controls]","TimeFormat"), ConfigValue(v));
+    comboBoxTimeFormat->setCurrentIndex(
+                comboBoxTimeFormat->findData(i));
+}
+
 void DlgPrefDeck::slotApply() {
     double timeDisplay = static_cast<double>(m_timeDisplayMode);
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(timeDisplay));
     m_pControlTrackTimeDisplay->set(timeDisplay);
+
+    // time format
+    double timeFormat = comboBoxTimeFormat->itemData(comboBoxTimeFormat->currentIndex()).toDouble();
+    m_pControlTrackTimeFormat->set(timeFormat);
+    m_pConfig->setValue(ConfigKey("[Controls]", "TimeFormat"), timeFormat);
 
     // Set cue mode for every deck
     for (ControlProxy* pControl : m_cueControls) {

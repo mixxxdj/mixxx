@@ -4,6 +4,8 @@
     An effect unit widget.
   Variables:
     group: The group for the controls.
+    FxRack
+    FxUnit
 -->
 <Template>
   <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
@@ -11,10 +13,10 @@
   <WidgetGroup>
     <ObjectName>EffectUnit<Variable name="FxUnit"/></ObjectName>
     <Layout>vertical</Layout>
-    <SizePolicy>me,max</SizePolicy>
+    <Size>635me,170min</Size>
     <Children>
 
-      <WidgetGroup><!-- Show parameters -->
+      <WidgetGroup><!-- Fx Parameters -->
         <SizePolicy>me,me</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
@@ -42,7 +44,7 @@
             </Children>
           </WidgetGroup>
 
-          <WidgetGroup><!-- Enable + Mix/Super + Pfl -->
+          <WidgetGroup><!-- Expand/Collapse + Mix/Super + Pfl -->
             <ObjectName>EffectUnitControls</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>max,min</SizePolicy>
@@ -56,7 +58,11 @@
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_MixModeButton</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>,5f</Size></WidgetGroup>
+              <WidgetGroup>
+                <MinimumSize>,0</MinimumSize>
+                <MaximumSize>,5</MaximumSize>
+                <SizePolicy>min,me</SizePolicy>
+              </WidgetGroup>
 
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_DryWetKnob</ObjectName>
@@ -66,26 +72,30 @@
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <Children>
-                  <WidgetGroup><Size>,5f</Size></WidgetGroup>
+                  <WidgetGroup><Size>,1f</Size></WidgetGroup>
                   <SingletonContainer>
                     <ObjectName>FxUnit<Variable name="FxUnit"/>_SuperKnob</ObjectName>
                   </SingletonContainer>
                 </Children>
                 <Connection>
-                  <ConfigKey persist="true">[Master],show_superknobs</ConfigKey>
+                  <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
 
-              <WidgetGroup><Size>,7f</Size></WidgetGroup>
+              <WidgetGroup>
+                <MinimumSize>,2</MinimumSize>
+                <MaximumSize>,7</MaximumSize>
+                <SizePolicy>min,me</SizePolicy>
+              </WidgetGroup>
 
               <SingletonContainer>
                 <ObjectName>FxUnit<Variable name="FxUnit"/>_PflButton</ObjectName>
               </SingletonContainer>
 
-              <WidgetGroup><Size>,5me</Size></WidgetGroup>
+              <WidgetGroup><Size>,0me</Size></WidgetGroup>
             </Children>
-          </WidgetGroup><!-- /Enable + Mix/Super + Pfl -->
+          </WidgetGroup><!-- /Expand/Collapse + Mix/Super + Pfl -->
         </Children>
       </WidgetGroup>
 
