@@ -93,29 +93,16 @@ DJCStarlight.vinylButton = function(channel, control, value, status, group) {
 
 
 // The touch action on the jog wheel's top surface
-DJCStarlight.wheelTouchA = function(channel, control, value, status, group) {
-    if (value > 0 && (engine.getValue("[Channel1]", "play") != 1 || DJCStarlight.scratchButtonState)){
+DJCStarlight.wheelTouch = function(channel, control, value, status, group) {
+    var deck = channel;
+    if (value > 0 && (engine.getValue("[Channel" + deck + "]", "play") != 1 || DJCStarlight.scratchButtonState)){
         //  Touching the wheel.
         var alpha = 1.0/8;
         var beta = alpha/32;
-        engine.scratchEnable(1, 600, 33+1/3, alpha, beta);
+        engine.scratchEnable(deck, 600, 33+1/3, alpha, beta);
     } else {
         // Released the wheel.
-        engine.scratchDisable(1);
-    }
-};
-
-
-// The touch action on the jog wheel's top surface
-DJCStarlight.wheelTouchB = function(channel, control, value, status, group) {
-    if (value > 0 && (engine.getValue("[Channel2]", "play") != 1 || DJCStarlight.scratchButtonState)) {
-        // Touching the wheel.
-        var alpha = 1.0/8;
-        var beta = alpha/32;
-        engine.scratchEnable(2, 600, 33+1/3, alpha, beta);
-    } else {
-        // Released the wheel.
-        engine.scratchDisable(2);
+        engine.scratchDisable(deck);
     }
 };
 

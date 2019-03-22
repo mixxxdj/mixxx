@@ -82,7 +82,7 @@
         // Jog Touch A
             <control>
                 <group>[Channel1]</group>
-                <key>DJCStarlight.wheelTouchA</key>
+                <key>DJCStarlight.wheelTouch</key>
                 <description>Jog Wheel Touch Deck A</description>
                 <status>0x91</status>
                 <midino>0x08</midino>
@@ -146,7 +146,7 @@
         // Jog Touch B
             <control>
                 <group>[Channel1]</group>
-                <key>DJCStarlight.wheelTouchB</key>
+                <key>DJCStarlight.wheelTouch</key>
                 <description>Jog Wheel Touch Deck B</description>
                 <status>0x92</status>
                 <midino>0x08</midino>
