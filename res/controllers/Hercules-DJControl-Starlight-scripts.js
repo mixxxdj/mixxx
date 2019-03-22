@@ -1,3 +1,14 @@
+var DJCStarlight = {};
+///////////////////////////////////////////////////////////////
+//                       USER OPTIONS                        //
+///////////////////////////////////////////////////////////////
+
+// How much faster seeking (shift+scratch) is than scratching.
+DJCStarlight.scratchShiftMultiplier = 4;
+
+// How fast bending is.
+DJCStarlight.bendScale = 1 / 30.0;
+
 // DJControl_Starlight_scripts.js
 //
 // ****************************************************************************
@@ -26,21 +37,10 @@
 //* Optimize JS code.
 // ****************************************************************************
 
-
-function DJCStarlight() {};
-var DJCStarlight = {};
-
-DJCStarlight.jogwheelShiftMultiplier = 4;
-var kBendScaleFactor = 1 / 30.0;
-
-DJCStarlight.scratchButtonState = true;
-kScratchActionNone = 0;
-kScratchActionScratch = 1;
-kScratchActionSeek = 2;
-kScratchActionBend = 3;
-DJCStarlight.scratchAction = {1: kScratchActionNone, 2: kScratchActionNone};
-
-DJCStarlight.cueMasterButtonState = false;
+DJCStarlight.kScratchActionNone = 0;
+DJCStarlight.kScratchActionScratch = 1;
+DJCStarlight.kScratchActionSeek = 2;
+DJCStarlight.kScratchActionBend = 3;
 
 
 // The base LED are mapped to the VU Meter for light show.
@@ -59,6 +59,12 @@ DJCStarlight.baseLEDUpdate = function(value, group, control){
 
 
 DJCStarlight.init = function() {
+    DJCStarlight.scratchButtonState = true;
+    DJCStarlight.cueMasterButtonState = false;
+    DJCStarlight.scratchAction = {
+        1: DJCStarlight.kScratchActionNone,
+        2: DJCStarlight.kScratchActionNone};
+
     // Turn off base LED default behavior
     midi.sendShortMsg(0x90,0x24,0x00);
 
@@ -69,7 +75,7 @@ DJCStarlight.init = function() {
     engine.connectControl("[Channel1]","VuMeterL","DJCStarlight.baseLEDUpdate");
     engine.connectControl("[Channel2]","VuMeterR","DJCStarlight.baseLEDUpdate");
 
-    //Set effects Levels - Dry/Wet
+    // Set effects Levels - Dry/Wet
     engine.setParameter("[EffectRack1_EffectUnit1_Effect1]", "meta", 0.6);
     engine.setParameter("[EffectRack1_EffectUnit1_Effect2]", "meta", 0.6);
     engine.setParameter("[EffectRack1_EffectUnit1_Effect3]", "meta", 0.6);
@@ -123,14 +129,14 @@ DJCStarlight.wheelTouch = function(channel, control, value, status, group) {
         //  Touching the wheel.
         if (engine.getValue("[Channel" + deck + "]", "play") != 1 || DJCStarlight.scratchButtonState) {
             DJCStarlight._scratchEnable(deck);
-            DJCStarlight.scratchAction[deck] = kScratchActionScratch;
+            DJCStarlight.scratchAction[deck] = DJCStarlight.kScratchActionScratch;
         } else {
-            DJCStarlight.scratchAction[deck] = kScratchActionBend;
+            DJCStarlight.scratchAction[deck] = DJCStarlight.kScratchActionBend;
         }
     } else {
         // Released the wheel.
         engine.scratchDisable(deck);
-        DJCStarlight.scratchAction[deck] = kScratchActionNone;
+        DJCStarlight.scratchAction[deck] = DJCStarlight.kScratchActionNone;
     }
 };
 
@@ -141,11 +147,11 @@ DJCStarlight.wheelTouchShift = function(channel, control, value, status, group) 
     // We always enable scratching regardless of button state.
     if (value > 0) {
         DJCStarlight._scratchEnable(deck);
-        DJCStarlight.scratchAction[deck] = kScratchActionSeek;
+        DJCStarlight.scratchAction[deck] = DJCStarlight.kScratchActionSeek;
     } else {
         // Released the wheel.
         engine.scratchDisable(deck);
-        DJCStarlight.scratchAction[deck] = kScratchActionNone;
+        DJCStarlight.scratchAction[deck] = DJCStarlight.kScratchActionNone;
     }
 };
 
@@ -155,10 +161,10 @@ DJCStarlight._scratchWheelImpl = function(deck, value) {
     var interval = DJCStarlight._convertWheelRotation(value);
     var scratchAction = DJCStarlight.scratchAction[deck];
 
-    if (scratchAction == kScratchActionScratch) {
+    if (scratchAction == DJCStarlight.kScratchActionScratch) {
         engine.scratchTick(deck, interval); // Scratch
-    } else if (scratchAction == kScratchActionSeek) {
-        engine.scratchTick(deck, interval * DJCStarlight.jogwheelShiftMultiplier); // Seek
+    } else if (scratchAction == DJCStarlight.kScratchActionSeek) {
+        engine.scratchTick(deck, interval * DJCStarlight.scratchShiftMultiplier); // Seek
     } else {
         engine.setValue('[Channel' + deck + ']', 'jog', interval); // Pitch bend
     }
@@ -184,7 +190,7 @@ DJCStarlight.bendWheel = function(channel, control, value, status, group) {
     var interval = DJCStarlight._convertWheelRotation(value);
 
     engine.setValue('[Channel' + deck + ']', 'jog',
-                    interval * kBendScaleFactor);
+                    interval * DJCStarlight.bendScale);
 };
 
 
