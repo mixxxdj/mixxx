@@ -33,6 +33,11 @@ var DJCStarlight = {};
 DJCStarlight.jogwheelShiftMultiplier = 4;
 
 DJCStarlight.scratchButtonState = true;
+kScratchActionNone = 0;
+kScratchActionScratch = 1;
+kScratchActionSeek = 2;
+kScratchActionBend = 3;
+DJCStarlight.scratchAction = {1: kScratchActionNone, 2: kScratchActionNone};
 
 
 // The base LED are mapped to the VU Meter for light show.
@@ -95,21 +100,44 @@ DJCStarlight.vinylButton = function(channel, control, value, status, group) {
 // The touch action on the jog wheel's top surface
 DJCStarlight.wheelTouch = function(channel, control, value, status, group) {
     var deck = channel;
-    if (value > 0 && (engine.getValue("[Channel" + deck + "]", "play") != 1 || DJCStarlight.scratchButtonState)){
+    if (value > 0) {
+        //  Touching the wheel.
+        if (engine.getValue("[Channel" + deck + "]", "play") != 1 || DJCStarlight.scratchButtonState) {
+            var alpha = 1.0/8;
+            var beta = alpha/32;
+            engine.scratchEnable(deck, 600, 33+1/3, alpha, beta);
+            DJCStarlight.scratchAction[deck] = kScratchActionScratch;
+        } else {
+            DJCStarlight.scratchAction[deck] = kScratchActionBend;
+        }
+    } else {
+        // Released the wheel.
+        engine.scratchDisable(deck);
+        DJCStarlight.scratchAction[deck] = kScratchActionNone;
+    }
+};
+
+
+// The touch action on the jog wheel's top surface while holding shift
+DJCStarlight.wheelTouchShift = function(channel, control, value, status, group) {
+    var deck = channel - 3;
+    // We always enable scratching regardless of button state.
+    if (value > 0) {
         //  Touching the wheel.
         var alpha = 1.0/8;
         var beta = alpha/32;
         engine.scratchEnable(deck, 600, 33+1/3, alpha, beta);
+        DJCStarlight.scratchAction[deck] = kScratchActionSeek;
     } else {
         // Released the wheel.
         engine.scratchDisable(deck);
+        DJCStarlight.scratchAction[deck] = kScratchActionNone;
     }
 };
 
 
 // Scratching on the jog wheel (rotating it while pressing the top surface)
-DJCStarlight.scratchWheel = function(channel, control, value, status, group) {
-    var deck = channel;
+DJCStarlight._scratchWheelImpl = function(deck, value) {
     var newValue;
     if (value < 64) {
         newValue = value;
@@ -117,32 +145,27 @@ DJCStarlight.scratchWheel = function(channel, control, value, status, group) {
         newValue = value - 128;
     }
 
-    if (engine.isScratching(deck)) {
-        engine.scratchTick(deck, newValue); // Scratch!
+    var scratchAction = DJCStarlight.scratchAction[deck];
+    if (scratchAction == kScratchActionScratch) {
+        engine.scratchTick(deck, newValue); // Scratch
+    } else if (scratchAction == kScratchActionSeek) {
+        engine.scratchTick(deck, newValue * DJCStarlight.jogwheelShiftMultiplier); // Seek
     } else {
         engine.setValue('[Channel' + deck + ']', 'jog', newValue); // Pitch bend
     }
+};
+
+// Scratching on the jog wheel (rotating it while pressing the top surface)
+DJCStarlight.scratchWheel = function(channel, control, value, status, group) {
+    var deck = channel;
+    DJCStarlight._scratchWheelImpl(deck, value);
 };
 
 
 // Seeking on the jog wheel (rotating it while pressing the top surface and holding Shift)
 DJCStarlight.scratchWheelShift = function(channel, control, value, status, group) {
     var deck = channel - 3;
-    var newValue;
-    if (value < 64) {
-        newValue = value;
-    } else {
-        newValue = value - 128;
-    }
-
-    if (engine.isScratching(deck)) {
-        // Pressing [Shift] while we're already scratching has no effect, we
-        // continue to scratch at normal speed.
-        engine.scratchTick(deck, newValue);
-    } else {
-        // Seek forward
-        engine.setValue('[Channel' + deck + ']', 'jog', newValue * DJCStarlight.jogwheelShiftMultiplier); // Pitch bend
-    }
+    DJCStarlight._scratchWheelImpl(deck, value);
 };
 
 
