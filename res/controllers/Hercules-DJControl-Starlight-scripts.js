@@ -40,6 +40,8 @@ kScratchActionSeek = 2;
 kScratchActionBend = 3;
 DJCStarlight.scratchAction = {1: kScratchActionNone, 2: kScratchActionNone};
 
+DJCStarlight.cueMasterButtonState = false;
+
 
 // The base LED are mapped to the VU Meter for light show.
 DJCStarlight.baseLEDUpdate = function(value, group, control){
@@ -183,6 +185,21 @@ DJCStarlight.bendWheel = function(channel, control, value, status, group) {
 
     engine.setValue('[Channel' + deck + ']', 'jog',
                     interval * kBendScaleFactor);
+};
+
+
+// Cue master button
+DJCStarlight.cueMaster = function(channel, control, value, status, group) {
+    // This button acts as a toggle. Ignore the release.
+    if (value == 0) {
+        return;
+    }
+
+    DJCStarlight.cueMasterButtonState = !DJCStarlight.cueMasterButtonState;
+
+    var headMixValue = DJCStarlight.cueMasterButtonState ? 1 : -1;
+
+    engine.setValue('[Master]', 'headMix', headMixValue);
 };
 
 
