@@ -216,6 +216,9 @@ DJCStarlight.cueMaster = function(channel, control, value, status, group) {
 
 
 // Cue mix button, toggles PFL / master split feature
+// We need a special function for this because we want to turn on the LED (but
+// we *don't* want to turn on the LED when the user clicks the headSplit button
+// in the GUI).
 DJCStarlight.cueMix = function(channel, control, value, status, group) {
     // This button acts as a toggle. Ignore the release.
     if (value == 0) {
