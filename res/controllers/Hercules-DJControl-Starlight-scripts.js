@@ -100,7 +100,8 @@ DJCStarlight.vinylButton = function(channel, control, value, status, group) {
 DJCStarlight._scratchEnable = function(deck) {
     var alpha = 1.0/8;
     var beta = alpha/32;
-    engine.scratchEnable(deck, 248, 33+1/3, alpha, beta);
+    // The RPM 38 was chosen so the scratch behavior matches Serato.
+    engine.scratchEnable(deck, 248, 38, alpha, beta);
 };
 
 
