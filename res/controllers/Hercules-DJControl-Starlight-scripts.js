@@ -172,7 +172,7 @@ DJCStarlight._scratchWheelImpl = function(deck, value) {
                            * DJCStarlight.scratchScale
                            * DJCStarlight.scratchShiftMultiplier);
     } else {
-        engine.setValue('[Channel' + deck + ']', 'jog', interval); // Pitch bend
+        DJCStarlight._bendWheelImpl(deck, value);
     }
 };
 
@@ -190,13 +190,17 @@ DJCStarlight.scratchWheelShift = function(channel, control, value, status, group
 };
 
 
+DJCStarlight._bendWheelImpl = function(deck, value) {
+    var interval = DJCStarlight._convertWheelRotation(value);
+    engine.setValue('[Channel' + deck + ']', 'jog',
+                    interval * DJCStarlight.bendScale);
+};
+
+
 // Bending on the jog wheel (rotating using the edge)
 DJCStarlight.bendWheel = function(channel, control, value, status, group) {
     var deck = channel;
-    var interval = DJCStarlight._convertWheelRotation(value);
-
-    engine.setValue('[Channel' + deck + ']', 'jog',
-                    interval * DJCStarlight.bendScale);
+    DJCStarlight._bendWheelImpl(deck, value);
 };
 
 
