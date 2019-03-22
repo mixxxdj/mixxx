@@ -136,10 +136,7 @@ DJCStarlight.wheelTouchShift = function(channel, control, value, status, group) 
     var deck = channel - 3;
     // We always enable scratching regardless of button state.
     if (value > 0) {
-        //  Touching the wheel.
-        var alpha = 1.0/8;
-        var beta = alpha/32;
-        engine._scratchEnable(deck);
+        DJCStarlight._scratchEnable(deck);
         DJCStarlight.scratchAction[deck] = kScratchActionSeek;
     } else {
         // Released the wheel.
