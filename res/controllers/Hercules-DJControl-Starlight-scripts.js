@@ -31,6 +31,7 @@ function DJCStarlight() {};
 var DJCStarlight = {};
 
 DJCStarlight.jogwheelShiftMultiplier = 4;
+var kBendScaleFactor = 1 / 30.0;
 
 DJCStarlight.scratchButtonState = true;
 kScratchActionNone = 0;
@@ -180,7 +181,8 @@ DJCStarlight.bendWheel = function(channel, control, value, status, group) {
     var deck = channel;
     var interval = DJCStarlight._convertWheelRotation(value);
 
-    engine.setValue('[Channel' + deck + ']', 'jog', interval); // Pitch bend
+    engine.setValue('[Channel' + deck + ']', 'jog',
+                    interval * kBendScaleFactor);
 };
 
 
