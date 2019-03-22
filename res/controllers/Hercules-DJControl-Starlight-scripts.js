@@ -211,6 +211,16 @@ DJCStarlight.cueMaster = function(channel, control, value, status, group) {
 };
 
 
+DJCStarlight.shiftButton = function(channel, control, value, status, group) {
+    if (value >= 0x40) {
+        // When Shift is held, light the LEDS to show the status of the alt
+        // functions of the cue buttons.
+        var cueMasterValue =
+            engine.getValue('[Master]', 'headMix') > 0 ? 0x7F : 0x00;
+        midi.sendShortMsg(0x91, 0x0C, cueMasterValue);
+    }
+}
+
 DJCStarlight.shutdown = function() {
     // Reset base LED
     midi.sendShortMsg(0x90,0x24,0x7F);
