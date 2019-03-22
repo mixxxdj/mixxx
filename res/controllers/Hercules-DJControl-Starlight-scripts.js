@@ -30,7 +30,7 @@
 function DJCStarlight() {};
 var DJCStarlight = {};
 
-DJCStarlight.jogwheelShiftMultiplier = 100;
+DJCStarlight.jogwheelShiftMultiplier = 4;
 
 DJCStarlight.scratchButtonState = true;
 
