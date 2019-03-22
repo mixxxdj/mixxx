@@ -79,7 +79,7 @@
                 </options>
             </control>
 
-        // Jog Touch A
+        // Jog wheel touch
             <control>
                 <group>[Channel1]</group>
                 <key>DJCStarlight.wheelTouch</key>
@@ -143,9 +143,9 @@
                 </options>
             </control>
 
-        // Jog Touch B
+        // Jog wheel touch
             <control>
-                <group>[Channel1]</group>
+                <group>[Channel2]</group>
                 <key>DJCStarlight.wheelTouch</key>
                 <description>Jog Wheel Touch Deck B</description>
                 <status>0x92</status>
@@ -207,6 +207,18 @@
                 </options>
             </control>
 
+        // Jog wheel touch
+            <control>
+                <group>[Channel1]</group>
+                <key>DJCStarlight.wheelTouchShift</key>
+                <description>Jog Wheel Shift Touch Deck A</description>
+                <status>0x94</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+
     /****************************************************************************************************/
     // NN's MIDI Channel 6 (0x95 Deck B - SHIFT MODE)
     /****************************************************************************************************/
@@ -258,6 +270,19 @@
                     <normal/>
                 </options>
             </control>
+
+        // Jog wheel touch
+            <control>
+                <group>[Channel2]</group>
+                <key>DJCStarlight.wheelTouchShift</key>
+                <description>Jog Wheel Shift Touch Deck B</description>
+                <status>0x95</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding />
+                </options>
+            </control>
+
 
     /****************************************************************************************************/
     // NN's MIDI Channel 7 (0x96 Deck A - Pads)
