@@ -121,7 +121,7 @@ DJCStarlight.wheelTouchB = function(channel, control, value, status, group) {
 
 
 // Scratching on the jog wheel (rotating it while pressing the top surface)
-DJCStarlight.scratchWheelA = function(channel, control, value, status, group) {
+DJCStarlight.scratchWheel = function(channel, control, value, status, group) {
     var newValue;
     if (value < 64) {
         newValue = value;
@@ -129,10 +129,10 @@ DJCStarlight.scratchWheelA = function(channel, control, value, status, group) {
         newValue = value - 128;
     }
 
-    if (engine.isScratching(1)) {
-        engine.scratchTick(1, newValue); // Scratch!
+    if (engine.isScratching(channel)) {
+        engine.scratchTick(channel, newValue); // Scratch!
     } else {
-        engine.setValue('[Channel1]', 'jog', newValue); // Pitch bend
+        engine.setValue('[Channel' + channel + ']', 'jog', newValue); // Pitch bend
     }
 };
 
@@ -166,23 +166,6 @@ DJCStarlight.bendWheelA = function(channel, control, value, status, group) {
         newValue = value - 128;
     }
     engine.setValue('[Channel1]', 'jog', newValue); // Pitch bend
-};
-
-
-// Scratching on the jog wheel (rotating it while pressing the touch surface)
-DJCStarlight.scratchWheelB = function(channel, control, value, status, group) {
-    var newValue;
-    if (value < 64) {
-        newValue = value;
-    } else {
-        newValue = value - 128;
-    }
-
-    if (engine.isScratching(2)) {
-        engine.scratchTick(2, newValue); // Scratch!
-    } else {
-        engine.setValue('[Channel2]', 'jog', newValue); // Pitch bend
-    }
 };
 
 
