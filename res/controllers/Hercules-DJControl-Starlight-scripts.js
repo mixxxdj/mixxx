@@ -13,12 +13,15 @@ DJCStarlight.bendScale = 0.5;
 //
 // ****************************************************************************
 // * Mixxx mapping script file for the Hercules DJControl Starlight.
-// * Author: DJ Phatso, contributions by Kerrick Staley
-// * Version 1.2 (March 17 2019)
+// * Author: DJ Phatso and Kerrick Staley
+// * Version 1.3 (March 21 2019)
 // * Forum: https://mixxx.org/forums/viewtopic.php?f=7&t=12570
 // * Wiki: https://mixxx.org/wiki/doku.php/hercules_dj_control_starlight
-
-
+// Changes to v1.3
+// - Fix seek-to-start and cue-master behavior.
+// - Change loops to 1/2/4/8 beats.
+// - Tweak scratch, seek, and bend behavior.
+// - Refactor to reduce code size.
 // Changes to v1.2
 // - Controller knob/slider values are queried on startup, so MIXXX is synced.
 // - Fixed vinyl button behavior the first time it's pressed.
@@ -28,13 +31,12 @@ DJCStarlight.bendScale = 0.5;
 //
 // v1.0 : Original release
 
-//TODO: Functions that could be implemented to the script:
-//
-//* Tweak/map base LED to other functions (if possible)
-//* FX:
+// TODO: Functions that could be implemented to the script:
+// * Tweak/map base LED to other functions (if possible).
+// * FX:
 //   - Potentially pre-select/load effects into deck and set parameters
-//* Tweak Jog wheels
-//* Optimize JS code.
+// * Fix behavior when adjusting tempo slider after pressing [Sync] (tempo
+//   adjustment should be relative, not absolute).
 // ****************************************************************************
 
 DJCStarlight.kScratchActionNone = 0;
