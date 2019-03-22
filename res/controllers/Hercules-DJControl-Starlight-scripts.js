@@ -3,6 +3,9 @@ var DJCStarlight = {};
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
 
+// How fast scratching is.
+DJCStarlight.scratchScale = 1.15;
+
 // How much faster seeking (shift+scratch) is than scratching.
 DJCStarlight.scratchShiftMultiplier = 4;
 
@@ -110,8 +113,7 @@ DJCStarlight.vinylButton = function(channel, control, value, status, group) {
 DJCStarlight._scratchEnable = function(deck) {
     var alpha = 1.0/8;
     var beta = alpha/32;
-    // The RPM 38 was chosen so the scratch behavior matches Serato.
-    engine.scratchEnable(deck, 248, 38, alpha, beta);
+    engine.scratchEnable(deck, 248, 33 + 1/3, alpha, beta);
 };
 
 
@@ -163,9 +165,12 @@ DJCStarlight._scratchWheelImpl = function(deck, value) {
     var scratchAction = DJCStarlight.scratchAction[deck];
 
     if (scratchAction == DJCStarlight.kScratchActionScratch) {
-        engine.scratchTick(deck, interval); // Scratch
+        engine.scratchTick(deck, interval * DJCStarlight.scratchScale);
     } else if (scratchAction == DJCStarlight.kScratchActionSeek) {
-        engine.scratchTick(deck, interval * DJCStarlight.scratchShiftMultiplier); // Seek
+        engine.scratchTick(deck,
+                           interval
+                           * DJCStarlight.scratchScale
+                           * DJCStarlight.scratchShiftMultiplier);
     } else {
         engine.setValue('[Channel' + deck + ']', 'jog', interval); // Pitch bend
     }
