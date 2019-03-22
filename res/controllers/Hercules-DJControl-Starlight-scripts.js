@@ -203,11 +203,15 @@ DJCStarlight.cueMaster = function(channel, control, value, status, group) {
         return;
     }
 
+    // Toggle state.
     DJCStarlight.cueMasterButtonState = !DJCStarlight.cueMasterButtonState;
 
     var headMixValue = DJCStarlight.cueMasterButtonState ? 1 : -1;
-
     engine.setValue('[Master]', 'headMix', headMixValue);
+
+    var cueMasterLedValue =
+        engine.getValue('[Master]', 'headMix') > 0 ? 0x7F : 0x00;
+    midi.sendShortMsg(0x91, 0x0C, cueMasterLedValue);
 };
 
 
@@ -215,9 +219,14 @@ DJCStarlight.shiftButton = function(channel, control, value, status, group) {
     if (value >= 0x40) {
         // When Shift is held, light the LEDS to show the status of the alt
         // functions of the cue buttons.
-        var cueMasterValue =
+        var cueMasterLedValue =
             engine.getValue('[Master]', 'headMix') > 0 ? 0x7F : 0x00;
-        midi.sendShortMsg(0x91, 0x0C, cueMasterValue);
+        midi.sendShortMsg(0x91, 0x0C, cueMasterLedValue);
+    } else {
+        // When Shift is released, go back to the normal LED values.
+        var cueChan1LedValue =
+            engine.getValue('[Channel1]', 'pfl') ? 0x7F : 0x00;
+        midi.sendShortMsg(0x91, 0x0C, cueChan1LedValue);
     }
 }
 
