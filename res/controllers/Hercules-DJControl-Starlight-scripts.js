@@ -122,6 +122,7 @@ DJCStarlight.wheelTouchB = function(channel, control, value, status, group) {
 
 // Scratching on the jog wheel (rotating it while pressing the top surface)
 DJCStarlight.scratchWheel = function(channel, control, value, status, group) {
+    var deck = channel;
     var newValue;
     if (value < 64) {
         newValue = value;
@@ -129,16 +130,17 @@ DJCStarlight.scratchWheel = function(channel, control, value, status, group) {
         newValue = value - 128;
     }
 
-    if (engine.isScratching(channel)) {
-        engine.scratchTick(channel, newValue); // Scratch!
+    if (engine.isScratching(deck)) {
+        engine.scratchTick(deck, newValue); // Scratch!
     } else {
-        engine.setValue('[Channel' + channel + ']', 'jog', newValue); // Pitch bend
+        engine.setValue('[Channel' + deck + ']', 'jog', newValue); // Pitch bend
     }
 };
 
 
 // Seeking on the jog wheel (rotating it while pressing the top surface and holding Shift)
 DJCStarlight.scratchWheelShift = function(channel, control, value, status, group) {
+    var deck = channel - 3;
     var newValue;
     if (value < 64) {
         newValue = value;
@@ -146,13 +148,13 @@ DJCStarlight.scratchWheelShift = function(channel, control, value, status, group
         newValue = value - 128;
     }
 
-    if (engine.isScratching(channel)) {
+    if (engine.isScratching(deck)) {
         // Pressing [Shift] while we're already scratching has no effect, we
         // continue to scratch at normal speed.
-        engine.scratchTick(channel, newValue);
+        engine.scratchTick(deck, newValue);
     } else {
         // Seek forward
-        engine.setValue('[Channel' + channel + ']', 'jog', newValue * DJCStarlight.jogwheelShiftMultiplier); // Pitch bend
+        engine.setValue('[Channel' + deck + ']', 'jog', newValue * DJCStarlight.jogwheelShiftMultiplier); // Pitch bend
     }
 };
 
