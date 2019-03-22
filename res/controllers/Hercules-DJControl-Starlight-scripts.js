@@ -104,6 +104,14 @@ DJCStarlight._scratchEnable = function(deck) {
 };
 
 
+DJCStarlight._convertWheelRotation = function(value) {
+    // When you rotate the jogwheel, the controller always sends either 0x1
+    // (clockwise) or 0x7F (counter clockwise). 0x1 should map to 1, 0x7F
+    // should map to -1 (IOW it's 7-bit signed).
+    return value < 0x40 ? 1 : -1;
+}
+
+
 // The touch action on the jog wheel's top surface
 DJCStarlight.wheelTouch = function(channel, control, value, status, group) {
     var deck = channel;
@@ -143,20 +151,15 @@ DJCStarlight.wheelTouchShift = function(channel, control, value, status, group) 
 
 // Scratching on the jog wheel (rotating it while pressing the top surface)
 DJCStarlight._scratchWheelImpl = function(deck, value) {
-    var newValue;
-    if (value < 64) {
-        newValue = value;
-    } else {
-        newValue = value - 128;
-    }
-
+    var interval = DJCStarlight._convertWheelRotation(value);
     var scratchAction = DJCStarlight.scratchAction[deck];
+
     if (scratchAction == kScratchActionScratch) {
-        engine.scratchTick(deck, newValue); // Scratch
+        engine.scratchTick(deck, interval); // Scratch
     } else if (scratchAction == kScratchActionSeek) {
-        engine.scratchTick(deck, newValue * DJCStarlight.jogwheelShiftMultiplier); // Seek
+        engine.scratchTick(deck, interval * DJCStarlight.jogwheelShiftMultiplier); // Seek
     } else {
-        engine.setValue('[Channel' + deck + ']', 'jog', newValue); // Pitch bend
+        engine.setValue('[Channel' + deck + ']', 'jog', interval); // Pitch bend
     }
 };
 
@@ -177,13 +180,9 @@ DJCStarlight.scratchWheelShift = function(channel, control, value, status, group
 // Bending on the jog wheel (rotating using the edge)
 DJCStarlight.bendWheel = function(channel, control, value, status, group) {
     var deck = channel;
-    var newValue;
-    if (value < 64) {
-        newValue = value;
-    } else {
-        newValue = value - 128;
-    }
-    engine.setValue('[Channel' + deck + ']', 'jog', newValue); // Pitch bend
+    var interval = DJCStarlight._convertWheelRotation(value);
+
+    engine.setValue('[Channel' + deck + ']', 'jog', interval); // Pitch bend
 };
 
 
