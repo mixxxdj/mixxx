@@ -221,11 +221,17 @@ DJCStarlight.shiftButton = function(channel, control, value, status, group) {
         var cueMasterLedValue =
             engine.getValue('[Master]', 'headMix') > 0 ? 0x7F : 0x00;
         midi.sendShortMsg(0x91, 0x0C, cueMasterLedValue);
+        var cueMixLedValue =
+            engine.getValue('[Master]', 'headSplit') ? 0x7F : 0x00;
+        midi.sendShortMsg(0x92, 0x0C, cueMixLedValue);
     } else {
         // When Shift is released, go back to the normal LED values.
         var cueChan1LedValue =
             engine.getValue('[Channel1]', 'pfl') ? 0x7F : 0x00;
         midi.sendShortMsg(0x91, 0x0C, cueChan1LedValue);
+        var cueChan2LedValue =
+            engine.getValue('[Channel2]', 'pfl') ? 0x7F : 0x00;
+        midi.sendShortMsg(0x92, 0x0C, cueChan2LedValue);
     }
 }
 
