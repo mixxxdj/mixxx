@@ -176,6 +176,7 @@ DJCStarlight._scratchWheelImpl = function(deck, value) {
     }
 };
 
+
 // Scratching on the jog wheel (rotating it while pressing the top surface)
 DJCStarlight.scratchWheel = function(channel, control, value, status, group) {
     var deck = channel;
@@ -263,7 +264,8 @@ DJCStarlight.shiftButton = function(channel, control, value, status, group) {
             engine.getValue('[Channel2]', 'pfl') ? 0x7F : 0x00;
         midi.sendShortMsg(0x92, 0x0C, cueChan2LedValue);
     }
-}
+};
+
 
 DJCStarlight.shutdown = function() {
     // Reset base LED
