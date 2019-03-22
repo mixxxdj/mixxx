@@ -886,7 +886,7 @@
 
             <control>
                 <group>[Channel1]</group>
-                <key>DJCStarlight.bendWheelA</key>
+                <key>DJCStarlight.bendWheel</key>
                 <description>Jog-Wheel Pitch Bend</description>
                 <status>0xB1</status>
                 <midino>0x09</midino>
@@ -981,7 +981,7 @@
 
             <control>
                 <group>[Channel2]</group>
-                <key>DJCStarlight.bendWheelB</key>
+                <key>DJCStarlight.bendWheel</key>
                 <description>Jog-Wheel Pitch Bend</description>
                 <status>0xB2</status>
                 <midino>0x09</midino>

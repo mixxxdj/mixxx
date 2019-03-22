@@ -160,26 +160,15 @@ DJCStarlight.scratchWheelShift = function(channel, control, value, status, group
 
 
 // Bending on the jog wheel (rotating using the edge)
-DJCStarlight.bendWheelA = function(channel, control, value, status, group) {
+DJCStarlight.bendWheel = function(channel, control, value, status, group) {
+    var deck = channel;
     var newValue;
     if (value < 64) {
         newValue = value;
     } else {
         newValue = value - 128;
     }
-    engine.setValue('[Channel1]', 'jog', newValue); // Pitch bend
-};
-
-
-// Bending on the jog wheel (rotating using the edge)
-DJCStarlight.bendWheelB = function(channel, control, value, status, group) {
-    var newValue;
-    if (value < 64) {
-        newValue = value;
-    } else {
-        newValue = value - 128;
-    }
-    engine.setValue('[Channel2]', 'jog', newValue); // Pitch bend
+    engine.setValue('[Channel' + deck + ']', 'jog', newValue); // Pitch bend
 };
 
 
