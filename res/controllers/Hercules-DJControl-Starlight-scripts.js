@@ -62,7 +62,6 @@ DJCStarlight.baseLEDUpdate = function(value, group, control){
 
 DJCStarlight.init = function() {
     DJCStarlight.scratchButtonState = true;
-    DJCStarlight.cueMasterButtonState = false;
     DJCStarlight.scratchAction = {
         1: DJCStarlight.kScratchActionNone,
         2: DJCStarlight.kScratchActionNone};
@@ -203,14 +202,14 @@ DJCStarlight.cueMaster = function(channel, control, value, status, group) {
         return;
     }
 
+    var masterIsCued = engine.getValue('[Master]', 'headMix') > 0;
     // Toggle state.
-    DJCStarlight.cueMasterButtonState = !DJCStarlight.cueMasterButtonState;
+    masterIsCued = !masterIsCued;
 
-    var headMixValue = DJCStarlight.cueMasterButtonState ? 1 : -1;
+    var headMixValue = masterIsCued ? 1 : -1;
     engine.setValue('[Master]', 'headMix', headMixValue);
 
-    var cueMasterLedValue =
-        engine.getValue('[Master]', 'headMix') > 0 ? 0x7F : 0x00;
+    var cueMasterLedValue = masterIsCued ? 0x7F : 0x00;
     midi.sendShortMsg(0x91, 0x0C, cueMasterLedValue);
 };
 
