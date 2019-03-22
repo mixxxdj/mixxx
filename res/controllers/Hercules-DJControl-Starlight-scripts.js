@@ -209,8 +209,26 @@ DJCStarlight.cueMaster = function(channel, control, value, status, group) {
     var headMixValue = masterIsCued ? 1 : -1;
     engine.setValue('[Master]', 'headMix', headMixValue);
 
+    // Set LED (will be overwritten when [Shift] is released)
     var cueMasterLedValue = masterIsCued ? 0x7F : 0x00;
     midi.sendShortMsg(0x91, 0x0C, cueMasterLedValue);
+};
+
+
+// Cue mix button, toggles PFL / master split feature
+DJCStarlight.cueMix = function(channel, control, value, status, group) {
+    // This button acts as a toggle. Ignore the release.
+    if (value == 0) {
+        return;
+    }
+
+    // Toggle state.
+    script.toggleControl('[Master]', 'headSplit');
+
+    // Set LED (will be overwritten when [Shift] is released)
+    var cueMixLedValue =
+        engine.getValue('[Master]', 'headSplit') ? 0x7F : 0x00;
+    midi.sendShortMsg(0x92, 0x0C, cueMixLedValue);
 };
 
 

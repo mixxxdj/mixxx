@@ -278,12 +278,12 @@
         // PFL
             <control>
                 <group>[Master]</group>
-                <key>headSplit</key>
+                <key>DJCStarlight.cueMix</key>
                 <description>Headphone CUE + MIX</description>
                 <status>0x95</status>
                 <midino>0x0C</midino>
                 <options>
-                    <normal/>
+                    <script-binding />
                 </options>
             </control>
 
@@ -1157,18 +1157,6 @@
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x92</status>
-                <midino>0x0C</midino>
-                <on>0x7f</on>
-                <off>0x0</off>
-            </output>
-
-            <output>
-                <group>[Master]</group>
-                <key>headSplit</key>
-                <description>CUE+MIX</description>
-                <minimum>0.5</minimum>
-                <maximum>1</maximum>
-                <status>0x95</status>
                 <midino>0x0C</midino>
                 <on>0x7f</on>
                 <off>0x0</off>
