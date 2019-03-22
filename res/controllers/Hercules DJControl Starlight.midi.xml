@@ -875,7 +875,7 @@
 
             <control>
                 <group>[Channel1]</group>
-                <key>DJCStarlight.scratchWheelAShift</key>
+                <key>DJCStarlight.scratchWheelShift</key>
                 <description> Jog-Wheel Seek (Held down + Shift)</description>
                 <status>0xB4</status>
                 <midino>0x0A</midino>
@@ -970,7 +970,7 @@
 
             <control>
                 <group>[Channel1]</group>
-                <key>DJCStarlight.scratchWheelBShift</key>
+                <key>DJCStarlight.scratchWheelShift</key>
                 <description> Jog-Wheel Seek (Held down + Shift)</description>
                 <status>0xB5</status>
                 <midino>0x0A</midino>

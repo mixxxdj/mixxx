@@ -138,7 +138,7 @@ DJCStarlight.scratchWheel = function(channel, control, value, status, group) {
 
 
 // Seeking on the jog wheel (rotating it while pressing the top surface and holding Shift)
-DJCStarlight.scratchWheelAShift = function(channel, control, value, status, group) {
+DJCStarlight.scratchWheelShift = function(channel, control, value, status, group) {
     var newValue;
     if (value < 64) {
         newValue = value;
@@ -146,13 +146,13 @@ DJCStarlight.scratchWheelAShift = function(channel, control, value, status, grou
         newValue = value - 128;
     }
 
-    if (engine.isScratching(1)) {
+    if (engine.isScratching(channel)) {
         // Pressing [Shift] while we're already scratching has no effect, we
         // continue to scratch at normal speed.
-        engine.scratchTick(1, newValue);
+        engine.scratchTick(channel, newValue);
     } else {
         // Seek forward
-        engine.setValue('[Channel1]', 'jog', newValue * DJCStarlight.jogwheelShiftMultiplier); // Pitch bend
+        engine.setValue('[Channel' + channel + ']', 'jog', newValue * DJCStarlight.jogwheelShiftMultiplier); // Pitch bend
     }
 };
 
@@ -168,25 +168,6 @@ DJCStarlight.bendWheelA = function(channel, control, value, status, group) {
     engine.setValue('[Channel1]', 'jog', newValue); // Pitch bend
 };
 
-
-// Seeking on the jog wheel (rotating it while pressing the top surface and holding Shift)
-DJCStarlight.scratchWheelBShift = function(channel, control, value, status, group) {
-    var newValue;
-    if (value < 64) {
-        newValue = value;
-    } else {
-        newValue = value - 128;
-    }
-
-    if (engine.isScratching(1)) {
-        // Pressing [Shift] while we're already scratching has no effect, we
-        // continue to scratch at normal speed.
-        engine.scratchTick(1, newValue);
-    } else {
-        // Seek forward
-        engine.setValue('[Channel2]', 'jog', newValue * DJCStarlight.jogwheelShiftMultiplier); // Pitch bend
-    }
-};
 
 // Bending on the jog wheel (rotating using the edge)
 DJCStarlight.bendWheelB = function(channel, control, value, status, group) {
