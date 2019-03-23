@@ -401,6 +401,11 @@ void DlgControllerLearning::visit(BulkController* pBulkController) {
     Q_UNUSED(pBulkController);
 }
 
+void DlgControllerLearning::visit(OscController* pOscController) {
+    qWarning() << "ERROR: DlgControllerLearning does not OSC devices.";
+    Q_UNUSED(pOscController);
+}
+
 DlgControllerLearning::~DlgControllerLearning() {
     // If the user hit done, we should save any pending mappings.
     if (m_messagesLearned) {
