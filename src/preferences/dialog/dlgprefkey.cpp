@@ -129,6 +129,7 @@ void DlgPrefKey::loadSettings() {
         }
     }
 
+    setNotation(notation_type);
     KeyUtils::setNotation(notation);
     m_pKeyNotation->set(static_cast<double>(notation_type));
 
@@ -148,17 +149,17 @@ void DlgPrefKey::slotResetToDefaults() {
     if (defaultNotation == KEY_NOTATION_LANCELOT) {
         radioNotationLancelot->setChecked(true);
         notation_type = KeyUtils::LANCELOT;
-    } else if (defaultNotation == KEY_NOTATION_OPEN_KEY) {
-        radioNotationOpenKey->setChecked(true);
-        notation_type = KeyUtils::OPEN_KEY;
     } else if (defaultNotation == KEY_NOTATION_TRADITIONAL) {
         radioNotationTraditional->setChecked(true);
         notation_type = KeyUtils::TRADITIONAL;
     } else if (defaultNotation == KEY_NOTATION_CUSTOM) {
         radioNotationCustom->setChecked(true);
         notation_type = KeyUtils::CUSTOM;
+    } else { // KEY_NOTATION_OPEN_KEY
+        radioNotationOpenKey->setChecked(true);
+        notation_type = KeyUtils::OPEN_KEY;
     }
-    setNotationLancelot(notation_type);
+    setNotation(notation_type);
 
     slotUpdate();
 }
