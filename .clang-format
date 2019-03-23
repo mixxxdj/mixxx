@@ -21,7 +21,6 @@ ContinuationIndentWidth: 8
 IndentCaseLabels: false
 ReflowComments: false
 SpacesBeforeTrailingComments: 1
-SpaceBeforeRangeBasedForLoopColon: false
 ---
 Language: JavaScript
 ---
