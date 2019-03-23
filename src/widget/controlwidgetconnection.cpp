@@ -13,7 +13,7 @@ ControlWidgetConnection::ControlWidgetConnection(
         : m_pWidget(pBaseWidget),
           m_pValueTransformer(pTransformer) {
     m_pControl = new ControlProxy(key, this);
-    m_pControl->connectValueChanged(SLOT(slotControlValueChanged(double)));
+    m_pControl->connectValueChanged(this, &ControlWidgetConnection::slotControlValueChanged);
 }
 
 void ControlWidgetConnection::setControlParameter(double parameter) {
@@ -54,9 +54,10 @@ void ControlParameterWidgetConnection::Init() {
 
 QString ControlParameterWidgetConnection::toDebugString() const {
     const ConfigKey& key = getKey();
-    return QString("%1,%2 Parameter: %3 Direction: %4 Emit: %5")
+    return QString("%1,%2 Parameter: %3 Value: %4 Direction: %5 Emit: %6")
             .arg(key.group, key.item,
                  QString::number(m_pControl->getParameter()),
+                 QString::number(m_pControl->get()),
                  directionOptionToString(m_directionOption),
                  emitOptionToString(m_emitOption));
 }
@@ -96,7 +97,7 @@ ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(
         WBaseWidget* pBaseWidget, const ConfigKey& key,
         ValueTransformer* pTransformer, const QString& propertyName)
         : ControlWidgetConnection(pBaseWidget, key, pTransformer),
-          m_propertyName(propertyName.toAscii()) {
+          m_propertyName(propertyName.toLatin1()) {
     slotControlValueChanged(m_pControl->get());
 }
 

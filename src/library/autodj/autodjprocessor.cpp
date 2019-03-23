@@ -31,8 +31,8 @@ DeckAttributes::DeckAttributes(int index,
             this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
     connect(m_pPlayer, SIGNAL(playerEmpty()),
             this, SLOT(slotPlayerEmpty()));
-    m_playPos.connectValueChanged(this, SLOT(slotPlayPosChanged(double)));
-    m_play.connectValueChanged(this, SLOT(slotPlayChanged(double)));
+    m_playPos.connectValueChanged(this, &DeckAttributes::slotPlayPosChanged);
+    m_play.connectValueChanged(this, &DeckAttributes::slotPlayChanged);
 }
 
 DeckAttributes::~DeckAttributes() {
@@ -180,7 +180,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::shufflePlaylist(
 
 void AutoDJProcessor::fadeNow() {
     // Auto-DJ needs at least two decks
-    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+    VERIFY_OR_DEBUG_ASSERT(m_decks.length() > 1) {
         return;
     }
     if (m_eState != ADJ_IDLE) {
@@ -221,7 +221,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::skipNext() {
     }
 
     // Auto-DJ needs at least two decks
-    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+    VERIFY_OR_DEBUG_ASSERT(m_decks.length() > 1) {
         return ADJ_NOT_TWO_DECKS;
     }
 
@@ -405,7 +405,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     }
 
     // Auto-DJ needs at least two decks
-    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+    VERIFY_OR_DEBUG_ASSERT(m_decks.length() > 1) {
         return;
     }
 
@@ -583,10 +583,10 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
 
 TrackPointer AutoDJProcessor::getNextTrackFromQueue() {
     // Get the track at the top of the playlist.
-    bool randomQueueEnabled = (((m_pConfig->getValueString(
-                ConfigKey("[Auto DJ]", "EnableRandomQueue")).toInt())) == 1);
+    bool randomQueueEnabled = m_pConfig->getValue<bool>(
+            ConfigKey("[Auto DJ]", "EnableRandomQueue"));
     int minAutoDJCrateTracks = m_pConfig->getValueString(
-                ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
+            ConfigKey(kConfigKey, "RandomQueueMinimumAllowed")).toInt();
     int tracksToAdd = minAutoDJCrateTracks - m_pAutoDJTableModel->rowCount();
     // In case we start off with < minimum tracks
     if (randomQueueEnabled && (tracksToAdd > 0)) {
@@ -630,20 +630,12 @@ bool AutoDJProcessor::loadNextTrackFromQueue(const DeckAttributes& deck, bool pl
 }
 
 bool AutoDJProcessor::removeLoadedTrackFromTopOfQueue(const DeckAttributes& deck) {
-    // Get loaded track for this group.
-    TrackPointer loadedTrack = deck.getLoadedTrack();
-
-    // No loaded track in this group.
-    if (loadedTrack.isNull()) {
-        return false;
-    }
-
-    return removeTrackFromTopOfQueue(loadedTrack);
+    return removeTrackFromTopOfQueue(deck.getLoadedTrack());
 }
 
 bool AutoDJProcessor::removeTrackFromTopOfQueue(TrackPointer pTrack) {
     // No track to test for.
-    if (pTrack.isNull()) {
+    if (!pTrack) {
         return false;
     }
 
@@ -769,7 +761,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack) {
     if (sDebug) {
         qDebug() << this << "playerTrackLoaded" << pDeck->group
-                 << (pTrack.isNull() ? "(null)" : pTrack->getLocation());
+                 << (pTrack ? pTrack->getLocation() : "(null)");
     }
 
     double duration = pTrack->getDuration();
@@ -791,8 +783,8 @@ void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
         TrackPointer pNewTrack, TrackPointer pOldTrack) {
     if (sDebug) {
         qDebug() << this << "playerLoadingTrack" << pDeck->group
-                 << "new:"<< (pNewTrack.isNull() ? "(null)" : pNewTrack->getLocation())
-                 << "old:"<< (pOldTrack.isNull() ? "(null)" : pOldTrack->getLocation());
+                 << "new:"<< (pNewTrack ? pNewTrack->getLocation() : "(null)")
+                 << "old:"<< (pOldTrack ? pOldTrack->getLocation() : "(null)");
     }
 
     // The Deck is loading an new track
@@ -805,7 +797,7 @@ void AutoDJProcessor::playerLoadingTrack(DeckAttributes* pDeck,
     // 4) We have just completed fading from one deck to another. Mode is
     //    ADJ_IDLE.
 
-    if (pNewTrack.isNull()) {
+    if (!pNewTrack) {
         // If a track is ejected because of a manual eject command or a load failure
         // this track seams to be undesired. Remove the bad track from the queue.
         removeTrackFromTopOfQueue(pOldTrack);
@@ -838,7 +830,7 @@ void AutoDJProcessor::setTransitionTime(int time) {
     }
 
     // Auto-DJ needs at least two decks
-    DEBUG_ASSERT_AND_HANDLE(m_decks.length() > 1) {
+    VERIFY_OR_DEBUG_ASSERT(m_decks.length() > 1) {
         return;
     }
 

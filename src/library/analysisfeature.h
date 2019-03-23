@@ -13,20 +13,22 @@
 #include <QList>
 
 #include "library/libraryfeature.h"
-#include "preferences/usersettings.h"
-#include "treeitemmodel.h"
 #include "library/dlganalysis.h"
+#include "library/treeitemmodel.h"
+#include "analyzer/trackanalysisscheduler.h"
+#include "preferences/usersettings.h"
 
-class AnalyzerQueue;
+class Library;
 class TrackCollection;
 
 class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    AnalysisFeature(QObject* parent,
-                    UserSettingsPointer pConfig,
-                    TrackCollection* pTrackCollection);
-    virtual ~AnalysisFeature();
+    AnalysisFeature(Library* parent,
+                    UserSettingsPointer pConfig);
+    ~AnalysisFeature() override = default;
+
+    void stop();
 
     QVariant title();
     QIcon getIcon();
@@ -41,16 +43,17 @@ class AnalysisFeature : public LibraryFeature {
 
   signals:
     void analysisActive(bool bActive);
-    void trackAnalysisStarted(int size);
 
   public slots:
     void activate();
     void analyzeTracks(QList<TrackId> trackIds);
 
+    void suspendAnalysis();
+    void resumeAnalysis();
+
   private slots:
-    void slotProgressUpdate(int num_left);
+    void onTrackAnalysisSchedulerProgress(AnalyzerProgress currentTrackProgress, int currentTrackNumber, int totalTracksCount);
     void stopAnalysis();
-    void cleanupAnalyzer();
 
   private:
     // Sets the title of this feature to the default name, given by
@@ -60,19 +63,20 @@ class AnalysisFeature : public LibraryFeature {
     // Sets the title of this feature to the default name followed by (x / y)
     // where x is the current track being analyzed and y is the total number of
     // tracks in the job
-    void setTitleProgress(int trackNum, int totalNum);
+    void setTitleProgress(int currentTrackNumber, int totalTracksCount);
+
+    Library* m_library;
 
     UserSettingsPointer m_pConfig;
-    TrackCollection* m_pTrackCollection;
-    AnalyzerQueue* m_pAnalyzerQueue;
-    // Used to temporarily enable BPM detection in the prefs before we analyse
-    int m_iOldBpmEnabled;
+    TrackAnalysisScheduler::Pointer m_pTrackAnalysisScheduler;
+
     // The title returned by title()
     QVariant m_Title;
     TreeItemModel m_childModel;
     const static QString m_sAnalysisViewName;
     QString m_analysisTitleName;
     DlgAnalysis* m_pAnalysisView;
+    QIcon m_icon;
 };
 
 

@@ -13,10 +13,12 @@
 class KeyUtils {
   public:
     enum KeyNotation {
-        CUSTOM = 0,
-        OPEN_KEY = 1,
-        LANCELOT = 2,
-        TRADITIONAL = 3,
+        INVALID = 0,
+        CUSTOM = 1,
+        OPEN_KEY = 2,
+        LANCELOT = 3,
+        TRADITIONAL = 4,
+        KEY_NOTATION_MAX
     };
 
     static QString keyDebugName(mixxx::track::io::key::ChromaticKey key);
@@ -48,6 +50,7 @@ class KeyUtils {
             KeyNotation notation = CUSTOM);
 
     static mixxx::track::io::key::ChromaticKey keyFromNumericValue(double value);
+    static KeyNotation keyNotationFromNumericValue(double value);
 
     static double keyToNumericValue(mixxx::track::io::key::ChromaticKey key);
 
@@ -97,13 +100,7 @@ class KeyUtils {
     }
 
     static inline double powerOf2ToOctaveChange(const double& power_of_2) {
-        // log2 is in the C99 standard, MSVC only supports C90.
-#ifdef _MSC_VER
-        static const double lg2 = log(2.0);
-        return log(power_of_2) / lg2;
-#else
         return log2(power_of_2);
-#endif
     }
 
     static inline double powerOf2ToSemitoneChange(const double& power_of_2) {
@@ -155,8 +152,8 @@ class KeyUtils {
         }
     }
 
-    static int keyToCircleOfFithsOrder(mixxx::track::io::key::ChromaticKey key,
-                                       double notationValue);
+    static int keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
+                                        KeyNotation notation);
 
   private:
     static QMutex s_notationMutex;

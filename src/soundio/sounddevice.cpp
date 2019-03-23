@@ -112,9 +112,9 @@ bool SoundDevice::operator==(const QString &other) const {
 }
 
 void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
-                                      const unsigned int framesToCompose,
-                                      const unsigned int framesReadOffset,
-                                      const unsigned int iFrameSize) {
+                                      const SINT framesToCompose,
+                                      const SINT framesReadOffset,
+                                      const int iFrameSize) {
     //qDebug() << "SoundDevice::composeOutputBuffer()"
     //         << device->getInternalName()
     //         << framesToCompose << iFrameSize;
@@ -149,20 +149,20 @@ void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
             if (iChannelCount == 1) {
                 // All AudioOutputs are stereo as of Mixxx 1.12.0. If we have a mono
                 // output then we need to downsample.
-                for (unsigned int iFrameNo = 0; iFrameNo < framesToCompose; ++iFrameNo) {
+                for (SINT iFrameNo = 0; iFrameNo < framesToCompose; ++iFrameNo) {
                     // iFrameBase is the "base sample" in a frame (ie. the first
                     // sample in a frame)
-                    const unsigned int iFrameBase = iFrameNo * iFrameSize;
+                    const SINT iFrameBase = iFrameNo * iFrameSize;
                     outputBuffer[iFrameBase + iChannelBase] = SampleUtil::clampSample(
                             (pAudioOutputBuffer[iFrameNo * 2] +
                                     pAudioOutputBuffer[iFrameNo * 2 + 1]) / 2.0f);
                 }
             } else {
-                for (unsigned int iFrameNo = 0; iFrameNo < framesToCompose; ++iFrameNo) {
+                for (SINT iFrameNo = 0; iFrameNo < framesToCompose; ++iFrameNo) {
                     // iFrameBase is the "base sample" in a frame (ie. the first
                     // sample in a frame)
-                    const unsigned int iFrameBase = iFrameNo * iFrameSize;
-                    const unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
+                    const SINT iFrameBase = iFrameNo * iFrameSize;
+                    const SINT iLocalFrameBase = iFrameNo * iChannelCount;
 
                     // this will make sure a sample from each channel is copied
                     for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
@@ -182,9 +182,9 @@ void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
 }
 
 void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
-                                     const unsigned int framesToPush,
-                                     const unsigned int framesWriteOffset,
-                                     const unsigned int iFrameSize) {
+                                     const SINT framesToPush,
+                                     const SINT framesWriteOffset,
+                                     const int iFrameSize) {
     //qDebug() << "SoundManager::pushBuffer"
     //         << framesToPush << framesWriteOffset << iFrameSize;
     // This function is called a *lot* and is a big source of CPU usage.
@@ -199,7 +199,7 @@ void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
         const AudioInputBuffer& in = m_audioInputs.at(0);
         CSAMPLE* pInputBuffer = in.getBuffer(); // Always Stereo
         pInputBuffer = &pInputBuffer[framesWriteOffset * 2];
-        for (unsigned int iFrameNo = 0; iFrameNo < framesToPush; ++iFrameNo) {
+        for (SINT iFrameNo = 0; iFrameNo < framesToPush; ++iFrameNo) {
             pInputBuffer[iFrameNo * 2] =
                     inputBuffer[iFrameNo];
             pInputBuffer[iFrameNo * 2 + 1] =
@@ -216,8 +216,7 @@ void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
         // Non Stereo input (iFrameSize != 2)
         // Do crazy deinterleaving of the audio into the correct m_inputBuffers.
 
-        for (QList<AudioInputBuffer>::const_iterator i = m_audioInputs.begin(),
-                     e = m_audioInputs.end(); i != e; ++i) {
+        for (auto i = m_audioInputs.constBegin(), e = m_audioInputs.constEnd(); i != e; ++i) {
             const AudioInputBuffer& in = *i;
             ChannelGroup chanGroup = in.getChannelGroup();
             int iChannelCount = chanGroup.getChannelCount();
@@ -225,11 +224,11 @@ void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
             CSAMPLE* pInputBuffer = in.getBuffer();
             pInputBuffer = &pInputBuffer[framesWriteOffset * 2];
 
-            for (unsigned int iFrameNo = 0; iFrameNo < framesToPush; ++iFrameNo) {
+            for (SINT iFrameNo = 0; iFrameNo < framesToPush; ++iFrameNo) {
                 // iFrameBase is the "base sample" in a frame (ie. the first
                 // sample in a frame)
-                unsigned int iFrameBase = iFrameNo * iFrameSize;
-                unsigned int iLocalFrameBase = iFrameNo * 2;
+                SINT iFrameBase = iFrameNo * iFrameSize;
+                SINT iLocalFrameBase = iFrameNo * 2;
 
                 if (iChannelCount == 1) {
                     pInputBuffer[iLocalFrameBase] =
@@ -247,11 +246,9 @@ void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
     }
 }
 
-void SoundDevice::clearInputBuffer(const unsigned int framesToPush,
-                                   const unsigned int framesWriteOffset) {
-
-    for (QList<AudioInputBuffer>::const_iterator i = m_audioInputs.begin(),
-                 e = m_audioInputs.end(); i != e; ++i) {
+void SoundDevice::clearInputBuffer(const SINT framesToPush,
+                                   const SINT framesWriteOffset) {
+    for (auto i = m_audioInputs.constBegin(), e = m_audioInputs.constEnd(); i != e; ++i) {
         const AudioInputBuffer& in = *i;
         CSAMPLE* pInputBuffer = in.getBuffer();  // Always stereo
         SampleUtil::clear(&pInputBuffer[framesWriteOffset * 2], framesToPush * 2);

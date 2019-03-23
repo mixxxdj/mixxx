@@ -1,12 +1,11 @@
 #include "effects/effectchainmanager.h"
+#include "effects/effectsmanager.h"
+#include "effects/effectxmlelements.h"
 
 #include <QtDebug>
 #include <QDomDocument>
 #include <QFile>
 #include <QDir>
-
-#include "effects/effectsmanager.h"
-#include "util/xml.h"
 
 EffectChainManager::EffectChainManager(UserSettingsPointer pConfig,
                                        EffectsManager* pEffectsManager)
@@ -19,17 +18,22 @@ EffectChainManager::~EffectChainManager() {
     //qDebug() << debugString() << "destroyed";
 }
 
-void EffectChainManager::registerChannel(const ChannelHandleAndGroup& handle_group) {
-    if (m_registeredChannels.contains(handle_group)) {
-        qWarning() << debugString() << "WARNING: Channel already registered:"
-                   << handle_group.name();
+void EffectChainManager::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
+    VERIFY_OR_DEBUG_ASSERT(!m_registeredInputChannels.contains(handle_group)) {
         return;
     }
-    m_registeredChannels.insert(handle_group);
+    m_registeredInputChannels.insert(handle_group);
 
-    foreach (StandardEffectRackPointer pRack, m_standardEffectRacks) {
-        pRack->registerChannel(handle_group);
+    for (auto& pRack : m_standardEffectRacks) {
+        pRack->registerInputChannel(handle_group);
     }
+}
+
+void EffectChainManager::registerOutputChannel(const ChannelHandleAndGroup& handle_group) {
+    VERIFY_OR_DEBUG_ASSERT(!m_registeredOutputChannels.contains(handle_group)) {
+        return;
+    }
+    m_registeredOutputChannels.insert(handle_group);
 }
 
 StandardEffectRackPointer EffectChainManager::addStandardEffectRack() {
@@ -49,7 +53,7 @@ StandardEffectRackPointer EffectChainManager::getStandardEffectRack(int i) {
 
 EqualizerRackPointer EffectChainManager::addEqualizerRack() {
     EqualizerRackPointer pRack(new EqualizerRack(
-        m_pEffectsManager, this, m_equalizerEffectRacks.size()));
+            m_pEffectsManager, this, m_equalizerEffectRacks.size()));
     m_equalizerEffectRacks.append(pRack);
     m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
     return pRack;
@@ -75,6 +79,18 @@ QuickEffectRackPointer EffectChainManager::getQuickEffectRack(int i) {
         return QuickEffectRackPointer();
     }
     return m_quickEffectRacks[i];
+}
+
+OutputEffectRackPointer EffectChainManager::addOutputsEffectRack() {
+    OutputEffectRackPointer pRack(new OutputEffectRack(
+        m_pEffectsManager, this));
+    m_pOutputEffectRack = pRack;
+    m_effectRacksByGroup.insert(pRack->getGroup(), pRack);
+    return m_pOutputEffectRack;
+}
+
+OutputEffectRackPointer EffectChainManager::getMasterEffectRack() {
+    return m_pOutputEffectRack;
 }
 
 EffectRackPointer EffectChainManager::getEffectRack(const QString& group) {
@@ -127,23 +143,36 @@ EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEf
     return m_effectChains[(indexOf - 1 + m_effectChains.size()) % m_effectChains.size()];
 }
 
+void EffectChainManager::refeshAllRacks() {
+    for (const auto& pRack: m_standardEffectRacks) {
+        pRack->refresh();
+    }
+    for (const auto& pRack: m_equalizerEffectRacks) {
+        pRack->refresh();
+    }
+    for (const auto& pRack: m_quickEffectRacks) {
+        pRack->refresh();
+    }
+}
+
 bool EffectChainManager::saveEffectChains() {
-    //qDebug() << debugString() << "saveEffectChains";
     QDomDocument doc("MixxxEffects");
 
     QString blank = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-        "<MixxxEffects>\n"
-        "</MixxxEffects>\n";
+        "<" + EffectXml::Root + " schemaVersion=\"" +
+              QString::number(EffectXml::kXmlSchemaVersion) + "\">\n"
+        "</" + EffectXml::Root + ">\n";
     doc.setContent(blank);
 
     QDomElement rootNode = doc.documentElement();
 
-    QDomElement chains = doc.createElement("EffectChains");
-    foreach (EffectChainPointer pChain, m_effectChains) {
-        QDomElement chain = pChain->toXML(&doc);
-        chains.appendChild(chain);
+    for (EffectRackPointer pRack : m_standardEffectRacks) {
+        rootNode.appendChild(pRack->toXml(&doc));
     }
-    rootNode.appendChild(chains);
+    // TODO? Save QuickEffects in effects.xml too, or keep stored in ConfigObjects?
+//     foreach(EffectRackPointer pRack, m_quickEffectRacks) {
+//         rootNode.appendChild(pRack->toXML(&doc));
+//     }
 
     QDir settingsPath(m_pConfig->getSettingsPath());
 
@@ -164,37 +193,43 @@ bool EffectChainManager::saveEffectChains() {
     return true;
 }
 
-bool EffectChainManager::loadEffectChains() {
-    //qDebug() << debugString() << "loadEffectChains";
-
+void EffectChainManager::loadEffectChains() {
     QDir settingsPath(m_pConfig->getSettingsPath());
     QFile file(settingsPath.absoluteFilePath("effects.xml"));
-
-    if (!file.open(QIODevice::ReadOnly)) {
-        return false;
-    }
-
     QDomDocument doc;
-    if (!doc.setContent(&file)) {
-        file.close();
-        return false;
+
+    QDomElement emptyChainElement = doc.createElement(EffectXml::Chain);
+    // Check that XML file can be opened and is valid XML
+    if (!file.open(QIODevice::ReadOnly) || !doc.setContent(&file)) {
+        return;
     }
-    file.close();
 
     QDomElement root = doc.documentElement();
+    QDomElement rackElement = XmlParse::selectElement(root, EffectXml::Rack);
+    QDomElement chainsElement = XmlParse::selectElement(rackElement, EffectXml::ChainsRoot);
+    QDomNodeList chainsList = chainsElement.elementsByTagName(EffectXml::Chain);
 
-    QDomElement effectChains = XmlParse::selectElement(root, "EffectChains");
-    QDomNodeList chains = effectChains.childNodes();
-
-    for (int i = 0; i < chains.count(); ++i) {
-        QDomNode chainNode = chains.at(i);
+    for (int i = 0; i < chainsList.count(); ++i) {
+        QDomNode chainNode = chainsList.at(i);
 
         if (chainNode.isElement()) {
-            EffectChainPointer pChain = EffectChain::fromXML(
-                m_pEffectsManager, chainNode.toElement());
-
-            m_effectChains.append(pChain);
+            QDomElement chainElement = chainNode.toElement();
+            EffectChainPointer pChain = EffectChain::createFromXml(
+                    m_pEffectsManager, chainElement);
+            if (pChain) { // null = ejected chains.
+                EffectChainSlotPointer pChainSlot = getStandardEffectRack(0)->getEffectChainSlot(i);
+                if (pChainSlot) {
+                    pChainSlot->loadEffectChainToSlot(pChain);
+                    pChainSlot->loadChainSlotFromXml(chainElement);
+                    pChain->addToEngine(getStandardEffectRack(0)->getEngineEffectRack(), i);
+                    pChain->updateEngineState();
+                    pChainSlot->updateRoutingSwitches();
+                }
+            }
         }
     }
-    return true;
+}
+
+bool EffectChainManager::isAdoptMetaknobValueEnabled() const {
+    return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
 }

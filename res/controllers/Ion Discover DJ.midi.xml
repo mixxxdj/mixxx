@@ -32,7 +32,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>IonDiscoverDJ.toggle_scratch_mode_off</key>
+                <key>IonDiscoverDJ.toggle_scratch_mode_on</key>
                 <status>0x80</status>
                 <midino>0x48</midino>
                 <options>

@@ -22,7 +22,7 @@ void BatteryLinux::read() {
     // once. However, while testing this up_client_get_devices(client) returned
     // an empty list when I tried to re-use the UpClient instance.
     UpClient* client = up_client_new();
-    if (client == nullptr) {
+    VERIFY_OR_DEBUG_ASSERT(client) {
       return;
     }
 
@@ -31,14 +31,26 @@ void BatteryLinux::read() {
     up_client_enumerate_devices_sync(client, NULL, NULL);
 #endif
 
-    GPtrArray* devices = up_client_get_devices(client);
-    if (devices == nullptr) {
+#if UP_CHECK_VERSION(0, 99, 8)
+    GPtrArray* devices = up_client_get_devices2(client);
+    VERIFY_OR_DEBUG_ASSERT(devices) {
       return;
     }
+#else
+    // This deprecated function doesn't set the free function for
+    // the array elements so we need to do it!
+    // https://bugs.freedesktop.org/show_bug.cgi?id=106740
+    // https://gitlab.freedesktop.org/upower/upower/issues/14
+    GPtrArray* devices = up_client_get_devices(client);
+    VERIFY_OR_DEBUG_ASSERT(devices) {
+      return;
+    }
+    devices = g_ptr_array_new_with_free_func((GDestroyNotify) g_object_unref);
+#endif
 
     for (guint i = 0; i < devices->len; ++i) {
       gpointer device = g_ptr_array_index(devices, i);
-      if (device == nullptr) {
+      VERIFY_OR_DEBUG_ASSERT(device) {
         continue;
       }
 

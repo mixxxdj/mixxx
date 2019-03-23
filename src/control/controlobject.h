@@ -34,9 +34,11 @@ class ControlObject : public QObject {
     // bIgnoreNops: Don't emit a signal if the CO is set to its current value.
     // bTrack: Record statistics about this control.
     // bPersist: Store value on exit, load on startup.
+    // defaultValue: default value of CO. If CO is persistent and there is no valid
+    //               value found in the config, this is also the initial value.
     ControlObject(ConfigKey key,
-                  bool bIgnoreNops=true, bool bTrack=false,
-                  bool bPersist=false);
+                  bool bIgnoreNops = true, bool bTrack = false,
+                  bool bPersist = false, double defaultValue = 0.0);
     virtual ~ControlObject();
 
     // Returns a pointer to the ControlObject matching the given ConfigKey
@@ -94,12 +96,20 @@ class ControlObject : public QObject {
             m_pControl->set(value, this);
         }
     }
+
     // Sets the ControlObject value and confirms it.
     inline void setAndConfirm(double value) {
         if (m_pControl) {
             m_pControl->setAndConfirm(value, this);
         }
     }
+
+    // Forces the control to 'value', regardless of whether it has a change
+    // request handler attached (identical to setAndConfirm).
+    inline void forceSet(double value) {
+        setAndConfirm(value);
+    }
+
     // Instantly sets the value of the ControlObject
     static void set(const ConfigKey& key, const double& value);
 
@@ -126,7 +136,7 @@ class ControlObject : public QObject {
     virtual double getParameterForValue(double value) const;
 
     // Returns the parameterized value of the object. Thread safe, non-blocking.
-    virtual double getParameterForMidiValue(double midiValue) const;
+    virtual double getParameterForMidi(double midiValue) const;
 
     // Sets the control parameterized value to v. Thread safe, non-blocking.
     virtual void setParameter(double v);
@@ -141,12 +151,21 @@ class ControlObject : public QObject {
     // You need to use Qt::DirectConnection for the engine objects, since the
     // audio thread has no Qt event queue. But be a ware of race conditions in this case.
     // ref: http://qt-project.org/doc/qt-4.8/qt.html#ConnectionType-enum
-    bool connectValueChangeRequest(const QObject* receiver,
-                                   const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+    template <typename Receiver, typename Slot>
+    bool connectValueChangeRequest(Receiver receiver, Slot func,
+                                   Qt::ConnectionType type = Qt::AutoConnection) {
+        bool ret = false;
+        if (m_pControl) {
+          ret = m_pControl->connectValueChangeRequest(receiver, func, type);
+        }
+        return ret;
+    }
+
+    // Installs a value-change request handler that ignores all sets.
+    void setReadOnly();
 
   signals:
     void valueChanged(double);
-    void valueChangedFromEngine(double);
 
   public:
     // DEPRECATED: Called to set the control value from the controller
@@ -161,10 +180,9 @@ class ControlObject : public QObject {
 
   private slots:
     void privateValueChanged(double value, QObject* pSetter);
+    void readOnlyHandler(double v);
 
   private:
-    void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                    bool bPersist);
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }

@@ -17,28 +17,40 @@
 
 WCoverArt::WCoverArt(QWidget* parent,
                      UserSettingsPointer pConfig,
-                     const QString& group)
+                     const QString& group,
+                     BaseTrackPlayer* pPlayer)
         : QWidget(parent),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
           m_bEnable(true),
           m_pMenu(new WCoverArtMenu(this)),
-          m_pDlgFullSize(new DlgCoverArtFullSize()) {
+          m_pPlayer(pPlayer),
+          m_pDlgFullSize(new DlgCoverArtFullSize(this, pPlayer)) {
     // Accept drops if we have a group to load tracks into.
     setAcceptDrops(!m_group.isEmpty());
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {
         connect(pCache, SIGNAL(coverFound(const QObject*,
-                                          const CoverInfo&, QPixmap, bool)),
+                                          const CoverInfoRelative&, QPixmap, bool)),
                 this, SLOT(slotCoverFound(const QObject*,
-                                          const CoverInfo&, QPixmap, bool)));
+                                          const CoverInfoRelative&, QPixmap, bool)));
     }
-    connect(m_pMenu, SIGNAL(coverInfoSelected(const CoverInfo&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfo&)));
+    connect(m_pMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
+            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
     connect(m_pMenu, SIGNAL(reloadCoverArt()),
             this, SLOT(slotReloadCoverArt()));
+
+    if (m_pPlayer != nullptr) {
+        connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
+                this, SLOT(slotLoadTrack(TrackPointer)));
+        connect(m_pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
+                this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+
+        // just in case a track is already loaded
+        slotLoadTrack(m_pPlayer->getLoadedTrack());
+    }
 }
 
 WCoverArt::~WCoverArt() {
@@ -93,7 +105,7 @@ void WCoverArt::slotReloadCoverArt() {
     }
 }
 
-void WCoverArt::slotCoverInfoSelected(const CoverInfo& coverInfo) {
+void WCoverArt::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
     if (m_loadedTrack) {
         // Will trigger slotTrackCoverArtUpdated().
         m_loadedTrack->setCoverInfo(coverInfo);
@@ -118,10 +130,10 @@ void WCoverArt::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack)
 
 void WCoverArt::slotReset() {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
-    m_loadedTrack = TrackPointer();
+    m_loadedTrack.reset();
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
@@ -129,11 +141,13 @@ void WCoverArt::slotReset() {
 }
 
 void WCoverArt::slotTrackCoverArtUpdated() {
-    CoverArtCache::requestCover(m_loadedTrack.data(), this);
+    if (m_loadedTrack) {
+        CoverArtCache::requestCover(*m_loadedTrack, this);
+    }
 }
 
 void WCoverArt::slotCoverFound(const QObject* pRequestor,
-                               const CoverInfo& info, QPixmap pixmap,
+                               const CoverInfoRelative& info, QPixmap pixmap,
                                bool fromCache) {
     Q_UNUSED(info);
     Q_UNUSED(fromCache);
@@ -153,7 +167,7 @@ void WCoverArt::slotCoverFound(const QObject* pRequestor,
 
 void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                    this, SLOT(slotTrackCoverArtUpdated()));
     }
     m_lastRequestedCover = CoverInfo();
@@ -161,7 +175,7 @@ void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     m_loadedCoverScaled = QPixmap();
     m_loadedTrack = pTrack;
     if (m_loadedTrack) {
-        connect(m_loadedTrack.data(), SIGNAL(coverArtUpdated()),
+        connect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
                 this, SLOT(slotTrackCoverArtUpdated()));
     }
 
@@ -221,13 +235,9 @@ void WCoverArt::mousePressEvent(QMouseEvent* event) {
         if (m_pDlgFullSize->isVisible()) {
             m_pDlgFullSize->close();
         } else {
-            m_pDlgFullSize->init(m_loadedCover);
+            m_pDlgFullSize->init(m_loadedTrack);
         }
     }
-}
-
-void WCoverArt::leaveEvent(QEvent* /*unused*/) {
-    m_pDlgFullSize->close();
 }
 
 void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
@@ -239,11 +249,8 @@ void WCoverArt::mouseMoveEvent(QMouseEvent* event) {
 void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
-    if (!m_group.isEmpty() &&
-            DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
-                                               true, false)) {
-        event->acceptProposedAction();
+    if (!m_group.isEmpty()) {
+        DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
     } else {
         event->ignore();
     }
@@ -252,15 +259,9 @@ void WCoverArt::dragEnterEvent(QDragEnterEvent* event) {
 void WCoverArt::dropEvent(QDropEvent *event) {
     // If group is empty then we are a library cover art widget and we don't
     // accept track drops.
-    if (!m_group.isEmpty() &&
-            DragAndDropHelper::allowLoadToPlayer(m_group, m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_group, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
-            return;
-        }
+    if (!m_group.isEmpty()) {
+        DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
+    } else {
+        event->ignore();
     }
-    event->ignore();
 }

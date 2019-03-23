@@ -2,27 +2,17 @@
 
 #include <QtDebug>
 
-#include "util/dbid.h"
+#include "util/db/dbid.h"
 
 namespace {
 
 class DbIdTest : public testing::Test {
   protected:
-
-    DbIdTest() {
-    }
-
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-
     static DbId fromValidVariant(const QVariant& variant) {
         DbId actual(variant);
         EXPECT_TRUE(actual.isValid());
         EXPECT_NE(DbId(), actual);
-        EXPECT_EQ(variant.toInt(), actual.toInt());
+        EXPECT_EQ(variant.toInt(), static_cast<int>(actual.value()));
         return actual;
     }
 

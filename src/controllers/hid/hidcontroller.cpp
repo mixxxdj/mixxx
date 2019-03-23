@@ -28,7 +28,7 @@ HidReader::~HidReader() {
 void HidReader::run() {
     m_stop = 0;
     unsigned char *data = new unsigned char[255];
-    while (load_atomic(m_stop) == 0) {
+    while (m_stop.load() == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data
@@ -286,7 +286,7 @@ int HidController::close() {
     }
 
     // Stop controller engine here to ensure it's done before the device is closed
-    //  incase it has any final parting messages
+    //  in case it has any final parting messages
     stopEngine();
 
     // Close device

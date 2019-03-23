@@ -5,7 +5,6 @@
 
 #include <QDebug>
 #include <QScopedPointer>
-#include <QTemporaryFile>
 
 FakeOverwriteAnswerer::~FakeOverwriteAnswerer() { }
 

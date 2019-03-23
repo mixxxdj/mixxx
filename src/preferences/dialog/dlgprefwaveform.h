@@ -3,12 +3,12 @@
 
 #include <QWidget>
 
-#include "library/library.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
 
 class MixxxMainWindow;
+class Library;
 
 class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
     Q_OBJECT
@@ -36,6 +36,8 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetNormalizeOverview(bool normalize);
     void slotWaveformMeasured(float frameRate, int droppedFrames);
     void slotClearCachedWaveforms();
+    void slotSetBeatGridAlpha(int alpha);
+    void slotSetPlayMarkerPosition(int position);
 
   private:
     void initWaveformControl();

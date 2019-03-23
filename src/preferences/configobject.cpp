@@ -49,7 +49,7 @@ QString computeResourcePath() {
 #endif
 #ifdef __APPLE__
         else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
-            // Release configuraton
+            // Release configuration
             qResourcePath = mixxxDir.absolutePath();
         } else {
             // TODO(rryan): What should we do here?
@@ -73,8 +73,11 @@ QString computeResourcePath() {
 }
 
 QString computeSettingsPath(const QString& configFilename) {
-    QFileInfo configFileInfo(configFilename);
-    return configFileInfo.absoluteDir().absolutePath();
+    if (!configFilename.isEmpty()) {
+        QFileInfo configFileInfo(configFilename);
+        return configFileInfo.absoluteDir().absolutePath();
+    }
+    return QString();
 }
 
 }  // namespace
@@ -108,6 +111,10 @@ ConfigValue::ConfigValue(const QString& stValue)
 
 ConfigValue::ConfigValue(int iValue)
     : value(QString::number(iValue)) {
+}
+
+ConfigValue::ConfigValue(double dValue)
+    : value(QString::number(dValue)) {
 }
 
 void ConfigValue::valCopy(const ConfigValue& configValue) {
@@ -171,19 +178,15 @@ bool ConfigObject<ValueType>::exists(const ConfigKey& k) const {
 }
 
 template <class ValueType>
-QString ConfigObject<ValueType>::getValueString(const ConfigKey& k) const {
-    ValueType v = get(k);
-    return v.value;
+bool ConfigObject<ValueType>::remove(const ConfigKey& k) {
+    QWriteLocker lock(&m_valuesLock);
+    return m_values.remove(k) > 0;
 }
 
 template <class ValueType>
-QString ConfigObject<ValueType>::getValueString(const ConfigKey& k,
-                                                const QString& default_string) const {
-    QString ret = getValueString(k);
-    if (ret.isEmpty()) {
-        return default_string;
-    }
-    return ret;
+QString ConfigObject<ValueType>::getValueString(const ConfigKey& k) const {
+    ValueType v = get(k);
+    return v.value;
 }
 
 template <class ValueType> bool ConfigObject<ValueType>::parse() {
@@ -246,8 +249,7 @@ template <class ValueType> void ConfigObject<ValueType>::save() {
 
         QString grp = "";
 
-        typename QMap<ConfigKey, ValueType>::const_iterator i;
-        for (i = m_values.begin(); i != m_values.end(); ++i) {
+        for (auto i = m_values.constBegin(); i != m_values.constEnd(); ++i) {
             //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
             if (i.key().group != grp) {
                 grp = i.key().group;
@@ -267,7 +269,7 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(const QDomNode&
         QDomNode ctrl = node.firstChild();
 
         while (!ctrl.isNull()) {
-            if(ctrl.nodeName() == "control") {
+            if (ctrl.nodeName() == "control") {
                 QString group = XmlParse::selectNodeQString(ctrl, "group");
                 QString key = XmlParse::selectNodeQString(ctrl, "key");
                 ConfigKey k(group, key);
@@ -284,8 +286,7 @@ QMultiHash<ValueType, ConfigKey> ConfigObject<ValueType>::transpose() const {
     QReadLocker lock(&m_valuesLock);
 
     QMultiHash<ValueType, ConfigKey> transposedHash;
-    for (typename QMap<ConfigKey, ValueType>::const_iterator it =
-            m_values.begin(); it != m_values.end(); ++it) {
+    for (auto it = m_values.constBegin(); it != m_values.constEnd(); ++it) {
         transposedHash.insert(it.value(), it.key());
     }
     return transposedHash;
@@ -295,44 +296,100 @@ template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueKbd>;
 
 template <> template <>
-void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const QString& value) {
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const QString& value) {
     set(key, ConfigValue(value));
 }
 
 template <> template <>
-void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const bool& value) {
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const bool& value) {
     set(key, value ? ConfigValue("1") : ConfigValue("0"));
 }
 
 template <> template <>
-void ConfigObject<ConfigValue>::setValue(const ConfigKey& key, const int& value) {
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const int& value) {
     set(key, ConfigValue(QString::number(value)));
 }
 
 template <> template <>
-bool ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
-                                         const bool& default_value) const {
+void ConfigObject<ConfigValue>::setValue(
+        const ConfigKey& key, const double& value) {
+    set(key, ConfigValue(QString::number(value)));
+}
+
+template <> template <>
+bool ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const bool& default_value) const {
     const ConfigValue value = get(key);
     if (value.isNull()) {
         return default_value;
     }
-    return static_cast<bool>(value.value.toInt());
+    bool ok;
+    auto result = value.value.toInt(&ok);
+    return ok ? result != 0 : default_value;
 }
 
 template <> template <>
-int ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
-                                        const int& default_value) const {
+int ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const int& default_value) const {
     const ConfigValue value = get(key);
     if (value.isNull()) {
         return default_value;
     }
-    return value.value.toInt();
+    bool ok;
+    auto result = value.value.toInt(&ok);
+    return ok ? result : default_value;
 }
 
 template <> template <>
-QString ConfigObject<ConfigValue>::getValue(const ConfigKey& key,
-                                            const QString& default_value) const {
+double ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const double& default_value) const {
     const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return default_value;
+    }
+    bool ok;
+    auto result = value.value.toDouble(&ok);
+    return ok ? result : default_value;
+}
+
+// For string literal default
+template <>
+QString ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const char* default_value) const {
+    const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return QString(default_value);
+    }
+    return value.value;
+}
+
+template <>
+QString ConfigObject<ConfigValueKbd>::getValue(
+        const ConfigKey& key, const char* default_value) const {
+    const ConfigValueKbd value = get(key);
+    if (value.isNull()) {
+        return QString(default_value);
+    }
+    return value.value;
+}
+
+template <> template <>
+QString ConfigObject<ConfigValue>::getValue(
+        const ConfigKey& key, const QString& default_value) const {
+    const ConfigValue value = get(key);
+    if (value.isNull()) {
+        return default_value;
+    }
+    return value.value;
+}
+
+template <> template <>
+QString ConfigObject<ConfigValueKbd>::getValue(
+        const ConfigKey& key, const QString& default_value) const {
+    const ConfigValueKbd value = get(key);
     if (value.isNull()) {
         return default_value;
     }

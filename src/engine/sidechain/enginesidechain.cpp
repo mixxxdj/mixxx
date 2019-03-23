@@ -34,8 +34,6 @@
 #include "util/timer.h"
 #include "util/trace.h"
 
-#define SIDECHAIN_BUFFER_SIZE 65536
-
 EngineSideChain::EngineSideChain(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_bStopThread(false),
@@ -75,11 +73,24 @@ void EngineSideChain::addSideChainWorker(SideChainWorker* pWorker) {
     m_workers.append(pWorker);
 }
 
-void EngineSideChain::writeSamples(const CSAMPLE* newBuffer, int buffer_size) {
-    Trace sidechain("EngineSideChain::writeSamples");
-    int samples_written = m_sampleFifo.write(newBuffer, buffer_size);
+void EngineSideChain::receiveBuffer(AudioInput input,
+                                    const CSAMPLE* pBuffer,
+                                    unsigned int iFrames) {
+    if (input.getType() != AudioInput::RECORD_BROADCAST) {
+        qDebug() << "WARNING: AudioInput type is not RECORD_BROADCAST. Ignoring incoming buffer.";
+        return;
+    }
+    writeSamples(pBuffer, iFrames);
+}
 
-    if (samples_written != buffer_size) {
+void EngineSideChain::writeSamples(const CSAMPLE* pBuffer, int iFrames) {
+    Trace sidechain("EngineSideChain::writeSamples");
+    // TODO: remove assumption of stereo buffer
+    const int kChannels = 2;
+    const int iSamples = iFrames * kChannels;
+    int samples_written = m_sampleFifo.write(pBuffer, iSamples);
+
+    if (samples_written != iSamples) {
         Counter("EngineSideChain::writeSamples buffer overrun").increment();
     }
 

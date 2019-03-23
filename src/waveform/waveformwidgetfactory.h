@@ -17,6 +17,7 @@ class WaveformWidgetAbstract;
 class QTimer;
 class VSyncThread;
 class GuiTick;
+class VisualsManager;
 
 class WaveformWidgetAbstractHandle {
   public:
@@ -81,11 +82,14 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool setWidgetTypeFromHandle(int handleIndex);
     WaveformWidgetType::Type getType() const { return m_type;}
 
-    void setDefaultZoom(int zoom);
-    int getDefaultZoom() const { return m_defaultZoom;}
+    void setDefaultZoom(double zoom);
+    double getDefaultZoom() const { return m_defaultZoom;}
 
     void setZoomSync(bool sync);
     int isZoomSync() const { return m_zoomSync;}
+
+    void setDisplayBeatGridAlpha(int alpha);
+    int beatGridAlpha() const { return m_beatGridAlpha; }
 
     void setVisualGain(FilterIndex index, double gain);
     double getVisualGain(FilterIndex index) const;
@@ -99,17 +103,27 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void addTimerListener(QWidget* pWidget);
 
-    void startVSync(GuiTick* pGuiTick);
+    void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
     void setVSyncType(int vsType);
     int getVSyncType();
+
+    void setPlayMarkerPosition(double position);
+    double getPlayMarkerPosition() const { return m_playMarkerPosition; }
 
     void notifyZoomChange(WWaveformViewer *viewer);
 
     WaveformWidgetType::Type autoChooseWidgetType() const;
 
+    // Returns the devicePixelRatio for the current window. This is the scaling
+    // factor between screen pixels and "device independent pixels". For
+    // example, on macOS with a retina display the ratio is 2.
+    static float getDevicePixelRatio();
+
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);
+    void renderSpinnies();
+    void swapSpinnies();
 
   protected:
     WaveformWidgetFactory();
@@ -140,7 +154,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_skipRender;
     int m_frameRate;
     int m_endOfTrackWarningTime;
-    int m_defaultZoom;
+    double m_defaultZoom;
     bool m_zoomSync;
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
@@ -148,14 +162,18 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_openGLAvailable;
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
+    int m_beatGridAlpha;
 
     VSyncThread* m_vsyncThread;
+    GuiTick* m_pGuiTick;  // not owned
+    VisualsManager* m_pVisualsManager;  // not owned
 
     //Debug
     PerformanceTimer m_time;
     float m_frameCnt;
     double m_actualFrameRate;
     int m_vSyncType;
+    double m_playMarkerPosition;
 };
 
 #endif // WAVEFORMWIDGETFACTORY_H

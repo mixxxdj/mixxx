@@ -1,7 +1,7 @@
 #include <QtDebug>
 
 #include "engine/positionscratchcontroller.h"
-#include "engine/enginebufferscale.h" // for MIN_SEEK_SPEED
+#include "engine/bufferscalers/enginebufferscale.h" // for MIN_SEEK_SPEED
 #include "util/math.h"
 
 class VelocityController {
@@ -107,7 +107,7 @@ void PositionScratchController::process(double currentSample, double releaseRate
 
     // Sample Mouse with fixed timing intervals to iron out significant jitters
     // that are added on the way from mouse to engine thread
-    // Normaly the Mouse is sampled every 8 ms so with this 16 ms window we
+    // Normally the Mouse is sampled every 8 ms so with this 16 ms window we
     // have 0 ... 3 samples. The remaining jitter is ironed by the following IIR
     // lowpass filter
     const double m_dMouseSampeIntervall = 0.016;

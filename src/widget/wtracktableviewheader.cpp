@@ -139,7 +139,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     restoreHeaderState();
 
     // Here we can override values to prevent restoring corrupt values from database
-    setMovable(true);
+    setSectionsMovable(true);
 
     // Setting true in the next line causes Bug #925619 at least with Qt 4.6.1
     setCascadingSectionResizes(false);
@@ -159,7 +159,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
         /* If Mixxx starts the first time or the header states have been cleared
          * due to database schema evolution we gonna hide all columns that may
          * contain a potential large number of NULL values.  Here we uncheck
-         * item in the context menu that are hidden by defualt (e.g., key
+         * item in the context menu that are hidden by default (e.g., key
          * column)
          */
         if (!hasPersistedHeaderState() &&

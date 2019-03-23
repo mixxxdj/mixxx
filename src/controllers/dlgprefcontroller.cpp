@@ -11,6 +11,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QDesktopServices>
+#include <QStandardPaths>
 #include <QtAlgorithms>
 
 #include "controllers/dlgprefcontroller.h"
@@ -229,15 +230,6 @@ void DlgPrefController::slotDirty() {
     m_bDirty = true;
 }
 
-QString nameForPreset(const PresetInfo& preset) {
-    QString name = preset.getName();
-    if (name.length() == 0) {
-        QFileInfo file(preset.getPath());
-        name = file.baseName();
-    }
-    return name;
-}
-
 void DlgPrefController::enumeratePresets() {
     m_ui.comboBoxPreset->clear();
 
@@ -248,7 +240,6 @@ void DlgPrefController::enumeratePresets() {
     // user has their controller plugged in)
     m_ui.comboBoxPreset->addItem("...");
 
-    m_ui.comboBoxPreset->setInsertPolicy(QComboBox::InsertAlphabetically);
     // Ask the controller manager for a list of applicable presets
     QSharedPointer<PresetInfoEnumerator> pie =
             m_pControllerManager->getMainThreadPresetEnumerator();
@@ -259,12 +250,13 @@ void DlgPrefController::enumeratePresets() {
         return;
     }
 
-    const QList<PresetInfo> presets = pie->getPresetsByExtension(
+    // Making the list of presets in the alphabetical order
+    QList<PresetInfo> presets = pie->getPresetsByExtension(
         m_pController->presetExtension());
 
     PresetInfo match;
     for (const PresetInfo& preset : presets) {
-        m_ui.comboBoxPreset->addItem(nameForPreset(preset), preset.getPath());
+        m_ui.comboBoxPreset->addItem(preset.getName(), preset.getPath());
         if (m_pController->matchPreset(preset)) {
             match = preset;
         }
@@ -272,7 +264,7 @@ void DlgPrefController::enumeratePresets() {
 
     // Jump to matching device in list if it was found.
     if (match.isValid()) {
-        int index = m_ui.comboBoxPreset->findText(nameForPreset(match));
+        int index = m_ui.comboBoxPreset->findText(match.getName());
         if (index != -1) {
             m_ui.comboBoxPreset->setCurrentIndex(index);
         }
@@ -375,6 +367,10 @@ void DlgPrefController::slotLoadPreset(int chosenIndex) {
 
     ControllerPresetPointer pPreset = ControllerPresetFileHandler::loadPreset(
         presetPath, ControllerManager::getPresetPaths(m_pConfig));
+
+    if (!pPreset) {
+        return;
+    }
 
     // Import the preset scripts to the user scripts folder.
     for (QList<ControllerPreset::ScriptFileInfo>::iterator it =
@@ -520,7 +516,7 @@ void DlgPrefController::slotPresetLoaded(ControllerPresetPointer preset) {
     m_ui.m_pScriptsTableWidget->setHorizontalHeaderItem(
         2, new QTableWidgetItem(tr("Built-in")));
     m_ui.m_pScriptsTableWidget->horizontalHeader()
-            ->setResizeMode(QHeaderView::Stretch);
+            ->setSectionResizeMode(QHeaderView::Stretch);
 
     for (int i = 0; i < preset->scripts.length(); ++i) {
         const ControllerPreset::ScriptFileInfo& script = preset->scripts.at(i);
@@ -649,7 +645,7 @@ void DlgPrefController::clearAllOutputMappings() {
 void DlgPrefController::addScript() {
     QString scriptFile = QFileDialog::getOpenFileName(
         this, tr("Add Script"),
-        QDesktopServices::storageLocation(QDesktopServices::DocumentsLocation),
+        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
         tr("Controller Script Files (*.js)"));
 
     if (scriptFile.isNull()) {

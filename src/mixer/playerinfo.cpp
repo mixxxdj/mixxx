@@ -19,7 +19,7 @@
 #include <QMutexLocker>
 
 #include "control/controlobject.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
 
@@ -118,7 +118,7 @@ double PlayerInfo::getDeckVolume(int deckNr)
         return 0;
     }
 
-    if (pDc->m_pregain.get() <= 0.5) {
+    if (pDc->m_pregain.get() <= 0.25) {
         return 0;
     }
 
@@ -162,7 +162,6 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             maxVolume = dvol;
         }
     }
-
     if (maxDeck != m_currentlyPlayingDeck) {
         m_currentlyPlayingDeck = maxDeck;
         locker.unlock();

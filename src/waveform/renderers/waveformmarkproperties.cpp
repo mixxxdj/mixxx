@@ -3,6 +3,7 @@
 #include "widget/wskincolor.h"
 
 #include "waveform/renderers/waveformmarkproperties.h"
+#include "waveform/renderers/waveformmark.h"
 
 Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFlags) {
     QStringList stringFlags = alignString.toLower()
@@ -43,15 +44,17 @@ Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFla
 
 WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
                                                const SkinContext& context,
-                                               const WaveformSignalColors& signalColors) {
-    m_color = context.selectString(node, "Color");
-    if (!m_color.isValid()) {
+                                               const WaveformSignalColors& signalColors,
+                                               int hotCue) {
+    QColor color(context.selectString(node, "Color"));
+    if (!color.isValid()) {
         // As a fallback, grab the color from the parent's AxesColor
-        m_color = signalColors.getAxesColor();
-        qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:" << m_color;
+        color = signalColors.getAxesColor();
+        qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:" << color;
     } else {
-        m_color = WSkinColor::getCorrectColor(m_color);
+        color = WSkinColor::getCorrectColor(color);
     }
+    setBaseColor(color);
 
     m_textColor = context.selectString(node, "TextColor");
     if (!m_textColor.isValid()) {
@@ -63,9 +66,30 @@ WaveformMarkProperties::WaveformMarkProperties(const QDomNode& node,
     QString markAlign = context.selectString(node, "Align");
     m_align = decodeAlignmentFlags(markAlign, Qt::AlignBottom | Qt::AlignHCenter);
 
-    m_text = context.selectString(node, "Text");
+    if (WaveformMark::kNoHotCue != hotCue) {
+        m_text = context.selectString(node, "Text").arg(hotCue + 1);
+    } else {
+        m_text = context.selectString(node, "Text");
+    }
     m_pixmapPath = context.selectString(node, "Pixmap");
     if (!m_pixmapPath.isEmpty()) {
-        m_pixmapPath = context.getSkinPath(m_pixmapPath);
+        m_pixmapPath = context.makeSkinPath(m_pixmapPath);
     }
+}
+
+void WaveformMarkProperties::setBaseColor(QColor baseColor) {
+    m_fillColor = baseColor;
+    m_borderColor = Color::chooseContrastColor(baseColor);
+    m_labelColor = Color::chooseColorByBrightness(baseColor, QColor(255,255,255,255), QColor(0,0,0,255));
+}
+
+QColor WaveformMarkProperties::fillColor() const {
+    return m_fillColor;
+}
+
+QColor WaveformMarkProperties::borderColor() const {
+    return m_borderColor;
+}
+QColor WaveformMarkProperties::labelColor() const {
+    return m_labelColor;
 }

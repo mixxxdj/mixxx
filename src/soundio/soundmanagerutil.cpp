@@ -15,7 +15,7 @@
 
 #include "soundio/soundmanagerutil.h"
 
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 
 /**
  * Constructs a ChannelGroup.
@@ -152,25 +152,27 @@ QString AudioPath::getStringFromType(AudioPathType type) {
     case INVALID:
         // this shouldn't happen but g++ complains if I don't
         // handle this -- bkgood
-        return QString::fromAscii("Invalid");
+        return QStringLiteral("Invalid");
     case MASTER:
-        return QString::fromAscii("Master");
+        return QStringLiteral("Master");
+    case BOOTH:
+        return QStringLiteral("Booth");
     case HEADPHONES:
-        return QString::fromAscii("Headphones");
+        return QStringLiteral("Headphones");
     case BUS:
-        return QString::fromAscii("Bus");
+        return QStringLiteral("Bus");
     case DECK:
-        return QString::fromAscii("Deck");
+        return QStringLiteral("Deck");
+    case RECORD_BROADCAST:
+        return QStringLiteral("Record/Broadcast");
     case VINYLCONTROL:
-        return QString::fromAscii("Vinyl Control");
+        return QStringLiteral("Vinyl Control");
     case MICROPHONE:
-        return QString::fromAscii("Microphone");
+        return QStringLiteral("Microphone");
     case AUXILIARY:
-        return QString::fromAscii("Auxiliary");
-    case SIDECHAIN:
-        return QString::fromAscii("Sidechain");
+        return QStringLiteral("Auxiliary");
     }
-    return QString::fromAscii("Unknown path type %1").arg(type);
+    return QStringLiteral("Unknown path type %1").arg(type);
 }
 
 /**
@@ -185,6 +187,8 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         return QObject::tr("Invalid");
     case MASTER:
         return QObject::tr("Master");
+    case BOOTH:
+        return QObject::tr("Booth");
     case HEADPHONES:
         return QObject::tr("Headphones");
     case BUS:
@@ -201,6 +205,8 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
     case DECK:
         return QString("%1 %2").arg(QObject::tr("Deck"),
                                     QString::number(index + 1));
+    case RECORD_BROADCAST:
+        return QObject::tr("Record/Broadcast");
     case VINYLCONTROL:
         return QString("%1 %2").arg(QObject::tr("Vinyl Control"),
                                     QString::number(index + 1));
@@ -210,8 +216,6 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
     case AUXILIARY:
         return QString("%1 %2").arg(QObject::tr("Auxiliary"),
                                     QString::number(index + 1));
-    case SIDECHAIN:
-        return QObject::tr("Sidechain");
     }
     return QObject::tr("Unknown path type %1").arg(type);
 }
@@ -224,6 +228,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
     string = string.toLower();
     if (string == AudioPath::getStringFromType(AudioPath::MASTER).toLower()) {
         return AudioPath::MASTER;
+    } else if (string == AudioPath::getStringFromType(AudioPath::BOOTH).toLower()) {
+        return AudioPath::BOOTH;
     } else if (string == AudioPath::getStringFromType(AudioPath::HEADPHONES).toLower()) {
         return AudioPath::HEADPHONES;
     } else if (string == AudioPath::getStringFromType(AudioPath::BUS).toLower()) {
@@ -236,8 +242,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
         return AudioPath::MICROPHONE;
     } else if (string == AudioPath::getStringFromType(AudioPath::AUXILIARY).toLower()) {
         return AudioPath::AUXILIARY;
-    } else if (string == AudioPath::getStringFromType(AudioPath::SIDECHAIN).toLower()) {
-        return AudioPath::SIDECHAIN;
+    } else if (string == AudioPath::getStringFromType(AudioPath::RECORD_BROADCAST).toLower()) {
+        return AudioPath::RECORD_BROADCAST;
     } else {
         return AudioPath::INVALID;
     }
@@ -298,6 +304,7 @@ AudioOutput::AudioOutput(AudioPathType type,
                          unsigned char channels,
                          unsigned char index)
     : AudioPath(channelBase, channels) {
+    // TODO(rryan): This is a virtual function call from a constructor.
     setType(type);
     if (isIndexed(type)) {
         m_index = index;
@@ -350,15 +357,16 @@ AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
 QList<AudioPathType> AudioOutput::getSupportedTypes() {
     QList<AudioPathType> types;
     types.append(MASTER);
+    types.append(BOOTH);
     types.append(HEADPHONES);
     types.append(BUS);
     types.append(DECK);
-    types.append(SIDECHAIN);
+    types.append(RECORD_BROADCAST);
     return types;
 }
 
 bool AudioOutput::isHidden() {
-    return m_type == SIDECHAIN;
+    return m_type == RECORD_BROADCAST;
 }
 
 
@@ -382,6 +390,7 @@ AudioInput::AudioInput(AudioPathType type,
                        unsigned char channels,
                        unsigned char index)
         : AudioPath(channelBase, channels) {
+    // TODO(rryan): This is a virtual function call from a constructor.
     setType(type);
     if (isIndexed(type)) {
         m_index = index;
@@ -439,6 +448,7 @@ QList<AudioPathType> AudioInput::getSupportedTypes() {
 #endif
     types.append(AUXILIARY);
     types.append(MICROPHONE);
+    types.append(RECORD_BROADCAST);
     return types;
 }
 

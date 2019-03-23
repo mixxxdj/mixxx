@@ -3,7 +3,7 @@
 
 #include "sources/soundsourceprovider.h"
 
-#include "util/circularsamplebuffer.h"
+#include "util/readaheadsamplebuffer.h"
 
 #include <FLAC/stream_decoder.h>
 
@@ -11,21 +11,14 @@
 
 namespace mixxx {
 
-class SoundSourceFLAC: public SoundSource {
-public:
+class SoundSourceFLAC final : public SoundSource {
+  public:
     explicit SoundSourceFLAC(const QUrl& url);
     ~SoundSourceFLAC() override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
-
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
-    SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
-
-    // callback methods
+    // Internal callbacks
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t* bytes);
     FLAC__StreamDecoderSeekStatus flacSeek(FLAC__uint64 offset);
     FLAC__StreamDecoderTellStatus flacTell(FLAC__uint64* offset);
@@ -36,12 +29,14 @@ public:
     void flacMetadata(const FLAC__StreamMetadata* metadata);
     void flacError(FLAC__StreamDecoderErrorStatus status);
 
-private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+  protected:
+    ReadableSampleFrames readSampleFramesClamped(
+            WritableSampleFrames sampleFrames) override;
 
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize,
-            bool readStereoSamples);
+  private:
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override;
 
     QFile m_file;
 
@@ -54,15 +49,17 @@ private:
     SINT m_maxBlocksize; // in time samples (audio samples = time samples * chanCount)
     SINT m_bitsPerSample;
 
-    CSAMPLE m_sampleScaleFactor;
+    ReadAheadSampleBuffer m_sampleBuffer;
 
-    SingularSampleBuffer m_sampleBuffer;
+    void invalidateCurFrameIndex() {
+        m_curFrameIndex = frameIndexMax();
+    }
 
     SINT m_curFrameIndex;
 };
 
 class SoundSourceProviderFLAC: public SoundSourceProvider {
-public:
+  public:
     QString getName() const override;
 
     QStringList getSupportedFileExtensions() const override;

@@ -13,9 +13,6 @@
 class ControlObject;
 class ControlPushButton;
 
-class EffectButtonParameterSlot;
-typedef QSharedPointer<EffectButtonParameterSlot> EffectButtonParameterSlotPointer;
-
 class EffectButtonParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
   public:
@@ -31,6 +28,9 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
 
     // Clear the currently loaded effect
     void clear();
+
+    QDomElement toXml(QDomDocument* doc) const override;
+    void loadParameterSlotFromXml(const QDomElement& parameterElement) override;
 
   private slots:
     // Solely for handling control changes

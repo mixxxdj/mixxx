@@ -3,21 +3,21 @@
 
 #include <QObject>
 
+#include "control/controlobject.h"
 #include "util/duration.h"
+#include "util/memory.h"
 #include "util/performancetimer.h"
 
-class ControlObject;
-
-class GuiTick : public QObject {
-    Q_OBJECT
+// A helper class that manages the "guiTickTime" COs, that drive updates of the
+// GUI from the VsyncThread at the user's configured FPS (possibly downsampled).
+class GuiTick {
   public:
-    GuiTick(QObject* pParent = NULL);
-    ~GuiTick();
+    GuiTick();
     void process();
 
   private:
-    ControlObject* m_pCOGuiTickTime;
-    ControlObject* m_pCOGuiTick50ms;
+    std::unique_ptr<ControlObject> m_pCOGuiTickTime;
+    std::unique_ptr<ControlObject> m_pCOGuiTick50ms;
     PerformanceTimer m_cpuTimer;
     mixxx::Duration m_lastUpdateTime;
     mixxx::Duration m_cpuTimeLastTick;

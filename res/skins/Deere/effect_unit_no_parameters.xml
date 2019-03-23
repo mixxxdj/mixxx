@@ -1,0 +1,52 @@
+<!DOCTYPE template>
+<!--
+EffectUnit with just metaknobs, but not individual parameter knobs showing
+
+Variables:
+  EffectRack: the rack
+  EffectUnit: the chain
+-->
+<Template>
+  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <!-- A little more vertical space is needed when show_focus is 1 because of the focused effect's border.
+    <MinimumSize>-1,65</MinimumSize>-->
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>EffectUnitNoParameters</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,max</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>EffectUnitEffectsNoParameters</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
+            <Children>
+              <Template src="skin:effect_single_no_parameters.xml">
+                <SetVariable name="Effect">1</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_single_no_parameters.xml">
+                <SetVariable name="Effect">2</SetVariable>
+              </Template>
+
+              <Template src="skin:effect_single_no_parameters.xml">
+                <SetVariable name="Effect">3</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+
+</Template>

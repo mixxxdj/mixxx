@@ -1,0 +1,49 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect chain widget.
+  Variables:
+    EffectRack: number of the effect rack (1)
+    EffectUnit: number of this effect unit
+-->
+<Template>
+  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
+    <Layout>vertical</Layout>
+    <Size>502min,me</Size>
+    <Children>
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,max</SizePolicy>
+        <Children>
+          <Template src="skin:effect_unit_no_parameters.xml"/>
+          <Template src="skin:effect_unit_controls.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform><Not/></Transform>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:effect_unit_with_parameters.xml"/>
+          <Template src="skin:effect_unit_controls.xml"/>
+        </Children>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,show_parameters</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>EffectUnitFiller</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

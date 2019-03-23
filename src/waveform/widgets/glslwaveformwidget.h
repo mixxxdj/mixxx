@@ -12,15 +12,15 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
   public:
     GLSLWaveformWidget(const char* group, QWidget* parent,
                        bool rgbRenderer);
-    virtual ~GLSLWaveformWidget();
+    ~GLSLWaveformWidget() override;
 
-    virtual void resize(int width, int height);
+    void resize(int width, int height, float devicePixelRatio) override;
 
   protected:
-    virtual void castToQWidget();
-    virtual void paintEvent(QPaintEvent* event);
-    virtual void mouseDoubleClickEvent(QMouseEvent *);
-    virtual mixxx::Duration render();
+    void castToQWidget() override;
+    void paintEvent(QPaintEvent* event) override;
+    void mouseDoubleClickEvent(QMouseEvent *) override;
+    mixxx::Duration render() override;
 
   private:
     GLSLWaveformRendererSignal* signalRenderer_;
@@ -29,11 +29,12 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 };
 
 class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
+    Q_OBJECT
   public:
     GLSLFilteredWaveformWidget(const char* group, QWidget* parent);
-    virtual ~GLSLFilteredWaveformWidget() {}
+    ~GLSLFilteredWaveformWidget() override = default;
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSLFilteredWaveform; }
+    WaveformWidgetType::Type getType() const override { return WaveformWidgetType::GLSLFilteredWaveform; }
 
     static inline QString getWaveformWidgetName() { return tr("Filtered"); }
     static inline bool useOpenGl() { return true; }
@@ -42,11 +43,12 @@ class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
 };
 
 class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
+    Q_OBJECT
   public:
     GLSLRGBWaveformWidget(const char* group, QWidget* parent);
-    virtual ~GLSLRGBWaveformWidget() {}
+    ~GLSLRGBWaveformWidget() override = default;
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLSLRGBWaveform; }
+    WaveformWidgetType::Type getType() const override { return WaveformWidgetType::GLSLRGBWaveform; }
 
     static inline QString getWaveformWidgetName() { return tr("RGB"); }
     static inline bool useOpenGl() { return true; }

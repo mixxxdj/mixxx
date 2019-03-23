@@ -13,12 +13,12 @@
 #include <QSqlDatabase>
 #include <QVector>
 
-#include "control/controlproxy.h"
 #include "library/dao/trackdao.h"
 #include "library/columncache.h"
 #include "track/track.h"
 #include "util/class.h"
 #include "util/memory.h"
+#include "util/string.h"
 
 class SearchQueryParser;
 class QueryNode;
@@ -88,11 +88,15 @@ class BaseTrackCache : public QObject {
     void slotDbTrackAdded(TrackPointer pTrack);
 
   private:
-    TrackPointer lookupCachedTrack(TrackId trackId) const;
+    const TrackPointer& getRecentTrack(TrackId trackId) const;
+    void replaceRecentTrack(TrackPointer pTrack) const;
+    void replaceRecentTrack(TrackId trackId, TrackPointer pTrack) const;
+    void resetRecentTrack() const;
+
     bool updateIndexWithQuery(const QString& query);
     bool updateIndexWithTrackpointer(TrackPointer pTrack);
     void updateTrackInIndex(TrackId trackId);
-    void updateTracksInIndex(QSet<TrackId> trackIds);
+    void updateTracksInIndex(const QSet<TrackId>& trackIds);
     void getTrackValueForColumn(TrackPointer pTrack, int column,
                                 QVariant& trackValue) const;
 
@@ -117,7 +121,9 @@ class BaseTrackCache : public QObject {
     const int m_columnCount;
     const QString m_columnsJoined;
 
-    ColumnCache m_columnCache;
+    const ColumnCache m_columnCache;
+
+    const StringCollator m_collator;
 
     QStringList m_searchColumns;
     QVector<int> m_searchColumnIndices;
@@ -126,7 +132,17 @@ class BaseTrackCache : public QObject {
 
     QVector<TrackId> m_trackOrder;
 
-    QSet<TrackId> m_dirtyTracks;
+    // Remember key and value of the most recent cache lookup to avoid querying
+    // the global track cache again and again while populating the columns
+    // of a single row. These members serve as a single-valued private cache.
+    mutable TrackId m_recentTrackId;
+    mutable TrackPointer m_recentTrackPtr;
+
+    // This set is updated by signals from the Track object. It might contain
+    // false positives, i.e. track ids of tracks that are neither cached nor
+    // dirty. Each invocation of getRecentTrack() will take care of updating
+    // this set by inserting and removing entries as required.
+    mutable QSet<TrackId> m_dirtyTracks;
 
     bool m_bIndexBuilt;
     bool m_bIsCaching;

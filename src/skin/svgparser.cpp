@@ -6,13 +6,14 @@
 
 SvgParser::SvgParser(const SkinContext& parent)
         : m_parentContext(parent) {
+    m_pChildContext.reset(new SkinContext(m_parentContext));
 }
 
 SvgParser::~SvgParser() {
 }
 
 QDomNode SvgParser::parseSvgTree(const QDomNode& svgSkinNode,
-                                 const QString& sourcePath) const {
+                                 const QString& sourcePath) {
     m_currentFile = sourcePath;
     // clone svg to don't alter xml input
     QDomElement svgNode = svgSkinNode.cloneNode(true).toElement();
@@ -83,21 +84,19 @@ void SvgParser::parseElement(QDomElement* element) const {
         // Look for a filepath in the "src" attribute
         // QString scriptPath = element->toElement().attribute("src");
 
-        auto childContext = lazyChildContext();
-
         QString scriptPath = element->attribute("src");
         if (!scriptPath.isNull()) {
-            QFile scriptFile(childContext.getSkinPath(scriptPath));
+            QFile scriptFile(m_pChildContext->makeSkinPath(scriptPath));
             if (!scriptFile.open(QIODevice::ReadOnly|QIODevice::Text)) {
                 qDebug() << "ERROR: Failed to open script file";
             }
             QTextStream in(&scriptFile);
-            QScriptValue result = childContext.evaluateScript(
+            QScriptValue result = m_pChildContext->evaluateScript(
                 in.readAll(), scriptPath);
         } else {
             // Evaluates the content of the script element
             // QString expression = m_context.nodeToString(*element);
-            QScriptValue result = childContext.evaluateScript(
+            QScriptValue result = m_pChildContext->evaluateScript(
                 element->text(), m_currentFile, element->lineNumber());
         }
     }
@@ -155,10 +154,9 @@ QByteArray SvgParser::saveToQByteArray(const QDomNode& svgNode) const {
 
 QScriptValue SvgParser::evaluateTemplateExpression(const QString& expression,
                                                    int lineNumber) const {
-    auto childContext = lazyChildContext();
-    QScriptValue out = childContext.evaluateScript(
+    QScriptValue out = m_pChildContext->evaluateScript(
         expression, m_currentFile, lineNumber);
-    if (childContext.getScriptEngine()->hasUncaughtException()) {
+    if (m_pChildContext->getScriptEngine()->hasUncaughtException()) {
         // return an empty string as replacement for the in-attribute expression
         return QScriptValue();
     } else {

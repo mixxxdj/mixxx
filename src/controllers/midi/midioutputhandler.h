@@ -16,7 +16,7 @@
 
 class MidiController;
 
-class MidiOutputHandler : QObject {
+class MidiOutputHandler : public QObject {
     Q_OBJECT
   public:
     MidiOutputHandler(MidiController* controller,

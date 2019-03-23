@@ -17,18 +17,17 @@ class MockMidiController : public MidiController {
 
     MOCK_METHOD0(open, int());
     MOCK_METHOD0(close, int());
-    MOCK_METHOD1(sendWord, void(unsigned int work));
+    MOCK_METHOD3(sendShortMsg, void(unsigned char status,
+                                    unsigned char byte1,
+                                    unsigned char byte2));
     MOCK_METHOD1(send, void(QByteArray data));
     MOCK_CONST_METHOD0(isPolling, bool());
 };
 
 class MidiControllerTest : public MixxxTest {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         m_pController.reset(new MockMidiController());
-    }
-
-    virtual void TearDown() {
     }
 
     void addMapping(MidiInputMapping mapping) {

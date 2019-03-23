@@ -15,7 +15,7 @@ function NumarkV7() {}
  
 NumarkV7.RateRanges = [ 0.0, 0.08, 0.1, 0.16, 0.5, 1.0 ];
 NumarkV7.MotorOnLoad = false; //set to "true" to diasble motor on load
-NumarkV7.ScratchDisableDefault = false; //set to "true" to disable scratching when the motors are runnning.
+NumarkV7.ScratchDisableDefault = false; //set to "true" to disable scratching when the motors are running.
 NumarkV7.loop_modeOnLoad = "Manual"; //("Manual", "Auto")
 NumarkV7.MotorSpeed = true; //Record RPM (true = "33 1/3",false = "45")
 
@@ -47,8 +47,8 @@ NumarkV7.PitchAPause = 0; //pauses scratching while changing pitch
 NumarkV7.PitchBPause = 0; //pauses scratching while changing pitch
 NumarkV7.PitchAPauseOn = false; //true is timer is running.
 NumarkV7.PitchBPauseOn = false; //true is timer is running.
-NumarkV7.ScratchDisableA = false; //set to "true" to disable scratching when the motors are runnning.
-NumarkV7.ScratchDisableB = false; //set to "true" to disable scratching when the motors are runnning.
+NumarkV7.ScratchDisableA = false; //set to "true" to disable scratching when the motors are running.
+NumarkV7.ScratchDisableB = false; //set to "true" to disable scratching when the motors are running.
 NumarkV7.ScratchDiffA = 0x00; //records last value
 NumarkV7.ScratchDiffB = 0x00; //records last value
 NumarkV7.RPM = 33+1/3; //Motor-Scratch rpm

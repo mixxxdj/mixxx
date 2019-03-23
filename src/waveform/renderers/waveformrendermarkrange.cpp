@@ -18,9 +18,6 @@ WaveformRenderMarkRange::WaveformRenderMarkRange(WaveformWidgetRenderer* wavefor
     WaveformRendererAbstract(waveformWidgetRenderer) {
 }
 
-WaveformRenderMarkRange::~WaveformRenderMarkRange() {
-}
-
 void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& context) {
     m_markRanges.clear();
     m_markRanges.reserve(1);
@@ -28,9 +25,12 @@ void WaveformRenderMarkRange::setup(const QDomNode& node, const SkinContext& con
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
         if (child.nodeName() == "MarkRange") {
-            m_markRanges.push_back(WaveformMarkRange());
-            m_markRanges.back().setup(m_waveformRenderer->getGroup(), child,
-                                      context, *m_waveformRenderer->getWaveformSignalColors());
+            m_markRanges.push_back(
+                    WaveformMarkRange(
+                            m_waveformRenderer->getGroup(),
+                            child,
+                            context,
+                            *m_waveformRenderer->getWaveformSignalColors()));
         }
         child = child.nextSibling();
     }
@@ -58,8 +58,8 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         int startSample = markRange.start();
         int endSample = markRange.end();
 
-        double startPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(startSample);
-        double endPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(endSample);
+        double startPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(startSample);
+        double endPosition = m_waveformRenderer->transformSamplePositionInRendererWorld(endSample);
 
         //range not in the current display
         if (startPosition > m_waveformRenderer->getLength() || endPosition < 0)

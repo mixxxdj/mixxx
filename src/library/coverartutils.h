@@ -21,9 +21,9 @@ class CoverArtUtils {
     // Extracts the first cover art image embedded within the file at
     // fileInfo. If no security token is provided a new one is created.
     static QImage extractEmbeddedCover(
-            const QFileInfo& fileInfo);
+            QFileInfo fileInfo);
     static QImage extractEmbeddedCover(
-            const QFileInfo& fileInfo,
+            QFileInfo fileInfo,
             SecurityTokenPointer pToken);
 
     static QImage loadCover(const CoverInfo& info);

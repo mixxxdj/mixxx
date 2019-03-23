@@ -30,7 +30,16 @@ class CoverInfoRelative {
     };
 
     CoverInfoRelative();
-    virtual ~CoverInfoRelative() {};
+
+    // all-default memory management
+    CoverInfoRelative(const CoverInfoRelative&) = default;
+    CoverInfoRelative& operator=(const CoverInfoRelative&) = default;
+    virtual ~CoverInfoRelative() = default;
+// Visual Studio does not support default generated move constructors yet
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    CoverInfoRelative(CoverInfoRelative&&) = default;
+    CoverInfoRelative& operator=(CoverInfoRelative&&) = default;
+#endif
 
     Source source;
     Type type;
@@ -51,7 +60,15 @@ class CoverInfo : public CoverInfoRelative {
           trackLocation(tl) {
     }
 
-    virtual ~CoverInfo() {};
+    // all-default memory management
+    CoverInfo(const CoverInfo&) = default;
+    CoverInfo& operator=(const CoverInfo&) = default;
+    virtual ~CoverInfo() override = default;
+// Visual Studio does not support default generated move constructors yet
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    CoverInfo(CoverInfo&&) = default;
+    CoverInfo& operator=(CoverInfo&&) = default;
+#endif
 
     QString trackLocation;
 };
@@ -72,7 +89,14 @@ class CoverArt : public CoverInfo {
           resizedToWidth(rtw) {
     }
 
-    virtual ~CoverArt() {};
+    // all-default memory management
+    CoverArt(const CoverArt&) = default;
+    virtual ~CoverArt() override = default;
+// Visual Studio does not support default generated move constructors yet
+#if !defined(_MSC_VER) || _MSC_VER > 1900
+    CoverArt(CoverArt&&) = default;
+    CoverArt& operator=(CoverArt&&) = default;
+#endif
 
     // it is not a QPixmap, because it is not safe to use pixmaps 
     // outside the GUI thread

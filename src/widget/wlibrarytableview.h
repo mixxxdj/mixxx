@@ -12,6 +12,7 @@
 #include "library/libraryview.h"
 #include "track/track.h"
 #include "library/coverartcache.h"
+#include "library/trackmodel.h"
 
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
@@ -24,6 +25,19 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     ~WLibraryTableView() override;
     void moveSelection(int delta) override;
 
+    /**
+     * @brief saveVScrollBarPos function saves current position of scrollbar
+     * using string key - can be any value but should invariant for model
+     * @param key unique for trackmodel
+     */
+    void saveVScrollBarPos(TrackModel* key);
+    /**
+     * @brief restoreVScrollBarPos function finds scrollbar value associated with model
+     * by given key and restores it
+     * @param key unique for trackmodel
+     */
+    void restoreVScrollBarPos(TrackModel* key);
+
   signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group,
@@ -33,20 +47,25 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void scrollValueChanged(int);
 
   public slots:
-    void saveVScrollBarPos();
-    void restoreVScrollBarPos();
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
+    void setSelectedClick(bool enable);
+
+  protected:
+    void saveNoSearchVScrollBarPos();
+    void restoreNoSearchVScrollBarPos();
 
   private:
     void loadVScrollBarPosState();
     void saveVScrollBarPosState();
 
+    QMap<TrackModel*, int> m_vScrollBarPosValues;
+
     UserSettingsPointer m_pConfig;
     ConfigKey m_vScrollBarPosKey;
     // The position of the vertical scrollbar slider, eg. before a search is
     // executed
-    int m_iSavedVScrollBarPos;
+    int m_noSearchVScrollBarPos;
 };
 
 

@@ -17,7 +17,7 @@ DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
 
     // Install our own trackTable
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
@@ -41,13 +41,15 @@ DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
-
     connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
+
     connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
             m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
             m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+    connect(pLibrary, SIGNAL(setSelectedClick(bool)),
+            m_pTrackTableView, SLOT(setSelectedClick(bool)));
 }
 
 DlgHidden::~DlgHidden() {
@@ -65,6 +67,10 @@ void DlgHidden::onShow() {
 
 void DlgHidden::onSearch(const QString& text) {
     m_pHiddenTableModel->search(text);
+}
+
+QString DlgHidden::currentSearch() {
+    return m_pHiddenTableModel->currentSearch();
 }
 
 void DlgHidden::clicked() {
@@ -87,10 +93,6 @@ void DlgHidden::selectionChanged(const QItemSelection &selected,
     activateButtons(!selected.indexes().isEmpty());
 }
 
-void DlgHidden::setTrackTableFont(const QFont& font) {
-    m_pTrackTableView->setTrackTableFont(font);
-}
-
-void DlgHidden::setTrackTableRowHeight(int rowHeight) {
-    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
+bool DlgHidden::hasFocus() const {
+    return QWidget::hasFocus();
 }

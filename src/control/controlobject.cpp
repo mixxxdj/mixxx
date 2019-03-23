@@ -29,25 +29,12 @@ ControlObject::ControlObject() {
 }
 
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                             bool bPersist) {
-    initialize(key, bIgnoreNops, bTrack, bPersist);
-}
-
-ControlObject::~ControlObject() {
-    if (m_pControl) {
-        m_pControl->removeCreatorCO();
-    }
-}
-
-void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                               bool bPersist) {
-    m_key = key;
-
+                             bool bPersist, double defaultValue)
+        : m_key(key) {
     // Don't bother looking up the control if key is NULL. Prevents log spew.
     if (!m_key.isNull()) {
         m_pControl = ControlDoublePrivate::getControl(m_key, true, this,
-                                                      bIgnoreNops, bTrack,
-                                                      bPersist);
+                bIgnoreNops, bTrack, bPersist, defaultValue);
     }
 
     // getControl can fail and return a NULL control even with the create flag.
@@ -58,13 +45,17 @@ void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
     }
 }
 
+ControlObject::~ControlObject() {
+    if (m_pControl) {
+        m_pControl->removeCreatorCO();
+    }
+}
+
 // slot
 void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
     // Only emit valueChanged() if we did not originate this change.
     if (pSender != this) {
         emit(valueChanged(dValue));
-    } else {
-        emit(valueChangedFromEngine(dValue));
     }
 }
 
@@ -80,7 +71,7 @@ ControlObject* ControlObject::getControl(const ConfigKey& key, bool warn) {
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
     if (m_pControl) {
-        m_pControl->setMidiParameter(o, v);
+        m_pControl->setValueFromMidi(o, v);
     }
 }
 
@@ -102,8 +93,8 @@ double ControlObject::getParameterForValue(double value) const {
     return m_pControl ? m_pControl->getParameterForValue(value) : 0.0;
 }
 
-double ControlObject::getParameterForMidiValue(double midiValue) const {
-    return m_pControl ? m_pControl->getParameterForMidiValue(midiValue) : 0.0;
+double ControlObject::getParameterForMidi(double midiParameter) const {
+    return m_pControl ? m_pControl->getParameterForMidi(midiParameter) : 0.0;
 }
 
 void ControlObject::setParameter(double v) {
@@ -126,12 +117,11 @@ void ControlObject::set(const ConfigKey& key, const double& value) {
     }
 }
 
-bool ControlObject::connectValueChangeRequest(const QObject* receiver,
-                                              const char* method,
-                                              Qt::ConnectionType type) {
-    bool ret = false;
-    if (m_pControl) {
-        ret = m_pControl->connectValueChangeRequest(receiver, method, type);
-    }
-    return ret;
+void ControlObject::setReadOnly() {
+    connectValueChangeRequest(this, &ControlObject::readOnlyHandler,
+                              Qt::DirectConnection);
+}
+
+void ControlObject::readOnlyHandler(double v) {
+    qWarning() << m_key << "is read-only. Ignoring set of value:" << v;
 }

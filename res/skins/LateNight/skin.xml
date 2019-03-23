@@ -1,125 +1,314 @@
-	<!--
-	LateNight, Resizable skin for Mixxx 1.12
-	www.mixxx.org
-	Copyright (C) 2010-2013 jus <s.brandt@mixxx.org>, 2014 Owen Williams <owilliams@mixxx.org>
-	"LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
-	http://creativecommons.org/licenses/by-sa/3.0/
+  <!--
+  LateNight, Resizable skin for Mixxx 2.1.x
+  www.mixxx.org
+  Copyright (C) 2010-2013 jus <s.brandt@mixxx.org>, 2014 Owen Williams <owilliams@mixxx.org>
+  "LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
+  http://creativecommons.org/licenses/by-sa/3.0/
 
-	With every copy of the work, you are required to either provide a copy of the license it self
-	or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
+  With every copy of the work, you are required to either provide a copy of the license it self
+  or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
 
-	You are free:
-	to Share - to copy, distribute and transmit the work
-	to Remix - to adapt the work
+  You are free:
+  to Share - to copy, distribute and transmit the work
+  to Remix - to adapt the work
 
-	Under the following conditions:
-	Attribution - You must attribute the work in the manner specified by the author or licensor
-	(but not in any way that suggests that they endorse you or your use of the work).
-	A attribution should include the following: The name of the author and/or licensor,
-	the title of the work, the URL that is associated with the work.
+  Under the following conditions:
+  Attribution - You must attribute the work in the manner specified by the author or licensor
+  (but not in any way that suggests that they endorse you or your use of the work).
+  A attribution should include the following: The name of the author and/or licensor,
+  the title of the work, the URL that is associated with the work.
 
-	Share Alike - If you alter, transform, or build upon this work, you may distribute
-	the resulting work only under the same or similar license to this one.
+  Share Alike - If you alter, transform, or build upon this work, you may distribute
+  the resulting work only under the same or similar license to this one.
 
-	See CHANGELOG.txt for the list of changes.
+  See CHANGELOG.txt for the list of changes.
 
-	TODO: Remove "persist" attributes throughout the skin and confirm that declaring
-	them in the attributes section instead works.
-	-->
+  TODO: Remove "persist" attributes throughout the skin and confirm that declaring
+  them in the attributes section instead works.
+  -->
 
 <!DOCTYPE skin>
 <skin>
   <manifest>
     <title>LateNight</title>
     <author>owilliams</author>
-    <version>1.12.0.01</version>
+    <version>2.1.0.01</version>
     <description>A nighttime-compatible skin</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
       <!-- Set skin defaults. -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute persist="true" config_key="[Spinny1],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Spinny2],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Spinny3],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Spinny4],show_spinny">1</attribute>
-      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
-      <attribute persist="true" config_key="[MicrophoneRack],show">0</attribute>
-      <attribute persist="true" config_key="[EffectRack1],show">0</attribute>
-      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
-      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
-      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute config_key="[Master],num_samplers">8</attribute>
+      <!-- Decks -->
+      <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
+      <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_rate_controls">1</attribute>
+      <!-- Mixer -->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
-      <attribute persist="true" config_key="[Master],show_eqs">1</attribute>
-      <attribute persist="true" config_key="[Master],show_mics">0</attribute>
-      <attribute persist="true" config_key="[Master],view_curpage">2</attribute>
-      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
-      <attribute persist="true" config_key="[Library],show_current">1</attribute>
-      <attribute persist="true" config_key="[Master],show_4decks">0</attribute>
-      <attribute persist="true" config_key="[Spinny],show_spinnies">1</attribute>
-      <attribute config_key="[Library],show_library">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
+      <!-- Effects -->
+      <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
+      <!-- Samplers -->
+      <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
+      <attribute persist="true" config_key="[Skin],8_samplers">1</attribute>
+      <attribute persist="true" config_key="[Skin],expand_samplers">0</attribute>
+      <!-- Library -->
       <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
+
+      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+      <attribute config_key="[Master],skin_settings">0</attribute>
+      <!--Disable hidden effect routing Buttons-->
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit2],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit3],group_[BusTalkover]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[MasterOutput]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusLeft]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusCenter]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusRight]_enable">0</attribute>
+      <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
     </attributes>
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss"/>
+  <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
 
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen -->
-  <MinimumSize>1280,700</MinimumSize>
+  <MinimumSize>1270,550</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
+  <LaunchImageStyle>
+    LaunchImage {
+      background-color: #0f0f0f;
+    }
+    QLabel {
+      image: url(skin:/style/mixxx_logo.svg);
+      padding: 0;
+      margin: 0px 2px 0px 2px;
+      border: none;
+      min-width: 160px;
+      min-height: 40px;
+      max-width: 160px;
+      max-height: 40px;
+    }
+    QProgressBar {
+      background: url(skin:/style/progressbar_bg.svg);
+      border: none;
+      min-width: 164px;
+      min-height: 5px;
+      max-width: 164px;
+      max-height: 5px;
+    }
+    QProgressBar::chunk {
+      background: url(skin:/style/progressbar.svg);
+    }
+  </LaunchImageStyle>
 
   <Children>
+    <SetVariable name="PotiMinAngle">-135</SetVariable>
+    <SetVariable name="PotiMaxAngle">135</SetVariable>
+
+    <SetVariable name="SignalColor_12">#E7C413</SetVariable>
+    <!-- <SetVariable name="SignalBgColor_12">#2f290a</SetVariable> -->
+    <SetVariable name="SignalColor_34">#09B2AE</SetVariable>
+    <!-- <SetVariable name="SignalBgColor_34">#2f290a</SetVariable> -->
+    <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
+    <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
+    <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
+    <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
     <!-- Define singletons as early in the skin as possible.  Note that the
     library doesn't actually appear here, it's just instantiated and configured.
     -->
+
     <SingletonDefinition>
-        <ObjectName>LibrarySingleton</ObjectName>
-        <Children>
-            <Template src="skin:library.xml"/>
-        </Children>
+      <ObjectName>WaveformsSingleton</ObjectName>
+      <Children>
+        <Template src="skin:waveforms_container.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverart1</ObjectName>
+      <Children>
+        <Template src="skin:spinny_coverart.xml">
+          <SetVariable name="channum">1</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverart2</ObjectName>
+      <Children>
+        <Template src="skin:spinny_coverart.xml">
+          <SetVariable name="channum">2</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverart3</ObjectName>
+      <Children>
+        <Template src="skin:spinny_coverart.xml">
+          <SetVariable name="channum">3</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>SpinnyCoverart4</ObjectName>
+      <Children>
+        <Template src="skin:spinny_coverart.xml">
+          <SetVariable name="channum">4</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview1</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="channum">1</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview2</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="channum">2</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview3</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="channum">3</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DeckOverview4</ObjectName>
+      <Children>
+        <Template src="skin:deck_overview.xml">
+          <SetVariable name="channum">4</SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>LibrarySingleton</ObjectName>
+      <Children>
+        <Template src="skin:library.xml"/>
+      </Children>
     </SingletonDefinition>
 
     <WidgetGroup>
-        <ObjectName>SkinContainer</ObjectName>
-        <Layout>horizontal</Layout>
-        <SizePolicy>me,me</SizePolicy>
-        <Children>
+      <ObjectName>SkinContainer</ObjectName>
+      <Layout>vertical</Layout>
+      <SizePolicy>me,me</SizePolicy>
+      <Children>
+        <WidgetGroup><!-- All skin elements-->
+          <Layout>horizontal</Layout>
+          <SizePolicy>me,me</SizePolicy>
+          <Children>
+
             <!-- Select between either the full UI or the big library -->
             <WidgetStack currentpage="[Master],maximize_library">
-                <Children>
-                    <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children>
-                            <WidgetGroup>
-                                <Layout>horizontal</Layout>
-                                <SizePolicy>i,max</SizePolicy>
-                                <Children>
-                                    <Template src="skin:decks_left.xml"/>
-                                    <Template src="skin:waveform_and_mixer.xml"/>
-                                    <Template src="skin:decks_right.xml"/>
-                                </Children>
-                            </WidgetGroup>
-                            <Template src="skin:lower_half.xml"/>
-                        </Children>
-                    </WidgetGroup>
+              <Children>
+
+                <!-- Waveforms, Decks, Effects... /  Library -->
+                <Splitter>
+                  <ObjectName>HorizontalSplitter</ObjectName>
+                  <Orientation>vertical</Orientation>
+                  <SizePolicy>me,min</SizePolicy>
+                  <SplitSizes>1,5</SplitSizes>
+                  <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
+                  <Collapsible>1,0</Collapsible>
+                  <Children>
+
+                    <SingletonContainer>
+                      <ObjectName>WaveformsSingleton</ObjectName>
+                    </SingletonContainer>
 
                     <WidgetGroup>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>me,me</SizePolicy>
-                        <Children>
-                            <SingletonContainer>
-                                <ObjectName>LibrarySingleton</ObjectName>
-                            </SingletonContainer>
-                            <Template src="skin:toolbar_big_library.xml"/>
-                        </Children>
+                      <Layout>vertical</Layout>
+                      <SizePolicy>me,me</SizePolicy>
+                      <Children>
+                        <WidgetGroup>
+                          <Layout>horizontal</Layout>
+                          <SizePolicy>me,max</SizePolicy>
+                          <Children>
+                            <Template src="skin:decks_left.xml"/>
+                            <Template src="skin:mixer.xml"/>
+                            <Template src="skin:decks_right.xml"/>
+                          </Children>
+                        </WidgetGroup>
+                        <Template src="skin:fx_rack.xml"/>
+                        <Template src="skin:samplers_rack.xml"/>
+                        <Template src="skin:mic_aux_rack.xml"/>
+                        <SingletonContainer>
+                          <ObjectName>LibrarySingleton</ObjectName>
+                        </SingletonContainer>
+                      </Children>
                     </WidgetGroup>
-                </Children>
+
+                  </Children>
+                </Splitter><!-- Decks, Effects ... Library -->
+
+                <!-- Maximized Library -->
+                <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
+
+                    <Template src="skin:decks_small.xml"/>
+
+                    <SingletonContainer>
+                      <ObjectName>LibrarySingleton</ObjectName>
+                    </SingletonContainer>
+                  </Children>
+                </WidgetGroup><!-- Maximized Library -->
+
+              </Children>
             </WidgetStack>
-        </Children>
+            <Template src="skin:skin_settings.xml"/>
+
+          </Children>
+        </WidgetGroup>
+
+        <Template src="skin:toolbar.xml"/>
+      </Children>
     </WidgetGroup>
   </Children>
 </skin>

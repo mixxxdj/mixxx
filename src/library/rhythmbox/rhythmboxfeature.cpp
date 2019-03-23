@@ -13,7 +13,8 @@
 RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackCollection)
         : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
-          m_cancelImport(false) {
+          m_cancelImport(false),
+          m_icon(":/images/library/ic_library_rhythmbox.svg") {
     QString tableName = "rhythmbox_library";
     QString idColumn = "id";
     QStringList columns;
@@ -57,7 +58,7 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
-    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->getDatabase(),
+    m_database = QSqlDatabase::cloneDatabase(pTrackCollection->database(),
                                              "RHYTHMBOX_SCANNER");
 
     //Open the database connection in this thread.
@@ -100,7 +101,7 @@ QVariant RhythmboxFeature::title() {
 }
 
 QIcon RhythmboxFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_rhythmbox.png");
+    return m_icon;
 }
 
 TreeItemModel* RhythmboxFeature::getChildModel() {
@@ -112,7 +113,7 @@ void RhythmboxFeature::activate() {
 
     if (!m_isActivated) {
         m_isActivated =  true;
-        // Ususally the maximum number of threads
+        // Usually the maximum number of threads
         // is > 2 depending on the CPU cores
         // Unfortunately, within VirtualBox
         // the maximum number of allowed threads
@@ -125,7 +126,7 @@ void RhythmboxFeature::activate() {
         m_track_watcher.setFuture(m_track_future);
         m_title = "(loading) Rhythmbox";
         //calls a slot in the sidebar model such that 'Rhythmbox (isLoading)' is displayed.
-        emit (featureIsLoading(this, true));
+        emit(featureIsLoading(this, true));
     }
 
     emit(showTrackModel(m_pRhythmboxTrackModel));
@@ -220,7 +221,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
             "INSERT INTO rhythmbox_playlist_tracks (playlist_id, track_id, position) "
             "VALUES (:playlist_id, :track_id, :position)");
     //The tree structure holding the playlists
-    TreeItem* rootItem = new TreeItem();
+    TreeItem* rootItem = new TreeItem(this);
 
     QXmlStreamReader xml(&db);
     while (!xml.atEnd() && !m_cancelImport) {
@@ -233,8 +234,7 @@ TreeItem* RhythmboxFeature::importPlaylists() {
                 QString playlist_name = attr.value("name").toString();
 
                 //Construct the childmodel
-                TreeItem * item = new TreeItem(playlist_name, playlist_name, this, rootItem);
-                rootItem->appendChild(item);
+                rootItem->appendChild(playlist_name);
 
                 //Execute SQL statement
                 query_insert_to_playlists.bindValue(":name", playlist_name);
@@ -325,7 +325,7 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 continue;
             }
             if (xml.name() == "location") {
-                locationUrl = QUrl::fromEncoded(xml.readElementText().toUtf8());
+                locationUrl = QUrl(xml.readElementText());
                 continue;
             }
         }
@@ -377,8 +377,7 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
         if (xml.isStartElement() && xml.name() == "location") {
             QString location = xml.readElementText();
             location.remove("file://");
-            QByteArray strlocbytes = location.toUtf8();
-            QUrl locationUrl = QUrl::fromEncoded(strlocbytes);
+            QUrl locationUrl = QUrl(location);
             location = locationUrl.toLocalFile();
 
             //get the ID of the file in the rhythmbox_library table
@@ -435,9 +434,9 @@ void RhythmboxFeature::clearTable(QString table_name) {
 }
 
 void RhythmboxFeature::onTrackCollectionLoaded() {
-    TreeItem* root = m_track_future.result();
+    std::unique_ptr<TreeItem> root(m_track_future.result());
     if (root) {
-        m_childModel.setRootItem(root);
+        m_childModel.setRootItem(std::move(root));
 
         // Tell the rhythmbox track source that it should re-build its index.
         m_trackSource->buildIndex();

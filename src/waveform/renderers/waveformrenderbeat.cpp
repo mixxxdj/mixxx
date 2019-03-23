@@ -22,9 +22,6 @@ WaveformRenderBeat::~WaveformRenderBeat() {
 void WaveformRenderBeat::setup(const QDomNode& node, const SkinContext& context) {
     m_beatColor.setNamedColor(context.selectString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor).toRgb();
-
-    if (m_beatColor.alphaF() > 0.99)
-        m_beatColor.setAlphaF(0.9);
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -37,20 +34,28 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     if (!trackBeats)
         return;
 
+    int alpha = m_waveformRenderer->beatGridAlpha();
+    if (alpha == 0)
+        return;
+    m_beatColor.setAlphaF(alpha/100.0);
+
     const int trackSamples = m_waveformRenderer->getTrackSamples();
     if (trackSamples <= 0) {
         return;
     }
 
-    const double firstDisplayedPosition = m_waveformRenderer->getFirstDisplayedPosition();
-    const double lastDisplayedPosition = m_waveformRenderer->getLastDisplayedPosition();
+    const double firstDisplayedPosition =
+            m_waveformRenderer->getFirstDisplayedPosition();
+    const double lastDisplayedPosition =
+            m_waveformRenderer->getLastDisplayedPosition();
 
     // qDebug() << "trackSamples" << trackSamples
     //          << "firstDisplayedPosition" << firstDisplayedPosition
     //          << "lastDisplayedPosition" << lastDisplayedPosition;
 
     std::unique_ptr<BeatIterator> it(trackBeats->findBeats(
-            firstDisplayedPosition * trackSamples, lastDisplayedPosition * trackSamples));
+            firstDisplayedPosition * trackSamples,
+            lastDisplayedPosition * trackSamples));
 
     // if no beat do not waste time saving/restoring painter
     if (!it || !it->hasNext()) {
@@ -61,7 +66,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setRenderHint(QPainter::Antialiasing);
 
     QPen beatPen(m_beatColor);
-    beatPen.setWidthF(1);
+    beatPen.setWidthF(std::max(1.0, scaleFactor()));
     painter->setPen(beatPen);
 
     const Qt::Orientation orientation = m_waveformRenderer->getOrientation();
@@ -71,8 +76,9 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     int beatCount = 0;
 
     while (it->hasNext()) {
-        int beatPosition = it->next();
-        double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
+        double beatPosition = it->next();
+        double xBeatPoint =
+                m_waveformRenderer->transformSamplePositionInRendererWorld(beatPosition);
 
         xBeatPoint = qRound(xBeatPoint);
 

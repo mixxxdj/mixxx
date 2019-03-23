@@ -1,7 +1,7 @@
 //
 // C++ Implementation: parserm3u
 //
-// Description: module to parse m3u(plaintext) formated playlists
+// Description: module to parse m3u(plaintext) formatted playlists
 //
 //
 // Author: Ingo Kossyk <kossyki@cs.tu-berlin.de>, (C) 2004
@@ -25,14 +25,14 @@
 
 /**
    ToDo:
-    - parse ALL informations from the pls file if available ,
+    - parse ALL information from the pls file if available ,
           not only the filepath;
 
           Userinformation :
           The M3U format is just a headerless plaintext format
           where every line of text either represents
           a file location or a comment. comments are being
-          preceeded by a '#'. This parser will try to parse all
+          preceded by a '#'. This parser will try to parse all
           file information from the given file and add the filepaths
           to the locations ptrlist when the file is existing locally
           or on a mounted harddrive.
@@ -78,11 +78,11 @@ QList<QString> ParserM3u::parse(QString sFilename)
             textstream.setCodec("windows-1252");
         }
 
-        while(!textstream.atEnd()) {
+        while (!textstream.atEnd()) {
             QString sLine = getFilepath(&textstream, basepath);
-            if(sLine.isEmpty())
-                break;
-
+            if (sLine.isEmpty()) {
+                continue;
+            }
             //qDebug() << "ParserM3u: parsed: " << (sLine);
             m_sLocations.append(sLine);
         }
@@ -96,11 +96,8 @@ QList<QString> ParserM3u::parse(QString sFilename)
 }
 
 
-QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
-{
-    QString textline,filename = "";
-
-    textline = stream->readLine();
+QString ParserM3u::getFilepath(QTextStream* stream, QString basepath) {
+    QString textline = stream->readLine();
 
     while (!textline.isEmpty()) {
         //qDebug() << "Untransofrmed text: " << textline;
@@ -109,23 +106,17 @@ QString ParserM3u::getFilepath(QTextStream *stream, QString basepath)
         }
 
         if (!textline.contains("#")) {
-            filename = textline;
-            filename.remove("file://");
-            QByteArray strlocbytes = filename.toUtf8();
-            //qDebug() << "QByteArray UTF-8: " << strlocbytes;
-            QUrl location = QUrl::fromEncoded(strlocbytes);
-            //qDebug() << "QURL UTF-8: " << location;
-            QString trackLocation = location.toString();
-            //qDebug() << "UTF8 TrackLocation:" << trackLocation;
-            if(isFilepath(trackLocation)) {
+            QString trackLocation = playlistEntrytoLocalFile(textline);
+            if(QFile::exists(trackLocation)) {
                 return trackLocation;
             } else {
                 // Try relative to m3u dir
                 QString rel = QDir(basepath).filePath(trackLocation);
-                if (isFilepath(rel)) {
+                if (QFile::exists(rel)) {
                     return rel;
                 }
                 // We couldn't match this to a real file so ignore it
+                qWarning() << trackLocation << "not found";
             }
         }
         textline = stream->readLine();

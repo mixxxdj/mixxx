@@ -29,7 +29,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
                          const bool onlyCached,
                          const bool signalWhenDone);
 
-    static void requestCover(const Track* pTrack,
+    static void requestCover(const Track& track,
                              const QObject* pRequestor);
 
     // Guesses the cover art for the provided tracks by searching the tracks'
@@ -55,7 +55,7 @@ class CoverArtCache : public QObject, public Singleton<CoverArtCache> {
 
   signals:
     void coverFound(const QObject* requestor,
-                    const CoverInfo& info, QPixmap pixmap, bool fromCache);
+                    const CoverInfoRelative& info, QPixmap pixmap, bool fromCache);
 
   protected:
     CoverArtCache();

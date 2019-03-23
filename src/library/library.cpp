@@ -6,6 +6,8 @@
 #include <QTranslator>
 #include <QDir>
 
+#include "database/mixxxdb.h"
+
 #include "mixer/playermanager.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -15,7 +17,7 @@
 #include "library/trackcollection.h"
 #include "library/trackmodel.h"
 #include "library/browse/browsefeature.h"
-#include "library/cratefeature.h"
+#include "library/crate/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/recording/recordingfeature.h"
@@ -26,34 +28,72 @@
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
+#include "util/db/dbconnectionpooled.h"
 #include "util/sandbox.h"
+#include "util/logger.h"
 #include "util/assert.h"
 
 #include "widget/wtracktableview.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wsearchlineedit.h"
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 
-// This is is the name which we use to register the WTrackTableView with the
+
+namespace {
+
+const mixxx::Logger kLogger("Library");
+
+} // anonymous namespace
+
+//static
+const QString Library::kConfigGroup("[Library]");
+
+//static
+const ConfigKey Library::kConfigKeyRepairDatabaseOnNextRestart(kConfigGroup, "RepairDatabaseOnNextRestart");
+
+// This is the name which we use to register the WTrackTableView with the
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
 // The default row height of the library.
 const int Library::kDefaultRowHeightPx = 20;
 
-Library::Library(QObject* parent, UserSettingsPointer pConfig,
-                 PlayerManagerInterface* pPlayerManager,
-                 RecordingManager* pRecordingManager) :
-        m_pConfig(pConfig),
-        m_pSidebarModel(new SidebarModel(parent)),
-        m_pTrackCollection(new TrackCollection(pConfig)),
-        m_pLibraryControl(new LibraryControl(this)),
-        m_pRecordingManager(pRecordingManager),
-        m_scanner(m_pTrackCollection, pConfig) {
+Library::Library(
+        QObject* parent,
+        UserSettingsPointer pConfig,
+        mixxx::DbConnectionPoolPtr pDbConnectionPool,
+        PlayerManager* pPlayerManager,
+        RecordingManager* pRecordingManager)
+    : m_pConfig(pConfig),
+      m_pDbConnectionPool(pDbConnectionPool),
+      m_pSidebarModel(new SidebarModel(parent)),
+      m_pTrackCollection(new TrackCollection(pConfig)),
+      m_pLibraryControl(new LibraryControl(this)),
+      m_pMixxxLibraryFeature(nullptr),
+      m_pPlaylistFeature(nullptr),
+      m_pCrateFeature(nullptr),
+      m_pAnalysisFeature(nullptr),
+      m_scanner(pDbConnectionPool, m_pTrackCollection, pConfig) {
+
+    QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
+
+    // TODO(XXX): Add a checkbox in the library preferences for checking
+    // and repairing the database on the next restart of the application.
+    if (pConfig->getValue(kConfigKeyRepairDatabaseOnNextRestart, false)) {
+        kLogger.info() << "Checking and repairing database (if necessary)";
+        m_pTrackCollection->repairDatabase(dbConnection);
+        // Reset config value
+        pConfig->setValue(kConfigKeyRepairDatabaseOnNextRestart, false);
+    }
+
+    kLogger.info() << "Connecting database";
+    m_pTrackCollection->connectDatabase(dbConnection);
+
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
-    m_pKeyNotation.reset(new ControlObject(ConfigKey("[Library]", "key_notation")));
+    m_pKeyNotation.reset(new ControlObject(ConfigKey(kConfigGroup, "key_notation")));
 
     connect(&m_scanner, SIGNAL(scanStarted()),
             this, SIGNAL(scanStarted()));
@@ -74,7 +114,7 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pCrateFeature);
     BrowseFeature* browseFeature = new BrowseFeature(
-        this, pConfig, m_pTrackCollection, m_pRecordingManager);
+        this, pConfig, m_pTrackCollection, pRecordingManager);
     connect(browseFeature, SIGNAL(scanLibrary()),
             &m_scanner, SLOT(scan()));
     connect(&m_scanner, SIGNAL(scanStarted()),
@@ -83,33 +123,41 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
             browseFeature, SLOT(slotLibraryScanFinished()));
 
     addFeature(browseFeature);
-    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
+    addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
-    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
-    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
-    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<TrackId>)),
-            m_pAnalysisFeature, SLOT(analyzeTracks(QList<TrackId>)));
+
+    m_pAnalysisFeature = new AnalysisFeature(this, pConfig);
+    connect(m_pPlaylistFeature, &PlaylistFeature::analyzeTracks,
+            m_pAnalysisFeature, &AnalysisFeature::analyzeTracks);
+    connect(m_pCrateFeature, &CrateFeature::analyzeTracks,
+            m_pAnalysisFeature, &AnalysisFeature::analyzeTracks);
     addFeature(m_pAnalysisFeature);
+    // Suspend a batch analysis while an ad-hoc analysis of
+    // loaded tracks is in progress and resume it afterwards.
+    connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
+            this, &Library::onPlayerManagerTrackAnalyzerProgress);
+    connect(pPlayerManager, &PlayerManager::trackAnalyzerIdle,
+            this, &Library::onPlayerManagerTrackAnalyzerIdle);
+
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
+        pConfig->getValue(ConfigKey(kConfigGroup,"ShowRhythmboxLibrary"), true)) {
         addFeature(new RhythmboxFeature(this, m_pTrackCollection));
     }
-    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
+    if (pConfig->getValue(ConfigKey(kConfigGroup,"ShowBansheeLibrary"), true)) {
         BansheeFeature::prepareDbPath(pConfig);
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
         }
     }
     if (ITunesFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
+        pConfig->getValue(ConfigKey(kConfigGroup,"ShowITunesLibrary"), true)) {
         addFeature(new ITunesFeature(this, m_pTrackCollection));
     }
     if (TraktorFeature::isSupported() &&
-        pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
+        pConfig->getValue(ConfigKey(kConfigGroup,"ShowTraktorLibrary"), true)) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
     }
 
@@ -125,15 +173,18 @@ Library::Library(QObject* parent, UserSettingsPointer pConfig,
         qDebug() << "Checking for access to" << directoryPath << ":" << hasAccess;
     }
 
-    m_iTrackTableRowHeight = m_pConfig->getValueString(
-            ConfigKey("[Library]", "RowHeight"),
-            QString::number(kDefaultRowHeightPx)).toInt();
-    QString fontStr = m_pConfig->getValueString(ConfigKey("[Library]", "Font"));
+    m_iTrackTableRowHeight = m_pConfig->getValue(
+            ConfigKey(kConfigGroup, "RowHeight"), kDefaultRowHeightPx);
+    QString fontStr = m_pConfig->getValueString(ConfigKey(kConfigGroup, "Font"));
     if (!fontStr.isEmpty()) {
         m_trackTableFont.fromString(fontStr);
     } else {
         m_trackTableFont = QApplication::font();
     }
+
+    m_editMetadataSelectedClick = m_pConfig->getValue(
+            ConfigKey(kConfigGroup, "EditMetadataSelectedClick"),
+            PREF_LIBRARY_EDIT_METADATA_DEFAULT);
 }
 
 Library::~Library() {
@@ -148,12 +199,24 @@ Library::~Library() {
     }
 
     delete m_pLibraryControl;
+
+    kLogger.info() << "Disconnecting database";
+    m_pTrackCollection->disconnectDatabase();
+
     //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
     //           Qt does it for us due to the way RJ wrote all this stuff.
     //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
     // we never see the TrackCollection's destructor being called... - Albert
     // Has to be deleted at last because the features holds references of it.
     delete m_pTrackCollection;
+}
+
+void Library::stopFeatures() {
+    if (m_pAnalysisFeature) {
+        m_pAnalysisFeature->stop();
+        m_pAnalysisFeature = nullptr;
+    }
+    m_scanner.slotCancel();
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -164,6 +227,8 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     connect(m_pSidebarModel, SIGNAL(selectIndex(const QModelIndex&)),
             pSidebarWidget, SLOT(selectIndex(const QModelIndex&)));
     connect(pSidebarWidget, SIGNAL(pressed(const QModelIndex&)),
+            m_pSidebarModel, SLOT(pressed(const QModelIndex&)));
+    connect(pSidebarWidget, SIGNAL(clicked(const QModelIndex&)),
             m_pSidebarModel, SLOT(clicked(const QModelIndex&)));
     // Lazy model: Let triangle symbol increment the model
     connect(pSidebarWidget, SIGNAL(expanded(const QModelIndex&)),
@@ -200,11 +265,8 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(setTrackTableFont(QFont)));
     connect(this, SIGNAL(setTrackTableRowHeight(int)),
             pTrackTableView, SLOT(setTrackTableRowHeight(int)));
-
-    connect(this, SIGNAL(searchStarting()),
-            pTrackTableView, SLOT(onSearchStarting()));
-    connect(this, SIGNAL(searchCleared()),
-            pTrackTableView, SLOT(onSearchCleared()));
+    connect(this, SIGNAL(setSelectedClick(bool)),
+            pTrackTableView, SLOT(setSelectedClick(bool)));
 
     m_pLibraryControl->bindWidget(pLibraryWidget, pKeyboard);
 
@@ -218,10 +280,11 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
     // just connected to us.
     emit(setTrackTableFont(m_trackTableFont));
     emit(setTrackTableRowHeight(m_iTrackTableRowHeight));
+    emit(setSelectedClick(m_editMetadataSelectedClick));
 }
 
 void Library::addFeature(LibraryFeature* feature) {
-    DEBUG_ASSERT_AND_HANDLE(feature) {
+    VERIFY_OR_DEBUG_ASSERT(feature) {
         return;
     }
     m_features.push_back(feature);
@@ -236,16 +299,31 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
+    connect(feature, SIGNAL(disableSearch()),
+            this, SLOT(slotDisableSearch()));
     connect(feature, SIGNAL(enableCoverArtDisplay(bool)),
             this, SIGNAL(enableCoverArtDisplay(bool)));
     connect(feature, SIGNAL(trackSelected(TrackPointer)),
             this, SIGNAL(trackSelected(TrackPointer)));
 }
 
+void Library::onPlayerManagerTrackAnalyzerProgress(
+        TrackId /*trackId*/,AnalyzerProgress /*analyzerProgress*/) {
+    if (m_pAnalysisFeature) {
+        m_pAnalysisFeature->suspendAnalysis();
+    }
+}
+
+void Library::onPlayerManagerTrackAnalyzerIdle() {
+    if (m_pAnalysisFeature) {
+        m_pAnalysisFeature->resumeAnalysis();
+    }
+}
+
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
     //qDebug() << "Library::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-    DEBUG_ASSERT_AND_HANDLE(trackModel) {
+    VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
     emit(showTrackModel(model));
@@ -265,7 +343,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
     TrackPointer pTrack = m_pTrackCollection->getTrackDAO()
             .getOrAddTrack(location, true, NULL);
-    if (!pTrack.isNull()) {
+    if (pTrack) {
         emit(loadTrackToPlayer(pTrack, group));
     }
 }
@@ -275,7 +353,11 @@ void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool pla
 }
 
 void Library::slotRestoreSearch(const QString& text) {
-    emit(restoreSearch(text));
+    emit restoreSearch(text);
+}
+
+void Library::slotDisableSearch() {
+    emit disableSearch();
 }
 
 void Library::slotRefreshLibraryModels() {
@@ -328,7 +410,7 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
             break;
         case Library::PurgeTracks:
             // The user requested that we purge all metadata.
-            m_pTrackCollection->getTrackDAO().purgeTracks(dir);
+            m_pTrackCollection->purgeTracks(dir);
             break;
         case Library::LeaveTracksUnchanged:
         default:
@@ -370,12 +452,38 @@ QStringList Library::getDirs() {
     return m_pTrackCollection->getDirectoryDAO().getDirs();
 }
 
-void Library::slotSetTrackTableFont(const QFont& font) {
+void Library::setFont(const QFont& font) {
     m_trackTableFont = font;
     emit(setTrackTableFont(font));
 }
 
-void Library::slotSetTrackTableRowHeight(int rowHeight) {
+void Library::setRowHeight(int rowHeight) {
     m_iTrackTableRowHeight = rowHeight;
     emit(setTrackTableRowHeight(rowHeight));
+}
+
+void Library::setEditMedatataSelectedClick(bool enabled) {
+    m_editMetadataSelectedClick = enabled;
+    emit(setSelectedClick(enabled));
+}
+
+void Library::saveCachedTrack(Track* pTrack) noexcept {
+    // It can produce dangerous signal loops if the track is still
+    // sending signals while being saved!
+    // See: https://bugs.launchpad.net/mixxx/+bug/1365708
+    // NOTE(uklotzde, 2018-02-03): Simply disconnecting all receivers
+    // doesn't seem to work reliably. Emitting the clean() signal from
+    // a track that is about to deleted may cause access violations!!
+    pTrack->blockSignals(true);
+
+    // The metadata must be exported while the cache is locked to
+    // ensure that we have exclusive (write) access on the file
+    // and not reader or writer is accessing the same file
+    // concurrently.
+    m_pTrackCollection->exportTrackMetadata(pTrack);
+
+    // The track must be saved while the cache is locked to
+    // prevent that a new track is created from the outdated
+    // metadata that is is the database before saving is finished.
+    m_pTrackCollection->saveTrack(pTrack);
 }

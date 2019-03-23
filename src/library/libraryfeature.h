@@ -16,7 +16,7 @@
 #include <QFileDialog>
 
 #include "track/track.h"
-#include "treeitemmodel.h"
+#include "library/treeitemmodel.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
 
@@ -29,11 +29,12 @@ class KeyboardEventFilter;
 class LibraryFeature : public QObject {
   Q_OBJECT
   public:
-    LibraryFeature(QObject* parent = NULL);
-
-    LibraryFeature(UserSettingsPointer pConfig,
-                   QObject* parent = NULL);
-    virtual ~LibraryFeature();
+    explicit LibraryFeature(
+          QObject* parent = nullptr);
+    explicit LibraryFeature(
+            UserSettingsPointer pConfig,
+            QObject* parent = nullptr);
+    ~LibraryFeature() override = default;
 
     virtual QVariant title() = 0;
     virtual QIcon getIcon() = 0;
@@ -65,9 +66,22 @@ class LibraryFeature : public QObject {
                             KeyboardEventFilter* /* keyboard */) {}
     virtual TreeItemModel* getChildModel() = 0;
 
+    virtual bool hasTrackTable() {
+        return false;
+    }
+
   protected:
-    inline QStringList getPlaylistFiles() { return getPlaylistFiles(QFileDialog::ExistingFiles); }
-    inline QString getPlaylistFile() { return getPlaylistFiles(QFileDialog::ExistingFile).first(); }
+    QStringList getPlaylistFiles() const {
+        return getPlaylistFiles(QFileDialog::ExistingFiles);
+    }
+    QString getPlaylistFile() const {
+        const QStringList playListFiles = getPlaylistFiles();
+        if (playListFiles.isEmpty()) {
+            return QString(); // no file chosen
+        } else {
+            return playListFiles.first();
+        }
+    }
     UserSettingsPointer m_pConfig;
 
   public slots:
@@ -97,6 +111,7 @@ class LibraryFeature : public QObject {
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void restoreSearch(const QString&);
+    void disableSearch();
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
     // The second arg indicates if the feature should be "selected" when loading starts
     void featureIsLoading(LibraryFeature*, bool selectFeature);
@@ -109,8 +124,7 @@ class LibraryFeature : public QObject {
     void trackSelected(TrackPointer pTrack);
 
   private: 
-    QStringList getPlaylistFiles(QFileDialog::FileMode mode);
-
+    QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
 };
 
 #endif /* LIBRARYFEATURE_H */

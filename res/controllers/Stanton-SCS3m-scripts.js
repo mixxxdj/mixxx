@@ -337,7 +337,7 @@ SCS3M.Agent = function(device) {
     // Param force: send value regardless of last recorded state
     // Param extra: do not record message as last state
     // Returns whether the massage was sent
-    // False is returned if the mesage was sent before.
+    // False is returned if the message was sent before.
     function send(message, force, extra) {
         if (!message){
             print("SCS3 warning: send function received invalid message");

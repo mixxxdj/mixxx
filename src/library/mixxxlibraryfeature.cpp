@@ -12,6 +12,7 @@
 #include "library/missingtablemodel.h"
 #include "library/hiddentablemodel.h"
 #include "library/queryutil.h"
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "treeitem.h"
 #include "sources/soundsourceproxy.h"
@@ -31,7 +32,8 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pHiddenView(NULL),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_icon(":/images/library/ic_library_tracks.svg") {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -65,7 +67,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
             << "library." + LIBRARYTABLE_COVERART_LOCATION
             << "library." + LIBRARYTABLE_COVERART_HASH;
 
-    QSqlQuery query(pTrackCollection->getDatabase());
+    QSqlQuery query(pTrackCollection->database());
     QString tableName = "library_cache_view";
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
@@ -108,15 +110,11 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection, "mixxx.db.model.library");
 
-    TreeItem* pRootItem = new TreeItem();
-    TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
-                                               this, pRootItem);
-    TreeItem* phiddenChildItem = new TreeItem(kHiddenTitle, kHiddenTitle,
-                                              this, pRootItem);
-    pRootItem->appendChild(pmissingChildItem);
-    pRootItem->appendChild(phiddenChildItem);
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    pRootItem->appendChild(kMissingTitle);
+    pRootItem->appendChild(kHiddenTitle);
 
-    m_childModel.setRootItem(pRootItem);
+    m_childModel.setRootItem(std::move(pRootItem));
 }
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {
@@ -139,11 +137,11 @@ void MixxxLibraryFeature::bindWidget(WLibrary* pLibraryWidget,
 }
 
 QVariant MixxxLibraryFeature::title() {
-    return tr("Library");
+    return tr("Tracks");
 }
 
 QIcon MixxxLibraryFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_library.png");
+    return m_icon;
 }
 
 TreeItemModel* MixxxLibraryFeature::getChildModel() {
@@ -171,6 +169,11 @@ void MixxxLibraryFeature::activate() {
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
     emit(switchToView(itemName));
+    if (m_pMissingView && itemName == kMissingTitle) {
+        emit(restoreSearch(m_pMissingView->currentSearch()));
+    } else if (m_pHiddenView && itemName == kHiddenTitle) {
+        emit(restoreSearch(m_pHiddenView->currentSearch()));
+    }
     emit(enableCoverArtDisplay(true));
 }
 

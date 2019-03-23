@@ -1,0 +1,43 @@
+<!DOCTYPE template>
+<!--
+EffectUnit with all parameters showing
+
+Variables:
+  EffectRack: the rack
+  EffectUnit: the chain
+-->
+<Template>
+  <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>]</SetVariable>
+  <WidgetGroup>
+    <ObjectName>EffectUnit<Variable name="EffectUnit"/></ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <!-- A little more vertical space is needed when show_focus is 1 because of the focused effect's border.-->
+    <MinimumSize>446,120</MinimumSize>
+    <MaximumSize>-1,190</MaximumSize>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>EffectUnitEffects</ObjectName>
+        <SizePolicy>me,min</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <Template src="skin:effect_single_with_parameters.xml">
+            <SetVariable name="Effect">1</SetVariable>
+          </Template>
+
+          <Template src="skin:effect_single_with_parameters.xml">
+            <SetVariable name="Effect">2</SetVariable>
+          </Template>
+
+          <Template src="skin:effect_single_with_parameters.xml">
+            <SetVariable name="Effect">3</SetVariable>
+          </Template>
+
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

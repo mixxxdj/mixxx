@@ -90,7 +90,9 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     void stopLearning();
 
   protected:
-    Q_INVOKABLE void send(QList<int> data, unsigned int length);
+    // The length parameter is here for backwards compatibility for when scripts
+    // were required to specify it.
+    Q_INVOKABLE void send(QList<int> data, unsigned int length = 0);
 
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
@@ -99,6 +101,9 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // To be called in sub-class' close() functions after stopping any input
     // polling/processing but before closing the device.
     void stopEngine();
+    
+    // To be called when receiving events
+    void triggerActivity();
 
     inline ControllerEngine* getEngine() const {
         return m_pEngine;
@@ -155,6 +160,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Indicates whether or not the device has been opened for input/output.
     bool m_bIsOpen;
     bool m_bLearning;
+    QTime m_userActivityInhibitTimer;
 
     // accesses lots of our stuff, but in the same thread
     friend class ControllerManager;

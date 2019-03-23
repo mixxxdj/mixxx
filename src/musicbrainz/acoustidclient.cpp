@@ -18,16 +18,20 @@
 #include "musicbrainz/gzip.h"
 #include "musicbrainz/network.h"
 
+namespace {
+
 // see API-KEY site here http://acoustid.org/application/496
 // I registered the KEY for version 1.12 -- kain88 (may 2013)
 const QString CLIENT_APIKEY = "czKxnkyO";
 const QString ACOUSTID_URL = "http://api.acoustid.org/v2/lookup";
-const int AcoustidClient::m_DefaultTimeout = 5000; // msec
+constexpr int kDefaultTimeout = 5000; // msec
+
+} // anonymous namespace
 
 AcoustidClient::AcoustidClient(QObject* parent)
               : QObject(parent),
                 m_network(this),
-                m_timeouts(m_DefaultTimeout, this) {
+                m_timeouts(kDefaultTimeout, this) {
 }
 
 void AcoustidClient::setTimeout(int msec) {
@@ -35,15 +39,17 @@ void AcoustidClient::setTimeout(int msec) {
 }
 
 void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
-    QUrl url;
-    url.addQueryItem("format", "xml");
-    url.addQueryItem("client", CLIENT_APIKEY);
-    url.addQueryItem("duration", QString::number(duration));
-    url.addQueryItem("meta", "recordingids");
-    url.addQueryItem("fingerprint", fingerprint);
-    QByteArray body = url.encodedQuery();
+    QUrlQuery urlQuery;
+    urlQuery.addQueryItem("format", "xml");
+    urlQuery.addQueryItem("client", CLIENT_APIKEY);
+    urlQuery.addQueryItem("duration", QString::number(duration));
+    urlQuery.addQueryItem("meta", "recordingids");
+    urlQuery.addQueryItem("fingerprint", fingerprint);
+    // application/x-www-form-urlencoded request bodies must be percent encoded.
+    QByteArray body = urlQuery.query(QUrl::FullyEncoded).toLatin1();
 
-    QNetworkRequest req(QUrl::fromEncoded(ACOUSTID_URL.toAscii()));
+    QUrl url(ACOUSTID_URL);
+    QNetworkRequest req(url);
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
 
@@ -51,7 +57,7 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
              << "body:" << body;
 
     QNetworkReply* reply = m_network.post(req, gzipCompress(body));
-    connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
+    connect(reply, &QNetworkReply::finished, this, &AcoustidClient::requestFinished);
     m_requests[reply] = id;
 
     m_timeouts.addReply(reply);
@@ -64,8 +70,13 @@ void AcoustidClient::cancel(int id) {
 }
 
 void AcoustidClient::cancelAll() {
-    qDeleteAll(m_requests.keys());
+    auto requests = m_requests;
     m_requests.clear();
+
+    for (auto it = requests.constBegin();
+         it != requests.constEnd(); ++it) {
+        delete it.key();
+    }
 }
 
 void AcoustidClient::requestFinished() {
@@ -80,30 +91,53 @@ void AcoustidClient::requestFinished() {
     int id = m_requests.take(reply);
 
     int status = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-    if (status != 200) {
-        QTextStream body(reply);
-        qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body.readAll();
+    QTextStream textReader(reply);
+    const QByteArray body(reply->readAll());
+    QXmlStreamReader reader(body);
+
+    QString statusText;
+    while (!reader.atEnd() && statusText.isEmpty()) {
+        if (reader.readNextStartElement()) {
+            const QStringRef name = reader.name();
+            if (name == "status") {
+                statusText = reader.readElementText();
+            }
+        }
+    }
+
+    if (status != 200 || statusText != "ok") {
+        qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body;
+        QString message;
+        QString code;
+        while (!reader.atEnd() && (message.isEmpty() || code.isEmpty())) {
+            if (reader.readNextStartElement()) {
+                const QStringRef name = reader.name();
+                if (name == "message") {
+                    DEBUG_ASSERT(name.isEmpty()); // fail if we have duplicated message elements. 
+                    message = reader.readElementText();
+                } else if (name == "code") {
+                    DEBUG_ASSERT(code.isEmpty()); // fail if we have duplicated code elements. 
+                    code = reader.readElementText();
+                }
+            }
+        }
         emit(networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
-             "AcoustID"));
+             "AcoustID", message, code.toInt()));
         return;
     }
 
-
-    QTextStream textReader(reply);
-    QString body = textReader.readAll();
     qDebug() << "AcoustIdClient POST reply status:" << status << "body:" << body;
 
-    QXmlStreamReader reader(body);
-    QString ID;
-    while (!reader.atEnd()) {
-        if (reader.readNext() == QXmlStreamReader::StartElement
-            && reader.name()== "results") {
-                ID = parseResult(reader);
-            }
+    QString resultId;
+    while (!reader.atEnd() && resultId.isEmpty()) {
+        if (reader.readNextStartElement()
+                && reader.name()== "results") {
+            resultId = parseResult(reader);
+        }
     }
 
-    emit(finished(id, ID));
+    emit(finished(id, resultId));
 }
 
 QString AcoustidClient::parseResult(QXmlStreamReader& reader) {

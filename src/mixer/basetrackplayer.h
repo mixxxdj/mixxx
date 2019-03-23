@@ -6,16 +6,18 @@
 #include <QString>
 
 #include "preferences/usersettings.h"
-#include "engine/enginechannel.h"
-#include "engine/enginedeck.h"
+#include "engine/channels/enginechannel.h"
+#include "engine/channels/enginedeck.h"
 #include "mixer/baseplayer.h"
 #include "track/track.h"
+#include "util/memory.h"
 
 class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
 class ControlProxy;
 class EffectsManager;
+class VisualsManager;
 
 // Interface for not leaking implementation details of BaseTrackPlayer into the
 // rest of Mixxx. Also makes testing a lot easier.
@@ -35,7 +37,9 @@ class BaseTrackPlayer : public BasePlayer {
     virtual TrackPointer getLoadedTrack() const = 0;
 
   public slots:
-    virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay=false) = 0;
+    virtual void slotLoadTrack(TrackPointer pTrack, bool bPlay = false) = 0;
+    virtual void slotCloneFromGroup(const QString& group) = 0;
+    virtual void slotCloneDeck() = 0;
 
   signals:
     void newTrackLoaded(TrackPointer pLoadedTrack);
@@ -52,13 +56,14 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
                         UserSettingsPointer pConfig,
                         EngineMaster* pMixingEngine,
                         EffectsManager* pEffectsManager,
+                        VisualsManager* pVisualsManager,
                         EngineChannel::ChannelOrientation defaultOrientation,
                         const QString& group,
                         bool defaultMaster,
                         bool defaultHeadphones);
     virtual ~BaseTrackPlayerImpl();
 
-    TrackPointer getLoadedTrack() const;
+    TrackPointer getLoadedTrack() const final;
 
     // TODO(XXX): Only exposed to let the passthrough AudioInput get
     // connected. Delete me when EngineMaster supports AudioInput assigning.
@@ -66,55 +71,78 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
 
     void setupEqControls();
 
+    // For testing, loads a fake track.
+    TrackPointer loadFakeTrack(bool bPlay, double filebpm);
+
   public slots:
-    void slotLoadTrack(TrackPointer track, bool bPlay) override;
+    void slotLoadTrack(TrackPointer track, bool bPlay) final;
+    void slotCloneFromGroup(const QString& group) final;
+    void slotCloneDeck() final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void slotLoadFailed(TrackPointer pTrack, QString reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
     void slotPlayToggled(double);
 
   private slots:
+    void slotCloneChannel(EngineChannel* pChannel);
+    void slotCloneFromDeck(double deck);
     void slotPassthroughEnabled(double v);
     void slotVinylControlEnabled(double v);
+    void slotWaveformZoomValueChangeRequest(double pressed);
+    void slotWaveformZoomUp(double pressed);
+    void slotWaveformZoomDown(double pressed);
+    void slotWaveformZoomSetDefault(double pressed);
 
   private:
     void setReplayGain(double value);
 
+    void loadTrack(TrackPointer pTrack);
+    TrackPointer unloadTrack();
+
+    void connectLoadedTrack();
+    void disconnectLoadedTrack();
+
     UserSettingsPointer m_pConfig;
     EngineMaster* m_pEngineMaster;
     TrackPointer m_pLoadedTrack;
+    EngineDeck* m_pChannel;
+    bool m_replaygainPending;
+    EngineChannel* m_pChannelToCloneFrom;
+
+    // Deck clone control
+    std::unique_ptr<ControlObject> m_pCloneFromDeck;
 
     // Waveform display related controls
-    ControlPotmeter* m_pWaveformZoom;
-    ControlObject* m_pEndOfTrack;
+    std::unique_ptr<ControlObject> m_pWaveformZoom;
+    std::unique_ptr<ControlPushButton> m_pWaveformZoomUp;
+    std::unique_ptr<ControlPushButton> m_pWaveformZoomDown;
+    std::unique_ptr<ControlPushButton> m_pWaveformZoomSetDefault;
 
-    ControlProxy* m_pLoopInPoint;
-    ControlProxy* m_pLoopOutPoint;
-    ControlObject* m_pDuration;
+
+    std::unique_ptr<ControlProxy> m_pLoopInPoint;
+    std::unique_ptr<ControlProxy> m_pLoopOutPoint;
+    std::unique_ptr<ControlObject> m_pDuration;
 
     // TODO() these COs are reconnected during runtime
     // This may lock the engine
-    ControlProxy* m_pBPM;
-    ControlProxy* m_pKey;
+    std::unique_ptr<ControlProxy> m_pFileBPM;
+    std::unique_ptr<ControlProxy> m_pKey;
 
-    ControlProxy* m_pReplayGain;
-    ControlProxy* m_pPlay;
-    ControlProxy* m_pLowFilter;
-    ControlProxy* m_pMidFilter;
-    ControlProxy* m_pHighFilter;
-    ControlProxy* m_pLowFilterKill;
-    ControlProxy* m_pMidFilterKill;
-    ControlProxy* m_pHighFilterKill;
-    ControlProxy* m_pPreGain;
-    ControlProxy* m_pRateSlider;
-    ControlProxy* m_pPitchAdjust;
-    QScopedPointer<ControlProxy> m_pInputConfigured;
-    QScopedPointer<ControlProxy> m_pPassthroughEnabled;
-    QScopedPointer<ControlProxy> m_pVinylControlEnabled;
-    QScopedPointer<ControlProxy> m_pVinylControlStatus;
-    EngineDeck* m_pChannel;
-
-    bool m_replaygainPending;
+    std::unique_ptr<ControlProxy> m_pReplayGain;
+    std::unique_ptr<ControlProxy> m_pPlay;
+    std::unique_ptr<ControlProxy> m_pLowFilter;
+    std::unique_ptr<ControlProxy> m_pMidFilter;
+    std::unique_ptr<ControlProxy> m_pHighFilter;
+    std::unique_ptr<ControlProxy> m_pLowFilterKill;
+    std::unique_ptr<ControlProxy> m_pMidFilterKill;
+    std::unique_ptr<ControlProxy> m_pHighFilterKill;
+    std::unique_ptr<ControlProxy> m_pPreGain;
+    std::unique_ptr<ControlProxy> m_pRateSlider;
+    std::unique_ptr<ControlProxy> m_pPitchAdjust;
+    std::unique_ptr<ControlProxy> m_pInputConfigured;
+    std::unique_ptr<ControlProxy> m_pPassthroughEnabled;
+    std::unique_ptr<ControlProxy> m_pVinylControlEnabled;
+    std::unique_ptr<ControlProxy> m_pVinylControlStatus;
 };
 
 #endif // MIXER_BASETRACKPLAYER_H

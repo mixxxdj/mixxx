@@ -1,0 +1,19 @@
+<Template>
+  <Template src="skin:left_3state_button.xml">
+    <SetVariable name="TooltipId">orientation</SetVariable>
+    <SetVariable name="ObjectName">OrientationButton<Variable name="Unit"/></SetVariable>
+    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+    <SetVariable name="state_0_text"></SetVariable>
+    <SetVariable name="state_0_pressed">icon/ic_orientation_left_48px.svg</SetVariable>
+    <SetVariable name="state_0_unpressed">icon/ic_orientation_left_48px.svg</SetVariable>
+    <SetVariable name="state_1_text"></SetVariable>
+    <SetVariable name="state_1_pressed">icon/ic_orientation_48px.svg</SetVariable>
+    <SetVariable name="state_1_unpressed">icon/ic_orientation_48px.svg</SetVariable>
+    <SetVariable name="state_2_text"></SetVariable>
+    <SetVariable name="state_2_pressed">icon/ic_orientation_right_48px.svg</SetVariable>
+    <SetVariable name="state_2_unpressed">icon/ic_orientation_right_48px.svg</SetVariable>
+    <SetVariable name="left_connection_control"><Variable name="group"/>,orientation</SetVariable>
+  </Template>
+</Template>

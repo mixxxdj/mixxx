@@ -78,6 +78,10 @@ void WaveformRendererHSV::draw(QPainter* painter,
     QColor color;
     float lo, hi, total;
 
+    QPen pen;
+    pen.setCapStyle(Qt::FlatCap);
+    pen.setWidth(math_max(1.0, 1.0 / m_waveformRenderer->getVisualSamplePerPixel()));
+
     const int breadth = m_waveformRenderer->getBreadth();
     const float halfBreadth = (float)breadth / 2.0;
 
@@ -155,7 +159,9 @@ void WaveformRendererHSV::draw(QPainter* painter,
             // Set color
             color.setHsvF(h, 1.0-hi, 1.0-lo);
 
-            painter->setPen(color);
+            pen.setColor(color);
+
+            painter->setPen(pen);
             switch (m_alignment) {
                 case Qt::AlignBottom :
                 case Qt::AlignRight :

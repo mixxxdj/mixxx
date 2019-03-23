@@ -1,15 +1,12 @@
 #include "library/columncache.h"
 
-#include "library/dao/trackdao.h"
+#include "library/dao/trackschema.h"
 #include "library/dao/playlistdao.h"
-#include "library/dao/cratedao.h"
-#include "track/keyutils.h"
-#include "track/key_preferences.h"
-#include "control/controlproxy.h"
+
 
  ColumnCache::ColumnCache(const QStringList& columns) {
     m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
-    m_pKeyNotationCP->connectValueChanged(SLOT(slotSetKeySortOrder(double)));
+    m_pKeyNotationCP->connectValueChanged(this, &ColumnCache::slotSetKeySortOrder);
 
     // ColumnCache is initialized before the preferences, so slotSetKeySortOrder is called
     // for again if DlgPrefKey sets the [Library]. key_notation CO to a value other than
@@ -43,7 +40,7 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_GROUPING] = fieldIndex(LIBRARYTABLE_GROUPING);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_TRACKNUMBER] = fieldIndex(LIBRARYTABLE_TRACKNUMBER);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_FILETYPE] = fieldIndex(LIBRARYTABLE_FILETYPE);
-    m_columnIndexByEnum[COLUMN_LIBRARYTABLE_LOCATION] = fieldIndex(LIBRARYTABLE_LOCATION);
+    m_columnIndexByEnum[COLUMN_LIBRARYTABLE_NATIVELOCATION] = fieldIndex(LIBRARYTABLE_LOCATION);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COMMENT] = fieldIndex(LIBRARYTABLE_COMMENT);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_DURATION] = fieldIndex(LIBRARYTABLE_DURATION);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_BITRATE] = fieldIndex(LIBRARYTABLE_BITRATE);
@@ -80,9 +77,6 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_TITLE] = fieldIndex(PLAYLISTTRACKSTABLE_TITLE);
     m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED] = fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED);
 
-    m_columnIndexByEnum[COLUMN_CRATETRACKSTABLE_TRACKID] = fieldIndex(CRATETRACKSTABLE_TRACKID);
-    m_columnIndexByEnum[COLUMN_CRATETRACKSTABLE_CRATEID] = fieldIndex(CRATETRACKSTABLE_CRATEID);
-
     const QString sortInt("cast(%1 as integer)");
     const QString sortNoCase("lower(%1)");
 
@@ -98,7 +92,7 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_GROUPING], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_TRACKNUMBER], sortInt);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_FILETYPE], sortNoCase);
-    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_LOCATION], sortNoCase);
+    m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_NATIVELOCATION], sortNoCase);
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_COMMENT], sortNoCase);
 
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_PLAYLISTTRACKSTABLE_LOCATION], sortNoCase);
@@ -108,17 +102,19 @@ void ColumnCache::setColumns(const QStringList& columns) {
     slotSetKeySortOrder(m_pKeyNotationCP->get());
 }
 
-void ColumnCache::slotSetKeySortOrder(double notation) {
+void ColumnCache::slotSetKeySortOrder(double notationValue) {
     if (m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY] < 0) return;
 
     // A custom COLLATE function was tested, but using CASE ... WHEN was found to be faster
     // see GitHub PR#649
     // https://github.com/mixxxdj/mixxx/pull/649#discussion_r34863809
+    KeyUtils::KeyNotation notation =
+            KeyUtils::keyNotationFromNumericValue(notationValue);
     QString keySortSQL("CASE %1_id WHEN NULL THEN 0 ");
     for (int i = 0; i <= 24; ++i) {
         keySortSQL.append(QString("WHEN %1 THEN %2 ")
             .arg(QString::number(i),
-                 QString::number(KeyUtils::keyToCircleOfFithsOrder(
+                 QString::number(KeyUtils::keyToCircleOfFifthsOrder(
                                      static_cast<mixxx::track::io::key::ChromaticKey>(i),
                                      notation))));
     }

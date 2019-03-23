@@ -36,17 +36,17 @@ EngineOscClient::EngineOscClient(UserSettingsPointer& pConfig) :
     connectServer();
 
     ControlProxy* xfader = new ControlProxy(ConfigKey("[Master]", "crossfader"), this);
-    xfader->connectValueChanged(SLOT(maybeSendState()));
+    xfader->connectValueChanged(this, &EngineOscClient::maybeSendState);
     connectedControls.append(xfader);
 
     //connect play buttons
     for(int deckNr = 0; deckNr < (int)PlayerManager::numDecks(); deckNr++){
         ControlProxy* play = new ControlProxy(ConfigKey(PlayerManager::groupForDeck(deckNr), "play"), this);
-        play->connectValueChanged(SLOT(sendState()));
+        play->connectValueChanged(this, &EngineOscClient::maybeSendState);
         connectedControls.append(play);
 
         ControlProxy* volume = new ControlProxy(ConfigKey(PlayerManager::groupForDeck(deckNr), "volume"), this);
-        volume->connectValueChanged(SLOT(maybeSendState()));
+        volume->connectValueChanged(this, &EngineOscClient::maybeSendState);
         connectedControls.append(volume);
     }
 

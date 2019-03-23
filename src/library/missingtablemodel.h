@@ -15,16 +15,14 @@ class MissingTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     MissingTableModel(QObject* parent, TrackCollection* pTrackCollection);
-    virtual ~MissingTableModel();
+    ~MissingTableModel() final;
 
     void setTableModel(int id = -1);
-    bool isColumnInternal(int column);
-    void purgeTracks(const QModelIndexList& indices);
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    TrackModel::CapabilitiesFlags getCapabilities() const;
 
-  private:
-    static const QString MISSINGFILTER;
+    bool isColumnInternal(int column) final;
+    void purgeTracks(const QModelIndexList& indices) final;
+    Qt::ItemFlags flags(const QModelIndex &index) const final;
+    CapabilitiesFlags getCapabilities() const final;
 };
 
 #endif

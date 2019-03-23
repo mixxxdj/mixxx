@@ -9,7 +9,7 @@
 
 //static
 QString CoverArtUtils::defaultCoverLocation() {
-    return QString(":/images/library/cover_default.png");
+    return QString(":/images/library/cover_default.svg");
 }
 
 //static
@@ -27,21 +27,19 @@ QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
 
 //static
 QImage CoverArtUtils::extractEmbeddedCover(
-        const QFileInfo& fileInfo) {
-    SecurityTokenPointer pToken(Sandbox::openSecurityToken(
-        QFileInfo(fileInfo), true));
-    return extractEmbeddedCover(fileInfo, pToken);
+        QFileInfo fileInfo) {
+    SecurityTokenPointer pToken = Sandbox::openSecurityToken(
+            QFileInfo(fileInfo), true);
+    return extractEmbeddedCover(
+            std::move(fileInfo), std::move(pToken));
 }
 
 //static
 QImage CoverArtUtils::extractEmbeddedCover(
-        const QFileInfo& fileInfo,
+        QFileInfo fileInfo,
         SecurityTokenPointer pToken) {
-    // TODO(uklotzde): Resolve the TrackPointer from the track cache
-    // to avoid accessing reading the file while it is written.
-    TrackPointer pTrack(
-            Track::newTemporary(fileInfo, pToken));
-    return SoundSourceProxy(pTrack).parseCoverImage();
+    return SoundSourceProxy::importTemporaryCoverImage(
+            std::move(fileInfo), std::move(pToken));
 }
 
 //static

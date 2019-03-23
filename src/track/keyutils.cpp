@@ -1,11 +1,3 @@
-// Horrible Hack to workaround QT 4.8 bug with MSVC compiler. lp:1627826
-// QT 4.8 explicitely disable Initializer lists, but initializer lists is
-// supported with MSVC 2013 SP2 +
-// http://code.qt.io/cgit/qt/qt.git/tree/src/corelib/global/qglobal.h#n910
-// TODO(XXX): Remove after QT4 deprecation, unneeded with QT5
-#if _MSC_VER >= 1800 /* MSVS 2013 */
-  #define Q_COMPILER_INITIALIZER_LISTS
-#endif /* MSVS 2013 */
 #include <QtDebug>
 #include <QMap>
 #include <QMutexLocker>
@@ -97,84 +89,60 @@ const ChromaticKey s_letterToMajorKey[] = {
     mixxx::track::io::key::G_MAJOR
 };
 
-static const QList<mixxx::track::io::key::ChromaticKey> s_sortKeysCircleOfFifths {
-    mixxx::track::io::key::INVALID,
-
-    mixxx::track::io::key::C_MAJOR,
-    mixxx::track::io::key::A_MINOR,
-
-    mixxx::track::io::key::G_MAJOR,
-    mixxx::track::io::key::E_MINOR,
-
-    mixxx::track::io::key::D_MAJOR,
-    mixxx::track::io::key::B_MINOR,
-
-    mixxx::track::io::key::A_MAJOR,
-    mixxx::track::io::key::F_SHARP_MINOR,
-
-    mixxx::track::io::key::E_MAJOR,
-    mixxx::track::io::key::C_SHARP_MINOR,
-
-    mixxx::track::io::key::B_MAJOR,
-    mixxx::track::io::key::G_SHARP_MINOR,
-
-    mixxx::track::io::key::F_SHARP_MAJOR,
-    mixxx::track::io::key::E_FLAT_MINOR,
-
-    mixxx::track::io::key::D_FLAT_MAJOR,
-    mixxx::track::io::key::B_FLAT_MINOR,
-
-    mixxx::track::io::key::A_FLAT_MAJOR,
-    mixxx::track::io::key::F_MINOR,
-
-    mixxx::track::io::key::E_FLAT_MAJOR,
-    mixxx::track::io::key::C_MINOR,
-
-    mixxx::track::io::key::B_FLAT_MAJOR,
-    mixxx::track::io::key::G_MINOR,
-
-    mixxx::track::io::key::F_MAJOR,
-    mixxx::track::io::key::D_MINOR
+static const int s_sortKeysCircleOfFifths[] = {
+    0, // INVALID
+    1, // C_MAJOR
+    15, // D_FLAT_MAJOR
+    5, // D_MAJOR
+    19, // E_FLAT_MAJOR
+    9, // E_MAJOR
+    23, // F_MAJOR
+    13, // F_SHARP_MAJOR
+    3, // G_MAJOR
+    17, // A_FLAT_MAJOR
+    7, // A_MAJOR
+    21, // B_FLAT_MAJOR
+    11, // B_MAJOR
+    20, // C_MINOR
+    10, // C_SHARP_MINOR
+    24, // D_MINOR
+    14, // E_FLAT_MINOR
+    4, // E_MINOR
+    18, // F_MINOR
+    8, // F_SHARP_MINOR
+    22, // G_MINOR
+    12, // G_SHARP_MINOR
+    2, // A_MINOR
+    16, // B_FLAT_MINOR
+    6, // B_MINOR
 };
 
-static const QList<mixxx::track::io::key::ChromaticKey> s_sortKeysCircleOfFifthsLancelot {
-    mixxx::track::io::key::INVALID,
-
-    mixxx::track::io::key::G_SHARP_MINOR,
-    mixxx::track::io::key::B_MAJOR,
-
-    mixxx::track::io::key::E_FLAT_MINOR,
-    mixxx::track::io::key::F_SHARP_MAJOR,
-
-    mixxx::track::io::key::B_FLAT_MINOR,
-    mixxx::track::io::key::D_FLAT_MAJOR,
-
-    mixxx::track::io::key::F_MINOR,
-    mixxx::track::io::key::A_FLAT_MAJOR,
-
-    mixxx::track::io::key::C_MINOR,
-    mixxx::track::io::key::E_FLAT_MAJOR,
-
-    mixxx::track::io::key::G_MINOR,
-    mixxx::track::io::key::B_FLAT_MAJOR,
-
-    mixxx::track::io::key::D_MINOR,
-    mixxx::track::io::key::F_MAJOR,
-
-    mixxx::track::io::key::A_MINOR,
-    mixxx::track::io::key::C_MAJOR,
-
-    mixxx::track::io::key::E_MINOR,
-    mixxx::track::io::key::G_MAJOR,
-
-    mixxx::track::io::key::B_MINOR,
-    mixxx::track::io::key::D_MAJOR,
-
-    mixxx::track::io::key::F_SHARP_MINOR,
-    mixxx::track::io::key::A_MAJOR,
-
-    mixxx::track::io::key::C_SHARP_MINOR,
-    mixxx::track::io::key::E_MAJOR,
+static const int s_sortKeysCircleOfFifthsLancelot[] = {
+    0, // INVALID
+    16, // C_MAJOR
+    6, // D_FLAT_MAJOR
+    20, // D_MAJOR
+    10, // E_FLAT_MAJOR
+    24, // E_MAJOR
+    14, // F_MAJOR
+    4, // F_SHARP_MAJOR
+    18, // G_MAJOR
+    8, // A_FLAT_MAJOR
+    22, // A_MAJOR
+    12, // B_FLAT_MAJOR
+    2, // B_MAJOR
+    9, // C_MINOR
+    23, // C_SHARP_MINOR
+    13, // D_MINOR
+    3, // E_FLAT_MINOR
+    17, // E_MINOR
+    7, // F_MINOR
+    21, // F_SHARP_MINOR
+    11, // G_MINOR
+    1, // G_SHARP_MINOR
+    15, // A_MINOR
+    5, // B_FLAT_MINOR
+    19, // B_MINOR
 };
 
 QMutex KeyUtils::s_notationMutex;
@@ -218,8 +186,7 @@ void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
     s_notation = notation;
     s_reverseNotation.clear();
 
-    for (QMap<ChromaticKey, QString>::const_iterator it = s_notation.begin();
-         it != s_notation.end(); ++it) {
+    for (auto it = s_notation.constBegin(); it != s_notation.constEnd(); ++it) {
         if (s_reverseNotation.contains(it.value())) {
             qWarning() << "Key notation is surjective (has duplicate values).";
         }
@@ -240,8 +207,8 @@ QString KeyUtils::keyToString(ChromaticKey key,
         // The default value for notation is KeyUtils::CUSTOM, so this executes when the function is
         // called without a notation specified after KeyUtils::setNotation has set up s_notation.
         QMutexLocker locker(&s_notationMutex);
-        QMap<ChromaticKey, QString>::const_iterator it = s_notation.find(key);
-        if (it != s_notation.end()) {
+        auto it = s_notation.constFind(key);
+        if (it != s_notation.constEnd()) {
             return it.value();
         }
     } else if (notation == OPEN_KEY) {
@@ -276,8 +243,8 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
     // Try using the user's custom notation.
     {
         QMutexLocker locker(&s_notationMutex);
-        QMap<QString, ChromaticKey>::const_iterator it = s_reverseNotation.find(text);
-        if (it != s_reverseNotation.end()) {
+        auto it = s_reverseNotation.constFind(text);
+        if (it != s_reverseNotation.constEnd()) {
             return it.value();
         }
     }
@@ -323,14 +290,14 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         // from s_letterToMajorKey. Upper-case means major, lower-case means
         // minor. Then apply the sharps or flats to the key.
         QChar letter = keyMatcher.cap(1).at(0);
-        int letterIndex = letter.toLower().toAscii() - 'a';
+        int letterIndex = letter.toLower().toLatin1() - 'a';
         bool major = letter.isUpper();
 
         // Now apply sharps and flats to the letter key.
         QString adjustments = keyMatcher.cap(2);
         int steps = 0;
-        for (QString::const_iterator it = adjustments.begin();
-             it != adjustments.end(); ++it) {
+        for (auto it = adjustments.constBegin();
+             it != adjustments.constEnd(); ++it) {
             steps += (*it == '#' || *it == s_sharpSymbol[0]) ? 1 : -1;
         }
 
@@ -367,6 +334,14 @@ ChromaticKey KeyUtils::keyFromNumericValue(double value) {
     }
 
     return static_cast<ChromaticKey>(value_floored);
+}
+
+KeyUtils::KeyNotation KeyUtils::keyNotationFromNumericValue(double value) {
+    int value_floored = static_cast<int>(value);
+    if (value_floored < 0 || value_floored >= KEY_NOTATION_MAX) {
+        return INVALID;
+    }
+    return static_cast<KeyNotation>(value_floored);
 }
 
 // static
@@ -436,8 +411,8 @@ mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
     double max_delta = 0;
     mixxx::track::io::key::ChromaticKey max_key = mixxx::track::io::key::INVALID;
     qDebug() << "Key Histogram";
-    for (QMap<mixxx::track::io::key::ChromaticKey, double>::const_iterator it = key_histogram.begin();
-         it != key_histogram.end(); ++it) {
+    for (auto it = key_histogram.constBegin();
+         it != key_histogram.constEnd(); ++it) {
         qDebug() << it.key() << ":" << keyDebugName(it.key()) << it.value();
         if (it.value() > max_delta) {
             max_key = it.key();
@@ -501,7 +476,7 @@ int KeyUtils::shortestStepsToCompatibleKey(
     bool major = keyIsMajor(key);
     bool targetMajor = keyIsMajor(target_key);
 
-    // If we have a mode missmatch, matching to a the Relative mode
+    // If we have a mode mismatch, matching to a the Relative mode
     // will produce a pitch up to +-6 semitones, which may sounds
     // too much chipmunked than expected.
     // Since the the relative major/minor key shares the same notes
@@ -570,11 +545,15 @@ QList<mixxx::track::io::key::ChromaticKey> KeyUtils::getCompatibleKeys(
     return compatible;
 }
 
-int KeyUtils::keyToCircleOfFithsOrder(mixxx::track::io::key::ChromaticKey key,
-                                      double notationValue) {
-    if (notationValue != static_cast<double>(KeyUtils::LANCELOT)) {
-      return s_sortKeysCircleOfFifths.indexOf(key);
+int KeyUtils::keyToCircleOfFifthsOrder(mixxx::track::io::key::ChromaticKey key,
+                                       KeyNotation notation) {
+    if (!ChromaticKey_IsValid(key)) {
+        key = mixxx::track::io::key::INVALID;
+    }
+
+    if (notation != LANCELOT) {
+        return s_sortKeysCircleOfFifths[static_cast<int>(key)];
     } else {
-      return s_sortKeysCircleOfFifthsLancelot.indexOf(key);
+        return s_sortKeysCircleOfFifthsLancelot[static_cast<int>(key)];
     }
 }

@@ -8,16 +8,6 @@ namespace {
 
 class ReplayGainTest : public testing::Test {
   protected:
-
-    ReplayGainTest() {
-    }
-
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-
     double ratioFromString(QString inputValue, bool expectedResult, double expectedValue) {
         //qDebug() << "ratioFromString" << inputValue << expectedResult << expectedValue;
 

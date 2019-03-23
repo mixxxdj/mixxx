@@ -2,10 +2,13 @@
 #include "sources/mp3decoding.h"
 
 #include "util/math.h"
+#include "util/logger.h"
 
 namespace mixxx {
 
 namespace {
+
+const Logger kLogger("SoundSourceCoreAudio");
 
 // The maximum number of samples per MP3 frame
 const SINT kMp3MaxFrameSize = 1152;
@@ -20,13 +23,13 @@ const SINT kMp3MaxFrameSize = 1152;
 const SINT kMp3StabilizationFrames =
         kMp3SeekFramePrefetchCount * kMp3MaxFrameSize;
 
-static CSAMPLE kMp3StabilizationScratchBuffer[kMp3StabilizationFrames *
-                                              AudioSource::kChannelCountStereo];
+static CSAMPLE kMp3StabilizationScratchBuffer[kMp3StabilizationFrames * 2]; // stereo
 
 }  // namespace
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QUrl url)
         : SoundSource(url),
+          LegacyAudioSourceAdapter(this, this),
           m_bFileIsMp3(false),
           m_headerFrames(0) {
 }
@@ -36,7 +39,9 @@ SoundSourceCoreAudio::~SoundSourceCoreAudio() {
 }
 
 // soundsource overrides
-SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& audioSrcCfg) {
+SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
+        OpenMode /*mode*/,
+        const OpenParams& params) {
     const QString fileName(getLocalFileName());
 
     //Open the audio file.
@@ -61,8 +66,8 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
      */
 
     if (err != noErr) {
-        qDebug() << "SSCA: Error opening file " << fileName;
-        return OpenResult::FAILED;
+        kLogger.debug() << "Error opening file " << fileName;
+        return OpenResult::Failed;
     }
 
     // get the input file format
@@ -71,14 +76,14 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
             kExtAudioFileProperty_FileDataFormat, &inputFormatSize,
             &m_inputFormat);
     if (err != noErr) {
-        qDebug() << "SSCA: Error getting file format (" << fileName << ")";
-        return OpenResult::UNSUPPORTED_FORMAT;
+        kLogger.debug() << "Error getting file format (" << fileName << ")";
+        return OpenResult::Aborted;
     }
     m_bFileIsMp3 = m_inputFormat.mFormatID == kAudioFormatMPEGLayer3;
 
     // create the output format
     const UInt32 numChannels =
-            audioSrcCfg.hasValidChannelCount() ? audioSrcCfg.getChannelCount() : 2;
+            params.channelCount().valid() ? params.channelCount() : 2;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels, CAStreamBasicDescription::kPCMFormatFloat32, true);
 
@@ -87,8 +92,8 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
             kExtAudioFileProperty_ClientDataFormat, sizeof(m_outputFormat),
             &m_outputFormat);
     if (err != noErr) {
-        qDebug() << "SSCA: Error setting file property";
-        return OpenResult::FAILED;
+        kLogger.debug() << "Error setting file property";
+        return OpenResult::Failed;
     }
 
     //get the total length in frames of the audio file - copypasta: http://discussions.apple.com/thread.jspa?threadID=2364583&tstart=47
@@ -98,8 +103,8 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
             kExtAudioFileProperty_FileLengthFrames, &totalFrameCountSize,
             &totalFrameCount);
     if (err != noErr) {
-        qDebug() << "SSCA: Error getting number of frames";
-        return OpenResult::FAILED;
+        kLogger.debug() << "Error getting number of frames";
+        return OpenResult::Failed;
     }
 
     //
@@ -125,19 +130,19 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(const AudioSourceConfig& a
     }
 
     setChannelCount(m_outputFormat.NumberChannels());
-    setSamplingRate(m_inputFormat.mSampleRate);
+    setSampleRate(m_inputFormat.mSampleRate);
     // NOTE(uklotzde): This is what I found when migrating
     // the code from SoundSource (sample-oriented) to the new
     // AudioSource (frame-oriented) API. It is not documented
     // when m_headerFrames > 0 and what the consequences are.
-    setFrameCount(totalFrameCount/* - m_headerFrames*/);
+    initFrameIndexRangeOnce(IndexRange::forward(0/*m_headerFrames*/, totalFrameCount));
 
-    //Seek to position 0, which forces us to skip over all the header frames.
+    //Seek to first position, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyzer rip and it'll
     //get the number of samples it expects (ie. no header frames).
-    seekSampleFrame(0);
+    seekSampleFrame(frameIndexMin());
 
-    return OpenResult::SUCCEEDED;
+    return OpenResult::Succeeded;
 }
 
 void SoundSourceCoreAudio::close() {
@@ -158,24 +163,42 @@ SINT SoundSourceCoreAudio::seekSampleFrame(SINT frameIndex) {
     }
 
     //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
-    //qDebug() << "SSCA: Seeking to" << frameIndex;
+    //kLogger.debug() << "Seeking to" << frameIndex;
     if (err != noErr) {
-        qDebug() << "SSCA: Error seeking to" << frameIndex; // << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
+        kLogger.debug() << "Error seeking to" << frameIndex; // << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
     }
     return frameIndex;
 }
 
 SINT SoundSourceCoreAudio::readSampleFrames(
         SINT numberOfFrames, CSAMPLE* sampleBuffer) {
-    //if (!m_decoder) return 0;
-    SINT numFramesRead = 0;
+    DEBUG_ASSERT(numberOfFrames >= 0);
+    if (numberOfFrames <= 0) {
+        return 0;
+    }
 
+    // Handle special case: Skipping instead of reading
+    if (sampleBuffer == nullptr) {
+        SInt64 frameOffset = 0;
+        const OSStatus osErr = ExtAudioFileTell(m_audioFile, &frameOffset);
+        if (osErr == noErr) {
+            const SINT frameIndexBefore = frameIndexMin() + frameOffset;
+            const SINT frameIndexAfter = seekSampleFrame(frameIndexBefore + numberOfFrames);
+            DEBUG_ASSERT(frameIndexBefore <= frameIndexAfter);
+            return frameIndexAfter - frameIndexBefore;
+        } else {
+            kLogger.warning() << "Error to determine the current position for skipping sample frames" << osErr;
+            return 0; // abort
+        }
+    }
+
+    SINT numFramesRead = 0;
     while (numFramesRead < numberOfFrames) {
         SINT numFramesToRead = numberOfFrames - numFramesRead;
 
         AudioBufferList fillBufList;
         fillBufList.mNumberBuffers = 1;
-        fillBufList.mBuffers[0].mNumberChannels = getChannelCount();
+        fillBufList.mBuffers[0].mNumberChannels = channelCount();
         fillBufList.mBuffers[0].mDataByteSize = frames2samples(numFramesToRead)
                 * sizeof(sampleBuffer[0]);
         fillBufList.mBuffers[0].mData = sampleBuffer
@@ -184,6 +207,8 @@ SINT SoundSourceCoreAudio::readSampleFrames(
         UInt32 numFramesToReadInOut = numFramesToRead; // input/output parameter
         OSStatus err = ExtAudioFileRead(m_audioFile, &numFramesToReadInOut,
                 &fillBufList);
+        // TODO(uklotz): Should this be handled?
+        Q_UNUSED(err);
         if (0 == numFramesToReadInOut) {
             // EOF
             break;// done

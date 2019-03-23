@@ -16,6 +16,17 @@ void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
     QString msg;
     bool ok = false;
 
+    // Default orientation is horizontal. For vertical splitters, the orientation must be set
+    // before calling setSizes() for reloading the saved state to work.
+    QString layout;
+    if (context.hasNodeSelectString(node, "Orientation", &layout)) {
+        if (layout == "vertical") {
+            setOrientation(Qt::Vertical);
+        } else if (layout == "horizontal") {
+            setOrientation(Qt::Horizontal);
+        }
+    }
+
     // Try to load last values stored in mixxx.cfg
     QString splitSizesConfigKey;
     if (context.hasNodeSelectString(node, "SplitSizesConfigKey", &splitSizesConfigKey)) {
@@ -58,16 +69,6 @@ void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
         }
         if (ok) {
             this->setSizes(sizesList);
-        }
-    }
-
-    // Default orientation is horizontal.
-    QString layout;
-    if (context.hasNodeSelectString(node, "Orientation", &layout)) {
-        if (layout == "vertical") {
-            setOrientation(Qt::Vertical);
-        } else if (layout == "horizontal") {
-            setOrientation(Qt::Horizontal);
         }
     }
 

@@ -3,15 +3,26 @@
 
 #include <QObject>
 
-#include "engine/sidechain/enginebroadcast.h"
+#include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
+#include "engine/sidechain/enginenetworkstream.h"
+#include "engine/sidechain/shoutconnection.h"
 
 class SoundManager;
+class ControlPushButton;
 
 class BroadcastManager : public QObject {
     Q_OBJECT
   public:
-    BroadcastManager(UserSettingsPointer pConfig,
+    enum StatusCOStates {
+        STATUSCO_UNCONNECTED = 0, // IDLE state, no error
+        STATUSCO_CONNECTING = 1, // 30 s max
+        STATUSCO_CONNECTED = 2, // On Air
+        STATUSCO_FAILURE = 3, // Happens when all connection fails
+        STATUSCO_WARNING = 4
+    };
+
+    BroadcastManager(SettingsManager* pSettingsManager,
                      SoundManager* pSoundManager);
     virtual ~BroadcastManager();
 
@@ -28,11 +39,22 @@ class BroadcastManager : public QObject {
 
   private slots:
     void slotControlEnabled(double v);
+    void slotProfileAdded(BroadcastProfilePtr profile);
+    void slotProfileRemoved(BroadcastProfilePtr profile);
+    void slotProfilesChanged();
+    void slotConnectionStatusChanged(int newState);
 
   private:
+    bool addConnection(BroadcastProfilePtr profile);
+    bool removeConnection(BroadcastProfilePtr profile);
+    ShoutConnectionPtr findConnectionForProfile(BroadcastProfilePtr profile);
+
     UserSettingsPointer m_pConfig;
-    QSharedPointer<EngineBroadcast> m_pBroadcast;
-    ControlProxy* m_pBroadcastEnabled;
+    BroadcastSettingsPointer m_pBroadcastSettings;
+    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
+
+    ControlPushButton* m_pBroadcastEnabled;
+    ControlObject* m_pStatusCO;
 };
 
 #endif /* BROADCAST_BROADCASTMANAGER_H */

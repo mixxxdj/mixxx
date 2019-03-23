@@ -3,19 +3,10 @@
 
 #include "util/performancetimer.h"
 
-class PerformanceTimerTest : public testing::Test {
-  protected:
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-};
-
 // This test was added because of an signed/unsigned underflow bug that
 // affected Windows and (presumably) Symbian.
 // See https://bugs.launchpad.net/mixxx/+bug/1300664
-TEST_F(PerformanceTimerTest, DifferenceCanBeNegative) {
+TEST(PerformanceTimerTest, DifferenceCanBeNegative) {
     PerformanceTimer early;
     early.start();
 

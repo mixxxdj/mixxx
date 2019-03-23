@@ -3,16 +3,7 @@
 
 #include "util/lcs.h"
 
-class LCSTest : public testing::Test {
-  protected:
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-};
-
-TEST_F(LCSTest, BasicLCS) {
+TEST(LCS, BasicLCS) {
     ASSERT_STREQ(qPrintable(QString("FOO")),
                  qPrintable(LCS("FOO", "FOO")));
 

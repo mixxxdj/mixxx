@@ -10,17 +10,23 @@ namespace mixxx {
 // DTO for storing BPM information.
 class Bpm final {
 public:
-    // TODO(uklotzde): Replace 'const' with 'constexpr'
-    // (and copy initialization from .cpp file) after switching to
-    // Visual Studio 2015 on Windows.
-    static const double kValueUndefined;
-    static const double kValueMin; // lower bound (exclusive)
+    static constexpr double kValueUndefined = 0.0;
+    static constexpr double kValueMin = 0.0; // lower bound (exclusive)
+    static constexpr double kValueMax = 300.0; // higher bound (inclusive)
 
     Bpm()
         : Bpm(kValueUndefined) {
     }
     explicit Bpm(double value)
         : m_value(value) {
+    }
+
+    static double normalizeValue(double value);
+
+    // Adjusts floating-point values to match their string representation
+    // in file tags to account for rounding errors.
+    void normalizeBeforeExport() {
+        m_value = normalizeValue(m_value);
     }
 
     static bool isValidValue(double value) {
@@ -39,7 +45,6 @@ public:
     void resetValue() {
         m_value = kValueUndefined;
     }
-    void normalizeValue();
 
     static double valueFromString(const QString& str, bool* pValid = nullptr);
     static QString valueToString(double value);
@@ -61,8 +66,14 @@ bool operator!=(const Bpm& lhs, const Bpm& rhs) {
     return !(lhs == rhs);
 }
 
+inline
+QDebug operator<<(QDebug dbg, const Bpm& arg) {
+    return dbg << arg.getValue();
 }
 
+}
+
+Q_DECLARE_TYPEINFO(mixxx::Bpm, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(mixxx::Bpm)
 
 #endif // MIXXX_BPM_H

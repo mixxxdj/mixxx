@@ -11,7 +11,7 @@ class UrlResource {
 public:
     virtual ~UrlResource() {}
 
-    const QUrl& getUrl() const {
+    QUrl getUrl() const {
         return m_url;
     }
     QString getUrlString() const {
@@ -19,7 +19,7 @@ public:
     }
 
 protected:
-    explicit UrlResource(const QUrl& url)
+    explicit UrlResource(QUrl url)
         : m_url(url) {
     }
 
@@ -28,16 +28,16 @@ protected:
         // handled! From the documentation of QUrl::isLocalFile():
         // "Note that this function considers URLs with hostnames
         // to be local file paths, ..."
-        return getUrl().isLocalFile();
+        return m_url.isLocalFile();
     }
 
     inline QString getLocalFileName() const {
         DEBUG_ASSERT(isLocalFile());
-        return getUrl().toLocalFile();
+        return m_url.toLocalFile();
     }
 
 private:
-    const QUrl m_url;
+    QUrl m_url;
 };
 
 } // namespace mixxx

@@ -58,50 +58,38 @@ class BeatMapIterator : public BeatIterator {
     BeatList::const_iterator m_endBeat;
 };
 
-BeatMap::BeatMap(TrackPointer pTrack, int iSampleRate,
-                 const QByteArray* pByteArray)
-        : QObject(),
-          m_mutex(QMutex::Recursive) {
-    initialize(pTrack, iSampleRate);
-    if (nullptr != pByteArray) {
-        readByteArray(*pByteArray);
-    }
+BeatMap::BeatMap(const Track& track, SINT iSampleRate)
+        : m_mutex(QMutex::Recursive),
+          m_iSampleRate(iSampleRate > 0 ? iSampleRate : track.getSampleRate()),
+          m_dCachedBpm(0),
+          m_dLastFrame(0) {
+    // BeatMap should live in the same thread as the track it is associated
+    // with.
+    moveToThread(track.thread());
 }
 
-BeatMap::BeatMap(TrackPointer pTrack, int iSampleRate,
+BeatMap::BeatMap(const Track& track, SINT iSampleRate,
+                 const QByteArray& byteArray)
+    : BeatMap(track, iSampleRate) {
+    readByteArray(byteArray);
+}
+
+BeatMap::BeatMap(const Track& track, SINT iSampleRate,
                  const QVector<double>& beats)
-        : QObject(),
-          m_mutex(QMutex::Recursive) {
-    initialize(pTrack, iSampleRate);
+        : BeatMap(track, iSampleRate) {
     if (beats.size() > 0) {
         createFromBeatVector(beats);
     }
 }
 
-void BeatMap::initialize(TrackPointer pTrack, int iSampleRate) {
-    m_iSampleRate = iSampleRate > 0 ? iSampleRate : pTrack->getSampleRate();
-    m_dCachedBpm = 0;
-    m_dLastFrame = 0;
-
-    if (!pTrack.isNull()) {
-        // BeatMap should live in the same thread as the track it is associated
-        // with.
-        moveToThread(pTrack->thread());
-    }
-}
-
 BeatMap::BeatMap (const BeatMap& other)
-        : QObject(),
-          m_mutex(QMutex::Recursive) {
-    m_iSampleRate = other.m_iSampleRate;
-    m_dCachedBpm = other.m_dCachedBpm;
-    m_dLastFrame = other.m_dLastFrame;
+        : m_mutex(QMutex::Recursive),
+          m_subVersion(other.m_subVersion),
+          m_iSampleRate(other.m_iSampleRate),
+          m_dCachedBpm(other.m_dCachedBpm),
+          m_dLastFrame(other.m_dLastFrame),
+          m_beats(other.m_beats) {
     moveToThread(other.thread());
-    m_subVersion = other.m_subVersion;
-    m_beats = other.m_beats;
-}
-
-BeatMap::~BeatMap() {
 }
 
 QByteArray BeatMap::toByteArray() const {
@@ -216,9 +204,9 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
     // Reduce sample offset to a frame offset.
     beat.set_frame_position(samplesToFrames(dSamples));
 
-    // it points at the first occurence of beat or the next largest beat
+    // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
-            qLowerBound(m_beats.begin(), m_beats.end(), beat, BeatLessThan);
+            qLowerBound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
@@ -230,9 +218,9 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
     }
 
     // Scan forward to find whether we are on a beat.
-    BeatList::const_iterator on_beat = m_beats.end();
-    BeatList::const_iterator previous_beat = m_beats.end();
-    BeatList::const_iterator next_beat = m_beats.end();
+    BeatList::const_iterator on_beat = m_beats.constEnd();
+    BeatList::const_iterator previous_beat = m_beats.constEnd();
+    BeatList::const_iterator next_beat = m_beats.constEnd();
     for (; it != m_beats.end(); ++it) {
         qint32 delta = it->frame_position() - beat.frame_position();
 
@@ -307,9 +295,9 @@ bool BeatMap::findPrevNextBeats(double dSamples,
     // Reduce sample offset to a frame offset.
     beat.set_frame_position(samplesToFrames(dSamples));
 
-    // it points at the first occurence of beat or the next largest beat
+    // it points at the first occurrence of beat or the next largest beat
     BeatList::const_iterator it =
-            qLowerBound(m_beats.begin(), m_beats.end(), beat, BeatLessThan);
+            qLowerBound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
@@ -321,9 +309,9 @@ bool BeatMap::findPrevNextBeats(double dSamples,
     }
 
     // Scan forward to find whether we are on a beat.
-    BeatList::const_iterator on_beat = m_beats.end();
-    BeatList::const_iterator previous_beat = m_beats.end();
-    BeatList::const_iterator next_beat = m_beats.end();
+    BeatList::const_iterator on_beat = m_beats.constEnd();
+    BeatList::const_iterator previous_beat = m_beats.constEnd();
+    BeatList::const_iterator next_beat = m_beats.constEnd();
     for (; it != m_beats.end(); ++it) {
         qint32 delta = it->frame_position() - beat.frame_position();
 
@@ -392,11 +380,11 @@ std::unique_ptr<BeatIterator> BeatMap::findBeats(double startSample, double stop
     stopBeat.set_frame_position(samplesToFrames(stopSample));
 
     BeatList::const_iterator curBeat =
-            qLowerBound(m_beats.begin(), m_beats.end(),
+            qLowerBound(m_beats.constBegin(), m_beats.constEnd(),
                         startBeat, BeatLessThan);
 
     BeatList::const_iterator lastBeat =
-            qUpperBound(m_beats.begin(), m_beats.end(),
+            qUpperBound(m_beats.constBegin(), m_beats.constEnd(),
                         stopBeat, BeatLessThan);
 
     if (curBeat >= lastBeat) {
@@ -563,9 +551,6 @@ void BeatMap::scale(enum BPMScale scale) {
 
     switch (scale) {
     case DOUBLE:
-        if (getBpm() * 2 > getMaxBpm()) {
-            return;
-        }
         // introduce a new beat into every gap
         scaleDouble();
         break;
@@ -584,6 +569,18 @@ void BeatMap::scale(enum BPMScale scale) {
         scaleTriple();
         // remove every second third and forth beat
         scaleFourth();
+        break;
+    case FOURTHIRDS:
+        // introduce three beats into every gap
+        scaleQuadruple();
+        // remove every second third and forth beat
+        scaleThird();
+        break;
+    case THREEHALVES:
+        // introduce two beats into every gap
+        scaleTriple();
+        // remove every second beat
+        scaleHalve();
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
@@ -622,6 +619,23 @@ void BeatMap::scaleTriple() {
         beat.set_frame_position(prevBeat.frame_position() + distance * 2 / 3);
         it = m_beats.insert(it, beat);
         prevBeat = (++it)[0];
+    }
+}
+
+void BeatMap::scaleQuadruple() {
+    Beat prevBeat = m_beats.first();
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = m_beats.begin() + 1;
+    for (; it != m_beats.end(); ++it) {
+        // Need to not accrue fractional frames.
+        int distance = it->frame_position() - prevBeat.frame_position();
+        Beat beat;
+        for (int i = 1; i <= 3; i++) {
+            beat.set_frame_position(prevBeat.frame_position() + distance * i / 4);
+            it = m_beats.insert(it, beat);
+            ++it;
+        }
+        prevBeat = it[0];
     }
 }
 
@@ -718,10 +732,10 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
     }
 
     BeatList::const_iterator curBeat =
-            qLowerBound(m_beats.begin(), m_beats.end(), startBeat, BeatLessThan);
+            qLowerBound(m_beats.constBegin(), m_beats.constEnd(), startBeat, BeatLessThan);
 
     BeatList::const_iterator lastBeat =
-            qUpperBound(m_beats.begin(), m_beats.end(), stopBeat, BeatLessThan);
+            qUpperBound(m_beats.constBegin(), m_beats.constEnd(), stopBeat, BeatLessThan);
 
     QVector<double> beatvect;
     for (; curBeat != lastBeat; ++curBeat) {

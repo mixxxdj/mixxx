@@ -10,15 +10,25 @@
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "widget/wtracktableview.h"
+#include "widget/wlibrary.h"
 
 SetlogFeature::SetlogFeature(QObject* parent,
                              UserSettingsPointer pConfig,
                              TrackCollection* pTrackCollection)
         : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME"),
-          m_playlistId(-1) {
+          m_playlistId(-1),
+          m_libraryWidget(nullptr),
+          m_icon(":/images/library/ic_library_history.svg") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true); //show all tracks
+
+    //construct child model
+    auto pRootItem = std::make_unique<TreeItem>(this);
+    m_childModel.setRootItem(std::move(pRootItem));
+    constructChildModel(-1);
+
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
@@ -28,11 +38,6 @@ SetlogFeature::SetlogFeature(QObject* parent,
 
     // initialized in a new generic slot(get new history playlist purpose)
     emit(slotGetNewPlaylist());
-
-    //construct child model
-    TreeItem *rootItem = new TreeItem();
-    m_childModel.setRootItem(rootItem);
-    constructChildModel(-1);
 }
 
 SetlogFeature::~SetlogFeature() {
@@ -50,7 +55,7 @@ QVariant SetlogFeature::title() {
 }
 
 QIcon SetlogFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_history.png");
+    return m_icon;
 }
 
 void SetlogFeature::bindWidget(WLibrary* libraryWidget,
@@ -59,6 +64,8 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
                                     keyboard);
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)),
             this, SLOT(slotPlayingTrackChanged(TrackPointer)));
+    m_libraryWidget = libraryWidget;
+
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -116,7 +123,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 void SetlogFeature::buildPlaylistList() {
     m_playlistList.clear();
     // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
+    QSqlTableModel playlistTableModel(this, m_pTrackCollection->database());
     playlistTableModel.setTable("Playlists");
     playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
     playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),
@@ -140,16 +147,16 @@ void SetlogFeature::buildPlaylistList() {
 
 void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
     if (playlist_id == m_playlistId) {
-        item->setIcon(QIcon(":/images/library/ic_library_history_current.png"));
+        item->setIcon(QIcon(":/images/library/ic_library_history_current.svg"));
     } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
-        item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
+        item->setIcon(QIcon(":/images/library/ic_library_locked.svg"));
     } else {
         item->setIcon(QIcon());
     }
 }
 
 void SetlogFeature::slotGetNewPlaylist() {
-    //qDebug() << "slotGetNewPlaylist() succesfully triggered !";
+    //qDebug() << "slotGetNewPlaylist() successfully triggered !";
 
     // create a new playlist for today
     QString set_log_name_format;
@@ -193,7 +200,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                 return;
             }
 
-            // Add every track from right klicked playlist to that with the next smaller ID
+            // Add every track from right-clicked playlist to that with the next smaller ID
             int previousPlaylistId = m_playlistDao.getPreviousPlaylist(currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
             if (previousPlaylistId >= 0) {
 
@@ -267,7 +274,19 @@ void SetlogFeature::slotPlayingTrackChanged(TrackPointer currentPlayingTrack) {
 
     if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
         // View needs a refresh
-        m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+
+        WTrackTableView* view = dynamic_cast<WTrackTableView*>(m_libraryWidget->getActiveView());
+        if (view != nullptr) {
+            // We have a active view on the history. The user may have some
+            // important active selection. For example putting track into crates
+            // while the song changes trough autodj. The selection is then lost
+            // and dataloss occurs
+            const QList<TrackId> trackIds = view->getSelectedTrackIds();
+            m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+            view->setSelectedTracks(trackIds);
+        } else {
+            m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+        }
     } else {
         // TODO(XXX): Care whether the append succeeded.
         m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,

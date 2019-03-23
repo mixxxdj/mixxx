@@ -26,7 +26,7 @@ const int COLUMN_BPM = 11;
 const int COLUMN_KEY = 12;
 const int COLUMN_TYPE = 13;
 const int COLUMN_BITRATE = 14;
-const int COLUMN_LOCATION = 15;
+const int COLUMN_NATIVELOCATION = 15;
 const int COLUMN_ALBUMARTIST = 16;
 const int COLUMN_GROUPING = 17;
 const int COLUMN_FILE_MODIFIED_TIME = 18;
@@ -37,7 +37,11 @@ const int COLUMN_REPLAYGAIN = 20;
 // The BrowseTable models displays tracks
 // of given directory on the HDD.
 // Usage: Recording and Browse feature.
-class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
+//
+// TODO(XXX): Editing track metadata outside of the table view
+// (e.g. in the property dialog) does not update the table view!
+// Editing single fields in the table view works as expected.
+class BrowseTableModel final : public QStandardItemModel, public virtual TrackModel {
     Q_OBJECT
 
   public:
@@ -73,7 +77,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
 
   private:
     void addSearchColumn(int index);
-    bool isTrackInUse(const QString& file) const;
+
     QList<int> m_searchColumns;
     MDir m_current_directory;
     TrackCollection* m_pTrackCollection;

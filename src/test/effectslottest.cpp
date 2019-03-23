@@ -10,6 +10,8 @@
 #include "effects/effectchainslot.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
+#include "effects/effectrack.h"
+#include "effects/effectslot.h"
 
 #include "test/baseeffecttest.h"
 
@@ -21,8 +23,6 @@ class EffectSlotTest : public BaseEffectTest {
     EffectSlotTest()
             : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
-        m_pEffectsManager->registerChannel(m_master);
-        m_pEffectsManager->registerChannel(m_headphone);
         registerTestBackend();
     }
 
@@ -39,7 +39,8 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     int iEffectNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pChainSlot = pRack->addEffectChainSlot();
+    EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
+    pChainSlot->loadEffectChainToSlot(pChain);
     // StandardEffectRack::addEffectChainSlot automatically adds 4 effect
     // slots. In the future we will probably remove this so this will just start
     // segfaulting.
@@ -48,24 +49,26 @@ TEST_F(EffectSlotTest, ControlsReflectSlotState) {
     QString group = StandardEffectRack::formatEffectSlotGroupString(
         iRackNumber, iChainNumber, iEffectNumber);
 
-    EffectManifest manifest;
-    manifest.setId("org.mixxx.test.effect");
-    manifest.setName("Test Effect");
-    manifest.addParameter();
-    registerTestEffect(manifest, false);
+    EffectManifestPointer pManifest(new EffectManifest());
+    pManifest->setId("org.mixxx.test.effect");
+    pManifest->setName("Test Effect");
+    pManifest->addParameter();
+    registerTestEffect(pManifest, false);
 
     // Check the controls reflect the state of their loaded effect.
-    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(manifest.id());
-
-    // Enabled defaults to true in both effects and the slot.
-    pEffect->setEnabled(false);
-    EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(group, "enabled")));
+    EffectPointer pEffect = m_pEffectsManager->instantiateEffect(pManifest->id());
+    // Enabled defaults to false in effect, slot, and engine effect.
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(group, "enabled")));
     EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(group, "num_parameters")));
 
-    pEffectSlot->loadEffect(pEffect);
-    EXPECT_LE(0, ControlObject::get(ConfigKey(group, "enabled")));
+    pEffectSlot->loadEffect(pEffect, false);
+    EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(group, "enabled")));
     EXPECT_DOUBLE_EQ(1, ControlObject::get(ConfigKey(group, "num_parameters")));
+
+    pEffect->setEnabled(true);
     EXPECT_TRUE(pEffect->enabled());
+    EXPECT_DOUBLE_EQ(1, ControlObject::get(ConfigKey(group, "enabled")));
+    EXPECT_DOUBLE_EQ(1, ControlObject::get(ConfigKey(group, "num_parameters")));
 
     // loaded is read-only.
     ControlObject::set(ConfigKey(group, "loaded"), 0.0);

@@ -12,7 +12,7 @@ namespace {
 
 class SampleUtilTest : public testing::Test {
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         sizes.append(1024);
         sizes.append(1025);
         sizes.append(1026);
@@ -28,7 +28,7 @@ class SampleUtilTest : public testing::Test {
                 evenBuffers.append(i);
         }
     }
-    virtual void TearDown() {
+    void TearDown() override {
         for (int i = 0; i < buffers.size(); ++i) {
             SampleUtil::free(buffers[i]);
         }
@@ -488,7 +488,7 @@ BENCHMARK(BM_SampleUtilCopy)->Range(64, 4096);
 TEST_F(SampleUtilTest, copy3WithGainSpeed) {
     CSAMPLE* buffer = buffers[0];
 
-    int size = sizes[0] - (rand() % 2) * 8; // preven predicting loop size
+    int size = sizes[0] - (rand() % 2) * 8; // prevent predicting loop size
     FillBuffer(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
     FillBuffer(buffer2, 0.0f, size);

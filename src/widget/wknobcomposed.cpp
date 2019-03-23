@@ -2,6 +2,7 @@
 #include <QStyleOption>
 #include <QTransform>
 
+#include "util/duration.h"
 #include "widget/wknobcomposed.h"
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
@@ -10,30 +11,43 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_dMinAngle(-230.0),
           m_dMaxAngle(50.0),
           m_dKnobCenterXOffset(0),
-          m_dKnobCenterYOffset(0) {
+          m_dKnobCenterYOffset(0),
+          m_renderTimer(mixxx::Duration::fromMillis(20),
+                        mixxx::Duration::fromSeconds(1)) {
+    connect(&m_renderTimer, SIGNAL(update()),
+            this, SLOT(update()));
 }
 
 void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
     clear();
 
+    double scaleFactor = context.getScaleFactor();
+
     // Set background pixmap if available
     QDomElement backPathElement = context.selectElement(node, "BackPath");
     if (!backPathElement.isNull()) {
-        setPixmapBackground(context.getPixmapSource(backPathElement),
-                            context.selectScaleMode(backPathElement, Paintable::STRETCH));
+        setPixmapBackground(
+                context.getPixmapSource(backPathElement),
+                context.selectScaleMode(backPathElement, Paintable::STRETCH),
+                scaleFactor);
     }
 
     // Set knob pixmap if available
     QDomElement knobNode = context.selectElement(node, "Knob");
     if (!knobNode.isNull()) {
-        setPixmapKnob(context.getPixmapSource(knobNode),
-                      context.selectScaleMode(knobNode, Paintable::STRETCH));
+        setPixmapKnob(
+                context.getPixmapSource(knobNode),
+                context.selectScaleMode(knobNode, Paintable::STRETCH),
+                scaleFactor);
     }
 
     context.hasNodeSelectDouble(node, "MinAngle", &m_dMinAngle);
     context.hasNodeSelectDouble(node, "MaxAngle", &m_dMaxAngle);
     context.hasNodeSelectDouble(node, "KnobCenterXOffset", &m_dKnobCenterXOffset);
     context.hasNodeSelectDouble(node, "KnobCenterYOffset", &m_dKnobCenterYOffset);
+
+    m_dKnobCenterXOffset *= scaleFactor;
+    m_dKnobCenterYOffset *= scaleFactor;
 }
 
 void WKnobComposed::clear() {
@@ -42,8 +56,9 @@ void WKnobComposed::clear() {
 }
 
 void WKnobComposed::setPixmapBackground(PixmapSource source,
-                                        Paintable::DrawMode mode) {
-    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
+                                        Paintable::DrawMode mode,
+                                        double scaleFactor) {
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
@@ -51,8 +66,9 @@ void WKnobComposed::setPixmapBackground(PixmapSource source,
 }
 
 void WKnobComposed::setPixmapKnob(PixmapSource source,
-                                  Paintable::DrawMode mode) {
-    m_pKnob = WPixmapStore::getPaintable(source, mode);
+                                  Paintable::DrawMode mode,
+                                  double scaleFactor) {
+    m_pKnob = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (m_pKnob.isNull() || m_pKnob->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading knob pixmap:" << source.getPath();
@@ -97,7 +113,7 @@ void WKnobComposed::paintEvent(QPaintEvent* e) {
         m_dCurrentAngle = m_dMinAngle + (m_dMaxAngle - m_dMinAngle) * getControlParameterDisplay();
         p.rotate(m_dCurrentAngle);
 
-        // Need to convert from QRect to a QRectF to avoid losing precison.
+        // Need to convert from QRect to a QRectF to avoid losing precision.
         QRectF targetRect = rect();
         m_pKnob->drawCentered(transform.mapRect(targetRect), &p,
                               m_pKnob->rect());
@@ -118,4 +134,12 @@ void WKnobComposed::mouseReleaseEvent(QMouseEvent* e) {
 
 void WKnobComposed::wheelEvent(QWheelEvent* e) {
     m_handler.wheelEvent(this, e);
+}
+
+void WKnobComposed::inputActivity() {
+#ifdef __APPLE__
+    m_renderTimer.activity();
+#else
+    update();
+#endif
 }

@@ -2,15 +2,13 @@
   <!-- This outer widget group makes the PreviewDeck borders work correctly -->
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <SizePolicy>me,min</SizePolicy>
-    <MaximumSize>,80</MaximumSize>
+    <SizePolicy>me,max</SizePolicy>
     <Children>
+
       <WidgetGroup>
         <ObjectName>PreviewDeck</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>min, min</SizePolicy>
-        <MinimumSize>100,40</MinimumSize>
-        <MaximumSize>,60</MaximumSize>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
           <!-- Preview Deck Column 1 Row 1 -->
           <WidgetGroup>
@@ -19,49 +17,63 @@
             <SizePolicy>min,min</SizePolicy>
             <MinimumSize>,40</MinimumSize>
             <Children>
+              <!-- Row 1 -->
               <WidgetGroup>
                 <ObjectName>PreviewTitleEject</ObjectName>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <Label>
-                    <Size>68f,15e</Size>
                     <ObjectName>PreviewLabel</ObjectName>
                     <TooltipId>text</TooltipId>
+                    <SizePolicy>min,min</SizePolicy>
                     <Text>Preview</Text>
+                    <Connection>
+                      <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
                   </Label>
+
                   <WidgetGroup>
-                    <ObjectName>PreviewDeckText</ObjectName>
+                    <ObjectName>PreviewDeckTextRow</ObjectName>
                     <Layout>horizontal</Layout>
-                    <SizePolicy>me,min</SizePolicy>
+                    <SizePolicy>i,min</SizePolicy>
                     <Children>
                       <Text>
                         <TooltipId>text</TooltipId>
-                        <Style>QLabel {
-                          font: 13px/14px "Lucida Grande", "Helvetica Neue", "Segoe UI", Arial, "Open Sans Light";
-                          background-color: transparent;
-                          font-weight:bold;
-                          color: #cfb32c;
-                          text-align: left;
-                          margin: 3px;
-                          }
-                        </Style>
+                        <SizePolicy>me,min</SizePolicy>
+                        <ObjectName>PreviewTitle</ObjectName>
                         <Group>[PreviewDeck1]</Group>
+                        <Elide>right</Elide>
                       </Text>
+                      <Number>
+                        <TooltipId>visual_bpm</TooltipId>
+                        <Group>[PreviewDeck1]</Group>
+                        <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                        <Alignment>left</Alignment>
+                        <Connection>
+                          <ConfigKey>[PreviewDeck1],visual_bpm</ConfigKey>
+                        </Connection>
+			<Connection>
+			  <ConfigKey>[PreviewDeck1],track_loaded</ConfigKey>
+			  <BindProperty>visible</BindProperty>
+			</Connection>
+                      </Number>
                     </Children>
                   </WidgetGroup>
                   <WidgetGroup>
                     <ObjectName>AlignRightCenter</ObjectName>
                     <Layout>horizontal</Layout>
-                    <SizePolicy>me,min</SizePolicy>
+                    <SizePolicy>min,min</SizePolicy>
                     <Children>
                       <PushButton>
                         <TooltipId>eject</TooltipId>
                         <NumberStates>1</NumberStates>
                         <State>
                           <Number>0</Number>
-                          <Pressed>btn_eject1_over.png</Pressed>
-                          <Unpressed>btn_eject1.png</Unpressed>
+                          <Pressed>buttons/btn_eject_over.svg</Pressed>
+                          <Unpressed>buttons/btn_eject.svg</Unpressed>
                         </State>
                         <Connection>
                           <ConfigKey>[PreviewDeck1],eject</ConfigKey>
@@ -72,39 +84,47 @@
                   </WidgetGroup>
                 </Children>
               </WidgetGroup>
+
+              <!-- Row 2 -->
               <WidgetGroup>
                 <ObjectName>PreviewPlayOverview</ObjectName>
                 <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
-                <MinimumSize>100,30</MinimumSize>
+                <SizePolicy>me,me</SizePolicy>
                 <Children>
-                  <PushButton>
-                    <TooltipId>play_start</TooltipId>
-                    <NumberStates>2</NumberStates>
-                    <RightClickIsPushButton>true</RightClickIsPushButton>
-                    <State>
-                      <Number>0</Number>
-                      <Pressed>btn_play_sampler_down.png</Pressed>
-                      <Unpressed>btn_play_sampler.png</Unpressed>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                      <Pressed>btn_play_sampler_overdown.png</Pressed>
-                      <Unpressed>btn_play_sampler_over.png</Unpressed>
-                    </State>
-                    <Connection>
-                      <ConfigKey>[PreviewDeck1],play</ConfigKey>
-                      <ButtonState>LeftButton</ButtonState>
-                    </Connection>
-                    <Connection>
-                      <ConfigKey>[PreviewDeck1],start</ConfigKey>
-                      <ButtonState>RightButton</ButtonState>
-                    </Connection>
-                  </PushButton>
+                  <WidgetGroup>
+                    <ObjectName>PreviewPlay</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <PushButton>
+                        <TooltipId>play_start</TooltipId>
+                        <NumberStates>2</NumberStates>
+                        <State>
+                          <Number>0</Number>
+                          <Pressed>buttons/btn_play_preview_down.svg</Pressed>
+                          <Unpressed>buttons/btn_play_preview.svg</Unpressed>
+                        </State>
+                        <State>
+                          <Number>1</Number>
+                          <Pressed>buttons/btn_play_preview_overdown.svg</Pressed>
+                          <Unpressed>buttons/btn_play_preview_over.svg</Unpressed>
+                        </State>
+                        <Connection>
+                          <ConfigKey>[PreviewDeck1],play</ConfigKey>
+                          <ButtonState>LeftButton</ButtonState>
+                        </Connection>
+                        <Connection>
+                          <ConfigKey>[PreviewDeck1],start</ConfigKey>
+                          <ButtonState>RightButton</ButtonState>
+                        </Connection>
+                      </PushButton>
+                    </Children>
+                  </WidgetGroup>
+
                   <Overview>
                     <TooltipId>waveform_overview</TooltipId>
+                    <Size>0me,20me</Size>
                     <Group>[PreviewDeck1]</Group>
-                    <Size>me,24f</Size>
                     <BgColor></BgColor>
                     <BgColor>#FFFFFF</BgColor>
                     <SignalColor>#FF8000</SignalColor>
@@ -112,18 +132,19 @@
                     <SignalMidColor>#EECE33</SignalMidColor>
                     <SignalLowColor>#E4C739</SignalLowColor>
                     <PlayPosColor>#00FF00</PlayPosColor>
+                    <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
                     <DefaultMark>
-                      <Align>bottom</Align>
-                      <Color>#FFFFFF</Color>
-                      <TextColor>#00FF00</TextColor>
+                      <Align>bottom|right</Align>
+                      <Color>#00FF00</Color>
+                      <TextColor>#FFFFFF</TextColor>
                       <Text> %1 </Text>
                     </DefaultMark>
                     <Mark>
                       <Control>cue_point</Control>
                       <Text> C </Text>
-                      <Align>top</Align>
+                      <Align>top|right</Align>
                       <Color>#FF001C</Color>
-                      <TextColor>#00FF00</TextColor>
+                      <TextColor>#FFFFFF</TextColor>
                     </Mark>
                     <Connection>
                       <ConfigKey>[PreviewDeck1],playposition</ConfigKey>
@@ -144,8 +165,8 @@
                 <Children>
                   <StatusLight>
                     <TooltipId>preview_PeakIndicator</TooltipId>
-                    <PathStatusLight>btn_clipping_previewdeck_over.png</PathStatusLight>
-                    <PathBack>btn_clipping_previewdeck.png</PathBack>
+                    <PathStatusLight>style/clipping_previewdeck_over.png</PathStatusLight>
+                    <PathBack>style/clipping_previewdeck.png</PathBack>
                     <Connection>
                       <ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
                     </Connection>
@@ -153,8 +174,8 @@
 
                   <VuMeter>
                     <TooltipId>preview_VuMeter</TooltipId>
-                    <PathVu>btn_volume_display_previewdeck_over.png</PathVu>
-                    <PathBack>btn_volume_display_previewdeck.png</PathBack>
+                    <PathVu>style/volume_display_previewdeck_over.png</PathVu>
+                    <PathBack>style/volume_display_previewdeck.png</PathBack>
                     <Horizontal>false</Horizontal>
                     <PeakHoldSize>3</PeakHoldSize>
                     <PeakHoldTime>250</PeakHoldTime>
@@ -169,8 +190,8 @@
 
               <SliderComposed>
                 <TooltipId>pregain</TooltipId>
-                <Handle>knob_volume_previewdeck.png</Handle>
-                <Slider>slider_volume_previewdeck.png</Slider>
+                <Handle scalemode="STRETCH_ASPECT">knob_volume_previewdeck.svg</Handle>
+                <Slider>slider_volume_previewdeck.svg</Slider>
                 <Horizontal>false</Horizontal>
                 <Connection>
                   <ConfigKey>[PreviewDeck1],pregain</ConfigKey>
@@ -180,6 +201,7 @@
           </WidgetGroup>
         </Children>
       </WidgetGroup>
+
     </Children>
     <Connection>
       <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>

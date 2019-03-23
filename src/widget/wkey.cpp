@@ -8,8 +8,8 @@ WKey::WKey(const char* group, QWidget* pParent)
           m_preferencesUpdated("[Preferences]", "updated", this),
           m_engineKeyDistance(group, "visual_key_distance", this) {
     setValue(m_dOldValue);
-    m_preferencesUpdated.connectValueChanged(SLOT(preferencesUpdated(double)));
-    m_engineKeyDistance.connectValueChanged(SLOT(setCents()));
+    m_preferencesUpdated.connectValueChanged(this, &WKey::preferencesUpdated);
+    m_engineKeyDistance.connectValueChanged(this, &WKey::setCents);
 }
 
 void WKey::onConnectedControlChanged(double dParameter, double dValue) {
@@ -22,6 +22,7 @@ void WKey::onConnectedControlChanged(double dParameter, double dValue) {
 void WKey::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
     m_displayCents = context.selectBool(node, "DisplayCents", false);
+    m_displayKey = context.selectBool(node, "DisplayKey", true);
 }
 
 void WKey::setValue(double dValue) {
@@ -30,7 +31,10 @@ void WKey::setValue(double dValue) {
             KeyUtils::keyFromNumericValue(dValue);
     if (key != mixxx::track::io::key::INVALID) {
         // Render this key with the user-provided notation.
-        QString keyStr = KeyUtils::keyToString(key);
+        QString keyStr = "";
+        if (m_displayKey) {
+            keyStr = KeyUtils::keyToString(key);
+        }
         if (m_displayCents) {
             double diff_cents = m_engineKeyDistance.get();
             int cents_to_display = static_cast<int>(diff_cents * 100);

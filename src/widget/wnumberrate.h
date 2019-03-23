@@ -16,7 +16,7 @@
 
 class ControlProxy;
 
-class WNumberRate : public WNumber {
+class WNumberRate final : public WNumber {
     Q_OBJECT
   public:
     explicit WNumberRate(const char *group, QWidget *parent=nullptr);

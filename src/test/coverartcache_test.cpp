@@ -5,19 +5,13 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/trackcollection.h"
-#include "test/mixxxtest.h"
+#include "test/librarytest.h"
 #include "sources/soundsourceproxy.h"
 
 // first inherit from MixxxTest to construct a QApplication to be able to
 // construct the default QPixmap in CoverArtCache
-class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
+class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
   protected:
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-
     void loadCoverFromMetadata(QString trackLocation) {
         CoverInfo info;
         info.type = CoverInfo::METADATA;
@@ -30,11 +24,10 @@ class CoverArtCacheTest : public MixxxTest, public CoverArtCache {
         EXPECT_QSTRING_EQ(QString(), res.cover.coverLocation);
         EXPECT_EQ(info.hash, res.cover.hash);
 
-        SecurityTokenPointer securityToken = Sandbox::openSecurityToken(
-            QDir(trackLocation), true);
-        TrackPointer pTrack(Track::newTemporary(trackLocation, securityToken));
-        SoundSourceProxy proxy(pTrack);
-        QImage img(SoundSourceProxy(pTrack).parseCoverImage());
+        SecurityTokenPointer securityToken =
+                Sandbox::openSecurityToken(QDir(trackLocation), true);
+        QImage img = SoundSourceProxy::importTemporaryCoverImage(
+                trackLocation, securityToken);
         EXPECT_FALSE(img.isNull());
         EXPECT_EQ(img, res.cover.image);
     }

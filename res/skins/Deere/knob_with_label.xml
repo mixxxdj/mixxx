@@ -7,6 +7,8 @@
 -->
 <Template>
   <WidgetGroup>
+    <MinimumSize>40,42</MinimumSize>
+    <MaximumSize>40,45</MaximumSize>
     <Layout>vertical</Layout>
     <Children>
       <Template src="skin:knob.xml"/>
