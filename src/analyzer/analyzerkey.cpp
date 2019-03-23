@@ -60,6 +60,7 @@ bool AnalyzerKey::initialize(TrackPointer tio, int sampleRate, int totalSamples)
     // if we can't load a stored track reanalyze it
     bool bShouldAnalyze = !isDisabledOrLoadStoredSuccess(tio);
 
+    DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
         if (m_pluginId == mixxx::AnalyzerQueenMaryKey::pluginInfo().id) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryKey>();

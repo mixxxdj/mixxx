@@ -216,6 +216,7 @@ void GlobalTrackCache::destroyInstance() {
     // Reset the static/global pointer before entering the destructor
     s_pInstance = nullptr;
     // Delete the singular instance
+    DEBUG_ASSERT(QThread::currentThread() == pInstance->thread());
     pInstance->deleteLater();
 }
 

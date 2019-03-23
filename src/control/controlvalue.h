@@ -6,7 +6,6 @@
 #include <QObject>
 
 #include "util/assert.h"
-#include "util/compatibility.h"
 
 // for lock free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
