@@ -5,10 +5,10 @@
 WKey::WKey(const char* group, QWidget* pParent)
         : WLabel(pParent),
           m_dOldValue(0),
-          m_pKeyNotation("[Library]", "key_notation", this),
+          m_keyNotation("[Library]", "key_notation", this),
           m_engineKeyDistance(group, "visual_key_distance", this) {
     setValue(m_dOldValue);
-    m_pKeyNotation.connectValueChanged(this, &WKey::keyNotationChanged);
+    m_keyNotation.connectValueChanged(this, &WKey::keyNotationChanged);
     m_engineKeyDistance.connectValueChanged(this, &WKey::setCents);
 }
 
