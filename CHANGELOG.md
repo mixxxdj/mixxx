@@ -38,9 +38,15 @@ Controllers
 Miscellaneous
 * Add preference option to adjust the play position marker of
   scrolling waveforms.
-* Add preference option to adjust opacity of beatgrid markers on
+* Add preference option to adjust opacity of beatgrid markers on 
   scrolling waveforms.
 * Support IRC/AIM/ICQ broadcast metadata.
+
+
+## [2.1.8](https://launchpad.net/mixxx/+milestone/2.1.8) (2019-02-23)
+
+* Fix a rare chance for a corrupt track file while writing metadata in out of disk situations. lp:1815305
+* Fix export of BPM track file metadata. lp:1816490  
 
 ## [2.1.7](https://launchpad.net/mixxx/+milestone/2.1.7) (2019-01-15)
 

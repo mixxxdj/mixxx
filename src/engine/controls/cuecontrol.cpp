@@ -1137,6 +1137,7 @@ double HotcueControl::getPosition() const {
 
 void HotcueControl::setCue(CuePointer pCue) {
     setPosition(pCue->getPosition());
+    setColor(pCue->getColor());
     // set pCue only if all other data is in place
     // because we have a null check for valid data else where in the code
     m_pCue = pCue;

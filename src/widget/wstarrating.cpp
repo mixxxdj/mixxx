@@ -10,6 +10,11 @@ WStarRating::WStarRating(QString group, QWidget* pParent)
           m_starRating(0,5),
           m_pGroup(group),
           m_focused(false) {
+  // Controls to change the star rating with controllers
+  m_pStarsUp = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_up"));
+  m_pStarsDown = std::make_unique<ControlPushButton>(ConfigKey(group, "stars_down"));
+  connect(m_pStarsUp.get(), SIGNAL(valueChanged(double)),this, SLOT(slotStarsUp(double)));
+  connect(m_pStarsDown.get(), SIGNAL(valueChanged(double)),this, SLOT(slotStarsDown(double)));
 }
 
 void WStarRating::setup(const QDomNode& node, const SkinContext& context) {
@@ -84,6 +89,30 @@ void WStarRating::mouseMoveEvent(QMouseEvent *event) {
     if (star != m_starRating.starCount() && star != -1) {
         m_starRating.setStarCount(star);
         update();
+    }
+}
+
+void WStarRating::slotStarsUp(double v) {
+    if (!m_pCurrentTrack) {
+        return;
+    }
+    if (v > 0 && m_starRating.starCount() < m_starRating.maxStarCount()) {
+        int star = m_starRating.starCount() + 1;
+        m_starRating.setStarCount(star);
+        update();
+        m_pCurrentTrack->setRating(star);
+    }
+}
+
+void WStarRating::slotStarsDown(double v) {
+    if (!m_pCurrentTrack) {
+        return;
+    }
+    if (v > 0 && m_starRating.starCount() > 0) {
+        int star = m_starRating.starCount() - 1;
+        m_starRating.setStarCount(star);
+        update();
+        m_pCurrentTrack->setRating(star);
     }
 }
 

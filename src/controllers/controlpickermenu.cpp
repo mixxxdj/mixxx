@@ -802,6 +802,12 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addDeckControl("waveform_zoom", tr("Waveform Zoom"), tr("Waveform zoom"), guiMenu);
     addDeckControl("waveform_zoom_down", tr("Waveform Zoom In"), tr("Zoom waveform in"), guiMenu);
     addDeckControl("waveform_zoom_up", tr("Waveform Zoom Out"), tr("Zoom waveform out"), guiMenu);
+
+    // Controls to change a deck's star rating
+    addDeckAndPreviewDeckControl("stars_up", tr("Star Rating Up"),
+        tr("Increase the track rating by one star"), guiMenu);
+    addDeckAndPreviewDeckControl("stars_down", tr("Star Rating Down"),
+        tr("Decrease the track rating by one star"), guiMenu);
 }
 
 ControlPickerMenu::~ControlPickerMenu() {

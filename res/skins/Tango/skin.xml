@@ -134,12 +134,13 @@
       <SetVariable name="EndOfTrackColor">#EA0085</SetVariable>
       <Style>
         <!-- All text labels in decks (artist, title, time, BPM, key, ...) -->
-        #Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
-        #Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
+        #Deck1 WLabel, #DeckMini1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
+        #Deck2 WLabel, #DeckMini2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
           color: #33a8ff;}
-        #Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
-        #Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
+        #Deck3 WLabel, #DeckMini3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
+        #Deck4 WLabel, #DeckMini4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
           color: #d910f0;}
+        WLabel#TrackBy, WLabel#TrackByMini, WLabel#TrackComment { color: #888;}
         <!-- Vinyl Controls toggle is transparent. This sets bg color so it matches those above -->
         #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #001D33;}
         #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #3A0440;}
@@ -156,12 +157,13 @@
       <!-- Cyan end-of-track warning -->
       <SetVariable name="EndOfTrackColor">#00ffff</SetVariable>
       <Style>
-        #Deck1 WLabel,#RateContainer1 WLabel, #RateContainer1 WPushButton,
-        #Deck2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
+        #Deck1 WLabel, #DeckMini1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
+        #Deck2 WLabel, #DeckMini2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
           color: #e145f3;}
-        #Deck3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
-        #Deck4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
+        #Deck3 WLabel, #DeckMini3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
+        #Deck4 WLabel, #DeckMini4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
           color: #3693d9;}
+        WLabel#TrackBy, WLabel#TrackByMini, WLabel#TrackComment { color: #888;}
         #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #3A0440;}
         #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #001D33;}
         <!-- brighter, broader library focus borders -->
@@ -274,8 +276,8 @@
       <Children>
         <Template src="skin:deck_overview.xml">
           <SetVariable name="chanNum">4</SetVariable>
-          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
-          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
+          <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>

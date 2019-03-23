@@ -704,10 +704,6 @@ WWidgetGroup {
     background-color: #333;
     }
 
-#DeckMini1 WLabel { /*
-  background-color: #121991;  */
-}
-
 #ArtistTitleTime {
   qproperty-layoutAlignment: 'AlignVCenter';
   background-color: #333;
