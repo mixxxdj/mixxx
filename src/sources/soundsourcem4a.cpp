@@ -162,7 +162,8 @@ SoundSourceM4A::SoundSourceM4A(const QUrl& url)
           m_hDecoder(nullptr),
           m_numberOfPrefetchSampleBlocks(0),
           m_curSampleBlockId(MP4_INVALID_SAMPLE_ID),
-          m_curFrameIndex(0) {
+          m_curFrameIndex(0),
+          m_pFaad(LibFaadLoader::Instance()) {
 }
 
 SoundSourceM4A::~SoundSourceM4A() {
@@ -259,12 +260,12 @@ SoundSource::OpenResult SoundSourceM4A::tryOpen(
 bool SoundSourceM4A::openDecoder() {
     DEBUG_ASSERT(m_hDecoder == nullptr); // not already opened
 
-    m_hDecoder = NeAACDecOpen();
+    m_hDecoder = m_pFaad->Open();
     if (m_hDecoder == nullptr) {
         kLogger.warning() << "Failed to open the AAC decoder!";
         return false;
     }
-    NeAACDecConfigurationPtr pDecoderConfig = NeAACDecGetCurrentConfiguration(
+    LibFaadLoader::Configuration* pDecoderConfig = m_pFaad->GetCurrentConfiguration(
             m_hDecoder);
     pDecoderConfig->outputFormat = FAAD_FMT_FLOAT;
     if ((m_openParams.channelCount() == 1) ||
@@ -275,7 +276,7 @@ bool SoundSourceM4A::openDecoder() {
     }
 
     pDecoderConfig->defObjectType = LC;
-    if (!NeAACDecSetConfiguration(m_hDecoder, pDecoderConfig)) {
+    if (!m_pFaad->SetConfiguration(m_hDecoder, pDecoderConfig)) {
         kLogger.warning() << "Failed to configure AAC decoder!";
         return false;
     }
@@ -285,14 +286,14 @@ bool SoundSourceM4A::openDecoder() {
     if (!MP4GetTrackESConfiguration(m_hFile, m_trackId, &configBuffer,
             &configBufferSize)) {
         // Failed to get mpeg-4 audio config... this is ok.
-        // NeAACDecInit2() will simply use default values instead.
+        // Init2() will simply use default values instead.
         kLogger.warning() << "Failed to read the MP4 audio configuration."
                 << "Continuing with default values.";
     }
 
     SAMPLERATE_TYPE sampleRate;
     unsigned char channelCount;
-    if (0 > NeAACDecInit2(m_hDecoder, configBuffer, configBufferSize,
+    if (0 > m_pFaad->Init2(m_hDecoder, configBuffer, configBufferSize,
                     &sampleRate, &channelCount)) {
         free(configBuffer);
         kLogger.warning() << "Failed to initialize the AAC decoder!";
@@ -333,7 +334,7 @@ bool SoundSourceM4A::openDecoder() {
 
 void SoundSourceM4A::closeDecoder() {
     if (m_hDecoder != nullptr) {
-        NeAACDecClose(m_hDecoder);
+        m_pFaad->Close(m_hDecoder);
         m_hDecoder = nullptr;
     }
 }
@@ -361,7 +362,7 @@ bool SoundSourceM4A::isValidSampleBlockId(MP4SampleId sampleBlockId) const {
 void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
     DEBUG_ASSERT(sampleBlockId >= kSampleBlockIdMin);
 
-    NeAACDecPostSeekReset(m_hDecoder, sampleBlockId);
+    m_pFaad->PostSeekReset(m_hDecoder, sampleBlockId);
     m_curSampleBlockId = sampleBlockId;
     m_curFrameIndex = frameIndexMin() +
             (sampleBlockId - kSampleBlockIdMin) * m_framesPerSampleBlock;
@@ -484,7 +485,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
             break; // EOF
         }
 
-        // NOTE(uklotzde): The sample buffer for NeAACDecDecode2 has to
+        // NOTE(uklotzde): The sample buffer for Decode2 has to
         // be big enough for a whole block of decoded samples, which
         // contains up to m_framesPerSampleBlock frames. Otherwise
         // we need to use a temporary buffer.
@@ -507,8 +508,8 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         }
         DEBUG_ASSERT(decodeBufferCapacityMin <= decodeBufferCapacity);
 
-        NeAACDecFrameInfo decFrameInfo;
-        void* pDecodeResult = NeAACDecDecode2(
+        LibFaadLoader::FrameInfo decFrameInfo;
+        void* pDecodeResult = m_pFaad->Decode2(
                 m_hDecoder, &decFrameInfo,
                 &m_inputBuffer[m_inputBufferOffset],
                 m_inputBufferLength,
@@ -518,7 +519,7 @@ ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
         if (0 != decFrameInfo.error) {
             kLogger.warning() << "AAC decoding error:"
                     << decFrameInfo.error
-                    << NeAACDecGetErrorMessage(decFrameInfo.error)
+                    << m_pFaad->GetErrorMessage(decFrameInfo.error)
                     << getUrlString();
             break; // abort
         }
@@ -600,8 +601,10 @@ QString SoundSourceProviderM4A::getName() const {
 
 QStringList SoundSourceProviderM4A::getSupportedFileExtensions() const {
     QStringList supportedFileExtensions;
-    supportedFileExtensions.append("m4a");
-    supportedFileExtensions.append("mp4");
+    if (LibFaadLoader::Instance()->isLoaded()) {
+        supportedFileExtensions.append("m4a");
+        supportedFileExtensions.append("mp4");
+    }
     return supportedFileExtensions;
 }
 

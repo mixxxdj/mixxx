@@ -4,6 +4,8 @@
 #include "sources/soundsource.h"
 #include "sources/soundsourceprovider.h"
 
+#include "sources/libfaadloader.h"
+
 #include "util/readaheadsamplebuffer.h"
 
 #ifdef __MP4V2__
@@ -11,8 +13,6 @@
 #else
 #include <mp4.h>
 #endif
-
-#include <neaacdec.h>
 
 #include <vector>
 
@@ -54,13 +54,15 @@ class SoundSourceM4A: public SoundSource {
 
     OpenParams m_openParams;
 
-    NeAACDecHandle m_hDecoder;
+    LibFaadLoader::Handle m_hDecoder;
     SINT m_numberOfPrefetchSampleBlocks;
     MP4SampleId m_curSampleBlockId;
 
     ReadAheadSampleBuffer m_sampleBuffer;
 
     SINT m_curFrameIndex;
+
+    LibFaadLoader* m_pFaad;
 };
 
 class SoundSourceProviderM4A: public SoundSourceProvider {
