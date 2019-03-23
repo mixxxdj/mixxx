@@ -129,8 +129,8 @@ void DlgPrefKey::loadSettings() {
         }
     }
 
-    m_pKeyNotation->set(static_cast<double>(notation_type));
     KeyUtils::setNotation(notation);
+    m_pKeyNotation->set(static_cast<double>(notation_type));
 
     slotUpdate();
 }
@@ -224,8 +224,8 @@ void DlgPrefKey::slotApply() {
     }
 
     m_keySettings.setKeyNotation(notation_name);
-    m_pKeyNotation->set(static_cast<double>(notation_type));
     KeyUtils::setNotation(notation);
+    m_pKeyNotation->set(static_cast<double>(notation_type));
 }
 
 void DlgPrefKey::slotUpdate() {
