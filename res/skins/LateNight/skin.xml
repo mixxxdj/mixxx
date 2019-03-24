@@ -155,6 +155,7 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">1</SetVariable>
+          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -164,6 +165,7 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">2</SetVariable>
+          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -173,6 +175,7 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">3</SetVariable>
+          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -182,6 +185,7 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">4</SetVariable>
+          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
