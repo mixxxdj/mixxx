@@ -905,12 +905,14 @@ bool TrackDAO::onPurgingTracks(
         }
     }
     {
-        // mark LibraryHash with needs_verification and invalidate the hash
+        // invalidate the hash in LibraryHash,
         // in case the file was not deleted to detect it on a rescan
+        // Note: -1 is used as return value for missing entries,
+        // needs_verification is a temporary coloumn used during the scan only.
         // TODO(XXX) delegate to libraryHashDAO
         FwdSqlQuery query(m_database, QString(
-                "UPDATE LibraryHashes SET needs_verification=1, "
-                "hash=-1 WHERE directory_path in (%1)").arg(
+                "UPDATE LibraryHashes SET "
+                "hash=-2 WHERE directory_path in (%1)").arg(
                         SqlStringFormatter::formatList(m_database, directories)));
         if (query.hasError() || !query.execPrepared()) {
             return false;
