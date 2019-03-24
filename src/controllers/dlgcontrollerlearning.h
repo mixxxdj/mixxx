@@ -19,6 +19,9 @@
 #ifdef __HID__
 #include "controllers/hid/hidcontroller.h"
 #endif
+#ifdef __OSC__
+#include "controllers/osc/osccontroller.h"
+#endif
 #include "controllers/bulk/bulkcontroller.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/controller.h"
@@ -41,6 +44,7 @@ class DlgControllerLearning : public QDialog,
     void visit(MidiController* pController);
     void visit(HidController* pController);
     void visit(BulkController* pController);
+    void visit(OscController* pController);
 
   signals:
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
