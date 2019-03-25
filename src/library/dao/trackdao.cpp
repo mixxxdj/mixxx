@@ -640,7 +640,7 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
         qDebug() << "TrackDAO::addTracksAddFile:"
                 << "Track has already been added to the database"
                 << oldTrackId;
-        return TrackPointer();
+        return pTrack;
     }
     // Keep the GlobalTrackCache locked until the id of the Track
     // object is known and has been updated in the cache.
@@ -857,6 +857,7 @@ bool TrackDAO::onPurgingTracks(
 
     QStringList idList;
     for (const auto& trackId: trackIds) {
+        GlobalTrackCacheLocker().purgeTrackId(trackId);
         idList.append(trackId.toString());
     }
     QString idListJoined = idList.join(",");

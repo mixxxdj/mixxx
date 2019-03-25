@@ -327,6 +327,8 @@ class Track : public QObject {
     // GlobalTrackCacheResolver!
     void initId(TrackId id); // write-once
 
+    void resetId(); // used after purge
+
     void relocate(
             QFileInfo fileInfo,
             SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
