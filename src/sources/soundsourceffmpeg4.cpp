@@ -87,20 +87,14 @@ inline int64_t getStreamStartTime(const AVStream& avStream) {
 }
 
 inline int64_t getStreamEndTime(const AVStream& avStream) {
-    auto start_time = avStream.start_time;
-    if (start_time == AV_NOPTS_VALUE) {
-        // This case is not unlikely, e.g. happens when decoding WAV files.
-        /*
-        kLogger.trace()
-                << "Unknown start time -> using default value"
-                << kavMinStartTime;
-        */
-        start_time = kavMinStartTime;
-    }
-    return start_time + avStream.duration;
+    // The duration is the actually the end time of the stream,
+    // i.e. pts always starts at 0 independent of the start_time!
+    DEBUG_ASSERT(avStream.duration >= getStreamStartTime(avStream));
+    return avStream.duration;
 }
 
 inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts) {
+    // getStreamStartTime(avStream) -> 1st audible frame at kMinFrameIndex
     return kMinFrameIndex +
            av_rescale_q(
                    pts - getStreamStartTime(avStream),
@@ -109,17 +103,18 @@ inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts)
 }
 
 inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT frameIndex) {
-    // See also: convertStreamTimeToFrameIndex(), e.g. pts = 0 at
-    // frameIndex = kMinFrameIndex!
+    // Inverse mapping of convertStreamTimeToFrameIndex()
     return av_rescale_q(
-            frameIndex - kMinFrameIndex,
-            (AVRational){1, avStream.codecpar->sample_rate},
-            avStream.time_base);
+                   frameIndex - kMinFrameIndex,
+                   (AVRational){1, avStream.codecpar->sample_rate},
+                   avStream.time_base) +
+           getStreamStartTime(avStream);
 }
 
 IndexRange getStreamFrameIndexRange(const AVStream& avStream) {
+    DEBUG_ASSERT(kMinFrameIndex == convertStreamTimeToFrameIndex(avStream, getStreamStartTime(avStream)));
     return IndexRange::forward(
-            convertStreamTimeToFrameIndex(avStream, getStreamStartTime(avStream)),
+            kMinFrameIndex,
             convertStreamTimeToFrameIndex(avStream, getStreamEndTime(avStream)));
 }
 
@@ -151,6 +146,7 @@ SINT getStreamSeekPrerollFrameCount(const AVStream& avStream) {
         // "It must also be assumed that without an explicit value, the playback
         // system will trim 2112 samples from the AAC decoder output when starting
         // playback from any point in the bistream."
+        // See also: https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/QTFFAppenG/QTFFAppenG.html
         const SINT aacSeekPrerollFrameCount = 2112;
         return math_max(aacSeekPrerollFrameCount, defaultSeekPrerollFrameCount);
     }
@@ -165,32 +161,6 @@ QString formatErrorMessage(int errnum) {
         return QString("%1 (%2)").arg(errbuf, errnum);
     } else {
         return QString("No description for error code (%1) found").arg(errnum);
-    }
-}
-
-inline void avTrace(const char* preamble, const AVStream& avStream) {
-    if (kLogger.traceEnabled()) {
-        kLogger.trace()
-                << preamble
-                << "{ index" << avStream.index
-                << "| id" << avStream.id
-                << "| codec_type" << avStream.codecpar->codec_type
-                << "| codec_id" << avStream.codecpar->codec_id
-                << "| channels" << avStream.codecpar->channels
-                << "| channel_layout" << avStream.codecpar->channel_layout
-                << "| channel_layout (fixed)" << getStreamChannelLayout(avStream)
-                << "| format" << avStream.codecpar->format
-                << "| sample_rate" << avStream.codecpar->sample_rate
-                << "| bit_rate" << avStream.codecpar->bit_rate
-                << "| frame_size" << avStream.codecpar->frame_size
-                << "| initial_padding" << avStream.codecpar->initial_padding
-                << "| trailing_padding" << avStream.codecpar->trailing_padding
-                << "| seek_preroll" << avStream.codecpar->seek_preroll
-                << "| start_time" << avStream.start_time
-                << "| duration" << avStream.duration
-                << "| nb_frames" << avStream.nb_frames
-                << "| time_base" << avStream.time_base.num << '/' << avStream.time_base.den
-                << '}';
     }
 }
 
@@ -544,7 +514,29 @@ SoundSource::OpenResult SoundSourceFFmpeg4::tryOpen(
     m_pavCodecContext = std::move(pavCodecContext);
     m_pavStream = pavStream;
 
-    avTrace("Opened stream for decoding", *m_pavStream);
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                << "Opened stream for decoding"
+                << "{ index" << m_pavStream->index
+                << "| id" << m_pavStream->id
+                << "| codec_type" << m_pavStream->codecpar->codec_type
+                << "| codec_id" << m_pavStream->codecpar->codec_id
+                << "| channels" << m_pavStream->codecpar->channels
+                << "| channel_layout" << m_pavStream->codecpar->channel_layout
+                << "| channel_layout (fixed)" << getStreamChannelLayout(*m_pavStream)
+                << "| format" << m_pavStream->codecpar->format
+                << "| sample_rate" << m_pavStream->codecpar->sample_rate
+                << "| bit_rate" << m_pavStream->codecpar->bit_rate
+                << "| frame_size" << m_pavStream->codecpar->frame_size
+                << "| initial_padding" << m_pavStream->codecpar->initial_padding
+                << "| trailing_padding" << m_pavStream->codecpar->trailing_padding
+                << "| seek_preroll" << m_pavStream->codecpar->seek_preroll
+                << "| start_time" << m_pavStream->start_time
+                << "| duration" << m_pavStream->duration
+                << "| nb_frames" << m_pavStream->nb_frames
+                << "| time_base" << m_pavStream->time_base.num << '/' << m_pavStream->time_base.den
+                << '}';
+    }
 
     const auto streamChannelCount =
             ChannelCount(m_pavStream->codecpar->channels);
