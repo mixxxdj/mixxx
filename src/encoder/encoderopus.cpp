@@ -72,12 +72,12 @@ int getSerial() {
 }
 }
 
-//static 
+//static
 int EncoderOpus::getMasterSamplerate() {
     return kMasterSamplerate;
 }
 
-//static 
+//static
 QString EncoderOpus::getInvalidSamplerateMessage() {
     return QObject::tr(
             "Using Opus at samplerates other than 48 kHz "
@@ -377,7 +377,7 @@ void EncoderOpus::encodeBuffer(const CSAMPLE *samples, const int size) {
     int writeRequired = size;
     int writeAvailable = m_fifoBuffer.writeAvailable();
     if (writeRequired > writeAvailable) {
-        kLogger.warning() << "FIFO buffer too small, loosing samples!"
+        kLogger.warning() << "FIFO buffer too small, losing samples!"
                           << "required:" << writeRequired
                           << "; available: " << writeAvailable;
     }

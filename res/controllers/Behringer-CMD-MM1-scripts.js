@@ -334,7 +334,7 @@ CMDMM.fxChannel = function (physicalChannel,virtualChannel) {
         theDeck.virtualChannel=theDeck.binaryChannel+1;
         // creating a new Unit is easier than changing the groups via Regexp
         theDeck.knobUnit = new CMDMM.FXKnobs(theDeck.virtualChannel,baseAddress);
-        // the fader doesnt get changed if it is set to controll the fxunit
+        // the fader doesn't get changed if it is set to control the fxunit
         // (look at components.Deck.setCurrentDeck for more explanation)
         if (theDeck.fader.inKey==="super1") {
           theDeck.fader.group='[EffectRack1_EffectUnit'+theDeck.virtualChannel+']';
@@ -369,7 +369,7 @@ CMDMM.fxChannel = function (physicalChannel,virtualChannel) {
         theDeck.virtualChannel=theDeck.binaryChannel+1;
         // creating a new Unit is easier than changing the groups via Regexp
         theDeck.knobUnit = new CMDMM.FXKnobs(theDeck.virtualChannel,baseAddress);
-        // the fader doesnt get changed if it is set to control the fxunit
+        // the fader doesn't get changed if it is set to control the fxunit
         // (look at components.Deck.setCurrentDeck for more explanation)
         if (theDeck.fader.inKey==="super1") {
           theDeck.fader.group='[EffectRack1_EffectUnit'+theDeck.virtualChannel+']';

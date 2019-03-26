@@ -241,7 +241,7 @@
       </Children>
     </SingletonDefinition>
 
-    <!-- Overviews are needed in both regular and minmal decks -->
+    <!-- Overviews are needed in both regular and minimal decks -->
     <SingletonDefinition>
       <ObjectName>DeckOverviewSingleton1</ObjectName>
       <Children>

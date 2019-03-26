@@ -7,7 +7,7 @@
 
 
 // Creates sound sources for tracks. Only intended to be used
-// in a narrow scope and not sharable between multiple threads!
+// in a narrow scope and not shareable between multiple threads!
 class SoundSourceProxy {
   public:
     // Initially registers all built-in SoundSource providers. This function is

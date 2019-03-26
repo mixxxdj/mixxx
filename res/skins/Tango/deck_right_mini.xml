@@ -1,6 +1,6 @@
 <!--
 Description:
-  A minmal deck container, visible when the library is maximized 
+  A minimal deck container, visible when the library is maximized
   | overview          | track title                    | Cover/ | Play/ |   loop   |
   |                   | elapsed/remaining | key | BPM  | Spinny | Pause | indicator|
 Variables:

@@ -30,7 +30,7 @@ LibFaadLoader::LibFaadLoader()
     // http://www.rarewares.org/aac-decoders.php
     libnames << "libfaad2.dll";
 #elif __APPLE__
-    // Firts try default location
+    // First try default location
     libnames << "libfaad2.dylib";
     // Using Homebrew ('brew install faad2' command):
     libnames << "/usr/local/lib/libfaad2.dylib";
@@ -196,5 +196,3 @@ char* LibFaadLoader::GetErrorMessage(unsigned char errcode) {
     }
     return nullptr;
 }
-
-

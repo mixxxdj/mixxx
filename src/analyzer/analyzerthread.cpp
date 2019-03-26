@@ -113,7 +113,7 @@ void AnalyzerThread::doRun() {
     if (AnalyzerEbur128::isEnabled(ReplayGainSettings(m_pConfig))) {
         m_analyzers.push_back(std::make_unique<AnalyzerEbur128>(m_pConfig));
     }
-    // BPM detection might be disabled in the config, but can be overriden
+    // BPM detection might be disabled in the config, but can be overridden
     // and enabled by explicitly setting the mode flag.
     const bool enforceBpmDetection = (m_modeFlags & AnalyzerModeFlags::WithBeats) != 0;
     m_analyzers.push_back(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection));

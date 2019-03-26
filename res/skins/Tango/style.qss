@@ -101,7 +101,7 @@ WWidgetGroup {
 /* All deck-specific colors are now defined in <Schemes> in skin.xml.
   - deck labels
   - waveform & overview background/signal colors
-  - Spinny mini mask, mini default cover 
+  - Spinny mini mask, mini default cover
  */
 
 
@@ -2362,7 +2362,7 @@ WLibrary QPushButton {
   QPushButton#pushButtonAnalyze:hover {
     border: 1px solid #ff6600;
   }
-  
+
   /* Increased margin for action buttons */
   QPushButton#pushButtonAutoDJ,
   QPushButton#pushButtonRecording {
@@ -2388,7 +2388,7 @@ WLibrary QPushButton {
     margin: 0px 0px 5px 2px;
   }
   /* Push labels away from buttons at the right */
-  /* AutoDJ selction info */
+  /* AutoDJ selection info */
   QLabel#labelSelectionInfo,
   /* Recording info */
   #DlgRecording QLabel,
