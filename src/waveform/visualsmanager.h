@@ -19,7 +19,7 @@ const int kSlowUpdateDivider = 4; // kUpdateRate / kSlowUpdateDivider = 3.75 upd
 } // anonymous namespace
 
 // This class updates the controls used for widgets and
-// controler indicator, in a CPU saving way and outside the engine thread
+// controller indicator, in a CPU saving way and outside the engine thread
 class DeckVisuals {
   public:
     DeckVisuals(const QString& group);
