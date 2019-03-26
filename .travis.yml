@@ -48,6 +48,7 @@ addons:
       - vamp-plugin-sdk
       - qtkeychain-dev
       - liblilv-dev
+      - liblo-dev
 before_install:
   # Virtual X, needed for analyzer waveform tests
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export DISPLAY=:99.0         ; fi

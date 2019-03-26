@@ -67,25 +67,17 @@ class OSC(Feature):
         return "OSC controller support"
 
     def enabled(self, build):
-        if build.platform_is_windows or build.platform_is_osx:
-            build.flags['osc'] = util.get_flags(build.env, 'osc', 1)
-        else:
-            build.flags['osc'] = util.get_flags(build.env, 'osc', 0)
+        build.flags['osc'] = util.get_flags(build.env, 'osc', 1)
         if int(build.flags['osc']):
             return True
         return False
 
     def add_options(self, build, vars):
-        if build.platform_is_windows or build.platform_is_osx:
-            vars.Add('osc',
-                     'Set to 1 to enable OSC controller support.', 1)
+        vars.Add('osc', 'Set to 1 to enable OSC controller support.', 1)
 
     def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        # Add the oscpkt library here?
-
-        build.env.Append(CPPDEFINES='__OSC__')
+        if self.enabled(build):
+            build.env.Append(CPPDEFINES='__OSC__')
 
     def sources(self, build):
         return ['controllers/osc/osccontroller.cpp',

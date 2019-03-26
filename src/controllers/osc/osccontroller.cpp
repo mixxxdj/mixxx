@@ -1,6 +1,8 @@
 #include "controllers/osc/osccontroller.h"
 
-OscController::OscController() : m_polling(false) {
+lo_server_thread OscController::m_st = nullptr;
+
+OscController::OscController() {
     QString deviceName = QString("OSC Server on Port %1").arg(OSC_SERVER_PORT);
 
     setDeviceName(deviceName);
@@ -14,75 +16,26 @@ OscController::~OscController() {
 }
 
 int OscController::open() {
-    m_sock.bindTo(OSC_SERVER_PORT);
-
-    if (m_sock.isOk()) {
-        m_polling = true;
-        setOpen(true);
-        return 0;
+    if (m_st) {
+        return -1;
     }
 
-    setOpen(false);
-    qWarning() << "Failed to open OSC server on port " << QString::number(OSC_SERVER_PORT);
-    return -1;
+    m_st = lo_server_thread_new(OSC_SERVER_PORT, OscController::oscErrorHandler);
+    lo_server_thread_add_method(m_st, nullptr, nullptr, OscController::oscMsgHandler, nullptr);
+    lo_server_thread_start(m_st);
+
+    setOpen(true);
+    return 0;
 }
 
 int OscController::close() {
-    if (!isOpen()) {
-        return 0;
-    }
-
-    m_polling = false;
+    quitServer();
     setOpen(false);
-    m_sock.close();
-
     return 0;
 }
 
 bool OscController::poll() {
-    if (!isOpen()) {
-        return false;
-    }
-
-    if (!m_sock.isOk()) {
-        m_polling = false;
-        setOpen(false);
-        m_sock.close();
-        return false;
-    }
-
-    double dValue;
-    int64_t i64Value;
-    float fValue;
-    int32_t i32Value;
-    bool bValue;
-
-    std::string group, key, location;
-
-    // Should 30ms timeout be changed?
-    if (m_sock.receiveNextPacket(30)) {
-        m_pr.init(m_sock.packetData(), m_sock.packetSize());
-        oscpkt::Message *msg;
-        while (m_pr.isOk() && (msg = m_pr.popMessage()) != 0) {
-            if (msg->match("/getparameter").popStr(group).popStr(key).isOkNoMoreArgs()) {
-                getParameter(group, key);
-            } else if (msg->match("/setparameter").popStr(group).popStr(key).popDouble(dValue).isOkNoMoreArgs()) {
-                setDouble(group, key, dValue);
-            } else if (msg->match("/setparameter").popStr(group).popStr(key).popFloat(fValue).isOkNoMoreArgs()) {
-                setFloat(group, key, fValue);
-            } else if (msg->match("/setparameter").popStr(group).popStr(key).popInt32(i32Value).isOkNoMoreArgs()) {
-                setI32(group, key, i32Value);
-            } else if (msg->match("/setparameter").popStr(group).popStr(key).popInt64(i64Value).isOkNoMoreArgs()) {
-                setI64(group, key, i64Value);
-            } else if (msg->match("/setparameter").popStr(group).popStr(key).popBool(bValue).isOkNoMoreArgs()) {
-                setBool(group, key, bValue);
-            } else {
-                qWarning() << "Unhandled OSC message" << QString::fromStdString(msg->addressPattern());
-            }
-        }
-    }
-
-    return true;
+    return false;
 }
 
 QString OscController::presetExtension() {
@@ -113,41 +66,94 @@ void OscController::visit(const HidControllerPreset* preset) {
     qWarning() << "ERROR: Attempting to load a HidControllerPreset to an OscController!";
 }
 
-void OscController::getParameter(const std::string& group, const std::string& key) {
-    ControlProxy proxy(QString::fromStdString(group), QString::fromStdString(key));
-
-    // If the specified parameter does not exist or is inaccessible,
-    // don't send a response (because it will be invalid).
-    // Is this the best behavior here or is it better to return 0?
-    if (!proxy.valid()) {
+void OscController::quitServer() {
+    if (!m_st) {
         return;
     }
 
-    oscpkt::Message msg;
-    msg.init("/mixxxparameter").pushStr(group).pushStr(key).pushDouble(proxy.get());
-    m_pw.init().addMessage(msg);
-    // m_sock.packetOrigin() is safe here because this function is called
-    // immediately after receiving a /get packet
-    m_sock.sendPacketTo(m_pw.packetData(), m_pw.packetSize(), m_sock.packetOrigin());
+    lo_server_thread_free(m_st);
+    m_st = nullptr;
 }
 
-void OscController::setDouble(const std::string& group, const std::string& key, double value) {
-    ControlProxy proxy(QString::fromStdString(group), QString::fromStdString(key));
-    proxy.set(value);
+void OscController::oscErrorHandler(int err, const char* msg, const char* path) {
+    qWarning() << QString("ERROR: %1 in OSC path %2 (code %3)").arg(QString::fromLatin1(msg)).arg(QString::fromLatin1(path)).arg(err);
+    quitServer();
 }
 
-void OscController::setFloat(const std::string& group, const std::string& key, float value) {
-    setDouble(group, key, static_cast<double>(value));
-}
+int OscController::oscMsgHandler(const char* path, const char* types, lo_arg** argv, int argc, void* data, void* userData) {
+    Q_UNUSED(userData);
 
-void OscController::setI32(const std::string& group, const std::string& key, int32_t value) {
-    setDouble(group, key, static_cast<double>(value));
-}
+    QRegularExpression pathRegEx("\\/(.+)\\/(.+)");
+    QRegularExpressionMatch pathMatch = pathRegEx.match(QString::fromLatin1(path));
 
-void OscController::setI64(const std::string& group, const std::string& key, int64_t value) {
-    setDouble(group, key, static_cast<double>(value));
-}
+    if (!pathMatch.hasMatch()) {
+        qWarning() << "ERROR: Invalid OSC path! Proper format: /<group>/<control>";
+        return 1;
+    }
 
-void OscController::setBool(const std::string& group, const std::string& key, bool value) {
-    setDouble(group, key, value ? 1.0 : 0.0);
+    ControlProxy proxy(pathMatch.captured(1), pathMatch.captured(2));
+
+    if (!proxy.valid()) {
+        qWarning() << "ERROR: Invalid group/key pair specified in OSC path!";
+        return 1;
+    }
+
+    for (int i = 0; i < argc; ++i) {
+        lo_type argType = static_cast<lo_type>(types[i]);
+
+        if ((argType == LO_BLOB) ||
+            (argType == LO_TIMETAG) ||
+            (argType == LO_MIDI) ||
+            (argType == LO_NIL) ||
+            (argType == LO_INFINITUM)) {
+            continue;
+        }
+
+        if ((argType == LO_STRING) ||
+            (argType == LO_SYMBOL)) {
+            if (OscController::m_st && (reinterpret_cast<char*>(argv[i])[0] == '?')) {
+                lo_address msgTo = lo_message_get_source(static_cast<lo_message>(data));
+                lo_send(msgTo, path, "d", proxy.get());
+            }
+
+            continue;
+        }
+
+        if (argType == LO_INT32) {
+            proxy.set(static_cast<double>(argv[i]->i));
+            continue;
+        }
+
+        if (argType == LO_FLOAT) {
+            proxy.set(static_cast<double>(argv[i]->f));
+            continue;
+        }
+
+        if (argType == LO_INT64) {
+            proxy.set(static_cast<double>(argv[i]->h));
+            continue;
+        }
+
+        if (argType == LO_DOUBLE) {
+            proxy.set(argv[i]->d);
+            continue;
+        }
+
+        if (argType == LO_CHAR) {
+            proxy.set(static_cast<double>(argv[i]->c));
+            continue;
+        }
+
+        if (argType == LO_TRUE) {
+            proxy.set(1.0);
+            continue;
+        }
+
+        if (argType == LO_FALSE) {
+            proxy.set(0.0);
+            continue;
+        }
+    }
+
+    return 0;
 }
