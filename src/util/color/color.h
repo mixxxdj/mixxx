@@ -7,36 +7,37 @@
 #include "util/math.h"
 
 namespace Color {
-static const PredefinedColorsSet predefinedColorSet = PredefinedColorsSet();
+
+const PredefinedColorsSet predefinedColorSet = PredefinedColorsSet();
 
 // algorithm by http://www.nbdtech.com/Blog/archive/2008/04/27/Calculating-the-Perceived-Brightness-of-a-Color.aspx
 // NOTE(Swiftb0y): please suggest if I should you use other methods
 // (like the W3C algorithm) or if this approach is to to performance hungry
 // NOTE: the author did not take alpha transparency into account!
-static inline int brightness(int red, int green, int blue) {
+inline int brightness(int red, int green, int blue) {
     return static_cast<int>(sqrtf(
             red * red * .241 +
             green * green * .691 +
             blue * blue * .068));
 };
 
-static inline int brightness(const QColor& color) {
+inline int brightness(const QColor& color) {
     return brightness(color.red(), color.green(), color.red());
 }
 
-static inline bool isDimmColor(const QColor& color) {
+inline bool isDimmColor(const QColor& color) {
     return brightness(color) <= 127;
 }
 
 // If the colorToChooseBy is darker than the global threshold,
 // dimmColor will be returned. Otherwise brightColor will be returned.
-static inline QColor chooseColorByBrightness(QColor colorToChooseBy, QColor dimmColor, QColor brightColor) {
+inline QColor chooseColorByBrightness(QColor colorToChooseBy, QColor dimmColor, QColor brightColor) {
     return isDimmColor(colorToChooseBy) ? dimmColor : brightColor;
 }
 
 // If the baseColor is darker than the global threshold,
 // returns a lighter color, otherwise returns a darker color.
-static QColor chooseContrastColor(QColor baseColor) {
+inline QColor chooseContrastColor(QColor baseColor) {
     // Will produce a color that is 60% brighter.
     static const int iLighterFactor = 160;
     // We consider a hsv color dark if its value is <= 20% of max value
@@ -66,4 +67,5 @@ static QColor chooseContrastColor(QColor baseColor) {
     QColor contrastColor = chooseColorByBrightness(baseColor, lightColor.toRgb(), darkColor.toRgb());
     return contrastColor;
 }
+
 } // namespace Color
