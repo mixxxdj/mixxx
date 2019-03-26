@@ -269,16 +269,16 @@ class SkinContext {
     }
 
     PredefinedColorsRepresentation getCueColorRepresentation(const QDomNode& node, QColor defaultColor) const {
-        PredefinedColorsRepresentation colorRepresentation = Color::predefinedColorSet.defaultRepresentation();
-        for (PredefinedColorPointer color : Color::predefinedColorSet.allColors) {
+        PredefinedColorsRepresentation colorRepresentation = Color::kDefaultPredefinedColorsSet.defaultRepresentation();
+        for (PredefinedColorPointer color : Color::kDefaultPredefinedColorsSet.allColors) {
             QString sColorName(color->m_sName);
             QColor skinRgba = selectColor(node, "Cue" + sColorName);
             if (skinRgba.isValid()) {
-                PredefinedColorPointer originalColor = Color::predefinedColorSet.predefinedColorFromName(sColorName);
+                PredefinedColorPointer originalColor = Color::kDefaultPredefinedColorsSet.predefinedColorFromName(sColorName);
                 colorRepresentation.setCustomRgba(originalColor, skinRgba);
             }
         }
-        colorRepresentation.setCustomRgba(Color::predefinedColorSet.noColor, defaultColor);
+        colorRepresentation.setCustomRgba(Color::kDefaultPredefinedColorsSet.noColor, defaultColor);
         return colorRepresentation;
     }
 
