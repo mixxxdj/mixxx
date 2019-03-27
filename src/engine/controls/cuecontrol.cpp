@@ -435,20 +435,14 @@ void CueControl::loadCuesFromTrack() {
     }
 
     if (pIntroCue) {
-        double position = pIntroCue->getPosition();
-        double length = pIntroCue->getLength();
+        double startPosition = pIntroCue->getPosition();
+        double endPosition = pIntroCue->getEndPosition();
         Cue::CueSource source = pIntroCue->getSource();
 
-        m_pIntroStartPosition->set(quantizeCuePoint(position, source, QuantizeMode::PreviousBeat));
-        m_pIntroStartEnabled->forceSet(position == -1.0 ? 0.0 : 1.0);
-
-        if (length > 0.0) {
-            m_pIntroEndPosition->set(quantizeCuePoint(position + length, source, QuantizeMode::NextBeat));
-            m_pIntroEndEnabled->forceSet(1.0);
-        } else {
-            m_pIntroEndPosition->set(-1.0);
-            m_pIntroEndEnabled->forceSet(0.0);
-        }
+        m_pIntroStartPosition->set(quantizeCuePoint(startPosition, source, QuantizeMode::PreviousBeat));
+        m_pIntroStartEnabled->forceSet(startPosition == -1.0 ? 0.0 : 1.0);
+        m_pIntroEndPosition->set(quantizeCuePoint(endPosition, source, QuantizeMode::NextBeat));
+        m_pIntroEndEnabled->forceSet(endPosition == -1.0 ? 0.0 : 1.0);
     } else {
         m_pIntroStartPosition->set(-1.0);
         m_pIntroStartEnabled->forceSet(0.0);
@@ -457,20 +451,14 @@ void CueControl::loadCuesFromTrack() {
     }
 
     if (pOutroCue) {
-        double position = pOutroCue->getPosition();
-        double length = pOutroCue->getLength();
+        double startPosition = pOutroCue->getPosition();
+        double endPosition = pOutroCue->getEndPosition();
         Cue::CueSource source = pOutroCue->getSource();
 
-        m_pOutroStartPosition->set(quantizeCuePoint(position, source, QuantizeMode::PreviousBeat));
-        m_pOutroStartEnabled->forceSet(position == -1.0 ? 0.0 : 1.0);
-
-        if (length > 0.0) {
-            m_pOutroEndPosition->set(quantizeCuePoint(position + length, source, QuantizeMode::NextBeat));
-            m_pOutroEndEnabled->forceSet(1.0);
-        } else {
-            m_pOutroEndPosition->set(-1.0);
-            m_pOutroEndEnabled->forceSet(0.0);
-        }
+        m_pOutroStartPosition->set(quantizeCuePoint(startPosition, source, QuantizeMode::PreviousBeat));
+        m_pOutroStartEnabled->forceSet(startPosition == -1.0 ? 0.0 : 1.0);
+        m_pOutroEndPosition->set(quantizeCuePoint(endPosition, source, QuantizeMode::NextBeat));
+        m_pOutroEndEnabled->forceSet(endPosition == -1.0 ? 0.0 : 1.0);
     } else {
         m_pOutroStartPosition->set(-1.0);
         m_pOutroStartEnabled->forceSet(0.0);

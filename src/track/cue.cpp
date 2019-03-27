@@ -176,6 +176,17 @@ void Cue::setDirty(bool dirty) {
     m_bDirty = dirty;
 }
 
+double Cue::getEndPosition() const {
+    QMutexLocker lock(&m_mutex);
+    if (m_samplePosition == -1.0) {
+        return m_length;
+    } else if (m_length == 0.0) {
+        return -1.0;
+    } else {
+        return  m_samplePosition + m_length;
+    }
+}
+
 bool operator==(const CuePosition& lhs, const CuePosition& rhs) {
     return lhs.getPosition() == rhs.getPosition() &&
             lhs.getSource() == rhs.getSource();
