@@ -323,12 +323,12 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
 
 
         QComboBox* colorComboBox = new QComboBox();
-        const QList<PredefinedColorPointer> predefinedColors = Color::kDefaultPredefinedColorsSet.allColors;
+        const QList<PredefinedColorPointer> predefinedColors = Color::kPredefinedColorsSet.allColors;
         for (int i = 0; i < predefinedColors.count(); i++) {
             PredefinedColorPointer color = predefinedColors.at(i);
             QColor defaultRgba = color->m_defaultRgba;
             colorComboBox->addItem(color->m_sDisplayName, defaultRgba);
-            if (*color != *Color::kDefaultPredefinedColorsSet.noColor) {
+            if (*color != *Color::kPredefinedColorsSet.noColor) {
                 QPixmap pixmap(80, 80);
                 pixmap.fill(defaultRgba);
                 QIcon icon(pixmap);
@@ -336,7 +336,7 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
             }
         }
         PredefinedColorPointer cueColor = pCue->getColor();
-        colorComboBox->setCurrentIndex(Color::kDefaultPredefinedColorsSet.predefinedColorIndex(cueColor));
+        colorComboBox->setCurrentIndex(Color::kPredefinedColorsSet.predefinedColorIndex(cueColor));
 
         m_cueMap[row] = pCue;
         cueTable->insertRow(row);
@@ -417,7 +417,7 @@ void DlgTrackInfo::saveTrack() {
 
         auto colorComboBox = qobject_cast<QComboBox*>(colorWidget);
         if (colorComboBox) {
-            PredefinedColorPointer color = Color::kDefaultPredefinedColorsSet.allColors.at(colorComboBox->currentIndex());
+            PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(colorComboBox->currentIndex());
             pCue->setColor(color);
         }
         // do nothing for now.

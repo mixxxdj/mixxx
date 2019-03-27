@@ -4,7 +4,7 @@
 
 namespace Color {
 
-extern const PredefinedColorsSet kDefaultPredefinedColorsSet;
+extern const PredefinedColorsSet kPredefinedColorsSet;
 
 int brightness(int red, int green, int blue);
 

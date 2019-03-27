@@ -7,7 +7,7 @@ ColorJSProxy::ColorJSProxy(QScriptEngine* pScriptEngine)
 ColorJSProxy::~ColorJSProxy() {};
 
 QScriptValue ColorJSProxy::predefinedColorFromId(int iId) {
-    PredefinedColorPointer color(Color::kDefaultPredefinedColorsSet.predefinedColorFromId(iId));
+    PredefinedColorPointer color(Color::kPredefinedColorsSet.predefinedColorFromId(iId));
     return jsColorFrom(color);
 };
 
@@ -26,10 +26,10 @@ QScriptValue ColorJSProxy::jsColorFrom(PredefinedColorPointer predefinedColor) {
 }
 
 QScriptValue ColorJSProxy::makePredefinedColorsList(QScriptEngine* pScriptEngine) {
-    int numColors = Color::kDefaultPredefinedColorsSet.allColors.length();
+    int numColors = Color::kPredefinedColorsSet.allColors.length();
     QScriptValue colorList = pScriptEngine->newArray(numColors);
     for (int i = 0; i < numColors; ++i) {
-        PredefinedColorPointer color = Color::kDefaultPredefinedColorsSet.allColors.at(i);
+        PredefinedColorPointer color = Color::kPredefinedColorsSet.allColors.at(i);
         colorList.setProperty(i, jsColorFrom(color));
     }
     return colorList;

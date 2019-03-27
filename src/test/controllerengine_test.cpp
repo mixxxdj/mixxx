@@ -592,7 +592,7 @@ TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
 }
 
 TEST_F(ControllerEngineTest, colorProxy) {
-    QList<PredefinedColorPointer> allColors = Color::kDefaultPredefinedColorsSet.allColors;
+    QList<PredefinedColorPointer> allColors = Color::kPredefinedColorsSet.allColors;
     for (int i = 0; i < allColors.length(); ++i) {
         PredefinedColorPointer color = allColors[i];
         qDebug() << "Testing color " << color->m_sName;
