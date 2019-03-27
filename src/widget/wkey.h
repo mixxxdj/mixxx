@@ -16,14 +16,14 @@ class WKey : public WLabel  {
 
   private slots:
     void setValue(double dValue);
-    void preferencesUpdated(double dValue);
+    void keyNotationChanged(double dValue);
     void setCents();
 
   private:
     double m_dOldValue;
     bool m_displayCents;
     bool m_displayKey;
-    ControlProxy m_preferencesUpdated;
+    ControlProxy m_keyNotation;
     ControlProxy m_engineKeyDistance;
 };
 
