@@ -23,8 +23,10 @@ ReflowComments: false
 SpacesBeforeTrailingComments: 1
 ---
 Language: JavaScript
+# Don't format .js files yet
+DisableFormat: true
 ---
 Language: Proto
-# Don't format .proto files.
+# Don't format .proto files yet
 DisableFormat: true
 ...
