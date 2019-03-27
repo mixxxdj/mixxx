@@ -60,7 +60,7 @@ install:
   # Build flags common to OS X and Linux.
   # Parallel builds are important for avoiding OSX build timeouts.
   # We turn off verbose output to avoid going over the 4MB output limit.
-  - export COMMON="-j4 qt5=1 test=1 mad=1 faad=1 ffmpeg=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0"
+  - export COMMON="-j4 qt5=1 test=1 mad=1 faad=1 opus=1 modplug=1 wv=1 hss1394=0 virtualize=0 debug_assertions_fatal=1 verbose=0"
 
   #####
   # Ubuntu Trusty Build
@@ -79,8 +79,8 @@ install:
   # NOTE(rryan): 2016-11-15 we are experiencing Travis timeouts for the OSX
   # build.  Turning off optimizations to see if that speeds up compile times.
   # TODO(rryan): localecompare doesn't work on Travis with qt5 for some reason.
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export EXTRA_FLAGS="optimize=none asan=0 localecompare=0" ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export EXTRA_FLAGS="localecompare=1" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export EXTRA_FLAGS=" ffmpeg4=1 optimize=none asan=0 localecompare=0" ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export EXTRA_FLAGS=" ffmpeg=1 localecompare=1" ; fi
 
   ####
   # Common Build
