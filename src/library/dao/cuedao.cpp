@@ -54,9 +54,8 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     int hotcue = record.value(record.indexOf("hotcue")).toInt();
     QString label = record.value(record.indexOf("label")).toString();
     int iColorId = record.value(record.indexOf("color")).toInt();
-    PredefinedColorPointer color = Color::predefinedColorSet.predefinedColorFromId(iColorId);
-    CuePointer pCue(new Cue(id, trackId, (Cue::CueType)type,
-                       position, length, hotcue, label, color));
+    PredefinedColorPointer color = Color::kPredefinedColorsSet.predefinedColorFromId(iColorId);
+    CuePointer pCue(new Cue(id, trackId, (Cue::CueType)type, position, length, hotcue, label, color));
     m_cues[id] = pCue;
     return pCue;
 }
