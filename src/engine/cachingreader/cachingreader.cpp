@@ -9,6 +9,7 @@
 #include "util/math.h"
 #include "util/sample.h"
 #include "util/logger.h"
+#include "util/compatibility.h"
 
 
 namespace {
