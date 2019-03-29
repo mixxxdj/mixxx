@@ -3,6 +3,7 @@
 
 #include <QUrl>
 #include <QDrag>
+#include <QDropEvent>
 #include <QMimeData>
 #include <QList>
 #include <QString>
@@ -19,6 +20,7 @@
 #include "library/parsercsv.h"
 #include "util/sandbox.h"
 #include "mixer/playermanager.h"
+#include "widget/trackdroptarget.h"
 
 class DragAndDropHelper {
   public:
@@ -109,6 +111,9 @@ class DragAndDropHelper {
                                            const QString& sourceIdentifier,
                                            bool firstOnly,
                                            bool acceptPlaylists) {
+        qDebug() << "dropEventFiles()" << mimeData.hasUrls() << mimeData.urls();
+        qDebug() << "mimeData.hasText()" << mimeData.hasText() << mimeData.text();
+
         if (!mimeData.hasUrls() ||
                 (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
             return QList<QFileInfo>();
@@ -116,6 +121,9 @@ class DragAndDropHelper {
 
         QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
                 mimeData.urls(), firstOnly, acceptPlaylists);
+        for (const auto file : files) {
+            qDebug() << file.canonicalFilePath();
+        }
         return files;
     }
 
@@ -139,6 +147,34 @@ class DragAndDropHelper {
 
     static QUrl urlFromLocation(const QString& trackLocation) {
         return QUrl::fromLocalFile(trackLocation);
+    }
+
+    static void handleTrackDragEnterEvent(QDragEnterEvent* event, const QString& group,
+                                          UserSettingsPointer pConfig) {
+        qDebug() << "handleTrackDragEnterEvent()";
+        if (allowLoadToPlayer(group, pConfig) &&
+                dragEnterAccept(*event->mimeData(), group,
+                                true, false)) {
+            qDebug() << "event->acceptProposedAction()";
+            event->acceptProposedAction();
+        } else {
+            qDebug() << "event->ignore();";
+            event->ignore();
+        }
+    }
+
+    static void handleTrackDropEvent(QDropEvent* event, TrackDropTarget& target,
+                                     const QString& group, UserSettingsPointer pConfig) {
+        if (allowLoadToPlayer(group, pConfig)) {
+            QList<QFileInfo> files = dropEventFiles(
+                    *event->mimeData(), group, true, false);
+            if (!files.isEmpty()) {
+                event->accept();
+                target.emitTrackDropped(files.at(0).absoluteFilePath(), group);
+                return;
+            }
+        }
+        event->ignore();
     }
 
   private:

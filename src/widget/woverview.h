@@ -19,6 +19,7 @@
 #include <QList>
 
 #include "track/track.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wwidget.h"
 
 #include "waveform/renderers/waveformsignalcolors.h"
@@ -30,7 +31,7 @@
 // @author Tue Haste Andersen
 class Waveform;
 
-class WOverview : public WWidget {
+class WOverview : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
     WOverview(const char* pGroup, UserSettingsPointer pConfig, QWidget* parent=nullptr);
