@@ -368,8 +368,11 @@ class FAAD(Feature):
     def description(self):
         return "FAAD AAC audio file decoder plugin"
 
+    def default(self, build):
+        return 1 if build.platform_is_linux else 0
+
     def enabled(self, build):
-        build.flags['faad'] = util.get_flags(build.env, 'faad', 0)
+        build.flags['faad'] = util.get_flags(build.env, 'faad', self.default(build))
         if int(build.flags['faad']):
             return True
         return False
@@ -392,14 +395,9 @@ class FAAD(Feature):
             raise Exception(
                 'Could not find libmp4, libmp4v2 or the libmp4v2 development headers.')
 
-        have_faad = conf.CheckLib(['faad', 'libfaad'])
-
-        if not have_faad:
-            raise Exception(
-                'Could not find libfaad or the libfaad development headers.')
-
     def sources(self, build):
-        return ['src/sources/soundsourcem4a.cpp']
+        return ['src/sources/soundsourcem4a.cpp',
+        		'src/sources/libfaadloader.cpp']
 
 
 class WavPack(Feature):

@@ -62,7 +62,6 @@
 #include "util/time.h"
 #include "util/version.h"
 #include "control/controlpushbutton.h"
-#include "util/compatibility.h"
 #include "util/sandbox.h"
 #include "mixer/playerinfo.h"
 #include "waveform/guitick.h"
