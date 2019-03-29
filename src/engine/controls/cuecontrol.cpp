@@ -1781,7 +1781,7 @@ void HotcueControl::slotHotcuePositionChanged(double newPosition) {
 }
 
 void HotcueControl::slotHotcueColorChanged(double newColorId) {
-    m_pCue->setColor(Color::predefinedColorSet.predefinedColorFromId(newColorId));
+    m_pCue->setColor(Color::kPredefinedColorsSet.predefinedColorFromId(newColorId));
     emit(hotcueColorChanged(this, newColorId));
 }
 
@@ -1797,7 +1797,7 @@ void HotcueControl::setCue(CuePointer pCue) {
     m_pCue = pCue;
 }
 PredefinedColorPointer HotcueControl::getColor() const {
-    return Color::predefinedColorSet.predefinedColorFromId(m_hotcueColor->get());
+    return Color::kPredefinedColorsSet.predefinedColorFromId(m_hotcueColor->get());
 }
 
 void HotcueControl::setColor(PredefinedColorPointer newColor) {

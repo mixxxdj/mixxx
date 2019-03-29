@@ -1200,6 +1200,7 @@ class MixxxCore(Feature):
                    "src/util/tapfilter.cpp",
                    "src/util/movinginterquartilemean.cpp",
                    "src/util/console.cpp",
+                   "src/util/color/color.cpp",
                    "src/util/db/dbconnection.cpp",
                    "src/util/db/dbconnectionpool.cpp",
                    "src/util/db/dbconnectionpooler.cpp",
