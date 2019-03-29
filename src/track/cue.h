@@ -61,9 +61,6 @@ class Cue : public QObject {
     PredefinedColorPointer getColor() const;
     void setColor(PredefinedColorPointer color);
 
-    CuePosition getCuePosition() const;
-    void setCuePosition(CuePosition position);
-
     double getEndPosition() const;
 
   signals:
