@@ -102,7 +102,7 @@ QString SearchQueryParser::getTextArgument(QString argument,
 
         if (quote_index == 0) {
             // We have found an explicit empty string ""
-            // return it as "" to distingish it from anunfinished empty string
+            // return it as "" to distinguish it from an unfinished empty string
             argument = kMissingFieldSearchTerm;
         } else {
             // Slice off the quote and everything after.

@@ -3,7 +3,7 @@
   <Overview>
     <TooltipId>waveform_overview</TooltipId>
     <Channel><Variable name="channum"/></Channel>
-    <Size>200me,40me</Size>
+    <Size>150me,40me</Size>
     <BgColor>#1E1E1E</BgColor>
     <SignalColor><Variable name="SignalColor"/></SignalColor>
     <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>

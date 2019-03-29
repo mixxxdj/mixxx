@@ -38,7 +38,7 @@ Controllers
 Miscellaneous
 * Add preference option to adjust the play position marker of
   scrolling waveforms.
-* Add preference option to adjust opacity of beatgrid markers on 
+* Add preference option to adjust opacity of beatgrid markers on
   scrolling waveforms.
 * Support IRC/AIM/ICQ broadcast metadata.
 
@@ -69,7 +69,7 @@ Miscellaneous
 * Improve search bar timing. [lp:1635087](https://bugs.launchpad.net/mixxx/+bug/1635087)
 * Fix quoted search sentence. [lp:1784141](https://bugs.launchpad.net/mixxx/+bug/1784141)
 * Fix loading a track formerly not existing. [lp:1800395](https://bugs.launchpad.net/mixxx/+bug/1800395)
-* Fix imporing m3u files with blank lines. [lp:1806271](https://bugs.launchpad.net/mixxx/+bug/1806271)
+* Fix importing m3u files with blank lines. [lp:1806271](https://bugs.launchpad.net/mixxx/+bug/1806271)
 * Fix position in sampler overview waveforms. [lp:1744170](https://bugs.launchpad.net/mixxx/+bug/1744170)
 * Don't reset rate slider, syncing a track without a beatgrid. [lp:1783020](https://bugs.launchpad.net/mixxx/+bug/1783020)
 * Clean up iTunes track context menu. [lp:1800335](https://bugs.launchpad.net/mixxx/+bug/1800335)

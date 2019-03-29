@@ -624,7 +624,7 @@ double BpmControl::getNearestPositionInPhase(
             if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
                 // "this" track is playing, or just starting
                 // only match phase if the sync target is playing as well
-                // else use the previouse phase of "this" track before the seek
+                // else use the previous phase of "this" track before the seek
                 pOtherEngineBuffer = getEngineBuffer();
             }
         }

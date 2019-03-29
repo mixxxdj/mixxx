@@ -50,6 +50,6 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     QVector<double> m_resultBeats;
 };
 
-}  // namepsace mixxx
+}  // namespace mixxx
 
 #endif /* ANALYZER_PLUGINS_ANALYZERQUEENMARYBEATS_H */
