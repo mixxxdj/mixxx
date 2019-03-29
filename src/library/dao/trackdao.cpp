@@ -467,7 +467,9 @@ namespace {
     bool insertTrackLibrary(QSqlQuery* pTrackLibraryInsert, const Track& track, DbId trackLocationId, QDateTime trackDateAdded) {
         bindTrackLibraryValues(pTrackLibraryInsert, track);
 
-        DEBUG_ASSERT(track.getDateAdded().isNull());
+        if (!track.getDateAdded().isNull()) {
+            qDebug() << "insertTrackLibrary: Track was added" << "track.getDateAdded()" << "and purged";
+        }
         pTrackLibraryInsert->bindValue(":datetime_added", trackDateAdded);
 
         // Written only once upon insert

@@ -592,9 +592,6 @@ void GlobalTrackCache::purgeTrackId(TrackId trackId) {
     if (m_tracksById.end() != trackById) {
         Track* track = trackById->second->getPlainPtr();
         track->resetId();
-        // This is called from the TrackDAO only when purging a track
-        // that is still referenced. It is not "added" anymore after purging.
-        track->setDateAdded(QDateTime());
         m_tracksById.erase(trackById);
     }
 }
