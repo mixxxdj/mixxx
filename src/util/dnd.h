@@ -134,6 +134,9 @@ class DragAndDropHelper {
                                            const QString& sourceIdentifier,
                                            bool firstOnly,
                                            bool acceptPlaylists) {
+        qDebug() << "dropEventFiles()" << mimeData.hasUrls() << mimeData.urls();
+        qDebug() << "mimeData.hasText()" << mimeData.hasText() << mimeData.text();
+
         if (!mimeData.hasUrls() ||
                 (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
             return QList<QFileInfo>();
@@ -141,6 +144,9 @@ class DragAndDropHelper {
 
         QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
                 mimeData.urls(), firstOnly, acceptPlaylists);
+        for (const auto file : files) {
+            qDebug() << file.canonicalFilePath();
+        }
         return files;
     }
 
@@ -168,11 +174,14 @@ class DragAndDropHelper {
 
     static void handleTrackDragEnterEvent(QDragEnterEvent* event, const QString& group,
                                           UserSettingsPointer pConfig) {
+        qDebug() << "handleTrackDragEnterEvent()";
         if (allowLoadToPlayer(group, pConfig) &&
                 dragEnterAccept(*event->mimeData(), group,
                                 true, false)) {
+            qDebug() << "event->acceptProposedAction()";
             event->acceptProposedAction();
         } else {
+            qDebug() << "event->ignore();";
             event->ignore();
         }
     }
@@ -189,7 +198,7 @@ class DragAndDropHelper {
                         *event->mimeData(), group, true, false);
                 if (!files.isEmpty()) {
                     event->accept();
-                    emit(target.trackDropped(files.at(0).absoluteFilePath(), group));
+                    target.emitTrackDropped(files.at(0).absoluteFilePath(), group);
                     return;
                 }
             }
