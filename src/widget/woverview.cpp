@@ -262,8 +262,8 @@ void WOverview::onMarkChanged(double /*v*/) {
     //qDebug() << "WOverview::onMarkChanged()" << v;
     if (m_pCurrentTrack) {
         updateCues(m_pCurrentTrack->getCuePoints());
+        update();
     }
-    update();
 }
 
 void WOverview::onMarkRangeChange(double /*v*/) {
