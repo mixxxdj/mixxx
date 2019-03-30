@@ -32,14 +32,10 @@ QUrl ensureFilePathUrl(const QUrl& url) {
     NSString *urlString = [[[NSString alloc] initWithBytesNoCopy:(void *)a.data() length:a.size()
                                              encoding:NSUTF8StringEncoding freeWhenDone:NO] autorelease];
     NSURL *nsurl = [NSURL URLWithString:urlString];
-    QUrl url;
     // OS X 10.10 sends file references instead of file paths
     if ([nsurl isFileReferenceURL]) {
-        url = urlFromNSURL([nsurl filePathURL]);
-    } else {
-        url = urlFromNSURL(nsurl);
+        return urlFromNSURL([nsurl filePathURL]);
     }
-
     return url; 
 } 
 
