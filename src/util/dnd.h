@@ -134,9 +134,6 @@ class DragAndDropHelper {
 
         QList<QFileInfo> files = DragAndDropHelper::supportedTracksFromUrls(
                 mimeData.urls(), firstOnly, acceptPlaylists);
-        for (const auto file : files) {
-            qDebug() << file.canonicalFilePath();
-        }
         return files;
     }
 
@@ -164,14 +161,12 @@ class DragAndDropHelper {
 
     static void handleTrackDragEnterEvent(QDragEnterEvent* event, const QString& group,
                                           UserSettingsPointer pConfig) {
-        qDebug() << "handleTrackDragEnterEvent()";
         if (allowLoadToPlayer(group, pConfig) &&
                 dragEnterAccept(*event->mimeData(), group,
                                 true, false)) {
-            qDebug() << "event->acceptProposedAction()";
             event->acceptProposedAction();
         } else {
-            qDebug() << "event->ignore();";
+            qDebug() << "Ignoring drag enter event, loading not allowed";
             event->ignore();
         }
     }
