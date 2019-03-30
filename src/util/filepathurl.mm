@@ -1,7 +1,31 @@
 #include "util/filepathurl.h"
 
+#include <QtCore/qsystemdetection.h>
+#if defined(Q_OS_IOS)
+#import <UIKit/UIKit.h>
+#elif defined(Q_OS_OSX)
+#import <Cocoa/Cocoa.h>
+#endif
+
+#import <Foundation/Foundation.h>
+
 
 // Taken from src/platformsupport/clipboard/qmacmime.mm
+
+QString stringFromNSString(const NSString *string) {
+    if (!string)
+        return QString();
+   QString qstring;
+   qstring.resize([string length]);
+   [string getCharacters: reinterpret_cast<unichar*>(qstring.data()) range: NSMakeRange(0, [string length])];
+   return qstring;
+}
+
+
+QUrl urlFromNSURL(const NSURL *url) {
+    return QUrl(stringFromNSString([url absoluteString]));
+}
+
 
 QUrl ensureFilePathUrl(const QUrl& url) {
     const QByteArray &a = url.toEncoded();
@@ -11,11 +35,11 @@ QUrl ensureFilePathUrl(const QUrl& url) {
     QUrl url;
     // OS X 10.10 sends file references instead of file paths
     if ([nsurl isFileReferenceURL]) {
-        url = QUrl::fromNSURL([nsurl filePathURL]);
+        url = urlFromNSURL([nsurl filePathURL]);
     } else {
-        url = QUrl::fromNSURL(nsurl);
+        url = urlFromNSURL(nsurl);
     }
 
-	return url; 
+    return url; 
 } 
 
