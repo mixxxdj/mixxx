@@ -22,13 +22,26 @@
 #include "mixer/playermanager.h"
 #include "widget/trackdroptarget.h"
 
+#if defined(__APPLE__) && QT_VERSION < QT_VERSION_CHECK(5, 4, 1)
+#include "util/filepathurl.h"
+#endif
+
+
+
 class DragAndDropHelper {
   public:
     static QList<QFileInfo> supportedTracksFromUrls(const QList<QUrl>& urls,
                                                     bool firstOnly,
                                                     bool acceptPlaylists) {
         QList<QFileInfo> fileLocations;
-        foreach (const QUrl& url, urls) {
+        for (QUrl url : urls) {
+
+#if defined(__APPLE__) && QT_VERSION < QT_VERSION_CHECK(5, 4, 1)
+            // OS X 10.10 sends file references instead of file paths
+            // e.g. "file:///.file/id=6571367.1629051"
+            // QT >= 5.4.1 hides this from us
+            url = ensureFilePathUrl(url);
+#endif
 
             // XXX: Possible WTF alert - Previously we thought we needed
             // toString() here but what you actually want in any case when
