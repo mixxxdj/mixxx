@@ -1,11 +1,6 @@
 #include "util/filepathurl.h"
 
-#include <QtCore/qsystemdetection.h>
-#if defined(Q_OS_IOS)
-#import <UIKit/UIKit.h>
-#elif defined(Q_OS_OSX)
-#import <Cocoa/Cocoa.h>
-#endif
+
 
 #import <Foundation/Foundation.h>
 
@@ -36,6 +31,5 @@ QUrl ensureFilePathUrl(const QUrl& url) {
     if ([nsurl isFileReferenceURL]) {
         return urlFromNSURL([nsurl filePathURL]);
     }
-    return url; 
-} 
-
+    return url;
+}
