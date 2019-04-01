@@ -125,7 +125,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
     m_pKeyNotation = new ControlProxy("[Library]", "key_notation", this);
-    m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::keyNotationChanged);
+    m_pKeyNotation->connectValueChanged(this, &WTrackTableView::keyNotationChanged);
 
 
     connect(this, SIGNAL(scrollValueChanged(int)),
