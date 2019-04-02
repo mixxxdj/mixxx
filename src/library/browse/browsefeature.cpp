@@ -347,7 +347,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
             folders << driveLetter;
         }
 #elif defined(__APPLE__)
-        qWarning() << "Trying to process DEVICE_NODE on macOS; we shouldn't reach this point!";
+        DEBUG_ASSERT(!"Trying to process DEVICE_NODE on macOS");
 #else // LINUX
         folders += getLinuxDevices();
 #endif
