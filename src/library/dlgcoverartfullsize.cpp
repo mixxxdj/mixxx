@@ -164,14 +164,38 @@ void DlgCoverArtFullSize::slotCoverInfoSelected(const CoverInfoRelative& coverIn
 }
 
 void DlgCoverArtFullSize::mousePressEvent(QMouseEvent* event) {
-    Q_UNUSED(event);
+    if (!m_pCoverMenu->isVisible() && event->button() == Qt::LeftButton) {
+        m_clickTimer.setSingleShot(true);
+        m_clickTimer.start(500);
+        m_coverPressed = true;
+        m_dragStartPosition = event->globalPos() - frameGeometry().topLeft();
+    }
+}
 
+void DlgCoverArtFullSize::mouseReleaseEvent(QMouseEvent* event) {
+    m_coverPressed = false;
     if (m_pCoverMenu->isVisible()) {
         return;
     }
 
     if (event->button() == Qt::LeftButton && isVisible()) {
-        close();
+        if (m_clickTimer.isActive()) {
+        // short press
+            close();
+        } else {
+        // long press
+            return;
+        }
+        event->accept();
+    }
+}
+
+void DlgCoverArtFullSize::mouseMoveEvent(QMouseEvent* event) {
+    if (m_coverPressed) {
+        move(event->globalPos() - m_dragStartPosition);
+        event->accept();
+    } else {
+        return;
     }
 }
 
