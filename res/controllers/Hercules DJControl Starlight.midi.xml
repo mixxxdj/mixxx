@@ -889,6 +889,7 @@
                 <midino>0x08</midino>
                 <options>
                     <fourteen-bit-msb/>
+                    <soft-takeover/>
                 </options>
             </control>
 
@@ -899,6 +900,7 @@
                 <midino>0x28</midino>
                 <options>
                     <fourteen-bit-lsb/>
+                    <soft-takeover/>
                 </options>
             </control>
 
@@ -984,6 +986,7 @@
                 <midino>0x08</midino>
                 <options>
                     <fourteen-bit-msb/>
+                    <soft-takeover/>
                 </options>
             </control>
 
@@ -994,6 +997,7 @@
                 <midino>0x28</midino>
                 <options>
                     <fourteen-bit-lsb/>
+                    <soft-takeover/>
                 </options>
             </control>
 
