@@ -285,6 +285,33 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
      onLazyChildExpandation(index);
 }
 
+QList<TreeItem*> BrowseFeature::getLinuxDevices() {
+    // To get devices on Linux, we look for directories under /media and
+    // /run/media/$USER.
+    QFileInfoList devices;
+
+    // Add folders under /media to devices.
+    devices += QDir("/media").entryInfoList(
+        QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    // Add folders under /run/media/$USER to devices.
+    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
+    devices += run_media_user_dir.entryInfoList(
+        QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    // Convert devices into a QList<TreeItem*> for display.
+    QList<TreeItem*> ret;
+    foreach(QFileInfo device, devices) {
+        TreeItem* folder = new TreeItem(
+            this,
+            device.fileName(),
+            device.filePath() + "/");
+        ret << folder;
+    }
+
+    return ret;
+}
+
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
 void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
@@ -480,31 +507,4 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
 
     qDebug() << "Default quick links:" << result;
     return result;
-}
-
-QList<TreeItem*> BrowseFeature::getLinuxDevices() {
-    // To get devices on Linux, we look for directories under /media and
-    // /run/media/$USER.
-    QFileInfoList devices;
-
-    // Add folders under /media to devices.
-    devices += QDir("/media").entryInfoList(
-        QDir::AllDirs | QDir::NoDotAndDotDot);
-
-    // Add folders under /run/media/$USER to devices.
-    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
-    devices += run_media_user_dir.entryInfoList(
-        QDir::AllDirs | QDir::NoDotAndDotDot);
-
-    // Convert devices into a QList<TreeItem*> for display.
-    QList<TreeItem*> ret;
-    foreach(QFileInfo device, devices) {
-        TreeItem* folder = new TreeItem(
-            this,
-            device.fileName(),
-            device.filePath() + "/");
-        ret << folder;
-    }
-
-    return ret;
 }
