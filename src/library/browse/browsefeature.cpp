@@ -91,7 +91,7 @@ BrowseFeature::BrowseFeature(QObject* parent,
     pRootItem->appendChild(tr("Devices"), "/Volumes/");
 #else  // LINUX
     // DEVICE_NODE contents will be rendered lazily in onLazyChildExpandation.
-    TreeItem* devices_link = pRootItem->appendChild(tr("Removable Devices"), DEVICE_NODE);
+    pRootItem->appendChild(tr("Removable Devices"), DEVICE_NODE);
 
     // show root directory on Linux.
     pRootItem->appendChild(QDir::rootPath(), QDir::rootPath());
