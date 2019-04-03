@@ -117,6 +117,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
     // Auto-DJ needs at least two decks
     DEBUG_ASSERT(m_decks.length() > 1);
 
+    m_pCOCrossfaderEnabled = new ControlProxy("[Mixer Profile]", "xFaderEnabled");
     m_pCOCrossfader = new ControlProxy("[Master]", "crossfader");
     m_pCOCrossfaderReverse = new ControlProxy("[Mixer Profile]", "xFaderReverse");
 
@@ -131,6 +132,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
 AutoDJProcessor::~AutoDJProcessor() {
     qDeleteAll(m_decks);
     m_decks.clear();
+    delete m_pCOCrossfaderEnabled;
     delete m_pCOCrossfader;
     delete m_pCOCrossfaderReverse;
 
@@ -282,7 +284,6 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
             }
         }
 
-
         TrackPointer nextTrack = getNextTrackFromQueue();
         if (!nextTrack) {
             qDebug() << "Queue is empty now";
@@ -297,6 +298,14 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         if (m_pEnabledAutoDJ->get() != 1.0) {
             m_pEnabledAutoDJ->set(1.0);
         }
+
+        // Save the Crossfader state
+        restoreCrossfaderState = m_pCOCrossfaderEnabled->toBool();
+
+        // AutoDJ requires Crossfader functionality
+        if (m_pCOCrossfaderEnabled->get() == 0.0)
+            m_pCOCrossfaderEnabled->set(1);
+
         qDebug() << "Auto DJ enabled";
 
         connect(&deck1, SIGNAL(playPositionChanged(DeckAttributes*, double)),
@@ -364,6 +373,9 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
     } else {  // Disable Auto DJ
         if (m_pEnabledAutoDJ->get() != 0.0) {
             m_pEnabledAutoDJ->set(0.0);
+            // Restore the previous Crossfader state
+            if (!restoreCrossfaderState)
+                m_pCOCrossfaderEnabled->set(0);
         }
         qDebug() << "Auto DJ disabled";
         m_eState = ADJ_DISABLED;

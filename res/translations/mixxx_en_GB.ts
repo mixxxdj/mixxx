@@ -4369,41 +4369,46 @@ Apply settings and continue?</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="26"/>
+        <source>Enable Crossfader</source>
+        <translation>Enable Crossfader</translation>
+    </message>
+    <message>
+        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="33"/>
         <source>Crossfader Curve</source>
         <translation>Crossfader Curve</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="38"/>
+        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="45"/>
         <source>Slow fade/Fast cut (additive)</source>
         <translation>Slow fade/Fast cut (additive)</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="45"/>
+        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="52"/>
         <source>Constant power</source>
         <translation>Constant power</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="58"/>
+        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="65"/>
         <source>Mixing</source>
         <translation>Mixing</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="78"/>
+        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="85"/>
         <source>Scratching</source>
         <translation>Scratching</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="117"/>
+        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="124"/>
         <source>Linear</source>
         <translation>Linear</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="143"/>
+        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="150"/>
         <source>Logarithmic</source>
         <translation>Logarithmic</translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="199"/>
+        <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="206"/>
         <source>Reverse crossfader (Hamster Style)</source>
         <translation>Reverse crossfader (Hamster Style)</translation>
     </message>

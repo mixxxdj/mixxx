@@ -35,9 +35,13 @@ class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfader
 
     QGraphicsScene* m_pxfScene;
 
+    // X-fader state
+    bool m_xFaderEnabled;
+
     // X-fader values
     double m_xFaderMode, m_transform, m_cal;
 
+    ControlProxy m_enabled;
     ControlProxy m_mode;
     ControlProxy m_curve;
     ControlProxy m_calibration;

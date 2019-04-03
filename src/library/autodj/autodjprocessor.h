@@ -170,6 +170,10 @@ class AutoDJProcessor : public QObject {
     void controlSkipNext(double value);
 
   private:
+    // Store the Crossfader state before enabling AutoDJ so that the state can
+    // be restored when disabling AutoDJ
+    bool restoreCrossfaderState;
+ 
     // Gets or sets the crossfader position while normalizing it so that -1 is
     // all the way mixed to the left side and 1 is all the way mixed to the
     // right side. (prevents AutoDJ logic from having to check for hamster mode
@@ -202,6 +206,7 @@ class AutoDJProcessor : public QObject {
 
     QList<DeckAttributes*> m_decks;
 
+    ControlProxy* m_pCOCrossfaderEnabled;
     ControlProxy* m_pCOCrossfader;
     ControlProxy* m_pCOCrossfaderReverse;
 

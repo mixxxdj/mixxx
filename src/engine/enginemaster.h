@@ -327,6 +327,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlPotmeter* m_pCrossfader;
     ControlPotmeter* m_pHeadMix;
     ControlPotmeter* m_pBalance;
+    ControlPushButton* m_pXFaderEnabled;
     ControlPushButton* m_pXFaderMode;
     ControlPotmeter* m_pXFaderCurve;
     ControlPotmeter* m_pXFaderCalibration;

@@ -156,6 +156,9 @@ EngineMaster::EngineMaster(UserSettingsPointer pConfig,
     m_pEngineSideChain = bEnableSidechain ? new EngineSideChain(pConfig) : NULL;
 
     // X-Fader Setup
+    m_pXFaderEnabled = new ControlPushButton(
+            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderEnabled"));
+    m_pXFaderEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pXFaderMode = new ControlPushButton(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"));
     m_pXFaderMode->setButtonMode(ControlPushButton::TOGGLE);
@@ -214,6 +217,7 @@ EngineMaster::~EngineMaster() {
     delete m_pXFaderCalibration;
     delete m_pXFaderCurve;
     delete m_pXFaderMode;
+    delete m_pXFaderEnabled;
 
     delete m_pMasterSync;
     delete m_pMasterSampleRate;
@@ -478,6 +482,12 @@ void EngineMaster::process(const int iBufferSize) {
                                 m_pXFaderMode->get(),
                                 m_pXFaderReverse->toBool(),
                                 &crossfaderLeftGain, &crossfaderRightGain);
+
+    // Check if crossfader has been enabled or disabled
+    if (!m_pXFaderEnabled->toBool()) {
+       crossfaderLeftGain = 0.5;
+       crossfaderRightGain = 0.5;
+    }
 
     // Make the mix for each crossfader orientation output bus.
     // m_masterGain takes care of applying the attenuation from

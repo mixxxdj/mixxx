@@ -12,9 +12,11 @@ DlgPrefCrossfader::DlgPrefCrossfader(
         : DlgPreferencePage(parent),
           m_config(config),
           m_pxfScene(NULL),
+          m_xFaderEnabled(true),
           m_xFaderMode(MIXXX_XFADER_ADDITIVE),
           m_transform(EngineXfader::kTransformDefault),
           m_cal(0.0),
+          m_enabled(EngineXfader::kXfaderConfigKey, "xFaderEnabled"),
           m_mode(EngineXfader::kXfaderConfigKey, "xFaderMode"),
           m_curve(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
           m_calibration(EngineXfader::kXfaderConfigKey, "xFaderCalibration"),
@@ -29,6 +31,9 @@ DlgPrefCrossfader::DlgPrefCrossfader(
 
     loadSettings();
 
+    connect(checkBoxEnabled, SIGNAL(clicked(bool)), this,
+            SLOT(slotApply()));
+
     connect(SliderXFader, SIGNAL(valueChanged(int)), this,
             SLOT(slotUpdateXFader()));
     connect(SliderXFader, SIGNAL(sliderMoved(int)), this,
@@ -41,9 +46,12 @@ DlgPrefCrossfader::DlgPrefCrossfader(
     // Update the crossfader curve graph and other settings when the
     // crossfader mode is changed.
     connect(radioButtonAdditive, SIGNAL(clicked(bool)), this,
-            SLOT(slotUpdate()));
+            SLOT(slotApply()));
     connect(radioButtonConstantPower, SIGNAL(clicked(bool)), this,
-            SLOT(slotUpdate()));
+            SLOT(slotApply()));
+
+    connect(checkBoxReverse, SIGNAL(clicked(bool)), this,
+            SLOT(slotApply()));
 }
 
 DlgPrefCrossfader::~DlgPrefCrossfader() {
@@ -52,6 +60,12 @@ DlgPrefCrossfader::~DlgPrefCrossfader() {
 
 // Loads the config keys and sets the widgets in the dialog to match
 void DlgPrefCrossfader::loadSettings() {
+    if (m_config->getValueString(
+            ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderEnabled")).isEmpty()) {
+        slotResetToDefaults();
+        return;
+    }
+
     // Range xFaderCurve EngineXfader::kTransformMin .. EngineXfader::kTransformMax
     m_transform = m_config->getValue(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
@@ -65,20 +79,17 @@ void DlgPrefCrossfader::loadSettings() {
             SliderXFader->maximum());
     SliderXFader->setValue(static_cast<int>(sliderVal + 0.5));
 
+    m_xFaderEnabled =
+            m_config->getValueString(ConfigKey(EngineXfader::kXfaderConfigKey,
+                "xFaderEnabled")).toInt() == 1;
+
     m_xFaderMode =
             m_config->getValueString(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode")).toInt();
 
-    if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
-        radioButtonConstantPower->setChecked(true);
-    } else {
-        radioButtonAdditive->setChecked(true);
-    }
-
     m_xFaderReverse = m_config->getValueString(
             ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse")).toInt() == 1;
-    checkBoxReverse->setChecked(m_xFaderReverse);
 
-    slotUpdateXFader();
+    slotUpdate();
     slotApply();
 }
 
@@ -91,35 +102,57 @@ void DlgPrefCrossfader::slotResetToDefaults() {
             SliderXFader->maximum());
     SliderXFader->setValue(sliderVal);
 
+    m_xFaderEnabled = true;
     m_xFaderMode = MIXXX_XFADER_ADDITIVE;
-    radioButtonAdditive->setChecked(true);
-    checkBoxReverse->setChecked(false);
+    m_xFaderReverse = false;
     slotUpdate();
-    slotApply();
 }
 
 // Apply and save any changes made in the dialog
 void DlgPrefCrossfader::slotApply() {
-    m_mode.set(m_xFaderMode);
     m_curve.set(m_transform);
     m_calibration.set(m_cal);
+
+    if (checkBoxEnabled->isChecked() != m_xFaderEnabled) {
+        m_enabled.set(checkBoxEnabled->isChecked());
+        m_xFaderEnabled = checkBoxEnabled->isChecked();
+    }
+
+    if (radioButtonAdditive->isChecked() && !radioButtonConstantPower->isChecked())
+        m_xFaderMode = MIXXX_XFADER_ADDITIVE;
+    else if (!radioButtonAdditive->isChecked() && radioButtonConstantPower->isChecked())
+        m_xFaderMode = MIXXX_XFADER_CONSTPWR;
+    m_mode.set(m_xFaderMode);
+
     if (checkBoxReverse->isChecked() != m_xFaderReverse) {
         m_reverse.set(checkBoxReverse->isChecked());
         double position = m_crossfader.get();
         m_crossfader.set(0.0 - position);
         m_xFaderReverse = checkBoxReverse->isChecked();
     }
+
+    slotUpdate();
     slotUpdateXFader();
 }
 
-// Update the dialog when the crossfader mode is changed
+// Update the dialog when the crossfader configuration is changed
 void DlgPrefCrossfader::slotUpdate() {
-    if (radioButtonAdditive->isChecked()) {
-        m_xFaderMode = MIXXX_XFADER_ADDITIVE;
+    radioButtonAdditive->setEnabled(m_xFaderEnabled);
+    radioButtonConstantPower->setEnabled(m_xFaderEnabled);
+    SliderXFader->setEnabled(m_xFaderEnabled);
+    checkBoxReverse->setEnabled(m_xFaderEnabled);
+
+    checkBoxEnabled->setChecked(m_xFaderEnabled);
+
+    if (m_xFaderMode == MIXXX_XFADER_ADDITIVE) {
+        radioButtonAdditive->setChecked(true);
+        radioButtonConstantPower->setChecked(false);
+    } else if (m_xFaderMode == MIXXX_XFADER_CONSTPWR) {
+        radioButtonAdditive->setChecked(false);
+        radioButtonConstantPower->setChecked(true);
     }
-    if (radioButtonConstantPower->isChecked()) {
-        m_xFaderMode = MIXXX_XFADER_CONSTPWR;
-    }
+
+    checkBoxReverse->setChecked(m_xFaderReverse);
 
     slotUpdateXFader();
 }
@@ -211,12 +244,16 @@ void DlgPrefCrossfader::slotUpdateXFader() {
             SliderXFader->maximum(),
             EngineXfader::kTransformMax) - 1 + EngineXfader::kTransformMin;
     m_cal = EngineXfader::getPowerCalibration(m_transform);
+    m_config->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderEnabled"),
+            ConfigValue(checkBoxEnabled->isChecked() ? 1 : 0));
     m_config->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderMode"),
             ConfigValue(m_xFaderMode));
     m_config->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderCurve"),
             ConfigValue(QString::number(m_transform)));
     m_config->set(ConfigKey(EngineXfader::kXfaderConfigKey, "xFaderReverse"),
                 ConfigValue(checkBoxReverse->isChecked() ? 1 : 0));
+
+    m_config->save();
 
     drawXfaderDisplay();
 }

@@ -20,6 +20,13 @@
    <string>Crossfader Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item row="0" column="0">
+    <widget class="QCheckBox" name="checkBoxEnabled">
+     <property name="text">
+      <string>Enable Crossfader</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
@@ -204,6 +211,7 @@
      <zorder>checkBoxReverse</zorder>
      <zorder>radioButtonConstantPower</zorder>
      <zorder>radioButtonAdditive</zorder>
+     <zorder>checkBoxEnabled</zorder>
     </widget>
    </item>
    <item>
@@ -223,6 +231,7 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
+  <tabstop>checkBoxEnabled</tabstop>
   <tabstop>radioButtonAdditive</tabstop>
   <tabstop>radioButtonConstantPower</tabstop>
   <tabstop>SliderXFader</tabstop>
