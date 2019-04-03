@@ -288,32 +288,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 namespace {
 // Get the list of devices (under "Removable Devices" section).
 QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
-#if defined(__LINUX__)
-    // To get devices on Linux, we look for directories under /media and
-    // /run/media/$USER.
-    QFileInfoList devices;
-
-    // Add folders under /media to devices.
-    devices += QDir("/media").entryInfoList(
-        QDir::AllDirs | QDir::NoDotAndDotDot);
-
-    // Add folders under /run/media/$USER to devices.
-    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
-    devices += run_media_user_dir.entryInfoList(
-        QDir::AllDirs | QDir::NoDotAndDotDot);
-
-    // Convert devices into a QList<TreeItem*> for display.
-    QList<TreeItem*> ret;
-    foreach(QFileInfo device, devices) {
-        TreeItem* folder = new TreeItem(
-            pFeature,
-            device.fileName(),
-            device.filePath() + "/");
-        ret << folder;
-    }
-
-    return ret;
-#elif defined(__WINDOWS__)
+#if defined(__WINDOWS__)
     QList<TreeItem*> ret;
     // Repopulate drive list
     QFileInfoList drives = QDir::drives();
@@ -336,6 +311,31 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
             display_path, // Displays C:
             drive.filePath()); // Displays C:/
         ret << driveLetter;
+    }
+
+    return ret;
+#elif defined(__LINUX__)
+    // To get devices on Linux, we look for directories under /media and
+    // /run/media/$USER.
+    QFileInfoList devices;
+
+    // Add folders under /media to devices.
+    devices += QDir("/media").entryInfoList(
+        QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    // Add folders under /run/media/$USER to devices.
+    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
+    devices += run_media_user_dir.entryInfoList(
+        QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    // Convert devices into a QList<TreeItem*> for display.
+    QList<TreeItem*> ret;
+    foreach(QFileInfo device, devices) {
+        TreeItem* folder = new TreeItem(
+            pFeature,
+            device.fileName(),
+            device.filePath() + "/");
+        ret << folder;
     }
 
     return ret;
