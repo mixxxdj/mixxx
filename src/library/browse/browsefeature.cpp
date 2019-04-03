@@ -285,9 +285,10 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
      onLazyChildExpandation(index);
 }
 
+#if defined(__LINUX__)
 namespace {
 // Get the list of devices (under "Removable Devices" section) on Linux.
-QList<TreeItem*> getLinuxRemovableDevices(LibraryFeature* pFeature) {
+QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
     // To get devices on Linux, we look for directories under /media and
     // /run/media/$USER.
     QFileInfoList devices;
@@ -314,6 +315,7 @@ QList<TreeItem*> getLinuxRemovableDevices(LibraryFeature* pFeature) {
     return ret;
 }
 }
+#endif
 
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
@@ -379,7 +381,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 #elif defined(__APPLE__)
         DEBUG_ASSERT(!"Trying to process DEVICE_NODE on macOS");
 #else // LINUX
-        folders += getLinuxRemovableDevices(this);
+        folders += getRemovableDevices(this);
 #endif
     } else {
         // we assume that the path refers to a folder in the file system
