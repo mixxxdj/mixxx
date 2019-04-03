@@ -4,8 +4,10 @@
 
 #import <Foundation/Foundation.h>
 
-
-// Taken from src/platformsupport/clipboard/qmacmime.mm
+// This File uses Apples Foundation Kit to converte a QUrl containing a file 
+// reference QUrl("file:///.file/id=6571367.1629051") to a normal file path 
+// QUrl Mixxx can handle. 
+// Taken from https://github.com/qt/qtbase/blob/5.11/src/platformsupport/clipboard/qmacmime.mm#L622
 
 QString stringFromNSString(const NSString *string) {
     if (!string)
