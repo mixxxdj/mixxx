@@ -285,10 +285,10 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
      onLazyChildExpandation(index);
 }
 
-#if defined(__LINUX__)
 namespace {
-// Get the list of devices (under "Removable Devices" section) on Linux.
+// Get the list of devices (under "Removable Devices" section).
 QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
+#if defined(__LINUX__)
     // To get devices on Linux, we look for directories under /media and
     // /run/media/$USER.
     QFileInfoList devices;
@@ -313,9 +313,35 @@ QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
     }
 
     return ret;
-}
-}
+#elif defined(__WINDOWS__)
+    QList<TreeItem*> ret;
+    // Repopulate drive list
+    QFileInfoList drives = QDir::drives();
+    // show drive letters
+    foreach (QFileInfo drive, drives) {
+        // Using drive.filePath() instead of drive.canonicalPath() as it
+        // freezes interface too much if there is a network share mounted
+        // (drive letter assigned) but unavailable
+        //
+        // drive.canonicalPath() make a system call to the underlying filesystem
+        // introducing delay if it is unreadable.
+        // drive.filePath() doesn't make any access to the filesystem and consequently
+        // shorten the delay
+        QString display_path = drive.filePath();
+        if (display_path.endsWith("/")) {
+            display_path.chop(1);
+        }
+        TreeItem* driveLetter = new TreeItem(
+            pFeature,
+            display_path, // Displays C:
+            drive.filePath()); // Displays C:/
+        ret << driveLetter;
+    }
+
+    return ret;
 #endif
+}
+}
 
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
@@ -355,33 +381,10 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 
     // If we are on the special device node
     if (path == DEVICE_NODE) {
-#if defined(__WINDOWS__)
-        // Repopulate drive list
-        QFileInfoList drives = QDir::drives();
-        // show drive letters
-        foreach (QFileInfo drive, drives) {
-            // Using drive.filePath() instead of drive.canonicalPath() as it
-            // freezes interface too much if there is a network share mounted
-            // (drive letter assigned) but unavailable
-            //
-            // drive.canonicalPath() make a system call to the underlying filesystem
-            // introducing delay if it is unreadable.
-            // drive.filePath() doesn't make any access to the filesystem and consequently
-            // shorten the delay
-            QString display_path = drive.filePath();
-            if (display_path.endsWith("/")) {
-                display_path.chop(1);
-            }
-            TreeItem* driveLetter = new TreeItem(
-                this,
-                display_path, // Displays C:
-                drive.filePath()); // Displays C:/
-            folders << driveLetter;
-        }
-#elif defined(__APPLE__)
-        DEBUG_ASSERT(!"Trying to process DEVICE_NODE on macOS");
-#else // LINUX
+#if defined(__WINDOWS__) || defined(__LINUX__)
         folders += getRemovableDevices(this);
+#else // __APPLE__
+        DEBUG_ASSERT(!"Trying to process DEVICE_NODE on macOS");
 #endif
     } else {
         // we assume that the path refers to a folder in the file system
