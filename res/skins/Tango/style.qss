@@ -235,16 +235,15 @@ WWidgetGroup {
 #CrossfaderContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   qproperty-layoutSpacing: 0px;
-  border-radius: 3px;
+  border-radius: 2px;
   border-top-right-radius: 0px;
   border-top-left-radius: 0px;
-  background-color: #252525;
   }
   #MixerbarSection {
     margin: 0px;
   }
   #CrossfaderContainer {
-    margin: 0px 10px;
+    margin: 0px 8px;
   }
   #MixerbarSection:hover,
   #CrossfaderContainer:hover {
