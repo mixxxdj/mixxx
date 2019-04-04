@@ -163,29 +163,14 @@
                     <Layout>vertical</Layout>
                     <SizePolicy>me,me</SizePolicy>
                     <Children>
-                      <WidgetGroup>
-                        <ObjectName>AlignCenterTop</ObjectName>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>min,me</SizePolicy>
-                        <Children>
-
-                          <Template src="skin:button_3state.xml">
-                            <SetVariable name="TooltipId">orientation</SetVariable>
-                            <SetVariable name="Size">34f,15f</SetVariable>
-                            <SetVariable name="state_0">orientation_deckLeft_left</SetVariable>
-                            <SetVariable name="state_1">orientation_deck_master</SetVariable>
-                            <SetVariable name="state_2">orientation_deckLeft_right</SetVariable>
-                            <SetVariable name="ConfigKey">[Channel1],orientation</SetVariable>
-                          </Template>
-
-                          <WidgetGroup><Size>min,me</Size></WidgetGroup>
-                        </Children>
-                        <Connection>
-                          <ConfigKey>[Channel1],orientation</ConfigKey>
-                          <Transform><IsEqual>0</IsEqual><Not/></Transform>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup>
+                      <Template src="skin:button_3state.xml">
+                        <SetVariable name="TooltipId">orientation</SetVariable>
+                        <SetVariable name="Size">34f,15f</SetVariable>
+                        <SetVariable name="state_0">orientation_deckLeft_left</SetVariable>
+                        <SetVariable name="state_1">orientation_deck_master</SetVariable>
+                        <SetVariable name="state_2">orientation_deckLeft_right</SetVariable>
+                        <SetVariable name="ConfigKey">[Channel1],orientation</SetVariable>
+                      </Template>
                     </Children>
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
@@ -222,29 +207,14 @@
                     <Layout>vertical</Layout>
                     <SizePolicy>me,me</SizePolicy>
                     <Children>
-                      <WidgetGroup>
-                        <ObjectName>AlignCenterTop</ObjectName>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>min,me</SizePolicy>
-                        <Children>
-
-                          <Template src="skin:button_3state.xml">
-                            <SetVariable name="TooltipId">orientation</SetVariable>
-                            <SetVariable name="Size">34f,15f</SetVariable>
-                            <SetVariable name="state_0">orientation_deckRight_left</SetVariable>
-                            <SetVariable name="state_1">orientation_deck_master</SetVariable>
-                            <SetVariable name="state_2">orientation_deckRight_right</SetVariable>
-                            <SetVariable name="ConfigKey">[Channel2],orientation</SetVariable>
-                          </Template>
-
-                          <WidgetGroup><Size>min,me</Size></WidgetGroup>
-                        </Children>
-                        <Connection>
-                          <ConfigKey>[Channel2],orientation</ConfigKey>
-                          <Transform><IsEqual>2</IsEqual><Not/></Transform>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup>
+                      <Template src="skin:button_3state.xml">
+                        <SetVariable name="TooltipId">orientation</SetVariable>
+                        <SetVariable name="Size">34f,15f</SetVariable>
+                        <SetVariable name="state_0">orientation_deckRight_left</SetVariable>
+                        <SetVariable name="state_1">orientation_deck_master</SetVariable>
+                        <SetVariable name="state_2">orientation_deckRight_right</SetVariable>
+                        <SetVariable name="ConfigKey">[Channel2],orientation</SetVariable>
+                      </Template>
                     </Children>
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
