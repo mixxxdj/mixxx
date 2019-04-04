@@ -263,10 +263,11 @@ WWidgetGroup {
   image: url(skin:/buttons/btn_booth.svg) no-repeat center center;
 }
 #MixerbarKnob {
-  margin: 2px 0px 0px 0px;
+  qproperty-layoutAlignment: 'AlignCenter';
+  margin-top: 0px;
 }
 #MixerbarSlider {
-  margin: 0px 0px 0px 0px;
+  margin: 0px;
 }
 #MixerbarCover {
   /* Note(ronso0): background is #333, so this has to blend in */
@@ -1795,23 +1796,28 @@ decks, samplers, mic, aux, fx */
 
 /* Master FX buttons in top bar's mixer section are
 styled differently because of their importance */
-#MasterFxButton {
+#FxMasterToggles {
+  qproperty-layoutSpacing: 1;
+}
+
+#FxMasterButton {
   font-size: 13px/13px;
   font-weight: bold;
   text-align: center;
-  background-color: #333;
+  border-radius: 1px;
   }
-  #MasterFxButton[displayValue="0"] {
+  #FxMasterButton[displayValue="0"] {
     color: #888;
+    background: #1e1e1e;
     }
-    #MasterFxButton[displayValue="0"]:hover {
+    #FxMasterButton[displayValue="0"]:hover {
       border: 1px solid #ff8f00;
     }
-  #MasterFxButton[displayValue="1"] {
+  #FxMasterButton[displayValue="1"] {
     background-color: #ff8f00;
     color: #0f0f0f;
     }
-    #MasterFxButton[displayValue="1"]:hover {
+    #FxMasterButton[displayValue="1"]:hover {
       border: 1px solid #fff;
     }
 
