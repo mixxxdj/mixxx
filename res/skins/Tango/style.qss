@@ -56,16 +56,17 @@ WWidgetGroup {
     text-align: center;
     color: #fff;
   }
-  #UnconfiguredHeadphoneText,
-  #UnconfiguredHeadphoneTextPrevDeck {
-    background-color: rgba(51, 51, 51, 200);
+  #UnconfiguredHeadphoneTopbar,
+  #UnconfiguredHeadphonePrevDeck {
     font-size: 12px/12px;
     color: #aaa;
     }
-    #UnconfiguredHeadphoneText {
-      margin-left: 5px;
+    #UnconfiguredHeadphoneTopbar {
+      background-color: rgba(30, 30, 30, 220);
+      padding-left: 5px;
     }
-    #UnconfiguredHeadphoneTextPrevDeck {
+    #UnconfiguredHeadphonePrevDeck {
+      background-color: rgba(51, 51, 51, 200);
       margin-left: 25px;
       padding: 1px 0px;
     }
@@ -234,16 +235,15 @@ WWidgetGroup {
 #CrossfaderContainer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
   qproperty-layoutSpacing: 0px;
-  border-radius: 3px;
+  border-radius: 2px;
   border-top-right-radius: 0px;
   border-top-left-radius: 0px;
-  background-color: #252525;
   }
   #MixerbarSection {
     margin: 0px;
   }
   #CrossfaderContainer {
-    margin: 0px 10px;
+    margin: 0px 8px;
   }
   #MixerbarSection:hover,
   #CrossfaderContainer:hover {
@@ -263,10 +263,11 @@ WWidgetGroup {
   image: url(skin:/buttons/btn_booth.svg) no-repeat center center;
 }
 #MixerbarKnob {
-  margin: 2px 0px 0px 0px;
+  qproperty-layoutAlignment: 'AlignCenter';
+  margin-top: 0px;
 }
 #MixerbarSlider {
-  margin: 0px 0px 0px 0px;
+  margin: 0px;
 }
 #MixerbarCover {
   /* Note(ronso0): background is #333, so this has to blend in */
@@ -1301,24 +1302,23 @@ WBeatSpinBox,
   background: url(skin:/knobs_sliders/knob_bg_disabled.svg) no-repeat center center;
 }
 
-#QuickFxEnableButton_Side {
-  background-color: #585858;
-  margin: 2px 0px 2px 0px;
+#QuickFXSide {
+  padding: 0px;
 }
-#QuickFxEnableButton_Bottom {
-  background-color: #585858;
-  margin: 2px 4px 2px 4px;
-}
-  #QuickFxEnableButton_Side[displayValue="0"]:hover,
-  #QuickFxEnableButton_Bottom[displayValue="0"]:hover {
+#QuickFXBottom {
+  padding: 4px 2px 4px 2px;
+  }
+  #QuickFXButton[displayValue="0"] {
+    background-color: #585858;
+  }
+    #QuickFXButton[displayValue="0"]:hover {
+      border: 1px solid #ff8f00;
+      }
+  #QuickFXButton[displayValue="1"] {
+    background-color: #999;
     border: 1px solid #ff8f00;
     }
-  #QuickFxEnableButton_Side[displayValue="1"],
-  #QuickFxEnableButton_Bottom[displayValue="1"] {
-    border: 1px solid #ff8f00;
-    }
-    #QuickFxEnableButton_Side[displayValue="1"]:hover,
-    #QuickFxEnableButton_Bottom[displayValue="1"]:hover {
+    #QuickFXButton[displayValue="1"]:hover {
       border: 1px solid #eeeeee;
     }
 
@@ -1797,23 +1797,28 @@ decks, samplers, mic, aux, fx */
 
 /* Master FX buttons in top bar's mixer section are
 styled differently because of their importance */
-#MasterFxButton {
+#FxMasterToggles {
+  qproperty-layoutSpacing: 1;
+}
+
+#FxMasterButton {
   font-size: 13px/13px;
   font-weight: bold;
   text-align: center;
-  background-color: #333;
+  border-radius: 1px;
   }
-  #MasterFxButton[displayValue="0"] {
+  #FxMasterButton[displayValue="0"] {
     color: #888;
+    background: #1e1e1e;
     }
-    #MasterFxButton[displayValue="0"]:hover {
+    #FxMasterButton[displayValue="0"]:hover {
       border: 1px solid #ff8f00;
     }
-  #MasterFxButton[displayValue="1"] {
+  #FxMasterButton[displayValue="1"] {
     background-color: #ff8f00;
     color: #0f0f0f;
     }
-    #MasterFxButton[displayValue="1"]:hover {
+    #FxMasterButton[displayValue="1"]:hover {
       border: 1px solid #fff;
     }
 
