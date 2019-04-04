@@ -106,6 +106,46 @@ void PlayerInfo::timerEvent(QTimerEvent* pTimerEvent) {
     updateCurrentPlayingDeck();
 }
 
+bool PlayerInfo::isDeckPlaying(int deckNr){
+    DeckControls* pDc = getDeckControls(deckNr);
+    return pDc->m_play.get() != 0;
+}
+
+double PlayerInfo::getDeckVolume(int deckNr)
+{
+    DeckControls* pDc = getDeckControls(deckNr);
+    if (pDc->m_play.get() == 0.0) {
+        return 0;
+    }
+
+    if (pDc->m_pregain.get() <= 0.25) {
+        return 0;
+    }
+
+    double fvol = pDc->m_volume.get();
+    if (fvol == 0.0) {
+        return 0;
+    }
+
+    double xfl, xfr;
+    // TODO: supply correct parameters to the function. If the hamster style
+    // for the crossfader is enabled, the result is currently wrong.
+    EngineXfader::getXfadeGains(m_pCOxfader->get(), 1.0, 0.0, false, false,
+                                &xfl, &xfr);
+
+    int orient = pDc->m_orientation.get();
+    double xfvol;
+    if (orient == EngineChannel::LEFT) {
+        xfvol = xfl;
+    } else if (orient == EngineChannel::RIGHT) {
+        xfvol = xfr;
+    } else {
+        xfvol = 1.0;
+    }
+
+    return fvol * xfvol;
+}
+
 void PlayerInfo::updateCurrentPlayingDeck() {
     QMutexLocker locker(&m_mutex);
 
@@ -113,38 +153,10 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     int maxDeck = -1;
 
     for (int i = 0; i < (int)PlayerManager::numDecks(); ++i) {
-        DeckControls* pDc = getDeckControls(i);
 
-        if (pDc->m_play.get() == 0.0) {
+        double dvol = getDeckVolume(i);
+        if(dvol == 0.0)
             continue;
-        }
-
-        if (pDc->m_pregain.get() <= 0.25) {
-            continue;
-        }
-
-        double fvol = pDc->m_volume.get();
-        if (fvol == 0.0) {
-            continue;
-        }
-
-        double xfl, xfr;
-        // TODO: supply correct parameters to the function. If the hamster style
-        // for the crossfader is enabled, the result is currently wrong.
-        EngineXfader::getXfadeGains(m_pCOxfader->get(), 1.0, 0.0, MIXXX_XFADER_ADDITIVE, false,
-                                    &xfl, &xfr);
-
-        int orient = pDc->m_orientation.get();
-        double xfvol;
-        if (orient == EngineChannel::LEFT) {
-            xfvol = xfl;
-        } else if (orient == EngineChannel::RIGHT) {
-            xfvol = xfr;
-        } else {
-            xfvol = 1.0;
-        }
-
-        double dvol = fvol * xfvol;
         if (dvol > maxVolume) {
             maxDeck = i;
             maxVolume = dvol;

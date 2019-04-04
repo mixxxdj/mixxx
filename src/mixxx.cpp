@@ -46,6 +46,7 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "mixer/playermanager.h"
 #include "recording/recordingmanager.h"
+#include "oscclient/oscclientmanager.h"
 #include "broadcast/broadcastmanager.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
@@ -144,6 +145,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pSoundManager(nullptr),
           m_pPlayerManager(nullptr),
           m_pRecordingManager(nullptr),
+          m_pOscClientManager(nullptr),
 #ifdef __BROADCAST__
           m_pBroadcastManager(nullptr),
 #endif
@@ -556,6 +558,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             SIGNAL(currentPlayingDeckChanged(int)),
             this, SLOT(slotChangedPlayingDeck(int)));
 
+    m_pOscClientManager = new OscClientManager(pConfig, m_pEngine);
+
     // this has to be after the OpenGL widgets are created or depending on a
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood ?? -- vrince
@@ -661,6 +665,8 @@ void MixxxMainWindow::finalize() {
     // RecordingManager depends on config, engine
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting RecordingManager";
     delete m_pRecordingManager;
+
+    delete m_pOscClientManager;
 
 #ifdef __BROADCAST__
     // BroadcastManager depends on config, engine

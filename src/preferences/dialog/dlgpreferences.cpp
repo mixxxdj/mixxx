@@ -52,6 +52,7 @@
 #endif
 
 #include "preferences/dialog/dlgprefrecord.h"
+#include "preferences/dialog/dlgprefosc.h"
 #include "preferences/dialog/dlgprefbeats.h"
 #include "preferences/dialog/dlgprefkey.h"
 #include "preferences/dialog/dlgprefreplaygain.h"
@@ -139,6 +140,9 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
 
     m_recordingPage = new DlgPrefRecord(this, m_pConfig);
     addPageWidget(m_recordingPage);
+
+    m_woscPage = new DlgPrefOsc(this, m_pConfig);
+    addPageWidget(m_woscPage);
 
     m_beatgridPage = new DlgPrefBeats(this, m_pConfig);
     addPageWidget (m_beatgridPage);
@@ -277,6 +281,12 @@ void DlgPreferences::createIcons() {
     m_pRecordingButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
+    m_pOscButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pOscButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_osc.png"));
+    m_pOscButton->setText(0, tr("OSC"));
+    m_pOscButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pOscButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
     m_pBeatDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pBeatDetectionButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.svg"));
     m_pBeatDetectionButton->setText(0, tr("Beat Detection"));
@@ -349,6 +359,8 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
 #endif
     } else if (current == m_pRecordingButton) {
         switchToPage(m_recordingPage);
+    } else if (current == m_pOscButton) {
+        switchToPage(m_woscPage);
     } else if (current == m_pBeatDetectionButton) {
         switchToPage(m_beatgridPage);
     } else if (current == m_pKeyDetectionButton) {

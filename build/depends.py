@@ -21,6 +21,12 @@ class PortAudio(Dependence):
     def sources(self, build):
         return ['src/soundio/sounddeviceportaudio.cpp']
 
+class LibLo(Dependence):
+    def configure(self, build, conf):
+        libs = ['lo']
+        
+        if not conf.CheckLib(libs):
+            raise Exception("Did not find liblo")
 
 class PortMIDI(Dependence):
 
@@ -724,6 +730,7 @@ class MixxxCore(Feature):
                    "src/preferences/dialog/dlgpreflibrary.cpp",
                    "src/preferences/dialog/dlgprefnovinyl.cpp",
                    "src/preferences/dialog/dlgprefrecord.cpp",
+                   "src/preferences/dialog/dlgprefosc.cpp",
                    "src/preferences/dialog/dlgprefreplaygain.cpp",
                    "src/preferences/dialog/dlgprefsound.cpp",
                    "src/preferences/dialog/dlgprefsounditem.cpp",
@@ -1011,6 +1018,9 @@ class MixxxCore(Feature):
                    "src/recording/recordingmanager.cpp",
                    "src/engine/sidechain/enginerecord.cpp",
 
+                   "src/oscclient/oscclientmanager.cpp",
+                   "src/engine/sidechain/engineoscclient.cpp",
+
                    # External Library Features
                    "src/library/baseexternallibraryfeature.cpp",
                    "src/library/baseexternaltrackmodel.cpp",
@@ -1272,6 +1282,7 @@ class MixxxCore(Feature):
             'src/preferences/dialog/dlgpreflibrarydlg.ui',
             'src/preferences/dialog/dlgprefnovinyldlg.ui',
             'src/preferences/dialog/dlgprefrecorddlg.ui',
+            'src/preferences/dialog/dlgprefoscdlg.ui',
             'src/preferences/dialog/dlgprefreplaygaindlg.ui',
             'src/preferences/dialog/dlgprefsounddlg.ui',
             'src/preferences/dialog/dlgprefsounditem.ui',
@@ -1511,7 +1522,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp]
+                QueenMaryDsp, LibLo]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
