@@ -32,7 +32,8 @@
                     <Children>
                       <Template src="skin:mixer_channel_4decks.xml">
                         <SetVariable name="channum">3</SetVariable>
-                        <SetVariable name="deckSide">Left</SetVariable>
+                        <SetVariable name="xfaderLeft">default</SetVariable>
+                        <SetVariable name="xfaderRight">warning</SetVariable>
                       </Template>
                     </Children>
                     <Connection>
@@ -43,7 +44,8 @@
 
                   <Template src="skin:mixer_channel_left.xml">
                     <SetVariable name="channum">1</SetVariable>
-                    <SetVariable name="deckSide">Left</SetVariable>
+                    <SetVariable name="xfaderLeft">default</SetVariable>
+                    <SetVariable name="xfaderRight">warning</SetVariable>
                   </Template>
 
                   <WidgetGroup>
@@ -130,7 +132,8 @@
 
                   <Template src="skin:mixer_channel_right.xml">
                     <SetVariable name="channum">2</SetVariable>
-                    <SetVariable name="deckSide">Right</SetVariable>
+                    <SetVariable name="xfaderLeft">warning</SetVariable>
+                    <SetVariable name="xfaderRight">default</SetVariable>
                   </Template>
 
                   <WidgetGroup>
@@ -139,7 +142,8 @@
                     <Children>
                       <Template src="skin:mixer_channel_4decks.xml">
                         <SetVariable name="channum">4</SetVariable>
-                        <SetVariable name="deckSide">Right</SetVariable>
+                        <SetVariable name="xfaderLeft">warning</SetVariable>
+                        <SetVariable name="xfaderRight">default</SetVariable>
                       </Template>
                       <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                     </Children>
@@ -159,17 +163,14 @@
                   <!-- Channel1 xfader switch:
                       visible if deck is NOT assigned to left side of xFader -->
                   <WidgetGroup>
-                    <ObjectName>AlignCenterTop</ObjectName>
+                    <ObjectName>AlignCenter</ObjectName>
                     <Layout>vertical</Layout>
                     <SizePolicy>me,me</SizePolicy>
                     <Children>
-                      <Template src="skin:button_3state.xml">
-                        <SetVariable name="TooltipId">orientation</SetVariable>
-                        <SetVariable name="Size">34f,15f</SetVariable>
-                        <SetVariable name="state_0">orientation_deckLeft_left</SetVariable>
-                        <SetVariable name="state_1">orientation_deck_master</SetVariable>
-                        <SetVariable name="state_2">orientation_deckLeft_right</SetVariable>
-                        <SetVariable name="ConfigKey">[Channel1],orientation</SetVariable>
+                      <Template src="skin:button_xfader_deck.xml">
+                        <SetVariable name="group">[Channel1]</SetVariable>
+                        <SetVariable name="xfaderLeft">default</SetVariable>
+                        <SetVariable name="xfaderRight">warning</SetVariable>
                       </Template>
                     </Children>
                     <Connection>
@@ -203,17 +204,14 @@
                   <!-- Channel2 xfader switch:
                       visible if deck is NOT assigned to right side of xFader -->
                   <WidgetGroup>
-                    <ObjectName>AlignCenterTop</ObjectName>
+                    <ObjectName>AlignCenter</ObjectName>
                     <Layout>vertical</Layout>
                     <SizePolicy>me,me</SizePolicy>
                     <Children>
-                      <Template src="skin:button_3state.xml">
-                        <SetVariable name="TooltipId">orientation</SetVariable>
-                        <SetVariable name="Size">34f,15f</SetVariable>
-                        <SetVariable name="state_0">orientation_deckRight_left</SetVariable>
-                        <SetVariable name="state_1">orientation_deck_master</SetVariable>
-                        <SetVariable name="state_2">orientation_deckRight_right</SetVariable>
-                        <SetVariable name="ConfigKey">[Channel2],orientation</SetVariable>
+                      <Template src="skin:button_xfader_deck.xml">
+                        <SetVariable name="group">[Channel2]</SetVariable>
+                        <SetVariable name="xfaderLeft">warning</SetVariable>
+                        <SetVariable name="xfaderRight">default</SetVariable>
                       </Template>
                     </Children>
                     <Connection>
