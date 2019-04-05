@@ -1,4 +1,20 @@
 <Template>
+
+  <SingletonDefinition>
+    <ObjectName>CrossfaderSingleton</ObjectName>
+    <Children>
+      <SliderComposed>
+        <TooltipId>crossfader</TooltipId>
+        <Handle scalemode="STRETCH_ASPECT">knob_crossfader.svg</Handle>
+        <Slider>slider_crossfader.svg</Slider>
+        <Horizontal>true</Horizontal>
+        <Connection>
+          <ConfigKey>[Master],crossfader</ConfigKey>
+        </Connection>
+      </SliderComposed>
+    </Children>
+  </SingletonDefinition>
+
   <WidgetGroup>
     <ObjectName>Mixer</ObjectName>
     <SizePolicy>max,me</SizePolicy>
@@ -185,15 +201,44 @@
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,min</SizePolicy>
                     <Children>
-                      <SliderComposed>
-                        <TooltipId>crossfader</TooltipId>
-                        <Handle scalemode="STRETCH_ASPECT">knob_crossfader.svg</Handle>
-                        <Slider>slider_crossfader.svg</Slider>
-                        <Horizontal>true</Horizontal>
+                      <SingletonContainer>
+                        <ObjectName>CrossfaderSingleton</ObjectName>
                         <Connection>
-                          <ConfigKey>[Master],crossfader</ConfigKey>
+                          <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                          <BindProperty>visible</BindProperty>
                         </Connection>
-                      </SliderComposed>
+                      </SingletonContainer>
+                      <WidgetGroup>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>CrossfaderSingleton</ObjectName>
+                            <Connection>
+                              <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </SingletonContainer>
+                          <SliderComposed>
+                            <TooltipId>crossfader</TooltipId>
+                            <Handle scalemode="STRETCH_ASPECT">knob_crossfader.svg</Handle>
+                            <Slider>slider_crossfader_small.svg</Slider>
+                            <Horizontal>true</Horizontal>
+                            <Connection>
+                              <ConfigKey>[Master],crossfader</ConfigKey>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+                              <Transform><Not/></Transform>
+                              <BindProperty>visible</BindProperty>
+                            </Connection>
+                          </SliderComposed>
+                        </Children>
+                        <Connection>
+                          <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
+                          <Transform><Not/></Transform>
+                          <BindProperty>visible</BindProperty>
+                        </Connection>
+                      </WidgetGroup>
                     </Children>
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
