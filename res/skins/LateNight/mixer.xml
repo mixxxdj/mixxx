@@ -37,6 +37,8 @@
             <Layout>vertical</Layout>
             <SizePolicy>min,min</SizePolicy>
             <Children>
+              <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
+
               <WidgetGroup><!-- Channel controls -->
                 <ObjectName>AlignHCenter</ObjectName>
                 <SizePolicy>min,min</SizePolicy>
@@ -179,15 +181,16 @@
                   <!-- Channel1 xfader switch:
                       visible if deck is NOT assigned to left side of xFader -->
                   <WidgetGroup>
-                    <ObjectName>AlignCenter</ObjectName>
                     <Layout>vertical</Layout>
-                    <SizePolicy>me,me</SizePolicy>
+                    <SizePolicy>me,min</SizePolicy>
                     <Children>
+                      <WidgetGroup><Size>min,2f</Size></WidgetGroup>
                       <Template src="skin:button_xfader_deck.xml">
                         <SetVariable name="group">[Channel1]</SetVariable>
                         <SetVariable name="xfaderLeft">default</SetVariable>
                         <SetVariable name="xfaderRight">warning</SetVariable>
                       </Template>
+                      <WidgetGroup><Size>min,me</Size></WidgetGroup>
                     </Children>
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
@@ -240,24 +243,21 @@
                         </Connection>
                       </WidgetGroup>
                     </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
                   </WidgetGroup>
 
                   <!-- Channel2 xfader switch:
                       visible if deck is NOT assigned to right side of xFader -->
                   <WidgetGroup>
-                    <ObjectName>AlignCenter</ObjectName>
                     <Layout>vertical</Layout>
-                    <SizePolicy>me,me</SizePolicy>
+                    <SizePolicy>me,min</SizePolicy>
                     <Children>
+                      <WidgetGroup><Size>min,2f</Size></WidgetGroup>
                       <Template src="skin:button_xfader_deck.xml">
                         <SetVariable name="group">[Channel2]</SetVariable>
                         <SetVariable name="xfaderLeft">warning</SetVariable>
                         <SetVariable name="xfaderRight">default</SetVariable>
                       </Template>
+                      <WidgetGroup><Size>min,me</Size></WidgetGroup>
                     </Children>
                     <Connection>
                       <ConfigKey persist="true">[Skin],show_4decks</ConfigKey>
@@ -267,7 +267,13 @@
                   </WidgetGroup><!-- /Channel2 xfader switch -->
 
                 </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_xfader</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup><!-- /Crossfader + Channel1/2 assign switches -->
+
+              <WidgetGroup><SizePolicy>min,e</SizePolicy></WidgetGroup>
 
             </Children>
           </WidgetGroup>

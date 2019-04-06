@@ -209,7 +209,7 @@ WTime {
   }
 
   #MixerContainer {
-    qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
     background-color: #1e1e1e;
     padding-top: 3px;
   }
