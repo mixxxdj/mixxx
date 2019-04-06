@@ -23,6 +23,16 @@ class PortAudio(Dependence):
 
     def sources(self, build):
         return ['soundio/sounddeviceportaudio.cpp']
+        
+class OSXFilePathUrlBackport(Dependence):
+
+    def configure(self, build, conf):
+        return
+
+    def sources(self, build):
+    	if build.platform_is_osx:
+        	return ['util/filepathurl.mm']
+        return []
 
 
 class PortMIDI(Dependence):
@@ -93,6 +103,13 @@ class CoreServices(Dependence):
             return
         build.env.Append(CPPPATH='/System/Library/Frameworks/CoreServices.framework/Headers/')
         build.env.Append(LINKFLAGS='-framework CoreServices')
+
+class Foundation(Dependence):
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(CPPPATH='/System/Library/Frameworks/Foundation.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework Foundation')
 
 class IOKit(Dependence):
     """Used for battery measurements and controlling the screensaver on OS X and iOS."""
@@ -1519,8 +1536,8 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, Ebur128Mit, PortAudio, PortMIDI, Qt, TestHeaders,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
-                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer]
+                Chromaprint, RubberBand, SecurityFramework, CoreServices, Foundation, IOKit,
+                QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, OSXFilePathUrlBackport]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
