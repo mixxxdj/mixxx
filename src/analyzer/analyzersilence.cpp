@@ -103,8 +103,10 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
         pIntroCue->setType(Cue::INTRO);
         pIntroCue->setSource(Cue::AUTOMATIC);
         pIntroCue->setPosition(mixxx::kAnalysisChannels * m_iSignalStart);
+        pIntroCue->setLength(0.0);
     } else if (pIntroCue->getSource() != Cue::MANUAL) {
         pIntroCue->setPosition(mixxx::kAnalysisChannels * m_iSignalStart);
+        pIntroCue->setLength(0.0);
     }
 
     CuePointer pOutroCue = tio->findCueByType(Cue::OUTRO);
@@ -115,6 +117,7 @@ void AnalyzerSilence::finalize(TrackPointer tio) {
         pOutroCue->setPosition(-1.0);
         pOutroCue->setLength(mixxx::kAnalysisChannels * m_iSignalEnd);
     } else if (pOutroCue->getSource() != Cue::MANUAL) {
+        pOutroCue->setPosition(-1.0);
         pOutroCue->setLength(mixxx::kAnalysisChannels * m_iSignalEnd);
     }
 }
