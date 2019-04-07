@@ -133,9 +133,10 @@ bool DragAndDropHelper::allowLoadToPlayer(
 }
 
 //static
-bool DragAndDropHelper::allowLoadToPlayer(const QString& group,
-                                  bool isPlaying,
-                                  UserSettingsPointer pConfig) {
+bool DragAndDropHelper::allowLoadToPlayer(
+        const QString& group,
+        bool isPlaying,
+        UserSettingsPointer pConfig) {
     // Always allow loads to preview decks.
     if (PlayerManager::isPreviewDeckGroup(group)) {
         return true;
