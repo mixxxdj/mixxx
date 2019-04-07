@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="en_GB" sourcelanguage="en" version="2.0">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="en_GB" sourcelanguage="en" version="2.1">
 <context>
     <name>:</name>
     <message>
@@ -2920,6 +2920,34 @@
     </message>
 </context>
 <context>
+    <name>DlgAbout</name>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="35"/>
+        <source>Mixxx %1 Development Team</source>
+        <translation>Mixxx %1 Development Team</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
+        <source>With contributions from:</source>
+        <translation>With contributions from:</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
+        <source>And special thanks to:</source>
+        <translation>And special thanks to:</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
+        <source>Past Developers</source>
+        <translation>Past Developers</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
+        <source>Past Contributors</source>
+        <translation>Past Contributors</translation>
+    </message>
+</context>
+<context>
     <name>DlgAboutDlg</name>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="26"/>
@@ -4681,11 +4709,7 @@ CUP mode:
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="262"/>
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="677"/>
         <source>None</source>
-        <extracomment>Displayed when no effect is selected
-----------
-Displayed when no effect is selected
-----------
-Displayed when no effect is selected</extracomment>
+        <extracomment>Displayed when no effect is selected</extracomment>
         <translation>None</translation>
     </message>
 </context>
@@ -5898,11 +5922,7 @@ The loudness target is approximate and assumes track pregain and master output l
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="181"/>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="204"/>
         <source> ms</source>
-        <extracomment>milliseconds
-----------
-milliseconds
-----------
-milliseconds</extracomment>
+        <extracomment>milliseconds</extracomment>
         <translation> ms</translation>
     </message>
     <message>
@@ -9220,132 +9240,137 @@ Fully right: end of the effect period</source>
         <translation>Error setting non-blocking mode:</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="263"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="98"/>
+        <source>Error setting tls mode:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="282"/>
         <source>Error setting hostname!</source>
         <translation>Error setting hostname!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="270"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="289"/>
         <source>Error setting port!</source>
         <translation>Error setting port!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="276"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="295"/>
         <source>Error setting password!</source>
         <translation>Error setting password!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="282"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="301"/>
         <source>Error setting mount!</source>
         <translation>Error setting mount!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="288"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="307"/>
         <source>Error setting username!</source>
         <translation>Error setting username!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="293"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="312"/>
         <source>Error setting stream name!</source>
         <translation>Error setting stream name!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="298"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="317"/>
         <source>Error setting stream description!</source>
         <translation>Error setting stream description!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="303"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="322"/>
         <source>Error setting stream genre!</source>
         <translation>Error setting stream genre!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="308"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="327"/>
         <source>Error setting stream url!</source>
         <translation>Error setting stream url!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="313"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="332"/>
         <source>Error setting stream public!</source>
         <translation>Error setting stream public!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="339"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="358"/>
         <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
         <translation>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="342"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="361"/>
         <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
         <translation>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="350"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="369"/>
         <source>Error setting bitrate</source>
         <translation>Error setting bitrate</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="365"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="384"/>
         <source>Error: unknown server protocol!</source>
         <translation>Error: unknown server protocol!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="370"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="389"/>
         <source>Error: libshout only supports Shoutcast with MP3 format!</source>
         <translation>Error: libshout only supports Shoutcast with MP3 format!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="376"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="395"/>
         <source>Error setting protocol!</source>
         <translation>Error setting protocol!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="604"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="623"/>
         <source>Network cache overflow</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="812"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="837"/>
         <source>Connection error</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="813"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="838"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="827"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="852"/>
         <source>Connection message</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="828"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="853"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="878"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="903"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="881"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="906"/>
         <source>Lost connection to streaming server.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="886"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="911"/>
         <source>Please check your connection to the Internet.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="921"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="946"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>Can&apos;t connect to streaming server</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="923"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="948"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>Please check your connection to the Internet and verify that your username and password are correct.</translation>
     </message>
@@ -10025,7 +10050,6 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="344"/>
         <source>Key</source>
-        <extracomment>The musical key of a track</extracomment>
         <translation>Key</translation>
     </message>
     <message>
@@ -11148,7 +11172,6 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="694"/>
         <source>Track Key</source>
-        <extracomment>The musical key of a track</extracomment>
         <translation>Track Key</translation>
     </message>
     <message>
@@ -11644,34 +11667,6 @@ Fully right: end of the effect period</source>
         <location filename="../../src/library/traktor/traktorfeature.cpp" line="614"/>
         <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
         <translation>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</translation>
-    </message>
-</context>
-<context>
-    <name>Ui</name>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="35"/>
-        <source>Mixxx %1 Development Team</source>
-        <translation>Mixxx %1 Development Team</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
-        <source>With contributions from:</source>
-        <translation>With contributions from:</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
-        <source>And special thanks to:</source>
-        <translation>And special thanks to:</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
-        <source>Past Developers</source>
-        <translation>Past Developers</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
-        <source>Past Contributors</source>
-        <translation>Past Contributors</translation>
     </message>
 </context>
 <context>
@@ -12231,22 +12226,20 @@ Fully right: end of the effect period</source>
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="370"/>
+        <location filename="../../src/widget/woverview.cpp" line="369"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Ready to play, analyzing ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="373"/>
-        <location filename="../../src/widget/woverview.cpp" line="383"/>
+        <location filename="../../src/widget/woverview.cpp" line="372"/>
+        <location filename="../../src/widget/woverview.cpp" line="382"/>
         <source>Loading track ..</source>
-        <extracomment>Text on waveform overview when file is cached from source
-----------
-Text on waveform overview when file is cached from source</extracomment>
+        <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Loading track ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="377"/>
+        <location filename="../../src/widget/woverview.cpp" line="376"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Finalizing ..</translation>
