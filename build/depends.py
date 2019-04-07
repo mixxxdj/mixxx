@@ -1199,6 +1199,7 @@ class MixxxCore(Feature):
                    "src/util/statsmanager.cpp",
                    "src/util/stat.cpp",
                    "src/util/statmodel.cpp",
+                   "src/util/dnd.cpp",
                    "src/util/duration.cpp",
                    "src/util/time.cpp",
                    "src/util/timer.cpp",
