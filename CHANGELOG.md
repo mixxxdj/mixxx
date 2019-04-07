@@ -42,11 +42,14 @@ Miscellaneous
   scrolling waveforms.
 * Support IRC/AIM/ICQ broadcast metadata.
 
-
-## [2.1.8](https://launchpad.net/mixxx/+milestone/2.1.8) (2019-02-23)
+## [2.1.8](https://launchpad.net/mixxx/+milestone/2.1.8) (2019-04-07)
 
 * Fix a rare chance for a corrupt track file while writing metadata in out of disk situations. lp:1815305
-* Fix export of BPM track file metadata. lp:1816490  
+* Fix export of BPM track file metadata. lp:1816490
+* Fix export of BPM track file metadata. lp:1816490
+* Fix sending of broadcast metadata with TLS enabled libshout 2.4.1. lp:1817395
+* Fix resdicovering purged tracks in all cases. lp:1821514
+* Fix dropping track from OSX Finder. lp:1822424
 
 ## [2.1.7](https://launchpad.net/mixxx/+milestone/2.1.7) (2019-01-15)
 
