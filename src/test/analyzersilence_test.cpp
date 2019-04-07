@@ -212,6 +212,48 @@ TEST_F(AnalyzerSilenceTest, UpdateNonUserAdjustedCues) {
     EXPECT_EQ(Cue::AUTOMATIC, pOutroCue->getSource());
 }
 
+TEST_F(AnalyzerSilenceTest, UpdateNonUserAdjustedRangeCues) {
+    int thirdTrackLength = nTrackSampleDataLength / 3;
+
+    CuePointer pIntroCue = pTrack->createAndAddCue();
+    pIntroCue->setType(Cue::INTRO);
+    pIntroCue->setSource(Cue::AUTOMATIC);
+    pIntroCue->setPosition(1500.0);  // Arbitrary value
+    pIntroCue->setLength(1000.0);  // Arbitrary value
+
+    CuePointer pOutroCue = pTrack->createAndAddCue();
+    pOutroCue->setType(Cue::OUTRO);
+    pOutroCue->setSource(Cue::AUTOMATIC);
+    pOutroCue->setPosition(9000.0);  // Arbitrary value
+    pOutroCue->setLength(1000.0);  // Arbitrary value
+
+    // Fill the first third with silence
+    for (int i = 0; i < thirdTrackLength; i++) {
+        pTrackSampleData[i] = 0.0;
+    }
+
+    // Fill the second third with 1 kHz tone
+    double omega = 2.0 * M_PI * kTonePitchHz / pTrack->getSampleRate();
+    for (int i = thirdTrackLength; i < 2 * thirdTrackLength; i++) {
+        pTrackSampleData[i] = sin(i / kChannelCount * omega);
+    }
+
+    // Fill the last third with silence
+    for (int i = 2 * thirdTrackLength; i < nTrackSampleDataLength; i++) {
+        pTrackSampleData[i] = 0.0;
+    }
+
+    analyzeTrack();
+
+    EXPECT_DOUBLE_EQ(thirdTrackLength, pIntroCue->getPosition());
+    EXPECT_DOUBLE_EQ(0.0, pIntroCue->getLength());
+    EXPECT_EQ(Cue::AUTOMATIC, pIntroCue->getSource());
+
+    EXPECT_DOUBLE_EQ(-1.0, pOutroCue->getPosition());
+    EXPECT_DOUBLE_EQ(2 * thirdTrackLength, pOutroCue->getLength());
+    EXPECT_EQ(Cue::AUTOMATIC, pOutroCue->getSource());
+}
+
 TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
     // Arbitrary values
     const double kManualCuePosition = 0.2 * nTrackSampleDataLength;
