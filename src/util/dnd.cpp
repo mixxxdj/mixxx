@@ -69,7 +69,7 @@ QList<QFileInfo> DragAndDropHelper::supportedTracksFromUrls(
         bool firstOnly,
         bool acceptPlaylists) {
     QList<QFileInfo> fileLocations;
-    for (QUrl url: urls) {
+    for (QUrl url : urls) {
 #if defined(__APPLE__) && QT_VERSION < QT_VERSION_CHECK(5, 4, 1)
         // OS X 10.10 sends file references instead of file paths
         // e.g. "file:///.file/id=6571367.1629051"
