@@ -3,18 +3,17 @@
 #include <QRegExp>
 
 #include "control/controlobject.h"
-#include "sources/soundsourceproxy.h"
 #include "library/parser.h"
+#include "library/parsercsv.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
-#include "library/parsercsv.h"
-#include "util/sandbox.h"
 #include "mixer/playermanager.h"
+#include "sources/soundsourceproxy.h"
+#include "util/sandbox.h"
 
 #if defined(__APPLE__) && QT_VERSION < QT_VERSION_CHECK(5, 4, 1)
 #include "util/filepathurl.h"
 #endif
-
 
 namespace {
 
@@ -69,9 +68,8 @@ QList<QFileInfo> DragAndDropHelper::supportedTracksFromUrls(
         const QList<QUrl>& urls,
         bool firstOnly,
         bool acceptPlaylists) {
-        QList<QFileInfo> fileLocations;
-        for (QUrl url : urls) {
-
+    QList<QFileInfo> fileLocations;
+    for (QUrl url: urls) {
 #if defined(__APPLE__) && QT_VERSION < QT_VERSION_CHECK(5, 4, 1)
         // OS X 10.10 sends file references instead of file paths
         // e.g. "file:///.file/id=6571367.1629051"
@@ -128,8 +126,7 @@ bool DragAndDropHelper::allowLoadToPlayer(
         const QString& group,
         UserSettingsPointer pConfig) {
     return allowLoadToPlayer(
-            group, ControlObject::get(ConfigKey(group, "play")) > 0.0,
-            pConfig);
+            group, ControlObject::get(ConfigKey(group, "play")) > 0.0, pConfig);
 }
 
 //static
@@ -143,8 +140,8 @@ bool DragAndDropHelper::allowLoadToPlayer(
     }
 
     return !isPlaying || pConfig->getValueString(
-            ConfigKey("[Controls]",
-                        "AllowTrackLoadToPlayingDeck")).toInt();
+                                        ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"))
+                                 .toInt();
 }
 
 //static
@@ -162,10 +159,10 @@ bool DragAndDropHelper::allowDeckCloneAttempt(
     }
 
     if (!event.mimeData()->hasText() ||
-                // prevent cloning to ourself
-                event.mimeData()->text() == group ||
-                // only allow clone from decks
-                !PlayerManager::isDeckGroup(event.mimeData()->text(), nullptr)) {
+        // prevent cloning to ourself
+        event.mimeData()->text() == group ||
+        // only allow clone from decks
+        !PlayerManager::isDeckGroup(event.mimeData()->text(), nullptr)) {
         return false;
     }
 
@@ -178,8 +175,7 @@ bool DragAndDropHelper::dragEnterAccept(
         const QString& sourceIdentifier,
         bool firstOnly,
         bool acceptPlaylists) {
-    QList<QFileInfo> files = dropEventFiles(mimeData, sourceIdentifier,
-                                            firstOnly, acceptPlaylists);
+    QList<QFileInfo> files = dropEventFiles(mimeData, sourceIdentifier, firstOnly, acceptPlaylists);
     return !files.isEmpty();
 }
 
@@ -193,7 +189,7 @@ QList<QFileInfo> DragAndDropHelper::dropEventFiles(
     qDebug() << "mimeData.hasText()" << mimeData.hasText() << mimeData.text();
 
     if (!mimeData.hasUrls() ||
-            (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
+        (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
         return QList<QFileInfo>();
     }
 
@@ -201,7 +197,6 @@ QList<QFileInfo> DragAndDropHelper::dropEventFiles(
             mimeData.urls(), firstOnly, acceptPlaylists);
     return files;
 }
-
 
 //static
 QDrag* DragAndDropHelper::dragTrack(
@@ -231,8 +226,7 @@ void DragAndDropHelper::handleTrackDragEnterEvent(
         const QString& group,
         UserSettingsPointer pConfig) {
     if (allowLoadToPlayer(group, pConfig) &&
-            dragEnterAccept(*event->mimeData(), group,
-                            true, false)) {
+        dragEnterAccept(*event->mimeData(), group, true, false)) {
         event->acceptProposedAction();
     } else {
         qDebug() << "Ignoring drag enter event, loading not allowed";
