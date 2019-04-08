@@ -47,6 +47,7 @@ class PlayerManager;
 class RecordingManager;
 class SettingsManager;
 class OscClientManager;
+class OscServer;
 class BroadcastManager;
 class SkinLoader;
 class SoundManager;
@@ -164,6 +165,8 @@ class MixxxMainWindow : public QMainWindow {
     RecordingManager* m_pRecordingManager;
     //oscClientManager
     OscClientManager* m_pOscClientManager;
+    // OscServer
+    OscServer* m_pOscServer;
 #ifdef __BROADCAST__
     BroadcastManager* m_pBroadcastManager;
 #endif

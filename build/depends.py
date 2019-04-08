@@ -24,7 +24,7 @@ class PortAudio(Dependence):
 class LibLo(Dependence):
     def configure(self, build, conf):
         libs = ['lo']
-        
+
         if not conf.CheckLib(libs):
             raise Exception("Did not find liblo")
 
@@ -1020,6 +1020,8 @@ class MixxxCore(Feature):
 
                    "src/oscclient/oscclientmanager.cpp",
                    "src/engine/sidechain/engineoscclient.cpp",
+
+                   "src/oscserver/oscserver.cpp",
 
                    # External Library Features
                    "src/library/baseexternallibraryfeature.cpp",

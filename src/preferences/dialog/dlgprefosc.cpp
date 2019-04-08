@@ -3,6 +3,7 @@
 
 #include "dlgprefosc.h"
 #include "oscclient/defs_oscclient.h"
+#include "oscserver/defs_oscserver.h"
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "util/sandbox.h"
@@ -15,6 +16,8 @@ DlgPrefOsc::DlgPrefOsc(QWidget* parent, UserSettingsPointer& pConfig)
     connect(LineEditServer, SIGNAL(returnPressed()),
             this, SLOT(slotApply()));
     connect(LineEditPort, SIGNAL(returnPressed()),
+            this, SLOT(slotApply()));
+    connect(LineEditPortServer, SIGNAL(returnPressed()),
             this, SLOT(slotApply()));
 
     //slotApply();
@@ -37,6 +40,8 @@ void DlgPrefOsc::slotUpdate() {
     LineEditServer->setText(serverUrl);
     QString port = m_pConfig->getValueString(ConfigKey(OSC_CLIENT_PREF_KEY, "Port"));
     LineEditPort->setText(port);
+    QString serverPort = m_pConfig->getValueString(ConfigKey(OSC_SERVER_PREF_KEY, "Port"));
+    LineEditPortServer->setText(serverPort);
     qDebug() << "update";
 
 }
@@ -44,5 +49,6 @@ void DlgPrefOsc::slotUpdate() {
 void DlgPrefOsc::slotApply() {
     m_pConfig->set(ConfigKey(OSC_CLIENT_PREF_KEY, "Server"), ConfigValue(LineEditServer->text()));
     m_pConfig->set(ConfigKey(OSC_CLIENT_PREF_KEY, "Port"), ConfigValue(LineEditPort->text()));
+    m_pConfig->set(ConfigKey(OSC_SERVER_PREF_KEY, "Port"), ConfigValue(LineEditPortServer->text()));
     qDebug() << "apply";
 }
