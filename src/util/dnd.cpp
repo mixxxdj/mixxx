@@ -158,10 +158,10 @@ bool DragAndDropHelper::allowDeckCloneAttempt(
     }
 
     if (!event.mimeData()->hasText() ||
-        // prevent cloning to ourself
-        event.mimeData()->text() == group ||
-        // only allow clone from decks
-        !PlayerManager::isDeckGroup(event.mimeData()->text(), nullptr)) {
+            // prevent cloning to ourself
+            event.mimeData()->text() == group ||
+            // only allow clone from decks
+            !PlayerManager::isDeckGroup(event.mimeData()->text(), nullptr)) {
         return false;
     }
 
@@ -188,7 +188,7 @@ QList<QFileInfo> DragAndDropHelper::dropEventFiles(
     qDebug() << "mimeData.hasText()" << mimeData.hasText() << mimeData.text();
 
     if (!mimeData.hasUrls() ||
-        (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
+            (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
         return QList<QFileInfo>();
     }
 
@@ -225,7 +225,7 @@ void DragAndDropHelper::handleTrackDragEnterEvent(
         const QString& group,
         UserSettingsPointer pConfig) {
     if (allowLoadToPlayer(group, pConfig) &&
-        dragEnterAccept(*event->mimeData(), group, true, false)) {
+            dragEnterAccept(*event->mimeData(), group, true, false)) {
         event->acceptProposedAction();
     } else {
         qDebug() << "Ignoring drag enter event, loading not allowed";
