@@ -140,7 +140,7 @@ bool DragAndDropHelper::allowLoadToPlayer(
     }
 
     return !isPlaying ||
-           pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt();
+            pConfig->getValueString(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt();
 }
 
 //static
