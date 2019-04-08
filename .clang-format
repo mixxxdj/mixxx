@@ -10,7 +10,8 @@ ColumnLimit:  0
 ---
 Language:     Cpp
 AccessModifierOffset: -2
-AlignAfterOpenBracket: AlwaysBreak
+AlignAfterOpenBracket: DontAlign
+AlignOperands: false
 AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
