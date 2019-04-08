@@ -376,7 +376,6 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
         xml.readNext();
         if (xml.isStartElement() && xml.name() == "location") {
             QString location = xml.readElementText();
-            location.remove("file://");
             QUrl locationUrl = QUrl(location);
             location = locationUrl.toLocalFile();
 
