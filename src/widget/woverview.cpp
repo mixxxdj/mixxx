@@ -22,6 +22,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "mixer/playermanager.h"
 #include "woverview.h"
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
