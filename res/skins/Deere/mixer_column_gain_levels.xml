@@ -10,35 +10,6 @@
     <Layout>vertical</Layout>
     <Size>40f,-1me</Size>
     <Children>
-      <!--In 4 deck mode with EQs showing, hide the gain knob here and show it above the EQs.-->
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <Children>
-          <WidgetGroup>
-            <Layout>horizontal</Layout>
-            <Children>
-              <Template src="skin:knob.xml">
-                <SetVariable name="TooltipId">pregain</SetVariable>
-                <SetVariable name="control">pregain</SetVariable>
-                <SetVariable name="color">green</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
-              <BindProperty>visible</BindProperty>
-              <Transform>
-                <Not/>
-              </Transform>
-            </Connection>
-          </WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey>[Skin],show_4decks</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
-      <!--In 2 deck mode, show the gain knob above the channel level meters.-->
       <WidgetGroup>
         <Layout>vertical</Layout>
         <Size>40f,-1</Size>
@@ -51,13 +22,6 @@
             <SetVariable name="color">green</SetVariable>
           </Template>
         </Children>
-        <Connection>
-          <ConfigKey>[Skin],show_4decks</ConfigKey>
-          <BindProperty>visible</BindProperty>
-          <Transform>
-            <Not/>
-          </Transform>
-        </Connection>
       </WidgetGroup>
 
       <WidgetGroup>

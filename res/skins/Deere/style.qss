@@ -23,8 +23,8 @@
 /* These definitions put a faint border around all the widgets. We have to be
    tricky with top/bottom-ness to get things right. */
 #DeckControls {
-  padding: 5px 7.5px 2px 7.5px;
-  /* background-color: #456789; */
+  padding: 5px 7.5px 2px 7.5px;  /*
+  background-color: #456789;  */
 }
 
 #CrossfaderContainer {
@@ -154,6 +154,9 @@
 }
 #TEST3 {
   background-color: #114522;
+}
+#TEST4 {
+  background-color: #225487;
 }
 
 #AlignLeft {
@@ -1241,10 +1244,6 @@ WWidget, WLabel {
   color: #D2D2D2;
 }
 
-#DeckMixer1, #DeckMixer2, #DeckMixer3, #DeckMixer4 {
-  background-color: #333333;
-}
-
 WNumberRate {
   font-size: 13px;
 }
@@ -1286,28 +1285,10 @@ WNumberRate {
   border-radius: 1px;
 }
 
-#DeckControls_SplitWaveforms_4Decks #channel_VuMeter_Group,
-#DeckControls_StackedWaveforms_4Decks #channel_VuMeter_Group {
-  /* padding-bottom: 5px; */
-  /* background-color: #116611; */
-}
-
-#DeckMixer_ColumnCondensed {
-  padding: 0px 5px 0px 5px;
-  qproperty-layoutAlignment: 'AlignHCenter';
-  /* background-color: #911661; */
-}
-
-/* pad 4 deck mixer columns left/right
-to avoid EQ kill buttons from shifting center of rest of column */
-#4DecksMixerCol2ContainerRight {
-  qproperty-layoutAlignment: 'AlignLeft';
-  padding-right: 6px;
-}
-
-#4DecksMixerCol2ContainerLeft {
-  qproperty-layoutAlignment: 'AlignRight';
-  padding-left: 6px;
+#MixerStrip_4Decks {
+  padding: 0px 5px;
+  qproperty-layoutAlignment: 'AlignHCenter';  /* 
+  background-color: #911661; */
 }
 
 #ButtonContainer {
@@ -1315,25 +1296,22 @@ to avoid EQ kill buttons from shifting center of rest of column */
   padding: 3px 0px 3px 0px;
 }
 
-#CondensedButtonContainerRight {
+#MixerButtonContainerRight {
   qproperty-layoutAlignment: 'AlignLeft';
+  padding: 0px 0px 0px 9px; /*
+  background-color: #456313;  */
 }
 
-#CondensedButtonContainerLeft {
+#MixerButtonContainerLeft {
   qproperty-layoutAlignment: 'AlignRight';
+  padding: 0px 9px 0px 0px;
 }
 
-#4DecksMixerCondensedMonoMeterLeft {
-  padding-left: 3px;
-  padding-right: 4px;
+#4DecksMixerMonoMeterLeft {
+  padding: 0px 3px 0px 4px;
 }
-#4DecksMixerCondensedMonoMeterRight {
-  padding-left: 4px;
-  padding-right: 3px;
-}
-
-#CondensedVolumeAndMonoMeter {
-  padding-bottom: 5px;
+#4DecksMixerMonoMeterRight {
+  padding: 0px 4px 0px 3px;
 }
 
 #channel_VuMeter_Group {

@@ -5,7 +5,7 @@
     <ObjectName>MasterVu</ObjectName>
     <Layout>vertical</Layout>
     <MinimumSize>28,90</MinimumSize>
-    <MaximumSize>28,150</MaximumSize>
+    <MaximumSize>28,210</MaximumSize>
     <SizePolicy>min,me</SizePolicy>
     <Children>
 

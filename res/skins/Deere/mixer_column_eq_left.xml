@@ -40,11 +40,8 @@
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
-              <WidgetGroup><!-- Expanding spacer to push EQ knob to right side -->
-                <Size>0me,1min</Size>
-                <Children/>
-              </WidgetGroup>
-
+              <!-- Expanding spacer to push EQ knob to right side -->
+              <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
               <Template src="skin:knob.xml">
                 <SetVariable name="TooltipId">pregain</SetVariable>
                 <SetVariable name="control">pregain</SetVariable>
@@ -80,8 +77,6 @@
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <Size>0min,34f</Size>
-                <Children>
-                </Children>
                 <Connection>
                   <ConfigKey>[QuickEffectRack1_[Channel1]_Effect1],loaded</ConfigKey>
                   <Transform><Not/></Transform>
@@ -102,10 +97,6 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup><!-- Spacer -->
-
-      <Template src="skin:equalizer_rack_parameter_left.xml">
-        <SetVariable name="parameter">4</SetVariable>
-      </Template>
 
       <Template src="skin:equalizer_rack_parameter_left.xml">
         <SetVariable name="parameter">3</SetVariable>
