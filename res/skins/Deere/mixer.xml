@@ -199,39 +199,63 @@
           </WidgetGroup><!-- DeckControls -->
 
           <WidgetGroup><!-- CrossfaderContainer -->
+                <ObjectName>CrossfaderContainer</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
               <WidgetGroup>
-                <ObjectName>CrossfaderContainer</ObjectName>
-                <Layout>horizontal</Layout>
-                <SizePolicy>me,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Size>28f,28me</Size>
                 <Children>
-                  <!-- Slider background is highlighted orange if AutoDJ is enabled -->
-                  <WidgetGroup>
-                    <ObjectName>Crossfader</ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Layout>horizontal</Layout>
-                    <Children>
-                      <SliderComposed>
-                        <TooltipId>crossfader</TooltipId>
-                        <Size>1me,40f</Size>
-                        <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
-                        <Handle scalemode="STRETCH_ASPECT">handle-crossfader-orange.svg</Handle>
-                        <Horizontal>true</Horizontal>
-                        <Connection>
-                          <ConfigKey>[Master],crossfader</ConfigKey>
-                          <EmitOnDownPress>false</EmitOnDownPress>
-                        </Connection>
-                      </SliderComposed>
-                    </Children>
-                    <Connection>
-                      <ConfigKey>[AutoDJ],enabled</ConfigKey>
-                      <BindProperty>highlight</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- Crossfader -->
-
+                  <Template src="skin:crossfader_orientation_button.xml">
+                    <SetVariable name="group">[Channel1]</SetVariable>
+                    <SetVariable name="Unit">Deck1</SetVariable>
+                  </Template>
                 </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_4decks</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+              <!-- Slider background is highlighted orange if AutoDJ is enabled -->
+              <WidgetGroup>
+                <ObjectName>Crossfader</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <SliderComposed>
+                    <TooltipId>crossfader</TooltipId>
+                    <Size>1me,40f</Size>
+                    <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
+                    <Handle scalemode="STRETCH_ASPECT">handle-crossfader-orange.svg</Handle>
+                    <Horizontal>true</Horizontal>
+                    <Connection>
+                      <ConfigKey>[Master],crossfader</ConfigKey>
+                      <EmitOnDownPress>false</EmitOnDownPress>
+                    </Connection>
+                  </SliderComposed>
+                </Children>
+                <Connection>
+                  <ConfigKey>[AutoDJ],enabled</ConfigKey>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- Crossfader -->
+
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <Size>28f,28me</Size>
+                <Children>
+                  <Template src="skin:crossfader_orientation_button.xml">
+                    <SetVariable name="group">[Channel2]</SetVariable>
+                    <SetVariable name="Unit">Deck2</SetVariable>
+                  </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_4decks</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
               </WidgetGroup>
             </Children>
             <Connection>
