@@ -860,7 +860,7 @@ class FFMPEG(Feature):
                 'src/encoder/encoderffmpegvorbis.cpp']
 
 
-class FFMPEG4(Feature):
+class FFmpeg4(Feature):
     def description(self):
         return "FFmpeg 4.x support"
 
