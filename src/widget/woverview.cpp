@@ -490,8 +490,12 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
             for (const auto& currentMark: m_marks) {
                 const WaveformMarkProperties& markProperties = currentMark->getProperties();
-                if (currentMark->isValid() && currentMark->getSamplePosition() >= 0.0 &&
-                        currentMark->hasVisible() && currentMark->isVisible()) {
+                if (currentMark->isValid() && currentMark->getSamplePosition() >= 0.0) {
+                    // Marks are visible by default.
+                    if (currentMark->hasVisible() && !currentMark->isVisible()) {
+                        continue;
+                    }
+
                     //const float markPosition = 1.0 +
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
                     const float markPosition = offset + currentMark->getSamplePosition() * gain;
