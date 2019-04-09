@@ -220,6 +220,9 @@
       <Children>
         <Template src="skin:deck_overview.xml">
           <SetVariable name="group">[Channel1]</SetVariable>
+          <SetVariable name="DeckSignalColor">#007BCD</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+          <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -229,6 +232,9 @@
       <Children>
         <Template src="skin:deck_overview.xml">
           <SetVariable name="group">[Channel2]</SetVariable>
+          <SetVariable name="DeckSignalColor">#E67A00</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#333333</SetVariable>
+          <SetVariable name="PlayedOverlayColor">#88000000</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -238,6 +244,9 @@
       <Children>
         <Template src="skin:deck_overview.xml">
           <SetVariable name="group">[Channel3]</SetVariable>
+          <SetVariable name="DeckSignalColor">#B500B5</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+          <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -247,6 +256,9 @@
       <Children>
         <Template src="skin:deck_overview.xml">
           <SetVariable name="group">[Channel4]</SetVariable>
+          <SetVariable name="DeckSignalColor">#AABD00</SetVariable>
+          <SetVariable name="DeckBackgroundColor">#35335a</SetVariable>
+          <SetVariable name="PlayedOverlayColor">#b8000000</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
