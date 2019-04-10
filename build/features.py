@@ -796,12 +796,12 @@ class FFMPEG(Feature):
             # Check for libavcodec, libavformat
             # I just randomly picked version numbers lower than mine for this
             if not conf.CheckForPKG('libavcodec', '53.35.0'):
-                raise Exception('Missing libavcodec or it\'s too old! It can'
-                                'be separated from main package so check your'
+                raise Exception('Missing libavcodec or it\'s too old! It can '
+                                'be separated from main package so check your '
                                 'operating system packages.')
             if not conf.CheckForPKG('libavformat', '53.21.0'):
-                raise Exception('Missing libavformat  or it\'s too old!'
-                                'It can be separated from main package so'
+                raise Exception('Missing libavformat  or it\'s too old! '
+                                'It can be separated from main package so '
                                 'check your operating system packages.')
 
             # Needed to build new FFmpeg
@@ -882,16 +882,16 @@ class FFmpeg4(Feature):
                 or build.platform_is_bsd:
             # Check for libavcodec, libavformat
             if not conf.CheckForPKG('libavcodec', '58'):
-                raise Exception('Missing libavcodec or it\'s too old! It can'
-                                'be separated from main package so check your'
+                raise Exception('Missing libavcodec or it\'s too old! It can '
+                                'be separated from main package so check your '
                                 'operating system packages.')
             if not conf.CheckForPKG('libavformat', '58'):
-                raise Exception('Missing libavformat or it\'s too old!'
-                                'It can be separated from main package so'
+                raise Exception('Missing libavformat or it\'s too old! '
+                                'It can be separated from main package so '
                                 'check your operating system packages.')
             if not conf.CheckForPKG('libswresample', '3.1'):
-                raise Exception('Missing libswresample or it\'s too old!'
-                                'It can be separated from main package so'
+                raise Exception('Missing libswresample or it\'s too old! '
+                                'It can be separated from main package so '
                                 'check your operating system packages.')
 
             # Needed to build new FFmpeg
