@@ -24,7 +24,7 @@ class Cue : public QObject {
         JUMP    = 5,
     };
 
-    ~Cue() override;
+    ~Cue() override = default;
 
     bool isDirty() const;
     int getId() const;
@@ -77,17 +77,13 @@ class Cue : public QObject {
 
 class CuePointer: public std::shared_ptr<Cue> {
   public:
-    CuePointer() {}
+    CuePointer() = default;
     explicit CuePointer(Cue* pCue)
           : std::shared_ptr<Cue>(pCue, deleteLater) {
     }
 
   private:
-    static void deleteLater(Cue* pCue) {
-        if (pCue != nullptr) {
-            pCue->deleteLater();
-        }
-    }
+    static void deleteLater(Cue* pCue);
 };
 
 #endif // MIXXX_CUE_H

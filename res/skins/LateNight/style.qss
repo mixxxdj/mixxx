@@ -166,11 +166,11 @@ WTime {
   background-color: #1e1e1e;
 }
 
-#VisualizationContainer {
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-right: 0px;
-  border-left: 0px;
+WSpinny {/*
+  This produces artifacts in spinny bg
+  background-color: rgba(1, 1, 1, 10);
+  This makes no difference, the spinny loads some default grey bg
+  background: none;*/
 }
 
 #ClockWidget {
@@ -209,7 +209,7 @@ WTime {
   }
 
   #MixerContainer {
-    qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
     background-color: #1e1e1e;
     padding-top: 3px;
   }

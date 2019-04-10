@@ -56,7 +56,7 @@ protected:
     bool isBinary(QString);
     // check for Utf8 encoding
     static bool isUtf8(const char* string);
-    // reads URLs an plain Parth and retuns a local file path
+    // reads URLs an plain Part and returns a local file path
     QString playlistEntrytoLocalFile(const QString& playlistEntry);
 
     FRIEND_TEST(PlaylistTest, Normalize);

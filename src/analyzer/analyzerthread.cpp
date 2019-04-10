@@ -113,7 +113,7 @@ void AnalyzerThread::doRun() {
     if (AnalyzerEbur128::isEnabled(ReplayGainSettings(m_pConfig))) {
         m_analyzers.push_back(std::make_unique<AnalyzerEbur128>(m_pConfig));
     }
-    // BPM detection might be disabled in the config, but can be overriden
+    // BPM detection might be disabled in the config, but can be overridden
     // and enabled by explicitly setting the mode flag.
     const bool enforceBpmDetection = (m_modeFlags & AnalyzerModeFlags::WithBeats) != 0;
     m_analyzers.push_back(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection));
@@ -191,20 +191,30 @@ void AnalyzerThread::doRun() {
 
 bool AnalyzerThread::submitNextTrack(TrackPointer nextTrack) {
     DEBUG_ASSERT(nextTrack);
-    return m_nextTrack.enqueue(std::move(nextTrack));
+    kLogger.debug()
+            << "Enqueueing next track"
+            << nextTrack->getId();
+    if (m_nextTrack.enqueue(std::move(nextTrack))) {
+        // Ensure that the submitted track gets processed eventually
+        // by waking the worker thread up after adding a new task to
+        // its back queue! Otherwise the thread might not notice if
+        // it is currently idle and has fallen asleep.
+        wake();
+        return true;
+    }
+    return false;
 }
 
 WorkerThread::FetchWorkResult AnalyzerThread::tryFetchWorkItems() {
     DEBUG_ASSERT(!m_currentTrack);
     if (m_nextTrack.dequeue(&m_currentTrack)) {
         DEBUG_ASSERT(m_currentTrack);
+        kLogger.debug()
+                << "Dequeued next track"
+                << m_currentTrack->getId();
         return FetchWorkResult::Ready;
     } else {
-        if (m_emittedState != AnalyzerThreadState::Idle) {
-            // Only send the idle signal once when entering the
-            // idle state from another state.
-            emitProgress(AnalyzerThreadState::Idle);
-        }
+        emitProgress(AnalyzerThreadState::Idle);
         return FetchWorkResult::Idle;
     }
 }
@@ -224,6 +234,7 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
     mixxx::IndexRange remainingFrames = audioSource->frameIndexRange();
     auto result = remainingFrames.empty() ? AnalysisResult::Complete : AnalysisResult::Pending;
     while (result == AnalysisResult::Pending) {
+        DEBUG_ASSERT(!remainingFrames.empty());
         sleepWhileSuspended();
         if (isStopping()) {
             return AnalysisResult::Cancelled;
@@ -282,6 +293,8 @@ AnalyzerThread::AnalysisResult AnalyzerThread::analyzeAudioSource(
         const AnalyzerProgress progress =
                 frameProgress *
                 (kAnalyzerProgressFinalizing - kAnalyzerProgressNone);
+        DEBUG_ASSERT(progress > kAnalyzerProgressNone);
+        DEBUG_ASSERT(progress <= kAnalyzerProgressFinalizing);
         emitBusyProgress(progress);
     }
 

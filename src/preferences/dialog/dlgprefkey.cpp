@@ -91,34 +91,47 @@ DlgPrefKey::~DlgPrefKey() {
 }
 
 void DlgPrefKey::loadSettings() {
-    qDebug() << "DlgPrefKey::loadSettings";
     m_selectedAnalyzerId = m_keySettings.getKeyPluginId();
     qDebug() << "Key plugin ID:" << m_selectedAnalyzerId;
+
     m_bAnalyzerEnabled = m_keySettings.getKeyDetectionEnabled();
     m_bFastAnalysisEnabled = m_keySettings.getFastAnalysis();
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChange();
 
-    QString notation = m_keySettings.getKeyNotation();
-    if (notation == KEY_NOTATION_OPEN_KEY) {
-        radioNotationOpenKey->setChecked(true);
-        setNotationOpenKey(true);
-    } else if (notation == KEY_NOTATION_LANCELOT) {
-        radioNotationLancelot->setChecked(true);
-        setNotationLancelot(true);
-    } else if (notation == KEY_NOTATION_TRADITIONAL) {
-        radioNotationTraditional->setChecked(true);
-        setNotationTraditional(true);
-    } else if (notation == KEY_NOTATION_CUSTOM) {
+    QString notation_name = m_keySettings.getKeyNotation();
+    KeyUtils::KeyNotation notation_type;
+    QMap<mixxx::track::io::key::ChromaticKey, QString> notation;
+    if (notation_name == KEY_NOTATION_CUSTOM) {
         radioNotationCustom->setChecked(true);
         for (auto it = m_keyLineEdits.constBegin();
-             it != m_keyLineEdits.constEnd(); ++it) {
+                it != m_keyLineEdits.constEnd(); ++it) {
             it.value()->setText(m_keySettings.getCustomKeyNotation(it.key()));
+            notation[it.key()] = it.value()->text();
         }
         setNotationCustom(true);
+        notation_type = KeyUtils::CUSTOM;
     } else {
-        radioNotationOpenKey->setChecked(true);
-        setNotationOpenKey(true);
+        if (notation_name == KEY_NOTATION_LANCELOT) {
+            radioNotationLancelot->setChecked(true);
+            notation_type = KeyUtils::LANCELOT;
+        } else if (notation_name == KEY_NOTATION_TRADITIONAL) {
+            radioNotationTraditional->setChecked(true);
+            notation_type = KeyUtils::TRADITIONAL;
+        } else { // KEY_NOTATION_OPEN_KEY and unknown names
+            radioNotationOpenKey->setChecked(true);
+            notation_type = KeyUtils::OPEN_KEY;
+        }
+
+        // This is just a handy way to iterate the keys. We don't use the
+        // QLineEdits.
+        for (auto it = m_keyLineEdits.constBegin(); it != m_keyLineEdits.constEnd(); ++it) {
+            notation[it.key()] = KeyUtils::keyToString(it.key(), notation_type);
+        }
     }
+
+    setNotation(notation_type);
+    KeyUtils::setNotation(notation);
+    m_pKeyNotation->set(static_cast<double>(notation_type));
 
     slotUpdate();
 }
@@ -131,20 +144,22 @@ void DlgPrefKey::slotResetToDefaults() {
     m_bReanalyzeEnabled = m_keySettings.getReanalyzeWhenSettingsChangeDefault();
     m_selectedAnalyzerId = m_keySettings.getKeyPluginIdDefault();
 
+    KeyUtils::KeyNotation notation_type;
     QString defaultNotation = m_keySettings.getKeyNotationDefault();
     if (defaultNotation == KEY_NOTATION_LANCELOT) {
         radioNotationLancelot->setChecked(true);
-        setNotationLancelot(true);
-    } else if (defaultNotation == KEY_NOTATION_OPEN_KEY) {
-        radioNotationOpenKey->setChecked(true);
-        setNotationOpenKey(true);
+        notation_type = KeyUtils::LANCELOT;
     } else if (defaultNotation == KEY_NOTATION_TRADITIONAL) {
         radioNotationTraditional->setChecked(true);
-        setNotationTraditional(true);
+        notation_type = KeyUtils::TRADITIONAL;
     } else if (defaultNotation == KEY_NOTATION_CUSTOM) {
         radioNotationCustom->setChecked(true);
-        setNotationCustom(true);
+        notation_type = KeyUtils::CUSTOM;
+    } else { // KEY_NOTATION_OPEN_KEY
+        radioNotationOpenKey->setChecked(true);
+        notation_type = KeyUtils::OPEN_KEY;
     }
+    setNotation(notation_type);
 
     slotUpdate();
 }
@@ -178,17 +193,18 @@ void DlgPrefKey::slotApply() {
     m_keySettings.setFastAnalysis(m_bFastAnalysisEnabled);
     m_keySettings.setReanalyzeWhenSettingsChange(m_bReanalyzeEnabled);
 
+    QString notation_name;
+    KeyUtils::KeyNotation notation_type;
     QMap<mixxx::track::io::key::ChromaticKey, QString> notation;
     if (radioNotationCustom->isChecked()) {
-        m_keySettings.setKeyNotation(KEY_NOTATION_CUSTOM);
+        notation_name = KEY_NOTATION_CUSTOM;
+        notation_type = KeyUtils::CUSTOM;
         for (auto it = m_keyLineEdits.constBegin();
-             it != m_keyLineEdits.end(); ++it) {
+                it != m_keyLineEdits.end(); ++it) {
             notation[it.key()] = it.value()->text();
             m_keySettings.setCustomKeyNotation(it.key(), it.value()->text());
         }
     } else {
-        QString notation_name;
-        KeyUtils::KeyNotation notation_type;
         if (radioNotationOpenKey->isChecked()) {
             notation_name = KEY_NOTATION_OPEN_KEY;
             notation_type = KeyUtils::OPEN_KEY;
@@ -201,8 +217,6 @@ void DlgPrefKey::slotApply() {
             notation_type = KeyUtils::LANCELOT;
         }
 
-        m_keySettings.setKeyNotation(notation_name);
-
         // This is just a handy way to iterate the keys. We don't use the
         // QLineEdits.
         for (auto it = m_keyLineEdits.constBegin(); it != m_keyLineEdits.constEnd(); ++it) {
@@ -210,7 +224,9 @@ void DlgPrefKey::slotApply() {
         }
     }
 
+    m_keySettings.setKeyNotation(notation_name);
     KeyUtils::setNotation(notation);
+    m_pKeyNotation->set(static_cast<double>(notation_type));
 }
 
 void DlgPrefKey::slotUpdate() {
@@ -240,20 +256,18 @@ void DlgPrefKey::setNotationCustom(bool active) {
     }
 
     for (auto it = m_keyLineEdits.constBegin();
-         it != m_keyLineEdits.constEnd(); ++it) {
+            it != m_keyLineEdits.constEnd(); ++it) {
         it.value()->setEnabled(true);
     }
-    m_pKeyNotation->set(KeyUtils::CUSTOM);
     slotUpdate();
 }
 
 void DlgPrefKey::setNotation(KeyUtils::KeyNotation notation) {
     for (auto it = m_keyLineEdits.constBegin();
-         it != m_keyLineEdits.constEnd(); ++it) {
+            it != m_keyLineEdits.constEnd(); ++it) {
         it.value()->setText(KeyUtils::keyToString(it.key(), notation));
         it.value()->setEnabled(false);
     }
-    m_pKeyNotation->set(notation);
     slotUpdate();
 }
 

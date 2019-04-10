@@ -23,7 +23,10 @@ Variables:
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:effect_buttons.xml"/>
+              <Template src="skin:effect_buttons.xml">
+                <SetVariable name="SizePolicy">min,max</SetVariable>
+                <SetVariable name="EnableButtonMaxSize">60,22</SetVariable>
+              </Template>
               <Template src="skin:effect_meta_knob.xml"/>
             </Children>
           </WidgetGroup>
@@ -69,7 +72,10 @@ Variables:
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:effect_buttons.xml"/>
+              <Template src="skin:effect_buttons.xml">
+                <SetVariable name="SizePolicy">min,max</SetVariable>
+                <SetVariable name="EnableButtonMaxSize">60,22</SetVariable>
+              </Template>
               <Template src="skin:effect_meta_knob.xml"/>
             </Children>
           </WidgetGroup>

@@ -5,7 +5,6 @@
 #include <QMetaType>
 
 #include "util/statsmanager.h"
-#include "util/compatibility.h"
 #include "util/cmdlineargs.h"
 
 // In practice we process stats pipes about once a minute @1ms latency.

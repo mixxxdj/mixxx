@@ -90,9 +90,10 @@ BrowseFeature::BrowseFeature(QObject* parent,
     // /Volumes
     pRootItem->appendChild(tr("Devices"), "/Volumes/");
 #else  // LINUX
-    pRootItem->appendChild(tr("Removable Devices"), "/media/");
+    // DEVICE_NODE contents will be rendered lazily in onLazyChildExpandation.
+    pRootItem->appendChild(tr("Removable Devices"), DEVICE_NODE);
 
-    // show root directory on UNIX-based operating systems
+    // show root directory on Linux.
     pRootItem->appendChild(QDir::rootPath(), QDir::rootPath());
 #endif
 
@@ -284,6 +285,64 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
      onLazyChildExpandation(index);
 }
 
+namespace {
+// Get the list of devices (under "Removable Devices" section).
+QList<TreeItem*> getRemovableDevices(LibraryFeature* pFeature) {
+#if defined(__WINDOWS__)
+    QList<TreeItem*> ret;
+    // Repopulate drive list
+    QFileInfoList drives = QDir::drives();
+    // show drive letters
+    foreach (QFileInfo drive, drives) {
+        // Using drive.filePath() instead of drive.canonicalPath() as it
+        // freezes interface too much if there is a network share mounted
+        // (drive letter assigned) but unavailable
+        //
+        // drive.canonicalPath() make a system call to the underlying filesystem
+        // introducing delay if it is unreadable.
+        // drive.filePath() doesn't make any access to the filesystem and consequently
+        // shorten the delay
+        QString display_path = drive.filePath();
+        if (display_path.endsWith("/")) {
+            display_path.chop(1);
+        }
+        TreeItem* driveLetter = new TreeItem(
+            pFeature,
+            display_path, // Displays C:
+            drive.filePath()); // Displays C:/
+        ret << driveLetter;
+    }
+
+    return ret;
+#elif defined(__LINUX__)
+    // To get devices on Linux, we look for directories under /media and
+    // /run/media/$USER.
+    QFileInfoList devices;
+
+    // Add folders under /media to devices.
+    devices += QDir("/media").entryInfoList(
+        QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    // Add folders under /run/media/$USER to devices.
+    QDir run_media_user_dir("/run/media/" + qgetenv("USER"));
+    devices += run_media_user_dir.entryInfoList(
+        QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    // Convert devices into a QList<TreeItem*> for display.
+    QList<TreeItem*> ret;
+    foreach(QFileInfo device, devices) {
+        TreeItem* folder = new TreeItem(
+            pFeature,
+            device.fileName(),
+            device.filePath() + "/");
+        ret << folder;
+    }
+
+    return ret;
+#endif
+}
+}
+
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
 void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
@@ -322,28 +381,11 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 
     // If we are on the special device node
     if (path == DEVICE_NODE) {
-        // Repopulate drive list
-        QFileInfoList drives = QDir::drives();
-        // show drive letters
-        foreach (QFileInfo drive, drives) {
-            // Using drive.filePath() instead of drive.canonicalPath() as it
-            // freezes interface too much if there is a network share mounted
-            // (drive letter assigned) but unavailable
-            //
-            // drive.canonicalPath() make a system call to the underlying filesystem
-            // introducing delay if it is unreadable.
-            // drive.filePath() doesn't make any access to the filesystem and consequently
-            // shorten the delay
-            QString display_path = drive.filePath();
-            if (display_path.endsWith("/")) {
-                display_path.chop(1);
-            }
-            TreeItem* driveLetter = new TreeItem(
-                this,
-                display_path, // Displays C:
-                drive.filePath()); // Displays C:/
-            folders << driveLetter;
-        }
+#if defined(__WINDOWS__) || defined(__LINUX__)
+        folders += getRemovableDevices(this);
+#else // __APPLE__
+        DEBUG_ASSERT(!"Trying to process DEVICE_NODE on macOS");
+#endif
     } else {
         // we assume that the path refers to a folder in the file system
         // populate childs
