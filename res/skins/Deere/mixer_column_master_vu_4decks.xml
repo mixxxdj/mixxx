@@ -1,0 +1,126 @@
+<!DOCTYPE template>
+<!-- Master level meter -->
+<Template>
+
+  <SingletonDefinition>
+    <ObjectName>StereoVUMeterMaster</ObjectName>
+    <Children>
+      <Template src="skin:vumeter_master.xml"/>
+    </Children>
+  </SingletonDefinition>
+
+  <WidgetGroup>
+    <ObjectName>MixerStrip_4Decks</ObjectName>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <Template src="skin:mixer_spacer_topbottom.xml" />
+
+      <WidgetGroup><!-- show EQ -->
+        <Layout>vertical</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Connection>
+          <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,me</SizePolicy>
+        <Children>
+
+          <WidgetGroup><Size>0me,25f</Size></WidgetGroup>
+
+          <!-- EQs -->
+          <WidgetGroup>
+            <GroupName>VolFader_VUMeter_4Decks</GroupName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <MaximumSize>60,-1</MaximumSize>
+            <Children>
+              <!-- Faders 
+              Vol fader next to mono VU meter
+                  when EQs are shown -->
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MaximumSize>60,161</MaximumSize>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>StereoVUMeterMaster</ObjectName>
+                  </SingletonContainer>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_faders</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+
+              <!-- no Faders 
+                  stereo VU meter -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MaximumSize>60,210</MaximumSize>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>StereoVUMeterMaster</ObjectName>
+                  </SingletonContainer>
+                </Children>
+                <Connection>
+                  <ConfigKey>[Skin],show_faders</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- no EQs -->
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MaximumSize>60,210</MaximumSize>
+                <Children>
+                  <SingletonContainer>
+                    <ObjectName>StereoVUMeterMaster</ObjectName>
+                  </SingletonContainer>
+                </Children>
+              </WidgetGroup>
+              
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <MaximumSize>60,161</MaximumSize>
+                <Connection>
+                  <ConfigKey>[Skin],show_faders</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup><Size>0me,25f</Size></WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+
+      <Template src="skin:mixer_spacer_topbottom.xml" />
+
+    </Children>
+  </WidgetGroup>
+</Template>

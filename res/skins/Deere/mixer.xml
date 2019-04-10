@@ -26,7 +26,7 @@
                   <Template src="skin:mixer_controls_2decks_left.xml">
                     <SetVariable name="i">1</SetVariable>
                   </Template>
-                  <Template src="skin:mixer_column_master_vu.xml"/>
+                  <Template src="skin:mixer_column_master_vu_2decks.xml"/>
                   <Template src="skin:mixer_controls_2decks_right.xml">
                     <SetVariable name="i">2</SetVariable>
                   </Template>
@@ -46,7 +46,7 @@
                   <Template src="skin:mixer_controls_4decks_left.xml">
                     <SetVariable name="i">1</SetVariable>
                   </Template>
-                  <Template src="skin:mixer_column_master_vu.xml"/>
+                  <Template src="skin:mixer_column_master_vu_4decks.xml"/>
                   <Template src="skin:mixer_controls_4decks_right.xml">
                     <SetVariable name="i">2</SetVariable>
                   </Template>
