@@ -75,12 +75,21 @@
 
               <WidgetGroup>
                 <Layout>vertical</Layout>
-                <Size>28f,28me</Size>
                 <Children>
-                  <Template src="skin:crossfader_orientation_button.xml">
-                    <SetVariable name="group">[Channel1]</SetVariable>
-                    <SetVariable name="Unit">Deck1</SetVariable>
-                  </Template>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Size>28f,28min</Size>
+                    <Children>
+                      <Template src="skin:crossfader_orientation_button.xml">
+                        <SetVariable name="group">[Channel1]</SetVariable>
+                        <SetVariable name="Unit">Deck1</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
                 </Children>
                 <Connection>
                   <ConfigKey>[Skin],show_4decks</ConfigKey>
@@ -115,12 +124,21 @@
 
               <WidgetGroup>
                 <Layout>vertical</Layout>
-                <Size>28f,28me</Size>
                 <Children>
-                  <Template src="skin:crossfader_orientation_button.xml">
-                    <SetVariable name="group">[Channel2]</SetVariable>
-                    <SetVariable name="Unit">Deck2</SetVariable>
-                  </Template>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Size>28f,28min</Size>
+                    <Children>
+                      <Template src="skin:crossfader_orientation_button.xml">
+                        <SetVariable name="group">[Channel2]</SetVariable>
+                        <SetVariable name="Unit">Deck2</SetVariable>
+                      </Template>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
                 </Children>
                 <Connection>
                   <ConfigKey>[Skin],show_4decks</ConfigKey>
@@ -134,6 +152,31 @@
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup><!-- CrossfaderContainer -->
+
+          <SizeAwareStack><!-- Check if xFader buttons fit in without squeezing xFader too much -->
+            <Size>0me,0f</Size>
+            <Children>
+              <WidgetStack><!-- Not enough space -->
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize>120,0</MaximumSize>
+                <Children>
+                  <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
+                  <WidgetGroup trigger="[Deere],xfader_buttons_fit"><Size>1f,0f</Size></WidgetGroup>
+                </Children>
+              </WidgetStack>
+
+              <WidgetStack><!-- when there is enough space for stars (min 83px) show them. -->
+                <SizePolicy>me,f</SizePolicy>
+                <MinimumSize>121,0</MinimumSize>
+                <MaximumSize>-1,0</MaximumSize>
+                <Children>
+                  <WidgetGroup trigger="[Deere],xfader_buttons_fit"><Size>1f,0f</Size></WidgetGroup>
+                  <WidgetGroup><Size>1f,0f</Size></WidgetGroup>
+                </Children>
+              </WidgetStack>
+            </Children>
+          </SizeAwareStack>
 
         </Children>
       </WidgetGroup><!-- Mixer -->
