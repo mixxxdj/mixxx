@@ -1271,12 +1271,30 @@ WNumberRate {
   border-radius: 2px;
 }
 
-#QuickEffectKillButton[value="0"] {
-  background-color: #006596;
+#EQKillButton,
+#QuickEffectKillButton {
+  border-radius: 4px;
+  border: 1px solid #b4b4b4;
+  margin: 1px;
 }
 
+#EQKillButton[value="1"] {
+  background-color: #bb0000;
+}
+
+#EQKillButton[value="1"]:hover,
+#QuickEffectKillButton[value="1"]:hover {
+  border: 1px solid #b4b4b4;
+}
+
+#QuickEffectKillButton[value="0"] {
+  background-color: #4b4b4b;
+  }
+  #QuickEffectKillButton[value="0"]:hover {
+    background-color: #5f5f5f;
+  }
 #QuickEffectKillButton[value="1"] {
-  background-color: #4B4B4B;
+  background-color: #006596;
 }
 
 #SmallCircleButton {
