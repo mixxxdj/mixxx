@@ -1,7 +1,36 @@
 <!DOCTYPE template>
 <!--
   Description:
-    Condensed mixer controls, for 4 decks with stacked waveforms and EQs.
+  A 4-deck mixer channel strip.
+  
+  Structure:
+  ⎡ Spacer that centers the level meter
+  | vertically when neither EQs
+  ⎣ nor Vol fader are shown
+
+  [ Gain+EQs+QuickEffect, optional ]
+  
+  [ Pfl button, always visible ]
+  
+  ⎡ with EQs                  ⎤
+  | ⎡ with faders:
+  | |   mono   + Vol
+  | ⎣___meter____fader_____⎦
+  | ⎡ no faders:
+  | ⎣___stereo VU meter____⎦
+  ⎣___________________________⎦
+
+  ⎡ no EQs____________________
+  | ⎡ with faders:
+  | |   stereo VU meter
+  | |    +
+  | ⎣___Vol fader__________⎦
+  | ⎡ no faders:
+  | ⎣___stereo VU meter____⎦
+  ⎣___________________________⎦
+
+  [ xFader button, always visible ]
+  
 -->
 <Template>
   <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
