@@ -16,9 +16,25 @@
 
       <Template src="skin:mixer_spacer_topbottom.xml" />
 
-      <WidgetGroup><!-- show EQ -->
+      <!-- Gain knob spacer -->
+      <WidgetGroup><Size>0me,34f</Size></WidgetGroup>
+
+      <!-- EQ knobs spacer -->
+      <WidgetGroup>
         <Layout>vertical</Layout>
-        <SizePolicy>me,me</SizePolicy>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+          <!-- 3 EQ knobs, 34px each -->
+          <WidgetGroup><Size>0min,102f</Size></WidgetGroup>
+          <!-- QuickEffect knob, 34px optional -->
+          <WidgetGroup>
+            <Size>0min,34f</Size>
+            <Connection>
+              <ConfigKey>[QuickEffectRack1_[Channel1]_Effect1],loaded</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
         <Connection>
           <ConfigKey>[Skin],show_eq_knobs</ConfigKey>
           <BindProperty>visible</BindProperty>
@@ -30,6 +46,7 @@
         <SizePolicy>min,me</SizePolicy>
         <Children>
 
+          <!-- Pfl button -->
           <WidgetGroup><Size>0me,25f</Size></WidgetGroup>
 
           <!-- EQs -->
@@ -45,7 +62,7 @@
               <WidgetGroup>
                 <Layout>horizontal</Layout>
                 <SizePolicy>min,me</SizePolicy>
-                <MaximumSize>60,161</MaximumSize>
+                <MaximumSize>60,180</MaximumSize>
                 <Children>
                   <SingletonContainer>
                     <ObjectName>StereoVUMeterMaster</ObjectName>
@@ -100,7 +117,7 @@
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
-                <MaximumSize>60,161</MaximumSize>
+                <MaximumSize>60,180</MaximumSize>
                 <Connection>
                   <ConfigKey>[Skin],show_faders</ConfigKey>
                   <BindProperty>visible</BindProperty>

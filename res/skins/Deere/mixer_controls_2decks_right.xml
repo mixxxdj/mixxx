@@ -10,8 +10,8 @@
     <Layout>horizontal</Layout>
     <SizePolicy>min,min</SizePolicy>
     <Children>
-      <Template src="skin:mixer_column_gain_levels.xml"/>
-      <Template src="skin:mixer_column_volume.xml"/>
+      <Template src="skin:mixer_column_pfl_levels.xml"/>
+      <Template src="skin:mixer_column_volume_gain.xml"/>
       <Template src="skin:mixer_column_eq_right.xml"/>
     </Children>
   </WidgetGroup>

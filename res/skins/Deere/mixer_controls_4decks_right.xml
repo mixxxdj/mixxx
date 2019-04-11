@@ -8,9 +8,11 @@
   | vertically when neither EQs
   ⎣ nor Vol fader are shown
 
-  [ Gain+EQs+QuickEffect, optional ]
+  [ Gain knob]
   
-  [ Pfl button, always visible ]
+  [ EQs + QuickEffect, optional ]
+  
+  [ Pfl button ]
   
   ⎡ with EQs                  ⎤
   | ⎡ with faders:
@@ -30,6 +32,10 @@
   ⎣___________________________⎦
 
   [ xFader button, always visible ]
+
+  ⎡ Spacer that centers the level meter
+  | vertically when neither EQs
+  ⎣ nor Vol fader are shown
   
 -->
 <Template>
@@ -77,7 +83,27 @@
 
       <Template src="skin:mixer_spacer_topbottom.xml" />
 
-      <Template src="skin:mixer_column_eq_right.xml" />
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skin:knob.xml">
+            <SetVariable name="TooltipId">pregain</SetVariable>
+            <SetVariable name="control">pregain</SetVariable>
+            <SetVariable name="color">green</SetVariable>
+          </Template>
+          <!-- Expanding spacer to push EQ knob to left side -->
+          <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,max</SizePolicy>
+        <Children>
+          <Template src="skin:mixer_column_eq_right.xml"/>
+        </Children>
+      </WidgetGroup>
 
       <WidgetGroup>
         <Layout>vertical</Layout>
@@ -120,7 +146,7 @@
                   when EQs are shown -->
               <WidgetGroup>
                 <Layout>horizontal</Layout>
-                <MaximumSize>60,161</MaximumSize>
+                <MaximumSize>60,180</MaximumSize>
                 <Children>
                   <SliderComposed>
                     <TooltipId>channel_volume</TooltipId>
@@ -197,7 +223,7 @@
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
-                <MaximumSize>60,161</MaximumSize>
+                <MaximumSize>60,180</MaximumSize>
                 <Children>
                   <WidgetGroup><Size>0min,5f</Size></WidgetGroup>
                   <SliderComposed>

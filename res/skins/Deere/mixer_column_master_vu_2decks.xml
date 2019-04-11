@@ -7,7 +7,7 @@
     <Children>
 
       <!-- 2 Decks: Spacer sized like channel Gain knob -->
-      <WidgetGroup><Size>0min,34f</Size></WidgetGroup>
+      <WidgetGroup><Size>0min,28f</Size></WidgetGroup>
 
       <WidgetGroup>
         <Layout>horizontal</Layout>

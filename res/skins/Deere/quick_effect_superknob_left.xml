@@ -8,12 +8,12 @@
     color: the knob ring color. carmine, yellow or light_blue
 -->
 <Template>
-  <SetVariable name="QuickEffectRackGroup">[QuickEffectRack<Variable name="QuickEffect"/>]</SetVariable>
-  <SetVariable name="QuickEffectUnitGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>]</SetVariable>
-  <SetVariable name="QuickEffectEffectGroup">[QuickEffectRack<Variable name="QuickEffect"/>_<Variable name="group"/>_Effect1]</SetVariable>
+  <SetVariable name="QuickEffectRackGroup">[QuickEffectRack1]</SetVariable>
+  <SetVariable name="QuickEffectUnitGroup">[QuickEffectRack1_<Variable name="group"/>]</SetVariable>
+  <SetVariable name="QuickEffectEffectGroup">[QuickEffectRack1_<Variable name="group"/>_Effect1]</SetVariable>
   <WidgetGroup>
     <Layout>horizontal</Layout>
-    <SizePolicy>me,me</SizePolicy>
+    <SizePolicy>me,min</SizePolicy>
     <Children>
 
       <!-- Invert the on/off icons so they match the EQ kill switches. -->

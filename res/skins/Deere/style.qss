@@ -1266,11 +1266,6 @@ WNumberRate {
   background-color: #333333;
 }
 
-#DeckMixer_Column2, #DeckMixer_Column3 {
-  /* qproperty-layoutSpacing: 5; */
-  /* background-color: #006596; */
-}
-
 #CircleButton, #QuickEffectKillButton {
   border: 3px solid #333333;
   border-radius: 2px;

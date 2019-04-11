@@ -68,10 +68,11 @@
           </WidgetGroup><!-- DeckControls -->
 
           <WidgetGroup><!-- CrossfaderContainer -->
-                <ObjectName>CrossfaderContainer</ObjectName>
+            <ObjectName>CrossfaderContainer</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
+
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <Size>28f,28me</Size>
@@ -87,6 +88,7 @@
                   <BindProperty>visible</BindProperty>
                 </Connection>
               </WidgetGroup>
+
               <!-- Slider background is highlighted orange if AutoDJ is enabled -->
               <WidgetGroup>
                 <ObjectName>Crossfader</ObjectName>
