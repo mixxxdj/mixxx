@@ -92,7 +92,7 @@ Variables:
             <Children>
               <WidgetGroup>
                 <ObjectName>QuickFXBottom</ObjectName>
-                <Size>30f,20f</Size>
+                <Size>30f,16f</Size>
                 <Layout>vertical</Layout>
                 <Children>
                   <Template src="skin:button_2state.xml">
