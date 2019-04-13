@@ -1394,7 +1394,7 @@ decks, samplers, mic, aux, fx */
 
 #VUMeterFloating {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 3px 0px;
+  padding: 4px 0px 2px 0px;
   background-color: #252525;
   border-radius: 3px;
 }

@@ -323,6 +323,72 @@
     </SingletonDefinition>
 
     <SingletonDefinition>
+      <ObjectName>VUMeterDeck1</ObjectName>
+      <Children>
+        <Template src="skin:vumeter_single.xml">
+          <SetVariable name="group">[Channel1]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>VUMeterDeck2</ObjectName>
+      <Children>
+        <Template src="skin:vumeter_single.xml">
+          <SetVariable name="group">[Channel2]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>VUMeterDeck3</ObjectName>
+      <Children>
+        <Template src="skin:vumeter_single.xml">
+          <SetVariable name="group">[Channel3]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>VUMeterDeck4</ObjectName>
+      <Children>
+        <Template src="skin:vumeter_single.xml">
+          <SetVariable name="group">[Channel4]</SetVariable>
+        </Template>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>VuMeterMaster</ObjectName>
+      <Children>
+        <WidgetGroup>
+          <Layout>vertical</Layout>
+          <SizePolicy>min,me</SizePolicy>
+          <Children>
+            <WidgetGroup><!-- VU incl. Label -->
+              <ObjectName>VUMeterFloating</ObjectName>
+              <Layout>vertical</Layout>
+              <MaximumSize>-1,136</MaximumSize>
+              <SizePolicy>min,me</SizePolicy>
+              <Children>
+                <Template src="skin:vumeter_single.xml">
+                  <SetVariable name="group">[Master]</SetVariable>
+                </Template>
+                <WidgetGroup><Size>0f,5f</Size></WidgetGroup>
+                <WidgetGroup>
+                  <ObjectName>VUMeterLabelMaster</ObjectName>
+                  <Size>16f,20f</Size>
+                </WidgetGroup>
+                <WidgetGroup><Size>0f,2f</Size></WidgetGroup>
+              </Children>
+            </WidgetGroup><!-- VU incl. Label -->
+            <WidgetGroup><Size>0f,1me</Size></WidgetGroup>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </SingletonDefinition>
+
+    <SingletonDefinition>
       <ObjectName>Library_Singleton</ObjectName>
       <Children>
         <Template src="skin:library.xml"/>
