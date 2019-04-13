@@ -263,7 +263,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return;
     }
-    emit(unshowTrackModel());
+    emit(saveViewState());
     m_crateTableModel.selectCrate(crateId);
     emit(showTrackModel(&m_crateTableModel));
     emit(enableCoverArtDisplay(true));
@@ -278,7 +278,7 @@ bool CrateFeature::activateCrate(CrateId crateId) {
     VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
         return false;
     }
-    emit(unshowTrackModel());
+    emit(saveViewState());
     m_lastRightClickedIndex = index;
     m_crateTableModel.selectCrate(crateId);
     emit(showTrackModel(&m_crateTableModel));

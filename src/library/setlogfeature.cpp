@@ -157,7 +157,7 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
 
 void SetlogFeature::slotGetNewPlaylist() {
     //qDebug() << "slotGetNewPlaylist() successfully triggered !";
-    emit(unshowTrackModel());
+    emit(saveViewState());
 
     // create a new playlist for today
     QString set_log_name_format;
@@ -189,7 +189,7 @@ void SetlogFeature::slotJoinWithPrevious() {
     //qDebug() << "slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
 
     if (m_lastRightClickedIndex.isValid()) {
-        emit(unshowTrackModel());
+        emit(saveViewState());
         int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(
             m_lastRightClickedIndex.data().toString());
 

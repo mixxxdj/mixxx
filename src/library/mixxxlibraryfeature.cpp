@@ -162,7 +162,7 @@ void MixxxLibraryFeature::refreshLibraryModels() {
 
 void MixxxLibraryFeature::activate() {
     qDebug() << "MixxxLibraryFeature::activate()";
-    emit(unshowTrackModel());
+    emit(saveViewState());
     emit(showTrackModel(m_pLibraryTableModel));
     emit(enableCoverArtDisplay(true));
 }

@@ -111,7 +111,7 @@ TreeItemModel* RhythmboxFeature::getChildModel() {
 void RhythmboxFeature::activate() {
     qDebug() << "RhythmboxFeature::activate()";
 
-    emit(unshowTrackModel());
+    emit(saveViewState());
     if (!m_isActivated) {
         m_isActivated =  true;
         // Usually the maximum number of threads
@@ -136,7 +136,7 @@ void RhythmboxFeature::activate() {
 
 void RhythmboxFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "RhythmboxFeature::activateChild()" << index;
-    emit(unshowTrackModel());
+    emit(saveViewState());
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);

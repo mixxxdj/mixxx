@@ -107,7 +107,7 @@ class LibraryFeature : public QObject {
     }
   signals:
     void showTrackModel(QAbstractItemModel* model);
-    void unshowTrackModel();
+    void saveViewState();
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
@@ -124,7 +124,7 @@ class LibraryFeature : public QObject {
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
 
-  private: 
+  private:
     QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
 };
 

@@ -93,7 +93,7 @@ class Library: public QObject,
 
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
-    void slotUnshowTrackModel();
+    void slotSaveViewState();
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
@@ -114,7 +114,7 @@ class Library: public QObject,
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
-    void unshowTrackModel();
+    void saveViewState();
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);

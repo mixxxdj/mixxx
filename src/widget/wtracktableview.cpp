@@ -240,7 +240,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
     }
 }
 
-void WTrackTableView::unloadTrackModel() {
+void WTrackTableView::saveViewState() {
     // We save the header state when a track model is going away.
     WTrackTableViewHeader* pHeader =
             dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());

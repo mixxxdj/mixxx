@@ -137,7 +137,7 @@ void TraktorFeature::refreshLibraryModels() {
 
 void TraktorFeature::activate() {
     qDebug() << "TraktorFeature::activate()";
-    emit(unshowTrackModel());
+    emit(saveViewState());
 
     if (!m_isActivated) {
         m_isActivated =  true;
@@ -171,7 +171,7 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
     if (!item->hasChildren()) {
-        emit(unshowTrackModel());
+        emit(saveViewState());
         qDebug() << "Activate Traktor Playlist: " << item->getData().toString();
         m_pTraktorPlaylistModel->setPlaylist(item->getData().toString());
         emit(showTrackModel(m_pTraktorPlaylistModel));
@@ -605,7 +605,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 void TraktorFeature::onTrackCollectionLoaded() {
     std::unique_ptr<TreeItem> root(m_future.result());
     if (root) {
-        emit(unshowTrackModel());
+        emit(saveViewState());
         m_childModel.setRootItem(std::move(root));
         // Tell the traktor track source that it should re-build its index.
         m_trackSource->buildIndex();
