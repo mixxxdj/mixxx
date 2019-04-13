@@ -238,16 +238,13 @@ WWidgetGroup {
   border-radius: 2px;
   border-top-right-radius: 0px;
   border-top-left-radius: 0px;
+  background-color: #333;
   }
   #MixerbarSection {
     margin: 0px;
   }
   #CrossfaderContainer {
     margin: 0px 8px;
-  }
-  #MixerbarSection:hover,
-  #CrossfaderContainer:hover {
-    background-color: #0f0f0f;
   }
 
 #MasterHeadMixerLabel {
@@ -273,7 +270,12 @@ WWidgetGroup {
   /* Note(ronso0): background is #333, so this has to blend in */
   background-color: rgba(30, 30, 30, 200);
 }
-
+#MixerbarSection #GuiToggleButton[value="0"] {
+  border: 1px solid #0f0f0f;
+  }
+  #MixerbarSection #GuiToggleButton[value="0"]:hover {
+    border: 1px solid #999;
+  }
 /*################################################################
  ######  Skin Controls / Rec / Broadcast / Clock ################
 ##############################################################*/

@@ -78,7 +78,7 @@ Description:
               <Template src="skin:mixer_master.xml"/>
 
               <WidgetGroup>
-                <MaximumSize>50,1</MaximumSize>
+                <MaximumSize>30,1</MaximumSize>
                 <SizePolicy>me,min</SizePolicy>
               </WidgetGroup>
 
