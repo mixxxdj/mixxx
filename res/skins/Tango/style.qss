@@ -1284,6 +1284,7 @@ WBeatSpinBox,
 }
 
 #EQKillButton {
+  margin: 1px 0px 3px 0px;
   }
   #EQKillButton[displayValue="0"] {
     background-color: #585858;
@@ -1311,20 +1312,21 @@ WBeatSpinBox,
 }
 #QuickFXBottom {
   padding: 0px 2px 4px 2px;
+}
+
+#QuickFXButton[displayValue="0"] {
+  background-color: #585858;
   }
-  #QuickFXButton[displayValue="0"] {
-    background-color: #585858;
-    }
-    #QuickFXButton[displayValue="0"]:hover {
-      border: 1px solid #ff8f00;
-      }
-  #QuickFXButton[displayValue="1"] {
-    background-color: #999;
+  #QuickFXButton[displayValue="0"]:hover {
     border: 1px solid #ff8f00;
     }
-    #QuickFXButton[displayValue="1"]:hover {
-      border: 1px solid #eeeeee;
-    }
+#QuickFXButton[displayValue="1"] {
+  background-color: #999;
+  border: 1px solid #ff8f00;
+  }
+  #QuickFXButton[displayValue="1"]:hover {
+    border: 1px solid #eeeeee;
+  }
 
 /*  This wouldn't scale the image:
 #PflButton[displayValue="0"] {

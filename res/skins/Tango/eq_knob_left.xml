@@ -45,7 +45,6 @@ Variables:
             <Layout>stacked</Layout>
             <Children>
               <EffectParameterKnobComposed>
-                <ObjectName>EQKnob</ObjectName>
                 <Size>30f,26f</Size>
                 <Knob>knobs_sliders/knob_white.svg</Knob>
                 <BackPath>knobs_sliders/knob_bg.svg</BackPath>
