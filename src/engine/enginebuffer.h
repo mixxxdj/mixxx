@@ -244,6 +244,8 @@ class EngineBuffer : public EngineObject {
     QString m_group;
     UserSettingsPointer m_pConfig;
 
+    friend class CueControlTest;
+
     LoopingControl* m_pLoopingControl; // used for testes
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);

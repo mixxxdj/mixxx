@@ -1,3 +1,4 @@
+#include "engine/controls/cuecontrol.h"
 #include "test/signalpathtest.h"
 
 class CueControlTest : public BaseSignalPathTest {
@@ -6,6 +7,7 @@ class CueControlTest : public BaseSignalPathTest {
         BaseSignalPathTest::SetUp();
 
         m_pQuantizeEnabled = std::make_unique<ControlProxy>(m_sGroup1, "quantize");
+        m_pSeekOnLoadMode = std::make_unique<ControlProxy>(m_sGroup1, "seekonload_mode");
         m_pCuePoint = std::make_unique<ControlProxy>(m_sGroup1, "cue_point");
         m_pIntroStartPosition = std::make_unique<ControlProxy>(m_sGroup1, "intro_start_position");
         m_pIntroStartEnabled = std::make_unique<ControlProxy>(m_sGroup1, "intro_start_enabled");
@@ -32,6 +34,7 @@ class CueControlTest : public BaseSignalPathTest {
 
     void loadTrack(TrackPointer pTrack) {
         BaseSignalPathTest::loadTrack(m_pMixerDeck1, pTrack);
+        ProcessBuffer();
     }
 
     TrackPointer createAndLoadFakeTrack() {
@@ -42,12 +45,17 @@ class CueControlTest : public BaseSignalPathTest {
         m_pMixerDeck1->slotLoadTrack(TrackPointer(), false);
     }
 
+    double getCurrentSample() {
+        return m_pChannel1->getEngineBuffer()->m_pCueControl->getSampleOfTrack().current;
+    }
+
     void setCurrentSample(double sample) {
         m_pChannel1->getEngineBuffer()->queueNewPlaypos(sample, EngineBuffer::SEEK_STANDARD);
         ProcessBuffer();
     }
 
     std::unique_ptr<ControlProxy> m_pQuantizeEnabled;
+    std::unique_ptr<ControlProxy> m_pSeekOnLoadMode;
     std::unique_ptr<ControlProxy> m_pCuePoint;
     std::unique_ptr<ControlProxy> m_pIntroStartPosition;
     std::unique_ptr<ControlProxy> m_pIntroStartEnabled;
@@ -252,6 +260,130 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
     EXPECT_DOUBLE_EQ(330.0, m_pIntroEndPosition->get());
     EXPECT_DOUBLE_EQ(770.0, m_pOutroStartPosition->get());
     EXPECT_DOUBLE_EQ(990.0, m_pOutroEndPosition->get());
+}
+
+TEST_F(CueControlTest, SeekOnLoadDefault) {
+    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_DEFAULT);
+
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setCuePoint(CuePosition(100.0, Cue::MANUAL));
+
+    loadTrack(pTrack);
+
+    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(100.0, getCurrentSample());
+
+    // Move cue and check if track is following it.
+    pTrack->setCuePoint(CuePosition(200.0, Cue::MANUAL));
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(200.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(200.0, getCurrentSample());
+}
+
+TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
+    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_DEFAULT);
+
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setCuePoint(CuePosition(-100.0, Cue::MANUAL));
+
+    loadTrack(pTrack);
+
+    EXPECT_DOUBLE_EQ(-100.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(-100.0, getCurrentSample());
+
+    // Move cue and check if track is following it.
+    pTrack->setCuePoint(CuePosition(-200.0, Cue::MANUAL));
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(-200.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(-200.0, getCurrentSample());
+}
+
+TEST_F(CueControlTest, SeekOnLoadDefault_NoCue) {
+    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_DEFAULT);
+
+    TrackPointer pTrack = createTestTrack();
+
+    loadTrack(pTrack);
+
+    EXPECT_DOUBLE_EQ(-1.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
+
+    // Set cue and check if track is seeked to it.
+    pTrack->setCuePoint(CuePosition(200.0, Cue::MANUAL));
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(200.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(200.0, getCurrentSample());
+}
+
+TEST_F(CueControlTest, SeekOnLoadDefault_CueRecallDisabled) {
+    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_DEFAULT);
+
+    // Note: CueRecall uses inverse logic (0 means enabled).
+    config()->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(1));
+
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setCuePoint(CuePosition(100.0, Cue::MANUAL));
+
+    loadTrack(pTrack);
+
+    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
+}
+
+TEST_F(CueControlTest, SeekOnLoadZeroPos) {
+    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_ZERO_POS);
+
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setCuePoint(CuePosition(100.0, Cue::MANUAL));
+
+    loadTrack(pTrack);
+
+    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(0.0, getCurrentSample());
+}
+
+TEST_F(CueControlTest, SeekOnLoadMainCue) {
+    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_MAIN_CUE);
+
+    TrackPointer pTrack = createTestTrack();
+    pTrack->setCuePoint(CuePosition(100.0, Cue::MANUAL));
+
+    loadTrack(pTrack);
+
+    EXPECT_DOUBLE_EQ(100.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(100.0, getCurrentSample());
+
+    // Move cue and check if track is following it.
+    pTrack->setCuePoint(CuePosition(200.0, Cue::MANUAL));
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(200.0, m_pCuePoint->get());
+    EXPECT_DOUBLE_EQ(200.0, getCurrentSample());
+}
+
+TEST_F(CueControlTest, SeekOnLoadIntroCue) {
+    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_INTRO_CUE);
+
+    TrackPointer pTrack = createTestTrack();
+    auto pIntro = pTrack->createAndAddCue();
+    pIntro->setType(Cue::INTRO);
+    pIntro->setSource(Cue::MANUAL);
+    pIntro->setPosition(200.0);
+
+    loadTrack(pTrack);
+
+    EXPECT_DOUBLE_EQ(200.0, m_pIntroStartPosition->get());
+    EXPECT_DOUBLE_EQ(200.0, getCurrentSample());
+
+    // Move cue and check if track is following it.
+    pIntro->setPosition(400.0);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(400.0, m_pIntroStartPosition->get());
+    EXPECT_DOUBLE_EQ(400.0, getCurrentSample());
 }
 
 TEST_F(CueControlTest, IntroCue_SetStartEnd_ClearStartEnd) {
