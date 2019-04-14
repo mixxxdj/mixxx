@@ -1273,7 +1273,7 @@ WNumberRate {
 
 #EQKillButton,
 #QuickEffectKillButton {
-  border-radius: 4px;
+  border-radius: 1px;
   border: 1px solid #b4b4b4;
   margin: 1px;
 }
