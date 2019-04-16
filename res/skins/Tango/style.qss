@@ -1628,9 +1628,9 @@ decks, samplers, mic, aux, fx */
     WEffectSelector::checked {
       /* not applied
       padding-left: 5px;
-      font-weight: bold;	*/
+      font-weight: bold;
+      background-color: #000;	*/
       color: #0081B7;
-      background-color: #000;
     }
     /* tick mark frame */
     WEffectSelector::indicator:checked {
@@ -1647,8 +1647,12 @@ decks, samplers, mic, aux, fx */
       /* Image is rendered correctly but size of the tick mark containers
       won't change. Also, only with this option the hover bg color defined
       above will be applied... it's qt magic
-      image: url(skin:/buttons/btn_fx_selector_tick.svg) no-repeat center center; */
-      background: #0081B7;
+      background: #0081B7; */
+      image: url(skin:/buttons/btn_skinsettings_close.svg) no-repeat center center;
+    }
+    WEffectSelector::indicator:!checked {
+      image: url(skin:/buttons/btn_.svg) no-repeat center center;
+      background-color: #202020;
     }
 
 #FxParametersLeft {
