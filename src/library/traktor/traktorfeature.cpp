@@ -305,11 +305,11 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 // On OS X, the volume is supposed to be "Macintosh HD" at all times,
                 // which is a folder in /Volumes/
                 #if defined(__APPLE__)
-                location = "/Volumes/"+volume;
+                location = "/Volumes/" + volume;
                 #else
                 location = volume;
                 #endif
-                location += path.replace(QString(":"), QString(""));
+                location += path.replace(QString("/:"), QString("/"));
                 location += filename;
                 continue;
             }
@@ -449,10 +449,10 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 }
 
 void TraktorFeature::parsePlaylistEntries(
-    QXmlStreamReader &xml,
-    QString playlist_path,
-    QSqlQuery query_insert_into_playlist,
-    QSqlQuery query_insert_into_playlisttracks) {
+        QXmlStreamReader &xml,
+        QString playlist_path,
+        QSqlQuery query_insert_into_playlist,
+        QSqlQuery query_insert_into_playlisttracks) {
     // In the database, the name of a playlist is specified by the unique path,
     // e.g., /someFolderA/someFolderB/playlistA"
     query_insert_into_playlist.bindValue(":name", playlist_path);
@@ -492,11 +492,8 @@ void TraktorFeature::parsePlaylistEntries(
                 QString key = attr.value("KEY").toString();
                 QString type = attr.value("TYPE").toString();
                 if (type == "TRACK") {
-                    key.replace(QString(":"), QString(""));
-                    //TODO: IFDEF
-                    #if defined(__WINDOWS__)
-                    key.insert(1,":");
-                    #else
+                    key.replace(QString("/:"), QString("/"));
+                    #if defined(__APPLE__)
                     key.prepend("/Volumes/");
                     #endif
 
