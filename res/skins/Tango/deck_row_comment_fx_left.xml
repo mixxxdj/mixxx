@@ -10,7 +10,7 @@ Variables:
   <SetVariable name="FxRack">1</SetVariable>
 
   <WidgetGroup>
-    <ObjectName>TrackCommentContainer</ObjectName>
+    <ObjectName>DeckRowCommentFx</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>

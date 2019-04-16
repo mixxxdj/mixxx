@@ -690,7 +690,7 @@ WWidgetGroup {
       border: 1px solid #fff;
     }
 
-  #TrackCommentContainer {
+  #DeckRowCommentFx {
     qproperty-layoutAlignment: 'AlignVCenter';
     background-color: #0f0f0f;
   }
@@ -707,7 +707,7 @@ WWidgetGroup {
     background-color: #333;
     }
 
-#ArtistTitleTime {
+#DeckRowText {
   qproperty-layoutAlignment: 'AlignVCenter';
   background-color: #333;
   }
@@ -752,7 +752,7 @@ WWidgetGroup {
       image: url(skin:/buttons/btn_reloop_on.svg) no-repeat center center;
     }
 
-#DeckButtonsPlay {
+#DeckRowTransport {
   background-color: #0f0f0f;
   }
   #DeckControlsLeft {
