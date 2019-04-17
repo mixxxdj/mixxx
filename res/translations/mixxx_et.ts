@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="et" sourcelanguage="en" version="2.0">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="et" sourcelanguage="en" version="2.1">
 <context>
     <name>:</name>
     <message>
@@ -76,12 +76,12 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="15"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Lisa auto-DJ järjekorda (üles)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="19"/>
         <source>Import Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Impordi esitusloend</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="92"/>
@@ -99,23 +99,23 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="281"/>
         <source>New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Uus esitusnimekiri</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="36"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Lisa auto-DJ järjekorda (alla)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="32"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="278"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Loo uus esitusloend</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="40"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Lisa auto-DJ järjekorda (üles)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="44"/>
@@ -125,17 +125,17 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="48"/>
         <source>Rename</source>
-        <translation type="unfinished"/>
+        <translation>Nimeta ümber</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="52"/>
         <source>Lock</source>
-        <translation type="unfinished"/>
+        <translation>Lukus</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="56"/>
         <source>Duplicate</source>
-        <translation type="unfinished"/>
+        <translation>duplikaat</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="60"/>
@@ -167,7 +167,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="223"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="279"/>
         <source>Enter name for new playlist:</source>
-        <translation type="unfinished"/>
+        <translation>Sisesta uue esitusloendi nimi:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="68"/>
@@ -184,7 +184,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="194"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="198"/>
         <source>Renaming Playlist Failed</source>
-        <translation type="unfinished"/>
+        <translation>Esitusloendi ümbernimetamine nurjus</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="195"/>
@@ -215,7 +215,7 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="307"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="432"/>
         <source>Playlist Creation Failed</source>
-        <translation type="unfinished"/>
+        <translation>Esitusloendi loomine nurjus</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="308"/>
@@ -226,12 +226,12 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="461"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation type="unfinished"/>
+        <translation>M3U Esitusloend (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="466"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation type="unfinished"/>
+        <translation>M3U Esitusloend (*.m3u);;M3U8 Esitusloend (*.m3u8);;PLSEsitusloend (*.pls);;Tekst CSV (*.csv);;Loetav tekst (*.txt)</translation>
     </message>
 </context>
 <context>
@@ -534,12 +534,12 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="31"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="32"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation>Lugu nr</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="33"/>
@@ -549,42 +549,42 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="34"/>
         <source>Genre</source>
-        <translation type="unfinished"/>
+        <translation>Žanr</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="35"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Helilooja</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="36"/>
         <source>Comment</source>
-        <translation type="unfinished"/>
+        <translation>Märkus</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="37"/>
         <source>Duration</source>
-        <translation type="unfinished"/>
+        <translation>Kestus</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="38"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>Lööki minutis</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="39"/>
         <source>Key</source>
-        <translation type="unfinished"/>
+        <translation>Nupp</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="40"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Tüüp</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="41"/>
         <source>Bitrate</source>
-        <translation type="unfinished"/>
+        <translation>Bitikiirus</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="42"/>
@@ -594,27 +594,27 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="43"/>
         <source>Location</source>
-        <translation type="unfinished"/>
+        <translation>Asukoht</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="44"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Albumi esitaja</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="45"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Rühmitamine</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="46"/>
         <source>File Modified</source>
-        <translation type="unfinished"/>
+        <translation>Kaust muudetud</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="47"/>
         <source>File Created</source>
-        <translation type="unfinished"/>
+        <translation>Kaust loodud</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="106"/>
@@ -640,7 +640,7 @@
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="47"/>
         <source>No control chosen.</source>
-        <translation type="unfinished"/>
+        <translation>Juhti pole valitud.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="51"/>
@@ -653,7 +653,7 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="6"/>
         <source>Group</source>
-        <translation type="unfinished"/>
+        <translation>Grupp</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="7"/>
@@ -663,7 +663,7 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="8"/>
         <source>Value</source>
-        <translation type="unfinished"/>
+        <translation>Väärtus</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="9"/>
@@ -2728,7 +2728,7 @@
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="41"/>
         <source>Action</source>
-        <translation type="unfinished"/>
+        <translation>Tegevus</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="42"/>
@@ -2743,7 +2743,7 @@
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="44"/>
         <source>Comment</source>
-        <translation type="unfinished"/>
+        <translation>Märkus</translation>
     </message>
 </context>
 <context>
@@ -2893,7 +2893,7 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="62"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="80"/>
         <source>Creating Crate Failed</source>
-        <translation type="unfinished"/>
+        <translation>Kasti loomine ebaõnnestus</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="55"/>
@@ -2905,7 +2905,7 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="63"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="116"/>
         <source>A crate by that name already exists.</source>
-        <translation type="unfinished"/>
+        <translation>Sellise nimega kast on juba olemas.</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="81"/>
@@ -2929,6 +2929,34 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="115"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="149"/>
         <source>Duplicating Crate Failed</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>DlgAbout</name>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="35"/>
+        <source>Mixxx %1 Development Team</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
+        <source>With contributions from:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
+        <source>And special thanks to:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
+        <source>Past Developers</source>
+        <translation>Eelmised arendajad</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
+        <source>Past Contributors</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -2962,7 +2990,7 @@
         <location filename="../../src/library/dlganalysis.ui" line="105"/>
         <location filename="../../src/library/dlganalysis.cpp" line="159"/>
         <source>Analyze</source>
-        <translation type="unfinished"/>
+        <translation>Analüüsi</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="52"/>
@@ -2972,17 +3000,17 @@
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="55"/>
         <source>New</source>
-        <translation type="unfinished"/>
+        <translation>Uus</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="62"/>
         <source>Shows all tracks in the library.</source>
-        <translation type="unfinished"/>
+        <translation>Näita kõiki helindeid fonoteegis.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="65"/>
         <source>All</source>
-        <translation type="unfinished"/>
+        <translation>Kõik</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="85"/>
@@ -2997,7 +3025,7 @@
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="95"/>
         <source>Select All</source>
-        <translation type="unfinished"/>
+        <translation>Vali Kõik</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="102"/>
@@ -3012,7 +3040,7 @@
     <message>
         <location filename="../../src/library/dlganalysis.cpp" line="176"/>
         <source>Analyzing %1/%2 %3%</source>
-        <translation type="unfinished"/>
+        <translation>Analüüsin %1/%2 %3%</translation>
     </message>
 </context>
 <context>
@@ -3043,7 +3071,7 @@
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="142"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="150"/>
         <source>Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>Automaatne DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="55"/>
@@ -3095,17 +3123,17 @@ If no track sources are configured, the track is added from the library instead.
         <location filename="../../src/library/autodj/dlgautodj.ui" line="121"/>
         <source>Seconds</source>
         <comment>&quot;sec.&quot; as in seconds</comment>
-        <translation type="unfinished"/>
+        <translation>Sekundid</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="124"/>
         <source>sec.</source>
-        <translation type="unfinished"/>
+        <translation>sek</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="151"/>
         <source>Turn Auto DJ on or off.</source>
-        <translation type="unfinished"/>
+        <translation>Lülita Auto DJ sisse või välja</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="154"/>
@@ -3164,7 +3192,7 @@ by analyzing the beats to discard outliers.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="103"/>
         <source>Analyzer Settings</source>
-        <translation type="unfinished"/>
+        <translation>Analüüsija seaded</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="114"/>
@@ -3207,12 +3235,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="50"/>
         <source>Min:</source>
-        <translation type="unfinished"/>
+        <translation>Min:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="70"/>
         <source>Max:</source>
-        <translation type="unfinished"/>
+        <translation>Maks:</translation>
     </message>
 </context>
 <context>
@@ -3225,7 +3253,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="70"/>
         <source>Learn</source>
-        <translation type="unfinished"/>
+        <translation>Õpi</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="80"/>
@@ -3235,7 +3263,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="121"/>
         <source>Choose Control...</source>
-        <translation type="unfinished"/>
+        <translation>Vali juht...</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="192"/>
@@ -3355,7 +3383,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="439"/>
         <source>&lt;i&gt;Ready to learn %1&lt;/i&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;i&gt;Valmis õppima %1&lt;/i&gt;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="440"/>
@@ -3424,7 +3452,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="68"/>
         <source>Select All</source>
-        <translation type="unfinished"/>
+        <translation>Vali Kõik</translation>
     </message>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="75"/>
@@ -3457,7 +3485,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/library/dlgmissing.ui" line="14"/>
         <source>Missing Tracks</source>
-        <translation type="unfinished"/>
+        <translation>Kadunud lood</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgmissing.ui" line="65"/>
@@ -3467,7 +3495,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/library/dlgmissing.ui" line="68"/>
         <source>Select All</source>
-        <translation type="unfinished"/>
+        <translation>Vali Kõik</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgmissing.ui" line="75"/>
@@ -3535,7 +3563,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="49"/>
         <source>%</source>
-        <translation type="unfinished"/>
+        <translation>%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="62"/>
@@ -3962,7 +3990,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="170"/>
         <source>%1 by %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 - %2</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="187"/>
@@ -3982,12 +4010,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="442"/>
         <source>Troubleshooting</source>
-        <translation type="unfinished"/>
+        <translation>Tõrkeotsing</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="512"/>
         <source>Filename</source>
-        <translation type="unfinished"/>
+        <translation>Failinimi</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="514"/>
@@ -3997,7 +4025,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="516"/>
         <source>Built-in</source>
-        <translation type="unfinished"/>
+        <translation>Sisseehitatud</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="592"/>
@@ -4061,7 +4089,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="133"/>
         <source>Description:</source>
-        <translation type="unfinished"/>
+        <translation>Kirjeldus:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="299"/>
@@ -4088,7 +4116,7 @@ Apply settings and continue?</source>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="432"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="485"/>
         <source>Add</source>
-        <translation type="unfinished"/>
+        <translation>Lisa</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="370"/>
@@ -4120,7 +4148,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="209"/>
         <source>Name:</source>
-        <translation type="unfinished"/>
+        <translation>Nimi:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="318"/>
@@ -4131,7 +4159,7 @@ Apply settings and continue?</source>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="396"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="459"/>
         <source>Clear All</source>
-        <translation type="unfinished"/>
+        <translation>Tühjenda kõik</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="407"/>
@@ -4141,7 +4169,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="470"/>
         <source>Scripts</source>
-        <translation type="unfinished"/>
+        <translation>Skriptid</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="512"/>
@@ -4159,7 +4187,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="20"/>
         <source>Controllers</source>
-        <translation type="unfinished"/>
+        <translation>Kontrollerid</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="66"/>
@@ -4227,7 +4255,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="138"/>
         <source>Tool tips</source>
-        <translation type="unfinished"/>
+        <translation>Kohtspikkrid</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="91"/>
@@ -4317,7 +4345,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="153"/>
         <source>Off</source>
-        <translation type="unfinished"/>
+        <translation>Väljas</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="163"/>
@@ -4365,7 +4393,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="117"/>
         <source>Linear</source>
-        <translation type="unfinished"/>
+        <translation>Lineaarne</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="143"/>
@@ -4423,12 +4451,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="133"/>
         <source>8% (Technics SL-1210)</source>
-        <translation type="unfinished"/>
+        <translation>8% (Technics SL-1210)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="134"/>
         <source>10%</source>
-        <translation type="unfinished"/>
+        <translation>10%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="135"/>
@@ -4698,11 +4726,7 @@ CUP mode:
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="263"/>
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="678"/>
         <source>None</source>
-        <extracomment>Displayed when no effect is selected
-----------
-Displayed when no effect is selected
-----------
-Displayed when no effect is selected</extracomment>
+        <extracomment>Displayed when no effect is selected</extracomment>
         <translation>Pole</translation>
     </message>
 </context>
@@ -4782,7 +4806,7 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="361"/>
         <source>Miscellaneous</source>
-        <translation type="unfinished"/>
+        <translation>Mitmesugust</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="377"/>
@@ -4889,7 +4913,7 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="304"/>
         <source>Information</source>
-        <translation type="unfinished"/>
+        <translation>Info</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="305"/>
@@ -4998,27 +5022,27 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="268"/>
         <source>D</source>
-        <translation type="unfinished"/>
+        <translation>D</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="291"/>
         <source>Eb</source>
-        <translation type="unfinished"/>
+        <translation>Eb</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="314"/>
         <source>E</source>
-        <translation type="unfinished"/>
+        <translation>E</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="337"/>
         <source>F</source>
-        <translation type="unfinished"/>
+        <translation>F</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="360"/>
         <source>F#</source>
-        <translation type="unfinished"/>
+        <translation>F#</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="383"/>
@@ -5073,7 +5097,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="613"/>
         <source>Fm</source>
-        <translation type="unfinished"/>
+        <translation>Fm</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="636"/>
@@ -5083,7 +5107,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="659"/>
         <source>Gm</source>
-        <translation type="unfinished"/>
+        <translation>Gm</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="682"/>
@@ -5384,7 +5408,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="190"/>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="292"/>
         <source>Low</source>
-        <translation type="unfinished"/>
+        <translation>Madal</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="183"/>
@@ -5451,22 +5475,22 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="327"/>
         <source>10ms</source>
-        <translation type="unfinished"/>
+        <translation>10ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="334"/>
         <source>256</source>
-        <translation type="unfinished"/>
+        <translation>256</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="341"/>
         <source>5ms</source>
-        <translation type="unfinished"/>
+        <translation>5ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="348"/>
         <source>100Hz</source>
-        <translation type="unfinished"/>
+        <translation>100Hz</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="355"/>
@@ -5481,7 +5505,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="369"/>
         <source>Noise reduction</source>
-        <translation type="unfinished"/>
+        <translation>Müra vähendamine</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="387"/>
@@ -5587,27 +5611,27 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="103"/>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="119"/>
         <source>Quality</source>
-        <translation type="unfinished"/>
+        <translation>Kvaliteet</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="277"/>
         <source>Tags</source>
-        <translation type="unfinished"/>
+        <translation>Sildid</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="289"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>Pealkiri</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="311"/>
         <source>Author</source>
-        <translation type="unfinished"/>
+        <translation>Autor</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="333"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="233"/>
@@ -5642,7 +5666,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="239"/>
         <source>Create a CUE file</source>
-        <translation type="unfinished"/>
+        <translation>Loo CUE fail</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="255"/>
@@ -5688,12 +5712,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="91"/>
         <source>-30 LUFS</source>
-        <translation type="unfinished"/>
+        <translation>-30 LUFS</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="131"/>
         <source>-6 LUFS</source>
-        <translation type="unfinished"/>
+        <translation>-6 LUFS</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="140"/>
@@ -5718,7 +5742,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="174"/>
         <source>-12 dB</source>
-        <translation type="unfinished"/>
+        <translation>-12 dB</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="226"/>
@@ -5897,7 +5921,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="35"/>
         <source>Sample Rate</source>
-        <translation type="unfinished"/>
+        <translation>Diskreetimissagedus</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="48"/>
@@ -5935,11 +5959,7 @@ The loudness target is approximate and assumes track pregain and master output l
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="181"/>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="204"/>
         <source> ms</source>
-        <extracomment>milliseconds
-----------
-milliseconds
-----------
-milliseconds</extracomment>
+        <extracomment>milliseconds</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -5965,7 +5985,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="405"/>
         <source>0</source>
-        <translation type="unfinished"/>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="151"/>
@@ -5995,7 +6015,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="270"/>
         <source>Output</source>
-        <translation type="unfinished"/>
+        <translation>Väljund</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="293"/>
@@ -6043,12 +6063,12 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="114"/>
         <source>Channel %1</source>
-        <translation type="unfinished"/>
+        <translation>Kanal %1</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="116"/>
         <source>Channels %1 - %2</source>
-        <translation type="unfinished"/>
+        <translation>Kanalid %1 - %2</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.ui" line="14"/>
@@ -6143,7 +6163,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="718"/>
         <source>http://www.xwax.co.uk</source>
-        <translation type="unfinished"/>
+        <translation>http://www.xwax.co.uk</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="721"/>
@@ -6502,7 +6522,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/recording/dlgrecording.ui" line="65"/>
         <source>Status:</source>
-        <translation type="unfinished"/>
+        <translation>Olek:</translation>
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.ui" line="72"/>
@@ -6543,7 +6563,7 @@ Select from different types of displays for the waveform, which differ primarily
         <location filename="../../src/library/dlgtagfetcher.ui" line="61"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="490"/>
         <source>Year</source>
-        <translation type="unfinished"/>
+        <translation>Aasta</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="66"/>
@@ -6560,7 +6580,7 @@ Select from different types of displays for the waveform, which differ primarily
         <location filename="../../src/library/dlgtagfetcher.ui" line="76"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="505"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="116"/>
@@ -6665,7 +6685,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/export/dlgtrackexport.ui" line="112"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Katkesta</translation>
     </message>
 </context>
 <context>
@@ -6673,7 +6693,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="20"/>
         <source>Track Editor</source>
-        <translation type="unfinished"/>
+        <translation>Raja redaktor</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="48"/>
@@ -6683,7 +6703,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="525"/>
         <source>Filetype:</source>
-        <translation type="unfinished"/>
+        <translation>Failitüüp:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="434"/>
@@ -6693,12 +6713,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="468"/>
         <source>Location:</source>
-        <translation type="unfinished"/>
+        <translation>Asukoht:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="488"/>
         <source>Bitrate:</source>
-        <translation type="unfinished"/>
+        <translation>Bitikiirus:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="578"/>
@@ -6748,12 +6768,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="127"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Helilooja</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="164"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>Pealkiri</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="174"/>
@@ -6773,17 +6793,17 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="268"/>
         <source>Artist</source>
-        <translation type="unfinished"/>
+        <translation>Esitaja</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="284"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="326"/>
         <source>Genre</source>
-        <translation type="unfinished"/>
+        <translation>Žanr</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="406"/>
@@ -6810,7 +6830,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="658"/>
         <source>Double BPM</source>
-        <translation type="unfinished"/>
+        <translation>Topelt BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="690"/>
@@ -6852,7 +6872,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="461"/>
         <source>Duration:</source>
-        <translation type="unfinished"/>
+        <translation>Kestvus:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="351"/>
@@ -6887,7 +6907,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="642"/>
         <source>2/3 BPM</source>
-        <translation type="unfinished"/>
+        <translation>2/3 BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="703"/>
@@ -6932,7 +6952,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="815"/>
         <source>Position</source>
-        <translation type="unfinished"/>
+        <translation>Asukoht</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="820"/>
@@ -6942,7 +6962,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="825"/>
         <source>Label</source>
-        <translation type="unfinished"/>
+        <translation>Silt</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="867"/>
@@ -6980,12 +7000,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="961"/>
         <source>&amp;Apply</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Rakenda</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="942"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Katkesta</translation>
     </message>
 </context>
 <context>
@@ -7066,7 +7086,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/waveform/widgets/emptywaveformwidget.h" line="18"/>
         <source>Empty</source>
-        <translation type="unfinished"/>
+        <translation>Tühi</translation>
     </message>
 </context>
 <context>
@@ -7144,7 +7164,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/waveform/widgets/glsimplewaveformwidget.h" line="16"/>
         <source>Simple</source>
-        <translation type="unfinished"/>
+        <translation>Lihtne</translation>
     </message>
 </context>
 <context>
@@ -7168,7 +7188,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/waveform/widgets/hsvwaveformwidget.h" line="15"/>
         <source>HSV</source>
-        <translation type="unfinished"/>
+        <translation>HSV</translation>
     </message>
 </context>
 <context>
@@ -7228,7 +7248,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <name>ITunesFeature</name>
     <message>
         <location filename="../../src/library/itunes/itunesfeature.cpp" line="100"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="828"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="826"/>
         <source>iTunes</source>
         <translation>iTunes</translation>
     </message>
@@ -7254,12 +7274,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="823"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="821"/>
         <source>Error Loading iTunes Library</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="824"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="822"/>
         <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
         <translation type="unfinished"/>
     </message>
@@ -7359,7 +7379,7 @@ support.</source>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="30"/>
         <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-        <translation type="unfinished"/>
+        <translation>Esitusloendi failid (*.m3u *.m3u8 *.pls *.csv)</translation>
     </message>
 </context>
 <context>
@@ -7437,7 +7457,7 @@ support.</source>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="45"/>
         <source>Click OK to exit.</source>
-        <translation type="unfinished"/>
+        <translation>Klikkal OK et väljuda.</translation>
     </message>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="46"/>
@@ -7709,25 +7729,25 @@ Please select an input device in the sound hardware preferences first.</source>
 <context>
     <name>ParserM3u</name>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="164"/>
-        <location filename="../../src/library/parserm3u.cpp" line="175"/>
+        <location filename="../../src/library/parserm3u.cpp" line="155"/>
+        <location filename="../../src/library/parserm3u.cpp" line="166"/>
         <source>Playlist Export Failed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="165"/>
+        <location filename="../../src/library/parserm3u.cpp" line="156"/>
         <source>File path contains characters, not allowed in m3u playlists.
 </source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="166"/>
+        <location filename="../../src/library/parserm3u.cpp" line="157"/>
         <source>Export a m3u8 playlist instead!
 </source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="176"/>
+        <location filename="../../src/library/parserm3u.cpp" line="167"/>
         <source>Could not create file</source>
         <translation type="unfinished"/>
     </message>
@@ -7735,12 +7755,12 @@ Please select an input device in the sound hardware preferences first.</source>
 <context>
     <name>ParserPls</name>
     <message>
-        <location filename="../../src/library/parserpls.cpp" line="155"/>
+        <location filename="../../src/library/parserpls.cpp" line="142"/>
         <source>Playlist Export Failed</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/library/parserpls.cpp" line="156"/>
+        <location filename="../../src/library/parserpls.cpp" line="143"/>
         <source>Could not create file</source>
         <translation type="unfinished"/>
     </message>
@@ -9190,7 +9210,7 @@ Fully right: end of the effect period</source>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="59"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="452"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>
@@ -9308,147 +9328,152 @@ Fully right: end of the effect period</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="266"/>
-        <source>Error setting hostname!</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="273"/>
-        <source>Error setting port!</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="279"/>
-        <source>Error setting password!</source>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="98"/>
+        <source>Error setting tls mode:</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>
+        <source>Error setting hostname!</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="292"/>
+        <source>Error setting port!</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="298"/>
+        <source>Error setting password!</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="304"/>
         <source>Error setting mount!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="291"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="310"/>
         <source>Error setting username!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="296"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="315"/>
         <source>Error setting stream name!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="301"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="320"/>
         <source>Error setting stream description!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="306"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="325"/>
         <source>Error setting stream genre!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="311"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="330"/>
         <source>Error setting stream url!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="317"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="336"/>
         <source>Error setting stream IRC!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="324"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="343"/>
         <source>Error setting stream AIM!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="331"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="350"/>
         <source>Error setting stream ICQ!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="337"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="356"/>
         <source>Error setting stream public!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="363"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="382"/>
         <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="366"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="385"/>
         <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="374"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="393"/>
         <source>Error setting bitrate</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="389"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="408"/>
         <source>Error: unknown server protocol!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="394"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="413"/>
         <source>Error: libshout only supports Shoutcast with MP3 format!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="400"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="419"/>
         <source>Error setting protocol!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="628"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="647"/>
         <source>Network cache overflow</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="836"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="861"/>
         <source>Connection error</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="837"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="862"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="851"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="876"/>
         <source>Connection message</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="852"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="877"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="902"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="927"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="905"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="930"/>
         <source>Lost connection to streaming server.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="910"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="935"/>
         <source>Please check your connection to the Internet.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="945"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="970"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="947"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="972"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation type="unfinished"/>
     </message>
@@ -9495,7 +9520,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="9"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Nimi</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="10"/>
@@ -9505,7 +9530,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="11"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Tüüp</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="12"/>
@@ -10128,7 +10153,6 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="344"/>
         <source>Key</source>
-        <extracomment>The musical key of a track</extracomment>
         <translation>Nupp</translation>
     </message>
     <message>
@@ -11287,7 +11311,6 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="701"/>
         <source>Track Key</source>
-        <extracomment>The musical key of a track</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -11786,34 +11809,6 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     </message>
 </context>
 <context>
-    <name>Ui</name>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="35"/>
-        <source>Mixxx %1 Development Team</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
-        <source>With contributions from:</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
-        <source>And special thanks to:</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
-        <source>Past Developers</source>
-        <translation>Eelmised arendajad</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
-        <source>Past Contributors</source>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
     <name>VSyncThread</name>
     <message>
         <location filename="../../src/waveform/vsyncthread.cpp" line="192"/>
@@ -11880,7 +11875,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <location filename="../../src/widget/wcoverartmenu.cpp" line="20"/>
         <source>Choose new cover</source>
         <comment>change cover art location</comment>
-        <translation type="unfinished"/>
+        <translation>Vali uus kaanepilt</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcoverartmenu.cpp" line="25"/>
@@ -11897,12 +11892,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wcoverartmenu.cpp" line="60"/>
         <source>Image Files</source>
-        <translation type="unfinished"/>
+        <translation>Pildid</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcoverartmenu.cpp" line="65"/>
         <source>Change Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>Muuda kaanepilti</translation>
     </message>
 </context>
 <context>
@@ -11929,7 +11924,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/weffectchain.cpp" line="38"/>
         <source>None</source>
-        <translation type="unfinished"/>
+        <translation>Pole</translation>
     </message>
     <message>
         <location filename="../../src/widget/weffectchain.cpp" line="39"/>
@@ -11942,12 +11937,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/weffectparameterbase.cpp" line="33"/>
         <source>None</source>
-        <translation type="unfinished"/>
+        <translation>Pole</translation>
     </message>
     <message>
         <location filename="../../src/widget/weffectparameterbase.cpp" line="34"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>Efekt puudub</translation>
     </message>
 </context>
 <context>
@@ -12392,22 +12387,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="370"/>
+        <location filename="../../src/widget/woverview.cpp" line="369"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="373"/>
-        <location filename="../../src/widget/woverview.cpp" line="383"/>
+        <location filename="../../src/widget/woverview.cpp" line="372"/>
+        <location filename="../../src/widget/woverview.cpp" line="382"/>
         <source>Loading track ..</source>
-        <extracomment>Text on waveform overview when file is cached from source
-----------
-Text on waveform overview when file is cached from source</extracomment>
+        <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Laen lugu ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="377"/>
+        <location filename="../../src/widget/woverview.cpp" line="376"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Lõpetamine...</translation>

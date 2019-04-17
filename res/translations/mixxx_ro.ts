@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="ro" sourcelanguage="en" version="2.0">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="ro" sourcelanguage="en" version="2.1">
 <context>
     <name>:</name>
     <message>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="15"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Adăugaţi în selecţia Auto DJ (sus)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="19"/>
@@ -100,12 +100,12 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="281"/>
         <source>New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Listă de redare nouă</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="36"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Adăugaţi în selecţia Auto DJ (jos)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="32"/>
@@ -116,7 +116,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="40"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Adăugaţi în selecţia Auto DJ (sus)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="44"/>
@@ -550,7 +550,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="34"/>
         <source>Genre</source>
-        <translation type="unfinished"/>
+        <translation>Gen</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="35"/>
@@ -565,17 +565,17 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="37"/>
         <source>Duration</source>
-        <translation type="unfinished"/>
+        <translation>Durată</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="38"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="39"/>
         <source>Key</source>
-        <translation type="unfinished"/>
+        <translation>Tastă</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="40"/>
@@ -590,7 +590,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="42"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>Înlocuire câștig</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="43"/>
@@ -600,7 +600,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="44"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Album artist</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="45"/>
@@ -654,7 +654,7 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="6"/>
         <source>Group</source>
-        <translation type="unfinished"/>
+        <translation>Grup</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="7"/>
@@ -2729,7 +2729,7 @@
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="41"/>
         <source>Action</source>
-        <translation type="unfinished"/>
+        <translation>Acțiune</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="42"/>
@@ -2744,7 +2744,7 @@
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="44"/>
         <source>Comment</source>
-        <translation type="unfinished"/>
+        <translation>Comentariu</translation>
     </message>
 </context>
 <context>
@@ -2894,7 +2894,7 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="62"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="80"/>
         <source>Creating Crate Failed</source>
-        <translation type="unfinished"/>
+        <translation>Crearea colecției a eșuat</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="55"/>
@@ -2923,7 +2923,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="97"/>
         <source>Duplicate Crate</source>
-        <translation type="unfinished"/>
+        <translation>Dublează colecția</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="108"/>
@@ -2931,6 +2931,34 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="149"/>
         <source>Duplicating Crate Failed</source>
         <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>DlgAbout</name>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="35"/>
+        <source>Mixxx %1 Development Team</source>
+        <translation>Echipa de dezvoltatori Mixxx %1</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
+        <source>With contributions from:</source>
+        <translation>Cu contribuții de la:</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
+        <source>And special thanks to:</source>
+        <translation>Și mulțumiri speciale lui:</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
+        <source>Past Developers</source>
+        <translation>Foști dezvoltatori</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
+        <source>Past Contributors</source>
+        <translation>Foști contribuitori</translation>
     </message>
 </context>
 <context>
@@ -2968,7 +2996,7 @@
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="52"/>
         <source>Shows tracks added to the library within the last 7 days.</source>
-        <translation type="unfinished"/>
+        <translation>Arată pistele adăugate la bibliotecă în ultimele 7 zile.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="55"/>
@@ -2983,12 +3011,12 @@
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="65"/>
         <source>All</source>
-        <translation type="unfinished"/>
+        <translation>Toate</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="85"/>
         <source>Progress</source>
-        <translation type="unfinished"/>
+        <translation>Progres</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="92"/>
@@ -2998,7 +3026,7 @@
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="95"/>
         <source>Select All</source>
-        <translation type="unfinished"/>
+        <translation>Selectează tot</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="102"/>
@@ -3013,7 +3041,7 @@
     <message>
         <location filename="../../src/library/dlganalysis.cpp" line="176"/>
         <source>Analyzing %1/%2 %3%</source>
-        <translation type="unfinished"/>
+        <translation>Se analizează%1/%2 %3% </translation>
     </message>
 </context>
 <context>
@@ -3044,7 +3072,7 @@
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="142"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="150"/>
         <source>Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>Auto DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="55"/>
@@ -3090,13 +3118,13 @@ If no track sources are configured, the track is added from the library instead.
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="105"/>
         <source>Determines the duration of the transition.</source>
-        <translation type="unfinished"/>
+        <translation>Determină durata tranziţiei.</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="121"/>
         <source>Seconds</source>
         <comment>&quot;sec.&quot; as in seconds</comment>
-        <translation type="unfinished"/>
+        <translation>Secunde</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="124"/>
@@ -3170,7 +3198,7 @@ by analyzing the beats to discard outliers.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="114"/>
         <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
-        <translation type="unfinished"/>
+        <translation>Activează analiza rapidă (Se poate pierde acuratețea pentru computerele încete)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="121"/>
@@ -3187,7 +3215,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="137"/>
         <source>Enable Offset Correction (Recommended)</source>
-        <translation type="unfinished"/>
+        <translation>Activează corecția compensării (Recomandat)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="144"/>
@@ -3209,7 +3237,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="50"/>
         <source>Min:</source>
-        <translation type="unfinished"/>
+        <translation>Min:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="70"/>
@@ -3227,7 +3255,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="70"/>
         <source>Learn</source>
-        <translation type="unfinished"/>
+        <translation>Învață</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="80"/>
@@ -3237,7 +3265,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="121"/>
         <source>Choose Control...</source>
-        <translation type="unfinished"/>
+        <translation>Alegeți controlul...</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="192"/>
@@ -3282,7 +3310,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="349"/>
         <source>Invert</source>
-        <translation type="unfinished"/>
+        <translation>Invers</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="356"/>
@@ -3292,7 +3320,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="359"/>
         <source>Jog Wheel / Select Knob</source>
-        <translation type="unfinished"/>
+        <translation>Jog Wheel / Buton selectat</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="387"/>
@@ -3327,7 +3355,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="49"/>
         <source>If you manipulate the control, you should see the Mixxx user interface respond the way you expect.</source>
-        <translation type="unfinished"/>
+        <translation>Dacă manevrați controlul, ar trebui să vedeți interfața utilizator Mixxx răspunzând cum vă așteptați.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="52"/>
@@ -3342,7 +3370,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="272"/>
         <source>Didn&apos;t get any midi messages.  Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>Nu s-a primit nici un mesaj midi.  Reâncercați.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="288"/>
@@ -3352,7 +3380,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="333"/>
         <source>Successfully mapped control:</source>
-        <translation type="unfinished"/>
+        <translation>Control mapat cu succes:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="439"/>
@@ -3424,12 +3452,12 @@ Ați încercat să învățați: %1,%2</translation>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="65"/>
         <source>Selects all tracks in the table below.</source>
-        <translation type="unfinished"/>
+        <translation>Selectați toate pistele în tabelul de mai jos.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="68"/>
         <source>Select All</source>
-        <translation type="unfinished"/>
+        <translation>Selectează tot</translation>
     </message>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="75"/>
@@ -3545,7 +3573,7 @@ Ați încercat să învățați: %1,%2</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="62"/>
         <source>Uncheck, to ignore all played tracks.</source>
-        <translation type="unfinished"/>
+        <translation>Debifați, pentru a se ignora toate pistele redate.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="65"/>
@@ -4003,7 +4031,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="516"/>
         <source>Built-in</source>
-        <translation type="unfinished"/>
+        <translation>Integrat</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="592"/>
@@ -4023,7 +4051,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="634"/>
         <source>Are you sure you want to clear all output mappings?</source>
-        <translation type="unfinished"/>
+        <translation>Sigur doriți să curățați toate mapările de ieșire?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="646"/>
@@ -4039,7 +4067,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="657"/>
         <source>Could not add script file: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation>Nu se poate adăuga fișierul script: &apos;%s&apos;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="727"/>
@@ -4067,7 +4095,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="133"/>
         <source>Description:</source>
-        <translation type="unfinished"/>
+        <translation>Descriere:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="299"/>
@@ -4082,7 +4110,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="52"/>
         <source>Preset Info</source>
-        <translation type="unfinished"/>
+        <translation>Informație preconfigurare</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="332"/>
@@ -4111,7 +4139,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="20"/>
         <source>Controller Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Preferințe controler</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="30"/>
@@ -4126,7 +4154,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="209"/>
         <source>Name:</source>
-        <translation type="unfinished"/>
+        <translation>Nume:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="318"/>
@@ -4147,7 +4175,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="470"/>
         <source>Scripts</source>
-        <translation type="unfinished"/>
+        <translation>Scripturi</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="512"/>
@@ -4170,7 +4198,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="66"/>
         <source>Mixxx did not detect any controllers. If you connected the controller while Mixxx was running you must restart Mixxx first.</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx nu a detectat nici un controler. Dacă ați conectat controlerul în timp ce Mixxx rula întâi trebuie să reporniți Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="79"/>
@@ -4215,7 +4243,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="162"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;MIDI Preset File Format&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Format fișier preconfigurare MIDI&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="172"/>
@@ -4248,7 +4276,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="108"/>
         <source>Locales determine country and language specific settings.</source>
-        <translation type="unfinished"/>
+        <translation>Localizările determină configurările specifice țării și limbii.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="98"/>
@@ -4313,17 +4341,17 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="125"/>
         <source>Start in full-screen mode</source>
-        <translation type="unfinished"/>
+        <translation>Pornește în mod ecran complet</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="115"/>
         <source>Full-screen mode</source>
-        <translation type="unfinished"/>
+        <translation>Mod ecran complet</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="153"/>
         <source>Off</source>
-        <translation type="unfinished"/>
+        <translation>Oprit</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="163"/>
@@ -4409,7 +4437,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="66"/>
         <source>Numark mode</source>
-        <translation type="unfinished"/>
+        <translation>Mod Numark</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="67"/>
@@ -4429,12 +4457,12 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="133"/>
         <source>8% (Technics SL-1210)</source>
-        <translation type="unfinished"/>
+        <translation>8% (Technics SL-1210)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="134"/>
         <source>10%</source>
-        <translation type="unfinished"/>
+        <translation>10%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="135"/>
@@ -4472,7 +4500,7 @@ Se aplică configurările și se continuă?</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="26"/>
         <source>Cue mode</source>
-        <translation type="unfinished"/>
+        <translation>Mod cue</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="39"/>
@@ -4584,7 +4612,7 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="273"/>
         <source>Permanent</source>
-        <translation type="unfinished"/>
+        <translation>Permanent</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="310"/>
@@ -4599,7 +4627,7 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="344"/>
         <source>Keylock mode</source>
-        <translation type="unfinished"/>
+        <translation>Mod keylock</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="357"/>
@@ -4624,7 +4652,7 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="418"/>
         <source>Speed/Tempo</source>
-        <translation type="unfinished"/>
+        <translation>Viteză/Tempo</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="428"/>
@@ -4704,11 +4732,7 @@ CUP mode:
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="263"/>
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="678"/>
         <source>None</source>
-        <extracomment>Displayed when no effect is selected
-----------
-Displayed when no effect is selected
-----------
-Displayed when no effect is selected</extracomment>
+        <extracomment>Displayed when no effect is selected</extracomment>
         <translation>Nimic</translation>
     </message>
 </context>
@@ -4717,7 +4741,7 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="14"/>
         <source>Equalizer Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Preferințe egalizator</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="370"/>
@@ -4742,7 +4766,7 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="32"/>
         <source>Uncheck to allow any effect to be loaded into the EQ knobs.</source>
-        <translation type="unfinished"/>
+        <translation>Debifați pentru a permite oricărui efect să fie încărcat în butoanele EQ.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="39"/>
@@ -4808,7 +4832,7 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="390"/>
         <source>When checked, EQs are not processed, improving performance on slower computers.</source>
-        <translation type="unfinished"/>
+        <translation>Când este bifat, EQ-urile nu sunt procesate, mărind performanța pe computerele lente.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="176"/>
@@ -4890,7 +4914,7 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="192"/>
         <source>This skin does not support color schemes</source>
-        <translation type="unfinished"/>
+        <translation>Acest aspect aplicație nu suportă scheme de culoare</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="304"/>
@@ -4949,12 +4973,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="97"/>
         <source>Re-analyze keys when settings change or 3rd-party keys are present</source>
-        <translation type="unfinished"/>
+        <translation>Re-analizează cheile când configurările se modifică sau chei terțe sunt prezente</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="113"/>
         <source>Key Notation</source>
-        <translation type="unfinished"/>
+        <translation>Notație cheie</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="121"/>
@@ -4969,7 +4993,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="135"/>
         <source>Traditional</source>
-        <translation type="unfinished"/>
+        <translation>Tradițional</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="142"/>
@@ -5004,7 +5028,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="268"/>
         <source>D</source>
-        <translation type="unfinished"/>
+        <translation>D</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="291"/>
@@ -5019,12 +5043,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="337"/>
         <source>F</source>
-        <translation type="unfinished"/>
+        <translation>F</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="360"/>
         <source>F#</source>
-        <translation type="unfinished"/>
+        <translation>F#</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="383"/>
@@ -5079,7 +5103,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="613"/>
         <source>Fm</source>
-        <translation type="unfinished"/>
+        <translation>Fm</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="636"/>
@@ -5368,7 +5392,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="14"/>
         <source>Modplug Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Preferințe modplug</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="403"/>
@@ -5390,7 +5414,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="190"/>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="292"/>
         <source>Low</source>
-        <translation type="unfinished"/>
+        <translation>Scăzută</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="183"/>
@@ -5412,7 +5436,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="227"/>
         <source>Bass Expansion</source>
-        <translation type="unfinished"/>
+        <translation>Expandare bași</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="250"/>
@@ -5442,7 +5466,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="299"/>
         <source>Reverb</source>
-        <translation type="unfinished"/>
+        <translation>Reverberație</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="306"/>
@@ -5457,7 +5481,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="327"/>
         <source>10ms</source>
-        <translation type="unfinished"/>
+        <translation>10ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="334"/>
@@ -5497,7 +5521,8 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="393"/>
         <source>Module files are decoded at once and kept in RAM to allow for seeking and smooth operation in Mixxx. About 10MB of RAM are required for 1 minute of audio.</source>
-        <translation type="unfinished"/>
+        <translation>Fișierele modul sunt decodate imediat și păstrate în memoria RAM pentru a permite căutări și funcționarea fără probleme în Mixxx.
+În jur de 10MiO de RAM sunt necesari pentru 1 minut audio.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="425"/>
@@ -5517,7 +5542,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="512"/>
         <source>Enable oversampling</source>
-        <translation type="unfinished"/>
+        <translation>Activare supraeșanționare</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="462"/>
@@ -5599,12 +5624,12 @@ href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; pentru mai multe inform
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="277"/>
         <source>Tags</source>
-        <translation type="unfinished"/>
+        <translation>Etichete</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="289"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>Titlu</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="311"/>
@@ -5614,7 +5639,7 @@ href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; pentru mai multe inform
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="333"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="233"/>
@@ -5649,7 +5674,7 @@ href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; pentru mai multe inform
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="239"/>
         <source>Create a CUE file</source>
-        <translation type="unfinished"/>
+        <translation>Crează un fișier CUE</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="255"/>
@@ -5772,7 +5797,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="263"/>
         <source>Hints</source>
-        <translation type="unfinished"/>
+        <translation>Sfaturi</translation>
     </message>
 </context>
 <context>
@@ -5904,7 +5929,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="35"/>
         <source>Sample Rate</source>
-        <translation type="unfinished"/>
+        <translation>Rată eșanționare</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="48"/>
@@ -5942,12 +5967,8 @@ The loudness target is approximate and assumes track pregain and master output l
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="181"/>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="204"/>
         <source> ms</source>
-        <extracomment>milliseconds
-----------
-milliseconds
-----------
-milliseconds</extracomment>
-        <translation type="unfinished"/>
+        <extracomment>milliseconds</extracomment>
+        <translation> ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="197"/>
@@ -6002,7 +6023,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="270"/>
         <source>Output</source>
-        <translation type="unfinished"/>
+        <translation>Ieșire</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="293"/>
@@ -6027,7 +6048,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="319"/>
         <source>Hints and Diagnostics</source>
-        <translation type="unfinished"/>
+        <translation>Sfaturi și diagnosticuri</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="335"/>
@@ -6055,7 +6076,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="116"/>
         <source>Channels %1 - %2</source>
-        <translation type="unfinished"/>
+        <translation>Canalele %1 -  %2</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.ui" line="14"/>
@@ -6066,7 +6087,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.ui" line="23"/>
         <source>Type (#)</source>
-        <translation type="unfinished"/>
+        <translation>Tip (#)</translation>
     </message>
 </context>
 <context>
@@ -6094,7 +6115,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="316"/>
         <source>Deck 3 Vinyl Type</source>
-        <translation type="unfinished"/>
+        <translation>Deck 3 Tip disc vinil</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="455"/>
@@ -6104,7 +6125,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="582"/>
         <source>Show Signal Quality in Skin</source>
-        <translation type="unfinished"/>
+        <translation>Arată calitatea semnalului în aspectul aplicației</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="155"/>
@@ -6538,19 +6559,19 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="30"/>
         <source>Select best possible match</source>
-        <translation type="unfinished"/>
+        <translation>Selectați cea mai bună potrivire</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="56"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="485"/>
         <source>Track</source>
-        <translation type="unfinished"/>
+        <translation>Pistă</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="61"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="490"/>
         <source>Year</source>
-        <translation type="unfinished"/>
+        <translation>An</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="66"/>
@@ -6583,13 +6604,13 @@ Select from different types of displays for the waveform, which differ primarily
         <location filename="../../src/library/dlgtagfetcher.ui" line="442"/>
         <source>Get API-Key</source>
         <comment>To be able to submit audio fingerprints to the MusicBrainz database, a free application programming interface key (API key) is required.</comment>
-        <translation type="unfinished"/>
+        <translation>Obține cheia API</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="475"/>
         <source>Submit</source>
         <comment>Submits audio fingerprints to the MusicBrainz database.</comment>
-        <translation type="unfinished"/>
+        <translation>Trimite</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="495"/>
@@ -6619,12 +6640,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="570"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Închide</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="96"/>
         <source>Status: %1</source>
-        <translation type="unfinished"/>
+        <translation>Stare: %1</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="116"/>
@@ -6644,7 +6665,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="144"/>
         <source>Original tags</source>
-        <translation type="unfinished"/>
+        <translation>Etichete originale</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="147"/>
@@ -6672,7 +6693,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/export/dlgtrackexport.ui" line="112"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Anulează</translation>
     </message>
 </context>
 <context>
@@ -6700,7 +6721,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="468"/>
         <source>Location:</source>
-        <translation type="unfinished"/>
+        <translation>Locație:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="488"/>
@@ -6730,7 +6751,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="687"/>
         <source>Sets the BPM to 50% of the current value.</source>
-        <translation type="unfinished"/>
+        <translation>Configurează BPM la 50% din valoarea actuală.</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="598"/>
@@ -6755,12 +6776,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="127"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Compozitor</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="164"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>Titlu</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="174"/>
@@ -6785,7 +6806,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="284"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>Album</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="326"/>
@@ -6795,7 +6816,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="406"/>
         <source>File</source>
-        <translation type="unfinished"/>
+        <translation>Fișier</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="441"/>
@@ -6894,7 +6915,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="642"/>
         <source>2/3 BPM</source>
-        <translation type="unfinished"/>
+        <translation>2/3 BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="703"/>
@@ -6954,7 +6975,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="867"/>
         <source>Activate Cue</source>
-        <translation type="unfinished"/>
+        <translation>Activează cue</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="977"/>
@@ -6965,12 +6986,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="980"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"/>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="841"/>
         <source>Delete Cue</source>
-        <translation type="unfinished"/>
+        <translation>Șterge cue</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="939"/>
@@ -6987,7 +7008,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="961"/>
         <source>&amp;Apply</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Aplică</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="942"/>
@@ -7073,7 +7094,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/waveform/widgets/emptywaveformwidget.h" line="18"/>
         <source>Empty</source>
-        <translation type="unfinished"/>
+        <translation>Gol</translation>
     </message>
 </context>
 <context>
@@ -7159,7 +7180,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/waveform/widgets/glvsynctestwidget.h" line="16"/>
         <source>VSyncTest</source>
-        <translation type="unfinished"/>
+        <translation>Test VSync</translation>
     </message>
 </context>
 <context>
@@ -7175,7 +7196,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/waveform/widgets/hsvwaveformwidget.h" line="15"/>
         <source>HSV</source>
-        <translation type="unfinished"/>
+        <translation>HSV</translation>
     </message>
 </context>
 <context>
@@ -7235,7 +7256,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <name>ITunesFeature</name>
     <message>
         <location filename="../../src/library/itunes/itunesfeature.cpp" line="100"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="828"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="826"/>
         <source>iTunes</source>
         <translation>iTunes</translation>
     </message>
@@ -7261,12 +7282,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         <translation>Alege biblioteca...</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="823"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="821"/>
         <source>Error Loading iTunes Library</source>
         <translation>Eroare la încărcarea bibliotecii iTunes</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="824"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="822"/>
         <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
         <translation>A intervenit o eroare la încărcarea bibliotecii iTunes. Unele dintre pistele sau listele de redare iTunes este posibil să nu se fi încărcat.</translation>
     </message>
@@ -7426,7 +7447,7 @@ OpenGL.</translation>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="139"/>
         <source>Some LEDs or other feedback may not work correctly.</source>
-        <translation type="unfinished"/>
+        <translation>Unele LED-uri sau alte reacții-control este posibil să nu funcționeze corect.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="140"/>
@@ -7445,7 +7466,7 @@ OpenGL.</translation>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="45"/>
         <source>Click OK to exit.</source>
-        <translation type="unfinished"/>
+        <translation>Apăsați OK pentru ieșire.</translation>
     </message>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="46"/>
@@ -7470,7 +7491,7 @@ OpenGL.</translation>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="63"/>
         <source>Try renaming it and restarting Mixxx.</source>
-        <translation type="unfinished"/>
+        <translation>Încercați redenumirea și reporniți Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="71"/>
@@ -7722,25 +7743,25 @@ Selectați întâi un dispozitiv de intrare din preferințele plăcii de sunet.<
 <context>
     <name>ParserM3u</name>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="164"/>
-        <location filename="../../src/library/parserm3u.cpp" line="175"/>
+        <location filename="../../src/library/parserm3u.cpp" line="155"/>
+        <location filename="../../src/library/parserm3u.cpp" line="166"/>
         <source>Playlist Export Failed</source>
         <translation>A eșuat exportul listei de redare</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="165"/>
+        <location filename="../../src/library/parserm3u.cpp" line="156"/>
         <source>File path contains characters, not allowed in m3u playlists.
 </source>
         <translation>Calea fișierului conține caractere, ne permise în listele de redare m3u.</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="166"/>
+        <location filename="../../src/library/parserm3u.cpp" line="157"/>
         <source>Export a m3u8 playlist instead!
 </source>
         <translation>Exportă în schimb o listă de redare m3u8!</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="176"/>
+        <location filename="../../src/library/parserm3u.cpp" line="167"/>
         <source>Could not create file</source>
         <translation>Nu se poate crea fișierul</translation>
     </message>
@@ -7748,12 +7769,12 @@ Selectați întâi un dispozitiv de intrare din preferințele plăcii de sunet.<
 <context>
     <name>ParserPls</name>
     <message>
-        <location filename="../../src/library/parserpls.cpp" line="155"/>
+        <location filename="../../src/library/parserpls.cpp" line="142"/>
         <source>Playlist Export Failed</source>
         <translation>A eșuat exportul listei de redare</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserpls.cpp" line="156"/>
+        <location filename="../../src/library/parserpls.cpp" line="143"/>
         <source>Could not create file</source>
         <translation>Nu se poate crea fișierul</translation>
     </message>
@@ -7939,7 +7960,7 @@ Doriți să scanați acum biblioteca pentru fișiere copertă?</translation>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="50"/>
         <source>Spread64</source>
-        <translation type="unfinished"/>
+        <translation>Spread64</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="52"/>
@@ -7959,7 +7980,7 @@ Doriți să scanați acum biblioteca pentru fișiere copertă?</translation>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="58"/>
         <source>Script</source>
-        <translation type="unfinished"/>
+        <translation>Script</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="60"/>
@@ -8034,7 +8055,7 @@ Doriți să scanați acum biblioteca pentru fișiere copertă?</translation>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
         <source>Unknown path type %1</source>
-        <translation type="unfinished"/>
+        <translation>Tip cale necunoscută %1</translation>
     </message>
     <message>
         <location filename="../../src/encoder/encodermp3.cpp" line="124"/>
@@ -9204,7 +9225,7 @@ Fully right: end of the effect period</source>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="59"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="452"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>
@@ -9214,7 +9235,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="36"/>
         <source>Save Sampler Bank</source>
-        <translation type="unfinished"/>
+        <translation>Salvează bancă sampler</translation>
     </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="34"/>
@@ -9322,147 +9343,152 @@ Fully right: end of the effect period</source>
         <translation>Eroare configurare mod fără blocuri:</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="266"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="98"/>
+        <source>Error setting tls mode:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>
         <source>Error setting hostname!</source>
         <translation>Eroare configurare nume gazdă!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="273"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="292"/>
         <source>Error setting port!</source>
         <translation>Eroare configurare port!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="279"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="298"/>
         <source>Error setting password!</source>
         <translation>Eroare configurare parolă!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="304"/>
         <source>Error setting mount!</source>
         <translation>Eroare configurare montare!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="291"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="310"/>
         <source>Error setting username!</source>
         <translation>Eroare configurare nume utilizator!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="296"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="315"/>
         <source>Error setting stream name!</source>
         <translation>Eroare configurare nume flux!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="301"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="320"/>
         <source>Error setting stream description!</source>
         <translation>Eroare configurare descriere flux!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="306"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="325"/>
         <source>Error setting stream genre!</source>
         <translation>Eroare configurare gen flux!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="311"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="330"/>
         <source>Error setting stream url!</source>
         <translation>Eroare configurare url flux!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="317"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="336"/>
         <source>Error setting stream IRC!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="324"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="343"/>
         <source>Error setting stream AIM!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="331"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="350"/>
         <source>Error setting stream ICQ!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="337"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="356"/>
         <source>Error setting stream public!</source>
         <translation>Eroare configurare flux public!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="363"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="382"/>
         <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
         <translation>Difuzarea la 96kHz cu Ogg Vorbis nu este actualmente suportată. Încercați o rată de eșanționare diferită sau comutați la o altă codificare.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="366"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="385"/>
         <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
         <translation>Vedeți https://bugs.launchpad.net/mixxx/+bug/686212 pentru mai multe informații.</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="374"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="393"/>
         <source>Error setting bitrate</source>
         <translation>Eroare configurare rată de biți</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="389"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="408"/>
         <source>Error: unknown server protocol!</source>
         <translation>Eroare: protocol server necunoscut!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="394"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="413"/>
         <source>Error: libshout only supports Shoutcast with MP3 format!</source>
         <translation>Eroare: libshout suportă numai Shoutcast cu formatul MP3!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="400"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="419"/>
         <source>Error setting protocol!</source>
         <translation>Eroare configurare protocol!</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="628"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="647"/>
         <source>Network cache overflow</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="836"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="861"/>
         <source>Connection error</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="837"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="862"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="851"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="876"/>
         <source>Connection message</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="852"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="877"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="902"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="927"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="905"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="930"/>
         <source>Lost connection to streaming server.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="910"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="935"/>
         <source>Please check your connection to the Internet.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="945"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="970"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>Nu se poate conecta la serverul de transmisie</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="947"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="972"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>Verificați conexiunea la internet și verificați dacă numele de utilizator și parola sunt corecte.</translation>
     </message>
@@ -9529,7 +9555,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="13"/>
         <source>Sum</source>
-        <translation type="unfinished"/>
+        <translation>Sum</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="14"/>
@@ -9544,17 +9570,17 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="16"/>
         <source>Mean</source>
-        <translation type="unfinished"/>
+        <translation>Medie</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="17"/>
         <source>Variance</source>
-        <translation type="unfinished"/>
+        <translation>Variație</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="18"/>
         <source>Standard Deviation</source>
-        <translation type="unfinished"/>
+        <translation>Deviația standard</translation>
     </message>
 </context>
 <context>
@@ -9562,7 +9588,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="54"/>
         <source>Fingerprinting track</source>
-        <translation type="unfinished"/>
+        <translation>Amprentă pistă</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="86"/>
@@ -10142,7 +10168,6 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="344"/>
         <source>Key</source>
-        <extracomment>The musical key of a track</extracomment>
         <translation>Tastă</translation>
     </message>
     <message>
@@ -11301,7 +11326,6 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="701"/>
         <source>Track Key</source>
-        <extracomment>The musical key of a track</extracomment>
         <translation>Cheie pistă</translation>
     </message>
     <message>
@@ -11800,34 +11824,6 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     </message>
 </context>
 <context>
-    <name>Ui</name>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="35"/>
-        <source>Mixxx %1 Development Team</source>
-        <translation>Echipa de dezvoltatori Mixxx %1</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
-        <source>With contributions from:</source>
-        <translation>Cu contribuții de la:</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
-        <source>And special thanks to:</source>
-        <translation>Și mulțumiri speciale lui:</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
-        <source>Past Developers</source>
-        <translation>Foști dezvoltatori</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
-        <source>Past Contributors</source>
-        <translation>Foști contribuitori</translation>
-    </message>
-</context>
-<context>
     <name>VSyncThread</name>
     <message>
         <location filename="../../src/waveform/vsyncthread.cpp" line="192"/>
@@ -11911,7 +11907,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wcoverartmenu.cpp" line="60"/>
         <source>Image Files</source>
-        <translation type="unfinished"/>
+        <translation>Fișiere imagine</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcoverartmenu.cpp" line="65"/>
@@ -11943,7 +11939,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/weffectchain.cpp" line="38"/>
         <source>None</source>
-        <translation type="unfinished"/>
+        <translation>Nimic</translation>
     </message>
     <message>
         <location filename="../../src/widget/weffectchain.cpp" line="39"/>
@@ -12406,22 +12402,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="370"/>
+        <location filename="../../src/widget/woverview.cpp" line="369"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>Gata de redare, se analizează ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="373"/>
-        <location filename="../../src/widget/woverview.cpp" line="383"/>
+        <location filename="../../src/widget/woverview.cpp" line="372"/>
+        <location filename="../../src/widget/woverview.cpp" line="382"/>
         <source>Loading track ..</source>
-        <extracomment>Text on waveform overview when file is cached from source
-----------
-Text on waveform overview when file is cached from source</extracomment>
+        <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>Se încarcă pista ..</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="377"/>
+        <location filename="../../src/widget/woverview.cpp" line="376"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>Se finalizează ..</translation>

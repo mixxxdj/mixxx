@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="zh_TW" sourcelanguage="en" version="2.0">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="zh_TW" sourcelanguage="en" version="2.1">
 <context>
     <name>:</name>
     <message>
@@ -76,12 +76,12 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="15"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>將添加到自動 DJ 佇列 （頂部）</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="19"/>
         <source>Import Playlist</source>
-        <translation type="unfinished"/>
+        <translation>匯入播放清單</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="92"/>
@@ -91,7 +91,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="93"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation type="unfinished"/>
+        <translation>創建播放清單時發生未知的錯誤︰</translation>
     </message>
 </context>
 <context>
@@ -99,23 +99,23 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="281"/>
         <source>New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>新增播放清單</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="36"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>將添加到自動 DJ 佇列 （底部）</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="32"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="278"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>創建新的播放清單</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="40"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>將添加到自動 DJ 佇列 （頂部）</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="44"/>
@@ -125,17 +125,17 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="48"/>
         <source>Rename</source>
-        <translation type="unfinished"/>
+        <translation>重新命名</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="52"/>
         <source>Lock</source>
-        <translation type="unfinished"/>
+        <translation>鎖</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="56"/>
         <source>Duplicate</source>
-        <translation type="unfinished"/>
+        <translation>複製</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="60"/>
@@ -151,47 +151,47 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="76"/>
         <source>Analyze entire Playlist</source>
-        <translation type="unfinished"/>
+        <translation>分析整個播放清單</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="182"/>
         <source>Enter new name for playlist:</source>
-        <translation type="unfinished"/>
+        <translation>輸入新播放清單名稱︰</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="222"/>
         <source>Duplicate Playlist</source>
-        <translation type="unfinished"/>
+        <translation>重複播放清單</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="223"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="279"/>
         <source>Enter name for new playlist:</source>
-        <translation type="unfinished"/>
+        <translation>輸入新播放清單名稱︰</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="68"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="464"/>
         <source>Export Playlist</source>
-        <translation type="unfinished"/>
+        <translation>將播放清單匯出</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="181"/>
         <source>Rename Playlist</source>
-        <translation type="unfinished"/>
+        <translation>重新命名播放清單</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="194"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="198"/>
         <source>Renaming Playlist Failed</source>
-        <translation type="unfinished"/>
+        <translation>重新命名播放清單失敗</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="195"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="237"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="291"/>
         <source>A playlist by that name already exists.</source>
-        <translation type="unfinished"/>
+        <translation>已存在該名稱的播放清單。</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="199"/>
@@ -205,7 +205,7 @@
         <source>_copy</source>
         <comment>[noun]</comment>
         <extracomment>Appendix to default name when duplicating a playlist</extracomment>
-        <translation type="unfinished"/>
+        <translation>_copy</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="236"/>
@@ -215,23 +215,23 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="307"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="432"/>
         <source>Playlist Creation Failed</source>
-        <translation type="unfinished"/>
+        <translation>播放清單創建失敗</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="308"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="433"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation type="unfinished"/>
+        <translation>創建播放清單時發生未知的錯誤︰</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="461"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation type="unfinished"/>
+        <translation>M3U 播放清單 (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="466"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation type="unfinished"/>
+        <translation>M3U 播放清單 (*.m3u);M3U8 播放清單 (*.m3u8);PLS播放清單 (*.pls);文字 CSV (*.csv);;可讀的文本 (*.txt)</translation>
     </message>
 </context>
 <context>
@@ -519,7 +519,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="28"/>
         <source>Filename</source>
-        <translation type="unfinished"/>
+        <translation>檔案名稱</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="29"/>
@@ -534,87 +534,87 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="31"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>專輯</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="32"/>
         <source>Track #</source>
-        <translation type="unfinished"/>
+        <translation>曲目 #</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="33"/>
         <source>Year</source>
-        <translation type="unfinished"/>
+        <translation>年份</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="34"/>
         <source>Genre</source>
-        <translation type="unfinished"/>
+        <translation>體裁</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="35"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>作曲家</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="36"/>
         <source>Comment</source>
-        <translation type="unfinished"/>
+        <translation>評論</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="37"/>
         <source>Duration</source>
-        <translation type="unfinished"/>
+        <translation>持續時間</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="38"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="39"/>
         <source>Key</source>
-        <translation type="unfinished"/>
+        <translation>關鍵</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="40"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>類型</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="41"/>
         <source>Bitrate</source>
-        <translation type="unfinished"/>
+        <translation>位元速率</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="42"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>重播增益</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="43"/>
         <source>Location</source>
-        <translation type="unfinished"/>
+        <translation>位置</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="44"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>唱片集演出者</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="45"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>分組</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="46"/>
         <source>File Modified</source>
-        <translation type="unfinished"/>
+        <translation>修改檔</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="47"/>
         <source>File Created</source>
-        <translation type="unfinished"/>
+        <translation>創建檔</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="106"/>
@@ -640,12 +640,12 @@
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="47"/>
         <source>No control chosen.</source>
-        <translation type="unfinished"/>
+        <translation>選擇沒有控制。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="51"/>
         <source>Script: %1(%2)</source>
-        <translation type="unfinished"/>
+        <translation>腳本︰ %1(%2)</translation>
     </message>
 </context>
 <context>
@@ -653,7 +653,7 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="6"/>
         <source>Group</source>
-        <translation type="unfinished"/>
+        <translation>集團</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="7"/>
@@ -663,7 +663,7 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="8"/>
         <source>Value</source>
-        <translation type="unfinished"/>
+        <translation>價值</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="9"/>
@@ -673,7 +673,7 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="10"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>標題</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="11"/>
@@ -2670,7 +2670,7 @@
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="37"/>
         <source>Channel</source>
-        <translation type="unfinished"/>
+        <translation>通道</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="38"/>
@@ -2680,7 +2680,7 @@
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="39"/>
         <source>Control</source>
-        <translation type="unfinished"/>
+        <translation>控制</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="40"/>
@@ -2690,7 +2690,7 @@
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="41"/>
         <source>Action</source>
-        <translation type="unfinished"/>
+        <translation>行動</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="42"/>
@@ -2703,7 +2703,7 @@
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="36"/>
         <source>Channel</source>
-        <translation type="unfinished"/>
+        <translation>通道</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="37"/>
@@ -2713,37 +2713,37 @@
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="38"/>
         <source>Control</source>
-        <translation type="unfinished"/>
+        <translation>控制</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="39"/>
         <source>On Value</source>
-        <translation type="unfinished"/>
+        <translation>論價值</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="40"/>
         <source>Off Value</source>
-        <translation type="unfinished"/>
+        <translation>關閉值</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="41"/>
         <source>Action</source>
-        <translation type="unfinished"/>
+        <translation>行動</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="42"/>
         <source>On Range Min</source>
-        <translation type="unfinished"/>
+        <translation>在最小範圍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="43"/>
         <source>On Range Max</source>
-        <translation type="unfinished"/>
+        <translation>在最大範圍</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="44"/>
         <source>Comment</source>
-        <translation type="unfinished"/>
+        <translation>評論</translation>
     </message>
 </context>
 <context>
@@ -2875,7 +2875,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="36"/>
         <source>New Crate</source>
-        <translation type="unfinished"/>
+        <translation>新音樂箱</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="43"/>
@@ -2886,14 +2886,14 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="44"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="98"/>
         <source>Enter name for new crate:</source>
-        <translation type="unfinished"/>
+        <translation>輸入新的音樂箱的名稱︰</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="54"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="62"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="80"/>
         <source>Creating Crate Failed</source>
-        <translation type="unfinished"/>
+        <translation>音樂箱建立失敗</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="55"/>
@@ -2905,7 +2905,7 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="63"/>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="116"/>
         <source>A crate by that name already exists.</source>
-        <translation type="unfinished"/>
+        <translation>已經有相同名稱的音樂箱。</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="81"/>
@@ -2917,12 +2917,12 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="90"/>
         <source>copy</source>
         <comment>[noun]</comment>
-        <translation type="unfinished"/>
+        <translation>複製</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="97"/>
         <source>Duplicate Crate</source>
-        <translation type="unfinished"/>
+        <translation>複製音樂箱</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="108"/>
@@ -2930,6 +2930,34 @@
         <location filename="../../src/library/crate/cratefeaturehelper.cpp" line="149"/>
         <source>Duplicating Crate Failed</source>
         <translation>複製音樂箱失敗</translation>
+    </message>
+</context>
+<context>
+    <name>DlgAbout</name>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="35"/>
+        <source>Mixxx %1 Development Team</source>
+        <translation>Mixxx %1 開發團隊</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
+        <source>With contributions from:</source>
+        <translation>捐款︰</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
+        <source>And special thanks to:</source>
+        <translation>並特別感謝︰</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
+        <source>Past Developers</source>
+        <translation>過去的開發人員</translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
+        <source>Past Contributors</source>
+        <translation>過去的貢獻者</translation>
     </message>
 </context>
 <context>
@@ -2962,47 +2990,47 @@
         <location filename="../../src/library/dlganalysis.ui" line="105"/>
         <location filename="../../src/library/dlganalysis.cpp" line="159"/>
         <source>Analyze</source>
-        <translation type="unfinished"/>
+        <translation>分析</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="52"/>
         <source>Shows tracks added to the library within the last 7 days.</source>
-        <translation type="unfinished"/>
+        <translation>顯示最近 7 天內添加到庫中的曲目。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="55"/>
         <source>New</source>
-        <translation type="unfinished"/>
+        <translation>新增功能</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="62"/>
         <source>Shows all tracks in the library.</source>
-        <translation type="unfinished"/>
+        <translation>在庫中顯示的所有曲目。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="65"/>
         <source>All</source>
-        <translation type="unfinished"/>
+        <translation>全部</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="85"/>
         <source>Progress</source>
-        <translation type="unfinished"/>
+        <translation>進度</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="92"/>
         <source>Selects all tracks in the table below.</source>
-        <translation type="unfinished"/>
+        <translation>在下表中選擇所有曲目。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="95"/>
         <source>Select All</source>
-        <translation type="unfinished"/>
+        <translation>選擇全部</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="102"/>
         <source>Runs beatgrid, key, and ReplayGain detection on the selected tracks. Does not generate waveforms for the selected tracks to save disk space.</source>
-        <translation type="unfinished"/>
+        <translation>在選定的曲目上運行節拍、音調和增益檢測。選定的曲目不會生成波形，以節省磁碟空間。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.cpp" line="156"/>
@@ -3012,7 +3040,7 @@
     <message>
         <location filename="../../src/library/dlganalysis.cpp" line="176"/>
         <source>Analyzing %1/%2 %3%</source>
-        <translation type="unfinished"/>
+        <translation>分析 %1/%2 %3%</translation>
     </message>
 </context>
 <context>
@@ -3020,35 +3048,35 @@
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="143"/>
         <source>One deck must be stopped to enable Auto DJ mode.</source>
-        <translation type="unfinished"/>
+        <translation>要啟用自動 DJ 模式，必須停止一個甲板。</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="151"/>
         <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
-        <translation type="unfinished"/>
+        <translation>要啟用自動 DJ 模式，必須停止甲板 3 和 4。</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="179"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="180"/>
         <source>Disable Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>禁用自動 DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="213"/>
         <source>Displays the duration and number of selected tracks.</source>
-        <translation type="unfinished"/>
+        <translation>顯示被選定的音軌的數量和時間長度</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="14"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="142"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="150"/>
         <source>Auto DJ</source>
-        <translation type="unfinished"/>
+        <translation>自動 DJ</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="55"/>
         <source>Shuffle</source>
-        <translation type="unfinished"/>
+        <translation>拖曳</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="69"/>
@@ -3064,12 +3092,13 @@
         <location filename="../../src/library/autodj/dlgautodj.ui" line="65"/>
         <source>Adds a random track from track sources (crates) to the Auto DJ queue.
 If no track sources are configured, the track is added from the library instead.</source>
-        <translation type="unfinished"/>
+        <translation>從軌道來源(音樂箱)添加隨機軌道新增到自動 DJ 柱列。
+如果軌道來源已被設置，則由音樂庫新增。</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="76"/>
         <source>Skip the next track in the Auto DJ queue.</source>
-        <translation type="unfinished"/>
+        <translation>跳過自動 DJ 庫中的下一曲目</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="79"/>
@@ -3089,23 +3118,23 @@ If no track sources are configured, the track is added from the library instead.
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="105"/>
         <source>Determines the duration of the transition.</source>
-        <translation type="unfinished"/>
+        <translation>決定過渡的持續時間。</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="121"/>
         <source>Seconds</source>
         <comment>&quot;sec.&quot; as in seconds</comment>
-        <translation type="unfinished"/>
+        <translation>秒</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="124"/>
         <source>sec.</source>
-        <translation type="unfinished"/>
+        <translation>秒</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="151"/>
         <source>Turn Auto DJ on or off.</source>
-        <translation type="unfinished"/>
+        <translation>打開或關閉自動 DJ。</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.ui" line="154"/>
@@ -3121,17 +3150,18 @@ If no track sources are configured, the track is added from the library instead.
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="20"/>
         <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
 automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
-        <translation type="unfinished"/>
+        <translation>啟用節拍檢測後，Mixxx 檢測你的音軌每分鐘節拍數，
+自動顯示節拍網格，並允許您使用其節拍資訊同步音軌。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="24"/>
         <source>Enable BPM and Beat Detection</source>
-        <translation type="unfinished"/>
+        <translation>啟用 BPM 和節拍檢測</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="198"/>
         <source>Choose between different algorithms to detect beats.</source>
-        <translation type="unfinished"/>
+        <translation>您可以選擇不同的演算法來檢測節拍。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="109"/>
@@ -3146,17 +3176,18 @@ This can speed up beat detection on slower computers but may result in lower qua
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="133"/>
         <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids 
 by analyzing the beats to discard outliers.</source>
-        <translation type="unfinished"/>
+        <translation>嘗試更正固定節奏的節奏網格階段(第一拍)
+藉由分析的節拍放棄離群值。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="14"/>
         <source>Beat Detection Preferences</source>
-        <translation type="unfinished"/>
+        <translation>節拍檢測選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="158"/>
         <source>Choose Analyzer</source>
-        <translation type="unfinished"/>
+        <translation>選擇分析儀</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="179"/>
@@ -3166,19 +3197,21 @@ by analyzing the beats to discard outliers.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="103"/>
         <source>Analyzer Settings</source>
-        <translation type="unfinished"/>
+        <translation>分析儀設置</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="114"/>
         <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
-        <translation type="unfinished"/>
+        <translation>啟用快速分析 （對於較慢的電腦，可能不太準確）</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="121"/>
         <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid. 
 Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-        <translation type="unfinished"/>
+        <translation>將轉換成固定節奏 beatgrid 分析器檢測到的節拍。
+使用此設置，如果你的曲目有恆定的節奏 （例如大多數電子音樂）。
+結果往往高品質 beatgrids，但意志不做很好在有節奏的軌道上轉移。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="126"/>
@@ -3188,18 +3221,19 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="137"/>
         <source>Enable Offset Correction (Recommended)</source>
-        <translation type="unfinished"/>
+        <translation>啟用 （推薦） 的偏移的校正</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="144"/>
         <source>e.g. from 3rd-party programs or Mixxx versions before 1.11.
 (Not checked: Analyze only, if no beats exist.)</source>
-        <translation type="unfinished"/>
+        <translation>例如，從協力廠商程式或 Mixxx 版本之前 1.11。
+(不檢查︰ 分析只，如果沒有節奏存在。)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="148"/>
         <source>Re-analyze beats when settings change or beat detection data is outdated</source>
-        <translation type="unfinished"/>
+        <translation>重新分析節拍時設置更改或跳動檢測資料已經過時</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="44"/>
@@ -3209,12 +3243,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="50"/>
         <source>Min:</source>
-        <translation type="unfinished"/>
+        <translation>最小︰</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="70"/>
         <source>Max:</source>
-        <translation type="unfinished"/>
+        <translation>最大︰</translation>
     </message>
 </context>
 <context>
@@ -3222,27 +3256,27 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="32"/>
         <source>Controller Learning Wizard</source>
-        <translation type="unfinished"/>
+        <translation>控制器學習精靈</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="70"/>
         <source>Learn</source>
-        <translation type="unfinished"/>
+        <translation>學習</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="80"/>
         <source>Close</source>
-        <translation type="unfinished"/>
+        <translation>關閉</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="121"/>
         <source>Choose Control...</source>
-        <translation type="unfinished"/>
+        <translation>選擇控制......</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="192"/>
         <source>Hints: If you&apos;re mapping a button or switch, only press or flip it once.  For knobs and sliders, move the control in both directions for best results. Make sure to touch one control at a time.</source>
-        <translation type="unfinished"/>
+        <translation>提示︰ 如果您所繪製的按鈕或開關，僅按或將其翻轉一次。 旋鈕和滑塊，移動控制項在兩個方向為獲得最佳效果。請確保一次觸摸一個控制。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="247"/>
@@ -3252,7 +3286,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="320"/>
         <source>Advanced MIDI Options</source>
-        <translation type="unfinished"/>
+        <translation>進階 MIDI 選項</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="326"/>
@@ -3262,7 +3296,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="329"/>
         <source>Switch Mode</source>
-        <translation type="unfinished"/>
+        <translation>切換模式</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="336"/>
@@ -3272,17 +3306,17 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="339"/>
         <source>Soft Takeover</source>
-        <translation type="unfinished"/>
+        <translation>軟接管</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="346"/>
         <source>Reverses the direction of the control.</source>
-        <translation type="unfinished"/>
+        <translation>反轉控制的方向。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="349"/>
         <source>Invert</source>
-        <translation type="unfinished"/>
+        <translation>反轉</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="356"/>
@@ -3292,17 +3326,17 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="359"/>
         <source>Jog Wheel / Select Knob</source>
-        <translation type="unfinished"/>
+        <translation>慢跑輪 / 選擇旋鈕</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="387"/>
         <source>Retry</source>
-        <translation type="unfinished"/>
+        <translation>重試</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="407"/>
         <source>Learn Another</source>
-        <translation type="unfinished"/>
+        <translation>學習另一種</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.ui" line="414"/>
@@ -3312,57 +3346,57 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="36"/>
         <source>Click anywhere in Mixxx or choose a control to learn</source>
-        <translation type="unfinished"/>
+        <translation>在 Mixxx 中任意位置按一下或選擇一個控制以學習</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="37"/>
         <source>You can click on any button, slider, or knob in Mixxx to teach it that control.  You can also type in the box to search for a control by name, or click the Choose Control button to select from a list.</source>
-        <translation type="unfinished"/>
+        <translation>您可以按一下任何按鈕、 滑塊或在 Mixxx 教它的旋鈕控制。 你還可以在框中輸入以搜尋控制項的名稱，或按一下選擇控制按鈕從清單中選擇。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="48"/>
         <source>Now test it out!</source>
-        <translation type="unfinished"/>
+        <translation>現在測試一下 ！</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="49"/>
         <source>If you manipulate the control, you should see the Mixxx user interface respond the way you expect.</source>
-        <translation type="unfinished"/>
+        <translation>如果你操作控制項，您應該看到 Mixxx 使用者介面回應你期望的方式。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="52"/>
         <source>Not quite right?</source>
-        <translation type="unfinished"/>
+        <translation>不完全正確嗎？</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="53"/>
         <source>If the mapping is not working try enabling an advanced option below and then try the control again. Or click Retry to redetect the midi control.</source>
-        <translation type="unfinished"/>
+        <translation>如果映射不是工作嘗試啟用高級的選項下面，然後試著控制再一次。或按一下重試重新檢測 midi 控制。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="272"/>
         <source>Didn&apos;t get any midi messages.  Please try again.</source>
-        <translation type="unfinished"/>
+        <translation>沒有得到任何的 midi 消息。 請再試一次。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="288"/>
         <source>Unable to detect a mapping -- please try again. Be sure to only touch one control at once.</source>
-        <translation type="unfinished"/>
+        <translation>無法檢測到的映射 — — 請再試一次。要確保只有一次觸摸一個控制項。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="333"/>
         <source>Successfully mapped control:</source>
-        <translation type="unfinished"/>
+        <translation>成功映射的控制項︰</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="439"/>
         <source>&lt;i&gt;Ready to learn %1&lt;/i&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;i&gt;準備好要學習 %1&lt;/i&gt;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="440"/>
         <source>Learning: %1. Now move a control on your controller.</source>
-        <translation type="unfinished"/>
+        <translation>學習: %1。現在移動您的控制器上的一個控制項。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgcontrollerlearning.cpp" line="466"/>
@@ -3381,22 +3415,22 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="14"/>
         <source>Developer Tools</source>
-        <translation type="unfinished"/>
+        <translation>開發人員工具</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="24"/>
         <source>Controls</source>
-        <translation type="unfinished"/>
+        <translation>控制項</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="46"/>
         <source>Dumps all ControlObject values to a csv-file saved in the settings path (e.g. ~/.mixxx)</source>
-        <translation type="unfinished"/>
+        <translation>轉儲到一個 csv 檔保存在設置路徑 (例如 ~/.mixxx) 中的所有控值。</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="49"/>
         <source>Dump to csv</source>
-        <translation type="unfinished"/>
+        <translation>轉儲到 csv</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="85"/>
@@ -3411,7 +3445,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/dialog/dlgdevelopertoolsdlg.ui" line="135"/>
         <source>Stats</source>
-        <translation type="unfinished"/>
+        <translation>統計資料</translation>
     </message>
 </context>
 <context>
@@ -3424,12 +3458,12 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="65"/>
         <source>Selects all tracks in the table below.</source>
-        <translation type="unfinished"/>
+        <translation>在下表中選擇所有曲目。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="68"/>
         <source>Select All</source>
-        <translation type="unfinished"/>
+        <translation>選擇全部</translation>
     </message>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="75"/>
@@ -3439,17 +3473,17 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="78"/>
         <source>Purge</source>
-        <translation type="unfinished"/>
+        <translation>清除</translation>
     </message>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="88"/>
         <source>Unhide selected tracks from the library.</source>
-        <translation type="unfinished"/>
+        <translation>取消隱藏選定的曲目，從圖書館。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="91"/>
         <source>Unhide</source>
-        <translation type="unfinished"/>
+        <translation>取消隱藏</translation>
     </message>
     <message>
         <location filename="../../src/library/dlghidden.ui" line="94"/>
@@ -3462,27 +3496,27 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/library/dlgmissing.ui" line="14"/>
         <source>Missing Tracks</source>
-        <translation type="unfinished"/>
+        <translation>不見蹤跡</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgmissing.ui" line="65"/>
         <source>Selects all tracks in the table below.</source>
-        <translation type="unfinished"/>
+        <translation>在下表中選擇所有曲目。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgmissing.ui" line="68"/>
         <source>Select All</source>
-        <translation type="unfinished"/>
+        <translation>選擇全部</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgmissing.ui" line="75"/>
         <source>Purge selected tracks from the library.</source>
-        <translation type="unfinished"/>
+        <translation>清除選定的曲目，從圖書館。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgmissing.ui" line="78"/>
         <source>Purge</source>
-        <translation type="unfinished"/>
+        <translation>清除</translation>
     </message>
 </context>
 <context>
@@ -3505,7 +3539,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="22"/>
         <source>Re-queue tracks after playback</source>
-        <translation type="unfinished"/>
+        <translation>重新排隊後播放的曲目</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="79"/>
@@ -3515,7 +3549,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="82"/>
         <source>hh:mm</source>
-        <translation type="unfinished"/>
+        <translation>hh: mm</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="39"/>
@@ -3535,32 +3569,32 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="46"/>
         <source>This percentage of tracks are always available for selecting, regardless of when they were last played.</source>
-        <translation type="unfinished"/>
+        <translation>這一百分比的曲目都是可供選擇，無論上場的時候。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="49"/>
         <source>%</source>
-        <translation type="unfinished"/>
+        <translation>%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="62"/>
         <source>Uncheck, to ignore all played tracks.</source>
-        <translation type="unfinished"/>
+        <translation>取消選中，要忽略所有演奏的曲目。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="65"/>
         <source>Suspend track in Track Source from re-queue</source>
-        <translation type="unfinished"/>
+        <translation>暫停跟蹤跟蹤源中的從重新排隊</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="72"/>
         <source>Suspension period for track selection</source>
-        <translation type="unfinished"/>
+        <translation>磁軌選擇的暫停實施期</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="92"/>
         <source>Enable random track addition to queue</source>
-        <translation type="unfinished"/>
+        <translation>啟用隨機軌道向佇列中添加</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="102"/>
@@ -3570,12 +3604,12 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="109"/>
         <source>Minimum allowed tracks before addition</source>
-        <translation type="unfinished"/>
+        <translation>最小允許前增加軌道</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="119"/>
         <source>Minimum number of tracks after which random tracks may be added</source>
-        <translation type="unfinished"/>
+        <translation>之後可能添加隨機軌道的軌道的最小數目</translation>
     </message>
 </context>
 <context>
@@ -3951,13 +3985,14 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="117"/>
         <source>Apply device settings?</source>
-        <translation type="unfinished"/>
+        <translation>應用設備設置嗎？</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="118"/>
         <source>Your settings must be applied before starting the learning wizard.
 Apply settings and continue?</source>
-        <translation type="unfinished"/>
+        <translation>開始學習嚮導前，必須應用您的設置。
+應用設置並繼續？</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="165"/>
@@ -3967,12 +4002,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="170"/>
         <source>%1 by %2</source>
-        <translation type="unfinished"/>
+        <translation>%2 %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="187"/>
         <source>No Name</source>
-        <translation type="unfinished"/>
+        <translation>沒有名字</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="196"/>
@@ -3982,27 +4017,27 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="205"/>
         <source>No Author</source>
-        <translation type="unfinished"/>
+        <translation>沒有作者</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="442"/>
         <source>Troubleshooting</source>
-        <translation type="unfinished"/>
+        <translation>疑難排解</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="512"/>
         <source>Filename</source>
-        <translation type="unfinished"/>
+        <translation>檔案名稱</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="514"/>
         <source>Function Prefix</source>
-        <translation type="unfinished"/>
+        <translation>函數首碼</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="516"/>
         <source>Built-in</source>
-        <translation type="unfinished"/>
+        <translation>內置</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="592"/>
@@ -4012,17 +4047,17 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="593"/>
         <source>Are you sure you want to clear all input mappings?</source>
-        <translation type="unfinished"/>
+        <translation>你確定你想要清除所有輸入的映射？</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="633"/>
         <source>Clear Output Mappings</source>
-        <translation type="unfinished"/>
+        <translation>清除輸出映射</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="634"/>
         <source>Are you sure you want to clear all output mappings?</source>
-        <translation type="unfinished"/>
+        <translation>你確定你想要清除所有輸出映射？</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="646"/>
@@ -4038,12 +4073,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="657"/>
         <source>Could not add script file: &apos;%s&apos;</source>
-        <translation type="unfinished"/>
+        <translation>不能添加指令檔: &apos;%s&apos;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="727"/>
         <source>Please select a script from the list to open.</source>
-        <translation type="unfinished"/>
+        <translation>請從清單中打開，選擇一個腳本。</translation>
     </message>
 </context>
 <context>
@@ -4056,7 +4091,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="238"/>
         <source>Controller Name</source>
-        <translation type="unfinished"/>
+        <translation>控制器的名稱</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="267"/>
@@ -4066,41 +4101,41 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="133"/>
         <source>Description:</source>
-        <translation type="unfinished"/>
+        <translation>描述︰</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="299"/>
         <source>Load Preset:</source>
-        <translation type="unfinished"/>
+        <translation>載入預設︰</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="64"/>
         <source>Support:</source>
-        <translation type="unfinished"/>
+        <translation>支援︰</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="52"/>
         <source>Preset Info</source>
-        <translation type="unfinished"/>
+        <translation>預設資訊</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="332"/>
         <source>Input Mappings</source>
-        <translation type="unfinished"/>
+        <translation>輸入的映射</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="360"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="432"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="485"/>
         <source>Add</source>
-        <translation type="unfinished"/>
+        <translation>添加</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="370"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="439"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="492"/>
         <source>Remove</source>
-        <translation type="unfinished"/>
+        <translation>刪除</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="312"/>
@@ -4110,12 +4145,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="20"/>
         <source>Controller Preferences</source>
-        <translation type="unfinished"/>
+        <translation>控制器的首選項</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="30"/>
         <source>Controller Setup</source>
-        <translation type="unfinished"/>
+        <translation>控制器安裝程式</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="193"/>
@@ -4125,18 +4160,18 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="209"/>
         <source>Name:</source>
-        <translation type="unfinished"/>
+        <translation>名稱︰</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="318"/>
         <source>Learning Wizard (MIDI Only)</source>
-        <translation type="unfinished"/>
+        <translation>學習嚮導 (僅適用于 MIDI)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="396"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="459"/>
         <source>Clear All</source>
-        <translation type="unfinished"/>
+        <translation>全部清除</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="407"/>
@@ -4146,7 +4181,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="470"/>
         <source>Scripts</source>
-        <translation type="unfinished"/>
+        <translation>腳本</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="512"/>
@@ -4159,22 +4194,22 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="14"/>
         <source>Controller Preferences</source>
-        <translation type="unfinished"/>
+        <translation>控制器的首選項</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="20"/>
         <source>Controllers</source>
-        <translation type="unfinished"/>
+        <translation>控制器</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="66"/>
         <source>Mixxx did not detect any controllers. If you connected the controller while Mixxx was running you must restart Mixxx first.</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx 沒有檢測到任何控制器。如果您連接控制器 Mixxx 運行你的同時必須首先重新開機 Mixxx。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="79"/>
         <source>Presets</source>
-        <translation type="unfinished"/>
+        <translation>預設</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="110"/>
@@ -4199,12 +4234,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="123"/>
         <source>You can create your own mapping by using the MIDI Learning Wizard when you select your controller in the sidebar. You can edit mappings by selecting the &quot;Input Mappings&quot; and &quot;Output Mappings&quot; tabs in the preference page for your controller. See the Resources below for more details on making mappings.</source>
-        <translation type="unfinished"/>
+        <translation>通過使用 MIDI 學習嚮導，在側邊欄中選擇您的控制器時，可以創建您自己的映射。您可以編輯映射通過在首選項頁面中選擇&quot;輸入映射&quot;和&quot;輸出映射&quot;選項卡，為您的控制器。看到以下資源以獲取更多的細節上進行映射。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="142"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;HTTP://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt; Mixxx DJ 硬體指南&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="152"/>
@@ -4214,12 +4249,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="162"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;MIDI Preset File Format&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;HTTP://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt; MIDI 預設檔案格式&lt;/a&gt;</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="172"/>
         <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;MIDI Scripting with Javascript&lt;/a&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;HTTP://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt; MIDI 使用 JAVAscript 編寫腳本&lt;/a&gt;</translation>
     </message>
 </context>
 <context>
@@ -4227,27 +4262,27 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="46"/>
         <source>Skin</source>
-        <translation type="unfinished"/>
+        <translation>皮膚</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="138"/>
         <source>Tool tips</source>
-        <translation type="unfinished"/>
+        <translation>工具提示</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="91"/>
         <source>Select from different color schemes of a skin if available.</source>
-        <translation type="unfinished"/>
+        <translation>如果可用，請選擇從不同的色彩配置的皮膚。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="236"/>
         <source>Color scheme</source>
-        <translation type="unfinished"/>
+        <translation>色彩配置</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="108"/>
         <source>Locales determine country and language specific settings.</source>
-        <translation type="unfinished"/>
+        <translation>地區設定確定的國家和語言的特定設置。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="98"/>
@@ -4257,7 +4292,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="14"/>
         <source>Interface Preferences</source>
-        <translation type="unfinished"/>
+        <translation>介面首選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="20"/>
@@ -4272,7 +4307,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="195"/>
         <source>Change the size of text, buttons, and other items.</source>
-        <translation type="unfinished"/>
+        <translation>改變文字的尺寸，按鈕，和其他的項目。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="217"/>
@@ -4282,7 +4317,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="220"/>
         <source>Auto Scaling</source>
-        <translation type="unfinished"/>
+        <translation>自動縮放</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="252"/>
@@ -4307,22 +4342,22 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="33"/>
         <source>Screen saver</source>
-        <translation type="unfinished"/>
+        <translation>螢幕保護程式</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="125"/>
         <source>Start in full-screen mode</source>
-        <translation type="unfinished"/>
+        <translation>在全螢幕模式下啟動</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="115"/>
         <source>Full-screen mode</source>
-        <translation type="unfinished"/>
+        <translation>全屏模式</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="153"/>
         <source>Off</source>
-        <translation type="unfinished"/>
+        <translation>關閉</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="163"/>
@@ -4332,7 +4367,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterfacedlg.ui" line="173"/>
         <source>Library and Skin</source>
-        <translation type="unfinished"/>
+        <translation>圖書館和皮膚</translation>
     </message>
 </context>
 <context>
@@ -4340,17 +4375,17 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="20"/>
         <source>Crossfader Preferences</source>
-        <translation type="unfinished"/>
+        <translation>推子供首選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="26"/>
         <source>Crossfader Curve</source>
-        <translation type="unfinished"/>
+        <translation>交叉推子曲線</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="38"/>
         <source>Slow fade/Fast cut (additive)</source>
-        <translation type="unfinished"/>
+        <translation>緩慢的淡入淡出/快速切 （添加劑）</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="45"/>
@@ -4365,12 +4400,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="78"/>
         <source>Scratching</source>
-        <translation type="unfinished"/>
+        <translation>抓</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="117"/>
         <source>Linear</source>
-        <translation type="unfinished"/>
+        <translation>線性</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcrossfaderdlg.ui" line="143"/>
@@ -4403,47 +4438,47 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="65"/>
         <source>Denon mode</source>
-        <translation type="unfinished"/>
+        <translation>電音模式</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="66"/>
         <source>Numark mode</source>
-        <translation type="unfinished"/>
+        <translation>發展模式</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="67"/>
         <source>CUP mode</source>
-        <translation type="unfinished"/>
+        <translation>CUP 模式</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="131"/>
         <source>4%</source>
-        <translation type="unfinished"/>
+        <translation>4%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="132"/>
         <source>6% (semitone)</source>
-        <translation type="unfinished"/>
+        <translation>6%（半音）</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="133"/>
         <source>8% (Technics SL-1210)</source>
-        <translation type="unfinished"/>
+        <translation>8%(工藝 SL-1210)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="134"/>
         <source>10%</source>
-        <translation type="unfinished"/>
+        <translation>10%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="135"/>
         <source>16%</source>
-        <translation type="unfinished"/>
+        <translation>16%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="136"/>
         <source>24%</source>
-        <translation type="unfinished"/>
+        <translation>24%</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="137"/>
@@ -4471,7 +4506,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="26"/>
         <source>Cue mode</source>
-        <translation type="unfinished"/>
+        <translation>提示模式</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="39"/>
@@ -4504,12 +4539,12 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="85"/>
         <source>Elapsed</source>
-        <translation type="unfinished"/>
+        <translation>過去了</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="95"/>
         <source>Remaining</source>
-        <translation type="unfinished"/>
+        <translation>剩餘</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="105"/>
@@ -4519,33 +4554,34 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="117"/>
         <source>Auto cue</source>
-        <translation type="unfinished"/>
+        <translation>自動提示</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="127"/>
         <source>Automatically seeks to the first saved cue point on track load.
             If none exists, seeks to the beginning of the track.</source>
-        <translation type="unfinished"/>
+        <translation>自動尋求對跟蹤負載上的第一次保存的提示點。
+            如果不存在，尋求到的磁軌起點。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="131"/>
         <source>Jump to main cue point on track load</source>
-        <translation type="unfinished"/>
+        <translation>跳轉到主要提示點上跟蹤負載</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="138"/>
         <source>Playing track protection</source>
-        <translation type="unfinished"/>
+        <translation>玩跟蹤保護</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="148"/>
         <source>Do not load tracks into playing decks</source>
-        <translation type="unfinished"/>
+        <translation>不載入軌道玩甲板</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="158"/>
         <source>Speed (Tempo) and Key (Pitch) options</source>
-        <translation type="unfinished"/>
+        <translation>速度 （節奏） 和金鑰 （球場） 選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="166"/>
@@ -4568,7 +4604,7 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="222"/>
         <source>Reset on track load</source>
-        <translation type="unfinished"/>
+        <translation>在跟蹤負載重置</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="232"/>
@@ -4583,7 +4619,7 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="273"/>
         <source>Permanent</source>
-        <translation type="unfinished"/>
+        <translation>常任理事國</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="310"/>
@@ -4598,12 +4634,12 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="344"/>
         <source>Keylock mode</source>
-        <translation type="unfinished"/>
+        <translation>鑰匙鎖模式</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="357"/>
         <source>Ramping sensitivity</source>
-        <translation type="unfinished"/>
+        <translation>斜向靈敏度</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="367"/>
@@ -4613,27 +4649,27 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="377"/>
         <source>Original key</source>
-        <translation type="unfinished"/>
+        <translation>原始金鑰</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="390"/>
         <source>Temporary rate change when left-clicking</source>
-        <translation type="unfinished"/>
+        <translation>臨時率變化時按一下滑鼠左鍵</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="418"/>
         <source>Speed/Tempo</source>
-        <translation type="unfinished"/>
+        <translation>速度節奏</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="428"/>
         <source>Key/Pitch</source>
-        <translation type="unfinished"/>
+        <translation>鍵/瀝青</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="438"/>
         <source>Adjustment buttons:</source>
-        <translation type="unfinished"/>
+        <translation>調整按鈕︰</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="454"/>
@@ -4653,27 +4689,27 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="498"/>
         <source>Down increases speed</source>
-        <translation type="unfinished"/>
+        <translation>向下增加速度</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="511"/>
         <source>Slider range</source>
-        <translation type="unfinished"/>
+        <translation>滑塊範圍</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="527"/>
         <source>Adjusts the range of the speed (Vinyl &quot;Pitch&quot;) slider.</source>
-        <translation type="unfinished"/>
+        <translation>調整速度 （乙烯&quot;Pitch&quot;） 滑塊的範圍。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="534"/>
         <source>Abrupt jump</source>
-        <translation type="unfinished"/>
+        <translation>突然跳轉</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="544"/>
         <source>Smoothly adjusts deck speed when temporary change buttons are held down</source>
-        <translation type="unfinished"/>
+        <translation>臨時更改按鈕被按下時順利調整甲板速度</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="547"/>
@@ -4703,11 +4739,7 @@ CUP mode:
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="263"/>
         <location filename="../../src/preferences/dialog/dlgprefeq.cpp" line="678"/>
         <source>None</source>
-        <extracomment>Displayed when no effect is selected
-----------
-Displayed when no effect is selected
-----------
-Displayed when no effect is selected</extracomment>
+        <extracomment>Displayed when no effect is selected</extracomment>
         <translation>沒有一個</translation>
     </message>
 </context>
@@ -4716,12 +4748,12 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="14"/>
         <source>Equalizer Preferences</source>
-        <translation type="unfinished"/>
+        <translation>等化器首選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="370"/>
         <source>Reset equalizers on track load</source>
-        <translation type="unfinished"/>
+        <translation>重置上跟蹤負載等化器</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="367"/>
@@ -4731,17 +4763,17 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="20"/>
         <source>Equalizer Rack</source>
-        <translation type="unfinished"/>
+        <translation>等化器機架</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="26"/>
         <source>Only allow EQ knobs to control EQ-specific effects</source>
-        <translation type="unfinished"/>
+        <translation>只允許情商旋鈕來控制特定于情商的影響</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="32"/>
         <source>Uncheck to allow any effect to be loaded into the EQ knobs.</source>
-        <translation type="unfinished"/>
+        <translation>取消選中允許任何影響要載入到情商旋鈕。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="39"/>
@@ -4756,12 +4788,12 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="77"/>
         <source>Equalizer Plugin</source>
-        <translation type="unfinished"/>
+        <translation>等化器外掛程式</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="90"/>
         <source>Quick Effect</source>
-        <translation type="unfinished"/>
+        <translation>快速效果</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="103"/>
@@ -4787,7 +4819,7 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="361"/>
         <source>Miscellaneous</source>
-        <translation type="unfinished"/>
+        <translation>雜項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="377"/>
@@ -4802,12 +4834,12 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="387"/>
         <source>Bypass EQ effect processing</source>
-        <translation type="unfinished"/>
+        <translation>旁路情商效果處理</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="390"/>
         <source>When checked, EQs are not processed, improving performance on slower computers.</source>
-        <translation type="unfinished"/>
+        <translation>選中時，情商的人不會處理，提高慢的電腦上的性能。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="176"/>
@@ -4818,7 +4850,7 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="202"/>
         <source>Low Shelf EQ</source>
-        <translation type="unfinished"/>
+        <translation>低的架子情商</translation>
     </message>
 </context>
 <context>
@@ -4869,17 +4901,17 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="69"/>
         <source>The minimum size of the selected skin is bigger than your screen resolution.</source>
-        <translation type="unfinished"/>
+        <translation>所選的外觀的最小大小大於您的螢幕解析度。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="157"/>
         <source>Allow screensaver to run</source>
-        <translation type="unfinished"/>
+        <translation>允許螢幕保護程式執行</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="159"/>
         <source>Prevent screensaver from running</source>
-        <translation type="unfinished"/>
+        <translation>在程式運行中防止螢幕保護程式</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="161"/>
@@ -4889,12 +4921,12 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="192"/>
         <source>This skin does not support color schemes</source>
-        <translation type="unfinished"/>
+        <translation>這種皮膚不支援色彩配置</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="304"/>
         <source>Information</source>
-        <translation type="unfinished"/>
+        <translation>資訊</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="305"/>
@@ -4907,7 +4939,7 @@ Displayed when no effect is selected</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="14"/>
         <source>Key Notation Format Settings</source>
-        <translation type="unfinished"/>
+        <translation>關鍵的記數法格式設置</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="20"/>
@@ -4928,32 +4960,32 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="52"/>
         <source>Key Analyzer:</source>
-        <translation type="unfinished"/>
+        <translation>關鍵分析儀︰</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="71"/>
         <source>Choose between different algorithms to detect keys.</source>
-        <translation type="unfinished"/>
+        <translation>您可以選擇不同的演算法來檢測鍵。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="84"/>
         <source>Analyzer Settings</source>
-        <translation type="unfinished"/>
+        <translation>分析儀設置</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="90"/>
         <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
-        <translation type="unfinished"/>
+        <translation>啟用快速分析 （對於較慢的電腦，可能不太準確）</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="97"/>
         <source>Re-analyze keys when settings change or 3rd-party keys are present</source>
-        <translation type="unfinished"/>
+        <translation>重新分析鍵設置更改或協力廠商金鑰存在時</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="113"/>
         <source>Key Notation</source>
-        <translation type="unfinished"/>
+        <translation>關鍵的符號</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="121"/>
@@ -4963,17 +4995,17 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="128"/>
         <source>OpenKey</source>
-        <translation type="unfinished"/>
+        <translation>OpenKey</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="135"/>
         <source>Traditional</source>
-        <translation type="unfinished"/>
+        <translation>傳統</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="142"/>
         <source>Custom</source>
-        <translation type="unfinished"/>
+        <translation>自訂</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="153"/>
@@ -4993,47 +5025,47 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="222"/>
         <source>C</source>
-        <translation type="unfinished"/>
+        <translation>C</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="245"/>
         <source>Db</source>
-        <translation type="unfinished"/>
+        <translation>Db</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="268"/>
         <source>D</source>
-        <translation type="unfinished"/>
+        <translation>D</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="291"/>
         <source>Eb</source>
-        <translation type="unfinished"/>
+        <translation>Eb</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="314"/>
         <source>E</source>
-        <translation type="unfinished"/>
+        <translation>E</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="337"/>
         <source>F</source>
-        <translation type="unfinished"/>
+        <translation>F</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="360"/>
         <source>F#</source>
-        <translation type="unfinished"/>
+        <translation>F #</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="383"/>
         <source>G</source>
-        <translation type="unfinished"/>
+        <translation>G</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="406"/>
         <source>Ab</source>
-        <translation type="unfinished"/>
+        <translation>Ab</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="429"/>
@@ -5043,7 +5075,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="452"/>
         <source>Bbm</source>
-        <translation type="unfinished"/>
+        <translation>Bbm</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="475"/>
@@ -5053,12 +5085,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="498"/>
         <source>Cm</source>
-        <translation type="unfinished"/>
+        <translation>釐米</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="521"/>
         <source>C#m</source>
-        <translation type="unfinished"/>
+        <translation>C #m</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="544"/>
@@ -5078,22 +5110,22 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="613"/>
         <source>Fm</source>
-        <translation type="unfinished"/>
+        <translation>調頻</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="636"/>
         <source>F#m</source>
-        <translation type="unfinished"/>
+        <translation>F #m</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="659"/>
         <source>Gm</source>
-        <translation type="unfinished"/>
+        <translation>通用汽車公司</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="682"/>
         <source>G#m</source>
-        <translation type="unfinished"/>
+        <translation>G #m</translation>
     </message>
 </context>
 <context>
@@ -5367,7 +5399,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="14"/>
         <source>Modplug Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Modplug 首選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="403"/>
@@ -5377,7 +5409,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="156"/>
         <source>Maximum Number of Mixing Channels:</source>
-        <translation type="unfinished"/>
+        <translation>混合通道的最大數目︰</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="23"/>
@@ -5389,7 +5421,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="190"/>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="292"/>
         <source>Low</source>
-        <translation type="unfinished"/>
+        <translation>低</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="183"/>
@@ -5411,17 +5443,17 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="227"/>
         <source>Bass Expansion</source>
-        <translation type="unfinished"/>
+        <translation>低音擴展</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="250"/>
         <source>Bass Range:</source>
-        <translation type="unfinished"/>
+        <translation>低音範圍︰</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="257"/>
         <source>16</source>
-        <translation type="unfinished"/>
+        <translation>16</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="264"/>
@@ -5431,7 +5463,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="278"/>
         <source>Pro-Logic Surround</source>
-        <translation type="unfinished"/>
+        <translation>親邏輯環繞</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="285"/>
@@ -5441,12 +5473,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="299"/>
         <source>Reverb</source>
-        <translation type="unfinished"/>
+        <translation>混響</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="306"/>
         <source>Stereo separation</source>
-        <translation type="unfinished"/>
+        <translation>身歷聲分離</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="320"/>
@@ -5456,77 +5488,77 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="327"/>
         <source>10ms</source>
-        <translation type="unfinished"/>
+        <translation>10ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="334"/>
         <source>256</source>
-        <translation type="unfinished"/>
+        <translation>256</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="341"/>
         <source>5ms</source>
-        <translation type="unfinished"/>
+        <translation>5 毫秒</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="348"/>
         <source>100Hz</source>
-        <translation type="unfinished"/>
+        <translation>100 Hz</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="355"/>
         <source>250ms</source>
-        <translation type="unfinished"/>
+        <translation>250ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="362"/>
         <source>50ms</source>
-        <translation type="unfinished"/>
+        <translation>50ms</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="369"/>
         <source>Noise reduction</source>
-        <translation type="unfinished"/>
+        <translation>降噪</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="387"/>
         <source>Hints</source>
-        <translation type="unfinished"/>
+        <translation>提示</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="393"/>
         <source>Module files are decoded at once and kept in RAM to allow for seeking and smooth operation in Mixxx. About 10MB of RAM are required for 1 minute of audio.</source>
-        <translation type="unfinished"/>
+        <translation>一次解碼模組檔並將其保存在 RAM，以便尋求平穩運行在 Mixxx。1 分鐘，大約 10 MB 的 RAM 是音訊的必需的。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="425"/>
         <source>Decoding options for libmodplug, a software library for loading and rendering module files (MOD music, tracker music).</source>
-        <translation type="unfinished"/>
+        <translation>解碼為 libmodplug，用於載入和呈現模組檔 （MOD 音樂，跟蹤音樂） 的軟體庫的選項。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="428"/>
         <source>Decoding Options</source>
-        <translation type="unfinished"/>
+        <translation>解碼選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="485"/>
         <source>Resampling mode (interpolation)</source>
-        <translation type="unfinished"/>
+        <translation>重採樣模式 （內插法）</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="512"/>
         <source>Enable oversampling</source>
-        <translation type="unfinished"/>
+        <translation>啟用採樣</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="462"/>
         <source>Nearest (very fast, extremely bad quality)</source>
-        <translation type="unfinished"/>
+        <translation>最近的 （非常快的極其惡劣的品質）</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="467"/>
         <source>Linear (fast, good quality)</source>
-        <translation type="unfinished"/>
+        <translation>線性 （快，品質好）</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="472"/>
@@ -5536,12 +5568,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="477"/>
         <source>8-tap FIR (extremely high quality)</source>
-        <translation type="unfinished"/>
+        <translation>8 抽頭 FIR （高品質）</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="505"/>
         <source>Memory limit for single track (MB)</source>
-        <translation type="unfinished"/>
+        <translation>記憶體限制為單個軌道 (MB) 的</translation>
     </message>
 </context>
 <context>
@@ -5550,7 +5582,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
         <location filename="../../src/preferences/dialog/dlgprefnovinyldlg.ui" line="14"/>
         <source>Vinyl Control (Disabled) Preferences</source>
         <extracomment>Using a version with the Vinyl Control feature disabled, an alternative preferences window is displayed.</extracomment>
-        <translation type="unfinished"/>
+        <translation>乙烯基控制 （已禁用） 首選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefnovinyldlg.ui" line="26"/>
@@ -5563,7 +5595,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecord.cpp" line="201"/>
         <source>Choose recordings directory</source>
-        <translation type="unfinished"/>
+        <translation>選擇錄音目錄</translation>
     </message>
 </context>
 <context>
@@ -5576,7 +5608,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="33"/>
         <source>Recordings Directory</source>
-        <translation type="unfinished"/>
+        <translation>錄音目錄</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="51"/>
@@ -5586,38 +5618,38 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="80"/>
         <source>Browse...</source>
-        <translation type="unfinished"/>
+        <translation>流覽...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="103"/>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="119"/>
         <source>Quality</source>
-        <translation type="unfinished"/>
+        <translation>品質</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="277"/>
         <source>Tags</source>
-        <translation type="unfinished"/>
+        <translation>標籤</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="289"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>標題</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="311"/>
         <source>Author</source>
-        <translation type="unfinished"/>
+        <translation>作者</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="333"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>專輯</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="233"/>
         <source>Miscellaneous</source>
-        <translation type="unfinished"/>
+        <translation>雜項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="90"/>
@@ -5632,7 +5664,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="161"/>
         <source>Lossy</source>
-        <translation type="unfinished"/>
+        <translation>損耗衰減</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="168"/>
@@ -5642,17 +5674,17 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="178"/>
         <source>Lossless</source>
-        <translation type="unfinished"/>
+        <translation>無損</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="239"/>
         <source>Create a CUE file</source>
-        <translation type="unfinished"/>
+        <translation>創建提示檔</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="255"/>
         <source>File Splitting</source>
-        <translation type="unfinished"/>
+        <translation>檔拆分</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="261"/>
@@ -5678,42 +5710,42 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="20"/>
         <source>ReplayGain Loudness Normalization</source>
-        <translation type="unfinished"/>
+        <translation>重播增益響度正常化</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="26"/>
         <source>Apply loudness normalization to loaded tracks.</source>
-        <translation type="unfinished"/>
+        <translation>適用于載入軌道的音量正常化。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="29"/>
         <source>Apply ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>應用重播增益</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="91"/>
         <source>-30 LUFS</source>
-        <translation type="unfinished"/>
+        <translation>-30 LUFS</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="131"/>
         <source>-6 LUFS</source>
-        <translation type="unfinished"/>
+        <translation>-6 LUFS</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="140"/>
         <source>When ReplayGain is enabled, adjust tracks lacking ReplayGain information by this amount.</source>
-        <translation type="unfinished"/>
+        <translation>當啟用時重播增益時，調整軌跡重播增益資訊缺乏這一數額。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="143"/>
         <source>Initial boost without ReplayGain data</source>
-        <translation type="unfinished"/>
+        <translation>最初的動力，沒有重播增益資料</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="36"/>
         <source>For tracks with ReplayGain, adjust the target loudness to this LUFS value (Loudness Units relative to Full Scale).</source>
-        <translation type="unfinished"/>
+        <translation>對於軌跡重播增益，調整目標響度為此 LUFS 值 （相對於完整規模的響度單位）。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="39"/>
@@ -5723,27 +5755,27 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="174"/>
         <source>-12 dB</source>
-        <translation type="unfinished"/>
+        <translation>-12 dB</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="226"/>
         <source>Analysis</source>
-        <translation type="unfinished"/>
+        <translation>分析</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="232"/>
         <source>ReplayGain 2.0 (ITU-R BS.1770)</source>
-        <translation type="unfinished"/>
+        <translation>重播增益 2.0 (國際電聯-R BS.1770)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="239"/>
         <source>ReplayGain 1.0</source>
-        <translation type="unfinished"/>
+        <translation>重播增益 1.0</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="246"/>
         <source>Disabled</source>
-        <translation type="unfinished"/>
+        <translation>已禁用</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="253"/>
@@ -5762,7 +5794,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="284"/>
         <source>When an unanalyzed track is playing, Mixxx will avoid an abrupt volume change by not applying a newly calculated ReplayGain value.</source>
-        <translation type="unfinished"/>
+        <translation>未分析的軌道玩時，Mixxx 將不採用新計算的重播增益值避免突然的體積變化。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="214"/>
@@ -5772,7 +5804,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefreplaygaindlg.ui" line="263"/>
         <source>Hints</source>
-        <translation type="unfinished"/>
+        <translation>提示</translation>
     </message>
 </context>
 <context>
@@ -5894,7 +5926,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="14"/>
         <source>Sound Hardware Preferences</source>
-        <translation type="unfinished"/>
+        <translation>聲音硬體首選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="22"/>
@@ -5904,7 +5936,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="35"/>
         <source>Sample Rate</source>
-        <translation type="unfinished"/>
+        <translation>採樣速率</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="48"/>
@@ -5934,7 +5966,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="174"/>
         <source>Headphone Delay</source>
-        <translation type="unfinished"/>
+        <translation>耳機延遲</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="135"/>
@@ -5942,12 +5974,8 @@ The loudness target is approximate and assumes track pregain and master output l
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="181"/>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="204"/>
         <source> ms</source>
-        <extracomment>milliseconds
-----------
-milliseconds
-----------
-milliseconds</extracomment>
-        <translation type="unfinished"/>
+        <extracomment>milliseconds</extracomment>
+        <translation>女士</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="197"/>
@@ -5962,17 +5990,17 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="388"/>
         <source>20 ms</source>
-        <translation type="unfinished"/>
+        <translation>為 20 毫秒</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="395"/>
         <source>Buffer Underflow Count</source>
-        <translation type="unfinished"/>
+        <translation>緩衝區下溢計數</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="405"/>
         <source>0</source>
-        <translation type="unfinished"/>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="151"/>
@@ -5982,17 +6010,17 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="85"/>
         <source>Keylock/Pitch-Bending Engine</source>
-        <translation type="unfinished"/>
+        <translation>鑰匙鎖/瀝青彎曲的引擎</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="61"/>
         <source>Multi-Soundcard Synchronization</source>
-        <translation type="unfinished"/>
+        <translation>多音效卡同步</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="98"/>
         <source>Master Mix</source>
-        <translation type="unfinished"/>
+        <translation>混合大師</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="111"/>
@@ -6002,7 +6030,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="270"/>
         <source>Output</source>
-        <translation type="unfinished"/>
+        <translation>輸出</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="293"/>
@@ -6012,7 +6040,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="358"/>
         <source>The &lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt; lists sound cards and controllers you may want to consider for using Mixxx.</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;HTTP://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt; Mixxx DJ 硬體指南&lt;/a&gt; 列出音效卡和您可能想要考慮使用 Mixxx 的控制器。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="378"/>
@@ -6022,17 +6050,17 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="325"/>
         <source>Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback.</source>
-        <translation type="unfinished"/>
+        <translation>如果增加下溢計數器或你聽到持久性有機污染物在播放過程中，放大你的音訊緩衝區。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="319"/>
         <source>Hints and Diagnostics</source>
-        <translation type="unfinished"/>
+        <translation>提示和診斷</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="335"/>
         <source>Downsize your audio buffer to improve Mixxx&apos;s responsiveness.</source>
-        <translation type="unfinished"/>
+        <translation>縮減你的音訊緩衝區來提高 Mixxx 的回應能力。</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="238"/>
@@ -6045,28 +6073,28 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="43"/>
         <source>None</source>
-        <translation type="unfinished"/>
+        <translation>沒有一個</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="114"/>
         <source>Channel %1</source>
-        <translation type="unfinished"/>
+        <translation>%1 通道</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.cpp" line="116"/>
         <source>Channels %1 - %2</source>
-        <translation type="unfinished"/>
+        <translation>管道 %1-%2</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.ui" line="14"/>
         <source>Sound Item Preferences</source>
         <extracomment>Constructs new sound items inside the Sound Hardware Preferences, representing an AudioPath and SoundDevice</extracomment>
-        <translation type="unfinished"/>
+        <translation>聲音專案首選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounditem.ui" line="23"/>
         <source>Type (#)</source>
-        <translation type="unfinished"/>
+        <translation>類型 （#）</translation>
     </message>
 </context>
 <context>
@@ -6074,37 +6102,37 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="592"/>
         <source>Input</source>
-        <translation type="unfinished"/>
+        <translation>輸入</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="20"/>
         <source>Vinyl Configuration</source>
-        <translation type="unfinished"/>
+        <translation>乙烯基配置</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="38"/>
         <source>Deck 1 Vinyl Type</source>
-        <translation type="unfinished"/>
+        <translation>甲板 1 乙烯基類型</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="177"/>
         <source>Deck 2 Vinyl Type</source>
-        <translation type="unfinished"/>
+        <translation>甲板 2 乙烯基類型</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="316"/>
         <source>Deck 3 Vinyl Type</source>
-        <translation type="unfinished"/>
+        <translation>甲板 3 乙烯基類型</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="455"/>
         <source>Deck 4 Vinyl Type</source>
-        <translation type="unfinished"/>
+        <translation>甲板 4 乙烯基類型</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="582"/>
         <source>Show Signal Quality in Skin</source>
-        <translation type="unfinished"/>
+        <translation>在皮膚中顯示信號品質</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="155"/>
@@ -6112,12 +6140,12 @@ milliseconds</extracomment>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="433"/>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="572"/>
         <source>seconds</source>
-        <translation type="unfinished"/>
+        <translation>秒</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="14"/>
         <source>Vinyl Control Preferences</source>
-        <translation type="unfinished"/>
+        <translation>乙烯基控制首選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="111"/>
@@ -6125,22 +6153,22 @@ milliseconds</extracomment>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="389"/>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="528"/>
         <source>Lead-in</source>
-        <translation type="unfinished"/>
+        <translation>導入</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="598"/>
         <source>Turntable Input Signal Boost</source>
-        <translation type="unfinished"/>
+        <translation>轉盤輸入的信號提振</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="626"/>
         <source>0 dB</source>
-        <translation type="unfinished"/>
+        <translation>0 dB</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="675"/>
         <source>44 dB</source>
-        <translation type="unfinished"/>
+        <translation>44 dB</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="690"/>
@@ -6150,7 +6178,7 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="718"/>
         <source>http://www.xwax.co.uk</source>
-        <translation type="unfinished"/>
+        <translation>HTTP://www.xwax.co.uk</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="721"/>
@@ -6160,12 +6188,12 @@ milliseconds</extracomment>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="731"/>
         <source>Hints</source>
-        <translation type="unfinished"/>
+        <translation>提示</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="747"/>
         <source>Select sound devices for Vinyl Control in the Sound Hardware pane.</source>
-        <translation type="unfinished"/>
+        <translation>選擇聲音設備乙烯控制聲音硬體窗格中。</translation>
     </message>
 </context>
 <context>
@@ -6491,12 +6519,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferencesdlg.ui" line="14"/>
         <source>Preferences</source>
-        <translation type="unfinished"/>
+        <translation>首選項</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferencesdlg.ui" line="48"/>
         <source>1</source>
-        <translation type="unfinished"/>
+        <translation>1</translation>
     </message>
 </context>
 <context>
@@ -6504,28 +6532,28 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/recording/dlgrecording.ui" line="14"/>
         <source>Recordings</source>
-        <translation type="unfinished"/>
+        <translation>錄音</translation>
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.ui" line="65"/>
         <source>Status:</source>
-        <translation type="unfinished"/>
+        <translation>狀態︰</translation>
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.ui" line="72"/>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="133"/>
         <source>Start Recording</source>
-        <translation type="unfinished"/>
+        <translation>開始錄製</translation>
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="130"/>
         <source>Stop Recording</source>
-        <translation type="unfinished"/>
+        <translation>停止錄製</translation>
     </message>
     <message>
         <location filename="../../src/library/recording/dlgrecording.cpp" line="156"/>
         <source>Recording to file: %1 (%2 MiB written in %3)</source>
-        <translation type="unfinished"/>
+        <translation>記錄到檔: %1 (%2 %3 中寫的 MiB)</translation>
     </message>
 </context>
 <context>
@@ -6538,19 +6566,19 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="30"/>
         <source>Select best possible match</source>
-        <translation type="unfinished"/>
+        <translation>選擇最佳匹配</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="56"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="485"/>
         <source>Track</source>
-        <translation type="unfinished"/>
+        <translation>跟蹤</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="61"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="490"/>
         <source>Year</source>
-        <translation type="unfinished"/>
+        <translation>年份</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="66"/>
@@ -6567,29 +6595,29 @@ Select from different types of displays for the waveform, which differ primarily
         <location filename="../../src/library/dlgtagfetcher.ui" line="76"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="505"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>專輯</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="116"/>
         <source>Fetching track data from the MusicBrainz database</source>
-        <translation type="unfinished"/>
+        <translation>從音軌資料庫提取軌道資料</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="391"/>
         <source>Mixxx could not find this track in the MusicBrainz database.</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx 在音軌資料庫中找不到這條賽道。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="442"/>
         <source>Get API-Key</source>
         <comment>To be able to submit audio fingerprints to the MusicBrainz database, a free application programming interface key (API key) is required.</comment>
-        <translation type="unfinished"/>
+        <translation>獲取 API 金鑰</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="475"/>
         <source>Submit</source>
         <comment>Submits audio fingerprints to the MusicBrainz database.</comment>
-        <translation type="unfinished"/>
+        <translation>提交</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="495"/>
@@ -6604,12 +6632,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="536"/>
         <source>&amp;Previous</source>
-        <translation type="unfinished"/>
+        <translation>&amp; 上一頁</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="543"/>
         <source>&amp;Next</source>
-        <translation type="unfinished"/>
+        <translation>與下一步</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="563"/>
@@ -6619,12 +6647,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="570"/>
         <source>&amp;Close</source>
-        <translation type="unfinished"/>
+        <translation>與關閉</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="96"/>
         <source>Status: %1</source>
-        <translation type="unfinished"/>
+        <translation>狀態: %1</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="116"/>
@@ -6634,7 +6662,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="118"/>
         <source>Mixxx can&apos;t connect to %1 for an unknown reason.</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx 無法連接到 %1，原因未知。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="120"/>
@@ -6644,12 +6672,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="144"/>
         <source>Original tags</source>
-        <translation type="unfinished"/>
+        <translation>原始標記</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="147"/>
         <source>Suggested tags</source>
-        <translation type="unfinished"/>
+        <translation>建議的標籤</translation>
     </message>
 </context>
 <context>
@@ -6657,7 +6685,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/export/dlgtrackexport.ui" line="32"/>
         <source>Export Tracks</source>
-        <translation type="unfinished"/>
+        <translation>出口軌道</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlgtrackexport.ui" line="47"/>
@@ -6667,12 +6695,12 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/export/dlgtrackexport.ui" line="84"/>
         <source>(status text)</source>
-        <translation type="unfinished"/>
+        <translation>（狀態文本）</translation>
     </message>
     <message>
         <location filename="../../src/library/export/dlgtrackexport.ui" line="112"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"/>
+        <translation>與取消</translation>
     </message>
 </context>
 <context>
@@ -6680,7 +6708,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="20"/>
         <source>Track Editor</source>
-        <translation type="unfinished"/>
+        <translation>軌道編輯器</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="48"/>
@@ -6690,22 +6718,22 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="525"/>
         <source>Filetype:</source>
-        <translation type="unfinished"/>
+        <translation>檔案類型︰</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="434"/>
         <source>BPM:</source>
-        <translation type="unfinished"/>
+        <translation>BPM:</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="468"/>
         <source>Location:</source>
-        <translation type="unfinished"/>
+        <translation>位置︰</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="488"/>
         <source>Bitrate:</source>
-        <translation type="unfinished"/>
+        <translation>位元速率︰</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="578"/>
@@ -6715,7 +6743,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="588"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="671"/>
@@ -6725,17 +6753,17 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="674"/>
         <source>3/4 BPM</source>
-        <translation type="unfinished"/>
+        <translation>3/4 BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="687"/>
         <source>Sets the BPM to 50% of the current value.</source>
-        <translation type="unfinished"/>
+        <translation>將 BPM 設置為當前值的 50%。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="598"/>
         <source>Displays the BPM of the selected track.</source>
-        <translation type="unfinished"/>
+        <translation>顯示選定的軌道的 BPM。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="54"/>
@@ -6750,22 +6778,22 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="117"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>唱片集演出者</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="127"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>作曲家</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="164"/>
         <source>Title</source>
-        <translation type="unfinished"/>
+        <translation>標題</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="174"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>分組</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="216"/>
@@ -6780,17 +6808,17 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="268"/>
         <source>Artist</source>
-        <translation type="unfinished"/>
+        <translation>演出者</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="284"/>
         <source>Album</source>
-        <translation type="unfinished"/>
+        <translation>專輯</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="326"/>
         <source>Genre</source>
-        <translation type="unfinished"/>
+        <translation>體裁</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="406"/>
@@ -6807,27 +6835,29 @@ Select from different types of displays for the waveform, which differ primarily
         <source>Converts beats detected by the analyzer into a fixed-tempo beatgrid. 
 Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-        <translation type="unfinished"/>
+        <translation>將轉換成固定節奏 beatgrid 分析器檢測到的節拍。
+使用此設置，如果你的曲目有恆定的節奏 （例如大多數電子音樂）。
+結果往往高品質 beatgrids，但意志不做很好在有節奏的軌道上轉移。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="655"/>
         <source>Sets the BPM to 200% of the current value.</source>
-        <translation type="unfinished"/>
+        <translation>將 BPM 設置為 200%的當前值。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="658"/>
         <source>Double BPM</source>
-        <translation type="unfinished"/>
+        <translation>雙 BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="690"/>
         <source>Halve BPM</source>
-        <translation type="unfinished"/>
+        <translation>減半 BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="729"/>
         <source>Clear BPM and Beatgrid</source>
-        <translation type="unfinished"/>
+        <translation>明確的 BPM 和 Beatgrid</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="803"/>
@@ -6838,7 +6868,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         <location filename="../../src/library/dlgtrackinfo.ui" line="894"/>
         <source>Move to the previous item.</source>
         <extracomment>&quot;Previous&quot; button</extracomment>
-        <translation type="unfinished"/>
+        <translation>移動到前一項。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="897"/>
@@ -6854,12 +6884,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="913"/>
         <source>&amp;Next</source>
-        <translation type="unfinished"/>
+        <translation>與下一步</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="461"/>
         <source>Duration:</source>
-        <translation type="unfinished"/>
+        <translation>持續時間︰</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="351"/>
@@ -6874,27 +6904,27 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="547"/>
         <source>Open in File Browser</source>
-        <translation type="unfinished"/>
+        <translation>在檔瀏覽器中打開</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="614"/>
         <source>Track BPM: </source>
-        <translation type="unfinished"/>
+        <translation>BPM 的軌道︰</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="626"/>
         <source>Assume constant tempo</source>
-        <translation type="unfinished"/>
+        <translation>假設恒定的節奏</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="639"/>
         <source>Sets the BPM to 66% of the current value.</source>
-        <translation type="unfinished"/>
+        <translation>將 BPM 設置為當前值的 66%。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="642"/>
         <source>2/3 BPM</source>
-        <translation type="unfinished"/>
+        <translation>2/3 BPM</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="703"/>
@@ -6929,32 +6959,32 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="782"/>
         <source>Hint: Use the Library Analyze view to run BPM detection.</source>
-        <translation type="unfinished"/>
+        <translation>提示︰ 使用庫分析視圖運行 BPM 檢測。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="810"/>
         <source>Cue Id</source>
-        <translation type="unfinished"/>
+        <translation>提示 Id</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="815"/>
         <source>Position</source>
-        <translation type="unfinished"/>
+        <translation>位置</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="820"/>
         <source>Hotcue</source>
-        <translation type="unfinished"/>
+        <translation>Hotcue</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="825"/>
         <source>Label</source>
-        <translation type="unfinished"/>
+        <translation>標籤</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="867"/>
         <source>Activate Cue</source>
-        <translation type="unfinished"/>
+        <translation>啟動提示</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="977"/>
@@ -6965,18 +6995,18 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="980"/>
         <source>&amp;OK</source>
-        <translation type="unfinished"/>
+        <translation>與確定</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="841"/>
         <source>Delete Cue</source>
-        <translation type="unfinished"/>
+        <translation>刪除提示</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="939"/>
         <source>Discard changes and close the window.</source>
         <extracomment>&quot;Cancel&quot; button</extracomment>
-        <translation type="unfinished"/>
+        <translation>捨棄變更並關閉視窗。</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="958"/>
@@ -6987,12 +7017,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="961"/>
         <source>&amp;Apply</source>
-        <translation type="unfinished"/>
+        <translation>與應用</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="942"/>
         <source>&amp;Cancel</source>
-        <translation type="unfinished"/>
+        <translation>與取消</translation>
     </message>
 </context>
 <context>
@@ -7073,7 +7103,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/waveform/widgets/emptywaveformwidget.h" line="18"/>
         <source>Empty</source>
-        <translation type="unfinished"/>
+        <translation>空</translation>
     </message>
 </context>
 <context>
@@ -7127,7 +7157,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/waveform/widgets/glrgbwaveformwidget.h" line="16"/>
         <source>RGB</source>
-        <translation type="unfinished"/>
+        <translation>RGB</translation>
     </message>
 </context>
 <context>
@@ -7151,7 +7181,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/waveform/widgets/glsimplewaveformwidget.h" line="16"/>
         <source>Simple</source>
-        <translation type="unfinished"/>
+        <translation>簡單</translation>
     </message>
 </context>
 <context>
@@ -7159,7 +7189,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/waveform/widgets/glvsynctestwidget.h" line="16"/>
         <source>VSyncTest</source>
-        <translation type="unfinished"/>
+        <translation>VSyncTest</translation>
     </message>
 </context>
 <context>
@@ -7167,7 +7197,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/waveform/widgets/glwaveformwidget.h" line="16"/>
         <source>Filtered</source>
-        <translation type="unfinished"/>
+        <translation>過濾</translation>
     </message>
 </context>
 <context>
@@ -7175,7 +7205,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/waveform/widgets/hsvwaveformwidget.h" line="15"/>
         <source>HSV</source>
-        <translation type="unfinished"/>
+        <translation>單純皰疹病毒</translation>
     </message>
 </context>
 <context>
@@ -7235,7 +7265,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <name>ITunesFeature</name>
     <message>
         <location filename="../../src/library/itunes/itunesfeature.cpp" line="100"/>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="828"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="826"/>
         <source>iTunes</source>
         <translation>iTunes</translation>
     </message>
@@ -7261,12 +7291,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         <translation>選擇庫...</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="823"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="821"/>
         <source>Error Loading iTunes Library</source>
         <translation>錯誤載入 iTunes 庫</translation>
     </message>
     <message>
-        <location filename="../../src/library/itunes/itunesfeature.cpp" line="824"/>
+        <location filename="../../src/library/itunes/itunesfeature.cpp" line="822"/>
         <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
         <translation>載入您的 iTunes 庫時出錯。一些你的 iTunes 曲目或播放清單可能不載入。</translation>
     </message>
@@ -7361,12 +7391,12 @@ support.</source>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="28"/>
         <source>Import Playlist</source>
-        <translation type="unfinished"/>
+        <translation>匯入播放清單</translation>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="30"/>
         <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-        <translation type="unfinished"/>
+        <translation>播放清單檔 (*.m3u *.m3u8 *.pls *.csv)</translation>
     </message>
 </context>
 <context>
@@ -7402,7 +7432,7 @@ support.</source>
     <message>
         <location filename="../../src/library/librarytablemodel.cpp" line="57"/>
         <source>Sort items randomly</source>
-        <translation type="unfinished"/>
+        <translation>隨機排序</translation>
     </message>
 </context>
 <context>
@@ -7410,12 +7440,12 @@ support.</source>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="22"/>
         <source>MIDI Controller</source>
-        <translation type="unfinished"/>
+        <translation>MIDI 控制器</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="136"/>
         <source>MixxxControl(s) not found</source>
-        <translation type="unfinished"/>
+        <translation>MixxxControl(s) 找不到</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="137"/>
@@ -7425,18 +7455,18 @@ support.</source>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="139"/>
         <source>Some LEDs or other feedback may not work correctly.</source>
-        <translation type="unfinished"/>
+        <translation>一些 Led 或其他回饋可能無法正常工作。</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="140"/>
         <source>* Check to see that the MixxxControl names are spelled correctly in the mapping file (.xml)
 </source>
-        <translation type="unfinished"/>
+        <translation>* 檢查以查看 MixxxControl 名稱的拼寫正確的映射檔 (.xml)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="143"/>
         <source>* Make sure the MixxxControls in question actually exist. Visit this wiki page for a complete list: </source>
-        <translation type="unfinished"/>
+        <translation>* 使肯定 MixxxControls 問題確實存在。訪問此 wiki 頁面的完整清單︰</translation>
     </message>
 </context>
 <context>
@@ -7444,7 +7474,7 @@ support.</source>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="45"/>
         <source>Click OK to exit.</source>
-        <translation type="unfinished"/>
+        <translation>按一下確定退出。</translation>
     </message>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="46"/>
@@ -7454,32 +7484,32 @@ support.</source>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="48"/>
         <source>Unable to upgrade your database schema to version %1</source>
-        <translation type="unfinished"/>
+        <translation>無法將您的資料庫架構升級到版本 %1</translation>
     </message>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="50"/>
         <source>For help with database issues contact:</source>
-        <translation type="unfinished"/>
+        <translation>資料庫問題的説明請聯繫︰</translation>
     </message>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="62"/>
         <source>Your mixxxdb.sqlite file may be corrupt.</source>
-        <translation type="unfinished"/>
+        <translation>您的 mixxxdb.sqlite 檔可能已損壞。</translation>
     </message>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="63"/>
         <source>Try renaming it and restarting Mixxx.</source>
-        <translation type="unfinished"/>
+        <translation>嘗試重命名並重新啟動 Mixxx。</translation>
     </message>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="71"/>
         <source>Your mixxxdb.sqlite file was created by a newer version of Mixxx and is incompatible.</source>
-        <translation type="unfinished"/>
+        <translation>您的 mixxxdb.sqlite 檔由較新版本的 Mixxx，和是不相容的。</translation>
     </message>
     <message>
         <location filename="../../src/database/mixxxdb.cpp" line="80"/>
         <source>The database schema file is invalid.</source>
-        <translation type="unfinished"/>
+        <translation>資料庫架構檔是不正確。</translation>
     </message>
 </context>
 <context>
@@ -7722,25 +7752,25 @@ Please select an input device in the sound hardware preferences first.</source>
 <context>
     <name>ParserM3u</name>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="164"/>
-        <location filename="../../src/library/parserm3u.cpp" line="175"/>
+        <location filename="../../src/library/parserm3u.cpp" line="155"/>
+        <location filename="../../src/library/parserm3u.cpp" line="166"/>
         <source>Playlist Export Failed</source>
         <translation>播放清單匯出失敗</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="165"/>
+        <location filename="../../src/library/parserm3u.cpp" line="156"/>
         <source>File path contains characters, not allowed in m3u playlists.
 </source>
         <translation>檔路徑包含 m3u 播放清單中不允許使用的字元。</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="166"/>
+        <location filename="../../src/library/parserm3u.cpp" line="157"/>
         <source>Export a m3u8 playlist instead!
 </source>
         <translation>而匯出 m3u8 播放清單 ！</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserm3u.cpp" line="176"/>
+        <location filename="../../src/library/parserm3u.cpp" line="167"/>
         <source>Could not create file</source>
         <translation>無法創建檔</translation>
     </message>
@@ -7748,12 +7778,12 @@ Please select an input device in the sound hardware preferences first.</source>
 <context>
     <name>ParserPls</name>
     <message>
-        <location filename="../../src/library/parserpls.cpp" line="155"/>
+        <location filename="../../src/library/parserpls.cpp" line="142"/>
         <source>Playlist Export Failed</source>
         <translation>播放清單匯出失敗</translation>
     </message>
     <message>
-        <location filename="../../src/library/parserpls.cpp" line="156"/>
+        <location filename="../../src/library/parserpls.cpp" line="143"/>
         <source>Could not create file</source>
         <translation>無法創建檔</translation>
     </message>
@@ -7873,17 +7903,17 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="10"/>
         <source>Note On</source>
-        <translation type="unfinished"/>
+        <translation>注記</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="12"/>
         <source>Note Off</source>
-        <translation type="unfinished"/>
+        <translation>注意關閉</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="14"/>
         <source>CC</source>
-        <translation type="unfinished"/>
+        <translation>抄送</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="16"/>
@@ -7899,17 +7929,17 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="34"/>
         <source>Normal</source>
-        <translation type="unfinished"/>
+        <translation>正常</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="36"/>
         <source>Invert</source>
-        <translation type="unfinished"/>
+        <translation>反轉</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="38"/>
         <source>Rot64</source>
-        <translation type="unfinished"/>
+        <translation>Rot64</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="40"/>
@@ -7919,17 +7949,17 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="42"/>
         <source>Rot64Fast</source>
-        <translation type="unfinished"/>
+        <translation>Rot64Fast</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="44"/>
         <source>Diff</source>
-        <translation type="unfinished"/>
+        <translation>比較</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="46"/>
         <source>Button</source>
-        <translation type="unfinished"/>
+        <translation>按鈕</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="48"/>
@@ -7939,17 +7969,17 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="50"/>
         <source>Spread64</source>
-        <translation type="unfinished"/>
+        <translation>Spread64</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="52"/>
         <source>HercJog</source>
-        <translation type="unfinished"/>
+        <translation>HercJog</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="54"/>
         <source>SelectKnob</source>
-        <translation type="unfinished"/>
+        <translation>SelectKnob</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="56"/>
@@ -7959,22 +7989,22 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="58"/>
         <source>Script</source>
-        <translation type="unfinished"/>
+        <translation>腳本</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="60"/>
         <source>14-bit (LSB)</source>
-        <translation type="unfinished"/>
+        <translation>14 位 (LSB)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midiutils.cpp" line="62"/>
         <source>14-bit (MSB)</source>
-        <translation type="unfinished"/>
+        <translation>14 位 (MSB)</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="189"/>
         <source>Master</source>
-        <translation type="unfinished"/>
+        <translation>碩士</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="191"/>
@@ -7984,12 +8014,12 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="193"/>
         <source>Headphones</source>
-        <translation type="unfinished"/>
+        <translation>耳機</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="197"/>
         <source>Left Bus</source>
-        <translation type="unfinished"/>
+        <translation>左的巴士</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="199"/>
@@ -7999,17 +8029,17 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="201"/>
         <source>Right Bus</source>
-        <translation type="unfinished"/>
+        <translation>公共汽車嗎</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="203"/>
         <source>Invalid Bus</source>
-        <translation type="unfinished"/>
+        <translation>不正確巴士</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="206"/>
         <source>Deck</source>
-        <translation type="unfinished"/>
+        <translation>甲板上</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="209"/>
@@ -8019,7 +8049,7 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="211"/>
         <source>Vinyl Control</source>
-        <translation type="unfinished"/>
+        <translation>唱片控制</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="214"/>
@@ -8029,12 +8059,12 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="217"/>
         <source>Auxiliary</source>
-        <translation type="unfinished"/>
+        <translation>輔助</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="220"/>
         <source>Unknown path type %1</source>
-        <translation type="unfinished"/>
+        <translation>未知的路徑類型 %1</translation>
     </message>
     <message>
         <location filename="../../src/encoder/encodermp3.cpp" line="124"/>
@@ -8700,12 +8730,12 @@ Higher values result in less attenuation of high frequencies.</source>
     <message>
         <location filename="../../src/widget/wbattery.cpp" line="81"/>
         <source>%1 minutes</source>
-        <translation type="unfinished"/>
+        <translation>%1 分鐘</translation>
     </message>
     <message>
         <location filename="../../src/widget/wbattery.cpp" line="83"/>
         <source>%1:%2</source>
-        <translation type="unfinished"/>
+        <translation>%1: %2</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="27"/>
@@ -9141,7 +9171,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/waveform/widgets/qtwaveformwidget.h" line="16"/>
         <source>Filtered</source>
-        <translation type="unfinished"/>
+        <translation>過濾</translation>
     </message>
 </context>
 <context>
@@ -9149,7 +9179,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/waveform/widgets/rgbwaveformwidget.h" line="15"/>
         <source>RGB</source>
-        <translation type="unfinished"/>
+        <translation>RGB</translation>
     </message>
 </context>
 <context>
@@ -9206,7 +9236,7 @@ Fully right: end of the effect period</source>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="59"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="452"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="450"/>
         <source>Rhythmbox</source>
         <translation>Rhythmbox</translation>
     </message>
@@ -9216,19 +9246,19 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="36"/>
         <source>Save Sampler Bank</source>
-        <translation type="unfinished"/>
+        <translation>保存採樣器銀行</translation>
     </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="34"/>
         <location filename="../../src/mixer/samplerbank.cpp" line="38"/>
         <location filename="../../src/mixer/samplerbank.cpp" line="119"/>
         <source>Mixxx Sampler Banks (*.xml)</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx 採樣器銀行 (*.xml)</translation>
     </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="56"/>
         <source>Error Saving Sampler Bank</source>
-        <translation type="unfinished"/>
+        <translation>錯誤儲蓄取樣器銀行</translation>
     </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="57"/>
@@ -9243,12 +9273,12 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="126"/>
         <source>Error Reading Sampler Bank</source>
-        <translation type="unfinished"/>
+        <translation>錯誤閱讀取樣器銀行</translation>
     </message>
     <message>
         <location filename="../../src/mixer/samplerbank.cpp" line="127"/>
         <source>Could not open the sampler bank file &apos;%1&apos;.</source>
-        <translation type="unfinished"/>
+        <translation>無法打開取樣器銀行檔 &apos;%1&apos;。</translation>
     </message>
 </context>
 <context>
@@ -9324,147 +9354,152 @@ Fully right: end of the effect period</source>
         <translation>錯誤設置非阻塞模式︰</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="266"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="98"/>
+        <source>Error setting tls mode:</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>
         <source>Error setting hostname!</source>
         <translation>錯誤設置主機名稱 ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="273"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="292"/>
         <source>Error setting port!</source>
         <translation>設置埠時出錯 ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="279"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="298"/>
         <source>Error setting password!</source>
         <translation>設置密碼時出錯 ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="285"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="304"/>
         <source>Error setting mount!</source>
         <translation>設置裝載錯誤 ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="291"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="310"/>
         <source>Error setting username!</source>
         <translation>錯誤設置使用者名 ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="296"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="315"/>
         <source>Error setting stream name!</source>
         <translation>錯誤設置流名稱 ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="301"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="320"/>
         <source>Error setting stream description!</source>
         <translation>錯誤設置流說明 ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="306"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="325"/>
         <source>Error setting stream genre!</source>
         <translation>錯誤設置流流派 ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="311"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="330"/>
         <source>Error setting stream url!</source>
         <translation>錯誤設置流 url ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="317"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="336"/>
         <source>Error setting stream IRC!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="324"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="343"/>
         <source>Error setting stream AIM!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="331"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="350"/>
         <source>Error setting stream ICQ!</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="337"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="356"/>
         <source>Error setting stream public!</source>
         <translation>錯誤設置流公共 ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="363"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="382"/>
         <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
         <translation>目前不支援 96 khz 頻率與 Ogg 格式的廣播。請嘗試不同的取樣速率或切換到不同的編碼。</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="366"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="385"/>
         <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
         <translation>看到 HTTPs://bugs.launchpad.net/mixxx/+bug/686212 的詳細資訊。</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="374"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="393"/>
         <source>Error setting bitrate</source>
         <translation>錯誤設置位元速率</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="389"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="408"/>
         <source>Error: unknown server protocol!</source>
         <translation>錯誤︰ 未知的伺服器協定 ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="394"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="413"/>
         <source>Error: libshout only supports Shoutcast with MP3 format!</source>
         <translation>錯誤︰ libshout 只支援 Shoutcast MP3 格式 ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="400"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="419"/>
         <source>Error setting protocol!</source>
         <translation>錯誤設置協定 ！</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="628"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="647"/>
         <source>Network cache overflow</source>
         <translation>網路的快取溢出</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="836"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="861"/>
         <source>Connection error</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="837"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="862"/>
         <source>One of the Live Broadcasting connections raised this error:&lt;br&gt;&lt;b&gt;Error with connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="851"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="876"/>
         <source>Connection message</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="852"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="877"/>
         <source>&lt;b&gt;Message from Live Broadcasting connection &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="902"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="927"/>
         <source>Lost connection to streaming server and %1 attempts to reconnect have failed.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="905"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="930"/>
         <source>Lost connection to streaming server.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="910"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="935"/>
         <source>Please check your connection to the Internet.</source>
         <translation>請檢你的網際網路連線</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="945"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="970"/>
         <source>Can&apos;t connect to streaming server</source>
         <translation>無法連接到流媒體伺服器</translation>
     </message>
     <message>
-        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="947"/>
+        <location filename="../../src/engine/sidechain/shoutconnection.cpp" line="972"/>
         <source>Please check your connection to the Internet and verify that your username and password are correct.</source>
         <translation>請檢查您連接到 Internet，請驗證您的使用者名和密碼正確。</translation>
     </message>
@@ -9511,27 +9546,27 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="9"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>名稱</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="10"/>
         <source>Count</source>
-        <translation type="unfinished"/>
+        <translation>計數</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="11"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>類型</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="12"/>
         <source>Units</source>
-        <translation type="unfinished"/>
+        <translation>單位</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="13"/>
         <source>Sum</source>
-        <translation type="unfinished"/>
+        <translation>總和</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="14"/>
@@ -9546,17 +9581,17 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="16"/>
         <source>Mean</source>
-        <translation type="unfinished"/>
+        <translation>意思是</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="17"/>
         <source>Variance</source>
-        <translation type="unfinished"/>
+        <translation>方差</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="18"/>
         <source>Standard Deviation</source>
-        <translation type="unfinished"/>
+        <translation>標準差</translation>
     </message>
 </context>
 <context>
@@ -9564,12 +9599,12 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="54"/>
         <source>Fingerprinting track</source>
-        <translation type="unfinished"/>
+        <translation>指紋識別跟蹤</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="86"/>
         <source>Identifying track</source>
-        <translation type="unfinished"/>
+        <translation>識別跟蹤</translation>
     </message>
     <message>
         <location filename="../../src/musicbrainz/tagfetcher.cpp" line="103"/>
@@ -10144,7 +10179,6 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="344"/>
         <source>Key</source>
-        <extracomment>The musical key of a track</extracomment>
         <translation>關鍵</translation>
     </message>
     <message>
@@ -11303,7 +11337,6 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="701"/>
         <source>Track Key</source>
-        <extracomment>The musical key of a track</extracomment>
         <translation>跟蹤關鍵</translation>
     </message>
     <message>
@@ -11702,37 +11735,37 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="47"/>
         <source>Export finished</source>
-        <translation type="unfinished"/>
+        <translation>出口成品</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="50"/>
         <source>Exporting %1</source>
-        <translation type="unfinished"/>
+        <translation>匯出 %1</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="62"/>
         <source>Overwrite Existing File?</source>
-        <translation type="unfinished"/>
+        <translation>改寫現有檔嗎？</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="63"/>
         <source>&quot;%1&quot; already exists, overwrite?</source>
-        <translation type="unfinished"/>
+        <translation>&quot;%1&quot;已存在，是否覆蓋？</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="67"/>
         <source>&amp;Overwrite</source>
-        <translation type="unfinished"/>
+        <translation>與覆蓋</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="68"/>
         <source>Over&amp;write All</source>
-        <translation type="unfinished"/>
+        <translation>在 &amp; 寫所有</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="69"/>
         <source>&amp;Skip</source>
-        <translation type="unfinished"/>
+        <translation>&amp; 跳過</translation>
     </message>
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="70"/>
@@ -11742,7 +11775,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/library/export/trackexportdlg.cpp" line="101"/>
         <source>Export Error</source>
-        <translation type="unfinished"/>
+        <translation>匯出錯誤</translation>
     </message>
 </context>
 <context>
@@ -11802,34 +11835,6 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     </message>
 </context>
 <context>
-    <name>Ui</name>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="35"/>
-        <source>Mixxx %1 Development Team</source>
-        <translation>Mixxx %1 開發團隊</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
-        <source>With contributions from:</source>
-        <translation>捐款︰</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
-        <source>And special thanks to:</source>
-        <translation>並特別感謝︰</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="38"/>
-        <source>Past Developers</source>
-        <translation>過去的開發人員</translation>
-    </message>
-    <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
-        <source>Past Contributors</source>
-        <translation>過去的貢獻者</translation>
-    </message>
-</context>
-<context>
     <name>VSyncThread</name>
     <message>
         <location filename="../../src/waveform/vsyncthread.cpp" line="192"/>
@@ -11862,12 +11867,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wbattery.cpp" line="109"/>
         <source>Time until charged unknown.</source>
-        <translation type="unfinished"/>
+        <translation>直到帶電未知的時間。</translation>
     </message>
     <message>
         <location filename="../../src/widget/wbattery.cpp" line="111"/>
         <source>Time until charged: %1</source>
-        <translation type="unfinished"/>
+        <translation>時間直到充電: %1</translation>
     </message>
     <message>
         <location filename="../../src/widget/wbattery.cpp" line="122"/>
@@ -11877,12 +11882,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wbattery.cpp" line="124"/>
         <source>Time left: %1</source>
-        <translation type="unfinished"/>
+        <translation>剩餘時間: %1</translation>
     </message>
     <message>
         <location filename="../../src/widget/wbattery.cpp" line="130"/>
         <source>Battery fully charged.</source>
-        <translation type="unfinished"/>
+        <translation>電池完全充電。</translation>
     </message>
     <message>
         <location filename="../../src/widget/wbattery.cpp" line="135"/>
@@ -11896,7 +11901,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <location filename="../../src/widget/wcoverartmenu.cpp" line="20"/>
         <source>Choose new cover</source>
         <comment>change cover art location</comment>
-        <translation type="unfinished"/>
+        <translation>選擇新的封面</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcoverartmenu.cpp" line="25"/>
@@ -11908,17 +11913,17 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <location filename="../../src/widget/wcoverartmenu.cpp" line="30"/>
         <source>Reload from file/folder</source>
         <comment>reload cover art from file metadata or folder</comment>
-        <translation type="unfinished"/>
+        <translation>從檔/資料夾重新載入</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcoverartmenu.cpp" line="60"/>
         <source>Image Files</source>
-        <translation type="unfinished"/>
+        <translation>影像檔</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcoverartmenu.cpp" line="65"/>
         <source>Change Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>更改封面藝術</translation>
     </message>
 </context>
 <context>
@@ -11945,7 +11950,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/weffectchain.cpp" line="38"/>
         <source>None</source>
-        <translation type="unfinished"/>
+        <translation>沒有一個</translation>
     </message>
     <message>
         <location filename="../../src/widget/weffectchain.cpp" line="39"/>
@@ -11958,12 +11963,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/weffectparameterbase.cpp" line="33"/>
         <source>None</source>
-        <translation type="unfinished"/>
+        <translation>沒有一個</translation>
     </message>
     <message>
         <location filename="../../src/widget/weffectparameterbase.cpp" line="34"/>
         <source>No effect loaded.</source>
-        <translation type="unfinished"/>
+        <translation>沒有影響載入。</translation>
     </message>
 </context>
 <context>
@@ -12408,22 +12413,20 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>WOverview</name>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="370"/>
+        <location filename="../../src/widget/woverview.cpp" line="369"/>
         <source>Ready to play, analyzing ..</source>
         <extracomment>Text on waveform overview when file is playable but no waveform is visible</extracomment>
         <translation>準備玩、 分析。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="373"/>
-        <location filename="../../src/widget/woverview.cpp" line="383"/>
+        <location filename="../../src/widget/woverview.cpp" line="372"/>
+        <location filename="../../src/widget/woverview.cpp" line="382"/>
         <source>Loading track ..</source>
-        <extracomment>Text on waveform overview when file is cached from source
-----------
-Text on waveform overview when file is cached from source</extracomment>
+        <extracomment>Text on waveform overview when file is cached from source</extracomment>
         <translation>載入跟蹤。</translation>
     </message>
     <message>
-        <location filename="../../src/widget/woverview.cpp" line="377"/>
+        <location filename="../../src/widget/woverview.cpp" line="376"/>
         <source>Finalizing ..</source>
         <extracomment>Text on waveform overview during finalizing of waveform analysis</extracomment>
         <translation>最後確定。</translation>
