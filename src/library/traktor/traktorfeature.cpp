@@ -302,14 +302,15 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 filename = attr.value("FILE").toString();
                 // compute the location, i.e, combining all the values
                 // On Windows the volume holds the drive letter e.g., d:
-                // On OS X, the volume is supposed to be "Macintosh HD" at all times,
-                // which is a folder in /Volumes/
+                // On OS X, the volume is supposed to be "Macintosh HD" or "Macintosh SSD",
+                // which is a folder in /Volumes/ symlinked to root folder /
                 #if defined(__APPLE__)
                 location = "/Volumes/" + volume;
                 #else
                 location = volume;
                 #endif
-                location += path.replace(QString("/:"), QString("/"));
+                // Traktor uses /: instead of just / as delimiting character for some reasons
+                location += path.replace("/:", "/");
                 location += filename;
                 continue;
             }
@@ -492,7 +493,7 @@ void TraktorFeature::parsePlaylistEntries(
                 QString key = attr.value("KEY").toString();
                 QString type = attr.value("TYPE").toString();
                 if (type == "TRACK") {
-                    key.replace(QString("/:"), QString("/"));
+                    key.replace("/:", "/");
                     #if defined(__APPLE__)
                     key.prepend("/Volumes/");
                     #endif
