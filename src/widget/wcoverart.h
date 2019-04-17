@@ -11,12 +11,13 @@
 #include "track/track.h"
 #include "library/coverartcache.h"
 #include "skin/skincontext.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"
 
 class DlgCoverArtFullSize;
 
-class WCoverArt : public QWidget, public WBaseWidget {
+class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     Q_OBJECT
   public:
     WCoverArt(QWidget* parent, UserSettingsPointer pConfig,

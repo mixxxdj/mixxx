@@ -96,9 +96,8 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
         if (child.nodeName() == "MarkRange") {
-            m_markRanges.push_back(WaveformMarkRange());
+            m_markRanges.push_back(WaveformMarkRange(m_group, child, context, m_signalColors));
             WaveformMarkRange& markRange = m_markRanges.back();
-            markRange.setup(m_group, child, context, m_signalColors);
 
             if (markRange.m_markEnabledControl) {
                 markRange.m_markEnabledControl->connectValueChanged(
@@ -583,27 +582,9 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
 }
 
 void WOverview::dragEnterEvent(QDragEnterEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_group,
-                                             m_playControl->get() > 0.0,
-                                             m_pConfig) &&
-            DragAndDropHelper::dragEnterAccept(*event->mimeData(), m_group,
-                                               true, false)) {
-        event->acceptProposedAction();
-    } else {
-        event->ignore();
-    }
+    DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
 void WOverview::dropEvent(QDropEvent* event) {
-    if (DragAndDropHelper::allowLoadToPlayer(m_group, m_playControl->get() > 0.0,
-                                             m_pConfig)) {
-        QList<QFileInfo> files = DragAndDropHelper::dropEventFiles(
-                *event->mimeData(), m_group, true, false);
-        if (!files.isEmpty()) {
-            event->accept();
-            emit(trackDropped(files.at(0).absoluteFilePath(), m_group));
-            return;
-        }
-    }
-    event->ignore();
+    DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }

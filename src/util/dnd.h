@@ -3,6 +3,7 @@
 
 #include <QUrl>
 #include <QDrag>
+#include <QDropEvent>
 #include <QMimeData>
 #include <QList>
 #include <QString>
@@ -19,6 +20,13 @@
 #include "library/parsercsv.h"
 #include "util/sandbox.h"
 #include "mixer/playermanager.h"
+#include "widget/trackdroptarget.h"
+
+#if defined(__APPLE__) && QT_VERSION < QT_VERSION_CHECK(5, 4, 1)
+#include "util/filepathurl.h"
+#endif
+
+
 
 class DragAndDropHelper {
   public:
@@ -26,7 +34,14 @@ class DragAndDropHelper {
                                                     bool firstOnly,
                                                     bool acceptPlaylists) {
         QList<QFileInfo> fileLocations;
-        foreach (const QUrl& url, urls) {
+        for (QUrl url : urls) {
+
+#if defined(__APPLE__) && QT_VERSION < QT_VERSION_CHECK(5, 4, 1)
+            // OS X 10.10 sends file references instead of file paths
+            // e.g. "file:///.file/id=6571367.1629051"
+            // QT >= 5.4.1 hides this from us
+            url = ensureFilePathUrl(url);
+#endif
 
             // XXX: Possible WTF alert - Previously we thought we needed
             // toString() here but what you actually want in any case when
@@ -109,6 +124,9 @@ class DragAndDropHelper {
                                            const QString& sourceIdentifier,
                                            bool firstOnly,
                                            bool acceptPlaylists) {
+        qDebug() << "dropEventFiles()" << mimeData.hasUrls() << mimeData.urls();
+        qDebug() << "mimeData.hasText()" << mimeData.hasText() << mimeData.text();
+
         if (!mimeData.hasUrls() ||
                 (mimeData.hasText() && mimeData.text() == sourceIdentifier)) {
             return QList<QFileInfo>();
@@ -139,6 +157,32 @@ class DragAndDropHelper {
 
     static QUrl urlFromLocation(const QString& trackLocation) {
         return QUrl::fromLocalFile(trackLocation);
+    }
+
+    static void handleTrackDragEnterEvent(QDragEnterEvent* event, const QString& group,
+                                          UserSettingsPointer pConfig) {
+        if (allowLoadToPlayer(group, pConfig) &&
+                dragEnterAccept(*event->mimeData(), group,
+                                true, false)) {
+            event->acceptProposedAction();
+        } else {
+            qDebug() << "Ignoring drag enter event, loading not allowed";
+            event->ignore();
+        }
+    }
+
+    static void handleTrackDropEvent(QDropEvent* event, TrackDropTarget& target,
+                                     const QString& group, UserSettingsPointer pConfig) {
+        if (allowLoadToPlayer(group, pConfig)) {
+            QList<QFileInfo> files = dropEventFiles(
+                    *event->mimeData(), group, true, false);
+            if (!files.isEmpty()) {
+                event->accept();
+                target.emitTrackDropped(files.at(0).absoluteFilePath(), group);
+                return;
+            }
+        }
+        event->ignore();
     }
 
   private:
