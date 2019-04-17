@@ -593,11 +593,8 @@ WWidgetGroup {
 
 #DeckMini_TitlePlayPosKeyBPM {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
-  background-color: #1e1e1e;
-  margin: 0px 1px 0px 1px;
-}
-#DeckMini_TitlePlayPosKeyBPM WLabel {
   background-color: #333;
+  margin: 0px 1px 0px 1px;
 }
 
 #DeckOverview {
@@ -631,19 +628,17 @@ WWidgetGroup {
     yellow background indicates passthrough, similar to how
     the FX expand toggle does */
   #VinylTogglerLeftPassthrough[displayValue="0"] {
-    background: #ff8f00;
+    background: #00ffff;
     image: url(skin:/buttons/btn_vinyl_pass_left.svg) no-repeat top center;
     }
     #VinylTogglerLeftPassthrough[displayValue="0"]:hover {
-      background: #ff8f00;
       image: url(skin:/buttons/btn_vinyl_pass_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerRightPassthrough[displayValue="0"] {
-    background: #ff8f00;
+    background: #00ffff;
     image: url(skin:/buttons/btn_vinyl_pass_right.svg) no-repeat top center;
     }
     #VinylTogglerRightPassthrough[displayValue="0"]:hover {
-      background: #ff8f00;
       image: url(skin:/buttons/btn_vinyl_pass_right_hover.svg) no-repeat top center;
     }
 
@@ -1136,7 +1131,7 @@ WBeatSpinBox,
 #RateContainer2,
 #RateContainer3,
 #RateContainer4,
-#BPM {
+#Bpm {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
 }
 
@@ -1152,37 +1147,48 @@ WBeatSpinBox,
   margin-top: 1px;
 }
 
-#BPM, #KeyDisplayMatch,
+#Bpm, #KeyDisplayMatch,
 #RateUp, #RateDown,
 #KeyUp, #KeyDown,
 #PitchSlider {
   background-color: #252525;
   border-radius: 3px;
 }
-
-#BpmLabel {
+#BpmLabel,
+#BpmLabelMini {
   qproperty-alignment: 'AlignHCenter | AlignVCenter';
   font-size: 16px/16px;
   font-weight: bold;
   text-align: center;
   padding-top: 1px;
   }
-#BpmLabelMini {
-  font-size: 16px/16px;
-  font-weight: bold;
-  padding: 1px 0px 0px 0px;
-  border-top: 1px solid #1e1e1e;
+  #BpmLabel {
+    background-color: #252525;
   }
-  #SyncButtonOverlay[displayValue="0"]:hover {
+  #BpmLabelMini {
+    background-color: #252525;
+  }
+  #SyncButtonOverlay[displayValue="0"]:hover,
+  #SyncButtonOverlayMini[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
-    border: 1px solid #ff4800;
   }
   #SyncButtonOverlay[displayValue="0"] {
     border: 1px solid #444;
   }
+  #SyncButtonOverlayMini[displayValue="0"],
+  #KeyMatchMini {
+    border: 1px solid #1e1e1e;  /*
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom: 1px solid #333;  */
+    margin-bottom: 1px;
+  }
   #SyncButtonOverlay[displayValue="0"]:hover,
-  #KeyMatch:hover {
+  #SyncButtonOverlayMini[displayValue="0"]:hover,
+  #KeyMatch:hover,
+  #KeyMatchMini:hover {
     background-color: rgba(70,70,70,180);
+    border: 1px solid #ff4800;
   }
   #SyncButtonOverlay[displayValue="1"],
   #SamplerSyncButton[displayValue="1"] {
@@ -1224,14 +1230,13 @@ WBeatSpinBox,
   }
   #KeyDisplayMini {
     padding: 0px 0px 0px 0px;
-    border-top: 1px solid #1e1e1e;
   }
   #KeyMatch {
     border: 1px solid #444;
-    }
-    #KeyMatch:hover {
+  }
+    #KeyMatch:hover,
+    #KeyMatchMini:hover {
       image: url(skin:/buttons/btn_key_match_hover.svg) no-repeat center center;
-      border: 1px solid #888;
     }
     #KeyUp {
       image: url(skin:/buttons/btn_key_up.svg) no-repeat center center;
@@ -1875,11 +1880,10 @@ styled differently because of their importance */
 
 #FxSamplersMiniMaxi_Focus[displayValue="0"] {
   image: url(skin:/buttons/btn_arrow_down_black.svg) no-repeat top center;
-  background-color: #ff8f00;
+  background-color: #00ffff;
   }
   #FxSamplersMiniMaxi_Focus[displayValue="0"]:hover {
     image: url(skin:/buttons/btn_arrow_down_black_hover.svg) no-repeat top center;
-    background-color: #ff8f00;
   }
 
 #SamplerPlayBox,
