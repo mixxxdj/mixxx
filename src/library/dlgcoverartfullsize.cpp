@@ -117,33 +117,29 @@ void DlgCoverArtFullSize::slotCoverFound(const QObject* pRequestor,
         // qDebug() << "DlgCoverArtFullSize::slotCoverFound" << pRequestor << info
         //          << pixmap.size();
         m_pixmap = pixmap;
-        if (m_pixmap.isNull()) {
-            close();
-        } else {
-            // Scale down dialog if the pixmap is larger than the screen.
-            // Use 90% of screen size instead of 100% to prevent an issue with
-            // whitespace appearing on the side when resizing a window whose
-            // borders touch the edges of the screen.
-            QSize dialogSize = m_pixmap.size();
-            const QSize availableScreenSpace =
-                QApplication::desktop()->availableGeometry().size() * 0.9;
-            if (dialogSize.height() > availableScreenSpace.height()) {
-                dialogSize.scale(dialogSize.width(), availableScreenSpace.height(),
-                                 Qt::KeepAspectRatio);
-            } else if (dialogSize.width() > availableScreenSpace.width()) {
-                dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
-                                 Qt::KeepAspectRatio);
-            }
-            QPixmap resizedPixmap = m_pixmap.scaled(size(),
-                Qt::KeepAspectRatio, Qt::SmoothTransformation);
-            coverArt->setPixmap(resizedPixmap);
-            // center the window
-            setGeometry(QStyle::alignedRect(
-                    Qt::LeftToRight,
-                    Qt::AlignCenter,
-                    dialogSize,
-                    QApplication::desktop()->availableGeometry()));
+        // Scale down dialog if the pixmap is larger than the screen.
+        // Use 90% of screen size instead of 100% to prevent an issue with
+        // whitespace appearing on the side when resizing a window whose
+        // borders touch the edges of the screen.
+        QSize dialogSize = m_pixmap.size();
+        const QSize availableScreenSpace =
+            QApplication::desktop()->availableGeometry().size() * 0.9;
+        if (dialogSize.height() > availableScreenSpace.height()) {
+            dialogSize.scale(dialogSize.width(), availableScreenSpace.height(),
+                             Qt::KeepAspectRatio);
+        } else if (dialogSize.width() > availableScreenSpace.width()) {
+            dialogSize.scale(availableScreenSpace.width(), dialogSize.height(),
+                             Qt::KeepAspectRatio);
         }
+        QPixmap resizedPixmap = m_pixmap.scaled(size(),
+            Qt::KeepAspectRatio, Qt::SmoothTransformation);
+        coverArt->setPixmap(resizedPixmap);
+        // center the window
+        setGeometry(QStyle::alignedRect(
+                Qt::LeftToRight,
+                Qt::AlignCenter,
+                dialogSize,
+                QApplication::desktop()->availableGeometry()));
     }
 }
 
