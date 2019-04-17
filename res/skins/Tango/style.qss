@@ -312,37 +312,50 @@ WWidgetGroup {
 #RecBox {
 /* used as Rec container as well as "Rec" label to cover RecDuration
   when inactive (--:--) */
+  qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   border-radius: 3px;
   background-color: #333;
   }
-  #RecButton[displayValue="0"] {
-    background-color: rgba(51, 51, 51, 120);
+  #RecButton[displayValue="0"] {  /*
+    background-color: rgba(51, 51, 51, 120);  */
     }
     #RecButton[displayValue="0"]:hover,
-    #RecButton[displayValue="2"] {
-      border: 1px solid #a90000;
-    }
+    #RecButton[displayValue="2"],
     #RecButton[displayValue="1"],
     #RecButton[displayValue="2"]:hover {
-      border: 1px solid #ff6600;
+      border: 1px solid #ff8800;
     }
     #RecButton[displayValue="2"] {
+      border: 1px solid #999;
     }
   #RecDot {
-    background-color: transparent;
-    image: url(skin:/graphics/rec_dot.svg) no-repeat center center;
+    background-color: transparent;  /*
+    image: url(skin:/graphics/rec_dot.svg) no-repeat center center; */
+    font-size: 12px/12px;
+    margin: 2px 0px 0px 0px;
+    }
+    #RecDot[value="0"] {
+      color: #999;
+    }
+    #RecDot[value="1"] {
+      color: #ff8800;
+    }
+    #RecDot[value="2"] {
+      color: #ff0000;
     }
   #RecDuration {
     font-weight: bold;
-    color: #d2d2d2;
+    color: #999;
   }
 
 #ClockBox {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
+  padding: 2px 0px;
+  qproperty-layoutSpacing: 2;
   }
   #ClockBox WLabel,
   #Clock, WTime {
-    font-size: 13px/13px;
+    font-size: 15px/15px;
     color: #999999;
     text-align: center;
   }

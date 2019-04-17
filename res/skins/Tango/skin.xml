@@ -41,7 +41,7 @@
       <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute persist="true" config_key="[Tango],stacked_waveforms">1</attribute>
       <attribute persist="true" config_key="[Tango],beatgrid_buttons">0</attribute>
-      <attribute persist="true" config_key="[Tango],colorLogo">0</attribute>
+      <attribute config_key="[Tango],colorLogo">0</attribute>
       <!-- Decks -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Tango],separate_cue_button">1</attribute>
