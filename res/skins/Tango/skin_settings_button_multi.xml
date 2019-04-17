@@ -28,7 +28,10 @@ Variables:
     </State>
     <Connection>
       <ConfigKey persist="true"><Variable name="Setting"/></ConfigKey>
-      <Transform><IsEqual><Variable name="stateX"/></IsEqual></Transform>
+      <Transform>
+        <Add>-<Variable name="stateX"/></Add>
+        <IsEqual>0</IsEqual>
+      </Transform>
       <EmitOnDownPress>true</EmitOnDownPress>
     </Connection>
   </PushButton>
