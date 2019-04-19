@@ -1,6 +1,6 @@
 ==== 2.2.1 2019-02-02 ====
 
-* Include all fixed from Mixxx 2.1.7 and 2.1.8
+* Include all fixes from Mixxx 2.1.7 and 2.1.8
 * Fix high CPU usage on MAC due to preview column lp:1812763
 * Fix HID controller output on Windows with common-hid-packet-parser.js
 * Fix rendering slow down by not using QStylePainter in WSpinny lp:1530720
