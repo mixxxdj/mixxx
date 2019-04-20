@@ -17,6 +17,17 @@
 #include "library/treeitem.h"
 #include "util/sandbox.h"
 
+namespace {
+
+QString fromTraktorSeparators(QString path) {
+    // Traktor uses /: instead of just / as delimiting character for some reasons
+    return path.replace("/:", "/");
+}
+
+
+} // anonymous namespace 
+
+
 TraktorTrackModel::TraktorTrackModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
                                      QSharedPointer<BaseTrackCache> trackSource)
@@ -309,8 +320,7 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 #else
                 location = volume;
                 #endif
-                // Traktor uses /: instead of just / as delimiting character for some reasons
-                location += path.replace("/:", "/");
+                location += fromTraktorSeparators(path);
                 location += filename;
                 continue;
             }
@@ -493,7 +503,7 @@ void TraktorFeature::parsePlaylistEntries(
                 QString key = attr.value("KEY").toString();
                 QString type = attr.value("TYPE").toString();
                 if (type == "TRACK") {
-                    key.replace("/:", "/");
+                    key = fromTraktorSeparators(key);
                     #if defined(__APPLE__)
                     key.prepend("/Volumes/");
                     #endif
