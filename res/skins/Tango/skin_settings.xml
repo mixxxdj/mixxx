@@ -92,7 +92,7 @@ Description:
               </Template>
 
               <WidgetGroup><!-- Expanding spacer -->
-                <MaximumSize>i,8</MaximumSize>
+                <MaximumSize>i,15</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
               </WidgetGroup>
 
@@ -157,6 +157,11 @@ Description:
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Loop / Beatjump Buttons</SetVariable>
                 <SetVariable name="Setting">[Skin],show_loop_beatjump_controls</SetVariable>
+              </Template>
+
+              <Template src="skin:../Tango/skin_settings_button_2state.xml">
+                <SetVariable name="text">Track Comment</SetVariable>
+                <SetVariable name="Setting">[Tango],trackComment</SetVariable>
               </Template>
 
               <WidgetGroup><!-- Permanent deck controls -->
@@ -273,7 +278,7 @@ Description:
               </WidgetGroup><!-- /Permanent deck controls -->
 
               <WidgetGroup><!-- Expanding spacer -->
-                <MaximumSize>i,8</MaximumSize>
+                <MaximumSize>i,15</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
               </WidgetGroup>
 
@@ -325,14 +330,9 @@ Description:
               </WidgetGroup><!-- Pitch/Key submenu -->
 
               <WidgetGroup><!-- Expanding spacer -->
-                <MaximumSize>i,8</MaximumSize>
+                <MaximumSize>i,15</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
               </WidgetGroup>
-
-              <Template src="skin:../Tango/skin_settings_button_2state.xml">
-                <SetVariable name="text">Track Comment</SetVariable>
-                <SetVariable name="Setting">[Tango],trackComment</SetVariable>
-              </Template>
 
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
                 <SetVariable name="text">Spinny</SetVariable>
