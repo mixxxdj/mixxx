@@ -7,6 +7,7 @@
 * Fix broken Mic mute button lp:1782568
 * added quick effect enable button to the control picker menu
 * Fix Cover Window close issue with empty cover arts
+* Fix Numark Mixtrack 3 mapping. #2057
 
 ==== 2.2.0 2018-12-17 ====
 
