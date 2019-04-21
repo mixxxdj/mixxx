@@ -17,6 +17,17 @@
 #include "library/treeitem.h"
 #include "util/sandbox.h"
 
+namespace {
+
+QString fromTraktorSeparators(QString path) {
+    // Traktor uses /: instead of just / as delimiting character for some reasons
+    return path.replace("/:", "/");
+}
+
+
+} // anonymous namespace 
+
+
 TraktorTrackModel::TraktorTrackModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
                                      QSharedPointer<BaseTrackCache> trackSource)
@@ -302,14 +313,14 @@ void TraktorFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                 filename = attr.value("FILE").toString();
                 // compute the location, i.e, combining all the values
                 // On Windows the volume holds the drive letter e.g., d:
-                // On OS X, the volume is supposed to be "Macintosh HD" at all times,
-                // which is a folder in /Volumes/
+                // On OS X, the volume is supposed to be "Macintosh HD" or "Macintosh SSD",
+                // which is a folder in /Volumes/ symlinked to root folder /
                 #if defined(__APPLE__)
-                location = "/Volumes/"+volume;
+                location = "/Volumes/" + volume;
                 #else
                 location = volume;
                 #endif
-                location += path.replace(QString(":"), QString(""));
+                location += fromTraktorSeparators(path);
                 location += filename;
                 continue;
             }
@@ -451,10 +462,10 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 }
 
 void TraktorFeature::parsePlaylistEntries(
-    QXmlStreamReader &xml,
-    QString playlist_path,
-    QSqlQuery query_insert_into_playlist,
-    QSqlQuery query_insert_into_playlisttracks) {
+        QXmlStreamReader &xml,
+        QString playlist_path,
+        QSqlQuery query_insert_into_playlist,
+        QSqlQuery query_insert_into_playlisttracks) {
     // In the database, the name of a playlist is specified by the unique path,
     // e.g., /someFolderA/someFolderB/playlistA"
     query_insert_into_playlist.bindValue(":name", playlist_path);
@@ -494,11 +505,8 @@ void TraktorFeature::parsePlaylistEntries(
                 QString key = attr.value("KEY").toString();
                 QString type = attr.value("TYPE").toString();
                 if (type == "TRACK") {
-                    key.replace(QString(":"), QString(""));
-                    //TODO: IFDEF
-                    #if defined(__WINDOWS__)
-                    key.insert(1,":");
-                    #else
+                    key = fromTraktorSeparators(key);
+                    #if defined(__APPLE__)
                     key.prepend("/Volumes/");
                     #endif
 
