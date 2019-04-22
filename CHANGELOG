@@ -1,4 +1,4 @@
-==== 2.2.1 2019-02-02 ====
+==== 2.2.1 2019-04-22 ====
 
 * Include all fixes from Mixxx 2.1.7 and 2.1.8
 * Fix high CPU usage on MAC due to preview column lp:1812763
