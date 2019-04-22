@@ -49,7 +49,7 @@ DJCStarlight.kScratchActionBend = 3;
 
 
 // The base LED are mapped to the VU Meter for light show.
-DJCStarlight.baseLEDUpdate = function(value, group, control){
+DJCStarlight.baseLEDUpdate = function(value, _group, control){
     value = (value*127);
     switch(control) {
     case "VuMeterL":
@@ -96,7 +96,7 @@ DJCStarlight.init = function() {
 
 
 // The Vinyl button, used to enable or disable scratching on the jog wheels (The Vinyl button enables both deck).
-DJCStarlight.vinylButton = function(channel, control, value, status, group) {
+DJCStarlight.vinylButton = function(_channel, _control, value, _status, _group) {
     if (value) {
         if (DJCStarlight.scratchButtonState) {
             DJCStarlight.scratchButtonState = false;
@@ -126,7 +126,7 @@ DJCStarlight._convertWheelRotation = function(value) {
 
 
 // The touch action on the jog wheel's top surface
-DJCStarlight.wheelTouch = function(channel, control, value, status, group) {
+DJCStarlight.wheelTouch = function(channel, _control, value, _status, _group) {
     var deck = channel;
     if (value > 0) {
         //  Touching the wheel.
@@ -145,7 +145,7 @@ DJCStarlight.wheelTouch = function(channel, control, value, status, group) {
 
 
 // The touch action on the jog wheel's top surface while holding shift
-DJCStarlight.wheelTouchShift = function(channel, control, value, status, group) {
+DJCStarlight.wheelTouchShift = function(channel, _control, value, _status, _group) {
     var deck = channel - 3;
     // We always enable scratching regardless of button state.
     if (value > 0) {
@@ -178,14 +178,14 @@ DJCStarlight._scratchWheelImpl = function(deck, value) {
 
 
 // Scratching on the jog wheel (rotating it while pressing the top surface)
-DJCStarlight.scratchWheel = function(channel, control, value, status, group) {
+DJCStarlight.scratchWheel = function(channel, _control, value, _status, _group) {
     var deck = channel;
     DJCStarlight._scratchWheelImpl(deck, value);
 };
 
 
 // Seeking on the jog wheel (rotating it while pressing the top surface and holding Shift)
-DJCStarlight.scratchWheelShift = function(channel, control, value, status, group) {
+DJCStarlight.scratchWheelShift = function(channel, _control, value, _status, _group) {
     var deck = channel - 3;
     DJCStarlight._scratchWheelImpl(deck, value);
 };
@@ -199,14 +199,14 @@ DJCStarlight._bendWheelImpl = function(deck, value) {
 
 
 // Bending on the jog wheel (rotating using the edge)
-DJCStarlight.bendWheel = function(channel, control, value, status, group) {
+DJCStarlight.bendWheel = function(channel, _control, value, _status, _group) {
     var deck = channel;
     DJCStarlight._bendWheelImpl(deck, value);
 };
 
 
 // Cue master button
-DJCStarlight.cueMaster = function(channel, control, value, status, group) {
+DJCStarlight.cueMaster = function(_channel, _control, value, _status, _group) {
     // This button acts as a toggle. Ignore the release.
     if (value == 0) {
         return;
@@ -229,7 +229,7 @@ DJCStarlight.cueMaster = function(channel, control, value, status, group) {
 // We need a special function for this because we want to turn on the LED (but
 // we *don't* want to turn on the LED when the user clicks the headSplit button
 // in the GUI).
-DJCStarlight.cueMix = function(channel, control, value, status, group) {
+DJCStarlight.cueMix = function(_channel, _control, value, _status, _group) {
     // This button acts as a toggle. Ignore the release.
     if (value == 0) {
         return;
@@ -245,7 +245,7 @@ DJCStarlight.cueMix = function(channel, control, value, status, group) {
 };
 
 
-DJCStarlight.shiftButton = function(channel, control, value, status, group) {
+DJCStarlight.shiftButton = function(_channel, _control, value, _status, _group) {
     if (value >= 0x40) {
         // When Shift is held, light the LEDS to show the status of the alt
         // functions of the cue buttons.
