@@ -42,6 +42,15 @@ DJCStarlight.bendScale = 0.5;
 //   adjustment should be relative, not absolute).
 // ****************************************************************************
 
+// We have to disable the no-unused-vars check because we have many MIDI
+// callbacks that receive a fixed list of arguments, but we usually don't use
+// most of these arguments. Eslint seems to make it relatively difficult to
+// disable this check on a case-by-case basis, so we disable it for the whole
+// file.
+// See this GitHub issue for more context:
+// https://github.com/eslint/eslint/issues/1939
+/*eslint-disable no-unused-vars*/
+
 DJCStarlight.kScratchActionNone = 0;
 DJCStarlight.kScratchActionScratch = 1;
 DJCStarlight.kScratchActionSeek = 2;
