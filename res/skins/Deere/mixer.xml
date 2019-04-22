@@ -71,20 +71,35 @@
             <ObjectName>CrossfaderContainer</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
+            <MaximumSize>-1,40</MaximumSize>
             <Children>
 
               <WidgetGroup>
                 <Layout>vertical</Layout>
                 <Children>
                   <WidgetGroup>
+                    <Size>0min,2f</Size>
+                    <Connection>
+                      <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup>
                     <Layout>vertical</Layout>
-                    <Size>28f,28min</Size>
+                    <Size>28f,22f</Size>
                     <Children>
                       <Template src="skin:crossfader_orientation_button.xml">
                         <SetVariable name="group">[Channel1]</SetVariable>
                         <SetVariable name="Unit">Deck1</SetVariable>
                       </Template>
                     </Children>
+                    <Connection>
+                      <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Size>0min,0e</Size>
                     <Connection>
                       <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
                       <BindProperty>visible</BindProperty>
@@ -126,14 +141,28 @@
                 <Layout>vertical</Layout>
                 <Children>
                   <WidgetGroup>
+                    <Size>0min,2f</Size>
+                    <Connection>
+                      <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup>
                     <Layout>vertical</Layout>
-                    <Size>28f,28min</Size>
+                    <Size>28f,22f</Size>
                     <Children>
                       <Template src="skin:crossfader_orientation_button.xml">
                         <SetVariable name="group">[Channel2]</SetVariable>
                         <SetVariable name="Unit">Deck2</SetVariable>
                       </Template>
                     </Children>
+                    <Connection>
+                      <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+                  <WidgetGroup>
+                    <Size>0min,0e</Size>
                     <Connection>
                       <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
                       <BindProperty>visible</BindProperty>
