@@ -199,16 +199,38 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         } else if (version & QGLFormat::OpenGL_Version_1_1) {
             majorVersion = 1;
             minorVersion = 1;
+        } else if (version & QGLFormat::OpenGL_ES_Version_2_0) {
+            m_openGLVersion = "ES 2.0";
+        } else if (version & QGLFormat::OpenGL_ES_CommonLite_Version_1_1) {
+            if (version & QGLFormat::OpenGL_ES_Common_Version_1_1) {
+                m_openGLVersion = "ES 1.1";
+            } else {
+                m_openGLVersion = "ES Common Lite 1.1";
+            }
+        } else if (version & QGLFormat::OpenGL_ES_Common_Version_1_1) {
+            m_openGLVersion = "ES Common Lite 1.1";
+        } else if (version & QGLFormat::OpenGL_ES_CommonLite_Version_1_0) {
+            if (version & QGLFormat::OpenGL_ES_Common_Version_1_0) {
+                m_openGLVersion = "ES 1.0";
+            } else {
+                m_openGLVersion = "ES Common Lite 1.0";
+            }
+        } else if (version & QGLFormat::OpenGL_ES_Common_Version_1_0) {
+            m_openGLVersion = "ES Common Lite 1.0";
+        } else {
+            m_openGLVersion = QString("Unknown 0x%1")
+                .arg(version, 0, 16);
         }
 
         if (majorVersion != 0) {
-            m_openGLVersion = QString::number(majorVersion) + "." +
-                    QString::number(minorVersion);
-        }
+            m_openGLVersion = QString::number(majorVersion) + "."
+                    + QString::number(minorVersion);
 
-        m_openGLAvailable = true;
-        m_openGLShaderAvailable =
-                QGLShaderProgram::hasOpenGLShaderPrograms(pGlWidget->context());
+            m_openGLAvailable = true;
+            m_openGLShaderAvailable =
+                    QGLShaderProgram::hasOpenGLShaderPrograms(
+                            pGlWidget->context());
+        }
     }
 
     evaluateWidgets();
