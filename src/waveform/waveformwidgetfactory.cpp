@@ -149,8 +149,6 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         int minorVersion = 0;
         if (version == QGLFormat::OpenGL_Version_None) {
             m_openGLVersion = "None";
-// Flags introduced in Qt 5.2.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
         } else if (version & QGLFormat::OpenGL_Version_4_3) {
             majorVersion = 4;
             minorVersion = 3;
@@ -160,9 +158,6 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         } else if (version & QGLFormat::OpenGL_Version_4_1) {
             majorVersion = 4;
             minorVersion = 1;
-#endif
-// Flags introduced in Qt 4.7.
-#if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
         } else if (version & QGLFormat::OpenGL_Version_4_0) {
             majorVersion = 4;
             minorVersion = 0;
@@ -175,7 +170,6 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         } else if (version & QGLFormat::OpenGL_Version_3_1) {
             majorVersion = 3;
             minorVersion = 1;
-#endif
         } else if (version & QGLFormat::OpenGL_Version_3_0) {
             majorVersion = 3;
         } else if (version & QGLFormat::OpenGL_Version_2_1) {
