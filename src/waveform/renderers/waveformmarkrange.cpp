@@ -13,7 +13,8 @@ WaveformMarkRange::WaveformMarkRange(
         const SkinContext& context,
         const WaveformSignalColors& signalColors)
         : m_activeColor(context.selectString(node, "Color")),
-          m_disabledColor(context.selectString(node, "DisabledColor")) {
+          m_disabledColor(context.selectString(node, "DisabledColor")),
+          m_durationTextColor(context.selectString(node, "DurationTextColor")) {
     if (!m_activeColor.isValid()) {
         //vRince kind of legacy fallback ...
         // As a fallback, grab the mark color from the parent's MarkerColor
@@ -85,6 +86,10 @@ double WaveformMarkRange::end() const {
         end = m_markEndPointControl->get();
     }
     return end;
+}
+
+bool WaveformMarkRange::showDuration() const {
+    return m_durationTextColor.isValid() && start() != end() && start() != -1 && end() != -1;
 }
 
 void WaveformMarkRange::generateImage(int weidth, int height) {

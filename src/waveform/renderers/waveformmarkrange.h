@@ -36,6 +36,8 @@ class WaveformMarkRange {
     // Returns end value or -1 if the end control doesn't exist.
     double end() const;
 
+    bool showDuration() const;
+
   private:
     void generateImage(int weidth, int height);
 
@@ -46,6 +48,7 @@ class WaveformMarkRange {
 
     QColor m_activeColor;
     QColor m_disabledColor;
+    QColor m_durationTextColor;
 
     QImage m_activeImage;
     QImage m_disabledImage;
