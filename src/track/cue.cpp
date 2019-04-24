@@ -4,7 +4,7 @@
 #include <QMutexLocker>
 #include <QtDebug>
 
-#include "library/dao/cue.h"
+#include "track/cue.h"
 #include "util/assert.h"
 #include "util/color/color.h"
 
@@ -23,6 +23,7 @@ Cue::Cue(TrackId trackId)
         : m_bDirty(false),
           m_iId(-1),
           m_trackId(trackId),
+          m_source(UNKNOWN),
           m_type(INVALID),
           m_samplePosition(-1.0),
           m_length(0.0),
@@ -32,11 +33,12 @@ Cue::Cue(TrackId trackId)
     DEBUG_ASSERT(!m_label.isNull());
 }
 
-Cue::Cue(int id, TrackId trackId, Cue::CueType type, double position, double length,
+Cue::Cue(int id, TrackId trackId, Cue::CueSource source, Cue::CueType type, double position, double length,
          int hotCue, QString label, PredefinedColorPointer color)
         : m_bDirty(false),
           m_iId(id),
           m_trackId(trackId),
+          m_source(source),
           m_type(type),
           m_samplePosition(position),
           m_length(length),
@@ -67,6 +69,19 @@ TrackId Cue::getTrackId() const {
 void Cue::setTrackId(TrackId trackId) {
     QMutexLocker lock(&m_mutex);
     m_trackId = trackId;
+    m_bDirty = true;
+    lock.unlock();
+    emit(updated());
+}
+
+Cue::CueSource Cue::getSource() const {
+    QMutexLocker lock(&m_mutex);
+    return m_source;
+}
+
+void Cue::setSource(CueSource source) {
+    QMutexLocker lock(&m_mutex);
+    m_source = source;
     m_bDirty = true;
     lock.unlock();
     emit(updated());
@@ -161,4 +176,20 @@ bool Cue::isDirty() const {
 void Cue::setDirty(bool dirty) {
     QMutexLocker lock(&m_mutex);
     m_bDirty = dirty;
+}
+
+double Cue::getEndPosition() const {
+    QMutexLocker lock(&m_mutex);
+    if (m_samplePosition == -1.0) {
+        return m_length;
+    } else if (m_length == 0.0) {
+        return -1.0;
+    } else {
+        return  m_samplePosition + m_length;
+    }
+}
+
+bool operator==(const CuePosition& lhs, const CuePosition& rhs) {
+    return lhs.getPosition() == rhs.getPosition() &&
+            lhs.getSource() == rhs.getSource();
 }

@@ -409,7 +409,7 @@ namespace {
         pTrackLibraryQuery->bindValue(":rating", track.getRating());
         pTrackLibraryQuery->bindValue(":bitrate", track.getBitrate());
         pTrackLibraryQuery->bindValue(":samplerate", track.getSampleRate());
-        pTrackLibraryQuery->bindValue(":cuepoint", track.getCuePoint());
+        pTrackLibraryQuery->bindValue(":cuepoint", track.getCuePoint().getPosition());
         pTrackLibraryQuery->bindValue(":bpm_lock", track.isBpmLocked()? 1 : 0);
         pTrackLibraryQuery->bindValue(":replaygain", track.getReplayGain().getRatio());
         pTrackLibraryQuery->bindValue(":replaygain_peak", track.getReplayGain().getPeak());
@@ -1036,7 +1036,7 @@ bool setTrackSampleRate(const QSqlRecord& record, const int column,
 
 bool setTrackCuePoint(const QSqlRecord& record, const int column,
                       TrackPointer pTrack) {
-    pTrack->setCuePoint(record.value(column).toDouble());
+    pTrack->setCuePoint(CuePosition(record.value(column).toDouble(), Cue::MANUAL));
     return false;
 }
 

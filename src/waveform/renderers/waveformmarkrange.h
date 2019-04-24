@@ -28,6 +28,9 @@ class WaveformMarkRange {
     // If a mark range is enabled that means it should be painted with its
     // active color instead of its disabled color.
     bool enabled() const;
+    // If a mark range is visible it should be drawn, otherwise it should be
+    // hidden, regardless whether it is active or not.
+    bool visible() const;
     // Returns start value or -1 if the start control doesn't exist.
     double start() const;
     // Returns end value or -1 if the end control doesn't exist.
@@ -39,6 +42,7 @@ class WaveformMarkRange {
     std::unique_ptr<ControlProxy> m_markStartPointControl;
     std::unique_ptr<ControlProxy> m_markEndPointControl;
     std::unique_ptr<ControlProxy> m_markEnabledControl;
+    std::unique_ptr<ControlProxy> m_markVisibleControl;
 
     QColor m_activeColor;
     QColor m_disabledColor;

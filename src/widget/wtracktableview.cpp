@@ -935,8 +935,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
-        // FIXME: Why are clearning the main cue and loop not working?
-        //m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
+        // FIXME: Why is clearing the loop not working?
+        m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
         m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
         //m_pClearMetadataMenu->addAction(m_pClearLoopAction);
         m_pClearMetadataMenu->addAction(m_pClearKeyAction);
