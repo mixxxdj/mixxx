@@ -89,7 +89,7 @@ DlgPrefWaveform::~DlgPrefWaveform() {
 void DlgPrefWaveform::slotUpdate() {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
-    if (factory->isOpenGLAvailable()) {
+    if (factory->isOpenGlAvailable()) {
         openGlStatusIcon->setText(factory->getOpenGLVersion());
     } else {
         openGlStatusIcon->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());

@@ -1385,7 +1385,7 @@ void MixxxMainWindow::checkDirectRendering() {
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
-    if (!factory->isOpenGLAvailable() &&
+    if (!factory->isOpenGlAvailable() &&
         pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
         QMessageBox::warning(
             0, tr("OpenGL Direct Rendering"),

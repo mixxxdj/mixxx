@@ -99,7 +99,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
         m_zoomSync(false),
         m_overviewNormalized(false),
-        m_openGLAvailable(false),
+        m_openGlAvailable(false),
+        m_openGlesAvailable(false),
         m_openGLShaderAvailable(false),
         m_beatGridAlpha(90),
         m_vsyncThread(NULL),
@@ -145,86 +146,107 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
 
         QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
 
-        int majorVersion = 0;
-        int minorVersion = 0;
+        int majorGlVersion = 0;
+        int minorGlVersion = 0;
+        int majorGlesVersion = 0;
+        int minorGlesVersion = 0;
         if (version == QGLFormat::OpenGL_Version_None) {
             m_openGLVersion = "None";
         } else if (version & QGLFormat::OpenGL_Version_4_3) {
-            majorVersion = 4;
-            minorVersion = 3;
+            majorGlVersion = 4;
+            minorGlVersion = 3;
         } else if (version & QGLFormat::OpenGL_Version_4_2) {
-            majorVersion = 4;
-            minorVersion = 2;
+            majorGlVersion = 4;
+            minorGlVersion = 2;
         } else if (version & QGLFormat::OpenGL_Version_4_1) {
-            majorVersion = 4;
-            minorVersion = 1;
+            majorGlVersion = 4;
+            minorGlVersion = 1;
         } else if (version & QGLFormat::OpenGL_Version_4_0) {
-            majorVersion = 4;
-            minorVersion = 0;
+            majorGlVersion = 4;
+            minorGlVersion = 0;
         } else if (version & QGLFormat::OpenGL_Version_3_3) {
-            majorVersion = 3;
-            minorVersion = 3;
+            majorGlVersion = 3;
+            minorGlVersion = 3;
         } else if (version & QGLFormat::OpenGL_Version_3_2) {
-            majorVersion = 3;
-            minorVersion = 2;
+            majorGlVersion = 3;
+            minorGlVersion = 2;
         } else if (version & QGLFormat::OpenGL_Version_3_1) {
-            majorVersion = 3;
-            minorVersion = 1;
+            majorGlVersion = 3;
+            minorGlVersion = 1;
         } else if (version & QGLFormat::OpenGL_Version_3_0) {
-            majorVersion = 3;
+            majorGlVersion = 3;
         } else if (version & QGLFormat::OpenGL_Version_2_1) {
-            majorVersion = 2;
-            minorVersion = 1;
+            majorGlVersion = 2;
+            minorGlVersion = 1;
         } else if (version & QGLFormat::OpenGL_Version_2_0) {
-            majorVersion = 2;
-            minorVersion = 0;
+            majorGlVersion = 2;
+            minorGlVersion = 0;
         } else if (version & QGLFormat::OpenGL_Version_1_5) {
-            majorVersion = 1;
-            minorVersion = 5;
+            majorGlVersion = 1;
+            minorGlVersion = 5;
         } else if (version & QGLFormat::OpenGL_Version_1_4) {
-            majorVersion = 1;
-            minorVersion = 4;
+            majorGlVersion = 1;
+            minorGlVersion = 4;
         } else if (version & QGLFormat::OpenGL_Version_1_3) {
-            majorVersion = 1;
-            minorVersion = 3;
+            majorGlVersion = 1;
+            minorGlVersion = 3;
         } else if (version & QGLFormat::OpenGL_Version_1_2) {
-            majorVersion = 1;
-            minorVersion = 2;
+            majorGlVersion = 1;
+            minorGlVersion = 2;
         } else if (version & QGLFormat::OpenGL_Version_1_1) {
-            majorVersion = 1;
-            minorVersion = 1;
+            majorGlVersion = 1;
+            minorGlVersion = 1;
         } else if (version & QGLFormat::OpenGL_ES_Version_2_0) {
             m_openGLVersion = "ES 2.0";
+            majorGlesVersion = 2;
+            minorGlesVersion = 0;
         } else if (version & QGLFormat::OpenGL_ES_CommonLite_Version_1_1) {
             if (version & QGLFormat::OpenGL_ES_Common_Version_1_1) {
                 m_openGLVersion = "ES 1.1";
             } else {
                 m_openGLVersion = "ES Common Lite 1.1";
             }
+            majorGlesVersion = 1;
+            minorGlesVersion = 1;
         } else if (version & QGLFormat::OpenGL_ES_Common_Version_1_1) {
             m_openGLVersion = "ES Common Lite 1.1";
+            majorGlesVersion = 1;
+            minorGlesVersion = 1;
         } else if (version & QGLFormat::OpenGL_ES_CommonLite_Version_1_0) {
             if (version & QGLFormat::OpenGL_ES_Common_Version_1_0) {
                 m_openGLVersion = "ES 1.0";
             } else {
                 m_openGLVersion = "ES Common Lite 1.0";
             }
+            majorGlesVersion = 1;
+            minorGlesVersion = 0;
         } else if (version & QGLFormat::OpenGL_ES_Common_Version_1_0) {
             m_openGLVersion = "ES Common Lite 1.0";
+            majorGlesVersion = 1;
+            minorGlesVersion = 0;
         } else {
             m_openGLVersion = QString("Unknown 0x%1")
                 .arg(version, 0, 16);
         }
 
-        if (majorVersion != 0) {
-            m_openGLVersion = QString::number(majorVersion) + "."
-                    + QString::number(minorVersion);
+        if (majorGlVersion != 0) {
+            m_openGLVersion = QString::number(majorGlVersion) + "."
+                    + QString::number(minorGlVersion);
 
-            m_openGLAvailable = true;
-            m_openGLShaderAvailable =
-                    QGLShaderProgram::hasOpenGLShaderPrograms(
-                            pGlWidget->context());
+            if (majorGlVersion * 100 + minorGlVersion >= 201) {
+                // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
+                m_openGlAvailable = true;
+            }
+        } else {
+            if (majorGlesVersion * 100 + minorGlesVersion >= 200) {
+                // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
+                m_openGlesAvailable = true;
+            }
         }
+
+        m_openGLShaderAvailable =
+                QGLShaderProgram::hasOpenGLShaderPrograms(
+                        pGlWidget->context());
     }
 
     evaluateWidgets();
@@ -653,7 +675,7 @@ void WaveformWidgetFactory::swap() {
 
 WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
     //default selection
-    if (m_openGLAvailable) {
+    if (m_openGlAvailable) {
         if (m_openGLShaderAvailable) {
             return WaveformWidgetType::GLSLRGBWaveform;
         } else {
@@ -763,7 +785,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
 
         // NOTE: For the moment non active widget are not added to available handle
         // but it could be useful to have them anyway but not selectable in the combo box
-        if ((useOpenGl && !isOpenGLAvailable()) ||
+        if ((useOpenGl && !isOpenGlAvailable()) ||
                 (useOpenGLShaders && !isOpenGlShaderAvailable())) {
             handle.m_active = false;
             continue;
