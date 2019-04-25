@@ -19,9 +19,7 @@ DJ505.init = function () {
 
     DJ505.shiftButton = function (channel, control, value, status, group) {
         DJ505.deck.concat(DJ505.effectUnit, DJ505.sampler).forEach(
-            value
-                ? function (module) { module.shift(); }
-                : function (module) { module.unshift(); }
+            value ? function (module) { module.shift(); } : function (module) { module.unshift(); }
         );
     };
 
@@ -43,8 +41,8 @@ DJ505.init = function () {
         engine.setValue('[Master]', 'num_samplers', 16);
     }
 
-    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7], 6) //request initial state
-    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6) //unlock pad layers
+    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7], 6); //request initial state
+    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6); //unlock pad layers
 
     DJ505.leftDeck.setCurrentDeck('[Channel1]');
     DJ505.rightDeck.setCurrentDeck('[Channel2]');
@@ -52,13 +50,12 @@ DJ505.init = function () {
 };
 
 DJ505.autoShowDecks = function (value, group, control) {
-    var any_loaded = engine.getValue('[Channel3]', 'track_loaded')
-        || engine.getValue('[Channel4]', 'track_loaded')
+    var any_loaded = engine.getValue('[Channel3]', 'track_loaded') || engine.getValue('[Channel4]', 'track_loaded');
     if (!DJ505.autoShowFourDecks) {
-        return
+        return;
     }
     engine.setValue('[Master]', 'show_4decks', any_loaded);
-}
+};
 
 DJ505.shutdown = function () {
 };
@@ -148,7 +145,7 @@ DJ505.Deck = function (deckNumbers, offset) {
         } else {    // If button up
             engine.scratchDisable(script.deckFromGroup(this.currentDeck));
         }
-    }
+    };
 
     this.wheelTurn = function (channel, control, value, status, group) {
         var newValue = value - 64;
@@ -170,7 +167,7 @@ DJ505.Deck = function (deckNumbers, offset) {
         } else {
             engine.setValue(this.currentDeck, 'jog', newValue); // Pitch bend
         }
-    }
+    };
 
 
 
@@ -190,7 +187,7 @@ DJ505.Deck = function (deckNumbers, offset) {
         input: function (channel, control, value, status, group) {
             components.CueButton.prototype.input.call(this, channel, control, value, status, group);
             if (value) {
-                return
+                return;
             }
             var state = engine.getValue(group, 'cue_indicator');
             if (state) {
@@ -225,7 +222,7 @@ DJ505.Deck = function (deckNumbers, offset) {
                 // equivalent to being stopped, so that pressing play again can
                 // trigger a soft-startup even before the brake is complete.
                 if (this.isBraking !== undefined) {
-                    isPlaying = isPlaying && !this.isBraking
+                    isPlaying = isPlaying && !this.isBraking;
                 }
 
                 if (this.longPressed) {             // Release after long press.
@@ -331,7 +328,7 @@ DJ505.Deck = function (deckNumbers, offset) {
             if (value) {                                        // Button press.
                 this.longPressTimer = engine.beginTimer(
                     this.longPressTimeout,
-                    function () { this.isLongPressed = true },
+                    function () { this.isLongPressed = true; },
                     true
                 );
                 this.deck.setCurrentDeck(otherDeck);
@@ -346,7 +343,7 @@ DJ505.Deck = function (deckNumbers, offset) {
             // Since we are in the release phase, currentDeck still reflects the
             // switched decks. So if we are now using deck 1/3, we were
             // originally using deck 2/4 and vice versa.
-            var deckWasVanilla = currentDeck == deckNumbers[1]
+            var deckWasVanilla = currentDeck == deckNumbers[1];
 
             if (this.isLongPressed) {                     // Release long press.
                 this.isLongPressed = false;
@@ -365,7 +362,7 @@ DJ505.Deck = function (deckNumbers, offset) {
         components.Deck.prototype.setCurrentDeck.call(this, deck);
         DJ505.effectUnit[offset + 1].focusedDeck = script.deckFromGroup(deck);
         DJ505.effectUnit[offset + 1].reconnect();
-    }
+    };
 
 };
 
@@ -430,7 +427,7 @@ DJ505.EffectUnit = function (unitNumber) {
                 var focusedEffect = engine.getValue(eu.group, 'focused_effect');
                 var effectGroup = '[EffectRack1_EffectUnit' + unitNumber + '_Effect' + focusedEffect + ']';
                 engine.softTakeoverIgnoreNextValue(effectGroup, 'meta');
-            }
+            };
         }
     });
 
@@ -453,7 +450,7 @@ DJ505.EffectUnit.prototype.reconnect = function () {
             component.connect();
         }
     );
-}
+};
 //////////////////////////////
 // Sampler.                 //
 //////////////////////////////
@@ -463,6 +460,15 @@ DJ505.Sampler = function () {
 
     this.button = [];
 
+    var sampler_button_send = function (value) {
+        var isLeftDeck = this.number <= 8;
+        var channel = isLeftDeck ? 0x94 : 0x95;
+        this.midi = [channel, 0x20 + this.number - (isLeftDeck ? 0 : 8)];
+        components.SamplerButton.prototype.send.call(this, value);
+        this.midi = [channel + 2, 0x20 + this.number - (isLeftDeck ? 0 : 8)];
+        components.SamplerButton.prototype.send.call(this, value);
+    };
+
     for (var i=1; i<=16; i++) {
         this.button[i] = new components.SamplerButton({
             sendShifted: true,
@@ -471,14 +477,7 @@ DJ505.Sampler = function () {
             number: i
         });
 
-        this.button[i].send = function (value) {
-            var isLeftDeck = this.number <= 8;
-            var channel = isLeftDeck ? 0x94 : 0x95;
-            this.midi = [channel, 0x20 + this.number - (isLeftDeck ? 0 : 8)];
-            components.SamplerButton.prototype.send.call(this, value);
-            this.midi = [channel + 2, 0x20 + this.number - (isLeftDeck ? 0 : 8)];
-            components.SamplerButton.prototype.send.call(this, value);
-        }
+        this.button[i].send = sampler_button_send;
     }
 
     this.level = new components.Pot({
@@ -489,27 +488,27 @@ DJ505.Sampler = function () {
         },
         input: function (channel, control, value, status, group) {
             if (!DJ505.bindSamplerControls) {
-                return
+                return;
             }
             for (var i=1; i<=16; i++) {
-                var group = '[Sampler' + i + ']';
-                engine.setValue(group, 'pregain', this.inValueScale(value));
+                var sampler_group = '[Sampler' + i + ']';
+                engine.setValue(sampler_group, 'pregain', this.inValueScale(value));
             }
         }
-    })
+    });
 
     this.pfl = new components.Button({
         sampler: this,
         midi: [0x9f, 0x1d],
         connect: function () {
             if (!DJ505.bindSamplerControls) {
-                return
+                return;
             }
             components.Button.prototype.connect.call(this);
             // Ensure a consistent state between mixxx and device.
             for (var i=1; i<=16; i++) {
-                var group = '[Sampler' + i + ']';
-                engine.setValue(group, 'pfl', false);
+                var sampler_group = '[Sampler' + i + ']';
+                engine.setValue(sampler_group, 'pfl', false);
             }
             this.send(0);
         },
@@ -518,12 +517,12 @@ DJ505.Sampler = function () {
                 return;
             }
             for (var i=1; i<=16; i++) {
-                var group = '[Sampler' + i + ']';
-                script.toggleControl(group, 'pfl');
+                var sampler_group = '[Sampler' + i + ']';
+                script.toggleControl(sampler_group, 'pfl');
             }
         }
-    })
-}
+    });
+};
 
 DJ505.Sampler.prototype = Object.create(components.ComponentContainer.prototype);
 
@@ -542,7 +541,7 @@ DJ505.FlashingButton.prototype.flash = function (cycles) {
     if (cycles == 0) {
         // Reset to correct value after flashing phase ends.
         this.trigger();
-        return
+        return;
     }
 
     if (cycles === undefined) {
@@ -569,11 +568,7 @@ DJ505.EffectButton = function (effectUnit, effectNumber) {
     this.effectNumber = effectNumber;
     this.effectUnitGroup = '[EffectRack1_EffectUnit' + this.effectUnitNumber + ']';
     this.effectGroup = (
-        '[EffectRack1_EffectUnit'
-            + this.effectUnitNumber
-            + '_Effect'
-            + this.effectNumber
-            + ']'
+        '[EffectRack1_EffectUnit' + this.effectUnitNumber + '_Effect' + this.effectNumber + ']'
     );
     this.midi = [0x98 + this.effectUnitNumber - 1, 0x00 + effectNumber - 1];
     this.sendShifted = true;
@@ -594,9 +589,7 @@ DJ505.EffectButton.prototype.connect = function () {
     var deck = this.effectUnit.focusedDeck;
 
     this.routingControl = (
-        'group_'
-            + (this.effectNumber == 3 ? '[Headphone]' : '[Channel' + deck + ']')
-            + '_enable'
+        'group_' + (this.effectNumber == 3 ? '[Headphone]' : '[Channel' + deck + ']') + '_enable'
     );
 
     this.connections = [
@@ -607,7 +600,7 @@ DJ505.EffectButton.prototype.connect = function () {
 
 DJ505.EffectButton.prototype.output = function (value, group, control) {
     if (control != this.outKey) {
-        return
+        return;
     }
     DJ505.FlashingButton.prototype.output.apply(this, arguments);
 };
@@ -655,7 +648,7 @@ DJ505.EffectButton.prototype.unshift = function () {
         }                                    // Else: release after short press.
 
         this.isLongPressed = false;
-    }
+    };
 };
 
 DJ505.EffectButton.prototype.shift = function () {
@@ -693,7 +686,7 @@ DJ505.EffectModeButton.prototype.input = function (channel, control, value, stat
 
     var focusedEffect = engine.getValue(this.group, 'focused_effect');
     if (!focusedEffect) {
-        return
+        return;
     }
 
     var effectGroup = '[EffectRack1_EffectUnit' + this.effectUnitNumber + '_Effect' + focusedEffect +']';
@@ -702,11 +695,11 @@ DJ505.EffectModeButton.prototype.input = function (channel, control, value, stat
 
 DJ505.EffectModeButton.prototype.shift = function () {
     this.shifted = true;
-}
+};
 
 DJ505.EffectModeButton.prototype.unshift = function () {
     this.shifted = false;
-}
+};
 
 DJ505.SyncButton = function (options) {
     components.SyncButton.call(this, options);
@@ -733,10 +726,10 @@ DJ505.SyncButton.prototype.send = function (value) {
 DJ505.SyncButton.prototype.output = function (value, group, control) {
     // Multiplex between several keys without forcing a reconnect.
     if (control != this.outKey) {
-        return
+        return;
     }
     this.send(value);
-}
+};
 
 DJ505.SyncButton.prototype.unshift = function () {
     this.inKey = 'sync_enabled';
@@ -747,7 +740,7 @@ DJ505.SyncButton.prototype.unshift = function () {
             if (this.isDoubleTap) {                               // Double tap.
                 var fileBPM = engine.getValue(this.group, 'file_bpm');
                 engine.setValue(this.group, 'bpm', fileBPM);
-                return
+                return;
             }                                               // Else: Single tap.
 
             var syncEnabled = engine.getValue(this.group, 'sync_enabled');
@@ -766,10 +759,10 @@ DJ505.SyncButton.prototype.unshift = function () {
                 this.isDoubleTap = true;
                 this.doubleTapTimer = engine.beginTimer(
                     this.doubleTapTimeout,
-                    function () { this.isDoubleTap = false },
+                    function () { this.isDoubleTap = false; },
                     true
                 );
-                return
+                return;
             }                                          // Else: Sync is enabled.
 
             engine.setValue(this.group, 'sync_enabled', 0);
@@ -779,7 +772,7 @@ DJ505.SyncButton.prototype.unshift = function () {
         if (this.longPressTimer) {
             engine.stopTimer(this.longPressTimer);
             this.longPressTimer = null;
-        };
+        }
 
         // Work-around button LED disabling itself on release.
         this.trigger();
@@ -815,14 +808,14 @@ DJ505.HotcueButton.prototype.connect = function () {
     var deck = script.deckFromGroup(this.group);
     this.midi = [0x94 + deck - 1, this.number];
     components.HotcueButton.prototype.connect.call(this);
-}
+};
 
 DJ505.HotcueButton.prototype.unshift = function () {
     this.inKey = 'hotcue_' + this.number + '_activate';
     this.input = function (channel, control, value, status, group) {
         components.HotcueButton.prototype.input.apply(this, arguments);
-    }
-}
+    };
+};
 
 DJ505.HotcueButton.prototype.shift = function ()  {
     this.input = function (channel, control, value, status, group) {
@@ -859,14 +852,14 @@ DJ505.SlipModeButton = function () {
 
 DJ505.ManualLoopButton = function () {
     DJ505.LoopButton.apply(this, arguments);
-}
+};
 
 DJ505.ManualLoopButton.prototype = Object.create(DJ505.LoopButton.prototype);
 
 DJ505.ManualLoopButton.prototype.connect = function () {
     var deck = script.deckFromGroup(this.group);
     this.midi = [0x94 + deck - 1, this.cc];
-    components.Button.prototype.connect.call(this)
+    components.Button.prototype.connect.call(this);
 };
 
 DJ505.SlipModeButton.prototype = Object.create(components.Button.prototype);
@@ -969,7 +962,7 @@ DJ505.KeylockButton.prototype.connect = function () {
     // However, we need to trigger side-effects upon unshifting (button LED
     // issue). Hence, we need to unshift again after we are connected.
     this.unshift();
-}
+};
 
 DJ505.KeylockButton.prototype.shift = function () {
     this.midi = [0x90 + this.deck - 1, 0x0E];
@@ -995,7 +988,7 @@ DJ505.ParamButtons = function () {
     components.Button.apply(this, arguments);
     this.isSongKeyMode = false;
     this.active = [false, false];
-}
+};
 
 DJ505.ParamButtons.prototype = Object.create(components.Button.prototype);
 
@@ -1065,7 +1058,7 @@ DJ505.ParamButtons.prototype.input = function (channel, control, value, status, 
     if (!value) {
         // Work-around LED self-reset on release.
         this.trigger();
-        return
+        return;
     }
 
     if (this.active.every(Boolean)) {
@@ -1110,13 +1103,14 @@ DJ505.PadSection = function (deck) {
 
     this.hotcueButton = [];
 
-    for (var i = 1; i <= 8; i++) {
+    var i;
+    for (i = 1; i <= 8; i++) {
         this.hotcueButton[i] = new DJ505.HotcueButton({number: i});
     }
 
     this.loopButton = [];
 
-    for (var i = 1; i <= 4; i++) {
+    for (i = 1; i <= 4; i++) {
         this.loopButton[i] = new DJ505.LoopButton({
             number: i
         });
@@ -1157,7 +1151,7 @@ DJ505.PadSection.prototype.setState = function (channel, control, value, status,
         } else {
             this.state = 'loop';
         }
-        return
+        return;
     case 0x3:                                            // Hot-cue mode button.
         if (this.state == 'hotcue') {
             var isLooping = engine.getValue(group, 'loop_enabled');
@@ -1165,6 +1159,6 @@ DJ505.PadSection.prototype.setState = function (channel, control, value, status,
         } else {
             this.state = 'hotcue';
         }
-        return
+        return;
     }
 };
