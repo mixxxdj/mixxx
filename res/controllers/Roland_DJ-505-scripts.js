@@ -31,8 +31,46 @@ DJ505.init = function () {
     DJ505.sampler.reconnectComponents();
 
     DJ505.effectUnit = [];
-    DJ505.effectUnit[1] = new DJ505.EffectUnit(1);
-    DJ505.effectUnit[2] = new DJ505.EffectUnit(2);
+    for(var i = 0; i <= 1; i++) {
+        DJ505.effectUnit[i] = new components.EffectUnit([i + 1, i + 3]);
+        DJ505.effectUnit[i].sendShifted = false;
+        DJ505.effectUnit[i].shiftOffset = 0x0B;
+        DJ505.effectUnit[i].shiftControl = true;
+        DJ505.effectUnit[i].enableButtons[1].midi = [0x98 + i, 0x00];
+        DJ505.effectUnit[i].enableButtons[2].midi = [0x98 + i, 0x01];
+        DJ505.effectUnit[i].enableButtons[3].midi = [0x98 + i, 0x02];
+        DJ505.effectUnit[i].effectFocusButton.midi = [0x98 + i, 0x04];
+        DJ505.effectUnit[i].knobs[1].midi = [0xB8 + i, 0x00];
+        DJ505.effectUnit[i].knobs[2].midi = [0xB8 + i, 0x01];
+        DJ505.effectUnit[i].knobs[3].midi = [0xB8 + i, 0x02];
+        DJ505.effectUnit[i].dryWetKnob.midi = [0xB8 + i, 0x03];
+        DJ505.effectUnit[i].dryWetKnob.input = function (channel, control, value, status, group) {
+            if (value === 1) {
+               // 0.05 is an example. Adjust that value to whatever works well for your controller.
+               this.inSetParameter(this.inGetParameter() + 0.05);
+            } else if (value === 127) {
+               this.inSetParameter(this.inGetParameter() - 0.05);
+            }
+        };
+        for(var j = 1; j <= 4; j++) {
+            DJ505.effectUnit[i].enableOnChannelButtons.addButton('Channel' + j);
+            DJ505.effectUnit[i].enableOnChannelButtons['Channel' + j].midi = [0x98 + i, 0x04 + j];
+            DJ505.effectUnit[i].enableOnChannelButtons['Channel' + j].input = function (channel, control, value, status, group) {
+                components.Button.prototype.input.call(this, channel, control, value, status, group);
+                if (value) {
+                    return;
+                }
+                var state = engine.getValue(group, this.key);
+                if (state) {
+                    this.trigger();
+                }
+            };
+        }
+        DJ505.effectUnit[i].init();
+        DJ505.effectUnit[i].reconnectComponents();
+    }
+
+
 
     engine.makeConnection('[Channel3]', 'track_loaded', DJ505.autoShowDecks);
     engine.makeConnection('[Channel4]', 'track_loaded', DJ505.autoShowDecks);
@@ -169,6 +207,57 @@ DJ505.Deck = function (deckNumbers, offset) {
         }
     };
 
+
+    // ========================== LOOP SECTION ==============================
+
+    this.loopActive = new components.Button({
+        midi: [0x94 + offset, 0x32],
+        inKey: 'reloop_toggle',
+        outKey: 'loop_enabled',
+    });
+    this.reloopExit = new components.Button({
+        midi: [0x94 + offset, 0x33],
+        key: 'reloop_andstop',
+    });
+    this.loopHalve = new components.Button({
+        midi: [0x94 + offset, 0x34],
+        key: 'loop_halve',
+    });
+    this.loopDouble = new components.Button({
+        midi: [0x94 + offset, 0x35],
+        key: 'loop_double',
+    });
+    this.loopShiftBackward = new components.Button({
+        midi: [0x94 + offset, 0x36],
+        key: 'beatjump_backward',
+    });
+    this.loopShiftForward = new components.Button({
+        midi: [0x94 + offset, 0x37],
+        key: 'beatjump_forward',
+    });
+    this.loopIn = new components.Button({
+        midi: [0x94 + offset, 0x38],
+        key: 'loop_in',
+    });
+    this.loopOut = new components.Button({
+        midi: [0x94 + offset, 0x39],
+        key: 'loop_out',
+    });
+    this.autoLoop = new components.Button({
+        midi: [0x94 + offset, 0x40],
+        inKey: 'beatloop_activate',
+        outKey: 'loop_enabled',
+        input: function (channel, control, value, status, group) {
+            components.Button.prototype.input.call(this, channel, control, value, status, group);
+            if (value) {
+                return;
+            }
+            var state = engine.getValue(group, this.outKey);
+            if (state) {
+                this.trigger();
+            }
+        },
+    });
 
 
     // ========================== PERFORMANCE PADS ==============================
@@ -360,8 +449,8 @@ DJ505.Deck = function (deckNumbers, offset) {
 
     this.setCurrentDeck = function (deck) {
         components.Deck.prototype.setCurrentDeck.call(this, deck);
-        DJ505.effectUnit[offset + 1].focusedDeck = script.deckFromGroup(deck);
-        DJ505.effectUnit[offset + 1].reconnect();
+        //DJ505.effectUnit[offset + 1].focusedDeck = script.deckFromGroup(deck);
+        //DJ505.effectUnit[offset + 1].reconnect();
     };
 
 };
@@ -463,15 +552,15 @@ DJ505.Sampler = function () {
     var sampler_button_send = function (value) {
         var isLeftDeck = this.number <= 8;
         var channel = isLeftDeck ? 0x94 : 0x95;
-        this.midi = [channel, 0x20 + this.number - (isLeftDeck ? 0 : 8)];
+        this.midi = [channel, 0x14 + this.number - (isLeftDeck ? 0 : 8)];
         components.SamplerButton.prototype.send.call(this, value);
-        this.midi = [channel + 2, 0x20 + this.number - (isLeftDeck ? 0 : 8)];
+        this.midi = [channel + 2, 0x14 + this.number - (isLeftDeck ? 0 : 8)];
         components.SamplerButton.prototype.send.call(this, value);
     };
 
     for (var i=1; i<=16; i++) {
         this.button[i] = new components.SamplerButton({
-            sendShifted: true,
+            sendShifted: false,
             shiftControl: true,
             shiftOffset: 8,
             number: i
@@ -560,145 +649,6 @@ DJ505.FlashingButton.prototype.flash = function (cycles) {
         },
         true
     );
-};
-
-DJ505.EffectButton = function (effectUnit, effectNumber) {
-    this.effectUnit = effectUnit;
-    this.effectUnitNumber = effectUnit.unitNumber;
-    this.effectNumber = effectNumber;
-    this.effectUnitGroup = '[EffectRack1_EffectUnit' + this.effectUnitNumber + ']';
-    this.effectGroup = (
-        '[EffectRack1_EffectUnit' + this.effectUnitNumber + '_Effect' + this.effectNumber + ']'
-    );
-    this.midi = [0x98 + this.effectUnitNumber - 1, 0x00 + effectNumber - 1];
-    this.sendShifted = true;
-    this.shiftOffset = 0x0B;
-    this.outKey = 'enabled';
-    DJ505.FlashingButton.call(this);
-};
-
-DJ505.EffectButton.prototype = Object.create(DJ505.FlashingButton.prototype);
-
-DJ505.EffectButton.prototype.connect = function () {
-    if (this.effectNumber == 3) {
-        this.routingGroup = this.effectUnitGroup;
-    } else {
-        this.routingGroup = '[EffectRack1_EffectUnit' + this.effectNumber + ']';
-    }
-
-    var deck = this.effectUnit.focusedDeck;
-
-    this.routingControl = (
-        'group_' + (this.effectNumber == 3 ? '[Headphone]' : '[Channel' + deck + ']') + '_enable'
-    );
-
-    this.connections = [
-        engine.makeConnection(this.effectGroup, 'enabled', this.output),
-        engine.makeConnection(this.routingGroup, this.routingControl, this.output)
-    ];
-};
-
-DJ505.EffectButton.prototype.output = function (value, group, control) {
-    if (control != this.outKey) {
-        return;
-    }
-    DJ505.FlashingButton.prototype.output.apply(this, arguments);
-};
-
-DJ505.EffectButton.prototype.unshift = function () {
-    this.group = this.effectGroup;
-    this.outKey = 'enabled';
-    this.inKey = this.outKey;
-    this.trigger();
-    this.input = function (channel, control, value, status) {
-        if (this.isPress(channel, control, value, status)) {
-            this.isLongPressed = false;
-            this.longPressTimer = engine.beginTimer(
-                this.longPressTimeout,
-                function () {
-                    engine.setValue(
-                        this.effectUnitGroup,
-                        'focused_effect',
-                        this.effectNumber
-                    );
-                    this.isLongPressed = true;
-                    this.flash();
-                },
-                true
-            );
-            return;
-        }                                            // Else: on button release.
-
-        if (this.longPressTimer) {
-            engine.stopTimer(this.longPressTimer);
-            this.longPressTimer = null;
-        }
-
-        // Work-around the indicator LED self-disabling itself on release.
-        this.trigger();
-
-        if (!this.isLongPressed) {                  // Release after long press.
-            var wasEnabled = engine.getValue(this.group, 'enabled');
-            script.toggleControl(this.group, 'enabled');
-            if (!wasEnabled && DJ505.autoFocusEffects) {
-                engine.setValue(this.effectUnitGroup, 'focused_effect', this.effectNumber);
-                this.flash();
-            }
-            return;
-        }                                    // Else: release after short press.
-
-        this.isLongPressed = false;
-    };
-};
-
-DJ505.EffectButton.prototype.shift = function () {
-    this.group = this.routingGroup;
-    this.outKey = this.routingControl;
-    this.inKey = this.outKey;
-    this.trigger();
-    this.input = function (channel, control, value, status) {
-        if (value) {
-            this.inToggle();
-        } else {
-            // Work-around the indicator LED self-disabling itself on release.
-            this.trigger();
-        }
-    };
-};
-
-DJ505.EffectModeButton = function (effectUnitNumber) {
-    this.effectUnitNumber = effectUnitNumber;
-    this.group = '[EffectRack1_EffectUnit' + effectUnitNumber + ']';
-    this.midi = [0x98 + effectUnitNumber - 1, 0x04];
-    DJ505.FlashingButton.call(this);
-};
-
-DJ505.EffectModeButton.prototype = Object.create(DJ505.FlashingButton.prototype);
-
-DJ505.EffectModeButton.prototype.input = function (channel, control, value, status) {
-
-    if (value) {                                                // Button press.
-        return;
-    }                                                   // Else: Button release.
-
-    // Work-around the indicator LED self-disabling itself on release.
-    this.trigger();
-
-    var focusedEffect = engine.getValue(this.group, 'focused_effect');
-    if (!focusedEffect) {
-        return;
-    }
-
-    var effectGroup = '[EffectRack1_EffectUnit' + this.effectUnitNumber + '_Effect' + focusedEffect +']';
-    engine.setValue(effectGroup, 'effect_selector',  this.shifted ? -1 : 1);
-};
-
-DJ505.EffectModeButton.prototype.shift = function () {
-    this.shifted = true;
-};
-
-DJ505.EffectModeButton.prototype.unshift = function () {
-    this.shifted = false;
 };
 
 DJ505.SyncButton = function (options) {
@@ -829,17 +779,15 @@ DJ505.HotcueButton.prototype.shift = function ()  {
     };
 };
 
-DJ505.LoopButton = function () {
+DJ505.DeckButton = function () {
     components.Button.apply(this, arguments);
 };
 
-DJ505.LoopButton.prototype = Object.create(components.Button.prototype);
+DJ505.DeckButton.prototype = Object.create(components.Button.prototype);
 
-DJ505.LoopButton.prototype.connect = function () {
+DJ505.DeckButton.prototype.connect = function () {
     var deck = script.deckFromGroup(this.group);
-    this.midi = [0x94 + deck - 1, 0x10 + this.number];
-    this.inKey = 'beatloop_'+ Math.pow(2, this.number - 1) + '_activate';
-    this.outKey = this.inKey;
+    this.midi = [0x94 + deck - 1, this.cc];
     components.Button.prototype.connect.apply(this, arguments);
 };
 
@@ -848,18 +796,6 @@ DJ505.SlipModeButton = function () {
     this.inKey = 'slip_enabled';
     this.outKey = 'slip_enabled';
     this.doubleTapTimeout = 500;
-};
-
-DJ505.ManualLoopButton = function () {
-    DJ505.LoopButton.apply(this, arguments);
-};
-
-DJ505.ManualLoopButton.prototype = Object.create(DJ505.LoopButton.prototype);
-
-DJ505.ManualLoopButton.prototype.connect = function () {
-    var deck = script.deckFromGroup(this.group);
-    this.midi = [0x94 + deck - 1, this.cc];
-    components.Button.prototype.connect.call(this);
 };
 
 DJ505.SlipModeButton.prototype = Object.create(components.Button.prototype);
@@ -1077,17 +1013,9 @@ DJ505.ParamButtons.prototype.input = function (channel, control, value, status, 
     var beatloopSize = engine.getValue(group, 'beatloop_size');
 
     switch (control) {
-    case 0x41:                                                 // Loop mode.
-    case 0x42:
-        engine.setValue(group, 'loop_move', isPlus ? beatjumpSize : -beatjumpSize);
-        break;
     case 0x43:                                              // Hot-Cue mode.
     case 0x44:
         script.triggerControl(group, isPlus ? 'beatjump_forward' : 'beatjump_backward');
-        break;
-    case 0x49:                                       // Loop mode (shifted).
-    case 0x4A:
-        engine.setValue(group, 'beatloop_size', isPlus ? beatloopSize*2 : beatloopSize/2);
         break;
     case 0x4B:                                    // Hot-Cue mode (shifted).
     case 0x4C:
@@ -1108,35 +1036,6 @@ DJ505.PadSection = function (deck) {
         this.hotcueButton[i] = new DJ505.HotcueButton({number: i});
     }
 
-    this.loopButton = [];
-
-    for (i = 1; i <= 4; i++) {
-        this.loopButton[i] = new DJ505.LoopButton({
-            number: i
-        });
-    }
-
-    this.loopIn = this.loopButton[5] = new DJ505.ManualLoopButton({
-        cc: 0x15,
-        inKey: 'loop_in',
-        outKey: 'loop_start_position'
-    });
-    this.loopOut = this.loopButton[6] = new DJ505.ManualLoopButton({
-        cc: 0x16,
-        inKey: 'loop_out',
-        outKey: 'loop_end_position',
-    });
-    this.loopToggle = this.loopButton[8] = new DJ505.ManualLoopButton({
-        cc: 0x18,
-        inKey: 'reloop_toggle',
-        outKey: 'loop_enabled'
-    });
-    this.loopExit = this.loopButton[7] = new DJ505.ManualLoopButton({
-        cc: 0x17,
-        inKey: 'reloop_andstop',
-        outKey: 'reloop_andstop'
-    });
-
     this.paramPlusMinus = new DJ505.ParamButtons();
 };
 
@@ -1144,14 +1043,6 @@ DJ505.PadSection.prototype = Object.create(components.ComponentContainer.prototy
 
 DJ505.PadSection.prototype.setState = function (channel, control, value, status, group) {
     switch (value) {
-    case 0x13:                                              // Loop mode button.
-        if (this.state == 'loop') {
-            var isRolling = engine.getValue(group, 'beatlooproll_activate');
-            engine.setValue(group, 'beatlooproll_activate', !isRolling);
-        } else {
-            this.state = 'loop';
-        }
-        return;
     case 0x3:                                            // Hot-cue mode button.
         if (this.state == 'hotcue') {
             var isLooping = engine.getValue(group, 'loop_enabled');
