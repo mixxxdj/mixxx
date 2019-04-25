@@ -94,9 +94,9 @@
 
       <WidgetGroup>
         <Size>17f,5f</Size>
-        <Pos>53,16</Pos>
+        <Pos>53,14</Pos>
         <BackPath>skin:/btn/btn_mix.png</BackPath>
-        <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
+        <Style>QGroupBox { border: 0px solid red; } QWidget { border: 0px solid red; margin: 0; padding: 0; }</Style>
       </WidgetGroup>
 
       <Knob>
@@ -104,7 +104,7 @@
         <Style></Style>
         <NumberStates>63</NumberStates>
         <Path>knobs/knob_rotary_s%1.png</Path>
-        <Pos>49,24</Pos>
+        <Pos>49,21</Pos>
         <Connection>
           <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],mix</ConfigKey>
         </Connection>
@@ -124,7 +124,8 @@
           <Pressed>skin:/btn/btn_fxmix_d+w.svg</Pressed>
           <Unpressed>skin:/btn/btn_fxmix_d+w.svg</Unpressed>
         </State>
-        <Pos>54,49</Pos>
+        <Size>20f,9f</Size>
+        <Pos>52,46</Pos>
         <Connection>
           <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],mix_mode</ConfigKey>
         </Connection>
@@ -132,7 +133,7 @@
 
       <WidgetGroup>
         <Size>29f,5f</Size>
-        <Pos>76,16</Pos>
+        <Pos>76,14</Pos>
         <BackPath>skin:/btn/btn_super.png</BackPath>
         <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
       </WidgetGroup>
@@ -142,7 +143,7 @@
         <Style></Style>
         <NumberStates>63</NumberStates>
         <Path>knobs/knob_rotary_s%1.png</Path>
-        <Pos>77,24</Pos>
+        <Pos>77,21</Pos>
         <Connection>
           <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],super1</ConfigKey>
         </Connection>
