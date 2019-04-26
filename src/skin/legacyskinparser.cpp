@@ -1154,19 +1154,21 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         return dummy;
     }
 
-    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
-    WSpinny* spinny = new WSpinny(m_pParent, channelStr, m_pConfig,
-                                  m_pVCManager, pPlayer);
-    if (!spinny->isValid()) {
-        delete spinny;
+    auto waveformWidgetFactory = WaveformWidgetFactory::instance();
+
+    if (!waveformWidgetFactory->isOpenGlAvailable() &&
+            !waveformWidgetFactory->isOpenGlesAvailable()) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Spinny can not be displayed. Please keep \n unchanged
         dummy->setText(tr("No OpenGL\nsupport."));
         return dummy;
     }
+
+    BaseTrackPlayer* pPlayer = m_pPlayerManager->getPlayer(channelStr);
+    WSpinny* spinny = new WSpinny(m_pParent, channelStr, m_pConfig,
+                                  m_pVCManager, pPlayer);
     commonWidgetSetup(node, spinny);
 
-    auto waveformWidgetFactory = WaveformWidgetFactory::instance();
     connect(waveformWidgetFactory, SIGNAL(renderSpinnies()),
             spinny, SLOT(render()));
     connect(waveformWidgetFactory, SIGNAL(swapSpinnies()),
