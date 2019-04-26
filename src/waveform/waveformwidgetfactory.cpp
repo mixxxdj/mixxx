@@ -8,6 +8,7 @@
 #include <QGLShaderProgram>
 #include <QGuiApplication>
 #include <QWindow>
+#include <QOpenGLFunctions>
 
 #include "waveform/waveformwidgetfactory.h"
 
@@ -145,6 +146,16 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
 
         QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
 
+        auto glFunctions = QOpenGLFunctions();
+
+        glFunctions.initializeOpenGLFunctions();
+        QString versionString(QLatin1String(reinterpret_cast<const char*>(glFunctions.glGetString(GL_VERSION))));
+        QString vendorString(QLatin1String(reinterpret_cast<const char*>(glFunctions.glGetString(GL_VENDOR))));
+        QString rendererString(QLatin1String(reinterpret_cast<const char*>(glFunctions.glGetString(GL_RENDERER))));
+
+        // Either GL or GL ES Version is set, not both.
+        qDebug() << QString("openGLVersionFlags 0x%1").arg(version, 0, 16) << versionString << vendorString << rendererString;
+
         int majorGlVersion = 0;
         int minorGlVersion = 0;
         int majorGlesVersion = 0;
@@ -246,6 +257,10 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_openGLShaderAvailable =
                 QGLShaderProgram::hasOpenGLShaderPrograms(
                         pGlWidget->context());
+
+        if (!rendererString.isEmpty()) {
+            m_openGLVersion += " (" + rendererString + ")";
+        }
     }
 
     evaluateWidgets();
