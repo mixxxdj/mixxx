@@ -12,7 +12,7 @@
   </info>
 <controller id="XboxOneController">
     <scriptfiles>
-      <file filename="common-hid-packet-parser.js" functionprefix=""/>
+      <file filename="lux-hidpp.js" functionprefix=""/>
       <file filename="lodash.mixxx.js" functionprefix=""/>
       <file filename="Microsoft-Xbox-One-Wired-Controller.js" functionprefix="xbc"/>
     </scriptfiles>
