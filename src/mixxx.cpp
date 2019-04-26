@@ -1385,7 +1385,7 @@ void MixxxMainWindow::checkDirectRendering() {
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
-    if (!factory->isOpenGlAvailable() &&
+    if (!factory->isOpenGlAvailable() && !factory->isOpenGlesAvailable() &&
         pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
         QMessageBox::warning(
             0, tr("OpenGL Direct Rendering"),
@@ -1394,10 +1394,7 @@ void MixxxMainWindow::checkDirectRendering() {
                "<b>slow and may tax your CPU heavily</b>. Either update your<br>"
                "configuration to enable direct rendering, or disable<br>"
                "the waveform displays in the Mixxx preferences by selecting<br>"
-               "\"Empty\" as the waveform display in the 'Interface' section.<br><br>"
-               "NOTE: If you use NVIDIA hardware,<br>"
-               "direct rendering may not be present, but you should<br>"
-               "not experience degraded performance."));
+               "\"Empty\" as the waveform display in the 'Interface' section."));
         pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), QString("yes"));
     }
 }

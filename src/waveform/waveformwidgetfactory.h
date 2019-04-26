@@ -24,10 +24,8 @@ class WaveformWidgetAbstractHandle {
 
     WaveformWidgetType::Type getType() const { return m_type;}
     QString getDisplayName() const { return m_displayString;}
-    bool isActive() const { return m_active;}
 
   private:
-    bool m_active;
     WaveformWidgetType::Type m_type;
     QString m_displayString;
 

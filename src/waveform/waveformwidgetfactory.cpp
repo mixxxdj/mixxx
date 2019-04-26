@@ -66,8 +66,7 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
 ///////////////////////////////////////////
 
 WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
-    : m_active(true),
-      m_type(WaveformWidgetType::Count_WaveformwidgetType) {
+    : m_type(WaveformWidgetType::Count_WaveformwidgetType) {
 }
 
 ///////////////////////////////////////////
@@ -690,6 +689,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
     for (int type = 0; type < WaveformWidgetType::Count_WaveformwidgetType; type++) {
         QString widgetName;
         bool useOpenGl;
+        bool useOpenGles;
         bool useOpenGLShaders;
         bool developerOnly;
 
@@ -697,6 +697,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
         case WaveformWidgetType::EmptyWaveform:
             widgetName = EmptyWaveformWidget::getWaveformWidgetName();
             useOpenGl = EmptyWaveformWidget::useOpenGl();
+            useOpenGles = EmptyWaveformWidget::useOpenGles();
             useOpenGLShaders = EmptyWaveformWidget::useOpenGLShaders();
             developerOnly = EmptyWaveformWidget::developerOnly();
             break;
@@ -705,98 +706,129 @@ void WaveformWidgetFactory::evaluateWidgets() {
         case WaveformWidgetType::SoftwareWaveform:
             widgetName = SoftwareWaveformWidget::getWaveformWidgetName();
             useOpenGl = SoftwareWaveformWidget::useOpenGl();
+            useOpenGles = SoftwareWaveformWidget::useOpenGles();
             useOpenGLShaders = SoftwareWaveformWidget::useOpenGLShaders();
             developerOnly = SoftwareWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::HSVWaveform:
             widgetName = HSVWaveformWidget::getWaveformWidgetName();
             useOpenGl = HSVWaveformWidget::useOpenGl();
+            useOpenGles = HSVWaveformWidget::useOpenGles();
             useOpenGLShaders = HSVWaveformWidget::useOpenGLShaders();
             developerOnly = HSVWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::RGBWaveform:
             widgetName = RGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = RGBWaveformWidget::useOpenGl();
+            useOpenGles = RGBWaveformWidget::useOpenGles();
             useOpenGLShaders = RGBWaveformWidget::useOpenGLShaders();
             developerOnly = RGBWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::QtSimpleWaveform:
             widgetName = QtSimpleWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtSimpleWaveformWidget::useOpenGl();
+            useOpenGles = QtSimpleWaveformWidget::useOpenGles();
             useOpenGLShaders = QtSimpleWaveformWidget::useOpenGLShaders();
             developerOnly = QtSimpleWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::QtWaveform:
             widgetName = QtWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtWaveformWidget::useOpenGl();
+            useOpenGles = QtWaveformWidget::useOpenGles();
             useOpenGLShaders = QtWaveformWidget::useOpenGLShaders();
             developerOnly = QtWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLSimpleWaveform:
             widgetName = GLSimpleWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLSimpleWaveformWidget::useOpenGl();
+            useOpenGles = GLSimpleWaveformWidget::useOpenGles();
             useOpenGLShaders = GLSimpleWaveformWidget::useOpenGLShaders();
             developerOnly = GLSimpleWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLFilteredWaveform:
             widgetName = GLWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLWaveformWidget::useOpenGl();
+            useOpenGles = GLWaveformWidget::useOpenGles();
             useOpenGLShaders = GLWaveformWidget::useOpenGLShaders();
             developerOnly = GLWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLSLFilteredWaveform:
             widgetName = GLSLFilteredWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLSLFilteredWaveformWidget::useOpenGl();
+            useOpenGles = GLSLFilteredWaveformWidget::useOpenGles();
             useOpenGLShaders = GLSLFilteredWaveformWidget::useOpenGLShaders();
             developerOnly = GLSLFilteredWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLSLRGBWaveform:
             widgetName = GLSLRGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLSLRGBWaveformWidget::useOpenGl();
+            useOpenGles = GLSLRGBWaveformWidget::useOpenGles();
             useOpenGLShaders = GLSLRGBWaveformWidget::useOpenGLShaders();
             developerOnly = GLSLRGBWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLVSyncTest:
             widgetName = GLVSyncTestWidget::getWaveformWidgetName();
             useOpenGl = GLVSyncTestWidget::useOpenGl();
+            useOpenGles =  GLVSyncTestWidget::useOpenGles();
             useOpenGLShaders = GLVSyncTestWidget::useOpenGLShaders();
             developerOnly = GLVSyncTestWidget::developerOnly();
             break;
         case WaveformWidgetType::GLRGBWaveform:
             widgetName = GLRGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLRGBWaveformWidget::useOpenGl();
+            useOpenGles =  GLVSyncTestWidget::useOpenGles();
             useOpenGLShaders = GLRGBWaveformWidget::useOpenGLShaders();
             developerOnly = GLRGBWaveformWidget::developerOnly();
             break;
         default:
+            DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
             continue;
         }
 
-        if (useOpenGLShaders) {
-            widgetName += " " + tr("(GLSL)");
-        } else if (useOpenGl) {
-            widgetName += " " + tr("(GL)");
-        }
-
-        // add new handle for each available widget type
-        WaveformWidgetAbstractHandle handle;
-        handle.m_displayString = widgetName;
-        handle.m_type = (WaveformWidgetType::Type)type;
-
-        // NOTE: For the moment non active widget are not added to available handle
-        // but it could be useful to have them anyway but not selectable in the combo box
-        if ((useOpenGl && !isOpenGlAvailable()) ||
-                (useOpenGLShaders && !isOpenGlShaderAvailable())) {
-            handle.m_active = false;
-            continue;
+        bool active = true;
+        if (isOpenGlAvailable()) {
+            if (useOpenGles && !useOpenGl) {
+                active = false;
+            } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
+                active = false;
+            } else {
+                if (useOpenGLShaders) {
+                    widgetName += " " + tr("(GLSL)");
+                } else if (useOpenGl) {
+                    widgetName += " " + tr("(GL)");
+                }
+            }
+        } else if (isOpenGlesAvailable()) {
+            if (useOpenGl && !useOpenGles) {
+                active = false;
+            } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
+                active = false;
+            } else {
+                if (useOpenGLShaders) {
+                    widgetName += " " + tr("(GLSL ES)");
+                } else if (useOpenGles) {
+                    widgetName += " " + tr("(GL ES)");
+                }
+            }
+        } else {
+            // No sufficiant GL supptor
+            if (useOpenGles || useOpenGl || useOpenGLShaders) {
+                active = false;
+            }
         }
 
         if (developerOnly && !CmdlineArgs::Instance().getDeveloper()) {
-            handle.m_active = false;
-            continue;
+            active = false;
         }
 
-        m_waveformWidgetHandles.push_back(handle);
+        if (active) {
+            // add new handle for each available widget type
+            WaveformWidgetAbstractHandle handle;
+            handle.m_displayString = widgetName;
+            handle.m_type = (WaveformWidgetType::Type)type;
+
+            m_waveformWidgetHandles.push_back(handle);
+        }
     }
 }
 
