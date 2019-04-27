@@ -257,7 +257,7 @@ DJ505.Deck = function (deckNumbers, offset) {
         sendShifted: true,
         shiftChannel: true,
         shiftOffset: 2,
-        reverseRollOnShift: true,
+        reverseRollOnShift: false,
         input: function (channel, control, value, status, group) {
             components.CueButton.prototype.input.call(this, channel, control, value, status, group);
             if (value) {
@@ -433,13 +433,6 @@ DJ505.Deck = function (deckNumbers, offset) {
             this.send(deckWasVanilla ? 0x7f : 0);
         }
     });
-
-    this.setCurrentDeck = function (deck) {
-        components.Deck.prototype.setCurrentDeck.call(this, deck);
-        DJ505.effectUnit[offset + 1].focusedDeck = script.deckFromGroup(deck);
-        DJ505.effectUnit[offset + 1].reconnect();
-    };
-
 };
 
 DJ505.Deck.prototype = Object.create(components.Deck.prototype);
