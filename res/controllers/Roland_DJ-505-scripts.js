@@ -91,14 +91,14 @@ DJ505.browseEncoder = new components.Encoder({
         switch (status) {
         case 0xBF: // Rotate.
             if (value === 127) {
-                script.triggerControl(group, isShifted ? 'ScrollUp' : 'MoveUp');
+                engine.setValue("[Playlist]", isShifted ? "SelectPlaylist" : "SelectTrackKnob", -1);
             } else if (value === 1) {
-                script.triggerControl(group, isShifted ? 'ScrollDown' : 'MoveDown');
+                engine.setValue("[Playlist]", isShifted ? "SelectPlaylist" : "SelectTrackKnob", 1);
             }
             break;
         case 0x9F: // Push.
             if (value) {
-                script.triggerControl(group, isShifted ? 'MoveFocusBackward' : 'MoveFocusForward');
+                script.triggerControl("[Playlist]", "ToggleSelectedSidebarItem");
             }
         }
     }
