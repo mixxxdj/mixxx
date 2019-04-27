@@ -791,7 +791,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
         case WaveformWidgetType::GLRGBWaveform:
             widgetName = GLRGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLRGBWaveformWidget::useOpenGl();
-            useOpenGles =  GLVSyncTestWidget::useOpenGles();
+            useOpenGles =  GLRGBWaveformWidget::useOpenGles();
             useOpenGLShaders = GLRGBWaveformWidget::useOpenGLShaders();
             developerOnly = GLRGBWaveformWidget::developerOnly();
             break;
