@@ -4,6 +4,8 @@
 class WaveformWidgetType {
   public:
     enum Type {
+        // The order must not be changed because the waveforms are refrerenced
+        // from the sotred preferences by a number.
         EmptyWaveform = 0,
         SoftwareSimpleWaveform, //TODO
         SoftwareWaveform,
@@ -18,6 +20,8 @@ class WaveformWidgetType {
         GLRGBWaveform,
         GLSLRGBWaveform,
         QtVSyncTest,
+        QtHSVWaveform,
+        QtRGBWaveform,
         Count_WaveformwidgetType // Also used as invalid value
     };
 };

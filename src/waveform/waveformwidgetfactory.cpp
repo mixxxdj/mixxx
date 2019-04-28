@@ -17,6 +17,8 @@
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
+#include "waveform/widgets/qthsvwaveformwidget.h"
+#include "waveform/widgets/qtrgbwaveformwidget.h"
 #include "waveform/widgets/glrgbwaveformwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/glsimplewaveformwidget.h"
@@ -820,6 +822,20 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = QtVSyncTestWidget::useOpenGLShaders();
             developerOnly = QtVSyncTestWidget::developerOnly();
             break;
+        case WaveformWidgetType::QtHSVWaveform:
+            widgetName = QtHSVWaveformWidget::getWaveformWidgetName();
+            useOpenGl = QtHSVWaveformWidget::useOpenGl();
+            useOpenGles = QtHSVWaveformWidget::useOpenGles();
+            useOpenGLShaders = QtHSVWaveformWidget::useOpenGLShaders();
+            developerOnly = QtHSVWaveformWidget::developerOnly();
+            break;
+        case WaveformWidgetType::QtRGBWaveform:
+            widgetName = QtRGBWaveformWidget::getWaveformWidgetName();
+            useOpenGl = QtRGBWaveformWidget::useOpenGl();
+            useOpenGles = QtRGBWaveformWidget::useOpenGles();
+            useOpenGLShaders = QtRGBWaveformWidget::useOpenGLShaders();
+            developerOnly = QtRGBWaveformWidget::developerOnly();
+            break;
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
             continue;
@@ -916,6 +932,12 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             break;
         case WaveformWidgetType::QtVSyncTest:
             widget = new QtVSyncTestWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtHSVWaveform:
+            widget = new QtHSVWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtRGBWaveform:
+            widget = new QtRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
         default:
         //case WaveformWidgetType::SoftwareSimpleWaveform: TODO: (vrince)
