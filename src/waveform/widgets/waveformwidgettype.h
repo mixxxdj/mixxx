@@ -17,6 +17,7 @@ class WaveformWidgetType {
         RGBWaveform,
         GLRGBWaveform,
         GLSLRGBWaveform,
+        QtVSyncTest,
         Count_WaveformwidgetType // Also used as invalid value
     };
 };
