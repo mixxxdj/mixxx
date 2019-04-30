@@ -331,12 +331,8 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
     }
 
     if (m_pCurrentTrack) {
-        // Display viewer contour if end of track
+        // Draw background if end of track
         if (m_endOfTrack) {
-            painter.setOpacity(0.8);
-            painter.setPen(QPen(QBrush(m_endOfTrackColor), 1.5 * m_scaleFactor));
-            painter.setBrush(QColor(0,0,0,0));
-            painter.drawRect(rect().adjusted(0,0,-1,-1));
             painter.setOpacity(0.3);
             painter.setBrush(m_endOfTrackColor);
             painter.drawRect(rect().adjusted(1,1,-2,-2));
@@ -386,6 +382,15 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                 } else {
                     painter.fillRect(0, 0, m_iPos, m_waveformImageScaled.height(), playedOverlayColor);
                 }
+            }
+
+            // Draw contour around waveform if end of track
+            if (m_endOfTrack) {
+                painter.setOpacity(0.8);
+                painter.setPen(QPen(QBrush(m_endOfTrackColor), 1.5 * m_scaleFactor));
+                painter.setBrush(QColor(0,0,0,0));
+                painter.drawRect(rect().adjusted(0,0,-1,-1));
+                painter.setOpacity(1);
             }
         }
 
