@@ -194,7 +194,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     // All WaveformMarks
     WaveformMarkSet m_marks;
     // List of visible WaveformMarks sorted by the order they appear in the track
-    QList<WaveformMarkPointer> m_marksToRender;
+    std::map<WaveformMarkSortKey, WaveformMarkPointer> m_marksToRender;
     std::vector<WaveformMarkRange> m_markRanges;
     WaveformMarkLabel m_cuePositionLabel;
     WaveformMarkLabel m_cueTimeDistanceLabel;

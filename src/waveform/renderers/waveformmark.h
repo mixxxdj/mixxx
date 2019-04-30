@@ -92,21 +92,29 @@ class WaveformMark {
 
 typedef QSharedPointer<WaveformMark> WaveformMarkPointer;
 
-inline bool operator<(const WaveformMarkPointer& lhs, const WaveformMarkPointer& rhs) {
-    double leftPosition = lhs->getSamplePosition();
-    int leftHotcue = lhs->getHotCue();
-    double rightPosition = rhs->getSamplePosition();
-    int rightHotcue = rhs->getHotCue();
-    if (leftPosition == rightPosition) {
-        // Sort WaveformMarks without hotcues before those with hotcues;
-        // if both have hotcues, sort numerically by hotcue number.
-        if (leftHotcue == Cue::kNoHotCue && rightHotcue != Cue::kNoHotCue) {
-            return true;
-        } else if (leftHotcue != Cue::kNoHotCue && rightHotcue == Cue::kNoHotCue) {
-            return false;
-        } else {
-            return leftHotcue < rightHotcue;
-        }
+class WaveformMarkSortKey {
+  public:
+    WaveformMarkSortKey(double samplePosition, int hotcue)
+            : m_samplePosition(samplePosition),
+              m_hotcue(hotcue) {
     }
-    return leftPosition < rightPosition;
-}
+
+    bool operator<(const WaveformMarkSortKey& other) const {
+        if (m_samplePosition == other.m_samplePosition) {
+            // Sort WaveformMarks without hotcues before those with hotcues;
+            // if both have hotcues, sort numerically by hotcue number.
+            if (m_hotcue == Cue::kNoHotCue && other.m_hotcue != Cue::kNoHotCue) {
+                return true;
+            } else if (m_hotcue != Cue::kNoHotCue && other.m_hotcue == Cue::kNoHotCue) {
+                return false;
+            } else {
+                return m_hotcue < other.m_hotcue;
+            }
+        }
+        return m_samplePosition < other.m_samplePosition;
+    }
+
+  private:
+    double m_samplePosition;
+    int m_hotcue;
+};
