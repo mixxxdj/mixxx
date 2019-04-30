@@ -14,6 +14,7 @@ Variables:
     <Size>504me,45f</Size>
     <Children>
       <WidgetGroup>
+        <ObjectName>DeckContainerMini</ObjectName>
         <Layout>horizontal</Layout>
         <Size>i,40f</Size>
         <Children>

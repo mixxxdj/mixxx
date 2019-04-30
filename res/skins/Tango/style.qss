@@ -591,6 +591,14 @@ WWidgetGroup {
   border-bottom-left-radius: 2px;
 }
 
+WLabel#TrackBy,
+WLabel#TrackByMini,
+WLabel#TrackComment {
+  color: #888;}
+#DeckContainer WLabel,
+#DeckContainerMini WLabel {
+  color: #b4b4b4;}
+
 #DeckMini_TitlePlayPosKeyBPM {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
   background-color: #333;
@@ -2545,8 +2553,8 @@ WSearchLineEdit {
     margin-bottom: 4px;
   }
 
-QLabel,
-QRadioButton {	/*
+WLibrary QLabel,
+WLibrary QRadioButton {	/*
   background: none;
   Extra declaration for QRadioButton otherwise it shows up with
   wrong colors in Linux with Gnome 	*/

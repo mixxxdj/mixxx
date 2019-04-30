@@ -133,15 +133,19 @@
       <SetVariable name="SpinnyCoverColor_34">purple</SetVariable>
       <SetVariable name="EndOfTrackColor">#EA0085</SetVariable>
       <Style>
-        <!-- All text labels in decks (artist, title, time, BPM, key, ...) -->
-        #Deck1 WLabel, #DeckMini1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
-        #Deck2 WLabel, #DeckMini2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
+        #Deck1 #TrackTitle, #Deck1 #TrackArtist,
+        #DeckMini1 #TrackTitleMini, #DeckMini1 #TrackArtistMini,
+        #Deck2 #TrackTitle, #Deck2 #TrackArtist,
+        #DeckMini2 #TrackTitleMini, #DeckMini2 #TrackArtistMini {
           color: #33a8ff;}
-        #Deck3 WLabel, #DeckMini3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
-        #Deck4 WLabel, #DeckMini4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
+        #Deck3 #TrackTitle, #Deck3 #TrackArtist,
+        #DeckMini3 #TrackTitleMini, #DeckMini3 #TrackArtistMini,
+        #Deck4 #TrackTitle, #Deck4 #TrackArtist,
+        #DeckMini4 #TrackTitleMini, #DeckMini4 #TrackArtistMini {
           color: #d910f0;}
         WLabel#TrackBy, WLabel#TrackByMini, WLabel#TrackComment { color: #888;}
-        <!-- Vinyl Controls toggle is transparent. This sets bg color so it matches those above -->
+        <!-- Vinyl Controls toggle is transparent. This sets bg color so it matches
+            artist/title color defined above -->
         #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #001D33;}
         #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #3A0440;}
       </Style>
@@ -157,13 +161,16 @@
       <!-- Cyan end-of-track warning -->
       <SetVariable name="EndOfTrackColor">#00ffff</SetVariable>
       <Style>
-        #Deck1 WLabel, #DeckMini1 WLabel, #RateContainer1 WLabel, #RateContainer1 WPushButton,
-        #Deck2 WLabel, #DeckMini2 WLabel, #RateContainer2 WLabel, #RateContainer2 WPushButton {
+        #Deck1 #TrackTitle, #Deck1 #TrackArtist,
+        #DeckMini1 #TrackTitleMini, #DeckMini1 #TrackArtistMini,
+        #Deck2 #TrackTitle, #Deck2 #TrackArtist,
+        #DeckMini2 #TrackTitleMini, #DeckMini2 #TrackArtistMini {
           color: #e145f3;}
-        #Deck3 WLabel, #DeckMini3 WLabel, #RateContainer3 WLabel, #RateContainer3 WPushButton,
-        #Deck4 WLabel, #DeckMini4 WLabel, #RateContainer4 WLabel, #RateContainer4 WPushButton {
+        #Deck3 #TrackTitle, #Deck3 #TrackArtist,
+        #DeckMini3 #TrackTitleMini, #DeckMini3 #TrackArtistMini,
+        #Deck4 #TrackTitle, #Deck4 #TrackArtist,
+        #DeckMini4 #TrackTitleMini, #DeckMini4 #TrackArtistMini {
           color: #3693d9;}
-        WLabel#TrackBy, WLabel#TrackByMini, WLabel#TrackComment { color: #888;}
         #DeckOverviewRow1, #DeckOverviewRow2 { background-color: #3A0440;}
         #DeckOverviewRow3, #DeckOverviewRow4 { background-color: #001D33;}
         <!-- brighter, broader library focus borders -->
