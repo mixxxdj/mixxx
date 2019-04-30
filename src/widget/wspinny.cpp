@@ -68,6 +68,9 @@ WSpinny::WSpinny(QWidget* parent, const QString& group,
     qDebug() << "WSpinny(): Created QGLWidget, Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache != nullptr) {

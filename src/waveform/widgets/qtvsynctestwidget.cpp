@@ -19,6 +19,12 @@
 QtVSyncTestWidget::QtVSyncTestWidget(const char* group, QWidget* parent)
     : QGLWidget(parent, SharedGLContext::getWidget()),
       WaveformWidgetAbstract(group) {
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << context()->isValid()
+             << "Sharing:" << context()->isSharing();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
 
     addRenderer<QtVSyncTestRenderer>();
 
@@ -27,12 +33,6 @@ QtVSyncTestWidget::QtVSyncTestWidget(const char* group, QWidget* parent)
 
     setAutoBufferSwap(false);
 
-    qDebug() << "Created QGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
     m_initSuccess = init();
 }
 
