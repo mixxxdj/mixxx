@@ -909,9 +909,6 @@ WLabel#TrackComment {
 #AuxMute[displayValue="1"]:hover {
   border: 1px solid #ff9900;
   }
-  #PlayCue[displayValue="0"]:hover {
-    background-color: rgba(255, 128, 0, 100);
-  }
   #SamplerPlayCue[displayValue="0"]:hover {
     background-color: rgba(255, 128, 0, 210);
   }
