@@ -1415,12 +1415,12 @@ decks, samplers, mic, aux, fx */
 
 #VUMeterMixer {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  margin-top: 4px;
+  margin-top: 3px;
 }
 
 #VUMeterFloating {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
-  padding: 4px 0px 2px 0px;
+  padding: 3px 0px 1px 0px;
   background-color: #252525;
   border-radius: 3px;
 }
@@ -1428,6 +1428,13 @@ decks, samplers, mic, aux, fx */
 #VUMeterSampler {
   padding: 0px 2px 0px 0px;
 }
+
+#VuMeterClippingBorder[highlight="0"] {
+  border: 1px solid transparent;
+  }
+  #VuMeterClippingBorder[highlight="1"] {
+    border: 1px solid #fff;
+  }
 
 #VUMeterLabelMaster {
   image: url(skin:/buttons/btn_master_vu_label.svg) no-repeat center center;
