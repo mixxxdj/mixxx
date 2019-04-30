@@ -121,6 +121,10 @@ Variables:
                         </Connection>
                       </Key>
                     </Children>
+                    <Connection>
+                      <ConfigKey persist="true">[Tango],key_display_match</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
                   </WidgetGroup><!-- /Key Display/Match -->
 
                   <WidgetGroup><!-- BPM display & invisble sync button -->
