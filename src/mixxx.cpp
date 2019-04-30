@@ -23,6 +23,7 @@
 #include <QGLWidget>
 #include <QUrl>
 #include <QtDebug>
+#include <QGLFormat>
 
 #include "analyzer/analyzerqueue.h"
 #include "dialog/dlgabout.h"
@@ -378,6 +379,14 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(47);
 
+    // Before creating the first skin we need to create a QGLWidget so that all
+    // the QGLWidget's we create can use it as a shared QGLContext.
+    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
+        QGLWidget* pContextWidget = new QGLWidget(this);
+        pContextWidget->hide();
+        SharedGLContext::setWidget(pContextWidget);
+    }
+
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
     WaveformWidgetFactory::instance()->setConfig(pConfig);
@@ -410,14 +419,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Connect signals to the menubar. Should be done before we go fullscreen
     // and emit newSkinLoaded.
     connectMenuBar();
-
-    // Before creating the first skin we need to create a QGLWidget so that all
-    // the QGLWidget's we create can use it as a shared QGLContext.
-    if (!CmdlineArgs::Instance().getSafeMode()) {
-        QGLWidget* pContextWidget = new QGLWidget(this);
-        pContextWidget->hide();
-        SharedGLContext::setWidget(pContextWidget);
-    }
 
     launchProgress(63);
 

@@ -1,5 +1,4 @@
 #include <QStringList>
-#include <QScopedPointer>
 #include <QTime>
 #include <QTimer>
 #include <QWidget>
@@ -13,6 +12,7 @@
 #include "waveform/waveformwidgetfactory.h"
 
 #include "control/controlpotmeter.h"
+#include "waveform/sharedglcontext.h"
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
@@ -139,7 +139,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
-        QScopedPointer<QGLWidget> pGlWidget(new QGLWidget()); // create paint device
+        const QGLWidget* pGlWidget = SharedGLContext::getWidget();
         // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
         // and QGLFormat::openGLVersionFlags() returns the maximum known version
         pGlWidget->context()->makeCurrent();
