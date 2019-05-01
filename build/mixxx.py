@@ -219,7 +219,7 @@ class MixxxBuild(object):
         # If match is None we don't know the version.
         if not compiler_dump_version is None:
             version_split = compiler_dump_version.split('.')
-            if len(version_split) > 0:
+            if version_split:
                 self.compiler_major_version = int(version_split[0])
 
         self.virtualize_build_dir()
