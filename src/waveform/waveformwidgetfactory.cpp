@@ -163,8 +163,6 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
             majorVersion = 4;
             minorVersion = 1;
 #endif
-// Flags introduced in Qt 4.7.
-#if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
         } else if (version & QGLFormat::OpenGL_Version_4_0) {
             majorVersion = 4;
             minorVersion = 0;
@@ -177,7 +175,6 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         } else if (version & QGLFormat::OpenGL_Version_3_1) {
             majorVersion = 3;
             minorVersion = 1;
-#endif
         } else if (version & QGLFormat::OpenGL_Version_3_0) {
             majorVersion = 3;
         } else if (version & QGLFormat::OpenGL_Version_2_1) {
