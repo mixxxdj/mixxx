@@ -7,25 +7,6 @@
 #include <QPair>
 #include <QGLWidget>
 
-#if defined(__APPLE__)
-
-#elif defined(__WINDOWS__)
-
-#else
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#ifndef QT_OPENGL_ES_2
-    #include <qx11info_x11.h>
-    #include <GL/glx.h>
-    //#include "GL/glxext.h"
-    // clean up after Xlib.h, which #defines values that conflict with QT.
-    #undef Bool
-    #undef Unsorted
-    #undef None
-    #undef Status
-#endif // QT_OPENGL_ES_2
-#endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#endif
-
 #include "util/performancetimer.h"
 
 class VSyncThread : public QThread {

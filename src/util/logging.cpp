@@ -59,11 +59,7 @@ inline void writeToLog(const QByteArray& message, bool shouldPrint,
 // Debug message handler which outputs to stderr and a logfile, prepending the
 // thread name and log level.
 void MessageHandler(QtMsgType type,
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-                    const char* input) {
-#else
                     const QMessageLogContext&, const QString& input) {
-#endif
     // For "]: " and '\n'.
     size_t baSize = 4;
     const char* tag = nullptr;
@@ -75,13 +71,8 @@ void MessageHandler(QtMsgType type,
         case QtDebugMsg:
             tag = "Debug [";
             baSize += strlen(tag);
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            isControllerDebug = strncmp(input, ControllerDebug::kLogMessagePrefix,
-                                        strlen(ControllerDebug::kLogMessagePrefix)) == 0;
-#else
             isControllerDebug = input.startsWith(QLatin1String(
                 ControllerDebug::kLogMessagePrefix));
-#endif
             shouldPrint = Logging::enabled(LogLevel::Debug) ||
                     isControllerDebug;
             shouldFlush = Logging::flushing(LogLevel::Debug);
@@ -104,12 +95,7 @@ void MessageHandler(QtMsgType type,
             tag = "Critical [";
             baSize += strlen(tag);
             shouldFlush = true;
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            isDebugAssert = strncmp(input, kDebugAssertPrefix,
-                                    strlen(kDebugAssertPrefix)) == 0;
-#else
             isDebugAssert = input.startsWith(QLatin1String(kDebugAssertPrefix));
-#endif
             break;
         case QtFatalMsg:
             tag = "Fatal [";
@@ -127,13 +113,6 @@ void MessageHandler(QtMsgType type,
             ->objectName().toLocal8Bit();
     baSize += threadName.length();
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    const char* inputOffset = input;
-    if (isControllerDebug) {
-        inputOffset += strlen(ControllerDebug::kLogMessagePrefix) + 1;
-    }
-    baSize += strlen(inputOffset);
-#else
     QByteArray input8Bit;
     if (isControllerDebug) {
         input8Bit = input.mid(strlen(ControllerDebug::kLogMessagePrefix) + 1).toLocal8Bit();
@@ -141,7 +120,6 @@ void MessageHandler(QtMsgType type,
         input8Bit = input.toLocal8Bit();
     }
     baSize += input8Bit.size();
-#endif
 
     QByteArray ba;
     ba.reserve(baSize);
@@ -149,11 +127,7 @@ void MessageHandler(QtMsgType type,
     ba += tag;
     ba += threadName;
     ba += "]: ";
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    ba += inputOffset;
-#else
     ba += input8Bit;
-#endif
     ba += '\n';
 
     if (isDebugAssert) {
@@ -167,13 +141,8 @@ void MessageHandler(QtMsgType type,
         // writeToLog case below.
 #ifdef MIXXX_DEBUG_ASSERTIONS_FATAL
         // re-send as fatal.
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        // The "%s" is intentional. See -Werror=format-security.
-        qFatal("%s", input);
-#else
         // The "%s" is intentional. See -Werror=format-security.
         qFatal("%s", input8Bit.constData());
-#endif // QT_VERSION
         return;
 #endif // MIXXX_DEBUG_ASSERTIONS_FATAL
     }
@@ -227,11 +196,7 @@ void Logging::initialize(const QDir& settingsDir,
     g_debugAssertBreak = debugAssertBreak;
 
     // Install the Qt message handler.
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    qInstallMsgHandler(MessageHandler);
-#else
     qInstallMessageHandler(MessageHandler);
-#endif
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
     // Ugly hack around distributions disabling debugging in Qt applications.
@@ -248,11 +213,7 @@ void Logging::initialize(const QDir& settingsDir,
 // static
 void Logging::shutdown() {
     // Reset the Qt message handler to default.
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    qInstallMsgHandler(nullptr);
-#else
     qInstallMessageHandler(nullptr);
-#endif
 
     // Even though we uninstalled the message handler, other threads may have
     // already entered it.

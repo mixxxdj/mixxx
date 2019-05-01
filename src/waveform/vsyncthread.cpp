@@ -11,14 +11,6 @@
 #include "util/math.h"
 #include "waveform/guitick.h"
 
-#if defined(__APPLE__)
-#elif defined(__WINDOWS__)
-#else
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-   extern const QX11Info *qt_x11Info(const QPaintDevice *pd);
-#endif
-#endif
-
 VSyncThread::VSyncThread(QObject* pParent)
         : QThread(pParent),
           m_bDoRendering(true),
@@ -125,16 +117,7 @@ void VSyncThread::swapGl(QGLWidget* glw, int index) {
 #elif defined(__WINDOWS__)
     glw->swapBuffers();
 #else
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#ifdef QT_OPENGL_ES_2
     glw->swapBuffers();
-#else
-    const QX11Info *xinfo = qt_x11Info(glw);
-    glXSwapBuffers(xinfo->display(), glw->winId());
-#endif
-#else
-    glw->swapBuffers();
-#endif // QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #endif
 }
 
