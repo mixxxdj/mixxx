@@ -388,8 +388,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
 
     WaveformWidgetFactory::createInstance(); // takes a long time
-    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
     WaveformWidgetFactory::instance()->setConfig(pConfig);
+    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick);
+
 
     launchProgress(52);
 

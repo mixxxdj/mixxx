@@ -281,12 +281,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 
     bool ok = false;
 
-    int frameRate = m_config->getValueString(ConfigKey("[Waveform]","FrameRate")).toInt(&ok);
-    if (ok) {
-        setFrameRate(frameRate);
-    } else {
-        m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
-    }
+    int frameRate = m_config->getValue(ConfigKey("[Waveform]","FrameRate"), m_frameRate);
+    m_frameRate = math_clamp(frameRate, 1, 120);
+
 
     int endTime = m_config->getValueString(ConfigKey("[Waveform]","EndOfTrackWarningTime")).toInt(&ok);
     if (ok) {
@@ -296,8 +293,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
                 ConfigValue(m_endOfTrackWarningTime));
     }
 
-    int vsync = m_config->getValue(ConfigKey("[Waveform]","VSync"), 0);
-    setVSyncType(vsync);
+    m_vSyncType = m_config->getValue(ConfigKey("[Waveform]","VSync"), 0);
 
     int defaultZoom = m_config->getValueString(ConfigKey("[Waveform]","DefaultZoom")).toInt(&ok);
     if (ok) {
@@ -407,7 +403,9 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
-    m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
+    if (m_vsyncThread) {
+        m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
+    }
 }
 
 void WaveformWidgetFactory::setEndOfTrackWarningTime(int endTime) {
@@ -423,7 +421,9 @@ void WaveformWidgetFactory::setVSyncType(int type) {
     }
 
     m_vSyncType = type;
-    m_vsyncThread->setVSyncType(type);
+    if (m_vsyncThread) {
+        m_vsyncThread->setVSyncType(type);
+    }
 }
 
 int WaveformWidgetFactory::getVSyncType() {
@@ -596,6 +596,8 @@ void WaveformWidgetFactory::render() {
 
     //int paintersSetupTime0 = 0;
     //int paintersSetupTime1 = 0;
+
+    //qDebug() << "render()" << m_vsyncThread->elapsed();
 
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform
@@ -923,12 +925,16 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
 void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick) {
     m_pGuiTick = pGuiTick;
     m_vsyncThread = new VSyncThread(this);
-    m_vsyncThread->start(QThread::NormalPriority);
+
+    m_vsyncThread->setVSyncType(m_vSyncType);
+    m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
 
     connect(m_vsyncThread, SIGNAL(vsyncRender()),
             this, SLOT(render()));
     connect(m_vsyncThread, SIGNAL(vsyncSwap()),
             this, SLOT(swap()));
+
+    m_vsyncThread->start(QThread::NormalPriority);
 }
 
 void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString > >* pList) {

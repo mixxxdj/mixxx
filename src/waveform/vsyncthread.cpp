@@ -32,11 +32,6 @@ VSyncThread::~VSyncThread() {
     //delete m_glw;
 }
 
-void VSyncThread::stop() {
-    m_bDoRendering = false;
-}
-
-
 void VSyncThread::run() {
     Counter droppedFrames("VsyncThread real time error");
     QThread::currentThread()->setObjectName("VSyncThread");
@@ -44,6 +39,7 @@ void VSyncThread::run() {
     m_waitToSwapMicros = m_syncIntervalTimeMicros;
     m_timer.start();
 
+    //qDebug() << "VSyncThread::run()";
     while (m_bDoRendering) {
         if (m_vSyncMode == ST_FREE) {
             // for benchmark only!

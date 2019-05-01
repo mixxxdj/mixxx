@@ -25,7 +25,6 @@ class VSyncThread : public QThread {
     ~VSyncThread();
 
     void run();
-    void stop();
 
     bool waitForVideoSync(QGLWidget* glw);
     int elapsed();
