@@ -1356,6 +1356,8 @@ class MixxxCore(Feature):
             # Default GNU Options
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
+            build.env.Append(CCFLAGS='-Wextra')
+
             if build.compiler_is_clang:
                 # Quiet down Clang warnings about inconsistent use of override
                 # keyword until Qt fixes qt_metacall.
@@ -1371,7 +1373,6 @@ class MixxxCore(Feature):
                 # Enable thread-safety analysis.
                 # http://clang.llvm.org/docs/ThreadSafetyAnalysis.html
                 build.env.Append(CCFLAGS='-Wthread-safety')
-            build.env.Append(CCFLAGS='-Wextra')
 
             # Always generate debugging info.
             build.env.Append(CCFLAGS='-g')
