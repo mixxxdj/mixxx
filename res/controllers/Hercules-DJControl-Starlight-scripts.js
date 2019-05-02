@@ -217,7 +217,7 @@ DJCStarlight.bendWheel = function(channel, control, value, status, group) {
 // Cue master button
 DJCStarlight.cueMaster = function(channel, control, value, status, group) {
     // This button acts as a toggle. Ignore the release.
-    if (value == 0) {
+    if (value === 0) {
         return;
     }
 
