@@ -313,7 +313,7 @@
             if (this.colorIdKey !== undefined) {
                 return color.predefinedColorFromId(engine.getValue(this.group,this.colorIdKey));
             } else {
-                return false;
+                return null;
             }
         },
         output: function(value) {
@@ -332,7 +332,7 @@
                     return;
                 }
                 if (this.sendRGB === undefined) {
-                    print("ERROR: no custom method for sending rgb defined!");
+                    print("ERROR: no function defined for sending RGB colors");
                     return;
                 }
                 this.sendRGB(color);
