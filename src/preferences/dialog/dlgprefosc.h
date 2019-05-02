@@ -1,6 +1,8 @@
 #ifndef DLGPREFOSC_H
 #define DLGPREFOSC_H
 
+#include <memory>
+
 #include <QRadioButton>
 #include <QWidget>
 
@@ -23,7 +25,8 @@ class DlgPrefOsc : public DlgPreferencePage, public Ui::DlgPrefOscDlg  {
     void slotUpdate();
     void slotResetToDefaults();
 
-
+  private slots:
+    void slotError(double error);
 
   signals:
     void apply(const QString &);
@@ -31,6 +34,9 @@ class DlgPrefOsc : public DlgPreferencePage, public Ui::DlgPrefOscDlg  {
   private:
     // Pointer to config object
     UserSettingsPointer m_pConfig;
+
+    std::unique_ptr<ControlObject> m_pUpdateCO;
+    std::unique_ptr<ControlObject> m_pErrorCO;
 };
 
 #endif

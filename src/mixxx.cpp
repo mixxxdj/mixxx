@@ -563,7 +563,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     m_pOscClientManager = new OscClientManager(pConfig, m_pEngine);
 
-    m_pOscServer = new OscServer(pConfig);
+    m_pOscServer = std::make_unique<OscServer>(pConfig);
 
     // this has to be after the OpenGL widgets are created or depending on a
     // million different variables the first waveform may be horribly
@@ -673,7 +673,7 @@ void MixxxMainWindow::finalize() {
 
     delete m_pOscClientManager;
 
-    delete m_pOscServer;
+    // Deleting m_pOscServer is unnecessary as it is a unique_ptr
 
 #ifdef __BROADCAST__
     // BroadcastManager depends on config, engine

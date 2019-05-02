@@ -166,7 +166,7 @@ class MixxxMainWindow : public QMainWindow {
     //oscClientManager
     OscClientManager* m_pOscClientManager;
     // OscServer
-    OscServer* m_pOscServer;
+    std::unique_ptr<OscServer> m_pOscServer;
 #ifdef __BROADCAST__
     BroadcastManager* m_pBroadcastManager;
 #endif

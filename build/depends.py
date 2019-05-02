@@ -436,8 +436,11 @@ class Qt(Dependence):
 
         # Mixxx requires C++11 support. Windows enables C++11 features by
         # default but Clang/GCC require a flag.
+        #
+        # This needs to be changed to -std=c++14 to support std::make_unique
+        # as requested by daschuer (https://github.com/mixxxdj/mixxx/pull/2078#discussion_r272895681)
         if not build.platform_is_windows:
-            build.env.Append(CXXFLAGS='-std=c++11')
+            build.env.Append(CXXFLAGS='-std=c++14')
 
 
 class TestHeaders(Dependence):
