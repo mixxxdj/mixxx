@@ -139,7 +139,7 @@ DJCStarlight.wheelTouch = function(channel, control, value, status, group) {
     var deck = channel;
     if (value > 0) {
         //  Touching the wheel.
-        if (engine.getValue("[Channel" + deck + "]", "play") != 1 || DJCStarlight.scratchButtonState) {
+        if (engine.getValue("[Channel" + deck + "]", "play") !== 1 || DJCStarlight.scratchButtonState) {
             DJCStarlight._scratchEnable(deck);
             DJCStarlight.scratchAction[deck] = DJCStarlight.kScratchActionScratch;
         } else {
@@ -240,7 +240,7 @@ DJCStarlight.cueMaster = function(channel, control, value, status, group) {
 // in the GUI).
 DJCStarlight.cueMix = function(channel, control, value, status, group) {
     // This button acts as a toggle. Ignore the release.
-    if (value == 0) {
+    if (value === 0) {
         return;
     }
 
