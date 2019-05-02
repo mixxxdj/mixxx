@@ -15,7 +15,7 @@ class ControlObjectScript : public ControlProxy {
 
     bool addScriptConnection(const ScriptConnection& conn);
 
-    void removeScriptConnection(const ScriptConnection& conn);
+    bool removeScriptConnection(const ScriptConnection& conn);
 
     // Required for legacy behavior of ControllerEngine::connectControl
     inline int countConnections() {
