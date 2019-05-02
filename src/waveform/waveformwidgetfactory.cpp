@@ -146,6 +146,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
 
         QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
         auto glFunctions = QOpenGLFunctions();
 
         glFunctions.initializeOpenGLFunctions();
@@ -155,6 +156,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
 
         // Either GL or GL ES Version is set, not both.
         qDebug() << QString("openGLVersionFlags 0x%1").arg(version, 0, 16) << versionString << vendorString << rendererString;
+#endif
 
         int majorGlVersion = 0;
         int minorGlVersion = 0;
@@ -258,9 +260,11 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
                 QGLShaderProgram::hasOpenGLShaderPrograms(
                         pGlWidget->context());
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
         if (!rendererString.isEmpty()) {
             m_openGLVersion += " (" + rendererString + ")";
         }
+#endif
     }
 
     evaluateWidgets();
