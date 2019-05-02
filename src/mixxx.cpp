@@ -27,6 +27,7 @@
 #include <QLocale>
 #include <QGuiApplication>
 #include <QInputMethod>
+#include <QGLFormat>
 
 #include "dialog/dlgabout.h"
 #include "preferences/dialog/dlgpreferences.h"
@@ -390,9 +391,18 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(47);
 
+    // Before creating the first skin we need to create a QGLWidget so that all
+    // the QGLWidget's we create can use it as a shared QGLContext.
+    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
+        QGLWidget* pContextWidget = new QGLWidget(this);
+        pContextWidget->hide();
+        SharedGLContext::setWidget(pContextWidget);
+    }
+
     WaveformWidgetFactory::createInstance(); // takes a long time
-    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
     WaveformWidgetFactory::instance()->setConfig(pConfig);
+    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
+
 
     launchProgress(52);
 
@@ -422,14 +432,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // Connect signals to the menubar. Should be done before we go fullscreen
     // and emit newSkinLoaded.
     connectMenuBar();
-
-    // Before creating the first skin we need to create a QGLWidget so that all
-    // the QGLWidget's we create can use it as a shared QGLContext.
-    if (!CmdlineArgs::Instance().getSafeMode()) {
-        QGLWidget* pContextWidget = new QGLWidget(this);
-        pContextWidget->hide();
-        SharedGLContext::setWidget(pContextWidget);
-    }
 
     launchProgress(63);
 
@@ -1406,7 +1408,7 @@ void MixxxMainWindow::checkDirectRendering() {
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
-    if (!factory->isOpenGLAvailable() &&
+    if (!factory->isOpenGlAvailable() && !factory->isOpenGlesAvailable() &&
         pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
         QMessageBox::warning(
             0, tr("OpenGL Direct Rendering"),
@@ -1415,10 +1417,7 @@ void MixxxMainWindow::checkDirectRendering() {
                "<b>slow and may tax your CPU heavily</b>. Either update your<br>"
                "configuration to enable direct rendering, or disable<br>"
                "the waveform displays in the Mixxx preferences by selecting<br>"
-               "\"Empty\" as the waveform display in the 'Interface' section.<br><br>"
-               "NOTE: If you use NVIDIA hardware,<br>"
-               "direct rendering may not be present, but you should<br>"
-               "not experience degraded performance."));
+               "\"Empty\" as the waveform display in the 'Interface' section."));
         pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), QString("yes"));
     }
 }
