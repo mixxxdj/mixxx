@@ -104,10 +104,6 @@ int main(int argc, char * argv[]) {
 
     MixxxApplication app(argc, argv);
 
-    // Support utf-8 for all translation strings. Not supported in Qt 5.
-    // TODO(rryan): Is this needed when we switch to qt5? Some sources claim it
-    // isn't.
-
     SoundSourceProxy::registerSoundSourceProviders();
 
 #ifdef __APPLE__
