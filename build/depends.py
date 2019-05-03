@@ -858,6 +858,7 @@ class MixxxCore(Feature):
                    "src/analyzer/analyzerbeats.cpp",
                    "src/analyzer/analyzerkey.cpp",
                    "src/analyzer/analyzerebur128.cpp",
+                   "src/analyzer/analyzersilence.cpp",
                    "src/analyzer/plugins/analyzersoundtouchbeats.cpp",
                    "src/analyzer/plugins/analyzerqueenmarybeats.cpp",
                    "src/analyzer/plugins/analyzerqueenmarykey.cpp",
@@ -1052,7 +1053,6 @@ class MixxxCore(Feature):
                    "src/library/scanner/recursivescandirectorytask.cpp",
 
                    "src/library/dao/cuedao.cpp",
-                   "src/library/dao/cue.cpp",
                    "src/library/dao/trackdao.cpp",
                    "src/library/dao/playlistdao.cpp",
                    "src/library/dao/libraryhashdao.cpp",
@@ -1150,6 +1150,7 @@ class MixxxCore(Feature):
                    "src/track/beatutils.cpp",
                    "src/track/beats.cpp",
                    "src/track/bpm.cpp",
+                   "src/track/cue.cpp",
                    "src/track/keyfactory.cpp",
                    "src/track/keys.cpp",
                    "src/track/keyutils.cpp",

@@ -1,0 +1,86 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    The deck mixer controls.
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <Size>30f,-1me</Size>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>ButtonContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children>
+          <Template src="skin:left_2state_button.xml">
+            <SetVariable name="TooltipId">pfl</SetVariable>
+            <SetVariable name="ObjectName">DeckPFLButton</SetVariable>
+            <SetVariable name="MinimumSize">22,22</SetVariable>
+            <SetVariable name="MaximumSize">22,22</SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="state_1_text"></SetVariable>
+            <SetVariable name="state_1_pressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="state_1_unpressed">icon/ic_headphones_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,pfl</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <ObjectName>Channel_VU_Container</ObjectName>
+        <Size>22me,50me</Size>
+        <Layout>horizontal</Layout>
+        <Children>
+          <WidgetGroup>
+            <ObjectName>channel_VuMeter_Group</ObjectName>
+            <Layout>horizontal</Layout>
+            <MaximumSize>22,150</MaximumSize>
+            <Children>
+              <Template src="skin:vumeter_v.xml">
+                <SetVariable name="group"><Variable name="group"/></SetVariable>
+                <SetVariable name="side">L</SetVariable>
+                <SetVariable name="tooltip_meter">channel_VuMeterL</SetVariable>
+                <SetVariable name="tooltip_clip">channel_PeakIndicatorL</SetVariable>
+              </Template>
+              <Template src="skin:vumeter_v.xml">
+                <SetVariable name="group"><Variable name="group"/></SetVariable>
+                <SetVariable name="side">R</SetVariable>
+                <SetVariable name="tooltip_meter">channel_VuMeterR</SetVariable>
+                <SetVariable name="tooltip_clip">channel_PeakIndicatorR</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup>
+            <Layout>vertical</Layout>
+            <Size>28f,28min</Size>
+            <Children>
+              <Template src="skin:crossfader_orientation_button.xml">
+                <SetVariable name="Unit">Deck<Variable name="i"/></SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Deere],xfader_buttons_fit</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+        <Connection>
+          <ConfigKey>[Skin],show_xfader</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

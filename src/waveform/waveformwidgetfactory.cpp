@@ -1,5 +1,4 @@
 #include <QStringList>
-#include <QScopedPointer>
 #include <QTime>
 #include <QTimer>
 #include <QWidget>
@@ -8,10 +7,12 @@
 #include <QGLShaderProgram>
 #include <QGuiApplication>
 #include <QWindow>
+#include <QOpenGLFunctions>
 
 #include "waveform/waveformwidgetfactory.h"
 
 #include "control/controlpotmeter.h"
+#include "waveform/sharedglcontext.h"
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
@@ -67,8 +68,7 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
 ///////////////////////////////////////////
 
 WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
-    : m_active(true),
-      m_type(WaveformWidgetType::Count_WaveformwidgetType) {
+    : m_type(WaveformWidgetType::Count_WaveformwidgetType) {
 }
 
 ///////////////////////////////////////////
@@ -100,7 +100,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
         m_zoomSync(false),
         m_overviewNormalized(false),
-        m_openGLAvailable(false),
+        m_openGlAvailable(false),
+        m_openGlesAvailable(false),
         m_openGLShaderAvailable(false),
         m_beatGridAlpha(90),
         m_vsyncThread(NULL),
@@ -140,77 +141,132 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
-        QScopedPointer<QGLWidget> pGlWidget(new QGLWidget()); // create paint device
+        const QGLWidget* pGlWidget = SharedGLContext::getWidget();
         // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
         // and QGLFormat::openGLVersionFlags() returns the maximum known version
         pGlWidget->context()->makeCurrent();
 
         QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
 
-        int majorVersion = 0;
-        int minorVersion = 0;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
+        auto glFunctions = QOpenGLFunctions();
+
+        glFunctions.initializeOpenGLFunctions();
+        QString versionString(QLatin1String(reinterpret_cast<const char*>(glFunctions.glGetString(GL_VERSION))));
+        QString vendorString(QLatin1String(reinterpret_cast<const char*>(glFunctions.glGetString(GL_VENDOR))));
+        QString rendererString(QLatin1String(reinterpret_cast<const char*>(glFunctions.glGetString(GL_RENDERER))));
+
+        // Either GL or GL ES Version is set, not both.
+        qDebug() << QString("openGLVersionFlags 0x%1").arg(version, 0, 16) << versionString << vendorString << rendererString;
+#endif
+
+        int majorGlVersion = 0;
+        int minorGlVersion = 0;
+        int majorGlesVersion = 0;
+        int minorGlesVersion = 0;
         if (version == QGLFormat::OpenGL_Version_None) {
             m_openGLVersion = "None";
-// Flags introduced in Qt 5.2.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
         } else if (version & QGLFormat::OpenGL_Version_4_3) {
-            majorVersion = 4;
-            minorVersion = 3;
+            majorGlVersion = 4;
+            minorGlVersion = 3;
         } else if (version & QGLFormat::OpenGL_Version_4_2) {
-            majorVersion = 4;
-            minorVersion = 2;
+            majorGlVersion = 4;
+            minorGlVersion = 2;
         } else if (version & QGLFormat::OpenGL_Version_4_1) {
-            majorVersion = 4;
-            minorVersion = 1;
-#endif
-// Flags introduced in Qt 4.7.
-#if QT_VERSION >= QT_VERSION_CHECK(4, 7, 0)
+            majorGlVersion = 4;
+            minorGlVersion = 1;
         } else if (version & QGLFormat::OpenGL_Version_4_0) {
-            majorVersion = 4;
-            minorVersion = 0;
+            majorGlVersion = 4;
+            minorGlVersion = 0;
         } else if (version & QGLFormat::OpenGL_Version_3_3) {
-            majorVersion = 3;
-            minorVersion = 3;
+            majorGlVersion = 3;
+            minorGlVersion = 3;
         } else if (version & QGLFormat::OpenGL_Version_3_2) {
-            majorVersion = 3;
-            minorVersion = 2;
+            majorGlVersion = 3;
+            minorGlVersion = 2;
         } else if (version & QGLFormat::OpenGL_Version_3_1) {
-            majorVersion = 3;
-            minorVersion = 1;
-#endif
+            majorGlVersion = 3;
+            minorGlVersion = 1;
         } else if (version & QGLFormat::OpenGL_Version_3_0) {
-            majorVersion = 3;
+            majorGlVersion = 3;
         } else if (version & QGLFormat::OpenGL_Version_2_1) {
-            majorVersion = 2;
-            minorVersion = 1;
+            majorGlVersion = 2;
+            minorGlVersion = 1;
         } else if (version & QGLFormat::OpenGL_Version_2_0) {
-            majorVersion = 2;
-            minorVersion = 0;
+            majorGlVersion = 2;
+            minorGlVersion = 0;
         } else if (version & QGLFormat::OpenGL_Version_1_5) {
-            majorVersion = 1;
-            minorVersion = 5;
+            majorGlVersion = 1;
+            minorGlVersion = 5;
         } else if (version & QGLFormat::OpenGL_Version_1_4) {
-            majorVersion = 1;
-            minorVersion = 4;
+            majorGlVersion = 1;
+            minorGlVersion = 4;
         } else if (version & QGLFormat::OpenGL_Version_1_3) {
-            majorVersion = 1;
-            minorVersion = 3;
+            majorGlVersion = 1;
+            minorGlVersion = 3;
         } else if (version & QGLFormat::OpenGL_Version_1_2) {
-            majorVersion = 1;
-            minorVersion = 2;
+            majorGlVersion = 1;
+            minorGlVersion = 2;
         } else if (version & QGLFormat::OpenGL_Version_1_1) {
-            majorVersion = 1;
-            minorVersion = 1;
+            majorGlVersion = 1;
+            minorGlVersion = 1;
+        } else if (version & QGLFormat::OpenGL_ES_Version_2_0) {
+            m_openGLVersion = "ES 2.0";
+            majorGlesVersion = 2;
+            minorGlesVersion = 0;
+        } else if (version & QGLFormat::OpenGL_ES_CommonLite_Version_1_1) {
+            if (version & QGLFormat::OpenGL_ES_Common_Version_1_1) {
+                m_openGLVersion = "ES 1.1";
+            } else {
+                m_openGLVersion = "ES Common Lite 1.1";
+            }
+            majorGlesVersion = 1;
+            minorGlesVersion = 1;
+        } else if (version & QGLFormat::OpenGL_ES_Common_Version_1_1) {
+            m_openGLVersion = "ES Common Lite 1.1";
+            majorGlesVersion = 1;
+            minorGlesVersion = 1;
+        } else if (version & QGLFormat::OpenGL_ES_CommonLite_Version_1_0) {
+            if (version & QGLFormat::OpenGL_ES_Common_Version_1_0) {
+                m_openGLVersion = "ES 1.0";
+            } else {
+                m_openGLVersion = "ES Common Lite 1.0";
+            }
+            majorGlesVersion = 1;
+            minorGlesVersion = 0;
+        } else if (version & QGLFormat::OpenGL_ES_Common_Version_1_0) {
+            m_openGLVersion = "ES Common Lite 1.0";
+            majorGlesVersion = 1;
+            minorGlesVersion = 0;
+        } else {
+            m_openGLVersion = QString("Unknown 0x%1")
+                .arg(version, 0, 16);
         }
 
-        if (majorVersion != 0) {
-            m_openGLVersion = QString::number(majorVersion) + "." +
-                    QString::number(minorVersion);
+        if (majorGlVersion != 0) {
+            m_openGLVersion = QString::number(majorGlVersion) + "."
+                    + QString::number(minorGlVersion);
+
+            if (majorGlVersion * 100 + minorGlVersion >= 201) {
+                // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
+                m_openGlAvailable = true;
+            }
+        } else {
+            if (majorGlesVersion * 100 + minorGlesVersion >= 200) {
+                // Qt5 requires at least OpenGL 2.1 or OpenGL ES 2.0
+                m_openGlesAvailable = true;
+            }
         }
 
-        m_openGLAvailable = true;
         m_openGLShaderAvailable =
-                QGLShaderProgram::hasOpenGLShaderPrograms(pGlWidget->context());
+                QGLShaderProgram::hasOpenGLShaderPrograms(
+                        pGlWidget->context());
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
+        if (!rendererString.isEmpty()) {
+            m_openGLVersion += " (" + rendererString + ")";
+        }
+#endif
     }
 
     evaluateWidgets();
@@ -231,12 +287,9 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 
     bool ok = false;
 
-    int frameRate = m_config->getValueString(ConfigKey("[Waveform]","FrameRate")).toInt(&ok);
-    if (ok) {
-        setFrameRate(frameRate);
-    } else {
-        m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
-    }
+    int frameRate = m_config->getValue(ConfigKey("[Waveform]","FrameRate"), m_frameRate);
+    m_frameRate = math_clamp(frameRate, 1, 120);
+
 
     int endTime = m_config->getValueString(ConfigKey("[Waveform]","EndOfTrackWarningTime")).toInt(&ok);
     if (ok) {
@@ -246,8 +299,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
                 ConfigValue(m_endOfTrackWarningTime));
     }
 
-    int vsync = m_config->getValue(ConfigKey("[Waveform]","VSync"), 0);
-    setVSyncType(vsync);
+    m_vSyncType = m_config->getValue(ConfigKey("[Waveform]","VSync"), 0);
 
     double defaultZoom = m_config->getValueString(ConfigKey("[Waveform]","DefaultZoom")).toDouble(&ok);
     if (ok) {
@@ -357,7 +409,9 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
-    m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
+    if (m_vsyncThread) {
+        m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
+    }
 }
 
 void WaveformWidgetFactory::setEndOfTrackWarningTime(int endTime) {
@@ -373,7 +427,9 @@ void WaveformWidgetFactory::setVSyncType(int type) {
     }
 
     m_vSyncType = type;
-    m_vsyncThread->setVSyncType(type);
+    if (m_vsyncThread) {
+        m_vsyncThread->setVSyncType(type);
+    }
 }
 
 int WaveformWidgetFactory::getVSyncType() {
@@ -547,6 +603,8 @@ void WaveformWidgetFactory::render() {
     //int paintersSetupTime0 = 0;
     //int paintersSetupTime1 = 0;
 
+    //qDebug() << "render()" << m_vsyncThread->elapsed();
+
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform
             // next rendered frame is displayed after next buffer swap and than after VSync
@@ -625,7 +683,7 @@ void WaveformWidgetFactory::swap() {
                 }
                 QGLWidget* glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
                 if (glw != nullptr) {
-                    VSyncThread::swapGl(glw, i);
+                    glw->swapBuffers();
                 }
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();
             }
@@ -640,7 +698,7 @@ void WaveformWidgetFactory::swap() {
 
 WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
     //default selection
-    if (m_openGLAvailable) {
+    if (m_openGlAvailable) {
         if (m_openGLShaderAvailable) {
             return WaveformWidgetType::GLSLRGBWaveform;
         } else {
@@ -655,6 +713,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
     for (int type = 0; type < WaveformWidgetType::Count_WaveformwidgetType; type++) {
         QString widgetName;
         bool useOpenGl;
+        bool useOpenGles;
         bool useOpenGLShaders;
         bool developerOnly;
 
@@ -662,6 +721,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
         case WaveformWidgetType::EmptyWaveform:
             widgetName = EmptyWaveformWidget::getWaveformWidgetName();
             useOpenGl = EmptyWaveformWidget::useOpenGl();
+            useOpenGles = EmptyWaveformWidget::useOpenGles();
             useOpenGLShaders = EmptyWaveformWidget::useOpenGLShaders();
             developerOnly = EmptyWaveformWidget::developerOnly();
             break;
@@ -670,98 +730,129 @@ void WaveformWidgetFactory::evaluateWidgets() {
         case WaveformWidgetType::SoftwareWaveform:
             widgetName = SoftwareWaveformWidget::getWaveformWidgetName();
             useOpenGl = SoftwareWaveformWidget::useOpenGl();
+            useOpenGles = SoftwareWaveformWidget::useOpenGles();
             useOpenGLShaders = SoftwareWaveformWidget::useOpenGLShaders();
             developerOnly = SoftwareWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::HSVWaveform:
             widgetName = HSVWaveformWidget::getWaveformWidgetName();
             useOpenGl = HSVWaveformWidget::useOpenGl();
+            useOpenGles = HSVWaveformWidget::useOpenGles();
             useOpenGLShaders = HSVWaveformWidget::useOpenGLShaders();
             developerOnly = HSVWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::RGBWaveform:
             widgetName = RGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = RGBWaveformWidget::useOpenGl();
+            useOpenGles = RGBWaveformWidget::useOpenGles();
             useOpenGLShaders = RGBWaveformWidget::useOpenGLShaders();
             developerOnly = RGBWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::QtSimpleWaveform:
             widgetName = QtSimpleWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtSimpleWaveformWidget::useOpenGl();
+            useOpenGles = QtSimpleWaveformWidget::useOpenGles();
             useOpenGLShaders = QtSimpleWaveformWidget::useOpenGLShaders();
             developerOnly = QtSimpleWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::QtWaveform:
             widgetName = QtWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtWaveformWidget::useOpenGl();
+            useOpenGles = QtWaveformWidget::useOpenGles();
             useOpenGLShaders = QtWaveformWidget::useOpenGLShaders();
             developerOnly = QtWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLSimpleWaveform:
             widgetName = GLSimpleWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLSimpleWaveformWidget::useOpenGl();
+            useOpenGles = GLSimpleWaveformWidget::useOpenGles();
             useOpenGLShaders = GLSimpleWaveformWidget::useOpenGLShaders();
             developerOnly = GLSimpleWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLFilteredWaveform:
             widgetName = GLWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLWaveformWidget::useOpenGl();
+            useOpenGles = GLWaveformWidget::useOpenGles();
             useOpenGLShaders = GLWaveformWidget::useOpenGLShaders();
             developerOnly = GLWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLSLFilteredWaveform:
             widgetName = GLSLFilteredWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLSLFilteredWaveformWidget::useOpenGl();
+            useOpenGles = GLSLFilteredWaveformWidget::useOpenGles();
             useOpenGLShaders = GLSLFilteredWaveformWidget::useOpenGLShaders();
             developerOnly = GLSLFilteredWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLSLRGBWaveform:
             widgetName = GLSLRGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLSLRGBWaveformWidget::useOpenGl();
+            useOpenGles = GLSLRGBWaveformWidget::useOpenGles();
             useOpenGLShaders = GLSLRGBWaveformWidget::useOpenGLShaders();
             developerOnly = GLSLRGBWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLVSyncTest:
             widgetName = GLVSyncTestWidget::getWaveformWidgetName();
             useOpenGl = GLVSyncTestWidget::useOpenGl();
+            useOpenGles =  GLVSyncTestWidget::useOpenGles();
             useOpenGLShaders = GLVSyncTestWidget::useOpenGLShaders();
             developerOnly = GLVSyncTestWidget::developerOnly();
             break;
         case WaveformWidgetType::GLRGBWaveform:
             widgetName = GLRGBWaveformWidget::getWaveformWidgetName();
             useOpenGl = GLRGBWaveformWidget::useOpenGl();
+            useOpenGles =  GLRGBWaveformWidget::useOpenGles();
             useOpenGLShaders = GLRGBWaveformWidget::useOpenGLShaders();
             developerOnly = GLRGBWaveformWidget::developerOnly();
             break;
         default:
+            DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
             continue;
         }
 
-        if (useOpenGLShaders) {
-            widgetName += " " + tr("(GLSL)");
-        } else if (useOpenGl) {
-            widgetName += " " + tr("(GL)");
-        }
-
-        // add new handle for each available widget type
-        WaveformWidgetAbstractHandle handle;
-        handle.m_displayString = widgetName;
-        handle.m_type = (WaveformWidgetType::Type)type;
-
-        // NOTE: For the moment non active widget are not added to available handle
-        // but it could be useful to have them anyway but not selectable in the combo box
-        if ((useOpenGl && !isOpenGLAvailable()) ||
-                (useOpenGLShaders && !isOpenGlShaderAvailable())) {
-            handle.m_active = false;
-            continue;
+        bool active = true;
+        if (isOpenGlAvailable()) {
+            if (useOpenGles && !useOpenGl) {
+                active = false;
+            } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
+                active = false;
+            } else {
+                if (useOpenGLShaders) {
+                    widgetName += " " + tr("(GLSL)");
+                } else if (useOpenGl) {
+                    widgetName += " " + tr("(GL)");
+                }
+            }
+        } else if (isOpenGlesAvailable()) {
+            if (useOpenGl && !useOpenGles) {
+                active = false;
+            } else if (useOpenGLShaders && !isOpenGlShaderAvailable()) {
+                active = false;
+            } else {
+                if (useOpenGLShaders) {
+                    widgetName += " " + tr("(GLSL ES)");
+                } else if (useOpenGles) {
+                    widgetName += " " + tr("(GL ES)");
+                }
+            }
+        } else {
+            // No sufficiant GL supptor
+            if (useOpenGles || useOpenGl || useOpenGLShaders) {
+                active = false;
+            }
         }
 
         if (developerOnly && !CmdlineArgs::Instance().getDeveloper()) {
-            handle.m_active = false;
-            continue;
+            active = false;
         }
 
-        m_waveformWidgetHandles.push_back(handle);
+        if (active) {
+            // add new handle for each available widget type
+            WaveformWidgetAbstractHandle handle;
+            handle.m_displayString = widgetName;
+            handle.m_type = (WaveformWidgetType::Type)type;
+
+            m_waveformWidgetHandles.push_back(handle);
+        }
     }
 }
 
@@ -842,12 +933,16 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick, VisualsManager* pVisua
     m_pGuiTick = pGuiTick;
     m_pVisualsManager = pVisualsManager;
     m_vsyncThread = new VSyncThread(this);
-    m_vsyncThread->start(QThread::NormalPriority);
+
+    m_vsyncThread->setVSyncType(m_vSyncType);
+    m_vsyncThread->setSyncIntervalTimeMicros(1e6 / m_frameRate);
 
     connect(m_vsyncThread, SIGNAL(vsyncRender()),
             this, SLOT(render()));
     connect(m_vsyncThread, SIGNAL(vsyncSwap()),
             this, SLOT(swap()));
+
+    m_vsyncThread->start(QThread::NormalPriority);
 }
 
 void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString > >* pList) {

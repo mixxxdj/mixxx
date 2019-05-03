@@ -35,7 +35,7 @@ bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
     return true;
 }
 
-void ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
+bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
     bool success = m_scriptConnections.removeOne(conn);
     if (success) {
         controllerDebug("Disconnected (" +
@@ -53,6 +53,7 @@ void ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
         disconnect(this, SIGNAL(trigger(double, QObject*)),
                 this, SLOT(slotValueChanged(double,QObject*)));
     }
+    return success;
 }
 
 void ControlObjectScript::disconnectAllConnectionsToFunction(const QScriptValue& function) {

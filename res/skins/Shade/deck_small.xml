@@ -5,7 +5,6 @@
     <Layout>horizontal</Layout>
     <Children>
       <WidgetGroup>
-        <ObjectName>EffectLeftBorder</ObjectName>
         <Size>5f,40f</Size>
         <BackPath>style/style_bg_deck_border.png</BackPath>
       </WidgetGroup>
@@ -25,26 +24,20 @@
               </SingletonContainer>
 
               <WidgetGroup>
+                <Size>1f,30f</Size>
+                <BackPath>style/style_component_border.png</BackPath>
+              </WidgetGroup>
+
+              <WidgetGroup>
                 <ObjectName>DeckSmall_TitleTimeKeyBPM</ObjectName>
                 <Size>220me,30f</Size>
                 <Layout>vertical</Layout>
-                <Style>
-                  WWidgetGroup #DeckSmall_TitleTimeKeyBPM { margin: 0px; padding: 0;
-                    background-color: #8d98a3;
-                    border: 1px solid #626f87;
-                    border-width: 0px 1px;
-                  }
-                </Style>
                 <Children>
                   <WidgetGroup>
                     <ObjectName>DeckSmall_TitleTime</ObjectName>
-                    <Size>10me,16f</Size>
+                    <Size>10me,15f</Size>
                     <Layout>horizontal</Layout>
                     <Style>
-                      WWidgetGroup #DeckSmall_TitleTime {
-                        border: 1px solid #626f87;
-                        border-width: 0px 0px 1px 0px;
-                      }
                       QLabel {
                         font: bold 9px sans-serif;
                         font-family: "Open Sans";
@@ -72,6 +65,12 @@
                         <Alignment>left</Alignment>
                         <Elide>right</Elide>
                       </TrackProperty>
+
+                      <WidgetGroup>
+                        <Size>1f,15f</Size>
+                        <BackPath>style/style_component_border.png</BackPath>
+                      </WidgetGroup>
+
                       <NumberPos>
                         <TooltipId>track_time</TooltipId>
                         <Size>55min,15f</Size>
@@ -88,6 +87,11 @@
                         <Alignment>right</Alignment>
                       </NumberPos>
                     </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Size>1min,1f</Size>
+                    <BackPath>style/style_component_border.png</BackPath>
                   </WidgetGroup>
 
                   <!-- Artist / Key /BPM -->
@@ -115,8 +119,6 @@
                           color: #191F24;
                           text-align: left;
                           padding: 0px 2px;
-                          border: 1px solid #626f87;
-                          border-width: 0px 1px 0px 0px;
                         }
                         </Style>
                         <Property>artist</Property>
@@ -127,14 +129,18 @@
                         <Alignment>left</Alignment>
                         <Elide>right</Elide>
                       </TrackProperty>
+
+                      <WidgetGroup>
+                        <Size>1f,14f</Size>
+                        <BackPath>style/style_component_border.png</BackPath>
+                      </WidgetGroup>
+
                       <Key>
                         <TooltipId>visual_key</TooltipId>
                         <Size>30min,14f</Size>
                         <Style>QLabel {
                           text-align: left;
                           padding: 2px 1px 0px 0px;
-                          border: 1px solid #626f87;
-                          border-width: 0px 1px 0px 0px;
                         }
                         </Style>
                         <Channel><Variable name="channum"/></Channel>
@@ -145,6 +151,12 @@
                           <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
                         </Connection>
                       </Key>
+
+                      <WidgetGroup>
+                        <Size>1f,14f</Size>
+                        <BackPath>style/style_component_border.png</BackPath>
+                      </WidgetGroup>
+
                       <NumberBpm>
                         <TooltipId>visual_bpm</TooltipId>
                         <Size>36f,14f</Size>
@@ -164,6 +176,11 @@
 
                 </Children>
               </WidgetGroup><!-- Title / Time // Artist / Key /BPM -->
+
+              <WidgetGroup>
+                <Size>1f,30f</Size>
+                <BackPath>style/style_component_border.png</BackPath>
+              </WidgetGroup>
               
               <!-- Play -->
               <WidgetGroup>

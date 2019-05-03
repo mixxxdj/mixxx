@@ -391,7 +391,7 @@ void WSpinny::swap() {
     if (window == nullptr || !window->isExposed()) {
         return;
     }
-    VSyncThread::swapGl(this, 0);
+    swapBuffers();
 }
 
 

@@ -12,20 +12,25 @@
     <SizePolicy>me,max</SizePolicy>
     <Children>
       <!-- Expanding spacers in between control contexts -->
-      <WidgetGroup><Size>3me,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
       <Template src="skin:loop.xml"/>
-      <WidgetGroup><Size>3me,1min</Size></WidgetGroup>
+      <WidgetGroup><Size>3min,1min</Size></WidgetGroup>
       <Template src="skin:beatjump.xml"/>
-      <WidgetGroup><Size>3me,1min</Size></WidgetGroup>
-      <Template src="skin:hotcue.xml"/>
+      <WidgetGroup><Size>3min,1min</Size></WidgetGroup>
+      <Template src="skin:special_cues.xml"/>
       <WidgetGroup>
-        <Size>3me,1min</Size>
+        <Size>3min,1min</Size>
+        <MaximumSize>12,-1</MaximumSize>
+      </WidgetGroup>
+      <Template src="skin:hotcues.xml"/>
+      <WidgetGroup>
+        <Size>3min,1min</Size>
         <MaximumSize>12,-1</MaximumSize>
       </WidgetGroup>
 
       <WidgetGroup>
         <Layout>vertical</Layout>
-        <MinimumSize>40,42</MinimumSize>
+        <MinimumSize>32,42</MinimumSize>
         <MaximumSize>60, -1</MaximumSize>
         <SizePolicy>me,me</SizePolicy>
         <Children>

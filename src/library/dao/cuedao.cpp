@@ -6,7 +6,7 @@
 #include <QVariant>
 
 #include "library/dao/cuedao.h"
-#include "library/dao/cue.h"
+#include "track/cue.h"
 #include "track/track.h"
 #include "library/queryutil.h"
 #include "util/assert.h"
@@ -48,6 +48,7 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     QSqlRecord record = query.record();
     int id = record.value(record.indexOf("id")).toInt();
     TrackId trackId(record.value(record.indexOf("track_id")));
+    int source = record.value(record.indexOf("source")).toInt();
     int type = record.value(record.indexOf("type")).toInt();
     int position = record.value(record.indexOf("position")).toInt();
     int length = record.value(record.indexOf("length")).toInt();
@@ -55,7 +56,7 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     QString label = record.value(record.indexOf("label")).toString();
     int iColorId = record.value(record.indexOf("color")).toInt();
     PredefinedColorPointer color = Color::kPredefinedColorsSet.predefinedColorFromId(iColorId);
-    CuePointer pCue(new Cue(id, trackId, (Cue::CueType)type, position, length, hotcue, label, color));
+    CuePointer pCue(new Cue(id, trackId, (Cue::CueSource)source, (Cue::CueType)type, position, length, hotcue, label, color));
     m_cues[id] = pCue;
     return pCue;
 }
@@ -140,8 +141,9 @@ bool CueDAO::saveCue(Cue* cue) {
     if (cue->getId() == -1) {
         // New cue
         QSqlQuery query(m_database);
-        query.prepare("INSERT INTO " CUE_TABLE " (track_id, type, position, length, hotcue, label, color) VALUES (:track_id, :type, :position, :length, :hotcue, :label, :color)");
+        query.prepare("INSERT INTO " CUE_TABLE " (track_id, source, type, position, length, hotcue, label, color) VALUES (:track_id, :source, :type, :position, :length, :hotcue, :label, :color)");
         query.bindValue(":track_id", cue->getTrackId().toVariant());
+        query.bindValue(":source", cue->getSource());
         query.bindValue(":type", cue->getType());
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());
@@ -161,6 +163,7 @@ bool CueDAO::saveCue(Cue* cue) {
         QSqlQuery query(m_database);
         query.prepare("UPDATE " CUE_TABLE " SET "
                         "track_id = :track_id,"
+                        "source = :source,"
                         "type = :type,"
                         "position = :position,"
                         "length = :length,"
@@ -170,6 +173,7 @@ bool CueDAO::saveCue(Cue* cue) {
                         " WHERE id = :id");
         query.bindValue(":id", cue->getId());
         query.bindValue(":track_id", cue->getTrackId().toVariant());
+        query.bindValue(":source", cue->getSource());
         query.bindValue(":type", cue->getType());
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());

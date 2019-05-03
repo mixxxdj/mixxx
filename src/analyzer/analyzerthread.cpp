@@ -8,6 +8,7 @@
 #include "analyzer/analyzergain.h"
 #include "analyzer/analyzerebur128.h"
 #include "analyzer/analyzerwaveform.h"
+#include "analyzer/analyzersilence.h"
 
 #include "library/dao/analysisdao.h"
 
@@ -118,6 +119,7 @@ void AnalyzerThread::doRun() {
     const bool enforceBpmDetection = (m_modeFlags & AnalyzerModeFlags::WithBeats) != 0;
     m_analyzers.push_back(std::make_unique<AnalyzerBeats>(m_pConfig, enforceBpmDetection));
     m_analyzers.push_back(std::make_unique<AnalyzerKey>(m_pConfig));
+    m_analyzers.push_back(std::make_unique<AnalyzerSilence>(m_pConfig));
     DEBUG_ASSERT(!m_analyzers.empty());
     kLogger.debug() << "Activated" << m_analyzers.size() << "analyzers";
 
