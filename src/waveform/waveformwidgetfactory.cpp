@@ -115,7 +115,14 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
 
-    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
+    const QGLWidget* pGlWidget = SharedGLContext::getWidget();
+    if (pGlWidget && pGlWidget->isValid()) {
+        // will be false if SafeMode is enabled
+
+        // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
+        // and QGLFormat::openGLVersionFlags() returns the maximum known version
+        pGlWidget->context()->makeCurrent();
+
         QGLFormat glFormat;
         glFormat.setDirectRendering(true);
         glFormat.setDoubleBuffer(true);
@@ -139,23 +146,26 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         glFormat.setRgba(true);
         QGLFormat::setDefaultFormat(glFormat);
 
-        const QGLWidget* pGlWidget = SharedGLContext::getWidget();
-        // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
-        // and QGLFormat::openGLVersionFlags() returns the maximum known version
-        pGlWidget->context()->makeCurrent();
-
         QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
 
+        auto rendererString = QString();
 #if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
-        auto glFunctions = QOpenGLFunctions();
+        if (QOpenGLContext::currentContext()) {
+            auto glFunctions = QOpenGLFunctions();
 
-        glFunctions.initializeOpenGLFunctions();
-        QString versionString(QLatin1String(reinterpret_cast<const char*>(glFunctions.glGetString(GL_VERSION))));
-        QString vendorString(QLatin1String(reinterpret_cast<const char*>(glFunctions.glGetString(GL_VENDOR))));
-        QString rendererString(QLatin1String(reinterpret_cast<const char*>(glFunctions.glGetString(GL_RENDERER))));
+            glFunctions.initializeOpenGLFunctions();
+            QString versionString(QLatin1String(
+                    reinterpret_cast<const char*>(glFunctions.glGetString(GL_VERSION))));
+            QString vendorString(QLatin1String(
+                    reinterpret_cast<const char*>(glFunctions.glGetString(GL_VENDOR))));
+            rendererString = QString(QLatin1String(
+                    reinterpret_cast<const char*>(glFunctions.glGetString(GL_RENDERER))));
 
-        // Either GL or GL ES Version is set, not both.
-        qDebug() << QString("openGLVersionFlags 0x%1").arg(version, 0, 16) << versionString << vendorString << rendererString;
+            // Either GL or GL ES Version is set, not both.
+            qDebug() << QString("openGLVersionFlags 0x%1").arg(version, 0, 16) << versionString << vendorString << rendererString;
+        } else {
+            qDebug() << "QOpenGLContext::currentContext() retuns nullptr";
+        }
 #endif
 
         int majorGlVersion = 0;
@@ -260,11 +270,9 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
                 QGLShaderProgram::hasOpenGLShaderPrograms(
                         pGlWidget->context());
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
         if (!rendererString.isEmpty()) {
             m_openGLVersion += " (" + rendererString + ")";
         }
-#endif
     }
 
     evaluateWidgets();
