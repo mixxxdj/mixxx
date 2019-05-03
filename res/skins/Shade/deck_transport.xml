@@ -454,13 +454,13 @@
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_hotcues_plus.png</Pressed>
-          <Unpressed>skin:/btn/btn_hotcues_plus.png</Unpressed>
+          <Pressed>skin:/btn/btn_hotcues.png</Pressed>
+          <Unpressed>skin:/btn/btn_hotcues.png</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Pressed>skin:/btn/btn_hotcues_minus.png</Pressed>
-          <Unpressed>skin:/btn/btn_hotcues_minus.png</Unpressed>
+          <Pressed>skin:/btn/btn_intro_cues.png</Pressed>
+          <Unpressed>skin:/btn/btn_intro_cues.png</Unpressed>
         </State>
         <Pos>196,0</Pos>
         <Connection>
