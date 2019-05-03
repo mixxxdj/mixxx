@@ -166,11 +166,11 @@ WTime {
   background-color: #1e1e1e;
 }
 
-#VisualizationContainer {
-  border: 1px solid #585858;
-  border-top: 0px;
-  border-right: 0px;
-  border-left: 0px;
+WSpinny {/*
+  This produces artifacts in spinny bg
+  background-color: rgba(1, 1, 1, 10);
+  This makes no difference, the spinny loads some default grey bg
+  background: none;*/
 }
 
 #ClockWidget {
@@ -209,7 +209,7 @@ WTime {
   }
 
   #MixerContainer {
-    qproperty-layoutAlignment: 'AlignLeft | AlignBottom';
+    qproperty-layoutAlignment: 'AlignLeft | AlignTop';
     background-color: #1e1e1e;
     padding-top: 3px;
   }
@@ -506,6 +506,7 @@ WEffectButtonParameter*/
 }
 
 #VinylButton,
+#SpecialCueButton,
 #FxAssignButton,
 #GuiToggleButton,
 #BroadcastButton,
@@ -527,6 +528,7 @@ WEffectButtonParameter*/
   }
 
 #VinylButton[displayValue="0"],
+#SpecialCueButton[displayValue="0"],
 #BroadcastButton[displayValue="0"],
 #SettingsButton[displayValue="0"],
 #GuiToggleButton[displayValue="0"],
@@ -538,6 +540,7 @@ WEffectButtonParameter*/
 }
 
 #VinylButton[displayValue="1"],
+#SpecialCueButton[displayValue="1"],
 #VinylButton[displayValue="2"],
 #GuiToggleButton[displayValue="1"],
 #GuiToggleButton[displayValue="2"],
@@ -554,6 +557,10 @@ WEffectButtonParameter*/
 
 #SettingsButton[displayValue="0"] {
   image: url(skin:/buttons/btn_settings_off.svg) no-repeat left center;
+}
+
+#SpecialCueButton {
+  margin: 0px 2px 2px 0px;
 }
 
 #SettingsButton[displayValue="1"] {

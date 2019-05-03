@@ -409,7 +409,7 @@ namespace {
         pTrackLibraryQuery->bindValue(":rating", track.getRating());
         pTrackLibraryQuery->bindValue(":bitrate", track.getBitrate());
         pTrackLibraryQuery->bindValue(":samplerate", track.getSampleRate());
-        pTrackLibraryQuery->bindValue(":cuepoint", track.getCuePoint());
+        pTrackLibraryQuery->bindValue(":cuepoint", track.getCuePoint().getPosition());
         pTrackLibraryQuery->bindValue(":bpm_lock", track.isBpmLocked()? 1 : 0);
         pTrackLibraryQuery->bindValue(":replaygain", track.getReplayGain().getRatio());
         pTrackLibraryQuery->bindValue(":replaygain_peak", track.getReplayGain().getPeak());
@@ -467,7 +467,9 @@ namespace {
     bool insertTrackLibrary(QSqlQuery* pTrackLibraryInsert, const Track& track, DbId trackLocationId, QDateTime trackDateAdded) {
         bindTrackLibraryValues(pTrackLibraryInsert, track);
 
-        DEBUG_ASSERT(track.getDateAdded().isNull());
+        if (!track.getDateAdded().isNull()) {
+            qDebug() << "insertTrackLibrary: Track was added" << "track.getDateAdded()" << "and purged";
+        }
         pTrackLibraryInsert->bindValue(":datetime_added", trackDateAdded);
 
         // Written only once upon insert
@@ -640,7 +642,7 @@ TrackPointer TrackDAO::addTracksAddFile(const QFileInfo& fileInfo, bool unremove
         qDebug() << "TrackDAO::addTracksAddFile:"
                 << "Track has already been added to the database"
                 << oldTrackId;
-        return TrackPointer();
+        return pTrack;
     }
     // Keep the GlobalTrackCache locked until the id of the Track
     // object is known and has been updated in the cache.
@@ -857,6 +859,7 @@ bool TrackDAO::onPurgingTracks(
 
     QStringList idList;
     for (const auto& trackId: trackIds) {
+        GlobalTrackCacheLocker().purgeTrackId(trackId);
         idList.append(trackId.toString());
     }
     QString idListJoined = idList.join(",");
@@ -905,12 +908,14 @@ bool TrackDAO::onPurgingTracks(
         }
     }
     {
-        // mark LibraryHash with needs_verification and invalidate the hash
+        // invalidate the hash in LibraryHash,
         // in case the file was not deleted to detect it on a rescan
+        // Note: -1 is used as return value for missing entries,
+        // needs_verification is a temporary coloumn used during the scan only.
         // TODO(XXX) delegate to libraryHashDAO
         FwdSqlQuery query(m_database, QString(
-                "UPDATE LibraryHashes SET needs_verification=1, "
-                "hash=-1 WHERE directory_path in (%1)").arg(
+                "UPDATE LibraryHashes SET "
+                "hash=-2 WHERE directory_path in (%1)").arg(
                         SqlStringFormatter::formatList(m_database, directories)));
         if (query.hasError() || !query.execPrepared()) {
             return false;
@@ -1031,7 +1036,7 @@ bool setTrackSampleRate(const QSqlRecord& record, const int column,
 
 bool setTrackCuePoint(const QSqlRecord& record, const int column,
                       TrackPointer pTrack) {
-    pTrack->setCuePoint(record.value(column).toDouble());
+    pTrack->setCuePoint(CuePosition(record.value(column).toDouble(), Cue::MANUAL));
     return false;
 }
 

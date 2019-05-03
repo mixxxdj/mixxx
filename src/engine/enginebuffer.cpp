@@ -809,7 +809,7 @@ void EngineBuffer::processTrackLocked(
     // (natural vinyl Pitch) when keylock is disabled and enabled.
     //
     // With preference mode KeylockMode = kCurrentKey
-    // the speedSliderPitchRatio is not reseted when keylock is enabled.
+    // the speedSliderPitchRatio is not reset when keylock is enabled.
     // This mode allows to enable keylock
     // while the track is already played. You can reset to the tracks
     // original pitch by resetting the pitch knob to center. When disabling
@@ -1194,7 +1194,7 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    VERIFY_OR_DEBUG_ASSERT(m_trackSampleRateOld && m_trackSamplesOld) {
+    VERIFY_OR_DEBUG_ASSERT(m_trackSampleRateOld && m_tempo_ratio_old) {
         // no track loaded, function not called in this case
         return;
     }

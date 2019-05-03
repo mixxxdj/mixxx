@@ -93,6 +93,7 @@ class WTrackTableView : public WLibraryTableView {
 
     void slotTrackInfoClosed();
     void slotTagFetcherClosed();
+    void keyNotationChanged();
 
   private:
 
@@ -215,6 +216,7 @@ class WTrackTableView : public WLibraryTableView {
     bool m_bPlaylistMenuLoaded;
     bool m_bCrateMenuLoaded;
     ControlProxy* m_pCOTGuiTick;
+    ControlProxy* m_pKeyNotation;
 };
 
 #endif

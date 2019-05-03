@@ -27,14 +27,14 @@ Variables:
         <Children>
           <WidgetGroup><Size>0f,19f</Size></WidgetGroup>
           <Label>
-            <ObjectName>UnconfiguredHeadphoneTextPrevDeck</ObjectName>
+            <ObjectName>UnconfiguredHeadphonePrevDeck</ObjectName>
             <SizePolicy>me,min</SizePolicy>
             <Text>No Headphone</Text>
           </Label>
           <Label>
-            <ObjectName>UnconfiguredHeadphoneTextPrevDeck</ObjectName>
+            <ObjectName>UnconfiguredHeadphonePrevDeck</ObjectName>
             <SizePolicy>me,min</SizePolicy>
-            <Text>device configured!</Text>
+            <Text>device configured</Text>
           </Label>
           <WidgetGroup><Size>0f,0me</Size></WidgetGroup>
         </Children>

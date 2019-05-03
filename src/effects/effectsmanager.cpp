@@ -144,43 +144,43 @@ bool EffectsManager::isEQ(const QString& effectId) const {
 }
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {
-    if (m_availableEffectManifests.isEmpty()) {
+    if (m_visibleEffectManifests.isEmpty()) {
         return QString();
     }
     if (effectId.isNull()) {
-        return m_availableEffectManifests.first()->id();
+        return m_visibleEffectManifests.first()->id();
     }
 
     int index;
-    for (index = 0; index < m_availableEffectManifests.size(); ++index) {
-        if (effectId == m_availableEffectManifests.at(index)->id()) {
+    for (index = 0; index < m_visibleEffectManifests.size(); ++index) {
+        if (effectId == m_visibleEffectManifests.at(index)->id()) {
             break;
         }
     }
-    if (++index >= m_availableEffectManifests.size()) {
+    if (++index >= m_visibleEffectManifests.size()) {
         index = 0;
     }
-    return m_availableEffectManifests.at(index)->id();
+    return m_visibleEffectManifests.at(index)->id();
 }
 
 QString EffectsManager::getPrevEffectId(const QString& effectId) {
-    if (m_availableEffectManifests.isEmpty()) {
+    if (m_visibleEffectManifests.isEmpty()) {
         return QString();
     }
     if (effectId.isNull()) {
-        return m_availableEffectManifests.last()->id();
+        return m_visibleEffectManifests.last()->id();
     }
 
     int index;
-    for (index = 0; index < m_availableEffectManifests.size(); ++index) {
-        if (effectId == m_availableEffectManifests.at(index)->id()) {
+    for (index = 0; index < m_visibleEffectManifests.size(); ++index) {
+        if (effectId == m_visibleEffectManifests.at(index)->id()) {
             break;
         }
     }
     if (--index < 0) {
-        index = m_availableEffectManifests.size() - 1;
+        index = m_visibleEffectManifests.size() - 1;
     }
-    return m_availableEffectManifests.at(index)->id();
+    return m_visibleEffectManifests.at(index)->id();
 }
 
 void EffectsManager::getEffectManifestAndBackend(

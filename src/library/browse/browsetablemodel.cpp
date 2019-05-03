@@ -10,6 +10,7 @@
 #include "library/browse/browsethread.h"
 #include "library/previewbuttondelegate.h"
 #include "mixer/playerinfo.h"
+#include "mixer/playermanager.h"
 #include "control/controlobject.h"
 #include "library/dao/trackdao.h"
 #include "util/dnd.h"

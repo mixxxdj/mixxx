@@ -731,6 +731,38 @@ void Tooltips::addStandardTooltips() {
             << tr("Star Rating")
             << tr("Assign ratings to individual tracks by clicking the stars.");
 
+    // Intro & outro cues
+    add("show_intro_outro_cues")
+            << tr("Show/hide intro & outro markers and associated buttons.");
+
+    add("intro_start")
+            << tr("Intro Start Marker")
+            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+            << tr("If marker is not set, sets the marker to the current play position.")
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+    add("intro_end")
+            << tr("Intro End Marker")
+            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+            << tr("If marker is not set, sets the marker to the current play position.")
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+    add("outro_start")
+            << tr("Outro Start Marker")
+            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+            << tr("If marker is not set, sets the marker to the current play position.")
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+    add("outro_end")
+            << tr("Outro End Marker")
+            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+            << tr("If marker is not set, sets the marker to the current play position.")
+            << quantizeSnap
+            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
     // Effect Unit Controls
     add("EffectUnit_clear")
             << tr("Clear Unit")

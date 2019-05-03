@@ -226,6 +226,7 @@ TrackPointer BaseTrackPlayerImpl::unloadTrack() {
         }
         if (!pLoopCue) {
             pLoopCue = m_pLoadedTrack->createAndAddCue();
+            pLoopCue->setSource(Cue::MANUAL);
             pLoopCue->setType(Cue::LOOP);
         }
         pLoopCue->setPosition(loopStart);

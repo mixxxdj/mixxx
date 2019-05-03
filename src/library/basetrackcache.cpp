@@ -9,6 +9,7 @@
 #include "track/keyutils.h"
 #include "track/globaltrackcache.h"
 #include "util/performancetimer.h"
+#include "util/compatibility.h"
 
 namespace {
 
