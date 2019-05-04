@@ -78,6 +78,8 @@ public:
     void relocateCachedTracks(
             GlobalTrackCacheRelocator* /*nullable*/ pRelocator) const;
 
+    void purgeTrackId(const TrackId& trackId);
+
     // Enforces the eviction of all cached tracks including invocation
     // of the callback and disables the cache permanently.
     void deactivateCache() const;
@@ -215,6 +217,8 @@ private:
             const TrackPointer& strongPtr,
             TrackRef trackRef,
             TrackId trackId);
+
+    void purgeTrackId(TrackId trackId);
 
     bool evict(Track* plainPtr);
     bool isEvicted(Track* plainPtr) const;

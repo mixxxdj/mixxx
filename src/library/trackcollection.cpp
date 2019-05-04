@@ -11,7 +11,6 @@
 
 #include "util/assert.h"
 
-
 namespace {
     mixxx::Logger kLogger("TrackCollection");
 } // anonymous namespace

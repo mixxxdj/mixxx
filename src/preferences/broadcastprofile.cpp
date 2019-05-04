@@ -16,7 +16,6 @@ using namespace QKeychain;
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
-#include "util/compatibility.h"
 #include "util/xml.h"
 #include "util/memory.h"
 #include "util/logger.h"

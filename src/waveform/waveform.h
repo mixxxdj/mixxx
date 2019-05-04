@@ -11,7 +11,6 @@
 #include <QMutexLocker>
 
 #include "util/class.h"
-#include "util/compatibility.h"
 
 enum FilterIndex { Low = 0, Mid = 1, High = 2, FilterCount = 3};
 enum ChannelIndex { Left = 0, Right = 1, ChannelCount = 2};

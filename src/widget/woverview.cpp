@@ -22,6 +22,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "mixer/playermanager.h"
 #include "woverview.h"
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
@@ -102,6 +103,10 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
             pMark->connectSamplePositionChanged(this,
                     &WOverview::onMarkChanged);
         }
+        if (pMark->hasVisible()) {
+            pMark->connectVisibleChanged(this,
+                    &WOverview::onMarkChanged);
+        }
     }
 
     QDomNode child = node.firstChild();
@@ -112,6 +117,10 @@ void WOverview::setup(const QDomNode& node, const SkinContext& context) {
 
             if (markRange.m_markEnabledControl) {
                 markRange.m_markEnabledControl->connectValueChanged(
+                        this, &WOverview::onMarkRangeChange);
+            }
+            if (markRange.m_markVisibleControl) {
+                markRange.m_markVisibleControl->connectValueChanged(
                         this, &WOverview::onMarkRangeChange);
             }
             if (markRange.m_markStartPointControl) {
@@ -322,12 +331,8 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
     }
 
     if (m_pCurrentTrack) {
-        // Display viewer contour if end of track
+        // Draw background if end of track
         if (m_endOfTrack) {
-            painter.setOpacity(0.8);
-            painter.setPen(QPen(QBrush(m_endOfTrackColor), 1.5 * m_scaleFactor));
-            painter.setBrush(QColor(0,0,0,0));
-            painter.drawRect(rect().adjusted(0,0,-1,-1));
             painter.setOpacity(0.3);
             painter.setBrush(m_endOfTrackColor);
             painter.drawRect(rect().adjusted(1,1,-2,-2));
@@ -380,6 +385,15 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             }
         }
 
+        // Draw contour around waveform if end of track
+        if (m_endOfTrack) {
+            painter.setOpacity(0.8);
+            painter.setPen(QPen(QBrush(m_endOfTrackColor), 1.5 * m_scaleFactor));
+            painter.setBrush(QColor(0,0,0,0));
+            painter.drawRect(rect().adjusted(0,0,-1,-1));
+            painter.setOpacity(1);
+        }
+
         if ((m_analyzerProgress >= kAnalyzerProgressNone) &&
             (m_analyzerProgress < kAnalyzerProgressDone)) {
             // Paint analyzer Progress
@@ -427,16 +441,21 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             const float gain = static_cast<float>(length() - 2) / trackSamples;
 
             // Draw range (loop)
-            for (auto&& currentMarkRange : m_markRanges) {
+            for (auto&& markRange: m_markRanges) {
                 // If the mark range is not active we should not draw it.
-                if (!currentMarkRange.active()) {
+                if (!markRange.active()) {
+                    continue;
+                }
+
+                // If the mark range is not visible we should not draw it.
+                if (!markRange.visible()) {
                     continue;
                 }
 
                 // Active mark ranges by definition have starts/ends that are not
                 // disabled.
-                const double startValue = currentMarkRange.start();
-                const double endValue = currentMarkRange.end();
+                const double startValue = markRange.start();
+                const double endValue = markRange.end();
 
                 const float startPosition = offset + startValue * gain;
                 const float endPosition = offset + endValue * gain;
@@ -445,14 +464,14 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     continue;
                 }
 
-                if (currentMarkRange.enabled()) {
+                if (markRange.enabled()) {
                     painter.setOpacity(0.4);
-                    painter.setPen(currentMarkRange.m_activeColor);
-                    painter.setBrush(currentMarkRange.m_activeColor);
+                    painter.setPen(markRange.m_activeColor);
+                    painter.setBrush(markRange.m_activeColor);
                 } else {
                     painter.setOpacity(0.2);
-                    painter.setPen(currentMarkRange.m_disabledColor);
-                    painter.setBrush(currentMarkRange.m_disabledColor);
+                    painter.setPen(markRange.m_disabledColor);
+                    painter.setBrush(markRange.m_disabledColor);
                 }
 
                 // let top and bottom of the rect out of the widget
@@ -478,6 +497,11 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             for (const auto& currentMark: m_marks) {
                 const WaveformMarkProperties& markProperties = currentMark->getProperties();
                 if (currentMark->isValid() && currentMark->getSamplePosition() >= 0.0) {
+                    // Marks are visible by default.
+                    if (currentMark->hasVisible() && !currentMark->isVisible()) {
+                        continue;
+                    }
+
                     //const float markPosition = 1.0 +
                     //        (currentMark.m_pointControl->get() / (float)m_trackSamplesControl->get()) * (float)(width()-2);
                     const float markPosition = offset + currentMark->getSamplePosition() * gain;

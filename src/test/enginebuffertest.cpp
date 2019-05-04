@@ -404,6 +404,7 @@ TEST_F(EngineBufferE2ETest, CueGotoAndPlayTest) {
     // Be sure, cue seek is not overwritten by quantization seek
     // Bug #1504503
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "cue_point"), 0.0);
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             1000, EngineBuffer::SEEK_EXACT);
     ProcessBuffer();

@@ -391,7 +391,7 @@ void WSpinny::swap() {
     if (window == nullptr || !window->isExposed()) {
         return;
     }
-    VSyncThread::swapGl(this, 0);
+    swapBuffers();
 }
 
 
@@ -675,6 +675,6 @@ void WSpinny::dragEnterEvent(QDragEnterEvent* event) {
     DragAndDropHelper::handleTrackDragEnterEvent(event, m_group, m_pConfig);
 }
 
-void WSpinny::dropEvent(QDropEvent * event) {
+void WSpinny::dropEvent(QDropEvent* event) {
     DragAndDropHelper::handleTrackDropEvent(event, *this, m_group, m_pConfig);
 }

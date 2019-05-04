@@ -45,6 +45,12 @@ WaveformMarkRange::WaveformMarkRange(
         DEBUG_ASSERT(!m_markEnabledControl); // has not been created yet
         m_markEnabledControl = std::make_unique<ControlProxy>(group, enabledControl);
     }
+    QString visibilityControl = context.selectString(node, "VisibilityControl");
+    if (!visibilityControl.isEmpty()) {
+        DEBUG_ASSERT(!m_markVisibleControl); // has not been created yet
+        ConfigKey key = ConfigKey::parseCommaSeparated(visibilityControl);
+        m_markVisibleControl = std::make_unique<ControlProxy>(key);
+    }
 }
 
 bool WaveformMarkRange::active() const {
@@ -57,6 +63,12 @@ bool WaveformMarkRange::enabled() const {
     // Default to enabled if there is no enabled control.
     return !m_markEnabledControl || !m_markEnabledControl->valid() ||
             m_markEnabledControl->get() > 0.0;
+}
+
+bool WaveformMarkRange::visible() const {
+    // Default to visible if there is no visible control.
+    return !m_markVisibleControl || !m_markVisibleControl->valid() ||
+            m_markVisibleControl->get() > 0.0;
 }
 
 double WaveformMarkRange::start() const {

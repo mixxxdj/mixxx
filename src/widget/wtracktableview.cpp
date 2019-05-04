@@ -124,6 +124,10 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCOTGuiTick = new ControlProxy("[Master]", "guiTick50ms", this);
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
+    m_pKeyNotation = new ControlProxy("[Library]", "key_notation", this);
+    m_pKeyNotation->connectValueChanged(this, &WTrackTableView::keyNotationChanged);
+
+
     connect(this, SIGNAL(scrollValueChanged(int)),
             this, SLOT(slotScrollValueChanged(int)));
 
@@ -931,8 +935,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA)) {
-        // FIXME: Why are clearning the main cue and loop not working?
-        //m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
+        // FIXME: Why is clearing the loop not working?
+        m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
         m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
         //m_pClearMetadataMenu->addAction(m_pClearLoopAction);
         m_pClearMetadataMenu->addAction(m_pClearKeyAction);
@@ -1990,3 +1994,9 @@ void WTrackTableView::restoreCurrentVScrollBarPos()
 {
     restoreVScrollBarPos(getTrackModel());
 }
+
+void WTrackTableView::keyNotationChanged()
+{
+    QWidget::update();
+}
+

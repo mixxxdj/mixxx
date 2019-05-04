@@ -772,7 +772,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
             inKey: 'beatloop_8_toggle',
             outKey: 'beatloop_8_enabled',
         })),
-        
+
         roll1: new components.Button(auto_loop_base(0x1C, {
             inKey: 'beatlooproll_0.0625_activate',
             outKey: 'beatloop_0.0625_enabled',
@@ -1350,7 +1350,7 @@ MixtrackPlatinum.wheelTurn = function (channel, control, value, status, group) {
     }
 };
 
-MixtrackPlatinum.wheel = []; // initialzed in the MixtrackPlatinum.init() function
+MixtrackPlatinum.wheel = []; // initialized in the MixtrackPlatinum.init() function
 MixtrackPlatinum.wheelToggle = function (channel, control, value, status, group) {
     if (value != 0x7F) return;
     MixtrackPlatinum.wheel[channel] = !MixtrackPlatinum.wheel[channel];

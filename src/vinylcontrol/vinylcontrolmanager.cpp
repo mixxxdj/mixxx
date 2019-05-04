@@ -4,17 +4,18 @@
  * @date April 15, 2011
  */
 
+#include "vinylcontrol/vinylcontrolmanager.h"
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "mixer/playermanager.h"
 #include "soundio/soundmanager.h"
+#include "util/compatibility.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolprocessor.h"
 #include "vinylcontrol/vinylcontrolxwax.h"
-
-#include "vinylcontrol/vinylcontrolmanager.h"
 
 VinylControlManager::VinylControlManager(QObject* pParent,
                                          UserSettingsPointer pConfig,

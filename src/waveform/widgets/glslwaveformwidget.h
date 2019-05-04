@@ -38,6 +38,7 @@ class GLSLFilteredWaveformWidget : public GLSLWaveformWidget {
 
     static inline QString getWaveformWidgetName() { return tr("Filtered"); }
     static inline bool useOpenGl() { return true; }
+    static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return true; }
     static inline bool developerOnly() { return false; }
 };
@@ -52,6 +53,7 @@ class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
 
     static inline QString getWaveformWidgetName() { return tr("RGB"); }
     static inline bool useOpenGl() { return true; }
+    static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return true; }
     static inline bool developerOnly() { return false; }
 };

@@ -648,8 +648,9 @@ void PlayerManager::slotAnalyzeTrack(TrackPointer track) {
         return;
     }
     if (m_pTrackAnalysisScheduler) {
-        m_pTrackAnalysisScheduler->scheduleTrackById(track->getId());
-        m_pTrackAnalysisScheduler->resume();
+        if (m_pTrackAnalysisScheduler->scheduleTrackById(track->getId())) {
+            m_pTrackAnalysisScheduler->resume();
+        }
         // The first progress signal will suspend a running batch analysis
         // until all loaded tracks have been analyzed. Emit it once just now
         // before any signals from the analyzer queue arrive.

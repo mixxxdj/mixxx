@@ -25,10 +25,8 @@ class WaveformWidgetAbstractHandle {
 
     WaveformWidgetType::Type getType() const { return m_type;}
     QString getDisplayName() const { return m_displayString;}
-    bool isActive() const { return m_active;}
 
   private:
-    bool m_active;
     WaveformWidgetType::Type m_type;
     QString m_displayString;
 
@@ -73,7 +71,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setEndOfTrackWarningTime(int endTime);
     int getEndOfTrackWarningTime() const { return m_endOfTrackWarningTime;}
 
-    bool isOpenGLAvailable() const { return m_openGLAvailable;}
+    bool isOpenGlAvailable() const { return m_openGlAvailable;}
+    bool isOpenGlesAvailable() const { return m_openGlesAvailable;}
     QString getOpenGLVersion() const { return m_openGLVersion;}
 
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
@@ -159,7 +158,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
 
-    bool m_openGLAvailable;
+    bool m_openGlAvailable;
+    bool m_openGlesAvailable;
     QString m_openGLVersion;
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;

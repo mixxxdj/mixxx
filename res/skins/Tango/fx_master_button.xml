@@ -8,8 +8,8 @@ Variables:
 <Template>
   <PushButton>
     <TooltipId>EffectUnit_master_enabled</TooltipId>
-    <ObjectName>MasterFxButton</ObjectName>
-    <Size><Variable name="Size"/></Size>
+    <ObjectName>FxMasterButton</ObjectName>
+    <Size>26f,13f</Size>
     <NumberStates>2</NumberStates>
     <State>
       <Number>0</Number>

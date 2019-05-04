@@ -43,6 +43,7 @@
       <!-- Decks -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
@@ -155,6 +156,7 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">1</SetVariable>
+          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -164,6 +166,7 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">2</SetVariable>
+          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -173,6 +176,7 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">3</SetVariable>
+          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
@@ -182,6 +186,7 @@
       <Children>
         <Template src="skin:spinny_coverart.xml">
           <SetVariable name="channum">4</SetVariable>
+          <SetVariable name="MaxSize">53,53</SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>

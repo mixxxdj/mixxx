@@ -5,8 +5,8 @@
 #include <QMutex>
 #include <QObject>
 
-#include "library/dao/cue.h"
 #include "track/beats.h"
+#include "track/cue.h"
 #include "track/trackrecord.h"
 #include "util/memory.h"
 #include "util/sandbox.h"
@@ -99,6 +99,7 @@ class Track : public QObject {
     void setType(const QString&);
     QString getType() const;
 
+    // Set number of channels
     void setChannels(int iChannels);
     // Get number of channels
     int getChannels() const;
@@ -107,7 +108,6 @@ class Track : public QObject {
     void setSampleRate(int iSampleRate);
     // Get sample rate
     int getSampleRate() const;
-    // Set number of channels
 
     // Sets the bitrate
     void setBitrate(int);
@@ -243,13 +243,14 @@ class Track : public QObject {
     void setAnalyzerProgress(int progress);
     int getAnalyzerProgress() const;
 
-    // Save the cue point in samples
-    void setCuePoint(double cue);
-    // Get saved the cue point
-    double getCuePoint() const;
+    // Get the track's main cue point
+    CuePosition getCuePoint() const;
+    // Set the track's main cue point
+    void setCuePoint(CuePosition cue);
 
     // Calls for managing the track's cue points
     CuePointer createAndAddCue();
+    CuePointer findCueByType(Cue::CueType type) const;  // NOTE: Cannot be used for hotcues.
     void removeCue(const CuePointer& pCue);
     void removeCuesOfType(Cue::CueType);
     QList<CuePointer> getCuePoints() const;
@@ -323,7 +324,11 @@ class Track : public QObject {
   private:
     // Set a unique identifier for the track. Only used by
     // GlobalTrackCacheResolver!
-    void initId(TrackId id); // write-once
+    void initId(TrackId id);
+    // Reset the unique identifier after purged from library
+    // which undos a previous add. Only used by
+    // GlobalTrackCacheResolver!
+    void resetId();
 
     void relocate(
             QFileInfo fileInfo,
