@@ -38,6 +38,15 @@ class WaveformMarkRange {
 
     bool showDuration() const;
 
+    enum class DurationTextLocation {
+        Before = 0,
+        After = 1
+    };
+
+    DurationTextLocation durationTextLocation() const {
+        return m_durationTextLocation;
+    }
+
   private:
     void generateImage(int weidth, int height);
 
@@ -52,6 +61,8 @@ class WaveformMarkRange {
 
     QImage m_activeImage;
     QImage m_disabledImage;
+
+    DurationTextLocation m_durationTextLocation;
 
     friend class WaveformRenderMarkRange;
     friend class WOverview;

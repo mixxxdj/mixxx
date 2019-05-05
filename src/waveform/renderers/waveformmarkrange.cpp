@@ -52,6 +52,13 @@ WaveformMarkRange::WaveformMarkRange(
         ConfigKey key = ConfigKey::parseCommaSeparated(visibilityControl);
         m_markVisibleControl = std::make_unique<ControlProxy>(key);
     }
+
+    QString durationTextLocation = context.selectString(node, "DurationTextLocation");
+    if (durationTextLocation == "before") {
+        m_durationTextLocation = DurationTextLocation::Before;
+    } else {
+        m_durationTextLocation = DurationTextLocation::After;
+    }
 }
 
 bool WaveformMarkRange::active() const {

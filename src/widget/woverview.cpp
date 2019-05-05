@@ -577,18 +577,27 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     QString duration = mixxx::Duration::formatTime((endValue - startValue)
                             / m_trackSampleRateControl->get() / 2 / rateRatio);
 
-                    // Ensure the right end of the text does not get cut off by
-                    // the end of the track
                     QFontMetrics fm(painter.font());
                     int textWidth = fm.width(duration);
-                    float x = startPosition;
-                    if (startPosition + textWidth > width()) {
+                    float padding = 3.0;
+                    float x;
+
+                    WaveformMarkRange::DurationTextLocation textLocation = markRange.durationTextLocation();
+                    if (textLocation == WaveformMarkRange::DurationTextLocation::Before) {
+                        x = startPosition - textWidth - padding;
+                    } else {
+                        x = endPosition + padding;
+                    }
+
+                    // Ensure the right end of the text does not get cut off by
+                    // the end of the track
+                    if (x + textWidth > width()) {
                         x = width() - textWidth;
                     }
 
                     painter.setOpacity(1.0);
                     painter.setPen(markRange.m_durationTextColor);
-                    painter.drawText(QPointF(x, height() - 2.0), duration);
+                    painter.drawText(QPointF(x, fm.ascent()), duration);
                 }
             }
 

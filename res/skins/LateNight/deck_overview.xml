@@ -47,6 +47,7 @@
       <Color>#0000FF</Color>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
       <DurationTextColor>#ffffff</DurationTextColor>
+      <DurationTextLocation>after</DurationTextLocation>
     </MarkRange>
     <MarkRange>
       <StartControl>outro_start_position</StartControl>
@@ -54,6 +55,7 @@
       <Color>#0000FF</Color>
       <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
       <DurationTextColor>#ffffff</DurationTextColor>
+      <DurationTextLocation>before</DurationTextLocation>
     </MarkRange>
     <Mark>
       <Control>intro_start_position</Control>
