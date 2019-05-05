@@ -331,7 +331,11 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     // Rotate pixmap
                     croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
                 }
-                m_waveformImageScaled = croppedImage.scaled(size() * devicePixelRatioF(),
+                qreal devicePixelRatio = 1.0;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+                devicePixelRatio = devicePixelRatioF();
+#endif
+                m_waveformImageScaled = croppedImage.scaled(size() * devicePixelRatio,
                                                             Qt::IgnoreAspectRatio,
                                                             Qt::SmoothTransformation);
                 m_diffGain = diffGain;

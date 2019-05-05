@@ -28,11 +28,16 @@ bool WOverviewRGB::drawNextPixmapPart() {
         return false;
     }
 
+    qreal devicePixelRatio = 1.0;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    devicePixelRatio = devicePixelRatioF();
+#endif
+
     if (m_waveformSourceImage.isNull()) {
         // Waveform pixmap twice the height of the viewport to be scalable
         // by total_gain
         // We keep full range waveform data to scale it on paint
-        m_waveformSourceImage = QImage(dataSize / 2, 2 * 255 * devicePixelRatioF(),
+        m_waveformSourceImage = QImage(dataSize / 2, 2 * 255 * devicePixelRatio,
                 QImage::Format_ARGB32_Premultiplied);
         m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
     }
@@ -91,7 +96,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
         if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
-            painter.drawLine(QPointF(currentCompletion / 2, -left * devicePixelRatioF()),
+            painter.drawLine(QPointF(currentCompletion / 2, -left * devicePixelRatio),
                              QPointF(currentCompletion / 2, 0));
         }
 
@@ -111,7 +116,7 @@ bool WOverviewRGB::drawNextPixmapPart() {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
             painter.drawLine(QPointF(currentCompletion / 2, 0),
-                             QPointF(currentCompletion / 2, right * devicePixelRatioF()));
+                             QPointF(currentCompletion / 2, right * devicePixelRatio));
         }
     }
 
