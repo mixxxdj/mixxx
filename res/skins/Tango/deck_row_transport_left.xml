@@ -18,6 +18,7 @@ Variables:
 <Template>
   <WidgetGroup>
     <ObjectName>DeckButtonsPlay</ObjectName>
+    <ObjectName>DeckRowTransport</ObjectName>
     <Size>0me,24f</Size>
     <Layout>stacked</Layout>
     <Children>

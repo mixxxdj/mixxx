@@ -25,7 +25,7 @@ Variables:
     <SignalRGBLowColor><Variable name="SignalRGBLowColor"/></SignalRGBLowColor>
     <PlayPosColor>#FF4300</PlayPosColor>
     <PlayedOverlayColor><Variable name="PlayedOverlayColor"/></PlayedOverlayColor>
-    <EndOfTrackColor>#EA0085</EndOfTrackColor>
+    <EndOfTrackColor><Variable name="EndOfTrackColor"/></EndOfTrackColor>
     <DefaultMark>
       <Align>bottom|right</Align>
       <Color>#00FF00</Color>
