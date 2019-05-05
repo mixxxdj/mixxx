@@ -456,6 +456,74 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
 
             painter.setOpacity(0.9);
 
+            // Draw range (loop)
+            for (auto&& markRange: m_markRanges) {
+                if (!markRange.active() || !markRange.visible()) {
+                    continue;
+                }
+
+                // Active mark ranges by definition have starts/ends that are not
+                // disabled.
+                const double startValue = markRange.start();
+                const double endValue = markRange.end();
+
+                const float startPosition = offset + startValue * gain;
+                const float endPosition = offset + endValue * gain;
+
+                if (startPosition < 0.0 && endPosition < 0.0) {
+                    continue;
+                }
+
+                if (markRange.enabled()) {
+                    painter.setOpacity(0.4);
+                    painter.setPen(markRange.m_activeColor);
+                    painter.setBrush(markRange.m_activeColor);
+                } else {
+                    painter.setOpacity(0.2);
+                    painter.setPen(markRange.m_disabledColor);
+                    painter.setBrush(markRange.m_disabledColor);
+                }
+
+                // let top and bottom of the rect out of the widget
+                if (m_orientation == Qt::Horizontal) {
+                    painter.drawRect(QRectF(QPointF(startPosition, -2.0),
+                                            QPointF(endPosition, height() + 1.0)));
+                } else {
+                    painter.drawRect(QRectF(QPointF(-2.0, startPosition),
+                                            QPointF(width() + 1.0, endPosition)));
+                }
+
+                // draw duration of range
+                if (markRange.showDuration()) {
+                    // TODO: replace with rate_ratio in PR #1765
+                    double rateRatio = 1.0 + m_pRateDirControl->get() * m_pRateRangeControl->get() * m_pRateSliderControl->get();
+                    QString duration = mixxx::Duration::formatTime((endValue - startValue)
+                            / m_trackSampleRateControl->get() / 2 / rateRatio);
+
+                    QFontMetrics fm(painter.font());
+                    int textWidth = fm.width(duration);
+                    float padding = 3.0;
+                    float x;
+
+                    WaveformMarkRange::DurationTextLocation textLocation = markRange.durationTextLocation();
+                    if (textLocation == WaveformMarkRange::DurationTextLocation::Before) {
+                        x = startPosition - textWidth - padding;
+                    } else {
+                        x = endPosition + padding;
+                    }
+
+                    // Ensure the right end of the text does not get cut off by
+                    // the end of the track
+                    if (x + textWidth > width()) {
+                        x = width() - textWidth;
+                    }
+
+                    painter.setOpacity(1.0);
+                    painter.setPen(markRange.m_durationTextColor);
+                    painter.drawText(QPointF(x, fm.ascent()), duration);
+                }
+            }
+
             for (const auto& currentMark: m_marks) {
                 const WaveformMarkProperties& markProperties = currentMark->getProperties();
                 if (currentMark->isValid() && currentMark->getSamplePosition() >= 0.0) {
@@ -530,74 +598,6 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                         painter.setFont(markerFont);
                         painter.drawText(textPoint, markProperties.m_text);
                     }
-                }
-            }
-
-            // Draw range (loop)
-            for (auto&& markRange: m_markRanges) {
-                if (!markRange.active() || !markRange.visible()) {
-                    continue;
-                }
-
-                // Active mark ranges by definition have starts/ends that are not
-                // disabled.
-                const double startValue = markRange.start();
-                const double endValue = markRange.end();
-
-                const float startPosition = offset + startValue * gain;
-                const float endPosition = offset + endValue * gain;
-
-                if (startPosition < 0.0 && endPosition < 0.0) {
-                    continue;
-                }
-
-                if (markRange.enabled()) {
-                    painter.setOpacity(0.4);
-                    painter.setPen(markRange.m_activeColor);
-                    painter.setBrush(markRange.m_activeColor);
-                } else {
-                    painter.setOpacity(0.2);
-                    painter.setPen(markRange.m_disabledColor);
-                    painter.setBrush(markRange.m_disabledColor);
-                }
-
-                // let top and bottom of the rect out of the widget
-                if (m_orientation == Qt::Horizontal) {
-                    painter.drawRect(QRectF(QPointF(startPosition, -2.0),
-                                            QPointF(endPosition, height() + 1.0)));
-                } else {
-                    painter.drawRect(QRectF(QPointF(-2.0, startPosition),
-                                            QPointF(width() + 1.0, endPosition)));
-                }
-
-                // draw duration of range
-                if (markRange.showDuration()) {
-                    // TODO: replace with rate_ratio in PR #1765
-                    double rateRatio = 1.0 + m_pRateDirControl->get() * m_pRateRangeControl->get() * m_pRateSliderControl->get();
-                    QString duration = mixxx::Duration::formatTime((endValue - startValue)
-                            / m_trackSampleRateControl->get() / 2 / rateRatio);
-
-                    QFontMetrics fm(painter.font());
-                    int textWidth = fm.width(duration);
-                    float padding = 3.0;
-                    float x;
-
-                    WaveformMarkRange::DurationTextLocation textLocation = markRange.durationTextLocation();
-                    if (textLocation == WaveformMarkRange::DurationTextLocation::Before) {
-                        x = startPosition - textWidth - padding;
-                    } else {
-                        x = endPosition + padding;
-                    }
-
-                    // Ensure the right end of the text does not get cut off by
-                    // the end of the track
-                    if (x + textWidth > width()) {
-                        x = width() - textWidth;
-                    }
-
-                    painter.setOpacity(1.0);
-                    painter.setPen(markRange.m_durationTextColor);
-                    painter.drawText(QPointF(x, fm.ascent()), duration);
                 }
             }
 
