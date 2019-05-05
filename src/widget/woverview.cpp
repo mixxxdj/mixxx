@@ -22,6 +22,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "engine/engine.h"
 #include "mixer/playermanager.h"
 #include "woverview.h"
 #include "wskincolor.h"
@@ -29,6 +30,7 @@
 #include "track/track.h"
 #include "analyzer/analyzerprogress.h"
 #include "util/color/color.h"
+#include "util/duration.h"
 #include "util/math.h"
 #include "util/timer.h"
 #include "util/dnd.h"
@@ -60,6 +62,13 @@ WOverview::WOverview(
     m_endOfTrackControl = new ControlProxy(
             m_group, "end_of_track", this);
     m_endOfTrackControl->connectValueChanged(this, &WOverview::onEndOfTrackChange);
+    m_pRateDirControl = new ControlProxy(m_group, "rate_dir", this);
+    m_pRateRangeControl = new ControlProxy(m_group, "rateRange", this);
+    m_pRateSliderControl = new ControlProxy(m_group, "rate", this);
+    // Needed to recalculate range durations when rate slider is moved without the deck playing
+    // TODO: connect to rate_ratio instead in PR #1765
+    m_pRateSliderControl->connectValueChanged(this, &WOverview::onRateSliderChange);
+    m_trackSampleRateControl = new ControlProxy(m_group, "track_samplerate", this);
     m_trackSamplesControl =
             new ControlProxy(m_group, "track_samples", this);
     setAcceptDrops(true);
@@ -272,6 +281,10 @@ void WOverview::onMarkRangeChange(double /*v*/) {
     update();
 }
 
+void WOverview::onRateSliderChange(double /*v*/) {
+    update();
+}
+
 // currently only updates the mark color but it could be easily extended.
 void WOverview::updateCues(const QList<CuePointer> &loadedCues) {
     for (CuePointer currentCue: loadedCues) {
@@ -440,15 +453,19 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
             const float offset = 1.0f;
             const float gain = static_cast<float>(length() - 2) / trackSamples;
 
+            // Draw markers (Cue & hotcues)
+            QFont markerFont = painter.font();
+            markerFont.setPixelSize(10 * m_scaleFactor);
+
+            QFont shadowFont = painter.font();
+            shadowFont.setWeight(99);
+            shadowFont.setPixelSize(10 * m_scaleFactor);
+
+            painter.setOpacity(0.9);
+
             // Draw range (loop)
             for (auto&& markRange: m_markRanges) {
-                // If the mark range is not active we should not draw it.
-                if (!markRange.active()) {
-                    continue;
-                }
-
-                // If the mark range is not visible we should not draw it.
-                if (!markRange.visible()) {
+                if (!markRange.active() || !markRange.visible()) {
                     continue;
                 }
 
@@ -482,17 +499,37 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     painter.drawRect(QRectF(QPointF(-2.0, startPosition),
                                             QPointF(width() + 1.0, endPosition)));
                 }
+
+                // draw duration of range
+                if (markRange.showDuration()) {
+                    // TODO: replace with rate_ratio in PR #1765
+                    double rateRatio = 1.0 + m_pRateDirControl->get() * m_pRateRangeControl->get() * m_pRateSliderControl->get();
+                    QString duration = mixxx::Duration::formatTime((endValue - startValue)
+                            / m_trackSampleRateControl->get() / mixxx::kEngineChannelCount / rateRatio);
+
+                    QFontMetrics fm(painter.font());
+                    int textWidth = fm.width(duration);
+                    float padding = 3.0;
+                    float x;
+
+                    WaveformMarkRange::DurationTextLocation textLocation = markRange.durationTextLocation();
+                    if (textLocation == WaveformMarkRange::DurationTextLocation::Before) {
+                        x = startPosition - textWidth - padding;
+                    } else {
+                        x = endPosition + padding;
+                    }
+
+                    // Ensure the right end of the text does not get cut off by
+                    // the end of the track
+                    if (x + textWidth > width()) {
+                        x = width() - textWidth;
+                    }
+
+                    painter.setOpacity(1.0);
+                    painter.setPen(markRange.m_durationTextColor);
+                    painter.drawText(QPointF(x, fm.ascent()), duration);
+                }
             }
-
-            // Draw markers (Cue & hotcues)
-            QFont markerFont = painter.font();
-            markerFont.setPixelSize(10 * m_scaleFactor);
-
-            QFont shadowFont = painter.font();
-            shadowFont.setWeight(99);
-            shadowFont.setPixelSize(10 * m_scaleFactor);
-
-            painter.setOpacity(0.9);
 
             for (const auto& currentMark: m_marks) {
                 const WaveformMarkProperties& markProperties = currentMark->getProperties();
