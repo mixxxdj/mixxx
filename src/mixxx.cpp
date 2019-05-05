@@ -817,6 +817,7 @@ void MixxxMainWindow::initializeKeyboard() {
         QString defaultKeyboard = QString(resourcePath).append("keyboard/");
         defaultKeyboard += locale.name();
         defaultKeyboard += ".kbd.cfg";
+        qDebug() << "Found and will use default keyboard preset" << defaultKeyboard;
 
         if (!QFile::exists(defaultKeyboard)) {
             qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
