@@ -22,6 +22,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "engine/engine.h"
 #include "woverview.h"
 #include "wskincolor.h"
 #include "widget/controlwidgetconnection.h"
@@ -498,7 +499,7 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     // TODO: replace with rate_ratio in PR #1765
                     double rateRatio = 1.0 + m_pRateDirControl->get() * m_pRateRangeControl->get() * m_pRateSliderControl->get();
                     QString duration = mixxx::Duration::formatTime((endValue - startValue)
-                            / m_trackSampleRateControl->get() / 2 / rateRatio);
+                            / m_trackSampleRateControl->get() / mixxx::kEngineChannelCount / rateRatio);
 
                     QFontMetrics fm(painter.font());
                     int textWidth = fm.width(duration);
