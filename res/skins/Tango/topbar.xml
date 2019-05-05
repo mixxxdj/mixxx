@@ -30,15 +30,10 @@ Description:
             <Size>-1me,28f</Size>
             <Children>
 
-              <WidgetGroup>
-                <MaximumSize>3,-1</MaximumSize>
-                <SizePolicy>min,min</SizePolicy>
-              </WidgetGroup>
+              <WidgetGroup><Size>2f,0min</Size></WidgetGroup>
 
               <PushButton>
-                <MinimumSize>51,12</MinimumSize>
-                <MaximumSize>102,24</MaximumSize>
-                <SizePolicy>me,min</SizePolicy>
+                <Size>102f,24f</Size>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -79,19 +74,17 @@ Description:
                 </Connection>
               </WidgetGroup>
 
-              <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-
-              <Template src="skin:mixer_master_booth.xml"/>
+              <!-- Master & Headphone mixer -->
+              <Template src="skin:mixer_master.xml"/>
 
               <WidgetGroup>
-                <MinimumSize>5,-1</MinimumSize>
-                <MaximumSize>50,-1</MaximumSize>
-                <SizePolicy>min,min</SizePolicy>
+                <MaximumSize>50,1</MaximumSize>
+                <SizePolicy>me,min</SizePolicy>
               </WidgetGroup>
 
               <Template src="skin:mixer_headphone.xml"/>
 
-              <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
+              <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
 
             </Children>
           </WidgetGroup>

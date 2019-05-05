@@ -145,7 +145,7 @@ CUP mode:
       <item row="4" column="0">
        <widget class="QLabel" name="labelPlayingTrackProtection">
         <property name="text">
-         <string>Pla&amp;ying track protection</string>
+         <string>Playing track protection</string>
         </property>
         <property name="buddy">
          <cstring>checkBoxDisallowLoadToPlayingDeck</cstring>

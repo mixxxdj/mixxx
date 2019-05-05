@@ -1765,7 +1765,7 @@ NumarkMixtrack3.BeatKnob = function(channel, control, value, status, group) {
 
 
     // direct interaction with knob, without any button combination
-    if (!deck.PADMode && !deck.shiftKey) {
+    if (!deck.PADMode && !deck.shiftKey && !deck.TapDown) {
         var mixValue = engine.getParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix");
         engine.setParameter("[EffectRack1_EffectUnit" + deck.decknum + "]", "mix", mixValue + increment);
     }

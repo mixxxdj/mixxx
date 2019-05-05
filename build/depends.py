@@ -22,6 +22,17 @@ class PortAudio(Dependence):
         return ['src/soundio/sounddeviceportaudio.cpp']
 
 
+class OSXFilePathUrlBackport(Dependence):
+
+    def configure(self, build, conf):
+        return
+
+    def sources(self, build):
+        if build.platform_is_osx:
+            return ['src/util/filepathurl.mm']
+        return []
+
+
 class PortMIDI(Dependence):
 
     def configure(self, build, conf):
@@ -91,6 +102,13 @@ class CoreServices(Dependence):
             return
         build.env.Append(CPPPATH='/System/Library/Frameworks/CoreServices.framework/Headers/')
         build.env.Append(LINKFLAGS='-framework CoreServices')
+
+class Foundation(Dependence):
+    def configure(self, build, conf):
+        if not build.platform_is_osx:
+            return
+        build.env.Append(CPPPATH='/System/Library/Frameworks/Foundation.framework/Headers/')
+        build.env.Append(LINKFLAGS='-framework Foundation')
 
 class IOKit(Dependence):
     """Used for battery measurements and controlling the screensaver on OS X and iOS."""
@@ -1182,6 +1200,7 @@ class MixxxCore(Feature):
                    "src/util/statsmanager.cpp",
                    "src/util/stat.cpp",
                    "src/util/statmodel.cpp",
+                   "src/util/dnd.cpp",
                    "src/util/duration.cpp",
                    "src/util/time.cpp",
                    "src/util/timer.cpp",
@@ -1337,6 +1356,14 @@ class MixxxCore(Feature):
             # Default GNU Options
             build.env.Append(CCFLAGS='-pipe')
             build.env.Append(CCFLAGS='-Wall')
+            build.env.Append(CCFLAGS='-Wextra')
+
+            if build.compiler_is_gcc and build.compiler_major_version >= 9:
+                # Avoid many warnings from GCC 9 about implicitly defined copy assignment
+                # operators that are deprecated for classes with a user-provided copy
+                # constructor. This affects both Qt 5.12 and Mixxx.
+                build.env.Append(CCFLAGS='-Wno-deprecated-copy')
+
             if build.compiler_is_clang:
                 # Quiet down Clang warnings about inconsistent use of override
                 # keyword until Qt fixes qt_metacall.
@@ -1352,7 +1379,6 @@ class MixxxCore(Feature):
                 # Enable thread-safety analysis.
                 # http://clang.llvm.org/docs/ThreadSafetyAnalysis.html
                 build.env.Append(CCFLAGS='-Wthread-safety')
-            build.env.Append(CCFLAGS='-Wextra')
 
             # Always generate debugging info.
             build.env.Append(CCFLAGS='-g')
@@ -1512,7 +1538,7 @@ class MixxxCore(Feature):
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
                 Chromaprint, RubberBand, SecurityFramework, CoreServices, IOKit,
                 QtScriptByteArray, Reverb, FpClassify, PortAudioRingBuffer, LAME,
-                QueenMaryDsp]
+                QueenMaryDsp, OSXFilePathUrlBackport]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

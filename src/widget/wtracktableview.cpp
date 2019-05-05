@@ -125,7 +125,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::slotGuiTick50ms);
 
     m_pKeyNotation = new ControlProxy("[Library]", "key_notation", this);
-    m_pCOTGuiTick->connectValueChanged(this, &WTrackTableView::keyNotationChanged);
+    m_pKeyNotation->connectValueChanged(this, &WTrackTableView::keyNotationChanged);
 
 
     connect(this, SIGNAL(scrollValueChanged(int)),
@@ -369,11 +369,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
             // Sort by the saved sort section and order.
             horizontalHeader()->setSortIndicator(horizontalHeader()->sortIndicatorSection(),
                                                  horizontalHeader()->sortIndicatorOrder());
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-            // in Qt4, the line above emits sortIndicatorChanged
             // in Qt5, we need to call it manually, which triggers finally the select()
             doSortByColumn(horizontalHeader()->sortIndicatorSection());
-#endif
         } else {
             // No saved order is present. Use the TrackModel's default sort order.
             int sortColumn = trackModel->defaultSortColumn();
@@ -386,11 +383,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
             }
             // This line sorts the TrackModel
             horizontalHeader()->setSortIndicator(sortColumn, sortOrder);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-            // in Qt4, the line above emits sortIndicatorChanged
             // in Qt5, we need to call it manually, which triggers finally the select()
             doSortByColumn(sortColumn);
-#endif
         }
     }
 

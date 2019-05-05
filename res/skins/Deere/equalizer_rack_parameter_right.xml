@@ -41,20 +41,14 @@
 
       <EffectPushButton>
         <TooltipId>EqualizerRack_effect_button_parameter</TooltipId>
-        <Size>15f,15f</Size>
-        <ObjectName>CircleButton</ObjectName>
+        <Size>15f,20f</Size>
+        <ObjectName>EQKillButton</ObjectName>
         <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Text></Text>
-          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_off_48px.svg</Unpressed>
         </State>
         <State>
           <Number>1</Number>
-          <Text></Text>
-          <Pressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Pressed>
-          <Unpressed scalemode="STRETCH_ASPECT">icon/ic_radio_button_on_48px.svg</Unpressed>
         </State>
         <Connection>
           <ConfigKey><Variable name="EqualizerEffectGroup"/>,button_parameter<Variable name="parameter"/></ConfigKey>
