@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>560</width>
+    <width>879</width>
     <height>399</height>
    </rect>
   </property>
@@ -135,6 +135,19 @@ If no track sources are configured, the track is added from the library instead.
        </property>
        <property name="text">
         <string>Add Random</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="introOutroCheckbox">
+       <property name="text">
+        <string>Use intro/outro markers</string>
+       </property>
+       <property name="toolTip">
+         <string>Use the intro of the incoming track or the
+outro of the outgoing track for the transition time,
+whichever is longer. If neither track has an intro or outro marked,
+fall back to the specified transition time.</string>
        </property>
       </widget>
      </item>

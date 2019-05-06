@@ -74,6 +74,10 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this, SLOT(toggleAutoDJButton(bool)));
 
+    introOutroCheckbox->setChecked(m_pAutoDJProcessor->getUseIntroOutro());
+    connect(introOutroCheckbox, &QCheckBox::stateChanged,
+            m_pAutoDJProcessor, &AutoDJProcessor::setUseIntroOutro);
+
     // Setup DlgAutoDJ UI based on the current AutoDJProcessor state. Keep in
     // mind that AutoDJ may already be active when DlgAutoDJ is created (due to
     // skin changes, etc.).

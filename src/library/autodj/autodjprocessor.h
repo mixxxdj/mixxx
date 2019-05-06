@@ -74,6 +74,10 @@ class DeckAttributes : public QObject {
         return m_introStartPos.get();
     }
 
+    double introEndPosition() const {
+        return m_introEndPos.get();
+    }
+
     double outroStartPosition() const {
         return m_outroStartPos.get();
     }
@@ -96,7 +100,8 @@ class DeckAttributes : public QObject {
     void playChanged(DeckAttributes* pDeck, bool playing);
     void playPositionChanged(DeckAttributes* pDeck, double playPosition);
     void introStartPositionChanged(DeckAttributes* pDeck, double introStartPosition);
-    void outroStartPositionChanged(DeckAttributes* pDeck, double introStartPosition);
+    void introEndPositionChanged(DeckAttributes* pDeck, double introEndPosition);
+    void outroStartPositionChanged(DeckAttributes* pDeck, double outtroStartPosition);
     void outroEndPositionChanged(DeckAttributes* pDeck, double outroEndPosition);
     void trackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
     void loadingTrack(DeckAttributes* pDeck, TrackPointer pNewTrack, TrackPointer pOldTrack);
@@ -106,6 +111,7 @@ class DeckAttributes : public QObject {
     void slotPlayPosChanged(double v);
     void slotPlayChanged(double v);
     void slotIntroStartPositionChanged(double v);
+    void slotIntroEndPositionChanged(double v);
     void slotOutroStartPositionChanged(double v);
     void slotOutroEndPositionChanged(double v);
     void slotTrackLoaded(TrackPointer pTrack);
@@ -126,6 +132,7 @@ class DeckAttributes : public QObject {
     ControlProxy m_repeat;
     ControlProxy m_seekOnLoadMode;
     ControlProxy m_introStartPos;
+    ControlProxy m_introEndPos;
     ControlProxy m_outroStartPos;
     ControlProxy m_outroEndPos;
     ControlProxy m_sampleRate;
@@ -169,6 +176,10 @@ class AutoDJProcessor : public QObject {
         return m_transitionTime;
     }
 
+    bool getUseIntroOutro() const {
+        return m_bUseIntroOutro;
+    }
+
     PlaylistTableModel* getTableModel() const {
         return m_pAutoDJTableModel;
     }
@@ -177,6 +188,8 @@ class AutoDJProcessor : public QObject {
 
   public slots:
     void setTransitionTime(int seconds);
+
+    void setUseIntroOutro(bool checkboxState);
 
     AutoDJError shufflePlaylist(const QModelIndexList& selectedIndices);
     AutoDJError skipNext();
@@ -203,6 +216,7 @@ class AutoDJProcessor : public QObject {
     void playerPositionChanged(DeckAttributes* pDeck, double position);
     void playerPlayChanged(DeckAttributes* pDeck, bool playing);
     void playerIntroStartChanged(DeckAttributes* pDeck, double position);
+    void playerIntroEndChanged(DeckAttributes* pDeck, double position);
     void playerOutroStartChanged(DeckAttributes* pDeck, double position);
     void playerOutroEndChanged(DeckAttributes* pDeck, double position);
     void playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack);
@@ -225,6 +239,7 @@ class AutoDJProcessor : public QObject {
     // Following functions return seconds computed from samples or -1 if
     // track in deck has invalid sample rate (<= 0)
     double getIntroStartPosition(DeckAttributes* pDeck);
+    double getIntroEndPosition(DeckAttributes* pDeck);
     double getOutroStartPosition(DeckAttributes* pDeck);
     double getOutroEndPosition(DeckAttributes* pDeck);
 
@@ -249,6 +264,7 @@ class AutoDJProcessor : public QObject {
 
     AutoDJState m_eState;
     double m_transitionTime; // the desired value set by the user
+    bool m_bUseIntroOutro;
 
     QList<DeckAttributes*> m_decks;
 
