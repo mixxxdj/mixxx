@@ -127,7 +127,7 @@ bool VinylControlManager::vinylInputConnected(int deck) {
         return false;
     }
     if (deck < 0 || deck >= m_pVcEnabled.length()) {
-        qDebug() << "WARNING, tried to get vinyl enabled status for non-existant deck " << deck;
+        qDebug() << "WARNING, tried to get vinyl enabled status for non-existent deck " << deck;
         return false;
     }
     return m_pProcessor->deckConfigured(deck);
