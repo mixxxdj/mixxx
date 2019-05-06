@@ -104,8 +104,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
           m_pPlayerManager(pPlayerManager),
           m_pAutoDJTableModel(NULL),
           m_eState(ADJ_DISABLED),
-          m_transitionTime(kTransitionPreferenceDefault),
-          m_bUseIntroOutro(true) {
+          m_transitionTime(kTransitionPreferenceDefault) {
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                  "mixxx.db.model.autodj");
     m_pAutoDJTableModel->setTableModel(iAutoDJPlaylistId);
@@ -157,8 +156,10 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
         m_transitionTime = str_autoDjTransition.toDouble();
     }
 
-    m_bUseIntroOutro = m_pConfig->getValue(
-            ConfigKey(kConfigKey, kUseIntroOutroPreferenceName), true);
+    int configMode = m_pConfig->getValue(
+            ConfigKey(kConfigKey, kUseIntroOutroPreferenceName),
+            static_cast<int>(IntroOutroUsage::Shorter));
+    m_useIntroOutroMode = static_cast<IntroOutroUsage>(configMode);
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -876,29 +877,27 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     double toTrackIntroLength = toTrackIntroEnd - toTrackIntroStart;
 
-    if (m_bUseIntroOutro) {
+    if (m_useIntroOutroMode != IntroOutroUsage::None) {
         if (fromTrackOutroLength > 0 && toTrackIntroLength > 0) {
             if (fromTrackOutroLength > toTrackIntroLength) {
-                pFromDeck->posThreshold = fromTrackOutroStart;
-                if (fromTrackOutroLength < toTrackDuration) {
-                    pFromDeck->fadeDuration = fromTrackOutroLength;
-                } else {
-                    pFromDeck->fadeDuration = toTrackDuration;
+                if (m_useIntroOutroMode == IntroOutroUsage::Longer) {
+                    useOutroFadeTime(pFromDeck, fromTrackOutroStart,
+                                     fromTrackOutroLength, toTrackDuration);
+                } else if (m_useIntroOutroMode == IntroOutroUsage::Shorter) {
+                    useIntroFadeTime(pFromDeck, fromTrackOutroEnd, toTrackIntroLength);
                 }
             } else if (fromTrackOutroLength < toTrackIntroLength) {
-                pFromDeck->posThreshold = fromTrackDuration - toTrackIntroLength;
-                pFromDeck->fadeDuration = toTrackIntroLength;
+                if (m_useIntroOutroMode == IntroOutroUsage::Longer) {
+                    useIntroFadeTime(pFromDeck, fromTrackOutroEnd, toTrackIntroLength);
+                } else if (m_useIntroOutroMode == IntroOutroUsage::Shorter) {
+                    useOutroFadeTime(pFromDeck, fromTrackOutroStart,
+                                     fromTrackOutroLength, toTrackDuration);
+                }
             }
         } else if (fromTrackOutroLength > 0 && toTrackIntroLength <= 0) {
-            pFromDeck->posThreshold = fromTrackOutroStart;
-            if (fromTrackOutroLength < toTrackDuration) {
-                pFromDeck->fadeDuration = fromTrackOutroLength;
-            } else {
-                pFromDeck->fadeDuration = toTrackDuration;
-            }
+            useOutroFadeTime(pFromDeck, fromTrackOutroStart, fromTrackOutroLength, toTrackDuration);
         } else if (fromTrackOutroLength <= 0 && toTrackIntroLength > 0) {
-            pFromDeck->posThreshold = fromTrackDuration - toTrackIntroLength;
-            pFromDeck->fadeDuration = toTrackIntroLength;
+            useIntroFadeTime(pFromDeck, fromTrackOutroEnd, toTrackIntroLength);
         } else {
             double transitionTime = m_transitionTime;
             if (m_transitionTime > toTrackDuration) {
@@ -942,6 +941,22 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     pFromDeck->posThreshold /= fromTrackDuration;
     pFromDeck->fadeDuration /= fromTrackDuration;
     pToDeck->startPos /= toTrackDuration;
+}
+
+void AutoDJProcessor::useOutroFadeTime(DeckAttributes* pFromDeck, double fromTrackOutroStart,
+                                       double fromTrackOutroLength, double toTrackDuration) {
+    pFromDeck->posThreshold = fromTrackOutroStart;
+    if (fromTrackOutroLength < toTrackDuration) {
+        pFromDeck->fadeDuration = fromTrackOutroLength;
+    } else {
+        pFromDeck->fadeDuration = toTrackDuration;
+    }
+}
+
+void AutoDJProcessor::useIntroFadeTime(DeckAttributes* pFromDeck, double fromTrackOutroEnd,
+                                       double toTrackIntroLength) {
+    pFromDeck->posThreshold = fromTrackOutroEnd - toTrackIntroLength;
+    pFromDeck->fadeDuration = toTrackIntroLength;
 }
 
 void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack) {
@@ -1038,10 +1053,10 @@ void AutoDJProcessor::setTransitionTime(int time) {
     }
 }
 
-void AutoDJProcessor::setUseIntroOutro(bool checkboxState) {
+void AutoDJProcessor::setUseIntroOutro(int checkboxState) {
     m_pConfig->set(ConfigKey(kConfigKey, kUseIntroOutroPreferenceName),
                    ConfigValue(checkboxState));
-    m_bUseIntroOutro = checkboxState;
+    m_useIntroOutroMode = static_cast<IntroOutroUsage>(checkboxState);
     // Then re-calculate fade thresholds for the decks.
     if (m_eState == ADJ_IDLE) {
         DeckAttributes& leftDeck = *m_decks[0];

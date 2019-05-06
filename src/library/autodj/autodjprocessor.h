@@ -161,6 +161,12 @@ class AutoDJProcessor : public QObject {
         ADJ_NOT_TWO_DECKS
     };
 
+    enum class IntroOutroUsage {
+        None = 0,
+        Shorter = 1,
+        Longer = 2
+    };
+
     AutoDJProcessor(QObject* pParent,
                     UserSettingsPointer pConfig,
                     PlayerManagerInterface* pPlayerManager,
@@ -176,8 +182,8 @@ class AutoDJProcessor : public QObject {
         return m_transitionTime;
     }
 
-    bool getUseIntroOutro() const {
-        return m_bUseIntroOutro;
+    IntroOutroUsage getUseIntroOutro() const {
+        return m_useIntroOutroMode;
     }
 
     PlaylistTableModel* getTableModel() const {
@@ -189,7 +195,7 @@ class AutoDJProcessor : public QObject {
   public slots:
     void setTransitionTime(int seconds);
 
-    void setUseIntroOutro(bool checkboxState);
+    void setUseIntroOutro(int checkboxState);
 
     AutoDJError shufflePlaylist(const QModelIndexList& selectedIndices);
     AutoDJError skipNext();
@@ -247,6 +253,10 @@ class AutoDJProcessor : public QObject {
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
     void calculateTransition(DeckAttributes* pFromDeck,
                              DeckAttributes* pToDeck);
+    void useOutroFadeTime(DeckAttributes* pFromDeck, double fromTrackOutroStart,
+                          double fromTrackOutroLength, double toTrackDuration);
+    void useIntroFadeTime(DeckAttributes* pFromDeck, double fromTrackOutroEnd,
+                          double toTrackIntroLength);
     DeckAttributes* getOtherDeck(DeckAttributes* pFromDeck,
                                  bool playing = false);
 
@@ -264,7 +274,7 @@ class AutoDJProcessor : public QObject {
 
     AutoDJState m_eState;
     double m_transitionTime; // the desired value set by the user
-    bool m_bUseIntroOutro;
+    IntroOutroUsage m_useIntroOutroMode;
 
     QList<DeckAttributes*> m_decks;
 

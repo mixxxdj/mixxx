@@ -74,8 +74,14 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this, SLOT(toggleAutoDJButton(bool)));
 
-    introOutroCheckbox->setChecked(m_pAutoDJProcessor->getUseIntroOutro());
-    connect(introOutroCheckbox, &QCheckBox::stateChanged,
+    introOutroCombobox->addItem(tr("Do not use intro/outro markers"),
+                                static_cast<int>(AutoDJProcessor::IntroOutroUsage::None));
+    introOutroCombobox->addItem(tr("Use intro/outro for transition time (whichever is shorter)"),
+                                static_cast<int>(AutoDJProcessor::IntroOutroUsage::Shorter));
+    introOutroCombobox->addItem(tr("Use intro/outro for transition time (whichever is longer)"),
+                                static_cast<int>(AutoDJProcessor::IntroOutroUsage::Longer));
+    introOutroCombobox->setCurrentIndex(static_cast<int>(m_pAutoDJProcessor->getUseIntroOutro()));
+    connect(introOutroCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             m_pAutoDJProcessor, &AutoDJProcessor::setUseIntroOutro);
 
     // Setup DlgAutoDJ UI based on the current AutoDJProcessor state. Keep in
