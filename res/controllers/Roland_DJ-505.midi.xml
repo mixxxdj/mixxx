@@ -17,6 +17,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.play.input</key>
+                <description>DECK 1 PLAY/PAUSE</description>
                 <status>0x90</status>
                 <midino>0x00</midino>
                 <options>
@@ -26,6 +27,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.cue.input</key>
+                <description>DECK 1 CUE</description>
                 <status>0x90</status>
                 <midino>0x01</midino>
                 <options>
@@ -35,6 +37,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.sync.input</key>
+                <description>DECK 1 SYNC</description>
                 <status>0x90</status>
                 <midino>0x02</midino>
                 <options>
@@ -44,6 +47,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.sync.input</key>
+                <description>DECK 1 SYNC OFF</description>
                 <status>0x90</status>
                 <midino>0x03</midino>
                 <options>
@@ -53,6 +57,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.play.input</key>
+                <description>DECK 1 STUTTER</description>
                 <status>0x90</status>
                 <midino>0x04</midino>
                 <options>
@@ -62,6 +67,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.cue.input</key>
+                <description>DECK 1 CUE REWIND</description>
                 <status>0x90</status>
                 <midino>0x05</midino>
                 <options>
@@ -71,6 +77,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.tempoFader.inputMSB</key>
+                <description>DECK 1 TEMPO FADER (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x09</midino>
                 <options>
@@ -80,6 +87,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.tempoFader.inputLSB</key>
+                <description>DECK 1 TEMPO FADER (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x3B</midino>
                 <options>
@@ -89,6 +97,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.keylock.input</key>
+                <description>DECK 1 KEY LOCK</description>
                 <status>0x90</status>
                 <midino>0x0D</midino>
                 <options>
@@ -98,6 +107,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.keylock.input</key>
+                <description>DECK 1 TEMPO RANGE</description>
                 <status>0x90</status>
                 <midino>0x0E</midino>
                 <options>
@@ -106,126 +116,140 @@
             </control>
             <!-- Deck 1, Pad-state buttons (Hot-cue mode, loop mode, sampler mode) -->
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x00</midino><!-- [HOT CUE] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - HOT CUE</description>
+                <status>0x94</status>
+                <midino>0x00</midino><!-- [HOT CUE] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x02</midino><!-- [HOT CUE] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - FLIP</description>
+                <status>0x94</status>
+                <midino>0x02</midino><!-- [HOT CUE] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x03</midino><!-- [SHIFT] + [HOT CUE] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - CUE LOOP</description>
+                <status>0x94</status>
+                <midino>0x03</midino><!-- [SHIFT] + [HOT CUE] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x08</midino><!-- [ROLL] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - ROLL</description>
+                <status>0x94</status>
+                <midino>0x08</midino><!-- [ROLL] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x0D</midino><!-- [ROLL] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - LOOP</description>
+                <status>0x94</status>
+                <midino>0x0D</midino><!-- [ROLL] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x09</midino><!-- [SHIFT] + [ROLL] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - SLICER</description>
+                <status>0x94</status>
+                <midino>0x09</midino><!-- [SHIFT] + [ROLL] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x0A</midino><!-- [SHIFT] + [ROLL] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - SLICER LOOP</description>
+                <status>0x94</status>
+                <midino>0x0A</midino><!-- [SHIFT] + [ROLL] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x04</midino><!-- [TR] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - TR</description>
+                <status>0x94</status>
+                <midino>0x04</midino><!-- [TR] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x06</midino><!-- [TR] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - TR VELOCITY</description>
+                <status>0x94</status>
+                <midino>0x06</midino><!-- [TR] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x05</midino><!-- [SHIFT] + [TR] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - PATTERN</description>
+                <status>0x94</status>
+                <midino>0x05</midino><!-- [SHIFT] + [TR] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x0B</midino><!-- [SAMPLER] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - SAMPLER</description>
+                <status>0x94</status>
+                <midino>0x0B</midino><!-- [SAMPLER] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x0F</midino><!-- [SAMPLER] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - PITCH PLAY</description>
+                <status>0x94</status>
+                <midino>0x0F</midino><!-- [SAMPLER] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel1]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x94</status>
-              <midino>0x0C</midino><!-- [SHIFT] + [SAMPLER] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel1]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 1 PADS - VELOCITY</description>
+                <status>0x94</status>
+                <midino>0x0C</midino><!-- [SHIFT] + [SAMPLER] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <!-- Deck 1, Performance Pads -->
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 1</description>
                 <status>0x94</status>
                 <midino>0x14</midino>
                 <options>
@@ -235,6 +259,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 2</description>
                 <status>0x94</status>
                 <midino>0x15</midino>
                 <options>
@@ -244,6 +269,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 3</description>
                 <status>0x94</status>
                 <midino>0x16</midino>
                 <options>
@@ -253,6 +279,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 4</description>
                 <status>0x94</status>
                 <midino>0x17</midino>
                 <options>
@@ -262,6 +289,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 5</description>
                 <status>0x94</status>
                 <midino>0x18</midino>
                 <options>
@@ -271,6 +299,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 6</description>
                 <status>0x94</status>
                 <midino>0x19</midino>
                 <options>
@@ -280,6 +309,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 7</description>
                 <status>0x94</status>
                 <midino>0x1a</midino>
                 <options>
@@ -289,6 +319,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 8</description>
                 <status>0x94</status>
                 <midino>0x1b</midino>
                 <options>
@@ -299,6 +330,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 1 (shifted)</description>
                 <status>0x94</status>
                 <midino>0x1C</midino>
                 <options>
@@ -308,6 +340,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 2 (shifted)</description>
                 <status>0x94</status>
                 <midino>0x1D</midino>
                 <options>
@@ -317,6 +350,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 3 (shifted)</description>
                 <status>0x94</status>
                 <midino>0x1E</midino>
                 <options>
@@ -326,6 +360,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 4 (shifted)</description>
                 <status>0x94</status>
                 <midino>0x1F</midino>
                 <options>
@@ -335,6 +370,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 5 (shifted)</description>
                 <status>0x94</status>
                 <midino>0x20</midino>
                 <options>
@@ -344,6 +380,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 6 (shifted)</description>
                 <status>0x94</status>
                 <midino>0x21</midino>
                 <options>
@@ -353,6 +390,8 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 7 (shifted)</description>
+                <status>0x94</status>
                 <status>0x94</status>
                 <midino>0x22</midino>
                 <options>
@@ -362,6 +401,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 1 PAD 8 (shifted)</description>
                 <status>0x94</status>
                 <midino>0x23</midino>
                 <options>
@@ -372,6 +412,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.loopActive.input</key>
+                <description>DECK 1 LOOP ACTIVE</description>
                 <status>0x94</status>
                 <midino>0x32</midino>
                 <options>
@@ -381,6 +422,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.reloopExit.input</key>
+                <description>DECK 1 RELOOP/EXIT</description>
                 <status>0x94</status>
                 <midino>0x33</midino>
                 <options>
@@ -390,6 +432,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.loopHalve.input</key>
+                <description>DECK 1 LOOP 1/2X</description>
                 <status>0x94</status>
                 <midino>0x34</midino>
                 <options>
@@ -399,6 +442,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.loopDouble.input</key>
+                <description>DECK 1 LOOP 2X</description>
                 <status>0x94</status>
                 <midino>0x35</midino>
                 <options>
@@ -408,6 +452,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.loopShiftBackward.input</key>
+                <description>DECK 1 LOOP SHIFT 1/2X</description>
                 <status>0x94</status>
                 <midino>0x36</midino>
                 <options>
@@ -417,6 +462,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.loopShiftForward.input</key>
+                <description>DECK 1 LOOP SHIFT 2X</description>
                 <status>0x94</status>
                 <midino>0x37</midino>
                 <options>
@@ -426,6 +472,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.loopIn.input</key>
+                <description>DECK 1 LOOP IN</description>
                 <status>0x94</status>
                 <midino>0x38</midino>
                 <options>
@@ -435,24 +482,29 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.loopOut.input</key>
+                <description>DECK 1 LOOP OUT</description>
                 <status>0x94</status>
                 <midino>0x39</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!--<control>
+            <!--
+            <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.slotSelect.input</key>
+                <description>DECK 1 SLOT SELECT</description>
                 <status>0x94</status>
                 <midino>0x3b</midino>
                 <options>
                     <script-binding/>
                 </options>
-            </control>-->
+            </control>
+            -->
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.autoLoop.input</key>
+                <description>DECK 1 AUTO LOOP</description>
                 <status>0x94</status>
                 <midino>0x40</midino>
                 <options>
@@ -463,6 +515,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.wheelTouch</key>
+                <description>DECK 1 JOG WHEEL TOUCH</description>
                 <status>0x90</status>
                 <midino>0x06</midino>
                 <options>
@@ -472,6 +525,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.wheelTurn</key>
+                <description>DECK 1 JOG WHEEL TURN</description>
                 <status>0xB0</status>
                 <midino>0x06</midino>
                 <options>
@@ -481,6 +535,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.slipModeButton.input</key>
+                <description>DECK 1 VINYL MODE</description>
                 <status>0x90</status>
                 <midino>0x07</midino>
                 <options>
@@ -490,6 +545,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.slipModeButton.input</key>
+                <description>DECK 1 SLIP MODE</description>
                 <status>0x90</status>
                 <midino>0x0F</midino>
                 <options>
@@ -500,6 +556,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.pregain.inputMSB</key>
+                <description>DECK 1 TRIM (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x16</midino>
                 <options>
@@ -509,6 +566,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.pregain.inputLSB</key>
+                <description>DECK 1 TRIM (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x34</midino>
                 <options>
@@ -518,6 +576,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
                 <key>DJ505.leftDeck.eqKnob[3].inputMSB</key>
+                <description>DECK 1 EQ HI (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x17</midino>
                 <options>
@@ -527,6 +586,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
                 <key>DJ505.leftDeck.eqKnob[3].inputLSB</key>
+                <description>DECK 1 EQ HI (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x35</midino>
                 <options>
@@ -536,6 +596,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
                 <key>DJ505.leftDeck.eqKnob[2].inputMSB</key>
+                <description>DECK 1 EQ MID (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x18</midino>
                 <options>
@@ -545,6 +606,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
                 <key>DJ505.leftDeck.eqKnob[2].inputLSB</key>
+                <description>DECK 1 EQ MID (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x36</midino>
                 <options>
@@ -554,6 +616,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
                 <key>DJ505.leftDeck.eqKnob[1].inputMSB</key>
+                <description>DECK 1 EQ LOW (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x19</midino>
                 <options>
@@ -563,6 +626,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel1]_Effect1]</group>
                 <key>DJ505.leftDeck.eqKnob[1].inputLSB</key>
+                <description>DECK 1 EQ LOW (LSB)</description>
                 <status>0xB0</status>
                 <midino>0x37</midino>
                 <options>
@@ -572,6 +636,7 @@
             <control>
                 <group>[QuickEffectRack1_[Channel1]]</group>
                 <key>DJ505.leftDeck.filter.input</key>
+                <description>DECK 1 FILTER</description>
                 <status>0xB0</status>
                 <midino>0x1A</midino>
                 <options>
@@ -581,153 +646,77 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.pfl.input</key>
+                <description>DECK 1 CUE/PFL</description>
                 <status>0x90</status>
                 <midino>0x1B</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 1, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 1 PARAMETER 1 MINUS</description>
                 <status>0x94</status>
-                <midino>0x41</midino>
+                <midino>0x28</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 1, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 1 PARAMETER 1 PLUS</description>
                 <status>0x94</status>
-                <midino>0x42</midino>
+                <midino>0x29</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 1, Hot-Cue-Mode, Param- -->
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 1 PARAMETER 2 MINUS</description>
                 <status>0x94</status>
-                <midino>0x43</midino>
-                <options>
-                  <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 1, Hot-Cue-Mode, Param⁺ -->
-            <control>
-              <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x94</status>
-                <midino>0x44</midino>
-                <options>
-                  <script-binding/>
-                </options>
-            </control>
-            <!-- Deck1, Sampler-Mode, Param⁻ -->
-            <control>
-                <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x94</status>
-                <midino>0x45</midino>
+                <midino>0x2A</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck1, Sampler-Mode, Param⁺ -->
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 1 PARAMETER 2 PLUS</description>
                 <status>0x94</status>
-                <midino>0x46</midino>
+                <midino>0x2B</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 1, Loop-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x94</status>
-                <midino>0x49</midino>
+                <key>DJ505.leftDeck.tapBPM.input</key>
+                <description>DECK 1 TAP</description>
+                <status>0x90</status>
+                <midino>0x12</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 1, Loop-Mode, Shift+Param⁺ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x94</status>
-                <midino>0x4A</midino>
+                <key>DJ505.leftDeck.volume.inputMSB</key>
+                <description>DECK 1 VOLUME (MSB)</description>
+                <status>0xB0</status>
+                <midino>0x1C</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 1, Hot-Cue-Mode, Shift+Param⁻ -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x94</status>
-                <midino>0x4B</midino>
-                <options>
-                  <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 1, Hot-Cue-Mode, Shift+Param⁺ -->
-            <control>
-                <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x94</status>
-                <midino>0x4C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 1, Sampler-Mode, Shift+Param⁻ -->
-            <control>
-                <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x94</status>
-                <midino>0x4D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 1, Sample-Mode, Shift+Param⁺ -->
-            <control>
-                <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x94</status>
-                <midino>0x4E</midino>
-                <options>
-                  <script-binding/>
-                </options>
-            </control>
-           <control>
-               <group>[Channel1]</group>
-               <key>DJ505.leftDeck.tapBPM.input</key>
-               <status>0x90</status>
-               <midino>0x12</midino>
-               <options>
-                   <script-binding/>
-               </options>
-           </control>
-           <control>
-               <group>[Channel1]</group>
-               <key>DJ505.leftDeck.volume.inputMSB</key>
-               <status>0xB0</status>
-               <midino>0x1C</midino>
-               <options>
-                    <script-binding/>
-               </options>
-           </control>
-           <control>
-               <group>[Channel1]</group>
                 <key>DJ505.leftDeck.volume.inputLSB</key>
+                <description>DECK 1 VOLUME (MSB)</description>
                 <status>0xB0</status>
                 <midino>0x3A</midino>
                 <options>
@@ -738,6 +727,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.play.input</key>
+                <description>DECK 3 PLAY/PAUSE</description>
                 <status>0x92</status>
                 <midino>0x00</midino>
                 <options>
@@ -747,6 +737,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.cue.input</key>
+                <description>DECK 3 CUE</description>
                 <status>0x92</status>
                 <midino>0x01</midino>
                 <options>
@@ -756,6 +747,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.sync.input</key>
+                <description>DECK 3 SYNC</description>
                 <status>0x92</status>
                 <midino>0x02</midino>
                 <options>
@@ -765,6 +757,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.sync.input</key>
+                <description>DECK 3 SYNC OFF</description>
                 <status>0x92</status>
                 <midino>0x03</midino>
                 <options>
@@ -774,6 +767,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.play.input</key>
+                <description>DECK 3 STUTTER</description>
                 <status>0x92</status>
                 <midino>0x04</midino>
                 <options>
@@ -783,6 +777,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.cue.input</key>
+                <description>DECK 3 CUE REWIND</description>
                 <status>0x92</status>
                 <midino>0x05</midino>
                 <options>
@@ -792,6 +787,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.tempoFader.inputMSB</key>
+                <description>DECK 3 TEMPO FADER (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x09</midino>
                 <options>
@@ -801,6 +797,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.tempoFader.inputLSB</key>
+                <description>DECK 3 TEMPO FADER (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x3B</midino>
                 <options>
@@ -810,6 +807,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.keylock.input</key>
+                <description>DECK 3 KEY LOCK</description>
                 <status>0x92</status>
                 <midino>0x0D</midino>
                 <options>
@@ -819,6 +817,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.keylock.input</key>
+                <description>DECK 3 TEMPO RANGE</description>
                 <status>0x92</status>
                 <midino>0x0E</midino>
                 <options>
@@ -827,126 +826,140 @@
             </control>
             <!-- Deck 3, Pad-state buttons (Hot-cue mode, loop mode, sampler mode) -->
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x00</midino><!-- [HOT CUE] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - HOT CUE</description>
+                <status>0x96</status>
+                <midino>0x00</midino><!-- [HOT CUE] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x02</midino><!-- [HOT CUE] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - FLIP</description>
+                <status>0x96</status>
+                <midino>0x02</midino><!-- [HOT CUE] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x03</midino><!-- [SHIFT] + [HOT CUE] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - CUE LOOP</description>
+                <status>0x96</status>
+                <midino>0x03</midino><!-- [SHIFT] + [HOT CUE] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x08</midino><!-- [ROLL] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - ROLL</description>
+                <status>0x96</status>
+                <midino>0x08</midino><!-- [ROLL] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x0D</midino><!-- [ROLL] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - LOOP</description>
+                <status>0x96</status>
+                <midino>0x0D</midino><!-- [ROLL] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x09</midino><!-- [SHIFT] + [ROLL] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - SLICER</description>
+                <status>0x96</status>
+                <midino>0x09</midino><!-- [SHIFT] + [ROLL] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x0A</midino><!-- [SHIFT] + [ROLL] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - SLICER LOOP</description>
+                <status>0x96</status>
+                <midino>0x0A</midino><!-- [SHIFT] + [ROLL] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x04</midino><!-- [TR] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - TR</description>
+                <status>0x96</status>
+                <midino>0x04</midino><!-- [TR] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x06</midino><!-- [TR] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - TR VELOCITY</description>
+                <status>0x96</status>
+                <midino>0x06</midino><!-- [TR] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x05</midino><!-- [SHIFT] + [TR] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - PATTERN</description>
+                <status>0x96</status>
+                <midino>0x05</midino><!-- [SHIFT] + [TR] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x0B</midino><!-- [SAMPLER] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - SAMPLER</description>
+                <status>0x96</status>
+                <midino>0x0B</midino><!-- [SAMPLER] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x0F</midino><!-- [SAMPLER] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - PITCH PLAY</description>
+                <status>0x96</status>
+                <midino>0x0F</midino><!-- [SAMPLER] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel3]</group>
-              <key>DJ505.leftDeck.padSection.setState</key>
-              <status>0x96</status>
-              <midino>0x0C</midino><!-- [SHIFT] + [SAMPLER] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel3]</group>
+                <key>DJ505.leftDeck.padSection.setState</key>
+                <description>DECK 3 PADS - VELOCITY</description>
+                <status>0x96</status>
+                <midino>0x0C</midino><!-- [SHIFT] + [SAMPLER] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <!-- Deck 3, Performance Pads -->
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 1</description>
                 <status>0x96</status>
                 <midino>0x14</midino>
                 <options>
@@ -956,6 +969,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 2</description>
                 <status>0x96</status>
                 <midino>0x15</midino>
                 <options>
@@ -965,6 +979,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 3</description>
                 <status>0x96</status>
                 <midino>0x16</midino>
                 <options>
@@ -974,6 +989,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 4</description>
                 <status>0x96</status>
                 <midino>0x17</midino>
                 <options>
@@ -983,6 +999,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 5</description>
                 <status>0x96</status>
                 <midino>0x18</midino>
                 <options>
@@ -992,6 +1009,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 6</description>
                 <status>0x96</status>
                 <midino>0x19</midino>
                 <options>
@@ -1001,6 +1019,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 7</description>
                 <status>0x96</status>
                 <midino>0x1a</midino>
                 <options>
@@ -1010,6 +1029,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 8</description>
                 <status>0x96</status>
                 <midino>0x1b</midino>
                 <options>
@@ -1020,6 +1040,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 1 (shifted)</description>
                 <status>0x96</status>
                 <midino>0x1C</midino>
                 <options>
@@ -1029,6 +1050,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 2 (shifted)</description>
                 <status>0x96</status>
                 <midino>0x1D</midino>
                 <options>
@@ -1038,6 +1060,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 3 (shifted)</description>
                 <status>0x96</status>
                 <midino>0x1E</midino>
                 <options>
@@ -1047,6 +1070,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 4 (shifted)</description>
                 <status>0x96</status>
                 <midino>0x1F</midino>
                 <options>
@@ -1056,6 +1080,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 5 (shifted)</description>
                 <status>0x96</status>
                 <midino>0x20</midino>
                 <options>
@@ -1065,6 +1090,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 6 (shifted)</description>
                 <status>0x96</status>
                 <midino>0x21</midino>
                 <options>
@@ -1074,6 +1100,8 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 7 (shifted)</description>
+                <status>0x96</status>
                 <status>0x96</status>
                 <midino>0x22</midino>
                 <options>
@@ -1083,6 +1111,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.padPressed</key>
+                <description>DECK 3 PAD 8 (shifted)</description>
                 <status>0x96</status>
                 <midino>0x23</midino>
                 <options>
@@ -1093,6 +1122,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.loopActive.input</key>
+                <description>DECK 3 LOOP ACTIVE</description>
                 <status>0x96</status>
                 <midino>0x32</midino>
                 <options>
@@ -1102,6 +1132,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.reloopExit.input</key>
+                <description>DECK 3 RELOOP/EXIT</description>
                 <status>0x96</status>
                 <midino>0x33</midino>
                 <options>
@@ -1111,6 +1142,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.loopHalve.input</key>
+                <description>DECK 3 LOOP 1/2X</description>
                 <status>0x96</status>
                 <midino>0x34</midino>
                 <options>
@@ -1120,6 +1152,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.loopDouble.input</key>
+                <description>DECK 3 LOOP 2X</description>
                 <status>0x96</status>
                 <midino>0x35</midino>
                 <options>
@@ -1129,6 +1162,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.loopShiftBackward.input</key>
+                <description>DECK 3 LOOP SHIFT 1/2X</description>
                 <status>0x96</status>
                 <midino>0x36</midino>
                 <options>
@@ -1138,6 +1172,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.loopShiftForward.input</key>
+                <description>DECK 3 LOOP SHIFT 2X</description>
                 <status>0x96</status>
                 <midino>0x37</midino>
                 <options>
@@ -1147,6 +1182,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.loopIn.input</key>
+                <description>DECK 3 LOOP IN</description>
                 <status>0x96</status>
                 <midino>0x38</midino>
                 <options>
@@ -1156,24 +1192,29 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.loopOut.input</key>
+                <description>DECK 3 LOOP OUT</description>
                 <status>0x96</status>
                 <midino>0x39</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!--<control>
+            <!--
+            <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.slotSelect.input</key>
+                <description>DECK 3 SLOT SELECT</description>
                 <status>0x96</status>
                 <midino>0x3b</midino>
                 <options>
                     <script-binding/>
                 </options>
-            </control>-->
+            </control>
+            -->
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.autoLoop.input</key>
+                <description>DECK 3 AUTO LOOP</description>
                 <status>0x96</status>
                 <midino>0x40</midino>
                 <options>
@@ -1184,6 +1225,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.wheelTouch</key>
+                <description>DECK 3 JOG WHEEL TOUCH</description>
                 <status>0x92</status>
                 <midino>0x06</midino>
                 <options>
@@ -1193,6 +1235,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.wheelTurn</key>
+                <description>DECK 3 JOG WHEEL TURN</description>
                 <status>0xB2</status>
                 <midino>0x06</midino>
                 <options>
@@ -1202,6 +1245,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.slipModeButton.input</key>
+                <description>DECK 3 VINYL MODE</description>
                 <status>0x92</status>
                 <midino>0x07</midino>
                 <options>
@@ -1211,6 +1255,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.slipModeButton.input</key>
+                <description>DECK 3 SLIP MODE</description>
                 <status>0x92</status>
                 <midino>0x0F</midino>
                 <options>
@@ -1221,6 +1266,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.pregain.inputMSB</key>
+                <description>DECK 3 TRIM (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x16</midino>
                 <options>
@@ -1230,6 +1276,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.pregain.inputLSB</key>
+                <description>DECK 3 TRIM (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x34</midino>
                 <options>
@@ -1239,6 +1286,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
                 <key>DJ505.leftDeck.eqKnob[3].inputMSB</key>
+                <description>DECK 3 EQ HI (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x17</midino>
                 <options>
@@ -1248,6 +1296,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
                 <key>DJ505.leftDeck.eqKnob[3].inputLSB</key>
+                <description>DECK 3 EQ HI (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x35</midino>
                 <options>
@@ -1257,6 +1306,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
                 <key>DJ505.leftDeck.eqKnob[2].inputMSB</key>
+                <description>DECK 3 EQ MID (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x18</midino>
                 <options>
@@ -1266,6 +1316,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
                 <key>DJ505.leftDeck.eqKnob[2].inputLSB</key>
+                <description>DECK 3 EQ MID (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x36</midino>
                 <options>
@@ -1275,6 +1326,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
                 <key>DJ505.leftDeck.eqKnob[1].inputMSB</key>
+                <description>DECK 3 EQ LOW (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x19</midino>
                 <options>
@@ -1284,6 +1336,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel3]_Effect1]</group>
                 <key>DJ505.leftDeck.eqKnob[1].inputLSB</key>
+                <description>DECK 3 EQ LOW (LSB)</description>
                 <status>0xB2</status>
                 <midino>0x37</midino>
                 <options>
@@ -1293,6 +1346,7 @@
             <control>
                 <group>[QuickEffectRack1_[Channel3]]</group>
                 <key>DJ505.leftDeck.filter.input</key>
+                <description>DECK 3 FILTER</description>
                 <status>0xB2</status>
                 <midino>0x1A</midino>
                 <options>
@@ -1302,128 +1356,49 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.pfl.input</key>
+                <description>DECK 3 CUE/PFL</description>
                 <status>0x92</status>
                 <midino>0x1B</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 3, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 3 PARAMETER 1 MINUS</description>
                 <status>0x96</status>
-                <midino>0x41</midino>
+                <midino>0x28</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 3, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 3 PARAMETER 1 PLUS</description>
                 <status>0x96</status>
-                <midino>0x42</midino>
+                <midino>0x29</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 3, Hot-Cue-Mode, Param- -->
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 3 PARAMETER 2 MINUS</description>
                 <status>0x96</status>
-                <midino>0x43</midino>
+                <midino>0x2A</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 3, Hot-Cue-Mode, Param⁺ -->
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 3 PARAMETER 2 PLUS</description>
                 <status>0x96</status>
-                <midino>0x44</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck1, Sampler-Mode, Param⁻ -->
-            <control>
-                <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x96</status>
-                <midino>0x45</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck1, Sampler-Mode, Param⁺ -->
-            <control>
-                <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x96</status>
-                <midino>0x46</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 3, Loop-Mode, Shift+Param⁻ -->
-            <control>
-                <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x96</status>
-                <midino>0x49</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 3, Loop-Mode, Shift+Param⁺ -->
-            <control>
-                <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x96</status>
-                <midino>0x4A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 3, Hot-Cue-Mode, Shift+Param⁻ -->
-            <control>
-                <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x96</status>
-                <midino>0x4B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 3, Hot-Cue-Mode, Shift+Param⁺ -->
-            <control>
-                <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x96</status>
-                <midino>0x4C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 3, Sampler-Mode, Shift+Param⁻ -->
-            <control>
-                <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x96</status>
-                <midino>0x4D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 3, Sample-Mode, Shift+Param⁺ -->
-            <control>
-                <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
-                <status>0x96</status>
-                <midino>0x4E</midino>
+                <midino>0x2B</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1431,6 +1406,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.tapBPM.input</key>
+                <description>DECK 3 TAP</description>
                 <status>0x92</status>
                 <midino>0x12</midino>
                 <options>
@@ -1440,6 +1416,7 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.volume.inputMSB</key>
+                <description>DECK 3 VOLUME (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x1C</midino>
                 <options>
@@ -1449,117 +1426,9 @@
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.volume.inputLSB</key>
+                <description>DECK 3 VOLUME (MSB)</description>
                 <status>0xB2</status>
                 <midino>0x3A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- FX section, Decks 1&3 -->
-            <control>
-                <group>[Master]</group>
-                <key>DJ505.effectUnit[0].enableButtons[1].input</key>
-                <status>0x98</status>
-                <midino>0x00</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>DJ505.effectUnit[0].enableButtons[2].input</key>
-                <status>0x98</status>
-                <midino>0x01</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>DJ505.effectUnit[0].enableButtons[3].input</key>
-                <status>0x98</status>
-                <midino>0x02</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>DJ505.effectUnit[0].effectFocusButton.input</key>
-                <status>0x98</status>
-                <midino>0x04</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>DJ505.effectUnit[0].knobs[1].input</key>
-                <status>0xB8</status>
-                <midino>0x00</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>DJ505.effectUnit[0].knobs[2].input</key>
-                <status>0xB8</status>
-                <midino>0x01</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>DJ505.effectUnit[0].knobs[3].input</key>
-                <status>0xB8</status>
-                <midino>0x02</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>DJ505.effectUnit[0].dryWetKnob.input</key>
-                <status>0xB8</status>
-                <midino>0x03</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>DJ505.effectUnit[0].enableOnChannelButtons.Channel1.input</key>
-                <status>0x98</status>
-                <midino>0x05</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>DJ505.effectUnit[0].enableOnChannelButtons.Channel2.input</key>
-                <status>0x98</status>
-                <midino>0x06</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>DJ505.effectUnit[0].enableOnChannelButtons.Channel3.input</key>
-                <status>0x98</status>
-                <midino>0x07</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-                <group>[Master]</group>
-                <key>DJ505.effectUnit[0].enableOnChannelButtons.Channel4.input</key>
-                <status>0x98</status>
-                <midino>0x08</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -1568,6 +1437,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.play.input</key>
+                <description>DECK 2 PLAY/PAUSE</description>
                 <status>0x91</status>
                 <midino>0x00</midino>
                 <options>
@@ -1577,6 +1447,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.cue.input</key>
+                <description>DECK 2 CUE</description>
                 <status>0x91</status>
                 <midino>0x01</midino>
                 <options>
@@ -1586,6 +1457,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.sync.input</key>
+                <description>DECK 2 SYNC</description>
                 <status>0x91</status>
                 <midino>0x02</midino>
                 <options>
@@ -1595,6 +1467,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.sync.input</key>
+                <description>DECK 2 SYNC OFF</description>
                 <status>0x91</status>
                 <midino>0x03</midino>
                 <options>
@@ -1604,6 +1477,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.play.input</key>
+                <description>DECK 2 STUTTER</description>
                 <status>0x91</status>
                 <midino>0x04</midino>
                 <options>
@@ -1613,6 +1487,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.cue.input</key>
+                <description>DECK 2 CUE REWIND</description>
                 <status>0x91</status>
                 <midino>0x05</midino>
                 <options>
@@ -1622,6 +1497,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.tempoFader.inputMSB</key>
+                <description>DECK 2 TEMPO FADER (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x09</midino>
                 <options>
@@ -1631,6 +1507,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.tempoFader.inputLSB</key>
+                <description>DECK 2 TEMPO FADER (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x3B</midino>
                 <options>
@@ -1640,6 +1517,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.keylock.input</key>
+                <description>DECK 2 KEY LOCK</description>
                 <status>0x91</status>
                 <midino>0x0D</midino>
                 <options>
@@ -1649,6 +1527,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.keylock.input</key>
+                <description>DECK 2 TEMPO RANGE</description>
                 <status>0x91</status>
                 <midino>0x0E</midino>
                 <options>
@@ -1657,126 +1536,140 @@
             </control>
             <!-- Deck 2, Pad-state buttons (Hot-cue mode, loop mode, sampler mode) -->
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x00</midino><!-- [HOT CUE] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - HOT CUE</description>
+                <status>0x95</status>
+                <midino>0x00</midino><!-- [HOT CUE] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x02</midino><!-- [HOT CUE] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - FLIP</description>
+                <status>0x95</status>
+                <midino>0x02</midino><!-- [HOT CUE] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x03</midino><!-- [SHIFT] + [HOT CUE] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - CUE LOOP</description>
+                <status>0x95</status>
+                <midino>0x03</midino><!-- [SHIFT] + [HOT CUE] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x08</midino><!-- [ROLL] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - ROLL</description>
+                <status>0x95</status>
+                <midino>0x08</midino><!-- [ROLL] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x0D</midino><!-- [ROLL] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - LOOP</description>
+                <status>0x95</status>
+                <midino>0x0D</midino><!-- [ROLL] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x09</midino><!-- [SHIFT] + [ROLL] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - SLICER</description>
+                <status>0x95</status>
+                <midino>0x09</midino><!-- [SHIFT] + [ROLL] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x0A</midino><!-- [SHIFT] + [ROLL] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - SLICER LOOP</description>
+                <status>0x95</status>
+                <midino>0x0A</midino><!-- [SHIFT] + [ROLL] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x04</midino><!-- [TR] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - TR</description>
+                <status>0x95</status>
+                <midino>0x04</midino><!-- [TR] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x06</midino><!-- [TR] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - TR VELOCITY</description>
+                <status>0x95</status>
+                <midino>0x06</midino><!-- [TR] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x05</midino><!-- [SHIFT] + [TR] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - PATTERN</description>
+                <status>0x95</status>
+                <midino>0x05</midino><!-- [SHIFT] + [TR] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x0B</midino><!-- [SAMPLER] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - SAMPLER</description>
+                <status>0x95</status>
+                <midino>0x0B</midino><!-- [SAMPLER] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x0F</midino><!-- [SAMPLER] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - PITCH PLAY</description>
+                <status>0x95</status>
+                <midino>0x0F</midino><!-- [SAMPLER] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x95</status>
-              <midino>0x0C</midino><!-- [SHIFT] + [SAMPLER] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel2]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 2 PADS - VELOCITY</description>
+                <status>0x95</status>
+                <midino>0x0C</midino><!-- [SHIFT] + [SAMPLER] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <!-- Deck 2, Performance Pads -->
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 1</description>
                 <status>0x95</status>
                 <midino>0x14</midino>
                 <options>
@@ -1786,6 +1679,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 2</description>
                 <status>0x95</status>
                 <midino>0x15</midino>
                 <options>
@@ -1795,6 +1689,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 3</description>
                 <status>0x95</status>
                 <midino>0x16</midino>
                 <options>
@@ -1804,6 +1699,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 4</description>
                 <status>0x95</status>
                 <midino>0x17</midino>
                 <options>
@@ -1813,6 +1709,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 5</description>
                 <status>0x95</status>
                 <midino>0x18</midino>
                 <options>
@@ -1822,6 +1719,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 6</description>
                 <status>0x95</status>
                 <midino>0x19</midino>
                 <options>
@@ -1831,6 +1729,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 7</description>
                 <status>0x95</status>
                 <midino>0x1a</midino>
                 <options>
@@ -1840,6 +1739,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 8</description>
                 <status>0x95</status>
                 <midino>0x1b</midino>
                 <options>
@@ -1850,6 +1750,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 1 (shifted)</description>
                 <status>0x95</status>
                 <midino>0x1C</midino>
                 <options>
@@ -1859,6 +1760,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 2 (shifted)</description>
                 <status>0x95</status>
                 <midino>0x1D</midino>
                 <options>
@@ -1868,6 +1770,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 3 (shifted)</description>
                 <status>0x95</status>
                 <midino>0x1E</midino>
                 <options>
@@ -1877,6 +1780,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 4 (shifted)</description>
                 <status>0x95</status>
                 <midino>0x1F</midino>
                 <options>
@@ -1886,6 +1790,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 5 (shifted)</description>
                 <status>0x95</status>
                 <midino>0x20</midino>
                 <options>
@@ -1895,6 +1800,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 6 (shifted)</description>
                 <status>0x95</status>
                 <midino>0x21</midino>
                 <options>
@@ -1904,6 +1810,8 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 7 (shifted)</description>
+                <status>0x95</status>
                 <status>0x95</status>
                 <midino>0x22</midino>
                 <options>
@@ -1913,6 +1821,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 2 PAD 8 (shifted)</description>
                 <status>0x95</status>
                 <midino>0x23</midino>
                 <options>
@@ -1923,6 +1832,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.loopActive.input</key>
+                <description>DECK 2 LOOP ACTIVE</description>
                 <status>0x95</status>
                 <midino>0x32</midino>
                 <options>
@@ -1932,6 +1842,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.reloopExit.input</key>
+                <description>DECK 2 RELOOP/EXIT</description>
                 <status>0x95</status>
                 <midino>0x33</midino>
                 <options>
@@ -1941,6 +1852,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.loopHalve.input</key>
+                <description>DECK 2 LOOP 1/2X</description>
                 <status>0x95</status>
                 <midino>0x34</midino>
                 <options>
@@ -1950,6 +1862,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.loopDouble.input</key>
+                <description>DECK 2 LOOP 2X</description>
                 <status>0x95</status>
                 <midino>0x35</midino>
                 <options>
@@ -1959,6 +1872,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.loopShiftBackward.input</key>
+                <description>DECK 2 LOOP SHIFT 1/2X</description>
                 <status>0x95</status>
                 <midino>0x36</midino>
                 <options>
@@ -1968,6 +1882,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.loopShiftForward.input</key>
+                <description>DECK 2 LOOP SHIFT 2X</description>
                 <status>0x95</status>
                 <midino>0x37</midino>
                 <options>
@@ -1977,6 +1892,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.loopIn.input</key>
+                <description>DECK 2 LOOP IN</description>
                 <status>0x95</status>
                 <midino>0x38</midino>
                 <options>
@@ -1986,24 +1902,29 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.loopOut.input</key>
+                <description>DECK 2 LOOP OUT</description>
                 <status>0x95</status>
                 <midino>0x39</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!--<control>
+            <!--
+            <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.slotSelect.input</key>
+                <description>DECK 2 SLOT SELECT</description>
                 <status>0x95</status>
                 <midino>0x3b</midino>
                 <options>
                     <script-binding/>
                 </options>
-            </control>-->
+            </control>
+            -->
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.autoLoop.input</key>
+                <description>DECK 2 AUTO LOOP</description>
                 <status>0x95</status>
                 <midino>0x40</midino>
                 <options>
@@ -2014,6 +1935,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.wheelTouch</key>
+                <description>DECK 2 JOG WHEEL TOUCH</description>
                 <status>0x91</status>
                 <midino>0x06</midino>
                 <options>
@@ -2023,6 +1945,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.wheelTurn</key>
+                <description>DECK 2 JOG WHEEL TURN</description>
                 <status>0xB1</status>
                 <midino>0x06</midino>
                 <options>
@@ -2032,6 +1955,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.slipModeButton.input</key>
+                <description>DECK 2 VINYL MODE</description>
                 <status>0x91</status>
                 <midino>0x07</midino>
                 <options>
@@ -2041,6 +1965,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.slipModeButton.input</key>
+                <description>DECK 2 SLIP MODE</description>
                 <status>0x91</status>
                 <midino>0x0F</midino>
                 <options>
@@ -2051,6 +1976,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.pregain.inputMSB</key>
+                <description>DECK 2 TRIM (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x16</midino>
                 <options>
@@ -2060,6 +1986,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.pregain.inputLSB</key>
+                <description>DECK 2 TRIM (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x34</midino>
                 <options>
@@ -2069,6 +1996,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>DJ505.rightDeck.eqKnob[3].inputMSB</key>
+                <description>DECK 2 EQ HI (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x17</midino>
                 <options>
@@ -2078,6 +2006,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>DJ505.rightDeck.eqKnob[3].inputLSB</key>
+                <description>DECK 2 EQ HI (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x35</midino>
                 <options>
@@ -2087,6 +2016,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>DJ505.rightDeck.eqKnob[2].inputMSB</key>
+                <description>DECK 2 EQ MID (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x18</midino>
                 <options>
@@ -2096,6 +2026,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>DJ505.rightDeck.eqKnob[2].inputLSB</key>
+                <description>DECK 2 EQ MID (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x36</midino>
                 <options>
@@ -2105,6 +2036,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>DJ505.rightDeck.eqKnob[1].inputMSB</key>
+                <description>DECK 2 EQ LOW (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x19</midino>
                 <options>
@@ -2114,6 +2046,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel2]_Effect1]</group>
                 <key>DJ505.rightDeck.eqKnob[1].inputLSB</key>
+                <description>DECK 2 EQ LOW (LSB)</description>
                 <status>0xB1</status>
                 <midino>0x37</midino>
                 <options>
@@ -2123,6 +2056,7 @@
             <control>
                 <group>[QuickEffectRack1_[Channel2]]</group>
                 <key>DJ505.rightDeck.filter.input</key>
+                <description>DECK 2 FILTER</description>
                 <status>0xB1</status>
                 <midino>0x1A</midino>
                 <options>
@@ -2132,128 +2066,49 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.pfl.input</key>
+                <description>DECK 2 CUE/PFL</description>
                 <status>0x91</status>
                 <midino>0x1B</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 2, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 2 PARAMETER 1 MINUS</description>
                 <status>0x95</status>
-                <midino>0x41</midino>
+                <midino>0x28</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 2, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 2 PARAMETER 1 PLUS</description>
                 <status>0x95</status>
-                <midino>0x42</midino>
+                <midino>0x29</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 2, Hot-Cue-Mode, Param⁻ -->
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 2 PARAMETER 2 MINUS</description>
                 <status>0x95</status>
-                <midino>0x43</midino>
+                <midino>0x2A</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 2, Hot-Cue-Mode, Param⁺ -->
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 2 PARAMETER 2 PLUS</description>
                 <status>0x95</status>
-                <midino>0x44</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 2, Sampler-Mode, Param⁻ -->
-            <control>
-                <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x95</status>
-                <midino>0x45</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 2, Sampler-Mode, Param⁺ -->
-            <control>
-                <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x95</status>
-                <midino>0x46</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 2, Loop-Mode, Shift+Param⁻ -->
-            <control>
-                <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x95</status>
-                <midino>0x49</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 2, Loop-Mode, Shift+Param⁺ -->
-            <control>
-                <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x95</status>
-                <midino>0x4A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 2, Hot-Cue-Mode, Shift+Param⁻ -->
-            <control>
-                <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x95</status>
-                <midino>0x4B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 2, Hot-Cue-Mode, Shift+Param⁺ -->
-            <control>
-                <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x95</status>
-                <midino>0x4C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 2, Sampler-Mode, Shift+Param⁻ -->
-            <control>
-                <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x95</status>
-                <midino>0x4D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 2, Sample-Mode, Shift+Param⁺ -->
-            <control>
-                <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x95</status>
-                <midino>0x4E</midino>
+                <midino>0x2B</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2261,6 +2116,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.tapBPM.input</key>
+                <description>DECK 2 TAP</description>
                 <status>0x91</status>
                 <midino>0x12</midino>
                 <options>
@@ -2270,6 +2126,7 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.volume.inputMSB</key>
+                <description>DECK 2 VOLUME (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x1C</midino>
                 <options>
@@ -2279,18 +2136,10 @@
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.volume.inputLSB</key>
+                <description>DECK 2 VOLUME (MSB)</description>
                 <status>0xB1</status>
                 <midino>0x3A</midino>
                 <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
-              <group>[Channel2]</group>
-              <key>DJ505.rightDeck.volume.inputLSB</key>
-              <status>0xB1</status>
-              <midino>0x3A</midino>
-              <options>
                     <script-binding/>
                 </options>
             </control>
@@ -2298,6 +2147,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.play.input</key>
+                <description>DECK 4 PLAY/PAUSE</description>
                 <status>0x93</status>
                 <midino>0x00</midino>
                 <options>
@@ -2307,6 +2157,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.cue.input</key>
+                <description>DECK 4 CUE</description>
                 <status>0x93</status>
                 <midino>0x01</midino>
                 <options>
@@ -2316,6 +2167,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.sync.input</key>
+                <description>DECK 4 SYNC</description>
                 <status>0x93</status>
                 <midino>0x02</midino>
                 <options>
@@ -2325,6 +2177,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.sync.input</key>
+                <description>DECK 4 SYNC OFF</description>
                 <status>0x93</status>
                 <midino>0x03</midino>
                 <options>
@@ -2334,6 +2187,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.play.input</key>
+                <description>DECK 4 STUTTER</description>
                 <status>0x93</status>
                 <midino>0x04</midino>
                 <options>
@@ -2343,6 +2197,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.cue.input</key>
+                <description>DECK 4 CUE REWIND</description>
                 <status>0x93</status>
                 <midino>0x05</midino>
                 <options>
@@ -2352,6 +2207,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.tempoFader.inputMSB</key>
+                <description>DECK 4 TEMPO FADER (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x09</midino>
                 <options>
@@ -2361,6 +2217,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.tempoFader.inputLSB</key>
+                <description>DECK 4 TEMPO FADER (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x3B</midino>
                 <options>
@@ -2370,6 +2227,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.keylock.input</key>
+                <description>DECK 4 KEY LOCK</description>
                 <status>0x93</status>
                 <midino>0x0D</midino>
                 <options>
@@ -2379,6 +2237,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.keylock.input</key>
+                <description>DECK 4 TEMPO RANGE</description>
                 <status>0x93</status>
                 <midino>0x0E</midino>
                 <options>
@@ -2387,126 +2246,140 @@
             </control>
             <!-- Deck 4, Pad-state buttons (Hot-cue mode, loop mode, sampler mode) -->
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x00</midino><!-- [HOT CUE] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - HOT CUE</description>
+                <status>0x97</status>
+                <midino>0x00</midino><!-- [HOT CUE] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x02</midino><!-- [HOT CUE] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - FLIP</description>
+                <status>0x97</status>
+                <midino>0x02</midino><!-- [HOT CUE] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x03</midino><!-- [SHIFT] + [HOT CUE] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - CUE LOOP</description>
+                <status>0x97</status>
+                <midino>0x03</midino><!-- [SHIFT] + [HOT CUE] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x08</midino><!-- [ROLL] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - ROLL</description>
+                <status>0x97</status>
+                <midino>0x08</midino><!-- [ROLL] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x0D</midino><!-- [ROLL] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - LOOP</description>
+                <status>0x97</status>
+                <midino>0x0D</midino><!-- [ROLL] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x09</midino><!-- [SHIFT] + [ROLL] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - SLICER</description>
+                <status>0x97</status>
+                <midino>0x09</midino><!-- [SHIFT] + [ROLL] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x0A</midino><!-- [SHIFT] + [ROLL] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - SLICER LOOP</description>
+                <status>0x97</status>
+                <midino>0x0A</midino><!-- [SHIFT] + [ROLL] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x04</midino><!-- [TR] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - TR</description>
+                <status>0x97</status>
+                <midino>0x04</midino><!-- [TR] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x06</midino><!-- [TR] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - TR VELOCITY</description>
+                <status>0x97</status>
+                <midino>0x06</midino><!-- [TR] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x05</midino><!-- [SHIFT] + [TR] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - PATTERN</description>
+                <status>0x97</status>
+                <midino>0x05</midino><!-- [SHIFT] + [TR] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x0B</midino><!-- [SAMPLER] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - SAMPLER</description>
+                <status>0x97</status>
+                <midino>0x0B</midino><!-- [SAMPLER] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x0F</midino><!-- [SAMPLER] (press twice) -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - PITCH PLAY</description>
+                <status>0x97</status>
+                <midino>0x0F</midino><!-- [SAMPLER] (press twice) -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <control>
-              <group>[Channel4]</group>
-              <key>DJ505.rightDeck.padSection.setState</key>
-              <status>0x97</status>
-              <midino>0x0C</midino><!-- [SHIFT] + [SAMPLER] -->
-              <options>
-                <script-binding/>
-              </options>
+                <group>[Channel4]</group>
+                <key>DJ505.rightDeck.padSection.setState</key>
+                <description>DECK 4 PADS - VELOCITY</description>
+                <status>0x97</status>
+                <midino>0x0C</midino><!-- [SHIFT] + [SAMPLER] -->
+                <options>
+                    <script-binding/>
+                </options>
             </control>
             <!-- Deck 4, Performance Pads -->
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 1</description>
                 <status>0x97</status>
                 <midino>0x14</midino>
                 <options>
@@ -2516,6 +2389,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 2</description>
                 <status>0x97</status>
                 <midino>0x15</midino>
                 <options>
@@ -2525,6 +2399,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 3</description>
                 <status>0x97</status>
                 <midino>0x16</midino>
                 <options>
@@ -2534,6 +2409,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 4</description>
                 <status>0x97</status>
                 <midino>0x17</midino>
                 <options>
@@ -2543,6 +2419,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 5</description>
                 <status>0x97</status>
                 <midino>0x18</midino>
                 <options>
@@ -2552,6 +2429,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 6</description>
                 <status>0x97</status>
                 <midino>0x19</midino>
                 <options>
@@ -2561,6 +2439,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 7</description>
                 <status>0x97</status>
                 <midino>0x1a</midino>
                 <options>
@@ -2570,6 +2449,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 8</description>
                 <status>0x97</status>
                 <midino>0x1b</midino>
                 <options>
@@ -2580,6 +2460,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 1 (shifted)</description>
                 <status>0x97</status>
                 <midino>0x1C</midino>
                 <options>
@@ -2589,6 +2470,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 2 (shifted)</description>
                 <status>0x97</status>
                 <midino>0x1D</midino>
                 <options>
@@ -2598,6 +2480,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 3 (shifted)</description>
                 <status>0x97</status>
                 <midino>0x1E</midino>
                 <options>
@@ -2607,6 +2490,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 4 (shifted)</description>
                 <status>0x97</status>
                 <midino>0x1F</midino>
                 <options>
@@ -2616,6 +2500,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 5 (shifted)</description>
                 <status>0x97</status>
                 <midino>0x20</midino>
                 <options>
@@ -2625,6 +2510,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 6 (shifted)</description>
                 <status>0x97</status>
                 <midino>0x21</midino>
                 <options>
@@ -2634,6 +2520,8 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 7 (shifted)</description>
+                <status>0x97</status>
                 <status>0x97</status>
                 <midino>0x22</midino>
                 <options>
@@ -2643,6 +2531,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.padPressed</key>
+                <description>DECK 4 PAD 8 (shifted)</description>
                 <status>0x97</status>
                 <midino>0x23</midino>
                 <options>
@@ -2653,6 +2542,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.loopActive.input</key>
+                <description>DECK 4 LOOP ACTIVE</description>
                 <status>0x97</status>
                 <midino>0x32</midino>
                 <options>
@@ -2662,6 +2552,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.reloopExit.input</key>
+                <description>DECK 4 RELOOP/EXIT</description>
                 <status>0x97</status>
                 <midino>0x33</midino>
                 <options>
@@ -2671,6 +2562,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.loopHalve.input</key>
+                <description>DECK 4 LOOP 1/2X</description>
                 <status>0x97</status>
                 <midino>0x34</midino>
                 <options>
@@ -2680,6 +2572,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.loopDouble.input</key>
+                <description>DECK 4 LOOP 2X</description>
                 <status>0x97</status>
                 <midino>0x35</midino>
                 <options>
@@ -2689,6 +2582,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.loopShiftBackward.input</key>
+                <description>DECK 4 LOOP SHIFT 1/2X</description>
                 <status>0x97</status>
                 <midino>0x36</midino>
                 <options>
@@ -2698,6 +2592,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.loopShiftForward.input</key>
+                <description>DECK 4 LOOP SHIFT 2X</description>
                 <status>0x97</status>
                 <midino>0x37</midino>
                 <options>
@@ -2707,6 +2602,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.loopIn.input</key>
+                <description>DECK 4 LOOP IN</description>
                 <status>0x97</status>
                 <midino>0x38</midino>
                 <options>
@@ -2716,24 +2612,29 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.loopOut.input</key>
+                <description>DECK 4 LOOP OUT</description>
                 <status>0x97</status>
                 <midino>0x39</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!--<control>
+            <!--
+            <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.slotSelect.input</key>
+                <description>DECK 4 SLOT SELECT</description>
                 <status>0x97</status>
                 <midino>0x3b</midino>
                 <options>
                     <script-binding/>
                 </options>
-            </control>-->
+            </control>
+            -->
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.autoLoop.input</key>
+                <description>DECK 4 AUTO LOOP</description>
                 <status>0x97</status>
                 <midino>0x40</midino>
                 <options>
@@ -2744,6 +2645,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.wheelTouch</key>
+                <description>DECK 4 JOG WHEEL TOUCH</description>
                 <status>0x93</status>
                 <midino>0x06</midino>
                 <options>
@@ -2753,6 +2655,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.wheelTurn</key>
+                <description>DECK 4 JOG WHEEL TURN</description>
                 <status>0xB3</status>
                 <midino>0x06</midino>
                 <options>
@@ -2762,6 +2665,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.slipModeButton.input</key>
+                <description>DECK 4 VINYL MODE</description>
                 <status>0x93</status>
                 <midino>0x07</midino>
                 <options>
@@ -2771,6 +2675,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.slipModeButton.input</key>
+                <description>DECK 4 SLIP MODE</description>
                 <status>0x93</status>
                 <midino>0x0F</midino>
                 <options>
@@ -2781,6 +2686,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.pregain.inputMSB</key>
+                <description>DECK 4 TRIM (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x16</midino>
                 <options>
@@ -2790,6 +2696,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.pregain.inputLSB</key>
+                <description>DECK 4 TRIM (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x34</midino>
                 <options>
@@ -2799,6 +2706,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
                 <key>DJ505.rightDeck.eqKnob[3].inputMSB</key>
+                <description>DECK 4 EQ HI (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x17</midino>
                 <options>
@@ -2808,6 +2716,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
                 <key>DJ505.rightDeck.eqKnob[3].inputLSB</key>
+                <description>DECK 4 EQ HI (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x35</midino>
                 <options>
@@ -2817,6 +2726,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
                 <key>DJ505.rightDeck.eqKnob[2].inputMSB</key>
+                <description>DECK 4 EQ MID (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x18</midino>
                 <options>
@@ -2826,6 +2736,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
                 <key>DJ505.rightDeck.eqKnob[2].inputLSB</key>
+                <description>DECK 4 EQ MID (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x36</midino>
                 <options>
@@ -2835,6 +2746,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
                 <key>DJ505.rightDeck.eqKnob[1].inputMSB</key>
+                <description>DECK 4 EQ LOW (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x19</midino>
                 <options>
@@ -2844,6 +2756,7 @@
             <control>
                 <group>[EqualizerRack1_[Channel4]_Effect1]</group>
                 <key>DJ505.rightDeck.eqKnob[1].inputLSB</key>
+                <description>DECK 4 EQ LOW (LSB)</description>
                 <status>0xB3</status>
                 <midino>0x37</midino>
                 <options>
@@ -2853,6 +2766,7 @@
             <control>
                 <group>[QuickEffectRack1_[Channel4]]</group>
                 <key>DJ505.rightDeck.filter.input</key>
+                <description>DECK 4 FILTER</description>
                 <status>0xB3</status>
                 <midino>0x1A</midino>
                 <options>
@@ -2862,128 +2776,49 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.pfl.input</key>
+                <description>DECK 4 CUE/PFL</description>
                 <status>0x93</status>
                 <midino>0x1B</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 4, Loop-Mode, Param⁻ -->
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 4 PARAMETER 1 MINUS</description>
                 <status>0x97</status>
-                <midino>0x41</midino>
+                <midino>0x28</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 4, Loop-Mode, Param⁺ -->
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 4 PARAMETER 1 PLUS</description>
                 <status>0x97</status>
-                <midino>0x42</midino>
+                <midino>0x29</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 4, Hot-Cue-Mode, Param⁻ -->
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 4 PARAMETER 2 MINUS</description>
                 <status>0x97</status>
-                <midino>0x43</midino>
+                <midino>0x2A</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- Deck 4, Hot-Cue-Mode, Param⁺ -->
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <description>DECK 4 PARAMETER 2 PLUS</description>
                 <status>0x97</status>
-                <midino>0x44</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 4, Sampler-Mode, Param⁻ -->
-            <control>
-                <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x97</status>
-                <midino>0x45</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 4, Sampler-Mode, Param⁺ -->
-            <control>
-                <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x97</status>
-                <midino>0x46</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 4, Loop-Mode, Shift+Param⁻ -->
-            <control>
-                <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x97</status>
-                <midino>0x49</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 4, Loop-Mode, Shift+Param⁺ -->
-            <control>
-                <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x97</status>
-                <midino>0x4A</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 4, Hot-Cue-Mode, Shift+Param⁻ -->
-            <control>
-                <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x97</status>
-                <midino>0x4B</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 4, Hot-Cue-Mode, Shift+Param⁺ -->
-            <control>
-                <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x97</status>
-                <midino>0x4C</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 4, Sampler-Mode, Shift+Param⁻ -->
-            <control>
-                <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x97</status>
-                <midino>0x4D</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <!-- Deck 4, Sample-Mode, Shift+Param⁺ -->
-            <control>
-                <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
-                <status>0x97</status>
-                <midino>0x4E</midino>
+                <midino>0x2B</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -2991,6 +2826,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.tapBPM.input</key>
+                <description>DECK 4 TAP</description>
                 <status>0x93</status>
                 <midino>0x12</midino>
                 <options>
@@ -3000,6 +2836,7 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.volume.inputMSB</key>
+                <description>DECK 4 VOLUME (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x1C</midino>
                 <options>
@@ -3009,15 +2846,18 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.volume.inputLSB</key>
+                <description>DECK 4 VOLUME (MSB)</description>
                 <status>0xB3</status>
                 <midino>0x3A</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
+            <!-- Deck 3/4 Buttons -->
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.setDeck.input</key>
+                <description>DECK 3 ENABLE</description>
                 <status>0x90</status>
                 <midino>0x08</midino>
                 <options>
@@ -3027,16 +2867,232 @@
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.setDeck.input</key>
+                <description>DECK 4 ENABLE</description>
                 <status>0x91</status>
                 <midino>0x08</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- FX section, Decks 2&4 -->
+            <!-- FX 1 -->
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].enableButtons[1].input</key>
+                <description>FX 1 ON 1</description>
+                <status>0x98</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].enableButtons[2].input</key>
+                <description>FX 1 ON 2</description>
+                <status>0x98</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].enableButtons[3].input</key>
+                <description>FX 1 ON 3</description>
+                <status>0x98</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].effectFocusButton.input</key>
+                <description>FX 1 TAP</description>
+                <status>0x98</status>
+                <midino>0x04</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].enableButtons[1].input</key>
+                <description>FX 1 FX SELECT 1</description>
+                <status>0x98</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].enableButtons[2].input</key>
+                <description>FX 1 FX SELECT 2</description>
+                <status>0x98</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].enableButtons[3].input</key>
+                <description>FX 1 FX SELECT 3</description>
+                <status>0x98</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].effectFocusButton.input</key>
+                <description>FX 1 FX MODE</description>
+                <status>0x98</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].knobs[1].input</key>
+                <description>FX 1 KNOB 1</description>
+                <status>0xB8</status>
+                <midino>0x00</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].knobs[2].input</key>
+                <description>FX 1 KNOB 2</description>
+                <status>0xB8</status>
+                <midino>0x01</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].knobs[3].input</key>
+                <description>FX 1 KNOB 3</description>
+                <status>0xB8</status>
+                <status>0xB8</status>
+                <midino>0x02</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].knobs[1].input</key>
+                <description>FX 1 KNOB 1 (shifted)</description>
+                <status>0xB8</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].knobs[2].input</key>
+                <description>FX 1 KNOB 2 (shifted)</description>
+                <status>0xB8</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].knobs[3].input</key>
+                <description>FX 1 KNOB 3 (shifted)</description>
+                <status>0xB8</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].dryWetKnob.input</key>
+                <description>FX 1 BEATS KNOB</description>
+                <status>0xB8</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].dryWetKnob.input</key>
+                <description>FX 1 BEATS KNOB PRESS</description>
+                <status>0x98</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].enableOnChannelButtons.Channel1.input</key>
+                <description>FX 1 CH ASSIGN 1</description>
+                <status>0x98</status>
+                <midino>0x05</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].enableOnChannelButtons.Channel2.input</key>
+                <description>FX 1 CH ASSIGN 2</description>
+                <status>0x98</status>
+                <midino>0x06</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].enableOnChannelButtons.Channel3.input</key>
+                <description>FX 1 CH ASSIGN 3</description>
+                <status>0x98</status>
+                <midino>0x07</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[0].enableOnChannelButtons.Channel4.input</key>
+                <description>FX 1 CH ASSIGN 4</description>
+                <status>0x98</status>
+                <midino>0x08</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <!--
+            <control>
+                <group>[Master]</group>
+                <description>FX 2 CH ASSIGN TR/SAMPLER</description>
+                <status>0x99</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            -->
+
+            <!-- FX 2 -->
             <control>
                 <group>[Master]</group>
                 <key>DJ505.effectUnit[1].enableButtons[1].input</key>
+                <description>FX 2 ON 1</description>
                 <status>0x99</status>
                 <midino>0x00</midino>
                 <options>
@@ -3046,6 +3102,7 @@
             <control>
                 <group>[Master]</group>
                 <key>DJ505.effectUnit[1].enableButtons[2].input</key>
+                <description>FX 2 ON 2</description>
                 <status>0x99</status>
                 <midino>0x01</midino>
                 <options>
@@ -3055,6 +3112,7 @@
             <control>
                 <group>[Master]</group>
                 <key>DJ505.effectUnit[1].enableButtons[3].input</key>
+                <description>FX 2 ON 3</description>
                 <status>0x99</status>
                 <midino>0x02</midino>
                 <options>
@@ -3064,6 +3122,7 @@
             <control>
                 <group>[Master]</group>
                 <key>DJ505.effectUnit[1].effectFocusButton.input</key>
+                <description>FX 2 TAP</description>
                 <status>0x99</status>
                 <midino>0x04</midino>
                 <options>
@@ -3072,7 +3131,48 @@
             </control>
             <control>
                 <group>[Master]</group>
+                <key>DJ505.effectUnit[1].enableButtons[1].input</key>
+                <description>FX 2 FX SELECT 1</description>
+                <status>0x99</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[1].enableButtons[2].input</key>
+                <description>FX 2 FX SELECT 2</description>
+                <status>0x99</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[1].enableButtons[3].input</key>
+                <description>FX 2 FX SELECT 3</description>
+                <status>0x99</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[1].effectFocusButton.input</key>
+                <description>FX 2 FX MODE</description>
+                <status>0x99</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
                 <key>DJ505.effectUnit[1].knobs[1].input</key>
+                <description>FX 2 KNOB 1</description>
                 <status>0xB9</status>
                 <midino>0x00</midino>
                 <options>
@@ -3082,6 +3182,7 @@
             <control>
                 <group>[Master]</group>
                 <key>DJ505.effectUnit[1].knobs[2].input</key>
+                <description>FX 2 KNOB 2</description>
                 <status>0xB9</status>
                 <midino>0x01</midino>
                 <options>
@@ -3091,6 +3192,8 @@
             <control>
                 <group>[Master]</group>
                 <key>DJ505.effectUnit[1].knobs[3].input</key>
+                <description>FX 2 KNOB 3</description>
+                <status>0xB9</status>
                 <status>0xB9</status>
                 <midino>0x02</midino>
                 <options>
@@ -3099,7 +3202,38 @@
             </control>
             <control>
                 <group>[Master]</group>
+                <key>DJ505.effectUnit[1].knobs[1].input</key>
+                <description>FX 2 KNOB 1 (shifted)</description>
+                <status>0xB9</status>
+                <midino>0x0B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[1].knobs[2].input</key>
+                <description>FX 2 KNOB 2 (shifted)</description>
+                <status>0xB9</status>
+                <midino>0x0C</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.effectUnit[1].knobs[3].input</key>
+                <description>FX 2 KNOB 3 (shifted)</description>
+                <status>0xB9</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
                 <key>DJ505.effectUnit[1].dryWetKnob.input</key>
+                <description>FX 2 BEATS KNOB</description>
                 <status>0xB9</status>
                 <midino>0x03</midino>
                 <options>
@@ -3108,7 +3242,18 @@
             </control>
             <control>
                 <group>[Master]</group>
+                <key>DJ505.effectUnit[1].dryWetKnob.input</key>
+                <description>FX 2 BEATS KNOB PRESS</description>
+                <status>0x99</status>
+                <midino>0x03</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
                 <key>DJ505.effectUnit[1].enableOnChannelButtons.Channel1.input</key>
+                <description>FX 2 CH ASSIGN 1</description>
                 <status>0x99</status>
                 <midino>0x05</midino>
                 <options>
@@ -3118,6 +3263,7 @@
             <control>
                 <group>[Master]</group>
                 <key>DJ505.effectUnit[1].enableOnChannelButtons.Channel2.input</key>
+                <description>FX 2 CH ASSIGN 2</description>
                 <status>0x99</status>
                 <midino>0x06</midino>
                 <options>
@@ -3127,6 +3273,7 @@
             <control>
                 <group>[Master]</group>
                 <key>DJ505.effectUnit[1].enableOnChannelButtons.Channel3.input</key>
+                <description>FX 2 CH ASSIGN 3</description>
                 <status>0x99</status>
                 <midino>0x07</midino>
                 <options>
@@ -3135,17 +3282,31 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>DJ505.effectUnit[1].enableOnChannelButtons.Channel3.input</key>
+                <key>DJ505.effectUnit[1].enableOnChannelButtons.Channel4.input</key>
+                <description>FX 2 CH ASSIGN 4</description>
                 <status>0x99</status>
                 <midino>0x08</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <!-- general -->
+            <!--
+            <control>
+                <group>[Master]</group>
+                <description>FX 2 CH ASSIGN TR/SAMPLER</description>
+                <status>0x99</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            -->
+
+            <!-- General -->
             <control>
                 <group>[Master]</group>
                 <key>DJ505.shiftButton</key>
+                <description>SHIFT</description>
                 <status>0x9F</status>
                 <midino>0x00</midino>
                 <options>
@@ -3155,6 +3316,7 @@
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.leftDeck.loadTrack.input</key>
+                <description>DECK 1 LOAD</description>
                 <status>0x9F</status>
                 <midino>0x02</midino>
                 <options>
@@ -3162,17 +3324,9 @@
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>DJ505.leftDeck.loadTrack.input</key>
-                <status>0x9F</status>
-                <midino>0x13</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel3]</group>
                 <key>DJ505.leftDeck.loadTrack.input</key>
+                <description>DECK 3 LOAD</description>
                 <status>0x9F</status>
                 <midino>0x04</midino>
                 <options>
@@ -3180,17 +3334,9 @@
                 </options>
             </control>
             <control>
-                <group>[Channel3]</group>
-                <key>DJ505.leftDeck.loadTrack.input</key>
-                <status>0x9F</status>
-                <midino>0x15</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel2]</group>
                 <key>DJ505.rightDeck.loadTrack.input</key>
+                <description>DECK 2 LOAD</description>
                 <status>0x9F</status>
                 <midino>0x03</midino>
                 <options>
@@ -3198,35 +3344,39 @@
                 </options>
             </control>
             <control>
-                <group>[Channel2]</group>
-                <key>DJ505.rightDeck.loadTrack.input</key>
-                <status>0x9F</status>
-                <midino>0x12</midino>
-                <options>
-                    <script-binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel4]</group>
                 <key>DJ505.rightDeck.loadTrack.input</key>
+                <description>DECK 4 LOAD</description>
                 <status>0x9F</status>
                 <midino>0x05</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
+            <!--
             <control>
-                <group>[Channel4]</group>
-                <key>DJ505.rightDeck.loadTrack.input</key>
+                <group>[Master]</group>
+                <description>BPM</description>
                 <status>0x9F</status>
-                <midino>0x14</midino>
+                <midino>0x13</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
+                <group>[Master]</group>
+                <description>KEY</description>
+                <status>0x9F</status>
+                <midino>0x1E</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            -->
+            <control>
                 <group>[Library]</group>
                 <key>DJ505.browseEncoder.input</key>
+                <description>BROWSER KNOB</description>
                 <status>0xBF</status>
                 <midino>0x00</midino>
                 <options>
@@ -3236,6 +3386,7 @@
             <control>
                 <group>[Library]</group>
                 <key>DJ505.browseEncoder.input</key>
+                <description>BROWSER KNOB (shifted)</description>
                 <status>0xBF</status>
                 <midino>0x01</midino>
                 <options>
@@ -3245,6 +3396,7 @@
             <control>
                 <group>[Library]</group>
                 <key>DJ505.browseEncoder.input</key>
+                <description>BROWSER KNOB PRESS</description>
                 <status>0x9F</status>
                 <midino>0x06</midino>
                 <options>
@@ -3254,6 +3406,7 @@
             <control>
                 <group>[Library]</group>
                 <key>DJ505.browseEncoder.input</key>
+                <description>BACK</description>
                 <status>0x9F</status>
                 <midino>0x07</midino>
                 <options>
@@ -3261,8 +3414,39 @@
                 </options>
             </control>
             <control>
+                <group>[Library]</group>
+                <key>DJ505.browseEncoder.input</key>
+                <description>SONG</description>
+                <status>0x9F</status>
+                <midino>0x12</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>DJ505.browseEncoder.input</key>
+                <description>ADD PREPARE</description>
+                <status>0x9F</status>
+                <midino>0x1B</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>DJ505.browseEncoder.input</key>
+                <description>ARTIST</description>
+                <status>0x9F</status>
+                <midino>0x14</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
                 <group>[Master]</group>
                 <key>DJ505.crossfader.inputMSB</key>
+                <description>CROSS FADER (MSB)</description>
                 <status>0xBF</status>
                 <midino>0x08</midino>
                 <options>
@@ -3272,15 +3456,46 @@
             <control>
                 <group>[Master]</group>
                 <key>DJ505.crossfader.inputLSB</key>
+                <description>CROSS FADER (LSB)</description>
                 <status>0xBF</status>
                 <midino>0x58</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
+            <!--
+            <control>
+                <group>[Master]</group>
+                <description>MASTER LEVEL</description>
+                <status>0xBF</status>
+                <midino>0x0A</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <description>BOOTH LEVEL</description>
+                <status>0xBE</status>
+                <midino>0x7F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <description>CUE/MASTER MIXING</description>
+                <status>0xBF</status>
+                <midino>0x0D</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            -->
             <control>
                 <group>[Master]</group>
                 <key>DJ505.sampler.level.input</key>
+                <description>TR/SAMPLER LEVEL</description>
                 <status>0xBF</status>
                 <midino>0x1A</midino>
                 <options>
@@ -3290,12 +3505,103 @@
             <control>
                 <group>[Master]</group>
                 <key>DJ505.sampler.pfl.input</key>
+                <description>TR/SAMPLER CUE/PFL</description>
                 <status>0x9F</status>
                 <midino>0x1D</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
+
+            <!-- Front Section -->
+            <!--
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.setCrossfaderCurve</key>
+                <description>CROSS FADER CURVE</description>
+                <status>0x9F</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.setCrossfaderReverse</key>
+                <description>CROSS FADER REVERSE ON/OFF</description>
+                <status>0x9F</status>
+                <midino>0x09</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.setChannel1Input</key>
+                <description>CH 1 PC/LINE/PHONO</description>
+                <status>0xB0</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.setChannel2Input</key>
+                <description>CH 2 PC/LINE/PHONO</description>
+                <status>0xB1</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <description>MIC LEVEL</description>
+                <status>0xBE</status>
+                <midino>0x7F</midino>
+            </control>
+            -->
+
+            <!-- TR-S Section -->
+            <!--
+            <control>
+                <group>[Master]</group>
+                <description>TR-S VALUE</description>
+                <status>0xEF</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <description>TR-S SYNC</description>
+                <status>0x9F</status>
+                <midino>0x53</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <description>TR-S SYNC OFF</description>
+                <status>0x9F</status>
+                <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <description>TR-S (change)</description>
+                <status>0x9E</status>
+                <midino>0x7F</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            -->
+
         </controls>
         <outputs/>
     </controller>
