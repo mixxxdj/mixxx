@@ -62,15 +62,6 @@ class DeckAttributes : public QObject {
         m_repeat.set(enabled ? 1.0 : 0.0);
     }
 
-    SeekOnLoadMode seekOnLoadMode() const {
-        return seekOnLoadModeFromDouble(m_seekOnLoadModeOverride.get());
-    }
-
-    void setSeekOnLoadModeOverride(SeekOnLoadMode mode) {
-        m_seekOnLoadModeOverride.set(static_cast<double>(
-                static_cast<int>(mode)));
-    }
-
     double introStartPosition() const {
         return m_introStartPos.get();
     }
@@ -131,7 +122,6 @@ class DeckAttributes : public QObject {
     ControlProxy m_playPos;
     ControlProxy m_play;
     ControlProxy m_repeat;
-    ControlProxy m_seekOnLoadModeOverride;
     ControlProxy m_introStartPos;
     ControlProxy m_introEndPos;
     ControlProxy m_outroStartPos;
@@ -264,7 +254,6 @@ class AutoDJProcessor : public QObject {
     void useIntroFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck);
     void useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
                           double endPoint, double startPoint);
-    void setSeekOnLoadModeOverrideForTransitionMode();
     DeckAttributes* getOtherDeck(DeckAttributes* pFromDeck,
                                  bool playing = false);
 

@@ -688,11 +688,6 @@ TEST_F(AutoDJProcessorTest, EnabledDisabledSuccess) {
     err = pProcessor->toggleAutoDJ(false);
     EXPECT_EQ(AutoDJProcessor::ADJ_OK, err);
     EXPECT_EQ(AutoDJProcessor::ADJ_DISABLED, pProcessor->getState());
-
-    // Restores decks 1 and 2 to respect CueRecall preference option when
-    // loading track. (This is default behaviour.)
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::UsePreference), deck1.seekOnLoadMode.get());
-    EXPECT_DOUBLE_EQ(static_cast<double>(SeekOnLoadMode::UsePreference), deck2.seekOnLoadMode.get());
 }
 
 TEST_F(AutoDJProcessorTest, FadeToDeck1_LoadOnDeck2_TrackLoadSuccess) {

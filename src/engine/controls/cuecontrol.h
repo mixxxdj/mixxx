@@ -18,14 +18,11 @@ class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
 
-// This enum class is shared between the preference option in DlgPrefDeck
-// and AutoDJ's override of that option from AutoDJProcessor.
 enum class SeekOnLoadMode {
     MainCue = 0,  // Use main cue point
     Beginning = 1,  // Use 0:00.000
     FirstSound = 2, // Skip leading silence
     IntroStart = 3,  // Use intro start cue point
-    UsePreference = 4,  // Use CueRecall preference setting
 };
 
 inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
@@ -125,7 +122,6 @@ class CueControl : public EngineControl {
     bool getPlayFlashingAtPause();
     SeekOnLoadMode getSeekOnLoadPreference();
     void trackLoaded(TrackPointer pNewTrack) override;
-    SeekOnLoadMode getSeekOnLoadModeAutoDjOverride();
 
   private slots:
     void quantizeChanged(double v);
@@ -207,7 +203,6 @@ class CueControl : public EngineControl {
     ControlObject* m_pTrackSamples;
     ControlObject* m_pCuePoint;
     ControlObject* m_pCueMode;
-    ControlObject* m_pSeekOnLoadModeAutoDjOverride;
     ControlPushButton* m_pCueSet;
     ControlPushButton* m_pCueClear;
     ControlPushButton* m_pCueCDJ;

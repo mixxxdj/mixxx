@@ -56,10 +56,6 @@ CueControl::CueControl(QString group,
 
     m_pCueMode = new ControlObject(ConfigKey(group, "cue_mode"));
 
-    m_pSeekOnLoadModeAutoDjOverride = new ControlObject(ConfigKey(group, "seekonload_mode_autodj"));
-    m_pSeekOnLoadModeAutoDjOverride->set(static_cast<double>(
-            static_cast<int>(SeekOnLoadMode::UsePreference)));
-
     m_pCueSet = new ControlPushButton(ConfigKey(group, "cue_set"));
     m_pCueSet->setButtonMode(ControlPushButton::TRIGGER);
     connect(m_pCueSet, &ControlObject::valueChanged,
@@ -209,7 +205,6 @@ CueControl::CueControl(QString group,
 CueControl::~CueControl() {
     delete m_pCuePoint;
     delete m_pCueMode;
-    delete m_pSeekOnLoadModeAutoDjOverride;
     delete m_pCueSet;
     delete m_pCueClear;
     delete m_pCueGoto;
@@ -349,10 +344,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     loadCuesFromTrack();
 
     // Seek track according to SeekOnLoadMode.
-    SeekOnLoadMode seekOnLoadMode = getSeekOnLoadModeAutoDjOverride();
-    if (seekOnLoadMode == SeekOnLoadMode::UsePreference) {
-        seekOnLoadMode = getSeekOnLoadPreference();
-    }
+    SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
     CuePointer pFirstSound = m_pLoadedTrack->findCueByType(Cue::Type::FirstSound);
     switch (seekOnLoadMode) {
@@ -499,10 +491,7 @@ void CueControl::reloadCuesFromTrack() {
     double intro = m_pIntroStartPosition->get();
 
     // Make track follow the updated cues.
-    SeekOnLoadMode seekOnLoadMode = getSeekOnLoadModeAutoDjOverride();
-    if (seekOnLoadMode == SeekOnLoadMode::UsePreference) {
-        seekOnLoadMode = getSeekOnLoadPreference();
-    }
+    SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
     if (seekOnLoadMode == SeekOnLoadMode::MainCue) {
         if ((trackAt == TrackAt::Cue || wasTrackAtZeroPos) && cue != -1.0) {
@@ -1643,10 +1632,6 @@ SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
     int configValue = getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
                                             static_cast<int>(SeekOnLoadMode::IntroStart));
     return static_cast<SeekOnLoadMode>(configValue);
-}
-
-SeekOnLoadMode CueControl::getSeekOnLoadModeAutoDjOverride() {
-    return seekOnLoadModeFromDouble(m_pSeekOnLoadModeAutoDjOverride->get());
 }
 
 
