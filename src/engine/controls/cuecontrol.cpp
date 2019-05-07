@@ -56,7 +56,9 @@ CueControl::CueControl(QString group,
 
     m_pCueMode = new ControlObject(ConfigKey(group, "cue_mode"));
 
-    m_pSeekOnLoadMode = new ControlObject(ConfigKey(group, "seekonload_mode"));
+    m_pSeekOnLoadModeAutoDjOverride = new ControlObject(ConfigKey(group, "seekonload_mode_autodj"));
+    m_pSeekOnLoadModeAutoDjOverride->set(static_cast<double>(
+            static_cast<int>(SeekOnLoadMode::UsePreference)));
 
     m_pCueSet = new ControlPushButton(ConfigKey(group, "cue_set"));
     m_pCueSet->setButtonMode(ControlPushButton::TRIGGER);
@@ -207,7 +209,7 @@ CueControl::CueControl(QString group,
 CueControl::~CueControl() {
     delete m_pCuePoint;
     delete m_pCueMode;
-    delete m_pSeekOnLoadMode;
+    delete m_pSeekOnLoadModeAutoDjOverride;
     delete m_pCueSet;
     delete m_pCueClear;
     delete m_pCueGoto;
@@ -347,10 +349,17 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     loadCuesFromTrack();
 
     // Seek track according to SeekOnLoadMode.
-    SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
+    SeekOnLoadMode seekOnLoadMode = getSeekOnLoadModeAutoDjOverride();
+    if (seekOnLoadMode == SeekOnLoadMode::UsePreference) {
+        seekOnLoadMode = getSeekOnLoadPreference();
+    }
     switch (seekOnLoadMode) {
-      case SeekOnLoadMode::Beginning:
-        seekExact(0.0);
+    case SeekOnLoadMode::Beginning:
+        // This allows users to load tracks and have the needle-drop be maintained.
+        if (!(m_pVinylControlEnabled->get() &&
+                m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
+            seekExact(0.0);
+        }
         break;
     case SeekOnLoadMode::MainCue:
         seekExact(m_pCuePoint->get());
@@ -359,17 +368,7 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         seekExact(m_pIntroStartPosition->get());
         break;
     default:
-        // Respect cue recall preference option.
-        if (isCueRecallEnabled() && m_pCuePoint->get() != -1.0) {
-            // If cue recall is ON and main cue point is set, seek to it.
-            seekExact(m_pCuePoint->get());
-        } else if (!(m_pVinylControlEnabled->get() &&
-                     m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
-            // Otherwise, seek to zero unless vinylcontrol is on and
-            // set to absolute. This allows users to load tracks and
-            // have the needle-drop be maintained.
-            seekExact(0.0);
-        }
+        seekExact(0.0);
         break;
     }
 }
@@ -491,12 +490,12 @@ void CueControl::reloadCuesFromTrack() {
     double intro = m_pIntroStartPosition->get();
 
     // Make track follow the updated cues.
-    SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
-    if (seekOnLoadMode == SeekOnLoadMode::Default) {
-        if ((trackAt == TrackAt::Cue || wasTrackAtZeroPos) && cue != -1.0 && isCueRecallEnabled()) {
-            seekExact(cue);
-        }
-    } else if (seekOnLoadMode == SeekOnLoadMode::MainCue) {
+    SeekOnLoadMode seekOnLoadMode = getSeekOnLoadModeAutoDjOverride();
+    if (seekOnLoadMode == SeekOnLoadMode::UsePreference) {
+        seekOnLoadMode = getSeekOnLoadPreference();
+    }
+
+    if (seekOnLoadMode == SeekOnLoadMode::MainCue) {
         if ((trackAt == TrackAt::Cue || wasTrackAtZeroPos) && cue != -1.0) {
             seekExact(cue);
         }
@@ -1631,13 +1630,14 @@ bool CueControl::isPlayingByPlayButton() {
             !m_iCurrentlyPreviewingHotcues && !m_bPreviewing;
 }
 
-bool CueControl::isCueRecallEnabled() {
-    // Note that [Controls],CueRecall == 0 corresponds to "ON", not "OFF".
-    return getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"), 0) == 0;
+SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
+    int configValue = getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
+                                            static_cast<int>(SeekOnLoadMode::IntroStart));
+    return static_cast<SeekOnLoadMode>(configValue);
 }
 
-SeekOnLoadMode CueControl::getSeekOnLoadMode() {
-    return seekOnLoadModeFromDouble(m_pSeekOnLoadMode->get());
+SeekOnLoadMode CueControl::getSeekOnLoadModeAutoDjOverride() {
+    return seekOnLoadModeFromDouble(m_pSeekOnLoadModeAutoDjOverride->get());
 }
 
 

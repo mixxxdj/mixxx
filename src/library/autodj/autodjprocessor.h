@@ -63,11 +63,11 @@ class DeckAttributes : public QObject {
     }
 
     SeekOnLoadMode seekOnLoadMode() const {
-        return seekOnLoadModeFromDouble(m_seekOnLoadMode.get());
+        return seekOnLoadModeFromDouble(m_seekOnLoadModeOverride.get());
     }
 
-    void setSeekOnLoadMode(SeekOnLoadMode mode) {
-        m_seekOnLoadMode.set(static_cast<double>(
+    void setSeekOnLoadModeOverride(SeekOnLoadMode mode) {
+        m_seekOnLoadModeOverride.set(static_cast<double>(
                 static_cast<int>(mode)));
     }
 
@@ -131,7 +131,7 @@ class DeckAttributes : public QObject {
     ControlProxy m_playPos;
     ControlProxy m_play;
     ControlProxy m_repeat;
-    ControlProxy m_seekOnLoadMode;
+    ControlProxy m_seekOnLoadModeOverride;
     ControlProxy m_introStartPos;
     ControlProxy m_introEndPos;
     ControlProxy m_outroStartPos;

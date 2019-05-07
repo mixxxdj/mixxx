@@ -28,7 +28,7 @@ DeckAttributes::DeckAttributes(int index,
           m_playPos(group, "playposition"),
           m_play(group, "play"),
           m_repeat(group, "repeat"),
-          m_seekOnLoadMode(group, "seekonload_mode"),
+          m_seekOnLoadModeOverride(group, "seekonload_mode_autodj"),
           m_introStartPos(group, "intro_start_position"),
           m_introEndPos(group, "intro_end_position"),
           m_outroStartPos(group, "outro_start_position"),
@@ -334,11 +334,11 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         qDebug() << "Auto DJ enabled";
 
         if (m_useIntroOutroMode == IntroOutroUsage::None) {
-            deck1.setSeekOnLoadMode(SeekOnLoadMode::Beginning);
-            deck2.setSeekOnLoadMode(SeekOnLoadMode::Beginning);
+            deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
+            deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
         } else {
-            deck1.setSeekOnLoadMode(SeekOnLoadMode::IntroStart);
-            deck2.setSeekOnLoadMode(SeekOnLoadMode::IntroStart);
+            deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
+            deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
         }
 
         connect(&deck1, &DeckAttributes::playPositionChanged,
@@ -429,8 +429,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         qDebug() << "Auto DJ disabled";
         m_eState = ADJ_DISABLED;
-        deck1.setSeekOnLoadMode(SeekOnLoadMode::Default);
-        deck2.setSeekOnLoadMode(SeekOnLoadMode::Default);
+        deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::UsePreference);
+        deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::UsePreference);
         deck1.disconnect(this);
         deck2.disconnect(this);
         m_pCOCrossfader->set(0);
@@ -1069,11 +1069,11 @@ void AutoDJProcessor::setUseIntroOutro(int checkboxState) {
         DeckAttributes& rightDeck = *m_decks[1];
 
         if (m_useIntroOutroMode == IntroOutroUsage::None) {
-            leftDeck.setSeekOnLoadMode(SeekOnLoadMode::Beginning);
-            rightDeck.setSeekOnLoadMode(SeekOnLoadMode::Beginning);
+            leftDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
+            rightDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
         } else {
-            leftDeck.setSeekOnLoadMode(SeekOnLoadMode::IntroStart);
-            rightDeck.setSeekOnLoadMode(SeekOnLoadMode::IntroStart);
+            leftDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
+            rightDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
         }
 
         if (leftDeck.isPlaying()) {

@@ -264,7 +264,7 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
 
 TEST_F(CueControlTest, SeekOnLoadDefault) {
     m_pSeekOnLoadMode->slotSet(static_cast<double>(
-        static_cast<int>(SeekOnLoadMode::Default)));
+        static_cast<int>(SeekOnLoadMode::UsePreference)));
 
     TrackPointer pTrack = createTestTrack();
     pTrack->setCuePoint(CuePosition(100.0, Cue::MANUAL));
@@ -284,7 +284,7 @@ TEST_F(CueControlTest, SeekOnLoadDefault) {
 
 TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
     m_pSeekOnLoadMode->slotSet(static_cast<double>(
-        static_cast<int>(SeekOnLoadMode::Default)));
+        static_cast<int>(SeekOnLoadMode::UsePreference)));
 
     TrackPointer pTrack = createTestTrack();
     pTrack->setCuePoint(CuePosition(-100.0, Cue::MANUAL));
@@ -304,7 +304,7 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
 
 TEST_F(CueControlTest, SeekOnLoadDefault_NoCue) {
     m_pSeekOnLoadMode->slotSet(static_cast<double>(
-        static_cast<int>(SeekOnLoadMode::Default)));
+        static_cast<int>(SeekOnLoadMode::UsePreference)));
 
     TrackPointer pTrack = createTestTrack();
 
@@ -323,7 +323,7 @@ TEST_F(CueControlTest, SeekOnLoadDefault_NoCue) {
 
 TEST_F(CueControlTest, SeekOnLoadDefault_CueRecallDisabled) {
     m_pSeekOnLoadMode->slotSet(static_cast<double>(
-        static_cast<int>(SeekOnLoadMode::Default)));
+        static_cast<int>(SeekOnLoadMode::UsePreference)));
 
     // Note: CueRecall uses inverse logic (0 means enabled).
     config()->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(1));

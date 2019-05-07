@@ -159,12 +159,24 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     connect(checkBoxDisallowLoadToPlayingDeck, SIGNAL(toggled(bool)),
             this, SLOT(slotDisallowTrackLoadToPlayingDeckCheckbox(bool)));
 
-    // Jump to cue on track load
-    // The check box reflects the opposite of the config value
-    m_bJumpToCueOnTrackLoad = !m_pConfig->getValue(ConfigKey("[Controls]", "CueRecall"), false);
-    checkBoxSeekToCue->setChecked(m_bJumpToCueOnTrackLoad);
-    connect(checkBoxSeekToCue, SIGNAL(toggled(bool)),
-            this, SLOT(slotJumpToCueOnTrackLoadCheckbox(bool)));
+    int seekMode = m_pConfig->getValue(ConfigKey("[Controls]", "CueRecall"),
+                                       static_cast<int>(SeekOnLoadMode::IntroStart));
+    m_seekOnLoadMode = static_cast<SeekOnLoadMode>(seekMode);
+    switch (m_seekOnLoadMode) {
+    case SeekOnLoadMode::Beginning:
+        radioButtonBeginning->setChecked(true);
+        break;
+    case SeekOnLoadMode::MainCue:
+        radioButtonMainCue->setChecked(true);
+        break;
+    default:
+        radioButtonIntroStart->setChecked(true);
+        m_seekOnLoadMode = SeekOnLoadMode::IntroStart;
+        break;
+    }
+    connect(buttonGroupLoadPoint,
+            static_cast<void(QButtonGroup::*)(QAbstractButton *)>(&QButtonGroup::buttonClicked),
+            this, &DlgPrefDeck::slotSetTrackLoadMode);
 
     m_bRateInverted = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), false);
     setRateDirectionForAllDecks(m_bRateInverted);
@@ -332,9 +344,6 @@ void DlgPrefDeck::slotUpdate() {
     checkBoxDisallowLoadToPlayingDeck->setChecked(!m_pConfig->getValue(
             ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false));
 
-    checkBoxSeekToCue->setChecked(!m_pConfig->getValue(
-            ConfigKey("[Controls]", "CueRecall"), false));
-
     double deck1RateRange = m_rateRangeControls[0]->get();
     int index = ComboBoxRateRange->findData(static_cast<int>(deck1RateRange * 100));
     if (index == -1) {
@@ -408,8 +417,8 @@ void DlgPrefDeck::slotResetToDefaults() {
     // Mixxx cue mode
     ComboBoxCueMode->setCurrentIndex(0);
 
-    // Cue recall on.
-    checkBoxSeekToCue->setChecked(true);
+    // Load at intro start
+    radioButtonIntroStart->setChecked(true);
 
     // Rate-ramping default off.
     radioButtonRateRampModeStepping->setChecked(true);
@@ -486,10 +495,6 @@ void DlgPrefDeck::slotCueModeCombobox(int index) {
     m_iCueMode = ComboBoxCueMode->itemData(index).toInt();
 }
 
-void DlgPrefDeck::slotJumpToCueOnTrackLoadCheckbox(bool checked) {
-    m_bJumpToCueOnTrackLoad = checked;
-}
-
 void DlgPrefDeck::slotSetTrackTimeDisplay(QAbstractButton* b) {
     if (b == radioButtonRemaining) {
         m_timeDisplayMode = TrackTime::DisplayMode::REMAINING;
@@ -547,6 +552,16 @@ void DlgPrefDeck::slotTimeFormatChanged(double v) {
                 comboBoxTimeFormat->findData(i));
 }
 
+void DlgPrefDeck::slotSetTrackLoadMode(QAbstractButton* pressedButton) {
+    if (pressedButton == radioButtonBeginning) {
+        m_seekOnLoadMode = SeekOnLoadMode::Beginning;
+    } else if (pressedButton == radioButtonMainCue) {
+        m_seekOnLoadMode = SeekOnLoadMode::MainCue;
+    } else {
+        m_seekOnLoadMode = SeekOnLoadMode::IntroStart;
+    }
+}
+
 void DlgPrefDeck::slotApply() {
     double timeDisplay = static_cast<double>(m_timeDisplayMode);
     m_pConfig->set(ConfigKey("[Controls]","PositionDisplay"), ConfigValue(timeDisplay));
@@ -566,7 +581,7 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"),
                         !m_bDisallowTrackLoadToPlayingDeck);
 
-    m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), !m_bJumpToCueOnTrackLoad);
+    m_pConfig->setValue(ConfigKey("[Controls]", "CueRecall"), static_cast<int>(m_seekOnLoadMode));
 
     // Set rate range
     setRateRangeForAllDecks(m_iRateRangePercent);
