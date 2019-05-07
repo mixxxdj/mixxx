@@ -186,7 +186,7 @@ class CueControl : public EngineControl {
     void detachCue(int hotcueNumber);
     void loadCuesFromTrack();
     void reloadCuesFromTrack();
-    double quantizeCuePoint(double position, Cue::CueSource source, QuantizeMode mode);
+    double quantizeCuePoint(double position, Cue::Source source, QuantizeMode mode);
     double quantizeCurrentPosition(QuantizeMode mode);
     TrackAt getTrackAt() const;
 

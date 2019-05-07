@@ -426,7 +426,7 @@ void CueControl::loadCuesFromTrack() {
 
     if (pLoadCue) {
         double position = pLoadCue->getPosition();
-        Cue::CueSource source = pLoadCue->getSource();
+        Cue::Source source = pLoadCue->getSource();
 
         m_pCuePoint->set(quantizeCuePoint(position, source, QuantizeMode::ClosestBeat));
     } else {
@@ -436,7 +436,7 @@ void CueControl::loadCuesFromTrack() {
     if (pIntroCue) {
         double startPosition = pIntroCue->getPosition();
         double endPosition = pIntroCue->getEndPosition();
-        Cue::CueSource source = pIntroCue->getSource();
+        Cue::Source source = pIntroCue->getSource();
 
         m_pIntroStartPosition->set(quantizeCuePoint(startPosition, source, QuantizeMode::PreviousBeat));
         m_pIntroStartEnabled->forceSet(startPosition == -1.0 ? 0.0 : 1.0);
@@ -452,7 +452,7 @@ void CueControl::loadCuesFromTrack() {
     if (pOutroCue) {
         double startPosition = pOutroCue->getPosition();
         double endPosition = pOutroCue->getEndPosition();
-        Cue::CueSource source = pOutroCue->getSource();
+        Cue::Source source = pOutroCue->getSource();
 
         m_pOutroStartPosition->set(quantizeCuePoint(startPosition, source, QuantizeMode::PreviousBeat));
         m_pOutroStartEnabled->forceSet(startPosition == -1.0 ? 0.0 : 1.0);
@@ -546,7 +546,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     pCue->setHotCue(hotcue);
     pCue->setLabel("");
     pCue->setType(Cue::Type::Hotcue);
-    pCue->setSource(Cue::MANUAL);
+    pCue->setSource(Cue::Source::Manual);
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, hotcue);
 
@@ -791,7 +791,7 @@ void CueControl::cueSet(double v) {
 
     // Store cue point in loaded track
     if (pLoadedTrack) {
-        pLoadedTrack->setCuePoint(CuePosition(cue, Cue::MANUAL));
+        pLoadedTrack->setCuePoint(CuePosition(cue, Cue::Source::Manual));
     }
 }
 
@@ -1108,7 +1108,7 @@ void CueControl::introStartSet(double v) {
             pCue = pLoadedTrack->createAndAddCue();
             pCue->setType(Cue::Type::Intro);
         }
-        pCue->setSource(Cue::MANUAL);
+        pCue->setSource(Cue::Source::Manual);
         pCue->setPosition(position);
         pCue->setLength(introEnd != -1.0 ? introEnd - position : 0.0);
     }
@@ -1187,7 +1187,7 @@ void CueControl::introEndSet(double v) {
             pCue = pLoadedTrack->createAndAddCue();
             pCue->setType(Cue::Type::Intro);
         }
-        pCue->setSource(Cue::MANUAL);
+        pCue->setSource(Cue::Source::Manual);
         if (introStart != -1.0) {
             pCue->setPosition(introStart);
             pCue->setLength(position - introStart);
@@ -1271,7 +1271,7 @@ void CueControl::outroStartSet(double v) {
             pCue = pLoadedTrack->createAndAddCue();
             pCue->setType(Cue::Type::Outro);
         }
-        pCue->setSource(Cue::MANUAL);
+        pCue->setSource(Cue::Source::Manual);
         pCue->setPosition(position);
         pCue->setLength(outroEnd != -1.0 ? outroEnd - position : 0.0);
     }
@@ -1350,7 +1350,7 @@ void CueControl::outroEndSet(double v) {
             pCue = pLoadedTrack->createAndAddCue();
             pCue->setType(Cue::Type::Outro);
         }
-        pCue->setSource(Cue::MANUAL);
+        pCue->setSource(Cue::Source::Manual);
         if (outroStart != -1.0) {
             pCue->setPosition(outroStart);
             pCue->setLength(position - outroStart);
@@ -1586,9 +1586,9 @@ double CueControl::quantizeCurrentPosition(QuantizeMode mode) {
     }
 }
 
-double CueControl::quantizeCuePoint(double position, Cue::CueSource source, QuantizeMode mode) {
+double CueControl::quantizeCuePoint(double position, Cue::Source source, QuantizeMode mode) {
     // Don't quantize unset cues, manual cues or when quantization is disabled.
-    if (position == -1.0 || source == Cue::MANUAL || !m_pQuantizeEnabled->toBool()) {
+    if (position == -1.0 || source == Cue::Source::Manual || !m_pQuantizeEnabled->toBool()) {
         return position;
     }
 

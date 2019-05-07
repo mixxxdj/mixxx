@@ -56,7 +56,7 @@ CuePointer CueDAO::cueFromRow(const QSqlQuery& query) const {
     QString label = record.value(record.indexOf("label")).toString();
     int iColorId = record.value(record.indexOf("color")).toInt();
     PredefinedColorPointer color = Color::kPredefinedColorsSet.predefinedColorFromId(iColorId);
-    CuePointer pCue(new Cue(id, trackId, (Cue::CueSource)source, (Cue::Type)type, position, length, hotcue, label, color));
+    CuePointer pCue(new Cue(id, trackId, (Cue::Source)source, (Cue::Type)type, position, length, hotcue, label, color));
     m_cues[id] = pCue;
     return pCue;
 }
@@ -143,7 +143,7 @@ bool CueDAO::saveCue(Cue* cue) {
         QSqlQuery query(m_database);
         query.prepare("INSERT INTO " CUE_TABLE " (track_id, source, type, position, length, hotcue, label, color) VALUES (:track_id, :source, :type, :position, :length, :hotcue, :label, :color)");
         query.bindValue(":track_id", cue->getTrackId().toVariant());
-        query.bindValue(":source", cue->getSource());
+        query.bindValue(":source", static_cast<int>(cue->getSource()));
         query.bindValue(":type", static_cast<int>(cue->getType()));
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());
@@ -173,7 +173,7 @@ bool CueDAO::saveCue(Cue* cue) {
                         " WHERE id = :id");
         query.bindValue(":id", cue->getId());
         query.bindValue(":track_id", cue->getTrackId().toVariant());
-        query.bindValue(":source", cue->getSource());
+        query.bindValue(":source", static_cast<int>(cue->getSource()));
         query.bindValue(":type", static_cast<int>(cue->getType()));
         query.bindValue(":position", cue->getPosition());
         query.bindValue(":length", cue->getLength());

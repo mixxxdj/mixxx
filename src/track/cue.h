@@ -17,10 +17,10 @@ class Cue : public QObject {
     Q_OBJECT
 
   public:
-    enum CueSource {
-        UNKNOWN   = 0,
-        AUTOMATIC = 1,
-        MANUAL    = 2,
+    enum class Source {
+        Unknown   = 0,
+        Automatic = 1,
+        Manual    = 2,
     };
 
     enum class Type {
@@ -40,8 +40,8 @@ class Cue : public QObject {
     int getId() const;
     TrackId getTrackId() const;
 
-    CueSource getSource() const;
-    void setSource(CueSource source);
+    Cue::Source getSource() const;
+    void setSource(Cue::Source source);
 
     Cue::Type getType() const;
     void setType(Cue::Type type);
@@ -68,7 +68,7 @@ class Cue : public QObject {
 
   private:
     explicit Cue(TrackId trackId);
-    Cue(int id, TrackId trackId, CueSource source, Cue::Type type, double position, double length,
+    Cue(int id, TrackId trackId, Cue::Source source, Cue::Type type, double position, double length,
         int hotCue, QString label, PredefinedColorPointer color);
     void setDirty(bool dirty);
     void setId(int id);
@@ -79,7 +79,7 @@ class Cue : public QObject {
     bool m_bDirty;
     int m_iId;
     TrackId m_trackId;
-    CueSource m_source;
+    Cue::Source m_source;
     Cue::Type m_type;
     double m_samplePosition;
     double m_length;
@@ -105,8 +105,8 @@ class CuePointer: public std::shared_ptr<Cue> {
 class CuePosition {
   public:
     CuePosition()
-        : m_position(0.0), m_source(Cue::UNKNOWN) {}
-    CuePosition(double position, Cue::CueSource source)
+        : m_position(0.0), m_source(Cue::Source::Unknown) {}
+    CuePosition(double position, Cue::Source source)
         : m_position(position), m_source(source) {}
 
     double getPosition() const {
@@ -117,27 +117,27 @@ class CuePosition {
         m_position = position;
     }
 
-    Cue::CueSource getSource() const {
+    Cue::Source getSource() const {
         return m_source;
     }
 
-    void setSource(Cue::CueSource source) {
+    void setSource(Cue::Source source) {
         m_source = source;
     }
 
-    void set(double position, Cue::CueSource source) {
+    void set(double position, Cue::Source source) {
         m_position = position;
         m_source = source;
     }
 
     void reset() {
         m_position = 0.0;
-        m_source = Cue::UNKNOWN;
+        m_source = Cue::Source::Unknown;
     }
 
   private:
     double m_position;
-    Cue::CueSource m_source;
+    Cue::Source m_source;
 };
 
 bool operator==(const CuePosition& lhs, const CuePosition& rhs);
@@ -149,7 +149,7 @@ bool operator!=(const CuePosition& lhs, const CuePosition& rhs) {
 
 inline
 QDebug operator<<(QDebug dbg, const CuePosition& arg) {
-    return dbg << "position =" << arg.getPosition() << "/" << "source =" << arg.getSource();
+    return dbg << "position =" << arg.getPosition() << "/" << "source =" << static_cast<int>(arg.getSource());
 }
 
 #endif // MIXXX_CUE_H
