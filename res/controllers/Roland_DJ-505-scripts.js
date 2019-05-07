@@ -1369,6 +1369,7 @@ DJ505.PadSection = function (deck) {
     this.hotcueButton = [];
     this.samplerButton = [];
     this.rollButton = [];
+    this.loopButton = [];
 
     for (var i = 1; i <= 8; i++) {
         this.hotcueButton[i] = new DJ505.HotcueButton({number: i});
@@ -1384,6 +1385,13 @@ DJ505.PadSection = function (deck) {
             shiftOffset: 8,
             number: i,
             inKey: 'beatlooproll_' + (0.03125 * Math.pow(2, i-1)) + '_activate'
+        });
+        this.loopButton[i] = new components.Button({
+            sendShifted: false,
+            shiftControl: true,
+            shiftOffset: 8,
+            number: i,
+            inKey: 'beatloop_' + (0.03125 * Math.pow(2, i-1)) + '_activate'
         });
     }
 
@@ -1444,6 +1452,9 @@ DJ505.PadSection.prototype.padPressed = function (channel, control, value, statu
         break;
     case "roll":
         this.rollButton[i].input(channel, control, value, status, group);
+        break;
+    case "loop":
+        this.loopButton[i].input(channel, control, value, status, group);
         break;
     case "sampler":
         this.samplerButton[i].input(channel, control, value, status, group);
