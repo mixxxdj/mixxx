@@ -24,7 +24,7 @@ Cue::Cue(TrackId trackId)
           m_iId(-1),
           m_trackId(trackId),
           m_source(UNKNOWN),
-          m_type(INVALID),
+          m_type(Cue::Type::Invalid),
           m_samplePosition(-1.0),
           m_length(0.0),
           m_iHotCue(-1),
@@ -33,7 +33,7 @@ Cue::Cue(TrackId trackId)
     DEBUG_ASSERT(!m_label.isNull());
 }
 
-Cue::Cue(int id, TrackId trackId, Cue::CueSource source, Cue::CueType type, double position, double length,
+Cue::Cue(int id, TrackId trackId, Cue::CueSource source, Cue::Type type, double position, double length,
          int hotCue, QString label, PredefinedColorPointer color)
         : m_bDirty(false),
           m_iId(id),
@@ -87,12 +87,12 @@ void Cue::setSource(CueSource source) {
     emit(updated());
 }
 
-Cue::CueType Cue::getType() const {
+Cue::Type Cue::getType() const {
     QMutexLocker lock(&m_mutex);
     return m_type;
 }
 
-void Cue::setType(Cue::CueType type) {
+void Cue::setType(Cue::Type type) {
     QMutexLocker lock(&m_mutex);
     m_type = type;
     m_bDirty = true;

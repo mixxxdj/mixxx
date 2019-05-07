@@ -387,16 +387,16 @@ void CueControl::loadCuesFromTrack() {
         return;
 
     for (const CuePointer& pCue: m_pLoadedTrack->getCuePoints()) {
-        if (pCue->getType() == Cue::LOAD) {
-            DEBUG_ASSERT(!pLoadCue);  // There should be only one LOAD cue
+        if (pCue->getType() == Cue::Type::MainCue) {
+            DEBUG_ASSERT(!pLoadCue);  // There should be only one MainCue cue
             pLoadCue = pCue;
-        } else if (pCue->getType() == Cue::INTRO) {
-            DEBUG_ASSERT(!pIntroCue);  // There should be only one INTRO cue
+        } else if (pCue->getType() == Cue::Type::Intro) {
+            DEBUG_ASSERT(!pIntroCue);  // There should be only one Intro cue
             pIntroCue = pCue;
-        } else if (pCue->getType() == Cue::OUTRO) {
-            DEBUG_ASSERT(!pOutroCue);  // There should be only one OUTRO cue
+        } else if (pCue->getType() == Cue::Type::Outro) {
+            DEBUG_ASSERT(!pOutroCue);  // There should be only one Outro cue
             pOutroCue = pCue;
-        } else if (pCue->getType() == Cue::CUE && pCue->getHotCue() != -1) {
+        } else if (pCue->getType() == Cue::Type::Hotcue && pCue->getHotCue() != -1) {
             int hotcue = pCue->getHotCue();
             HotcueControl* pControl = m_hotcueControls.value(hotcue, NULL);
 
@@ -545,7 +545,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     pCue->setPosition(cuePosition);
     pCue->setHotCue(hotcue);
     pCue->setLabel("");
-    pCue->setType(Cue::CUE);
+    pCue->setType(Cue::Type::Hotcue);
     pCue->setSource(Cue::MANUAL);
     // TODO(XXX) deal with spurious signals
     attachCue(pCue, hotcue);
@@ -1103,10 +1103,10 @@ void CueControl::introStartSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::INTRO);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::INTRO);
+            pCue->setType(Cue::Type::Intro);
         }
         pCue->setSource(Cue::MANUAL);
         pCue->setPosition(position);
@@ -1125,7 +1125,7 @@ void CueControl::introStartClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::INTRO);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
         if (introEnd != -1.0) {
             pCue->setPosition(-1.0);
             pCue->setLength(introEnd);
@@ -1182,10 +1182,10 @@ void CueControl::introEndSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::INTRO);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::INTRO);
+            pCue->setType(Cue::Type::Intro);
         }
         pCue->setSource(Cue::MANUAL);
         if (introStart != -1.0) {
@@ -1209,7 +1209,7 @@ void CueControl::introEndClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::INTRO);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Intro);
         if (introStart != -1.0) {
             pCue->setPosition(introStart);
             pCue->setLength(0.0);
@@ -1266,10 +1266,10 @@ void CueControl::outroStartSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::OUTRO);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::OUTRO);
+            pCue->setType(Cue::Type::Outro);
         }
         pCue->setSource(Cue::MANUAL);
         pCue->setPosition(position);
@@ -1288,7 +1288,7 @@ void CueControl::outroStartClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::OUTRO);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
         if (outroEnd != -1.0) {
             pCue->setPosition(-1.0);
             pCue->setLength(outroEnd);
@@ -1345,10 +1345,10 @@ void CueControl::outroEndSet(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::OUTRO);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
         if (!pCue) {
             pCue = pLoadedTrack->createAndAddCue();
-            pCue->setType(Cue::OUTRO);
+            pCue->setType(Cue::Type::Outro);
         }
         pCue->setSource(Cue::MANUAL);
         if (outroStart != -1.0) {
@@ -1372,7 +1372,7 @@ void CueControl::outroEndClear(double v) {
     lock.unlock();
 
     if (pLoadedTrack) {
-        CuePointer pCue = pLoadedTrack->findCueByType(Cue::OUTRO);
+        CuePointer pCue = pLoadedTrack->findCueByType(Cue::Type::Outro);
         if (outroStart != -1.0) {
             pCue->setPosition(outroStart);
             pCue->setLength(0.0);

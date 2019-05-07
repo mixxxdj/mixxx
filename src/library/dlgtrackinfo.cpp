@@ -277,8 +277,8 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
     QListIterator<CuePointer> it(cuePoints);
     while (it.hasNext()) {
         CuePointer pCue = it.next();
-        Cue::CueType type = pCue->getType();
-        if (type == Cue::CUE || type == Cue::INTRO || type == Cue::OUTRO) {
+        Cue::Type type = pCue->getType();
+        if (type == Cue::Type::Hotcue || type == Cue::Type::Intro || type == Cue::Type::Outro) {
             listPoints.push_back(pCue);
         }
     }
@@ -325,16 +325,16 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         // Decode cue type to display text
         QString cueType;
         switch (pCue->getType()) {
-            case Cue::CUE:
+          case Cue::Type::Hotcue:
                 cueType = "Hotcue";
                 break;
-            case Cue::INTRO:
+          case Cue::Type::Intro:
                 cueType = "Intro";
                 break;
-            case Cue::OUTRO:
+          case Cue::Type::Outro:
                 cueType = "Outro";
                 break;
-            default:
+          default:
                 break;
         }
 

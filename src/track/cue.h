@@ -23,15 +23,15 @@ class Cue : public QObject {
         MANUAL    = 2,
     };
 
-    enum CueType {
-        INVALID = 0,
-        CUE     = 1, // hot cue
-        LOAD    = 2, // the cue
-        BEAT    = 3,
-        LOOP    = 4,
-        JUMP    = 5,
-        INTRO   = 6,
-        OUTRO   = 7,
+    enum class Type {
+        Invalid = 0,
+        Hotcue  = 1,
+        MainCue = 2,
+        Beat    = 3, // unused (what is this for?)
+        Loop    = 4,
+        Jump    = 5,
+        Intro   = 6,
+        Outro   = 7,
     };
 
     ~Cue() override = default;
@@ -43,8 +43,8 @@ class Cue : public QObject {
     CueSource getSource() const;
     void setSource(CueSource source);
 
-    CueType getType() const;
-    void setType(CueType type);
+    Cue::Type getType() const;
+    void setType(Cue::Type type);
 
     double getPosition() const;
     void setPosition(double samplePosition);
@@ -68,7 +68,7 @@ class Cue : public QObject {
 
   private:
     explicit Cue(TrackId trackId);
-    Cue(int id, TrackId trackId, CueSource source, CueType type, double position, double length,
+    Cue(int id, TrackId trackId, CueSource source, Cue::Type type, double position, double length,
         int hotCue, QString label, PredefinedColorPointer color);
     void setDirty(bool dirty);
     void setId(int id);
@@ -80,7 +80,7 @@ class Cue : public QObject {
     int m_iId;
     TrackId m_trackId;
     CueSource m_source;
-    CueType m_type;
+    Cue::Type m_type;
     double m_samplePosition;
     double m_length;
     int m_iHotCue;
