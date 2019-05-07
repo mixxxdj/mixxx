@@ -333,8 +333,13 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         qDebug() << "Auto DJ enabled";
 
-        deck1.setSeekOnLoadMode(SeekOnLoadMode::IntroStart);
-        deck2.setSeekOnLoadMode(SeekOnLoadMode::IntroStart);
+        if (m_useIntroOutroMode == IntroOutroUsage::None) {
+            deck1.setSeekOnLoadMode(SeekOnLoadMode::Beginning);
+            deck2.setSeekOnLoadMode(SeekOnLoadMode::Beginning);
+        } else {
+            deck1.setSeekOnLoadMode(SeekOnLoadMode::IntroStart);
+            deck2.setSeekOnLoadMode(SeekOnLoadMode::IntroStart);
+        }
 
         connect(&deck1, &DeckAttributes::playPositionChanged,
                 this, &AutoDJProcessor::playerPositionChanged);
@@ -1057,10 +1062,20 @@ void AutoDJProcessor::setUseIntroOutro(int checkboxState) {
     m_pConfig->set(ConfigKey(kConfigKey, kUseIntroOutroPreferenceName),
                    ConfigValue(checkboxState));
     m_useIntroOutroMode = static_cast<IntroOutroUsage>(checkboxState);
+
     // Then re-calculate fade thresholds for the decks.
     if (m_eState == ADJ_IDLE) {
         DeckAttributes& leftDeck = *m_decks[0];
         DeckAttributes& rightDeck = *m_decks[1];
+
+        if (m_useIntroOutroMode == IntroOutroUsage::None) {
+            leftDeck.setSeekOnLoadMode(SeekOnLoadMode::Beginning);
+            rightDeck.setSeekOnLoadMode(SeekOnLoadMode::Beginning);
+        } else {
+            leftDeck.setSeekOnLoadMode(SeekOnLoadMode::IntroStart);
+            rightDeck.setSeekOnLoadMode(SeekOnLoadMode::IntroStart);
+        }
+
         if (leftDeck.isPlaying()) {
             calculateTransition(&leftDeck, &rightDeck);
         }
