@@ -1061,9 +1061,11 @@ void AutoDJProcessor::setTransitionMode(int checkboxState) {
 
         if (leftDeck.isPlaying()) {
             calculateTransition(&leftDeck, &rightDeck);
+            rightDeck.setPlayPosition(rightDeck.startPos);
         }
         if (rightDeck.isPlaying()) {
             calculateTransition(&rightDeck, &leftDeck);
+            leftDeck.setPlayPosition(leftDeck.startPos);
         }
     }
 }
