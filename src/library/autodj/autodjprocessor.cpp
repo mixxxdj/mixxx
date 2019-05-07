@@ -571,7 +571,6 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
                                      thisDeck.posThreshold >= 1.0)) {
             if (!otherDeckPlaying) {
                 calculateTransition(&otherDeck, &thisDeck);
-                otherDeck.setPlayPosition(otherDeck.startPos);
                 otherDeck.play();
             }
 
@@ -973,6 +972,7 @@ void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTra
         loadNextTrackFromQueue(*pDeck, m_eState == ADJ_ENABLE_P1LOADED);
     } else {
         calculateTransition(getOtherDeck(pDeck, true), pDeck);
+        pDeck->setPlayPosition(pDeck->startPos);
     }
 }
 
