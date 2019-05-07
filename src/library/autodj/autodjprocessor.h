@@ -114,7 +114,7 @@ class DeckAttributes : public QObject {
     int index;
     QString group;
     double startPos;
-    double posThreshold;
+    double fadeBeginPos;
     double fadeDuration;
 
   private:

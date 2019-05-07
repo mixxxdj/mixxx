@@ -22,7 +22,7 @@ DeckAttributes::DeckAttributes(int index,
                                EngineChannel::ChannelOrientation orientation)
         : index(index),
           group(pPlayer->getGroup()),
-          posThreshold(1.0),
+          fadeBeginPos(1.0),
           fadeDuration(0.0),
           m_orientation(orientation),
           m_playPos(group, "playposition"),
@@ -230,7 +230,7 @@ void AutoDJProcessor::fadeNow() {
         calculateTransition(&leftDeck, &rightDeck);
 
         // override posThreshold to start fade now
-        leftDeck.posThreshold = leftDeck.playPosition() -
+        leftDeck.fadeBeginPos = leftDeck.playPosition() -
                 ((crossfader + 1.0) / 2 * (leftDeck.fadeDuration));
         // Repeat is disabled by FadeNow but disables auto Fade
         leftDeck.setRepeat(false);
@@ -239,7 +239,7 @@ void AutoDJProcessor::fadeNow() {
         calculateTransition(&rightDeck, &leftDeck);
 
         // override posThreshold to start fade now
-        rightDeck.posThreshold = rightDeck.playPosition() -
+        rightDeck.fadeBeginPos = rightDeck.playPosition() -
                 ((1.0 - crossfader) / 2 * (rightDeck.fadeDuration));
         // Repeat is disabled by FadeNow but disables auto Fade
         rightDeck.setRepeat(false);
@@ -545,7 +545,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // Invalidate threshold calculated for the old otherDeck
             // This avoids starting a fade back before the new track is
             // loaded into the otherDeck
-            thisDeck.posThreshold = 1.0;
+            thisDeck.fadeBeginPos = 1.0;
             thisDeck.fadeDuration = 0.0;
             // Load the next track to otherDeck.
             loadNextTrackFromQueue(otherDeck);
@@ -566,9 +566,9 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
     // TODO(rryan): We need to investigate the chain of events that occur when
     // the track we are fading to crosses its posThreshold before we are done
     // fading to it.
-    if (thisPlayPosition >= thisDeck.posThreshold) {
+    if (thisPlayPosition >= thisDeck.fadeBeginPos) {
         if (m_eState == ADJ_IDLE && (thisDeckPlaying ||
-                                     thisDeck.posThreshold >= 1.0)) {
+                                     thisDeck.fadeBeginPos >= 1.0)) {
             if (!otherDeckPlaying) {
                 calculateTransition(&otherDeck, &thisDeck);
                 otherDeck.play();
@@ -583,7 +583,7 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             emitAutoDJStateChanged(m_eState);
         }
 
-        double posFadeEnd = math_min(1.0, thisDeck.posThreshold + thisFadeDuration);
+        double posFadeEnd = math_min(1.0, thisDeck.fadeBeginPos + thisFadeDuration);
         if (thisPlayPosition >= posFadeEnd) {
             // If this track has passed the end of its target fade then we stop
             // it. We don't handle mode switches here since that's handled by
@@ -599,8 +599,8 @@ void AutoDJProcessor::playerPositionChanged(DeckAttributes* pAttributes,
             // adjustment.  If thisDeck is right, the new value is 1.0 minus the
             // adjustment.
             double crossfadeEdgeValue = -1.0;
-            double adjustment = 2 * (thisPlayPosition - thisDeck.posThreshold) /
-                    (posFadeEnd - thisDeck.posThreshold);
+            double adjustment = 2 * (thisPlayPosition - thisDeck.fadeBeginPos) /
+                    (posFadeEnd - thisDeck.fadeBeginPos);
             bool isLeft = thisDeck.isLeft();
             if (!isLeft) {
                 crossfadeEdgeValue = 1.0;
@@ -900,7 +900,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     }
 
     VERIFY_OR_DEBUG_ASSERT(fromTrackDuration > 0) {
-        pFromDeck->posThreshold = fromTrackDuration;
+        pFromDeck->fadeBeginPos = fromTrackDuration;
         pFromDeck->fadeDuration = 0;
     }
     VERIFY_OR_DEBUG_ASSERT(toTrackDuration > 0) {
@@ -912,7 +912,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     }
 
     // These are expected to be a fraction of the track length.
-    pFromDeck->posThreshold /= fromTrackDuration;
+    pFromDeck->fadeBeginPos /= fromTrackDuration;
     pFromDeck->fadeDuration /= fromTrackDuration;
     pToDeck->startPos /= toTrackDuration;
 }
@@ -920,7 +920,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 void AutoDJProcessor::useOutroFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck) {
     double outroStart = getOutroStartPosition(pFromDeck);
     double outroEnd = getOutroEndPosition(pFromDeck);
-    pFromDeck->posThreshold = outroStart;
+    pFromDeck->fadeBeginPos = outroStart;
     pFromDeck->fadeDuration = outroEnd - outroStart;
     pToDeck->startPos = getIntroStartPosition(pToDeck);
 }
@@ -930,7 +930,7 @@ void AutoDJProcessor::useIntroFadeTime(DeckAttributes* pFromDeck, DeckAttributes
     double introStart = getIntroStartPosition(pToDeck);
     double introEnd = getIntroEndPosition(pToDeck);
     double introLength = introEnd - introStart;
-    pFromDeck->posThreshold = outroEnd - introLength;
+    pFromDeck->fadeBeginPos = outroEnd - introLength;
     pFromDeck->fadeDuration = introLength;
     pToDeck->startPos = introStart;
 }
@@ -944,11 +944,11 @@ void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes
     }
 
     if (transitionTime > 0.0) {
-        pFromDeck->posThreshold = endPoint - transitionTime;
+        pFromDeck->fadeBeginPos = endPoint - transitionTime;
         pFromDeck->fadeDuration = transitionTime;
         pToDeck->startPos = startPoint;
     } else {
-        pFromDeck->posThreshold = endPoint;
+        pFromDeck->fadeBeginPos = endPoint;
         pFromDeck->fadeDuration = transitionTime;
         pToDeck->startPos = startPoint + transitionTime;
     }
