@@ -260,10 +260,8 @@ class AutoDJProcessor : public QObject {
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
     void calculateTransition(DeckAttributes* pFromDeck,
                              DeckAttributes* pToDeck);
-    void useOutroFadeTime(DeckAttributes* pFromDeck, double fromTrackOutroStart,
-                          double fromTrackOutroLength, double toTrackDuration);
-    void useIntroFadeTime(DeckAttributes* pFromDeck, double fromTrackOutroEnd,
-                          double toTrackIntroLength);
+    void useOutroFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck);
+    void useIntroFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck);
     void useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
                           double endPoint, double startPoint);
     void setSeekOnLoadModeOverrideForTransitionMode();
