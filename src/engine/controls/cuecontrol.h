@@ -23,8 +23,9 @@ class ControlIndicator;
 enum class SeekOnLoadMode {
     MainCue = 0,  // Use main cue point
     Beginning = 1,  // Use 0:00.000
-    IntroStart = 2,  // Use intro start cue point
-    UsePreference = 3,  // Use CueRecall preference setting
+    FirstSound = 2, // Skip leading silence
+    IntroStart = 3,  // Use intro start cue point
+    UsePreference = 4,  // Use CueRecall preference setting
 };
 
 inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {

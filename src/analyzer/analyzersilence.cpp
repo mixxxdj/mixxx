@@ -37,6 +37,16 @@ bool AnalyzerSilence::isDisabledOrLoadStoredSuccess(TrackPointer pTrack) const {
         return false;
     }
 
+    CuePointer pFirstSound = pTrack->findCueByType(Cue::Type::FirstSound);
+    if (!pFirstSound || pFirstSound->getSource() != Cue::Source::Manual) {
+        return false;
+    }
+
+    CuePointer pLastSound = pTrack->findCueByType(Cue::Type::LastSound);
+    if (!pLastSound || pLastSound->getSource() != Cue::Source::Manual) {
+        return false;
+    }
+
     CuePointer pIntroCue = pTrack->findCueByType(Cue::Type::Intro);
     if (!pIntroCue || pIntroCue->getSource() != Cue::Source::Manual) {
         return false;
@@ -95,6 +105,28 @@ void AnalyzerSilence::finalize(TrackPointer pTrack) {
 
     if (shouldUpdateCue(pTrack->getCuePoint())) {
         pTrack->setCuePoint(CuePosition(mixxx::kAnalysisChannels * m_iSignalStart, Cue::Source::Automatic));
+    }
+
+    CuePointer pFirstSound = pTrack->findCueByType(Cue::Type::FirstSound);
+    if (pFirstSound == nullptr) {
+        qDebug() << "AnalyzerSilence placing FirstSound cue for" << pTrack.get();
+        pFirstSound = pTrack->createAndAddCue();
+        pFirstSound->setType(Cue::Type::FirstSound);
+        pFirstSound->setSource(Cue::Source::Automatic);
+        pFirstSound->setPosition(mixxx::kAnalysisChannels * m_iSignalStart);
+    } else if (pFirstSound->getSource() != Cue::Source::Manual) {
+        pFirstSound->setPosition(mixxx::kAnalysisChannels * m_iSignalStart);
+    }
+
+    CuePointer pLastSound = pTrack->findCueByType(Cue::Type::LastSound);
+    if (pLastSound == nullptr) {
+        qDebug() << "AnalyzerSilence placing LastSound cue for" << pTrack.get();
+        pLastSound = pTrack->createAndAddCue();
+        pLastSound->setType(Cue::Type::LastSound);
+        pLastSound->setSource(Cue::Source::Automatic);
+        pLastSound->setPosition(mixxx::kAnalysisChannels * m_iSignalEnd);
+    } else if (pLastSound->getSource() != Cue::Source::Manual) {
+        pLastSound->setPosition(mixxx::kAnalysisChannels * m_iSignalEnd);
     }
 
     CuePointer pIntroCue = pTrack->findCueByType(Cue::Type::Intro);

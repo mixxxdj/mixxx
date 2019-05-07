@@ -353,11 +353,20 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     if (seekOnLoadMode == SeekOnLoadMode::UsePreference) {
         seekOnLoadMode = getSeekOnLoadPreference();
     }
+
+    CuePointer pFirstSound = m_pLoadedTrack->findCueByType(Cue::Type::FirstSound);
     switch (seekOnLoadMode) {
     case SeekOnLoadMode::Beginning:
         // This allows users to load tracks and have the needle-drop be maintained.
         if (!(m_pVinylControlEnabled->get() &&
                 m_pVinylControlMode->get() == MIXXX_VCMODE_ABSOLUTE)) {
+            seekExact(0.0);
+        }
+        break;
+    case SeekOnLoadMode::FirstSound:
+        if (pFirstSound) {
+            seekExact(pFirstSound->getPosition());
+        } else {
             seekExact(0.0);
         }
         break;

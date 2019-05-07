@@ -32,6 +32,8 @@ class Cue : public QObject {
         Jump    = 5,
         Intro   = 6,
         Outro   = 7,
+        FirstSound = 8, // not shown to user
+        LastSound = 9, // not shown to user
     };
 
     ~Cue() override = default;
