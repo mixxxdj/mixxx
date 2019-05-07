@@ -239,44 +239,40 @@
       </PushButton>
 
       <PushButton>
-        <TooltipId>fwd_end</TooltipId>
+        <TooltipId>beatjump_forward</TooltipId>
         <Style></Style>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_forward_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_forward.png</Unpressed>
+          <Pressed>skin:/btn/btn_beatjump_forward_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatjump_forward.png</Unpressed>
         </State>
         <Pos>122,14</Pos>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],fwd</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ConfigKey>[Channel<Variable name="channum"/>],beatjump_forward</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],end</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ConfigKey>[Channel<Variable name="channum"/>],beatjump_1_forward</ConfigKey>
           <ButtonState>RightButton</ButtonState>
         </Connection>
       </PushButton>
       <PushButton>
-        <TooltipId>back_start</TooltipId>
+        <TooltipId>beatjump_backward</TooltipId>
         <Style></Style>
         <NumberStates>1</NumberStates>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_rewind_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_rewind.png</Unpressed>
+          <Pressed>skin:/btn/btn_beatjump_backward_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatjump_backward.png</Unpressed>
         </State>
         <Pos>101,14</Pos>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],back</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ConfigKey>[Channel<Variable name="channum"/>],beatjump_backward</ConfigKey>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],start</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ConfigKey>[Channel<Variable name="channum"/>],beatjump_1_backward</ConfigKey>
           <ButtonState>RightButton</ButtonState>
         </Connection>
       </PushButton>
