@@ -263,7 +263,8 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
 }
 
 TEST_F(CueControlTest, SeekOnLoadDefault) {
-    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_DEFAULT);
+    m_pSeekOnLoadMode->slotSet(static_cast<double>(
+        static_cast<int>(SeekOnLoadMode::Default)));
 
     TrackPointer pTrack = createTestTrack();
     pTrack->setCuePoint(CuePosition(100.0, Cue::MANUAL));
@@ -282,7 +283,8 @@ TEST_F(CueControlTest, SeekOnLoadDefault) {
 }
 
 TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
-    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_DEFAULT);
+    m_pSeekOnLoadMode->slotSet(static_cast<double>(
+        static_cast<int>(SeekOnLoadMode::Default)));
 
     TrackPointer pTrack = createTestTrack();
     pTrack->setCuePoint(CuePosition(-100.0, Cue::MANUAL));
@@ -301,7 +303,8 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueInPreroll) {
 }
 
 TEST_F(CueControlTest, SeekOnLoadDefault_NoCue) {
-    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_DEFAULT);
+    m_pSeekOnLoadMode->slotSet(static_cast<double>(
+        static_cast<int>(SeekOnLoadMode::Default)));
 
     TrackPointer pTrack = createTestTrack();
 
@@ -319,7 +322,8 @@ TEST_F(CueControlTest, SeekOnLoadDefault_NoCue) {
 }
 
 TEST_F(CueControlTest, SeekOnLoadDefault_CueRecallDisabled) {
-    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_DEFAULT);
+    m_pSeekOnLoadMode->slotSet(static_cast<double>(
+        static_cast<int>(SeekOnLoadMode::Default)));
 
     // Note: CueRecall uses inverse logic (0 means enabled).
     config()->set(ConfigKey("[Controls]", "CueRecall"), ConfigValue(1));
@@ -334,7 +338,8 @@ TEST_F(CueControlTest, SeekOnLoadDefault_CueRecallDisabled) {
 }
 
 TEST_F(CueControlTest, SeekOnLoadZeroPos) {
-    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_ZERO_POS);
+    m_pSeekOnLoadMode->slotSet(static_cast<double>(
+        static_cast<int>(SeekOnLoadMode::Beginning)));
 
     TrackPointer pTrack = createTestTrack();
     pTrack->setCuePoint(CuePosition(100.0, Cue::MANUAL));
@@ -346,7 +351,8 @@ TEST_F(CueControlTest, SeekOnLoadZeroPos) {
 }
 
 TEST_F(CueControlTest, SeekOnLoadMainCue) {
-    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_MAIN_CUE);
+    m_pSeekOnLoadMode->slotSet(static_cast<double>(
+        static_cast<int>(SeekOnLoadMode::MainCue)));
 
     TrackPointer pTrack = createTestTrack();
     pTrack->setCuePoint(CuePosition(100.0, Cue::MANUAL));
@@ -365,7 +371,8 @@ TEST_F(CueControlTest, SeekOnLoadMainCue) {
 }
 
 TEST_F(CueControlTest, SeekOnLoadIntroCue) {
-    m_pSeekOnLoadMode->slotSet(SEEK_ON_LOAD_INTRO_CUE);
+    m_pSeekOnLoadMode->slotSet(static_cast<double>(
+        static_cast<int>(SeekOnLoadMode::IntroStart)));
 
     TrackPointer pTrack = createTestTrack();
     auto pIntro = pTrack->createAndAddCue();

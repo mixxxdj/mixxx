@@ -67,7 +67,8 @@ class DeckAttributes : public QObject {
     }
 
     void setSeekOnLoadMode(SeekOnLoadMode mode) {
-        m_seekOnLoadMode.set(mode);
+        m_seekOnLoadMode.set(static_cast<double>(
+                static_cast<int>(mode)));
     }
 
     double introStartPosition() const {

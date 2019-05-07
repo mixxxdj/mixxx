@@ -349,13 +349,13 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     // Seek track according to SeekOnLoadMode.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
     switch (seekOnLoadMode) {
-    case SEEK_ON_LOAD_ZERO_POS:
+      case SeekOnLoadMode::Beginning:
         seekExact(0.0);
         break;
-    case SEEK_ON_LOAD_MAIN_CUE:
+    case SeekOnLoadMode::MainCue:
         seekExact(m_pCuePoint->get());
         break;
-    case SEEK_ON_LOAD_INTRO_CUE:
+    case SeekOnLoadMode::IntroStart:
         seekExact(m_pIntroStartPosition->get());
         break;
     default:
@@ -492,15 +492,15 @@ void CueControl::reloadCuesFromTrack() {
 
     // Make track follow the updated cues.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadMode();
-    if (seekOnLoadMode == SEEK_ON_LOAD_DEFAULT) {
+    if (seekOnLoadMode == SeekOnLoadMode::Default) {
         if ((trackAt == TrackAt::Cue || wasTrackAtZeroPos) && cue != -1.0 && isCueRecallEnabled()) {
             seekExact(cue);
         }
-    } else if (seekOnLoadMode == SEEK_ON_LOAD_MAIN_CUE) {
+    } else if (seekOnLoadMode == SeekOnLoadMode::MainCue) {
         if ((trackAt == TrackAt::Cue || wasTrackAtZeroPos) && cue != -1.0) {
             seekExact(cue);
         }
-    } else if (seekOnLoadMode == SEEK_ON_LOAD_INTRO_CUE) {
+    } else if (seekOnLoadMode == SeekOnLoadMode::IntroStart) {
         if ((wasTrackAtIntroCue || wasTrackAtZeroPos) && intro != -1.0) {
             seekExact(intro);
         }

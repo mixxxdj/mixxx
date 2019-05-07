@@ -18,21 +18,16 @@ class ControlObject;
 class ControlPushButton;
 class ControlIndicator;
 
-enum SeekOnLoadMode {
-    SEEK_ON_LOAD_DEFAULT = 0,  // Use CueRecall preference setting
-    SEEK_ON_LOAD_ZERO_POS = 1,  // Use 0:00.000
-    SEEK_ON_LOAD_MAIN_CUE = 2,  // Use main cue point
-    SEEK_ON_LOAD_INTRO_CUE = 3,  // Use intro cue point
-    SEEK_ON_LOAD_NUM_MODES
+enum class SeekOnLoadMode {
+    Default = 0,  // Use CueRecall preference setting
+    Beginning = 1,  // Use 0:00.000
+    MainCue = 2,  // Use main cue point
+    IntroStart = 3,  // Use intro start cue point
 };
 
 inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
     // msvs does not allow to cast from double to an enum
-    SeekOnLoadMode mode = static_cast<SeekOnLoadMode>(int(value));
-    if (mode >= SEEK_ON_LOAD_NUM_MODES || mode < 0) {
-        return SEEK_ON_LOAD_DEFAULT;
-    }
-    return mode;
+    return static_cast<SeekOnLoadMode>(int(value));;
 }
 
 class HotcueControl : public QObject {

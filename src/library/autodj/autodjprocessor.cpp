@@ -333,8 +333,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         qDebug() << "Auto DJ enabled";
 
-        deck1.setSeekOnLoadMode(SEEK_ON_LOAD_INTRO_CUE);
-        deck2.setSeekOnLoadMode(SEEK_ON_LOAD_INTRO_CUE);
+        deck1.setSeekOnLoadMode(SeekOnLoadMode::IntroStart);
+        deck2.setSeekOnLoadMode(SeekOnLoadMode::IntroStart);
 
         connect(&deck1, &DeckAttributes::playPositionChanged,
                 this, &AutoDJProcessor::playerPositionChanged);
@@ -424,8 +424,8 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         qDebug() << "Auto DJ disabled";
         m_eState = ADJ_DISABLED;
-        deck1.setSeekOnLoadMode(SEEK_ON_LOAD_DEFAULT);
-        deck2.setSeekOnLoadMode(SEEK_ON_LOAD_DEFAULT);
+        deck1.setSeekOnLoadMode(SeekOnLoadMode::Default);
+        deck2.setSeekOnLoadMode(SeekOnLoadMode::Default);
         deck1.disconnect(this);
         deck2.disconnect(this);
         m_pCOCrossfader->set(0);
