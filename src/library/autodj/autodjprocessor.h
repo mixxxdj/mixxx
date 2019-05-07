@@ -162,10 +162,11 @@ class AutoDJProcessor : public QObject {
         ADJ_NOT_TWO_DECKS
     };
 
-    enum class IntroOutroUsage {
-        None = 0,
-        Shorter = 1,
-        Longer = 2
+    enum class TransitionMode {
+        FixedFullTrack = 0,
+        FixedSkipSilence = 1,
+        IntroOutroShorter = 2,
+        IntroOutroLonger = 3,
     };
 
     AutoDJProcessor(QObject* pParent,
@@ -183,8 +184,8 @@ class AutoDJProcessor : public QObject {
         return m_transitionTime;
     }
 
-    IntroOutroUsage getUseIntroOutro() const {
-        return m_useIntroOutroMode;
+    TransitionMode getUseIntroOutro() const {
+        return m_transitionMode;
     }
 
     PlaylistTableModel* getTableModel() const {
@@ -249,6 +250,8 @@ class AutoDJProcessor : public QObject {
     double getIntroEndPosition(DeckAttributes* pDeck);
     double getOutroStartPosition(DeckAttributes* pDeck);
     double getOutroEndPosition(DeckAttributes* pDeck);
+    double getLastSoundPosition(DeckAttributes* pDeck);
+    double samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck);
 
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue(const DeckAttributes& pDeck, bool play = false);
@@ -275,7 +278,7 @@ class AutoDJProcessor : public QObject {
 
     AutoDJState m_eState;
     double m_transitionTime; // the desired value set by the user
-    IntroOutroUsage m_useIntroOutroMode;
+    TransitionMode m_transitionMode;
 
     QList<DeckAttributes*> m_decks;
 

@@ -74,12 +74,14 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this, SLOT(toggleAutoDJButton(bool)));
 
-    introOutroCombobox->addItem(tr("Do not use intro/outro markers"),
-                                static_cast<int>(AutoDJProcessor::IntroOutroUsage::None));
-    introOutroCombobox->addItem(tr("Use intro/outro for transition time (whichever is shorter)"),
-                                static_cast<int>(AutoDJProcessor::IntroOutroUsage::Shorter));
-    introOutroCombobox->addItem(tr("Use intro/outro for transition time (whichever is longer)"),
-                                static_cast<int>(AutoDJProcessor::IntroOutroUsage::Longer));
+    introOutroCombobox->addItem(tr("Fixed time (full track)"),
+                                static_cast<int>(AutoDJProcessor::TransitionMode::FixedFullTrack));
+    introOutroCombobox->addItem(tr("Fixed time (skip silence)"),
+                                static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
+    introOutroCombobox->addItem(tr("Intro/outro (shorter)"),
+                                static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutroShorter));
+    introOutroCombobox->addItem(tr("Intro/outro (longer)"),
+                                static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutroLonger));
     introOutroCombobox->setCurrentIndex(static_cast<int>(m_pAutoDJProcessor->getUseIntroOutro()));
     connect(introOutroCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             m_pAutoDJProcessor, &AutoDJProcessor::setUseIntroOutro);

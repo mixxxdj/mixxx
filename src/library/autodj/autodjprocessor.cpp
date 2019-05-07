@@ -158,8 +158,8 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
 
     int configMode = m_pConfig->getValue(
             ConfigKey(kConfigKey, kUseIntroOutroPreferenceName),
-            static_cast<int>(IntroOutroUsage::Shorter));
-    m_useIntroOutroMode = static_cast<IntroOutroUsage>(configMode);
+            static_cast<int>(TransitionMode::IntroOutroShorter));
+    m_transitionMode = static_cast<TransitionMode>(configMode);
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -333,9 +333,12 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         qDebug() << "Auto DJ enabled";
 
-        if (m_useIntroOutroMode == IntroOutroUsage::None) {
+        if (m_transitionMode == TransitionMode::FixedFullTrack) {
             deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
             deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
+        } else if (m_transitionMode == TransitionMode::FixedSkipSilence) {
+            deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::FirstSound);
+            deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::FirstSound);
         } else {
             deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
             deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
@@ -802,39 +805,37 @@ void AutoDJProcessor::playerOutroEndChanged(DeckAttributes* pAttributes, double 
 }
 
 double AutoDJProcessor::getIntroStartPosition(DeckAttributes* pDeck) {
-    double position = pDeck->introStartPosition() / kChannelCount;
-    double samplerate = pDeck->sampleRate();
-    if (position <= 0.0 || samplerate <= 0.0) {
-        return -1.0;
-    }
-    return position / samplerate;  // Convert to seconds
+    return samplePositionToSeconds(pDeck->introStartPosition(), pDeck);
 }
 
 double AutoDJProcessor::getIntroEndPosition(DeckAttributes* pDeck) {
-    double position = pDeck->introEndPosition() / kChannelCount;
-    double samplerate = pDeck->sampleRate();
-    if (position <= 0.0 || samplerate <= 0.0) {
-        return -1.0;
-    }
-    return position / samplerate;  // Convert to seconds
+    return samplePositionToSeconds(pDeck->introEndPosition(), pDeck);
 }
 
 double AutoDJProcessor::getOutroStartPosition(DeckAttributes* pDeck) {
-    double position = pDeck->outroStartPosition() / kChannelCount;
-    double samplerate = pDeck->sampleRate();
-    if (position <= 0.0 || samplerate <= 0.0) {
-        return -1.0;
-    }
-    return position / samplerate;  // Convert to seconds
+    return samplePositionToSeconds(pDeck->outroStartPosition(), pDeck);
 }
 
 double AutoDJProcessor::getOutroEndPosition(DeckAttributes* pDeck) {
-    double position = pDeck->outroEndPosition() / kChannelCount;
-    double samplerate = pDeck->sampleRate();
-    if (position <= 0.0 || samplerate <= 0.0) {
+    return samplePositionToSeconds(pDeck->outroEndPosition(), pDeck);
+}
+
+double AutoDJProcessor::getLastSoundPosition(DeckAttributes* pDeck) {
+    CuePointer pFromTrackLastSound = pDeck->getLoadedTrack()->findCueByType(Cue::Type::LastSound);
+    if (pFromTrackLastSound) {
+        return samplePositionToSeconds(pFromTrackLastSound->getPosition(), pDeck);
+    } else {
+        return pDeck->duration();
+    }
+}
+
+double AutoDJProcessor::samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck) {
+    samplePosition /= kChannelCount;
+    double sampleRate = pDeck->sampleRate();
+    if (samplePosition <= 0.0 || sampleRate <= 0.0) {
         return -1.0;
     }
-    return position / samplerate;  // Convert to seconds
+    return samplePosition / sampleRate;
 }
 
 void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
@@ -882,19 +883,20 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     double toTrackIntroLength = toTrackIntroEnd - toTrackIntroStart;
 
-    if (m_useIntroOutroMode != IntroOutroUsage::None) {
+    if (m_transitionMode == TransitionMode::IntroOutroLonger
+        || m_transitionMode == TransitionMode::IntroOutroShorter) {
         if (fromTrackOutroLength > 0 && toTrackIntroLength > 0) {
             if (fromTrackOutroLength > toTrackIntroLength) {
-                if (m_useIntroOutroMode == IntroOutroUsage::Longer) {
+                if (m_transitionMode == TransitionMode::IntroOutroLonger) {
                     useOutroFadeTime(pFromDeck, fromTrackOutroStart,
                                      fromTrackOutroLength, toTrackDuration);
-                } else if (m_useIntroOutroMode == IntroOutroUsage::Shorter) {
+                } else if (m_transitionMode == TransitionMode::IntroOutroShorter) {
                     useIntroFadeTime(pFromDeck, fromTrackOutroEnd, toTrackIntroLength);
                 }
             } else if (fromTrackOutroLength < toTrackIntroLength) {
-                if (m_useIntroOutroMode == IntroOutroUsage::Longer) {
+                if (m_transitionMode == TransitionMode::IntroOutroLonger) {
                     useIntroFadeTime(pFromDeck, fromTrackOutroEnd, toTrackIntroLength);
-                } else if (m_useIntroOutroMode == IntroOutroUsage::Shorter) {
+                } else if (m_transitionMode == TransitionMode::IntroOutroShorter) {
                     useOutroFadeTime(pFromDeck, fromTrackOutroStart,
                                      fromTrackOutroLength, toTrackDuration);
                 }
@@ -917,6 +919,21 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                 // Setting this is only required for negative transition times
                 pToDeck->startPos = toTrackIntroStart + transitionTime;
             }
+        }
+    } else if (m_transitionMode == TransitionMode::FixedSkipSilence) {
+        double fromTrackEndPoint = getLastSoundPosition(pFromDeck);
+        double transitionTime = m_transitionTime;
+        if (m_transitionTime > toTrackDuration) {
+            transitionTime = toTrackDuration;
+        }
+        if (transitionTime > 0.0) {
+            pFromDeck->posThreshold = fromTrackEndPoint - transitionTime;
+            pFromDeck->fadeDuration = transitionTime;
+        } else {
+            pFromDeck->posThreshold = fromTrackEndPoint;
+            pFromDeck->fadeDuration = transitionTime;
+            // Setting this is only required for negative transition times
+            pToDeck->startPos = transitionTime;
         }
     } else {
         double transitionTime = m_transitionTime;
@@ -1061,16 +1078,19 @@ void AutoDJProcessor::setTransitionTime(int time) {
 void AutoDJProcessor::setUseIntroOutro(int checkboxState) {
     m_pConfig->set(ConfigKey(kConfigKey, kUseIntroOutroPreferenceName),
                    ConfigValue(checkboxState));
-    m_useIntroOutroMode = static_cast<IntroOutroUsage>(checkboxState);
+    m_transitionMode = static_cast<TransitionMode>(checkboxState);
 
     // Then re-calculate fade thresholds for the decks.
     if (m_eState == ADJ_IDLE) {
         DeckAttributes& leftDeck = *m_decks[0];
         DeckAttributes& rightDeck = *m_decks[1];
 
-        if (m_useIntroOutroMode == IntroOutroUsage::None) {
+        if (m_transitionMode == TransitionMode::FixedFullTrack) {
             leftDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
             rightDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
+        } else if (m_transitionMode == TransitionMode::FixedSkipSilence) {
+            leftDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::FirstSound);
+            rightDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::FirstSound);
         } else {
             leftDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
             rightDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
