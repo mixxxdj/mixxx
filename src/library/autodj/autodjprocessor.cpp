@@ -333,16 +333,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         }
         qDebug() << "Auto DJ enabled";
 
-        if (m_transitionMode == TransitionMode::FixedFullTrack) {
-            deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
-            deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
-        } else if (m_transitionMode == TransitionMode::FixedSkipSilence) {
-            deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::FirstSound);
-            deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::FirstSound);
-        } else {
-            deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
-            deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
-        }
+        setSeekOnLoadModeOverrideForTransitionMode();
 
         connect(&deck1, &DeckAttributes::playPositionChanged,
                 this, &AutoDJProcessor::playerPositionChanged);
@@ -820,6 +811,15 @@ double AutoDJProcessor::getOutroEndPosition(DeckAttributes* pDeck) {
     return samplePositionToSeconds(pDeck->outroEndPosition(), pDeck);
 }
 
+double AutoDJProcessor::getFirstSoundPosition(DeckAttributes* pDeck) {
+    CuePointer pFromTrackFirstSound = pDeck->getLoadedTrack()->findCueByType(Cue::Type::FirstSound);
+    if (pFromTrackFirstSound) {
+        return samplePositionToSeconds(pFromTrackFirstSound->getPosition(), pDeck);
+    } else {
+        return 0;
+    }
+}
+
 double AutoDJProcessor::getLastSoundPosition(DeckAttributes* pDeck) {
     CuePointer pFromTrackLastSound = pDeck->getLoadedTrack()->findCueByType(Cue::Type::LastSound);
     if (pFromTrackLastSound) {
@@ -828,6 +828,16 @@ double AutoDJProcessor::getLastSoundPosition(DeckAttributes* pDeck) {
         return pDeck->duration();
     }
 }
+
+double AutoDJProcessor::getMainCuePosition(DeckAttributes* pDeck) {
+    CuePointer pMainCue = pDeck->getLoadedTrack()->findCueByType(Cue::Type::MainCue);
+    if (pMainCue) {
+        return samplePositionToSeconds(pMainCue->getPosition(), pDeck);
+    } else {
+        return 0;
+    }
+}
+
 
 double AutoDJProcessor::samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck) {
     samplePosition /= kChannelCount;
@@ -906,49 +916,15 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         } else if (fromTrackOutroLength <= 0 && toTrackIntroLength > 0) {
             useIntroFadeTime(pFromDeck, fromTrackOutroEnd, toTrackIntroLength);
         } else {
-            double transitionTime = m_transitionTime;
-            if (m_transitionTime > toTrackDuration) {
-                transitionTime = toTrackDuration;
-            }
-            if (transitionTime >= 0) {
-                pFromDeck->posThreshold = fromTrackOutroEnd - transitionTime;
-                pFromDeck->fadeDuration = transitionTime;
-            } else {
-                pFromDeck->posThreshold = fromTrackOutroEnd;
-                pFromDeck->fadeDuration = transitionTime;
-                // Setting this is only required for negative transition times
-                pToDeck->startPos = toTrackIntroStart + transitionTime;
-            }
+            useFixedFadeTime(pFromDeck, pToDeck, fromTrackOutroEnd, toTrackIntroStart);
         }
     } else if (m_transitionMode == TransitionMode::FixedSkipSilence) {
-        double fromTrackEndPoint = getLastSoundPosition(pFromDeck);
-        double transitionTime = m_transitionTime;
-        if (m_transitionTime > toTrackDuration) {
-            transitionTime = toTrackDuration;
-        }
-        if (transitionTime > 0.0) {
-            pFromDeck->posThreshold = fromTrackEndPoint - transitionTime;
-            pFromDeck->fadeDuration = transitionTime;
-        } else {
-            pFromDeck->posThreshold = fromTrackEndPoint;
-            pFromDeck->fadeDuration = transitionTime;
-            // Setting this is only required for negative transition times
-            pToDeck->startPos = transitionTime;
-        }
+        useFixedFadeTime(pFromDeck, pToDeck,
+                         getLastSoundPosition(pFromDeck), getFirstSoundPosition(pToDeck));
+    } else if (m_transitionMode == TransitionMode::FixedLoadAtCue) {
+        useFixedFadeTime(pFromDeck, pToDeck, fromTrackDuration, getMainCuePosition(pToDeck));
     } else {
-        double transitionTime = m_transitionTime;
-        if (m_transitionTime > toTrackDuration) {
-            transitionTime = toTrackDuration;
-        }
-        if (transitionTime > 0.0) {
-            pFromDeck->posThreshold = fromTrackDuration - transitionTime;
-            pFromDeck->fadeDuration = transitionTime;
-        } else {
-            pFromDeck->posThreshold = fromTrackDuration;
-            pFromDeck->fadeDuration = transitionTime;
-            // Setting this is only required for negative transition times
-            pToDeck->startPos = transitionTime;
-        }
+        useFixedFadeTime(pFromDeck, pToDeck, fromTrackDuration, 0);
     }
 
     VERIFY_OR_DEBUG_ASSERT(fromTrackDuration > 0) {
@@ -979,6 +955,25 @@ void AutoDJProcessor::useIntroFadeTime(DeckAttributes* pFromDeck, double fromTra
                                        double toTrackIntroLength) {
     pFromDeck->posThreshold = fromTrackOutroEnd - toTrackIntroLength;
     pFromDeck->fadeDuration = toTrackIntroLength;
+}
+
+void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
+                                       double endPoint, double startPoint) {
+    double transitionTime = m_transitionTime;
+    double toTrackDuration = pToDeck->duration();
+    if (m_transitionTime > toTrackDuration) {
+        transitionTime = toTrackDuration;
+    }
+
+    if (transitionTime > 0.0) {
+        pFromDeck->posThreshold = endPoint - transitionTime;
+        pFromDeck->fadeDuration = transitionTime;
+    } else {
+        pFromDeck->posThreshold = endPoint;
+        pFromDeck->fadeDuration = transitionTime;
+        // Setting this is only required for negative transition times
+        pToDeck->startPos = startPoint + transitionTime;
+    }
 }
 
 void AutoDJProcessor::playerTrackLoaded(DeckAttributes* pDeck, TrackPointer pTrack) {
@@ -1085,16 +1080,7 @@ void AutoDJProcessor::setUseIntroOutro(int checkboxState) {
         DeckAttributes& leftDeck = *m_decks[0];
         DeckAttributes& rightDeck = *m_decks[1];
 
-        if (m_transitionMode == TransitionMode::FixedFullTrack) {
-            leftDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
-            rightDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
-        } else if (m_transitionMode == TransitionMode::FixedSkipSilence) {
-            leftDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::FirstSound);
-            rightDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::FirstSound);
-        } else {
-            leftDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
-            rightDeck.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
-        }
+        setSeekOnLoadModeOverrideForTransitionMode();
 
         if (leftDeck.isPlaying()) {
             calculateTransition(&leftDeck, &rightDeck);
@@ -1102,6 +1088,34 @@ void AutoDJProcessor::setUseIntroOutro(int checkboxState) {
         if (rightDeck.isPlaying()) {
             calculateTransition(&rightDeck, &leftDeck);
         }
+    }
+}
+
+void AutoDJProcessor::setSeekOnLoadModeOverrideForTransitionMode() {
+    DeckAttributes& deck1 = *m_decks[0];
+    DeckAttributes& deck2 = *m_decks[1];
+    switch (m_transitionMode) {
+    case TransitionMode::FixedFullTrack:
+        deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
+        deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::Beginning);
+        break;
+    case TransitionMode::FixedSkipSilence:
+        deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::FirstSound);
+        deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::FirstSound);
+        break;
+    case TransitionMode::FixedLoadAtCue:
+        deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::MainCue);
+        deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::MainCue);
+        break;
+    case TransitionMode::IntroOutroShorter:
+    case TransitionMode::IntroOutroLonger:
+        deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
+        deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::IntroStart);
+        break;
+    default:
+        deck1.setSeekOnLoadModeOverride(SeekOnLoadMode::UsePreference);
+        deck2.setSeekOnLoadModeOverride(SeekOnLoadMode::UsePreference);
+        break;
     }
 }
 

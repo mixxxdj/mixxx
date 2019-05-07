@@ -165,8 +165,9 @@ class AutoDJProcessor : public QObject {
     enum class TransitionMode {
         FixedFullTrack = 0,
         FixedSkipSilence = 1,
-        IntroOutroShorter = 2,
-        IntroOutroLonger = 3,
+        FixedLoadAtCue = 2,
+        IntroOutroShorter = 3,
+        IntroOutroLonger = 4,
     };
 
     AutoDJProcessor(QObject* pParent,
@@ -250,7 +251,9 @@ class AutoDJProcessor : public QObject {
     double getIntroEndPosition(DeckAttributes* pDeck);
     double getOutroStartPosition(DeckAttributes* pDeck);
     double getOutroEndPosition(DeckAttributes* pDeck);
+    double getFirstSoundPosition(DeckAttributes* pDeck);
     double getLastSoundPosition(DeckAttributes* pDeck);
+    double getMainCuePosition(DeckAttributes* pDeck);
     double samplePositionToSeconds(double samplePosition, DeckAttributes* pDeck);
 
     TrackPointer getNextTrackFromQueue();
@@ -261,6 +264,9 @@ class AutoDJProcessor : public QObject {
                           double fromTrackOutroLength, double toTrackDuration);
     void useIntroFadeTime(DeckAttributes* pFromDeck, double fromTrackOutroEnd,
                           double toTrackIntroLength);
+    void useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
+                          double endPoint, double startPoint);
+    void setSeekOnLoadModeOverrideForTransitionMode();
     DeckAttributes* getOtherDeck(DeckAttributes* pFromDeck,
                                  bool playing = false);
 
