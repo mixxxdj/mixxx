@@ -1049,7 +1049,7 @@ void AutoDJProcessor::setTransitionTime(int time) {
     }
 }
 
-void AutoDJProcessor::setUseIntroOutro(int checkboxState) {
+void AutoDJProcessor::setTransitionMode(int checkboxState) {
     m_pConfig->set(ConfigKey(kConfigKey, kUseIntroOutroPreferenceName),
                    ConfigValue(checkboxState));
     m_transitionMode = static_cast<TransitionMode>(checkboxState);

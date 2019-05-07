@@ -175,7 +175,7 @@ class AutoDJProcessor : public QObject {
         return m_transitionTime;
     }
 
-    TransitionMode getUseIntroOutro() const {
+    TransitionMode getTransitionMode() const {
         return m_transitionMode;
     }
 
@@ -188,7 +188,7 @@ class AutoDJProcessor : public QObject {
   public slots:
     void setTransitionTime(int seconds);
 
-    void setUseIntroOutro(int checkboxState);
+    void setTransitionMode(int checkboxState);
 
     AutoDJError shufflePlaylist(const QModelIndexList& selectedIndices);
     AutoDJError skipNext();

@@ -84,9 +84,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                                 static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutroShorter));
     fadeModeCombobox->addItem(tr("Intro/outro (longer)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutroLonger));
-    fadeModeCombobox->setCurrentIndex(static_cast<int>(m_pAutoDJProcessor->getUseIntroOutro()));
+    fadeModeCombobox->setCurrentIndex(static_cast<int>(m_pAutoDJProcessor->getTransitionMode()));
     connect(fadeModeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            m_pAutoDJProcessor, &AutoDJProcessor::setUseIntroOutro);
+            m_pAutoDJProcessor, &AutoDJProcessor::setTransitionMode);
 
     // Setup DlgAutoDJ UI based on the current AutoDJProcessor state. Keep in
     // mind that AutoDJ may already be active when DlgAutoDJ is created (due to
