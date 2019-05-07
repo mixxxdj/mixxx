@@ -74,18 +74,18 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this, SLOT(toggleAutoDJButton(bool)));
 
-    introOutroCombobox->addItem(tr("Fixed time (full track)"),
+    fadeModeCombobox->addItem(tr("Fixed time (full track)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FixedFullTrack));
-    introOutroCombobox->addItem(tr("Fixed time (skip silence)"),
+    fadeModeCombobox->addItem(tr("Fixed time (skip silence)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
-    introOutroCombobox->addItem(tr("Fixed time (start at cue)"),
+    fadeModeCombobox->addItem(tr("Fixed time (start at cue)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FixedLoadAtCue));
-    introOutroCombobox->addItem(tr("Intro/outro (shorter)"),
+    fadeModeCombobox->addItem(tr("Intro/outro (shorter)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutroShorter));
-    introOutroCombobox->addItem(tr("Intro/outro (longer)"),
+    fadeModeCombobox->addItem(tr("Intro/outro (longer)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutroLonger));
-    introOutroCombobox->setCurrentIndex(static_cast<int>(m_pAutoDJProcessor->getUseIntroOutro()));
-    connect(introOutroCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
+    fadeModeCombobox->setCurrentIndex(static_cast<int>(m_pAutoDJProcessor->getUseIntroOutro()));
+    connect(fadeModeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             m_pAutoDJProcessor, &AutoDJProcessor::setUseIntroOutro);
 
     // Setup DlgAutoDJ UI based on the current AutoDJProcessor state. Keep in
