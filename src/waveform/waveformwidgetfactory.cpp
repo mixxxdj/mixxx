@@ -115,36 +115,14 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
 
-    const QGLWidget* pGlWidget = SharedGLContext::getWidget();
+    QGLWidget* pGlWidget = SharedGLContext::getWidget();
     if (pGlWidget && pGlWidget->isValid()) {
         // will be false if SafeMode is enabled
 
+        pGlWidget->show();
         // Without a makeCurrent, hasOpenGLShaderPrograms returns false on Qt 5.
         // and QGLFormat::openGLVersionFlags() returns the maximum known version
-        pGlWidget->context()->makeCurrent();
-
-        QGLFormat glFormat;
-        glFormat.setDirectRendering(true);
-        glFormat.setDoubleBuffer(true);
-        glFormat.setDepth(false);
-        // Disable waiting for vertical Sync
-        // This can be enabled when using a single Threads for each QGLContext
-        // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
-#if defined(__APPLE__)
-        // On OS X, syncing to vsync has good performance FPS-wise and
-        // eliminates tearing.
-        glFormat.setSwapInterval(1);
-#else
-        // Otherwise, turn VSync off because it could cause horrible FPS on
-        // Linux.
-        // TODO(XXX): Make this configurable.
-        // TODO(XXX): What should we do on Windows?
-        glFormat.setSwapInterval(0);
-#endif
-
-
-        glFormat.setRgba(true);
-        QGLFormat::setDefaultFormat(glFormat);
+        pGlWidget->makeCurrent();
 
         QGLFormat::OpenGLVersionFlags version = QGLFormat::openGLVersionFlags();
 
@@ -165,6 +143,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
             qDebug() << QString("openGLVersionFlags 0x%1").arg(version, 0, 16) << versionString << vendorString << rendererString;
         } else {
             qDebug() << "QOpenGLContext::currentContext() retuns nullptr";
+            qDebug() << "pGlWidget->->windowHandle() =" << pGlWidget->windowHandle();
         }
 #endif
 
@@ -273,6 +252,8 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         if (!rendererString.isEmpty()) {
             m_openGLVersion += " (" + rendererString + ")";
         }
+
+        pGlWidget->hide();
     }
 
     evaluateWidgets();
