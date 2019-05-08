@@ -5,10 +5,10 @@
 #include <QGLFormat>
 #include <QGLWidget>
 
-const QGLWidget* SharedGLContext::s_pSharedGLWidget = NULL;
+QGLWidget* SharedGLContext::s_pSharedGLWidget = nullptr;
 
 // static
-void SharedGLContext::setWidget(const QGLWidget* pWidget) {
+void SharedGLContext::setWidget(QGLWidget* pWidget) {
     s_pSharedGLWidget = pWidget;
     qDebug() << "Set root GL Context widget valid:"
              << pWidget << (pWidget && pWidget->isValid());
@@ -32,6 +32,6 @@ void SharedGLContext::setWidget(const QGLWidget* pWidget) {
 }
 
 // static
-const QGLWidget* SharedGLContext::getWidget() {
+QGLWidget* SharedGLContext::getWidget() {
     return s_pSharedGLWidget;
 }
