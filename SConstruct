@@ -48,6 +48,7 @@ available_features = [features.Mad,
                       features.Verbose,
                       features.Optimize,
                       features.FAAD,
+                      features.FFmpeg4,
                       features.WavPack,
                       features.ModPlug,
                       features.TestSuite,
@@ -63,7 +64,6 @@ available_features = [features.Mad,
                       features.FFMPEG,
 
                       # Experimental features
-                      features.FFmpeg4,
                       features.OpenGLES,
                       features.QtKeychain
                       ]
