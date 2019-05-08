@@ -3564,9 +3564,9 @@
             -->
 
             <!-- TR-S Section -->
-            <!--
             <control>
                 <group>[Master]</group>
+                <key>DJ505.trsSection.bpmKnobTurned</key>
                 <description>TR-S VALUE</description>
                 <status>0xEF</status>
                 <options>
@@ -3575,6 +3575,7 @@
             </control>
             <control>
                 <group>[Master]</group>
+                <key>DJ505.trsSection.syncButtonPressed</key>
                 <description>TR-S SYNC</description>
                 <status>0x9F</status>
                 <midino>0x53</midino>
@@ -3584,6 +3585,7 @@
             </control>
             <control>
                 <group>[Master]</group>
+                <key>DJ505.trsSection.syncButtonPressed</key>
                 <description>TR-S SYNC OFF</description>
                 <status>0x9F</status>
                 <midino>0x55</midino>
@@ -3591,6 +3593,7 @@
                     <script-binding/>
                 </options>
             </control>
+            <!--
             <control>
                 <group>[Master]</group>
                 <description>TR-S (change)</description>

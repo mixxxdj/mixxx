@@ -29,6 +29,7 @@ DJ505.init = function () {
 
     DJ505.sampler = new DJ505.Sampler();
     DJ505.sampler.reconnectComponents();
+    DJ505.trsSection = new DJ505.TRSSection(this);
 
     DJ505.effectUnit = [];
     for(var i = 0; i <= 1; i++) {
@@ -1508,3 +1509,68 @@ DJ505.PadSection.prototype.padPressed = function (channel, control, value, statu
         break;
     }
 };
+
+DJ505.TRSSection = function() {
+    // TODO: Improve sync so that we don't need to use the NUDGE button for
+    // beatmatching.
+    // TODO: Add support for custom samples
+    // TODO: Add support for FX
+    components.ComponentContainer.call(this);
+
+    this.syncDeck = -1;
+
+    var getActiveDeck = function() {
+        var deckvolume = new Array(0, 0, 0, 0);
+        var volumemax = -1;
+        var newdeck = -1;
+
+        // get volume from the decks and check it for use
+        for (var z = 0; z <= 3; z++) {
+            if (engine.getValue("[Channel" + (z + 1) + "]", "track_loaded") > 0) {
+                deckvolume[z] = engine.getValue("[Channel" + (z + 1) + "]", "volume");
+                if (deckvolume[z] > volumemax) {
+                    volumemax = deckvolume[z];
+                    newdeck = z;
+                }
+            }
+        }
+
+        return newdeck;
+    };
+
+    this.syncButtonPressed = function (channel, control, value, status, group) {
+        if (value != 0x7f) {
+            return;
+        }
+        var isShifted = (control == 0x55);
+        if (isShifted || this.syncDeck >= 0) {
+            this.syncDeck = -1;
+        } else {
+            var deck = getActiveDeck();
+            if (deck < 0) {
+                return;
+            }
+            var bpm = engine.getValue("[Channel" + (deck + 1) + "]", "bpm");
+
+            // Minimum BPM is 5.0 (0xEA 0x32 0x00), maximum BPM is 800.0 (0xEA 0x40 0x3e).
+            if (!(bpm >= 5 && bpm <= 800)) {
+                return;
+            }
+            var bpm_value = Math.round(bpm*10);
+            midi.sendShortMsg(0xEA, bpm_value & 0x7f, (bpm_value >> 7) & 0x7f);
+            this.syncDeck = deck;
+        }
+        print(this.syncDeck);
+    };
+
+    this.bpmKnobTurned = function (channel, control, value, status, group) {
+        print(this.syncDeck);
+        if (this.syncDeck >= 0) {
+            var bpm = ((value << 7) | control) / 10;
+            engine.setValue("[Channel" + (this.syncDeck + 1) + "]", "bpm", bpm);
+        }
+    };
+};
+
+DJ505.TRSSection.prototype = Object.create(components.ComponentContainer.prototype);
+
