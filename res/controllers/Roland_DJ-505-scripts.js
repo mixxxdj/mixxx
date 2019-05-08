@@ -117,6 +117,30 @@ DJ505.crossfader = new components.Pot({
         components.Pot.prototype.input.apply(this, arguments);
     }
 });
+DJ505.crossfader.setCurve = function (channel, control, value, status, group) {
+    // 0x00 is Picnic Bench, 0x01 is Constant Power and 0x02 is Linear
+    switch(value) {
+        case 0x00:  // Picnic Bench / Fast Cut
+            engine.setValue("[Mixer Profile]", "xFaderMode", 0);
+            engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.9);
+            engine.setValue("[Mixer Profile]", "xFaderCurve", 7.0);
+            break;
+        case 0x01:  // Constant Power
+            engine.setValue("[Mixer Profile]", "xFaderMode", 1);
+            engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.3);
+            engine.setValue("[Mixer Profile]", "xFaderCurve", 0.6);
+            break;
+        case 0x02: // Additive
+            engine.setValue("[Mixer Profile]", "xFaderMode", 0);
+            engine.setValue("[Mixer Profile]", "xFaderCalibration", 0.4);
+            engine.setValue("[Mixer Profile]", "xFaderCurve", 0.9);
+    }
+};
+
+DJ505.crossfader.setReverse = function (channel, control, value, status, group) {
+    // 0x00 is ON, 0x01 is OFF
+    engine.setValue('[Mixer Profile]', 'xFaderReverse', (value == 0x00) ? 1 : 0);
+};
 
 DJ505.Deck = function (deckNumbers, offset) {
     components.Deck.call(this, deckNumbers);

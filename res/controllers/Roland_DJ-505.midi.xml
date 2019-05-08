@@ -3514,20 +3514,19 @@
             </control>
 
             <!-- Front Section -->
-            <!--
             <control>
-                <group>[Master]</group>
-                <key>DJ505.setCrossfaderCurve</key>
+                <group>[Mixer Profile]</group>
+                <key>DJ505.crossfader.setCurve</key>
                 <description>CROSS FADER CURVE</description>
-                <status>0x9F</status>
+                <status>0xBF</status>
                 <midino>0x09</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>DJ505.setCrossfaderReverse</key>
+                <group>[Mixer Profile]</group>
+                <key>DJ505.crossfader.setReverse</key>
                 <description>CROSS FADER REVERSE ON/OFF</description>
                 <status>0x9F</status>
                 <midino>0x09</midino>
@@ -3535,6 +3534,7 @@
                     <script-binding/>
                 </options>
             </control>
+            <!--
             <control>
                 <group>[Master]</group>
                 <key>DJ505.setChannel1Input</key>
