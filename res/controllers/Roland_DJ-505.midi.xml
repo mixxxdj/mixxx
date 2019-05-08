@@ -3534,10 +3534,9 @@
                     <script-binding/>
                 </options>
             </control>
-            <!--
             <control>
                 <group>[Master]</group>
-                <key>DJ505.setChannel1Input</key>
+                <key>DJ505.setChannelInput</key>
                 <description>CH 1 PC/LINE/PHONO</description>
                 <status>0xB0</status>
                 <midino>0x22</midino>
@@ -3547,7 +3546,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>DJ505.setChannel2Input</key>
+                <key>DJ505.setChannelInput</key>
                 <description>CH 2 PC/LINE/PHONO</description>
                 <status>0xB1</status>
                 <midino>0x22</midino>
@@ -3555,6 +3554,7 @@
                     <script-binding/>
                 </options>
             </control>
+            <!--
             <control>
                 <group>[Master]</group>
                 <description>MIC LEVEL</description>

@@ -142,6 +142,29 @@ DJ505.crossfader.setReverse = function (channel, control, value, status, group) 
     engine.setValue('[Mixer Profile]', 'xFaderReverse', (value == 0x00) ? 1 : 0);
 };
 
+DJ505.setChannelInput = function (channel, control, value, status, group) {
+    channel_number = (channel == 0x00) ? 1 : 2;
+    auxgroup = '[Auxiliary' + channel_number + ']';
+    channelgroup = '[Channel' + channel_number + ']';
+    switch(value) {
+        case 0x00:  // PC
+            engine.setValue(auxgroup, 'mute' , 1);
+            engine.setValue(channelgroup, 'mute', 0);
+            break;
+        case 0x01:  // LINE
+            engine.setValue(auxgroup, 'master' , 0);
+            engine.setValue(auxgroup, 'orientation' , channel_number ? 0 : 2);
+            engine.setValue(channelgroup, 'mute', 1);
+            engine.setValue(auxgroup, 'mute' , 0);
+            break;
+        case 0x02:  // PHONO
+            // TODO
+            engine.setValue(channelgroup, 'mute', 0);
+            engine.setValue(auxgroup, 'mute' , 0);
+            break;
+    }
+};
+
 DJ505.Deck = function (deckNumbers, offset) {
     components.Deck.call(this, deckNumbers);
     channel = offset+1;
