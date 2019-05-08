@@ -144,6 +144,7 @@ DJ505.crossfader.setReverse = function (channel, control, value, status, group) 
 };
 
 DJ505.setChannelInput = function (channel, control, value, status, group) {
+    // TODO: Add support for PHONO setting
     channel_number = (channel == 0x00) ? 1 : 2;
     auxgroup = '[Auxiliary' + channel_number + ']';
     channelgroup = '[Channel' + channel_number + ']';
@@ -159,7 +160,6 @@ DJ505.setChannelInput = function (channel, control, value, status, group) {
             engine.setValue(auxgroup, 'mute' , 0);
             break;
         case 0x02:  // PHONO
-            // TODO
             engine.setValue(channelgroup, 'mute', 0);
             engine.setValue(auxgroup, 'mute' , 0);
             break;
@@ -1411,6 +1411,8 @@ DJ505.ParamButtons.prototype.input = function (channel, control, value, status, 
 };
 
 DJ505.PadSection = function (deck) {
+    // TODO: Fix performance pad LEDs
+    // TODO: Add support for missing modes (flip, cueloop, slicer, slicerloop, pitchplay, velocitysampler)
     components.ComponentContainer.call(this);
 
     this.state = "hotcue";
