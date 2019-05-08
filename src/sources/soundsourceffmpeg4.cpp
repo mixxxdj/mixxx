@@ -96,10 +96,10 @@ inline int64_t getStreamEndTime(const AVStream& avStream) {
 inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts) {
     // getStreamStartTime(avStream) -> 1st audible frame at kMinFrameIndex
     return kMinFrameIndex +
-           av_rescale_q(
-                   pts - getStreamStartTime(avStream),
-                   avStream.time_base,
-                   (AVRational){1, avStream.codecpar->sample_rate});
+            av_rescale_q(
+                    pts - getStreamStartTime(avStream),
+                    avStream.time_base,
+                    (AVRational){1, avStream.codecpar->sample_rate});
 }
 
 inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT frameIndex) {
@@ -108,7 +108,7 @@ inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT fram
                    frameIndex - kMinFrameIndex,
                    (AVRational){1, avStream.codecpar->sample_rate},
                    avStream.time_base) +
-           getStreamStartTime(avStream);
+            getStreamStartTime(avStream);
 }
 
 IndexRange getStreamFrameIndexRange(const AVStream& avStream) {
@@ -574,8 +574,8 @@ SoundSource::OpenResult SoundSourceFFmpeg4::tryOpen(
     // the channels and to transform the decoded audio data into the sample
     // format that is used by Mixxx.
     if ((resampledChannelCount != streamChannelCount) ||
-        (m_avResampledChannelLayout != m_avStreamChannelLayout) ||
-        (avResampledSampleFormat != avStreamSampleFormat)) {
+            (m_avResampledChannelLayout != m_avStreamChannelLayout) ||
+            (avResampledSampleFormat != avStreamSampleFormat)) {
         /*
         kLogger.trace()
                 << "Decoded stream needs to be resampled"
@@ -702,8 +702,8 @@ SINT readNextPacket(
     }
     DEBUG_ASSERT(pavPacket->stream_index == pavStream->index);
     return (pavPacket->pts != AV_NOPTS_VALUE)
-                   ? convertStreamTimeToFrameIndex(*pavStream, pavPacket->pts)
-                   : kFrameIndexUnknown;
+            ? convertStreamTimeToFrameIndex(*pavStream, pavPacket->pts)
+            : kFrameIndexUnknown;
 }
 } // namespace
 
@@ -725,7 +725,7 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
                 intersect(bufferedRange, writableRange);
         DEBUG_ASSERT(consumableRange.length() <= writableRange.length());
         if (!consumableRange.empty() &&
-            (consumableRange.start() == writableRange.start())) {
+                (consumableRange.start() == writableRange.start())) {
             // Drop and skip preceding buffered samples
             DEBUG_ASSERT(m_curFrameIndex <= writableRange.start());
             const auto skippableRange =
@@ -772,8 +772,8 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
         DEBUG_ASSERT(seekFrameIndex >= kMinFrameIndex);
         DEBUG_ASSERT(seekFrameIndex <= writableRange.start());
         if ((m_curFrameIndex == kFrameIndexInvalid) ||
-            (m_curFrameIndex > writableRange.start()) ||
-            (m_curFrameIndex < seekFrameIndex)) {
+                (m_curFrameIndex > writableRange.start()) ||
+                (m_curFrameIndex < seekFrameIndex)) {
             // Flush internal decoder state
             avcodec_flush_buffers(m_pavCodecContext);
             // Invalidate current position
@@ -806,7 +806,7 @@ ReadableSampleFrames SoundSourceFFmpeg4::readSampleFramesClamped(
     AVPacket* pavNextPacket = nullptr;
     auto readFrameIndex = m_curFrameIndex;
     while ((pavNextPacket || !writableRange.empty()) &&
-           (m_curFrameIndex != kFrameIndexInvalid)) {
+            (m_curFrameIndex != kFrameIndexInvalid)) {
         // Read next packet from stream
         if (!pavNextPacket) {
             const SINT packetFrameIndex =
