@@ -84,6 +84,10 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
                                 static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutroShorter));
     fadeModeCombobox->addItem(tr("Intro/outro (longer)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::IntroOutroLonger));
+    fadeModeCombobox->addItem(tr("Align intro + outro start"),
+                                static_cast<int>(AutoDJProcessor::TransitionMode::AlignIntroOutroStart));
+    fadeModeCombobox->addItem(tr("Align intro + outro end"),
+                                static_cast<int>(AutoDJProcessor::TransitionMode::AlignIntroOutroStart));
     fadeModeCombobox->setCurrentIndex(static_cast<int>(m_pAutoDJProcessor->getTransitionMode()));
     connect(fadeModeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             m_pAutoDJProcessor, &AutoDJProcessor::setTransitionMode);

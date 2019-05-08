@@ -158,6 +158,8 @@ class AutoDJProcessor : public QObject {
         FixedLoadAtCue = 2,
         IntroOutroShorter = 3,
         IntroOutroLonger = 4,
+        AlignIntroOutroStart = 5,
+        AlignIntroOutroEnd = 6,
     };
 
     AutoDJProcessor(QObject* pParent,
