@@ -312,44 +312,6 @@
 
       <!--
       **********************************************
-      Button - Beatloop
-      **********************************************
-      -->
-      <PushButton>
-        <TooltipId>beatloop_activate</TooltipId>
-        <Style></Style>
-        <NumberStates>2</NumberStates>
-        <LeftClickIsPushButton>true</LeftClickIsPushButton>
-        <RightClickIsPushButton>true</RightClickIsPushButton>
-        <State>
-          <Number>0</Number>
-          <Pressed>skin:/btn/btn_beatloop_4_down.png</Pressed>
-          <Unpressed>skin:/btn/btn_beatloop_4.png</Unpressed>
-        </State>
-        <State>
-          <Number>1</Number>
-          <Pressed>skin:/btn/btn_beatloop_4_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_beatloop_4_over.png</Unpressed>
-        </State>
-        <Pos>149,35</Pos>
-        <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],beatloop_4_toggle</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-          <ButtonState>LeftButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],beatlooproll_4_activate</ConfigKey>
-          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-          <ButtonState>RightButton</ButtonState>
-        </Connection>
-        <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],beatloop_4_enabled</ConfigKey>
-          <ConnectValueFromWidget>false</ConnectValueFromWidget>
-        </Connection>
-      </PushButton>
-
-      <!--
-      **********************************************
       Button- Looping
       **********************************************
       -->
@@ -372,43 +334,48 @@
           <ConfigKey>[Skin],show_loop_beatjump_controls</ConfigKey>
         </Connection>
       </PushButton>
+
+      <!--
+      **********************************************
+      Button - Beatloop
+      **********************************************
+      -->
       <PushButton>
-        <TooltipId>loop_halve</TooltipId>
+        <TooltipId>beatloop_activate</TooltipId>
         <Style></Style>
-        <NumberStates>1</NumberStates>
+        <NumberStates>2</NumberStates>
+        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+        <RightClickIsPushButton>true</RightClickIsPushButton>
         <State>
           <Number>0</Number>
-          <Pressed>skin:/btn/btn_beatloop_halve_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_beatloop_halve.png</Unpressed>
+          <Pressed>skin:/btn/btn_beatloop_4_down.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatloop_4.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_beatloop_4_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatloop_4_over.png</Unpressed>
         </State>
         <Pos>149,14</Pos>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],loop_halve</ConfigKey>
+          <ConfigKey>[Channel<Variable name="channum"/>],beatloop_4_toggle</ConfigKey>
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
           <ButtonState>LeftButton</ButtonState>
         </Connection>
-      </PushButton>
-      <PushButton>
-        <TooltipId>loop_double</TooltipId>
-        <Style></Style>
-        <NumberStates>1</NumberStates>
-        <State>
-          <Number>0</Number>
-          <Pressed>skin:/btn/btn_beatloop_double_overdown.png</Pressed>
-          <Unpressed>skin:/btn/btn_beatloop_double.png</Unpressed>
-        </State>
-        <Pos>170,14</Pos>
         <Connection>
-          <ConfigKey>[Channel<Variable name="channum"/>],loop_double</ConfigKey>
+          <ConfigKey>[Channel<Variable name="channum"/>],beatlooproll_4_activate</ConfigKey>
           <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-          <ButtonState>LeftButton</ButtonState>
+          <ButtonState>RightButton</ButtonState>
+        </Connection>
+        <Connection>
+          <ConfigKey>[Channel<Variable name="channum"/>],beatloop_4_enabled</ConfigKey>
+          <ConnectValueFromWidget>false</ConnectValueFromWidget>
         </Connection>
       </PushButton>
-
       <PushButton>
         <TooltipId>reloop_toggle</TooltipId>
         <Style></Style>
-        <Pos>170,35</Pos>
+        <Pos>170,14</Pos>
         <NumberStates>2</NumberStates>
         <LeftClickIsPushButton>true</LeftClickIsPushButton>
         <State>
@@ -438,6 +405,40 @@
           <ConnectValueFromWidget>false</ConnectValueFromWidget>
         </Connection>
       </PushButton>
+
+      <PushButton>
+        <TooltipId>loop_halve</TooltipId>
+        <Style></Style>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_beatloop_halve_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatloop_halve.png</Unpressed>
+        </State>
+        <Pos>149,35</Pos>
+        <Connection>
+          <ConfigKey>[Channel<Variable name="channum"/>],loop_halve</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+      <PushButton>
+        <TooltipId>loop_double</TooltipId>
+        <Style></Style>
+        <NumberStates>1</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_beatloop_double_overdown.png</Pressed>
+          <Unpressed>skin:/btn/btn_beatloop_double.png</Unpressed>
+        </State>
+        <Pos>170,35</Pos>
+        <Connection>
+          <ConfigKey>[Channel<Variable name="channum"/>],loop_double</ConfigKey>
+          <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
 
       <!--
       **********************************************
