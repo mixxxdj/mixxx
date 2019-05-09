@@ -867,30 +867,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     double toTrackIntroLength = toTrackIntroEnd - toTrackIntroStart;
 
-    if (m_transitionMode == TransitionMode::IntroOutroLonger
-        || m_transitionMode == TransitionMode::IntroOutroShorter) {
-        if (fromTrackOutroLength > 0 && toTrackIntroLength > 0) {
-            if (fromTrackOutroLength > toTrackIntroLength) {
-                if (m_transitionMode == TransitionMode::IntroOutroLonger) {
-                    useOutroFadeTime(pFromDeck, pToDeck);
-                } else if (m_transitionMode == TransitionMode::IntroOutroShorter) {
-                    useIntroFadeTime(pFromDeck, pToDeck);
-                }
-            } else if (fromTrackOutroLength < toTrackIntroLength) {
-                if (m_transitionMode == TransitionMode::IntroOutroLonger) {
-                    useIntroFadeTime(pFromDeck, pToDeck);
-                } else if (m_transitionMode == TransitionMode::IntroOutroShorter) {
-                    useOutroFadeTime(pFromDeck, pToDeck);
-                }
-            }
-        } else if (fromTrackOutroLength > 0 && toTrackIntroLength <= 0) {
-            useOutroFadeTime(pFromDeck, pToDeck);
-        } else if (fromTrackOutroLength <= 0 && toTrackIntroLength > 0) {
-            useIntroFadeTime(pFromDeck, pToDeck);
-        } else {
-            useFixedFadeTime(pFromDeck, pToDeck, fromTrackOutroEnd, toTrackIntroStart);
-        }
-    } else if (m_transitionMode == TransitionMode::AlignIntroOutroStart) {
+    if (m_transitionMode == TransitionMode::AlignIntroOutroStart) {
         if (toTrackIntroStart > 0) {
             pToDeck->startPos = toTrackIntroStart;
         } else {
@@ -921,9 +898,13 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
                 pToDeck->startPos = toTrackIntroStart;
             }
         } else if (fromTrackOutroLength > 0 && toTrackIntroLength <= 0) {
-            useOutroFadeTime(pFromDeck, pToDeck);
+            pFromDeck->fadeBeginPos = fromTrackOutroStart;
+            pFromDeck->fadeDuration = fromTrackOutroEnd - fromTrackOutroStart;
+            pToDeck->startPos = getIntroStartPosition(pToDeck);
         } else if (fromTrackOutroLength <= 0 && toTrackIntroLength > 0) {
-            useIntroFadeTime(pFromDeck, pToDeck);
+            pFromDeck->fadeBeginPos = fromTrackOutroEnd - toTrackIntroLength;
+            pFromDeck->fadeDuration = toTrackIntroLength;
+            pToDeck->startPos = toTrackIntroStart;
         } else {
             useFixedFadeTime(pFromDeck, pToDeck,
                              getLastSoundPosition(pFromDeck), getFirstSoundPosition(pToDeck));
@@ -953,24 +934,6 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     pFromDeck->fadeBeginPos /= fromTrackDuration;
     pFromDeck->fadeDuration /= fromTrackDuration;
     pToDeck->startPos /= toTrackDuration;
-}
-
-void AutoDJProcessor::useOutroFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck) {
-    double outroStart = getOutroStartPosition(pFromDeck);
-    double outroEnd = getOutroEndPosition(pFromDeck);
-    pFromDeck->fadeBeginPos = outroStart;
-    pFromDeck->fadeDuration = outroEnd - outroStart;
-    pToDeck->startPos = getIntroStartPosition(pToDeck);
-}
-
-void AutoDJProcessor::useIntroFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck) {
-    double outroEnd = getOutroEndPosition(pFromDeck);
-    double introStart = getIntroStartPosition(pToDeck);
-    double introEnd = getIntroEndPosition(pToDeck);
-    double introLength = introEnd - introStart;
-    pFromDeck->fadeBeginPos = outroEnd - introLength;
-    pFromDeck->fadeDuration = introLength;
-    pToDeck->startPos = introStart;
 }
 
 void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
