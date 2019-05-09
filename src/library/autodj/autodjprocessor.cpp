@@ -852,14 +852,14 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     double outroEnd = getOutroEndPosition(pFromDeck);
     if (outroEnd <= 0.0) {
-        outroEnd = fromTrackDuration;
+        outroEnd = getLastSoundPosition(pFromDeck);
     }
 
     double outroLength = outroEnd - outroStart;
 
     double introStart = getIntroStartPosition(pToDeck);
     if (introStart <= 0.0) {
-        introStart = 0.0;
+        introStart = getFirstSoundPosition(pToDeck);
     }
 
     double introEnd = getIntroEndPosition(pToDeck);
@@ -870,12 +870,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double introLength = introEnd - introStart;
 
     if (m_transitionMode == TransitionMode::AlignIntroOutroStart) {
-        if (introStart > 0) {
-            pToDeck->startPos = introStart;
-        } else {
-            pToDeck->startPos = getFirstSoundPosition(pToDeck);
-        }
-
+        pToDeck->startPos = introStart;
         if (outroLength > 0 && introLength > 0) {
             pFromDeck->fadeBeginPos = outroStart;
             pFromDeck->fadeDuration = math_min(outroLength, introLength);
@@ -886,7 +881,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             pFromDeck->fadeBeginPos = outroEnd - introLength;
             pFromDeck->fadeDuration = introLength;
         } else {
-            useFixedFadeTime(pFromDeck, pToDeck, getLastSoundPosition(pFromDeck), pToDeck->startPos);
+            useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
         }
     } else if (m_transitionMode == TransitionMode::AlignIntroOutroEnd) {
         if (outroLength > 0 && introLength > 0) {
@@ -908,8 +903,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             pFromDeck->fadeDuration = introLength;
             pToDeck->startPos = introStart;
         } else {
-            useFixedFadeTime(pFromDeck, pToDeck,
-                             getLastSoundPosition(pFromDeck), getFirstSoundPosition(pToDeck));
+            useFixedFadeTime(pFromDeck, pToDeck, outroEnd, introStart);
         }
     } else if (m_transitionMode == TransitionMode::FixedSkipSilence) {
         useFixedFadeTime(pFromDeck, pToDeck,
