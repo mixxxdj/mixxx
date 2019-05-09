@@ -938,6 +938,7 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         pFromDeck->fadeDuration = 0;
     }
     VERIFY_OR_DEBUG_ASSERT(toTrackDuration > 0) {
+        pFromDeck->fadeDuration = 0;
         pToDeck->startPos = 0;
     }
 
