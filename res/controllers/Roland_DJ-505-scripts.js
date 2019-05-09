@@ -69,6 +69,13 @@ DJ505.init = function () {
 
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7], 6); //request initial state
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6); //unlock pad layers
+    DJ505.leftDeck.padSection.resetPadLEDs();
+    DJ505.rightDeck.padSection.resetPadLEDs();
+
+    engine.beginTimer(500, function() {
+        // Keep sending this message to enable performance pad LEDs
+        midi.sendShortMsg(0xBF, 0x64, 0x00);
+    });
 
     DJ505.leftDeck.setCurrentDeck('[Channel1]');
     DJ505.rightDeck.setCurrentDeck('[Channel2]');
@@ -295,7 +302,7 @@ DJ505.Deck = function (deckNumbers, offset) {
 
     // ========================== PERFORMANCE PADS ==============================
 
-    this.padSection = new DJ505.PadSection(this);
+    this.padSection = new DJ505.PadSection(this, offset);
     this.keylock = new DJ505.KeylockButton(this.padSection.paramPlusMinus);
 
     // ============================= TRANSPORT ==================================
@@ -1142,7 +1149,6 @@ DJ505.HotcueButton.prototype = Object.create(components.HotcueButton.prototype);
 
 DJ505.HotcueButton.prototype.connect = function () {
     var deck = script.deckFromGroup(this.group);
-    this.midi = [0x94 + deck - 1, this.number];
     components.HotcueButton.prototype.connect.call(this);
 };
 
@@ -1410,106 +1416,285 @@ DJ505.ParamButtons.prototype.input = function (channel, control, value, status, 
     }
 };
 
-DJ505.PadSection = function (deck) {
-    // TODO: Fix performance pad LEDs
+DJ505.PadSection = function (deck, offset) {
     // TODO: Add support for missing modes (flip, cueloop, slicer, slicerloop, pitchplay, velocitysampler)
+    /*
+     * The Performance Pad Section on the DJ-505 apparently have two basic
+     * modes of operation that determines how the LEDs react to MIDI messages
+     * and button presses.
+     *
+     * - Standalone mode:
+     *   When the DJ-505 is not connected to a computer (or no SysEx/Keep-Alive
+     *   messages are sent [see below]), the controller's performance pads
+     *   allow setting various "modes" using the mode buttons and the shift
+     *   modifier. Pressing the mode buttons will change their LED color (and
+     *   makes the performance pads barely lit in that color, too). However,
+     *   it the Mode colors differ from that in the Owner's manual. Also, it
+     *   does not seem to be possible to actually illuminate the performance
+     *   pad LEDs - neither by pressing the button nor by sending MIDI messages
+     *   to the device.
+     *
+     * - Serato mode:
+     *   When the DJ-505 receives a SysEx message, the performance pads are put
+     *   in "Serato" mode. In this mode, the pressing Pad mode buttons will not
+     *   change their color. Instead, all LEDs have to be controlled by sending
+     *   MIDI messages. Unlike the Standalone mode, it is also possible to
+     *   control the pad LEDs.  However, in order to keep the DJ-505 in "Serato
+     *   mode", it seems to be necessary to regularily send a certain
+     *   "keep-alive" MIDI message (0xBF 0x64 0x00). Otherwise the device will
+     *   switch back to "Standalone mode" after approximately 1.5 seconds.
+     *
+     * The following table gives an overview over the different performance pad
+     * modes. The values in the "Serato LED" and "Serato Mode" columns have
+     * been taken from the Owner's Manual.
+     *
+     * Button                         MIDI control Standalone LED   Serato LED   Serato Mode
+     * ------------------------------ ------------ ---------------- ------------ -----------
+     * [HOT CUE]                      0x00         White            White        Hot Cue
+     * [HOT CUE] (press twice)        0x02         Blue             Orange       Saved Flip
+     * [SHIFT] + [HOT CUE]            0x03         Orange           Blue         Cue Loop
+     * [ROLL]                         0x08         Turqoise         Light Blue   Roll
+     * [ROLL] (press twice)           0x0D         Red              Green        Saved Loop
+     * [SHIFT] + [ROLL]               0x09         Blue             Red          Slicer
+     * [SHIFT] + [ROLL] (press twice) 0x0A         Blue             Blue         Slicer Loop
+     * [TR]                           0x04         Red              Red          TR
+     * [TR] (press twice)             0x06         Orange           Orange       TR Velocity
+     * [SHIFT] + [TR]                 0x05         Green            Green        Pattern (Switches TR-S pattern)
+     * [SAMPLER]                      0x0B         Purple           Magenta      Sampler
+     * [SAMPLER] (press twice)        0x0F         Aquamarine       Green        Pitch Play
+     * [SHIFT] + [SAMPLER]            0x0C         Magenta          Purple       Velocity Sampler
+     *
+     * The Pad and Mode Butttons support 31 different LED states:
+     *
+     *   MIDI value Color          MIDI value Color
+     *   ---------- -----          ---------- -----
+     *   0x00       Off            0x10       Off
+     *   0x01       Red            0x11       Red (Dim)
+     *   0x02       Orange         0x12       Orange (Dim)
+     *   0x03       Blue           0x13       Blue (Dim)
+     *   0x04       Yellow         0x14       Yellow (Dim)
+     *   0x05       Applegreen     0x15       Applegreen (Dim)
+     *   0x06       Magenta        0x16       Magenta (Dim)
+     *   0x07       Light Blue     0x17       Light Blue (Dim)
+     *   0x08       Purple         0x18       Purple (Dim)
+     *   0x09       Apricot        0x19       Apricot (Dim)
+     *   0x0A       Coral          0x1A       Coral (Dim)
+     *   0x0B       Azure          0x1B       Azure (Dim)
+     *   0x0C       Turquoise      0x1C       Turquoise (Dim)
+     *   0x0C       Aquamarine     0x1C       Aquamarine (Dim)
+     *   0x0E       Green          0x1E       Green (Dim)
+     *   0x0F       White          0x1F       White (Dim)
+     */
     components.ComponentContainer.call(this);
 
-    this.state = "hotcue";
-    this.hotcueButton = [];
-    this.samplerButton = [];
-    this.rollButton = [];
-    this.loopButton = [];
+    const MODE_HOTCUE = 0x00;
+    const MODE_FLIP = 0x02;
+    const MODE_CUELOOP = 0x03;
+    const MODE_ROLL = 0x08;
+    const MODE_LOOP = 0x0D;
+    const MODE_SLICER = 0x09;
+    const MODE_SLICERLOOP = 0x0A;
+    const MODE_TR = 0x04;
+    const MODE_TRVELOCITY = 0x06;
+    const MODE_PATTERN = 0x05;
+    const MODE_SAMPLER = 0x0B;
+    const MODE_PITCHPLAY = 0x0F;
+    const MODE_VELOCITYSAMPLER = 0x0C;
+
+    this.modes = new Array(
+        undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined,
+        undefined, undefined, undefined, undefined
+    );
+    this.modes[MODE_HOTCUE] = { // [HOT CUE]
+        state: "hotcue",
+        led_control: 0x00,
+        color: 0x0F,
+        pads: [],
+    };
+    //this.modes[MODE_FLIP] = { // [HOT CUE] (press twice)
+    //    state: "flip",
+    //    led_control: 0x00,
+    //    color: 0x02,
+    //    pads: [],
+    //};
+    //this.modes[MODE_CUELOOP] = { // [SHIFT] + [HOT CUE]
+    //    state: "cueloop",
+    //    led_control: 0x00,
+    //    color: 0x03,
+    //    pads: [],
+    //};
+    this.modes[MODE_ROLL] = { // [ROLL]
+        state: "roll",
+        led_control: 0x08,
+        color: 0x07,
+        pads: [],
+    };
+    this.modes[MODE_LOOP] = { // [ROLL] (press twice)
+        state: "loop",
+        led_control: 0x08,
+        color: 0x0E,
+        pads: [],
+    };
+    //this.modes[MODE_SLICER] = { // [SHIFT] + [ROLL]
+    //    state: "slicer",
+    //    led_control: 0x08,
+    //    color: 0x01,
+    //    pads: [],
+    //};
+    //this.modes[MODE_SLICERLOOP] = { // [SHIFT] + [ROLL] (press twice)
+    //    state: "slicerloop",
+    //    led_control: 0x08,
+    //    color: 0x03,
+    //    pads: [],
+    //};
+    this.modes[MODE_TR] = { // [TR]
+        state: "tr",
+    };
+    this.modes[MODE_TRVELOCITY] = { // [TR] (press twice)
+        state: "trvelocity",
+    };
+    this.modes[MODE_PATTERN] = { // [SHIFT] + [TR]
+        state: "pattern",
+    };
+    this.modes[MODE_SAMPLER] = { // [SAMPLER]
+        state: "sampler",
+        led_control: 0x0B,
+        color: 0x06,
+        pads: [],
+    };
+    //this.modes[MODE_PITCHPLAY] = { // [SAMPLER] (press twice)
+    //    state: "pitchplay",
+    //    led_control: 0x0B,
+    //    color: 0x0E,
+    //    pads: [],
+    //};
+    //this.modes[MODE_VELOCITYSAMPLER] = { // [SHIFT] + [SAMPLER]
+    //    state: "velocitysampler",
+    //    led_control: 0x0B,
+    //    color: 0x08,
+    //    pads: [],
+    //};
 
     for (var i = 1; i <= 8; i++) {
-        this.hotcueButton[i] = new DJ505.HotcueButton({number: i});
-        this.samplerButton[i] = new components.SamplerButton({
-            sendShifted: false,
-            shiftControl: true,
-            shiftOffset: 8,
+        this.modes[MODE_HOTCUE].pads[i] = new DJ505.HotcueButton({
+            midi: [0x94 + offset, 0x14 + i - 1],
             number: i,
+            group: deck.currentDeck,
+            on: i,
+            off: this.modes[MODE_HOTCUE].color + 0x10,
         });
-        this.rollButton[i] = new components.Button({
+        this.modes[MODE_SAMPLER].pads[i] = new components.SamplerButton({
+            midi: [0x94 + offset, 0x14 + i - 1],
+            group: deck.currentDeck,
             sendShifted: false,
             shiftControl: true,
             shiftOffset: 8,
             number: i,
-            inKey: 'beatlooproll_' + (0.03125 * Math.pow(2, i-1)) + '_activate'
+            outConnect: false,
+            on: this.modes[MODE_SAMPLER].color,
+            off: this.modes[MODE_SAMPLER].color + 0x10,
         });
-        this.loopButton[i] = new components.Button({
+        this.modes[MODE_ROLL].pads[i] = new components.Button({
+            midi: [0x94 + offset, 0x14 + i - 1],
             sendShifted: false,
             shiftControl: true,
             shiftOffset: 8,
             number: i,
-            inKey: 'beatloop_' + (0.03125 * Math.pow(2, i-1)) + '_activate'
+            group: deck.currentDeck,
+            outKey: 'beatloop_' + (0.03125 * Math.pow(2, i-1)) + '_enabled',
+            inKey: 'beatlooproll_' + (0.03125 * Math.pow(2, i-1)) + '_activate',
+            outConnect: false,
+            on: this.modes[MODE_ROLL].color,
+            off: this.modes[MODE_ROLL].color + 0x10,
+        });
+        this.modes[MODE_LOOP].pads[i] = new components.Button({
+            midi: [0x94 + offset, 0x14 + i -1],
+            sendShifted: false,
+            shiftControl: true,
+            shiftOffset: 8,
+            number: i,
+            group: deck.currentDeck,
+            outKey: 'beatloop_' + (0.03125 * Math.pow(2, i-1)) + '_enabled',
+            inKey: 'beatloop_' + (0.03125 * Math.pow(2, i-1)) + '_activate',
+            outConnect: false,
+            on: this.modes[MODE_LOOP].color,
+            off: this.modes[MODE_LOOP].color + 0x10,
         });
     }
 
     this.paramPlusMinus = new DJ505.ParamButtons();
+
+    this.padMode = MODE_HOTCUE;
+
+    // Set LEDs
+    midi.sendShortMsg(0x94 + offset, MODE_HOTCUE, this.modes[MODE_HOTCUE].color);
+    midi.sendShortMsg(0x94 + offset, MODE_ROLL, 0x00);
+    midi.sendShortMsg(0x94 + offset, MODE_SAMPLER, 0x00);
 };
 
 DJ505.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
 
-DJ505.PadSection.prototype.setState = function (channel, control, value, status, group) {
-    switch (control) {
-    case 0x00: // [HOT CUE]
-        this.state = "hotcue";
-        break;
-    case 0x02: // [HOT CUE] (press twice)
-        this.state = "flip";
-        break;
-    case 0x03: // [SHIFT] + [HOT CUE]
-        this.state = "cueloop";
-        break;
-    case 0x08: // [ROLL]
-        this.state = "roll";
-        break;
-    case 0x0D: // [ROLL] (press twice)
-        this.state = "loop";
-        break;
-    case 0x09: // [SHIFT] + [ROLL]
-        this.state = "slicer";
-        break;
-    case 0x0A: // [SHIFT] + [ROLL] (press twice)
-        this.state = "slicerloop";
-        break;
-    case 0x04: // [TR]
-        this.state = "tr";
-        break;
-    case 0x06: // [TR] (press twice)
-        this.state = "trvelocity";
-        break;
-    case 0x05: // [SHIFT] + [TR]
-        this.state = "pattern";
-        break;
-    case 0x0B: // [SAMPLER]
-        this.state = "sampler";
-        break;
-    case 0x0F: // [SAMPLER] (press twice)
-        this.state = "pitchplay";
-        break;
-    case 0x0C: // [SHIFT] + [SAMPLER]
-        this.state = "velocitysampler";
-        break;
+DJ505.PadSection.prototype.resetPadLEDs = function() {
+    var mode = this.modes[this.padMode];
+    if (mode && mode.pads) {
+        for (var i = 1; i <= 8; i++) {
+            mode.pads[i].trigger();
+        }
     }
+};
+
+DJ505.PadSection.prototype.setPadMode = function (channel, control, value, status, group) {
+    if (this.padMode == control) {
+        return;
+    }
+
+    var new_mode = this.modes[control];
+    if (!new_mode) {
+        return;
+    }
+
+    var i;
+    // Disable previous mode's LED
+    var old_mode = this.modes[this.padMode];
+    if (old_mode) {
+        if (old_mode.led_control !== undefined) {
+            midi.sendShortMsg(status, old_mode.led_control, 0x00);
+        }
+        if (old_mode.pads) {
+            for (i = 1; i <= 8; i++) {
+                old_mode.pads[i].disconnect();
+            }
+        }
+    }
+
+    // Set new mode's LED
+    if (new_mode.led_control !== undefined) {
+        midi.sendShortMsg(status, new_mode.led_control, new_mode.color);
+    }
+    if (new_mode.pads) {
+        for (i = 1; i <= 8; i++) {
+            new_mode.pads[i].connect();
+            new_mode.pads[i].trigger();
+        }
+    } else {
+        for (i = 1; i <= 8; i++) {
+            midi.sendShortMsg(status, 0x14 + i - 1, 0x00);
+        }
+    }
+
+    this.padMode = control;
 };
 
 DJ505.PadSection.prototype.padPressed = function (channel, control, value, status, group) {
     var i = control - ((control > 0x1B) ? 0x1B : 0x13);
-    switch (this.state) {
-    case "hotcue":
-        this.hotcueButton[i].input(channel, control, value, status, group);
-        break;
-    case "roll":
-        this.rollButton[i].input(channel, control, value, status, group);
-        break;
-    case "loop":
-        this.loopButton[i].input(channel, control, value, status, group);
-        break;
-    case "sampler":
-        this.samplerButton[i].input(channel, control, value, status, group);
-        break;
+    var mode = this.modes[this.padMode];
+    if (!mode || !mode.pads) {
+        return;
     }
+
+    mode.pads[i].input(channel, control, value, status, group);
 };
 
 DJ505.TRSSection = function() {
