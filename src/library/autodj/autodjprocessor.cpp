@@ -869,6 +869,13 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
     double introLength = introEnd - introStart;
 
+    // For both the AlignIntroOutroStart & AlignIntroOutroEnd TransitionModes,
+    // fadeDuration is the intro or outro length, whichever is shorter. This
+    // is the best way to avoid clashing sounds overlapping. If only one track
+    // has an intro or outro range marked (not just one point of the range, but
+    // the full range with the end and beginning markers), use the length of
+    // that range as the transition time as a best guess. Only fall back to the
+    // fixed number of seconds from the spinbox as a last resort.
     if (m_transitionMode == TransitionMode::AlignIntroOutroStart) {
         pToDeck->startPos = introStart;
         if (outroLength > 0 && introLength > 0) {
