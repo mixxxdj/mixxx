@@ -73,7 +73,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void slotSetTrackTimeDisplay(double);
     void slotDisallowTrackLoadToPlayingDeckCheckbox(bool);
     void slotCueModeCombobox(int);
-    void slotSetTrackLoadMode(QAbstractButton*);
+    void slotSetTrackLoadMode(int comboboxIndex);
     void slotRateRampingModeLinearButton(bool);
     void slotRateRampSensitivitySlider(int);
 

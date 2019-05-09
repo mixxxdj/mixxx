@@ -159,23 +159,16 @@ DlgPrefDeck::DlgPrefDeck(QWidget * parent, MixxxMainWindow * mixxx,
     connect(checkBoxDisallowLoadToPlayingDeck, SIGNAL(toggled(bool)),
             this, SLOT(slotDisallowTrackLoadToPlayingDeckCheckbox(bool)));
 
+    comboBoxLoadPoint->addItem(tr("Intro start"), static_cast<int>(SeekOnLoadMode::IntroStart));
+    comboBoxLoadPoint->addItem(tr("Main cue"), static_cast<int>(SeekOnLoadMode::MainCue));
+    comboBoxLoadPoint->addItem(tr("First sound (skip silence)"), static_cast<int>(SeekOnLoadMode::FirstSound));
+    comboBoxLoadPoint->addItem(tr("Beginning of file"), static_cast<int>(SeekOnLoadMode::Beginning));
     int seekMode = m_pConfig->getValue(ConfigKey("[Controls]", "CueRecall"),
                                        static_cast<int>(SeekOnLoadMode::IntroStart));
+    comboBoxLoadPoint->setCurrentIndex(
+            comboBoxLoadPoint->findData(seekMode));
     m_seekOnLoadMode = static_cast<SeekOnLoadMode>(seekMode);
-    switch (m_seekOnLoadMode) {
-    case SeekOnLoadMode::Beginning:
-        radioButtonBeginning->setChecked(true);
-        break;
-    case SeekOnLoadMode::MainCue:
-        radioButtonMainCue->setChecked(true);
-        break;
-    default:
-        radioButtonIntroStart->setChecked(true);
-        m_seekOnLoadMode = SeekOnLoadMode::IntroStart;
-        break;
-    }
-    connect(buttonGroupLoadPoint,
-            static_cast<void(QButtonGroup::*)(QAbstractButton *)>(&QButtonGroup::buttonClicked),
+    connect(comboBoxLoadPoint, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DlgPrefDeck::slotSetTrackLoadMode);
 
     m_bRateInverted = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), false);
@@ -418,7 +411,8 @@ void DlgPrefDeck::slotResetToDefaults() {
     ComboBoxCueMode->setCurrentIndex(0);
 
     // Load at intro start
-    radioButtonIntroStart->setChecked(true);
+    comboBoxLoadPoint->setCurrentIndex(
+          comboBoxLoadPoint->findData(static_cast<int>(SeekOnLoadMode::IntroStart)));
 
     // Rate-ramping default off.
     radioButtonRateRampModeStepping->setChecked(true);
@@ -552,14 +546,9 @@ void DlgPrefDeck::slotTimeFormatChanged(double v) {
                 comboBoxTimeFormat->findData(i));
 }
 
-void DlgPrefDeck::slotSetTrackLoadMode(QAbstractButton* pressedButton) {
-    if (pressedButton == radioButtonBeginning) {
-        m_seekOnLoadMode = SeekOnLoadMode::Beginning;
-    } else if (pressedButton == radioButtonMainCue) {
-        m_seekOnLoadMode = SeekOnLoadMode::MainCue;
-    } else {
-        m_seekOnLoadMode = SeekOnLoadMode::IntroStart;
-    }
+void DlgPrefDeck::slotSetTrackLoadMode(int comboboxIndex) {
+    m_seekOnLoadMode = static_cast<SeekOnLoadMode>(
+          comboBoxLoadPoint->itemData(comboboxIndex).toInt());
 }
 
 void DlgPrefDeck::slotApply() {
