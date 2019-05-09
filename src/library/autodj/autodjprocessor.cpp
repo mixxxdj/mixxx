@@ -948,20 +948,14 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
 
 void AutoDJProcessor::useFixedFadeTime(DeckAttributes* pFromDeck, DeckAttributes* pToDeck,
                                        double endPoint, double startPoint) {
-    double transitionTime = m_transitionTime;
-    double toTrackDuration = pToDeck->duration();
-    if (m_transitionTime > toTrackDuration) {
-        transitionTime = toTrackDuration;
-    }
-
-    if (transitionTime > 0.0) {
-        pFromDeck->fadeBeginPos = endPoint - transitionTime;
-        pFromDeck->fadeDuration = transitionTime;
+    if (m_transitionTime > 0.0) {
+        pFromDeck->fadeBeginPos = endPoint - m_transitionTime;
+        pFromDeck->fadeDuration = m_transitionTime;
         pToDeck->startPos = startPoint;
     } else {
         pFromDeck->fadeBeginPos = endPoint;
-        pFromDeck->fadeDuration = transitionTime;
-        pToDeck->startPos = startPoint + transitionTime;
+        pFromDeck->fadeDuration = m_transitionTime;
+        pToDeck->startPos = startPoint + m_transitionTime;
     }
 }
 
