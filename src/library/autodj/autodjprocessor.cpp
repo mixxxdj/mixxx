@@ -921,16 +921,23 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         useFixedFadeTime(pFromDeck, pToDeck, fromTrackDuration, 0);
     }
 
+    // Guard against the next track being too short. This transition must finish
+    // before the next one starts.
+    double toDeckOutroStart = getOutroStartPosition(pToDeck);
+    if (toDeckOutroStart <= 0) {
+        toDeckOutroStart = getOutroEndPosition(pToDeck);
+    }
+    double maxFadeTime = toDeckOutroStart - pToDeck->startPos;
+    if (pFromDeck->fadeDuration > maxFadeTime) {
+        pFromDeck->fadeDuration = maxFadeTime;
+    }
+
     VERIFY_OR_DEBUG_ASSERT(fromTrackDuration > 0) {
         pFromDeck->fadeBeginPos = fromTrackDuration;
         pFromDeck->fadeDuration = 0;
     }
     VERIFY_OR_DEBUG_ASSERT(toTrackDuration > 0) {
         pToDeck->startPos = 0;
-    }
-
-    if (pFromDeck->fadeDuration > toTrackDuration) {
-        pFromDeck->fadeDuration = toTrackDuration;
     }
 
     // These are expected to be a fraction of the track length.
