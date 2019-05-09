@@ -346,7 +346,8 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
     // Seek track according to SeekOnLoadMode.
     SeekOnLoadMode seekOnLoadMode = getSeekOnLoadPreference();
 
-    CuePointer pFirstSound = m_pLoadedTrack->findCueByType(Cue::Type::FirstSound);
+    CuePointer pFirstSound = pNewTrack->findCueByType(Cue::Type::FirstSound);
+    double introEnd = m_pIntroEndPosition->get();
     switch (seekOnLoadMode) {
     case SeekOnLoadMode::Beginning:
         // This allows users to load tracks and have the needle-drop be maintained.
@@ -367,6 +368,13 @@ void CueControl::trackLoaded(TrackPointer pNewTrack) {
         break;
     case SeekOnLoadMode::IntroStart:
         seekExact(m_pIntroStartPosition->get());
+        break;
+    case SeekOnLoadMode::IntroEnd:
+        if (introEnd >= 0) {
+            seekExact(introEnd);
+        } else {
+            seekExact(m_pIntroStartPosition->get());
+        }
         break;
     default:
         seekExact(0.0);

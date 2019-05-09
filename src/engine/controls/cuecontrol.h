@@ -23,6 +23,7 @@ enum class SeekOnLoadMode {
     Beginning = 1,  // Use 0:00.000
     FirstSound = 2, // Skip leading silence
     IntroStart = 3,  // Use intro start cue point
+    IntroEnd = 4, // Use intro end cue point
 };
 
 inline SeekOnLoadMode seekOnLoadModeFromDouble(double value) {
