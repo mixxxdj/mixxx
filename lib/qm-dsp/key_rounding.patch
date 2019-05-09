@@ -1,0 +1,26 @@
+diff --git a/lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp b/lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp
+index cf3580e..bf72b21 100644
+--- a/lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp
++++ b/lib/qm-dsp/dsp/keydetection/GetKeyMode.cpp
+@@ -182,7 +182,7 @@ int GetKeyMode::process(double *PCMData)
+     // middle of its three bins :
+     // Added 21.11.07 by Chris Sutton based on debugging with Katy
+     // Noland + comparison with Matlab equivalent.
+-    MathUtilities::circShift( m_ChrPointer, m_BPO, 1);
++    MathUtilities::circShift( m_ChrPointer, m_BPO, 2);
+ /*
+     std::cout << "raw chroma: ";
+     for (int ii = 0; ii < m_BPO; ++ii) {
+@@ -266,8 +266,10 @@ int GetKeyMode::process(double *PCMData)
+   std::cout << std::endl;
+ */
+     double dummy;
+-    // '1 +' because we number keys 1-24, not 0-23.
+-    key = 1 + (int)ceil( (double)MathUtilities::getMax( m_Keys, 2* m_BPO, &dummy )/3 );
++    // m_Keys[1] is C center  1 / 3 + 1 = 1
++    // m_Keys[4] is D center  4 / 3 + 1 = 2
++    // '+ 1' because we number keys 1-24, not 0-23.
++    key = MathUtilities::getMax( m_Keys, 2* m_BPO, &dummy ) / 3 + 1;
+ 
+ //    std::cout << "key pre-sorting: " << key << std::endl;
+ 
