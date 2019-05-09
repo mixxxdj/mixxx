@@ -7,6 +7,7 @@
 #include "analyzer/plugins/analyzerqueenmarykey.h"
 
 #include "analyzer/constants.h"
+#include "util/assert.h"
 #include "util/math.h"
 
 using mixxx::track::io::key::ChromaticKey;
@@ -47,10 +48,18 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
     QMutexLocker locked(&s_mutex);
     return m_helper.initialize(
             windowSize, stepSize, [this](double* pWindow, size_t) {
-                const int iKey = m_pKeyMode->process(pWindow);
+                int iKey = m_pKeyMode->process(pWindow);
+                // NOTE(uklotzde): Due to a rounding error in GetKeyMode::process()
+                // the Queen Mary analyzer v1.7.1 returns values in the range [1, 25]
+                // instead of [1, 24]. Instead of patching the original file GetKeyMode.cpp
+                // we compensate this error here to avoid losing the fix after reimporting
+                // the QM plugins!
+                if (iKey == 25) {
+                    iKey = 24;
+                }
 
-                // Should not happen.
-                if (!ChromaticKey_IsValid(iKey)) {
+                VERIFY_OR_DEBUG_ASSERT(ChromaticKey_IsValid(iKey)) {
+                    qWarning() << "No valid key detected in analyzed window:" << iKey;
                     return false;
                 }
                 const auto key = static_cast<ChromaticKey>(iKey);
