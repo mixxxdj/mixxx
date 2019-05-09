@@ -896,8 +896,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
             }
         } else if (outroLength > 0 && introLength <= 0) {
             pFromDeck->fadeBeginPos = outroStart;
-            pFromDeck->fadeDuration = outroEnd - outroStart;
-            pToDeck->startPos = getIntroStartPosition(pToDeck);
+            pFromDeck->fadeDuration = outroLength;
+            pToDeck->startPos = introStart;
         } else if (outroLength <= 0 && introLength > 0) {
             pFromDeck->fadeBeginPos = outroEnd - introLength;
             pFromDeck->fadeDuration = introLength;
