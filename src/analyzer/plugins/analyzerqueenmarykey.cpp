@@ -26,7 +26,7 @@ constexpr int kTuningFrequencyHertz = 440;
 // See also: https://bugs.launchpad.net/mixxx/+bug/1813413
 QMutex s_mutex;
 
-}  // namespace
+} // namespace
 
 AnalyzerQueenMaryKey::AnalyzerQueenMaryKey()
         : m_currentFrame(0),
@@ -40,30 +40,28 @@ bool AnalyzerQueenMaryKey::initialize(int samplerate) {
     m_prevKey = mixxx::track::io::key::INVALID;
     m_resultKeys.clear();
     m_currentFrame = 0;
-    m_pKeyMode = std::make_unique<GetKeyMode>(samplerate, kTuningFrequencyHertz,
-                                              kChromaWindowLength, kChromaWindowLength);
+    m_pKeyMode = std::make_unique<GetKeyMode>(samplerate, kTuningFrequencyHertz, kChromaWindowLength, kChromaWindowLength);
     size_t windowSize = m_pKeyMode->getBlockSize();
     size_t stepSize = m_pKeyMode->getHopSize();
 
     QMutexLocker locked(&s_mutex);
     return m_helper.initialize(
-        windowSize, stepSize,
-        [this](double* pWindow, size_t) {
-            const int iKey = m_pKeyMode->process(pWindow);
+            windowSize, stepSize, [this](double* pWindow, size_t) {
+                const int iKey = m_pKeyMode->process(pWindow);
 
-            // Should not happen.
-            if (!ChromaticKey_IsValid(iKey)) {
-                return false;
-            }
-            const auto key = static_cast<ChromaticKey>(iKey);
-            if (key != m_prevKey) {
-                // TODO(rryan) reserve?
-                m_resultKeys.push_back(qMakePair(
-                    key, static_cast<double>(m_currentFrame)));
-                m_prevKey = key;
-            }
-            return true;
-        });
+                // Should not happen.
+                if (!ChromaticKey_IsValid(iKey)) {
+                    return false;
+                }
+                const auto key = static_cast<ChromaticKey>(iKey);
+                if (key != m_prevKey) {
+                    // TODO(rryan) reserve?
+                    m_resultKeys.push_back(qMakePair(
+                            key, static_cast<double>(m_currentFrame)));
+                    m_prevKey = key;
+                }
+                return true;
+            });
 }
 
 bool AnalyzerQueenMaryKey::process(const CSAMPLE* pIn, const int iLen) {
@@ -88,4 +86,4 @@ bool AnalyzerQueenMaryKey::finalize() {
     return true;
 }
 
-}  // namespace mixxx
+} // namespace mixxx
