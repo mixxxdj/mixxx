@@ -843,68 +843,70 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
     double fromTrackDuration = pFromDeck->duration();
     double toTrackDuration = pToDeck->duration();
 
-    double fromTrackOutroStart = getOutroStartPosition(pFromDeck);
-    if (fromTrackOutroStart <= 0.0) {
-        fromTrackOutroStart = fromTrackDuration;
+    // Within this function, the outro refers to the outro of the currently
+    // playing track and the intro refers to the intro of the next track.
+    double outroStart = getOutroStartPosition(pFromDeck);
+    if (outroStart <= 0.0) {
+        outroStart = fromTrackDuration;
     }
 
-    double fromTrackOutroEnd = getOutroEndPosition(pFromDeck);
-    if (fromTrackOutroEnd <= 0.0) {
-        fromTrackOutroEnd = fromTrackDuration;
+    double outroEnd = getOutroEndPosition(pFromDeck);
+    if (outroEnd <= 0.0) {
+        outroEnd = fromTrackDuration;
     }
 
-    double fromTrackOutroLength = fromTrackOutroEnd - fromTrackOutroStart;
+    double outroLength = outroEnd - outroStart;
 
-    double toTrackIntroStart = getIntroStartPosition(pToDeck);
-    if (toTrackIntroStart <= 0.0) {
-        toTrackIntroStart = 0.0;
+    double introStart = getIntroStartPosition(pToDeck);
+    if (introStart <= 0.0) {
+        introStart = 0.0;
     }
 
-    double toTrackIntroEnd = getIntroEndPosition(pToDeck);
-    if (toTrackIntroEnd <= 0.0) {
-        toTrackIntroEnd = 0.0;
+    double introEnd = getIntroEndPosition(pToDeck);
+    if (introEnd <= 0.0) {
+        introEnd = 0.0;
     }
 
-    double toTrackIntroLength = toTrackIntroEnd - toTrackIntroStart;
+    double introLength = introEnd - introStart;
 
     if (m_transitionMode == TransitionMode::AlignIntroOutroStart) {
-        if (toTrackIntroStart > 0) {
-            pToDeck->startPos = toTrackIntroStart;
+        if (introStart > 0) {
+            pToDeck->startPos = introStart;
         } else {
             pToDeck->startPos = getFirstSoundPosition(pToDeck);
         }
 
-        if (fromTrackOutroLength > 0 && toTrackIntroLength > 0) {
-            pFromDeck->fadeBeginPos = fromTrackOutroStart;
-            pFromDeck->fadeDuration = math_min(fromTrackOutroLength, toTrackIntroLength);
-        } else if (fromTrackOutroLength > 0 && toTrackIntroLength <= 0) {
-            pFromDeck->fadeBeginPos = fromTrackOutroStart;
-            pFromDeck->fadeDuration = fromTrackOutroLength;
-        } else if (fromTrackOutroLength <= 0 && toTrackIntroLength > 0) {
-            pFromDeck->fadeBeginPos = fromTrackOutroEnd - toTrackIntroLength;
-            pFromDeck->fadeDuration = toTrackIntroLength;
+        if (outroLength > 0 && introLength > 0) {
+            pFromDeck->fadeBeginPos = outroStart;
+            pFromDeck->fadeDuration = math_min(outroLength, introLength);
+        } else if (outroLength > 0 && introLength <= 0) {
+            pFromDeck->fadeBeginPos = outroStart;
+            pFromDeck->fadeDuration = outroLength;
+        } else if (outroLength <= 0 && introLength > 0) {
+            pFromDeck->fadeBeginPos = outroEnd - introLength;
+            pFromDeck->fadeDuration = introLength;
         } else {
             useFixedFadeTime(pFromDeck, pToDeck, getLastSoundPosition(pFromDeck), pToDeck->startPos);
         }
     } else if (m_transitionMode == TransitionMode::AlignIntroOutroEnd) {
-        if (fromTrackOutroLength > 0 && toTrackIntroLength > 0) {
-            if (fromTrackOutroLength < toTrackIntroLength) {
-                pFromDeck->fadeBeginPos = fromTrackOutroStart;
-                pFromDeck->fadeDuration = fromTrackOutroLength;
-                pToDeck->startPos = toTrackIntroEnd - fromTrackOutroLength;
+        if (outroLength > 0 && introLength > 0) {
+            if (outroLength < introLength) {
+                pFromDeck->fadeBeginPos = outroStart;
+                pFromDeck->fadeDuration = outroLength;
+                pToDeck->startPos = introEnd - outroLength;
             } else {
-                pFromDeck->fadeBeginPos = fromTrackOutroEnd - toTrackIntroLength;
-                pFromDeck->fadeDuration = toTrackIntroLength;
-                pToDeck->startPos = toTrackIntroStart;
+                pFromDeck->fadeBeginPos = outroEnd - introLength;
+                pFromDeck->fadeDuration = introLength;
+                pToDeck->startPos = introStart;
             }
-        } else if (fromTrackOutroLength > 0 && toTrackIntroLength <= 0) {
-            pFromDeck->fadeBeginPos = fromTrackOutroStart;
-            pFromDeck->fadeDuration = fromTrackOutroEnd - fromTrackOutroStart;
+        } else if (outroLength > 0 && introLength <= 0) {
+            pFromDeck->fadeBeginPos = outroStart;
+            pFromDeck->fadeDuration = outroEnd - outroStart;
             pToDeck->startPos = getIntroStartPosition(pToDeck);
-        } else if (fromTrackOutroLength <= 0 && toTrackIntroLength > 0) {
-            pFromDeck->fadeBeginPos = fromTrackOutroEnd - toTrackIntroLength;
-            pFromDeck->fadeDuration = toTrackIntroLength;
-            pToDeck->startPos = toTrackIntroStart;
+        } else if (outroLength <= 0 && introLength > 0) {
+            pFromDeck->fadeBeginPos = outroEnd - introLength;
+            pFromDeck->fadeDuration = introLength;
+            pToDeck->startPos = introStart;
         } else {
             useFixedFadeTime(pFromDeck, pToDeck,
                              getLastSoundPosition(pFromDeck), getFirstSoundPosition(pToDeck));
