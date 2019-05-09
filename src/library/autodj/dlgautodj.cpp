@@ -74,16 +74,16 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
             this, SLOT(toggleAutoDJButton(bool)));
 
+    fadeModeCombobox->addItem(tr("Align intro + outro start"),
+                                static_cast<int>(AutoDJProcessor::TransitionMode::AlignIntroOutroStart));
+    fadeModeCombobox->addItem(tr("Align intro + outro end"),
+                                static_cast<int>(AutoDJProcessor::TransitionMode::AlignIntroOutroEnd));
     fadeModeCombobox->addItem(tr("Fixed time (full track)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FixedFullTrack));
     fadeModeCombobox->addItem(tr("Fixed time (skip silence)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FixedSkipSilence));
     fadeModeCombobox->addItem(tr("Fixed time (start at cue)"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::FixedLoadAtCue));
-    fadeModeCombobox->addItem(tr("Align intro + outro start"),
-                                static_cast<int>(AutoDJProcessor::TransitionMode::AlignIntroOutroStart));
-    fadeModeCombobox->addItem(tr("Align intro + outro end"),
-                                static_cast<int>(AutoDJProcessor::TransitionMode::AlignIntroOutroEnd));
     fadeModeCombobox->setCurrentIndex(static_cast<int>(m_pAutoDJProcessor->getTransitionMode()));
     connect(fadeModeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DlgAutoDJ::slotTransitionModeChanged);
