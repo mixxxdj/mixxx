@@ -83,10 +83,10 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent,
     fadeModeCombobox->addItem(tr("Align intro + outro start"),
                                 static_cast<int>(AutoDJProcessor::TransitionMode::AlignIntroOutroStart));
     fadeModeCombobox->addItem(tr("Align intro + outro end"),
-                                static_cast<int>(AutoDJProcessor::TransitionMode::AlignIntroOutroStart));
+                                static_cast<int>(AutoDJProcessor::TransitionMode::AlignIntroOutroEnd));
     fadeModeCombobox->setCurrentIndex(static_cast<int>(m_pAutoDJProcessor->getTransitionMode()));
     connect(fadeModeCombobox, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            m_pAutoDJProcessor, &AutoDJProcessor::setTransitionMode);
+            this, &DlgAutoDJ::slotTransitionModeChanged);
 
     // Setup DlgAutoDJ UI based on the current AutoDJProcessor state. Keep in
     // mind that AutoDJ may already be active when DlgAutoDJ is created (due to
@@ -205,6 +205,11 @@ void DlgAutoDJ::autoDJStateChanged(AutoDJProcessor::AutoDJState state) {
         // You can always skip the next track if we are enabled.
         pushButtonSkipNext->setEnabled(true);
     }
+}
+
+void DlgAutoDJ::slotTransitionModeChanged(int comboboxIndex) {
+    m_pAutoDJProcessor->setTransitionMode(static_cast<AutoDJProcessor::TransitionMode>(
+          fadeModeCombobox->itemData(comboboxIndex).toInt()));
 }
 
 void DlgAutoDJ::updateSelectionInfo() {

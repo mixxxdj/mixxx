@@ -1050,10 +1050,10 @@ void AutoDJProcessor::setTransitionTime(int time) {
     }
 }
 
-void AutoDJProcessor::setTransitionMode(int checkboxState) {
+void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
     m_pConfig->set(ConfigKey(kConfigKey, kTransitionModePreferenceName),
-                   ConfigValue(checkboxState));
-    m_transitionMode = static_cast<TransitionMode>(checkboxState);
+                   ConfigValue(static_cast<int>(newMode)));
+    m_transitionMode = newMode;
 
     // Then re-calculate fade thresholds for the decks.
     if (m_eState == ADJ_IDLE) {

@@ -188,7 +188,7 @@ class AutoDJProcessor : public QObject {
   public slots:
     void setTransitionTime(int seconds);
 
-    void setTransitionMode(int checkboxState);
+    void setTransitionMode(TransitionMode newMode);
 
     AutoDJError shufflePlaylist(const QModelIndexList& selectedIndices);
     AutoDJError skipNext();
