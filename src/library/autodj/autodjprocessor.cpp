@@ -10,7 +10,7 @@
 
 #define kConfigKey "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
-const char* kUseIntroOutroPreferenceName = "UseIntroOutroMarkers";
+const char* kTransitionModePreferenceName = "TransitionMode";
 const double kTransitionPreferenceDefault = 10.0;
 
 const mixxx::AudioSignal::ChannelCount kChannelCount = mixxx::kEngineChannelCount;
@@ -156,7 +156,7 @@ AutoDJProcessor::AutoDJProcessor(QObject* pParent,
     }
 
     int configMode = m_pConfig->getValue(
-            ConfigKey(kConfigKey, kUseIntroOutroPreferenceName),
+            ConfigKey(kConfigKey, kTransitionModePreferenceName),
             static_cast<int>(TransitionMode::IntroOutroShorter));
     m_transitionMode = static_cast<TransitionMode>(configMode);
 }
@@ -1088,7 +1088,7 @@ void AutoDJProcessor::setTransitionTime(int time) {
 }
 
 void AutoDJProcessor::setTransitionMode(int checkboxState) {
-    m_pConfig->set(ConfigKey(kConfigKey, kUseIntroOutroPreferenceName),
+    m_pConfig->set(ConfigKey(kConfigKey, kTransitionModePreferenceName),
                    ConfigValue(checkboxState));
     m_transitionMode = static_cast<TransitionMode>(checkboxState);
 
