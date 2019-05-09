@@ -109,7 +109,6 @@ void AnalyzerSilence::finalize(TrackPointer pTrack) {
 
     CuePointer pFirstSound = pTrack->findCueByType(Cue::Type::FirstSound);
     if (pFirstSound == nullptr) {
-        qDebug() << "AnalyzerSilence placing FirstSound cue for" << pTrack.get();
         pFirstSound = pTrack->createAndAddCue();
         pFirstSound->setType(Cue::Type::FirstSound);
         pFirstSound->setSource(Cue::Source::Automatic);
@@ -120,7 +119,6 @@ void AnalyzerSilence::finalize(TrackPointer pTrack) {
 
     CuePointer pLastSound = pTrack->findCueByType(Cue::Type::LastSound);
     if (pLastSound == nullptr) {
-        qDebug() << "AnalyzerSilence placing LastSound cue for" << pTrack.get();
         pLastSound = pTrack->createAndAddCue();
         pLastSound->setType(Cue::Type::LastSound);
         pLastSound->setSource(Cue::Source::Automatic);
