@@ -916,7 +916,8 @@ void AutoDJProcessor::calculateTransition(DeckAttributes* pFromDeck,
         useFixedFadeTime(pFromDeck, pToDeck,
                          getLastSoundPosition(pFromDeck), getFirstSoundPosition(pToDeck));
     } else if (m_transitionMode == TransitionMode::FixedLoadAtCue) {
-        useFixedFadeTime(pFromDeck, pToDeck, fromTrackDuration, getMainCuePosition(pToDeck));
+        useFixedFadeTime(pFromDeck, pToDeck,
+                         getLastSoundPosition(pFromDeck), getMainCuePosition(pToDeck));
     } else {
         useFixedFadeTime(pFromDeck, pToDeck, fromTrackDuration, 0);
     }
