@@ -1645,7 +1645,9 @@ DJ505.PadSection = function (deck, offset) {
         });
         this.modes[MODE_SAMPLER].pads[i] = new components.SamplerButton({
             midi: [0x94 + offset, 0x14 + i - 1],
-            group: deck.currentDeck,
+            group: '[Sampler' + i + ']',
+            inKey: 'start',
+            outKey: 'track_loaded',
             sendShifted: false,
             shiftControl: true,
             shiftOffset: 8,
