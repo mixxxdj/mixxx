@@ -47,7 +47,7 @@ QString DurationBase::formatTime(double dSeconds, Precision precision) {
         durationString = QString("%1:").arg(days * 24 + t.hour()) % durationString;
     }
     // remove leading 0
-    if (durationString.at(0) == "0" && durationString.at(1) != ":") {
+    if (durationString.at(0) == '0' && durationString.at(1) != ':') {
         durationString = durationString.right(durationString.length() - 1);
     }
 

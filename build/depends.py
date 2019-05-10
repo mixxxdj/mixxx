@@ -862,6 +862,7 @@ class MixxxCore(Feature):
                    "src/analyzer/plugins/analyzersoundtouchbeats.cpp",
                    "src/analyzer/plugins/analyzerqueenmarybeats.cpp",
                    "src/analyzer/plugins/analyzerqueenmarykey.cpp",
+                   "src/analyzer/plugins/buffering_utils.cpp",
 
                    "src/controllers/controller.cpp",
                    "src/controllers/controllerdebug.cpp",

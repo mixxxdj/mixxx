@@ -18,9 +18,9 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
   public:
     static AnalyzerPluginInfo pluginInfo() {
         return AnalyzerPluginInfo(
-            "qm-keydetector",
-            QObject::tr("Queen Mary University London"),
-            QObject::tr("Queen Mary Key Detector"));
+                "qm-keydetector",
+                QObject::tr("Queen Mary University London"),
+                QObject::tr("Queen Mary Key Detector"));
     }
 
     AnalyzerQueenMaryKey();
@@ -46,6 +46,6 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
     mixxx::track::io::key::ChromaticKey m_prevKey;
 };
 
-}  // namespace mixxx
+} // namespace mixxx
 
 #endif /* ANALYZER_PLUGINS_ANALYZERQUEENMARYKEY_H */
