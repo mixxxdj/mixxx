@@ -54,6 +54,8 @@ DJ505.init = function () {
             DJ505.effectUnit[i].enableOnChannelButtons.addButton('Channel' + j);
             DJ505.effectUnit[i].enableOnChannelButtons['Channel' + j].midi = [0x98 + i, 0x04 + j];
         }
+        DJ505.effectUnit[i].enableOnChannelButtons.addButton('Auxiliary3');
+        DJ505.effectUnit[i].enableOnChannelButtons.Auxiliary3.midi = [0x98 + i, 0x09];
         DJ505.effectUnit[i].init();
     }
 
@@ -938,7 +940,6 @@ DJ505.Sampler = function() {
     // TODO: Improve sync so that we don't need to use the NUDGE button for
     // beatmatching.
     // TODO: Add support for custom samples
-    // TODO: Add support for FX
     /*
      * Like the performance pads, the built-in TR-S drum machine 505 has two
      * modes of operation.

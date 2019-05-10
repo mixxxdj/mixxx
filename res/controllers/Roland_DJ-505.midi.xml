@@ -3076,17 +3076,16 @@
                     <script-binding/>
                 </options>
             </control>
-            <!--
             <control>
                 <group>[Master]</group>
+                <key>DJ505.effectUnit[0].enableOnChannelButtons.Auxiliary3.input</key>
                 <description>FX 2 CH ASSIGN TR/SAMPLER</description>
-                <status>0x99</status>
+                <status>0x98</status>
                 <midino>0x09</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            -->
 
             <!-- FX 2 -->
             <control>
@@ -3290,9 +3289,9 @@
                     <script-binding/>
                 </options>
             </control>
-            <!--
             <control>
                 <group>[Master]</group>
+                <key>DJ505.effectUnit[1].enableOnChannelButtons.Auxiliary3.input</key>
                 <description>FX 2 CH ASSIGN TR/SAMPLER</description>
                 <status>0x99</status>
                 <midino>0x09</midino>
@@ -3300,7 +3299,6 @@
                     <script-binding/>
                 </options>
             </control>
-            -->
 
             <!-- General -->
             <control>
