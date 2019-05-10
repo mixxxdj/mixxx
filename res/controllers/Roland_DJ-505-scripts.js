@@ -8,7 +8,6 @@ DJ505.stripSearchScaling = 50;
 DJ505.tempoRange = [0.08, 0.16, 0.5];
 DJ505.autoFocusEffects = false;
 DJ505.autoShowFourDecks = false;
-DJ505.bindSamplerControls = false;
 
 
 ///////////
@@ -28,8 +27,6 @@ DJ505.init = function () {
     DJ505.deck = [DJ505.leftDeck, DJ505.rightDeck];
 
     DJ505.sampler = new DJ505.Sampler();
-    DJ505.sampler.reconnectComponents();
-    DJ505.trsSection = new DJ505.TRSSection(this);
 
     DJ505.effectUnit = [];
     for(var i = 0; i <= 1; i++) {
@@ -934,75 +931,134 @@ DJ505.EffectUnit = function (unitNumbers, allowFocusWhenParametersHidden, colors
 DJ505.EffectUnit.prototype = new components.ComponentContainer();
 
 //////////////////////////////
-// Sampler.                 //
+// TR/Sampler.              //
 //////////////////////////////
 
-DJ505.Sampler = function () {
+DJ505.Sampler = function() {
+    // TODO: Improve sync so that we don't need to use the NUDGE button for
+    // beatmatching.
+    // TODO: Add support for custom samples
+    // TODO: Add support for FX
+    /*
+     * Like the performance pads, the built-in TR-S drum machine 505 has two
+     * modes of operation.
+     *
+     * - Standalone mode:
+     *   When the DJ-505 is not connected to a computer (or no SysEx/Keep-Alive
+     *   messages are sent), the controller's TR-S works with the SERATO SAMPLER
+     *   and SYNC functionality disabled. Also, it's not possible to apply FX
+     *   to the TR-S output signal. The TR/SAMPLER LEVEL knob can be used to adjust
+     *   the volume of the output. It's possible to set the BPM in the range
+     *   5.0 to 800.0 BPM by sending this MIDI message:
+     *
+     *       sendShortMsg(0xEA, Math.round(bpm*10) & 0x7f, (Math.round(bpm*10) >> 7) & 0x7f);
+     *
+     * - Serato mode:
+     *   When the DJ-505 receives a SysEx message, the TR-S is put in "Serato"
+     *   mode. In this mode, the BPM can also be set by sending MIDI clock
+     *   messages (0xF8). The sampler can be started by sending one MIDI
+     *   message per bar (0xBA 0x02 XX). In this mode, the TR-S is not directly
+     *   connected to the master out. Instead, the sound is played on channels
+     *   7-8 so that the signal can be router through the FX section.
+     *   However, in order to keep the DJ-505 in "Serato mode", it seems to be
+     *   necessary to regularily send a certain "keep-alive" MIDI message (0xBF
+     *   0x64 0x00). Otherwise the device will switch back to "Standalone mode"
+     *   after approximately 1.5 seconds.
+     *
+     * The SERATO SAMPLER features 8 instruments (S1 - S8) that can be to play
+     * samples from Serato's sampler banks. If the device is in Serato mode and
+     * the sampler instruments are programmed using the TRS pads, two MIDI
+     * messages are sent by the DJ-505 when the sampler step is reached:
+     *
+     *   9F 2X YY
+     *   8F 2X 00
+     *
+     *  X is the Sampler number, i. e. for S1 this means that X=1. YY is either
+     *  0x57 (for steps 1, 5, 9, 13, 16) or 0x50 (all other steps).
+     *
+     * When the TR-S starts playback, the MIDI start message (0xFA) is sent by the
+     * device. When the playback stops, the device sends the stop message (0xFC).
+     *
+     */
     components.ComponentContainer.call(this);
+    this.syncDeck = -1;
 
-    this.button = [];
+    var getActiveDeck = function() {
+        var deckvolume = new Array(0, 0, 0, 0);
+        var volumemax = -1;
+        var newdeck = -1;
 
-    var sampler_button_send = function (value) {
-        var isLeftDeck = this.number <= 8;
-        var channel = isLeftDeck ? 0x94 : 0x95;
-        this.midi = [channel, 0x14 + this.number - (isLeftDeck ? 0 : 8)];
-        components.SamplerButton.prototype.send.call(this, value);
-        this.midi = [channel + 2, 0x14 + this.number - (isLeftDeck ? 0 : 8)];
-        components.SamplerButton.prototype.send.call(this, value);
+        // get volume from the decks and check it for use
+        for (var z = 0; z <= 3; z++) {
+            if (engine.getValue("[Channel" + (z + 1) + "]", "track_loaded") > 0) {
+                deckvolume[z] = engine.getValue("[Channel" + (z + 1) + "]", "volume");
+                if (deckvolume[z] > volumemax) {
+                    volumemax = deckvolume[z];
+                    newdeck = z;
+                }
+            }
+        }
+
+        return newdeck;
     };
 
-    for (var i=1; i<=16; i++) {
-        this.button[i] = new components.SamplerButton({
-            sendShifted: false,
-            shiftControl: true,
-            shiftOffset: 8,
-            number: i
-        });
-
-        this.button[i].send = sampler_button_send;
-    }
-
-    this.level = new components.Pot({
-        inValueScale: function (value) {
-            // FIXME: The sampler gain knob has a dead zone and appears to scale
-            // non-linearly.
-            return components.Pot.prototype.inValueScale.call(this, value) * 4;
-        },
-        input: function (channel, control, value, status, group) {
-            if (!DJ505.bindSamplerControls) {
+    this.syncButtonPressed = function (channel, control, value, status, group) {
+        if (value != 0x7f) {
+            return;
+        }
+        var isShifted = (control == 0x55);
+        if (isShifted || this.syncDeck >= 0) {
+            this.syncDeck = -1;
+        } else {
+            var deck = getActiveDeck();
+            if (deck < 0) {
                 return;
             }
-            for (var i=1; i<=16; i++) {
-                var sampler_group = '[Sampler' + i + ']';
-                engine.setValue(sampler_group, 'pregain', this.inValueScale(value));
+            var bpm = engine.getValue("[Channel" + (deck + 1) + "]", "bpm");
+
+            // Minimum BPM is 5.0 (0xEA 0x32 0x00), maximum BPM is 800.0 (0xEA 0x40 0x3e).
+            if (!(bpm >= 5 && bpm <= 800)) {
+                return;
+            }
+            var bpm_value = Math.round(bpm*10);
+            midi.sendShortMsg(0xEA, bpm_value & 0x7f, (bpm_value >> 7) & 0x7f);
+            this.syncDeck = deck;
+        }
+        print(this.syncDeck);
+    };
+
+    this.bpmKnobTurned = function (channel, control, value, status, group) {
+        print(this.syncDeck);
+        if (this.syncDeck >= 0) {
+            var bpm = ((value << 7) | control) / 10;
+            engine.setValue("[Channel" + (this.syncDeck + 1) + "]", "bpm", bpm);
+        }
+    };
+
+    this.startStopButtonPressed = function (channel, control, value, status, group) {
+        if (status == 0xFA) {
+            this.playbackCounter = 1;
+            this.playbackTimer = engine.beginTimer(500, function() {
+                midi.sendShortMsg(0xBA, 0x02, this.playbackCounter);
+                this.playbackCounter = (this.playbackCounter % 4) + 1;
+            });
+        } else if (status == 0xFC) {
+            if (this.playbackTimer) {
+                engine.stopTimer(this.playbackTimer);
             }
         }
+    };
+
+    this.levelKnob = new components.Pot({
+        group: '[Auxiliary3]',
+        inKey: 'volume',
     });
 
-    this.pfl = new components.Button({
-        sampler: this,
-        midi: [0x9f, 0x1d],
-        connect: function () {
-            if (!DJ505.bindSamplerControls) {
-                return;
-            }
-            components.Button.prototype.connect.call(this);
-            // Ensure a consistent state between mixxx and device.
-            for (var i=1; i<=16; i++) {
-                var sampler_group = '[Sampler' + i + ']';
-                engine.setValue(sampler_group, 'pfl', false);
-            }
-            this.send(0);
-        },
-        input: function (channel, control, value, status, group) {
-            if (!value || !DJ505.bindSamplerControls) {
-                return;
-            }
-            for (var i=1; i<=16; i++) {
-                var sampler_group = '[Sampler' + i + ']';
-                script.toggleControl(sampler_group, 'pfl');
-            }
-        }
+    this.cueButton = new components.Button({
+        group: '[Auxiliary3]',
+        key: 'pfl',
+        type: components.Button.prototype.types.toggle,
+        midi: [0x9F, 0x1D],
     });
 };
 
@@ -1696,68 +1752,3 @@ DJ505.PadSection.prototype.padPressed = function (channel, control, value, statu
 
     mode.pads[i].input(channel, control, value, status, group);
 };
-
-DJ505.TRSSection = function() {
-    // TODO: Improve sync so that we don't need to use the NUDGE button for
-    // beatmatching.
-    // TODO: Add support for custom samples
-    // TODO: Add support for FX
-    components.ComponentContainer.call(this);
-
-    this.syncDeck = -1;
-
-    var getActiveDeck = function() {
-        var deckvolume = new Array(0, 0, 0, 0);
-        var volumemax = -1;
-        var newdeck = -1;
-
-        // get volume from the decks and check it for use
-        for (var z = 0; z <= 3; z++) {
-            if (engine.getValue("[Channel" + (z + 1) + "]", "track_loaded") > 0) {
-                deckvolume[z] = engine.getValue("[Channel" + (z + 1) + "]", "volume");
-                if (deckvolume[z] > volumemax) {
-                    volumemax = deckvolume[z];
-                    newdeck = z;
-                }
-            }
-        }
-
-        return newdeck;
-    };
-
-    this.syncButtonPressed = function (channel, control, value, status, group) {
-        if (value != 0x7f) {
-            return;
-        }
-        var isShifted = (control == 0x55);
-        if (isShifted || this.syncDeck >= 0) {
-            this.syncDeck = -1;
-        } else {
-            var deck = getActiveDeck();
-            if (deck < 0) {
-                return;
-            }
-            var bpm = engine.getValue("[Channel" + (deck + 1) + "]", "bpm");
-
-            // Minimum BPM is 5.0 (0xEA 0x32 0x00), maximum BPM is 800.0 (0xEA 0x40 0x3e).
-            if (!(bpm >= 5 && bpm <= 800)) {
-                return;
-            }
-            var bpm_value = Math.round(bpm*10);
-            midi.sendShortMsg(0xEA, bpm_value & 0x7f, (bpm_value >> 7) & 0x7f);
-            this.syncDeck = deck;
-        }
-        print(this.syncDeck);
-    };
-
-    this.bpmKnobTurned = function (channel, control, value, status, group) {
-        print(this.syncDeck);
-        if (this.syncDeck >= 0) {
-            var bpm = ((value << 7) | control) / 10;
-            engine.setValue("[Channel" + (this.syncDeck + 1) + "]", "bpm", bpm);
-        }
-    };
-};
-
-DJ505.TRSSection.prototype = Object.create(components.ComponentContainer.prototype);
-

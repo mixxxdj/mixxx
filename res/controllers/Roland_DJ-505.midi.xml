@@ -3494,7 +3494,7 @@
             -->
             <control>
                 <group>[Master]</group>
-                <key>DJ505.sampler.level.input</key>
+                <key>DJ505.sampler.levelKnob.input</key>
                 <description>TR/SAMPLER LEVEL</description>
                 <status>0xBF</status>
                 <midino>0x1A</midino>
@@ -3504,7 +3504,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>DJ505.sampler.pfl.input</key>
+                <key>DJ505.sampler.cueButton.input</key>
                 <description>TR/SAMPLER CUE/PFL</description>
                 <status>0x9F</status>
                 <midino>0x1D</midino>
@@ -3566,7 +3566,7 @@
             <!-- TR-S Section -->
             <control>
                 <group>[Master]</group>
-                <key>DJ505.trsSection.bpmKnobTurned</key>
+                <key>DJ505.sampler.bpmKnobTurned</key>
                 <description>TR-S VALUE</description>
                 <status>0xEF</status>
                 <options>
@@ -3575,7 +3575,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>DJ505.trsSection.syncButtonPressed</key>
+                <key>DJ505.sampler.syncButtonPressed</key>
                 <description>TR-S SYNC</description>
                 <status>0x9F</status>
                 <midino>0x53</midino>
@@ -3585,10 +3585,28 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>DJ505.trsSection.syncButtonPressed</key>
+                <key>DJ505.sampler.syncButtonPressed</key>
                 <description>TR-S SYNC OFF</description>
                 <status>0x9F</status>
                 <midino>0x55</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.sampler.startStopButtonPressed</key>
+                <description>TR-S START</description>
+                <status>0xFA</status>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>DJ505.sampler.startStopButtonPressed</key>
+                <description>TR-S STOP</description>
+                <status>0xFC</status>
                 <options>
                     <script-binding/>
                 </options>
