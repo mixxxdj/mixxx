@@ -1050,9 +1050,22 @@ DJ505.Sampler = function() {
         }
     };
 
+    this.customSamplePlayback = function (channel, control, value, status, group) {
+        if (value) {
+            engine.setValue(group, 'cue_gotoandplay', 1);
+        }
+    };
+
     this.levelKnob = new components.Pot({
         group: '[Auxiliary3]',
         inKey: 'volume',
+        input: function (channel, control, value, status, group) {
+            components.Pot.prototype.input.apply(this, arguments);
+            var volume = this.inGetParameter();
+            for (var i = 1; i <= 8; i++) {
+                engine.setValue('[Sampler' + i + ']', this.inKey, volume);
+            }
+        },
     });
 
     this.cueButton = new components.Button({
@@ -1060,6 +1073,13 @@ DJ505.Sampler = function() {
         key: 'pfl',
         type: components.Button.prototype.types.toggle,
         midi: [0x9F, 0x1D],
+        input: function (channel, control, value, status, group) {
+            components.Button.prototype.input.apply(this, arguments);
+            var pfl = this.inGetValue();
+            for (var i = 1; i <= 8; i++) {
+                engine.setValue('[Sampler' + i + ']', this.inKey, pfl);
+            }
+        },
     });
 };
 

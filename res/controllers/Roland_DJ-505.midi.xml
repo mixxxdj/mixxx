@@ -3609,6 +3609,86 @@
                     <script-binding/>
                 </options>
             </control>
+            <control>
+                <group>[Sampler1]</group>
+                <key>DJ505.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S1 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x21</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler2]</group>
+                <key>DJ505.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S2 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x22</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler3]</group>
+                <key>DJ505.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S3 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x23</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler4]</group>
+                <key>DJ505.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S4 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x24</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler5]</group>
+                <key>DJ505.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S5 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x25</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler6]</group>
+                <key>DJ505.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S6 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x26</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler7]</group>
+                <key>DJ505.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S7 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x27</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Sampler8]</group>
+                <key>DJ505.sampler.customSamplePlayback</key>
+                <description>SERATO SAMPLER S8 PLAYBACK</description>
+                <status>0x9F</status>
+                <midino>0x28</midino>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
             <!--
             <control>
                 <group>[Master]</group>
