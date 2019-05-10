@@ -1475,6 +1475,7 @@ DJ505.ParamButtons.prototype.input = function (channel, control, value, status, 
 
 DJ505.PadSection = function (deck, offset) {
     // TODO: Add support for missing modes (flip, cueloop, slicer, slicerloop, pitchplay, velocitysampler)
+    // TODO: Clean this up and fix non-working shift modifier in Hotcue-Mode
     /*
      * The Performance Pad Section on the DJ-505 apparently have two basic
      * modes of operation that determines how the LEDs react to MIDI messages
