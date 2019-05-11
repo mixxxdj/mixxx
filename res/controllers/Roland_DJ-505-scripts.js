@@ -1431,6 +1431,7 @@ DJ505.PadSection = function (deck, offset) {
         "roll": new DJ505.RollMode(deck, offset),
         "loop": new DJ505.LoopMode(deck, offset),
         "sampler": new DJ505.SamplerMode(deck, offset),
+        "velocitysampler": new DJ505.VelocitySamplerMode(deck, offset),
     }
     this.offset = offset;
 
@@ -1485,9 +1486,9 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     case 0x0B:
         mode = this.modes["sampler"];
         break;
-    //case 0x0C:
-    //    mode = this.modes["velocitysampler"];
-    //    break;
+    case 0x0C:
+        mode = this.modes["velocitysampler"];
+        break;
     case 0x0D:
         mode = this.modes["loop"];
         break;
@@ -1689,3 +1690,24 @@ DJ505.SamplerMode = function (deck, offset) {
     }
 };
 DJ505.SamplerMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+DJ505.VelocitySamplerMode = function (deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = 0x0B;
+    this.color = 0x08;
+    this.pads = [];
+    for (var i = 0; i <= 7; i++) {
+        this.pads[i] = new components.SamplerButton({
+            midi: [0x94 + offset, 0x14 + i],
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 8,
+            number: i + 1,
+            outConnect: false,
+            on: this.color,
+            off: this.color + 0x10,
+            volumeByVelocity: true,
+        });
+    }
+};
+DJ505.VelocitySamplerMode.prototype = Object.create(components.ComponentContainer.prototype);
