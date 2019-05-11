@@ -1588,22 +1588,65 @@ DJ505.RollMode = function (deck, offset) {
     this.ledControl = 0x08;
     this.color = 0x07;
     this.pads = [];
+    this.loopSize = 0.03125;
+
+    var loopSize;
     for (var i = 0; i <= 7; i++) {
+        loopSize = (this.loopSize * Math.pow(2, i));
         this.pads[i] = new components.Button({
             midi: [0x94 + offset, 0x14 + i],
             sendShifted: true,
             shiftControl: true,
             shiftOffset: 8,
             group: deck.currentDeck,
-            outKey: "beatloop_" + (0.03125 * Math.pow(2, i)) + "_enabled",
-            inKey: "beatlooproll_" + (0.03125 * Math.pow(2, i)) + "_activate",
+            outKey: "beatloop_" + loopSize + "_enabled",
+            inKey: "beatlooproll_" + loopSize + "_activate",
             outConnect: false,
             on: this.color,
-            off: this.color + 0x10,
+            off: this.color + ((loopSize == 4) ? 0x01 : 0x10),
         });
     }
+    this.paramMinusButton = new components.Button({
+        midi: [0x94 + offset, 0x28],
+        mode: this,
+        input: function (channel, control, value, status, group) {
+            if (value) {
+                if (this.mode.loopSize == 0.03125) {
+                    this.mode.setLoopSize(0.25);
+                } else {
+                    this.mode.setLoopSize(this.mode.loopSize / 2);
+                }
+            }
+            this.send(value);
+        },
+    });
+    this.paramPlusButton = new components.Button({
+        midi: [0x94 + offset, 0x29],
+        mode: this,
+        input: function (channel, control, value, status, group) {
+            if (value) {
+                if (this.mode.loopSize == 0.25) {
+                    this.mode.setLoopSize(0.03125);
+                } else {
+                    this.mode.setLoopSize(this.mode.loopSize * 2);
+                }
+            }
+            this.send(value);
+        },
+    });
 };
 DJ505.RollMode.prototype = Object.create(components.ComponentContainer.prototype);
+DJ505.RollMode.prototype.setLoopSize = function (loopSize) {
+    this.loopSize = loopSize;
+    var padLoopSize;
+    for (var i = 0; i <= 7; i++) {
+        padLoopSize = (this.loopSize * Math.pow(2, i));
+        this.pads[i].inKey = "beatlooproll_" + padLoopSize + "_activate";
+        this.pads[i].outKey = "beatloop_" + padLoopSize + "_enabled";
+        this.pads[i].off = this.color + ((padLoopSize == 4) ? 0x01 : 0x10);
+    }
+    this.reconnectComponents();
+};
 
 DJ505.LoopMode = function (deck, offset) {
     components.ComponentContainer.call(this);
