@@ -100,7 +100,17 @@ SoundSource::OpenResult SoundSourceFLAC::tryOpen(
     }
     FLAC__stream_decoder_set_md5_checking(m_decoder, false);
     const FLAC__StreamDecoderInitStatus initStatus(
-            FLAC__stream_decoder_init_stream(m_decoder, FLAC_read_cb, FLAC_seek_cb, FLAC_tell_cb, FLAC_length_cb, FLAC_eof_cb, FLAC_write_cb, FLAC_metadata_cb, FLAC_error_cb, this));
+            FLAC__stream_decoder_init_stream(
+                    m_decoder,
+                    FLAC_read_cb,
+                    FLAC_seek_cb,
+                    FLAC_tell_cb,
+                    FLAC_length_cb,
+                    FLAC_eof_cb,
+                    FLAC_write_cb,
+                    FLAC_metadata_cb,
+                    FLAC_error_cb,
+                    this));
     if (initStatus != FLAC__STREAM_DECODER_INIT_STATUS_OK) {
         kLogger.warning() << "Failed to initialize FLAC decoder:" << initStatus;
         return OpenResult::Failed;
@@ -192,7 +202,8 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
         DEBUG_ASSERT(m_curFrameIndex <= firstFrameIndex);
         const auto precedingFrames =
                 IndexRange::between(m_curFrameIndex, firstFrameIndex);
-        if (!precedingFrames.empty() && (precedingFrames != readSampleFramesClamped(WritableSampleFrames(precedingFrames)).frameIndexRange())) {
+        if (!precedingFrames.empty() &&
+                (precedingFrames != readSampleFramesClamped(WritableSampleFrames(precedingFrames)).frameIndexRange())) {
             kLogger.warning()
                     << "Failed to skip preceding frames"
                     << precedingFrames;
@@ -357,7 +368,8 @@ namespace {
 // get rid of the garbage in the most significant bits before scaling
 // to the range [-CSAMPLE_PEAK, CSAMPLE_PEAK - epsilon] with
 // epsilon = 1 / 2 ^ bitsPerSample.
-constexpr CSAMPLE kSampleScaleFactor = CSAMPLE_PEAK / (static_cast<FLAC__int32>(1) << std::numeric_limits<FLAC__int32>::digits);
+constexpr CSAMPLE kSampleScaleFactor = CSAMPLE_PEAK /
+        (static_cast<FLAC__int32>(1) << std::numeric_limits<FLAC__int32>::digits);
 
 inline CSAMPLE convertDecodedSample(FLAC__int32 decodedSample, int bitsPerSample) {
     DEBUG_ASSERT(std::numeric_limits<FLAC__int32>::is_signed);
