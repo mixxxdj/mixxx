@@ -1,8 +1,8 @@
 #include "sources/soundsourcecoreaudio.h"
 #include "sources/mp3decoding.h"
 
-#include "util/math.h"
 #include "util/logger.h"
+#include "util/math.h"
 
 namespace mixxx {
 
@@ -25,7 +25,7 @@ const SINT kMp3StabilizationFrames =
 
 static CSAMPLE kMp3StabilizationScratchBuffer[kMp3StabilizationFrames * 2]; // stereo
 
-}  // namespace
+} // namespace
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QUrl url)
         : SoundSource(url),
@@ -49,10 +49,9 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
 
     /** This code blocks works with OS X 10.5+ only. DO NOT DELETE IT for now. */
     CFStringRef urlStr = CFStringCreateWithCharacters(0,
-            reinterpret_cast<const UniChar *>(fileName.unicode()),
+            reinterpret_cast<const UniChar*>(fileName.unicode()),
             fileName.size());
-    CFURLRef urlRef = CFURLCreateWithFileSystemPath(nullptr, urlStr,
-            kCFURLPOSIXPathStyle, false);
+    CFURLRef urlRef = CFURLCreateWithFileSystemPath(nullptr, urlStr, kCFURLPOSIXPathStyle, false);
     err = ExtAudioFileOpenURL(urlRef, &m_audioFile);
     CFRelease(urlStr);
     CFRelease(urlRef);
@@ -73,7 +72,8 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
     // get the input file format
     UInt32 inputFormatSize = sizeof(m_inputFormat);
     err = ExtAudioFileGetProperty(m_audioFile,
-            kExtAudioFileProperty_FileDataFormat, &inputFormatSize,
+            kExtAudioFileProperty_FileDataFormat,
+            &inputFormatSize,
             &m_inputFormat);
     if (err != noErr) {
         kLogger.debug() << "Error getting file format (" << fileName << ")";
@@ -85,11 +85,14 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
     const UInt32 numChannels =
             params.channelCount().valid() ? params.channelCount() : 2;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
-            numChannels, CAStreamBasicDescription::kPCMFormatFloat32, true);
+            numChannels,
+            CAStreamBasicDescription::kPCMFormatFloat32,
+            true);
 
     // set the client format
     err = ExtAudioFileSetProperty(m_audioFile,
-            kExtAudioFileProperty_ClientDataFormat, sizeof(m_outputFormat),
+            kExtAudioFileProperty_ClientDataFormat,
+            sizeof(m_outputFormat),
             &m_outputFormat);
     if (err != noErr) {
         kLogger.debug() << "Error setting file property";
@@ -100,7 +103,8 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
     SInt64 totalFrameCount;
     UInt32 totalFrameCountSize = sizeof(totalFrameCount);
     err = ExtAudioFileGetProperty(m_audioFile,
-            kExtAudioFileProperty_FileLengthFrames, &totalFrameCountSize,
+            kExtAudioFileProperty_FileLengthFrames,
+            &totalFrameCountSize,
             &totalFrameCount);
     if (err != noErr) {
         kLogger.debug() << "Error getting number of frames";
@@ -114,14 +118,15 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
     AudioConverterRef acRef;
     UInt32 acrsize = sizeof(AudioConverterRef);
     err = ExtAudioFileGetProperty(m_audioFile,
-            kExtAudioFileProperty_AudioConverter, &acrsize, &acRef);
+            kExtAudioFileProperty_AudioConverter,
+            &acrsize,
+            &acRef);
     //_ThrowExceptionIfErr(@"kExtAudioFileProperty_AudioConverter", err);
 
     AudioConverterPrimeInfo primeInfo;
     UInt32 piSize = sizeof(AudioConverterPrimeInfo);
     memset(&primeInfo, 0, piSize);
-    err = AudioConverterGetProperty(acRef, kAudioConverterPrimeInfo, &piSize,
-            &primeInfo);
+    err = AudioConverterGetProperty(acRef, kAudioConverterPrimeInfo, &piSize, &primeInfo);
     if (err != kAudioConverterErr_PropertyNotSupported) { // Only if decompressing
         //_ThrowExceptionIfErr(@"kAudioConverterPrimeInfo", err);
         m_headerFrames = primeInfo.leadingFrames;
@@ -135,7 +140,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
     // the code from SoundSource (sample-oriented) to the new
     // AudioSource (frame-oriented) API. It is not documented
     // when m_headerFrames > 0 and what the consequences are.
-    initFrameIndexRangeOnce(IndexRange::forward(0/*m_headerFrames*/, totalFrameCount));
+    initFrameIndexRangeOnce(IndexRange::forward(0 /*m_headerFrames*/, totalFrameCount));
 
     //Seek to first position, which forces us to skip over all the header frames.
     //This makes sure we're ready to just let the Analyzer rip and it'll
@@ -154,12 +159,13 @@ SINT SoundSourceCoreAudio::seekSampleFrame(SINT frameIndex) {
 
     // See comments above on kMp3StabilizationFrames.
     const SINT stabilization_frames = m_bFileIsMp3 ? math_min(
-            kMp3StabilizationFrames, SINT(frameIndex + m_headerFrames)) : 0;
+                                                             kMp3StabilizationFrames, SINT(frameIndex + m_headerFrames))
+                                                   : 0;
     OSStatus err = ExtAudioFileSeek(
             m_audioFile, frameIndex + m_headerFrames - stabilization_frames);
     if (stabilization_frames > 0) {
         readSampleFrames(stabilization_frames,
-                         &kMp3StabilizationScratchBuffer[0]);
+                &kMp3StabilizationScratchBuffer[0]);
     }
 
     //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
@@ -199,19 +205,16 @@ SINT SoundSourceCoreAudio::readSampleFrames(
         AudioBufferList fillBufList;
         fillBufList.mNumberBuffers = 1;
         fillBufList.mBuffers[0].mNumberChannels = channelCount();
-        fillBufList.mBuffers[0].mDataByteSize = frames2samples(numFramesToRead)
-                * sizeof(sampleBuffer[0]);
-        fillBufList.mBuffers[0].mData = sampleBuffer
-                + frames2samples(numFramesRead);
+        fillBufList.mBuffers[0].mDataByteSize = frames2samples(numFramesToRead) * sizeof(sampleBuffer[0]);
+        fillBufList.mBuffers[0].mData = sampleBuffer + frames2samples(numFramesRead);
 
         UInt32 numFramesToReadInOut = numFramesToRead; // input/output parameter
-        OSStatus err = ExtAudioFileRead(m_audioFile, &numFramesToReadInOut,
-                &fillBufList);
+        OSStatus err = ExtAudioFileRead(m_audioFile, &numFramesToReadInOut, &fillBufList);
         // TODO(uklotz): Should this be handled?
         Q_UNUSED(err);
         if (0 == numFramesToReadInOut) {
             // EOF
-            break;// done
+            break; // done
         }
         numFramesRead += numFramesToReadInOut;
     }
@@ -235,4 +238,4 @@ QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
     return supportedFileExtensions;
 }
 
-}  // namespace mixxx
+} // namespace mixxx

@@ -5,7 +5,6 @@
 
 #include "sources/soundsourceproviderregistry.h"
 
-
 // Creates sound sources for tracks. Only intended to be used
 // in a narrow scope and not shareable between multiple threads!
 class SoundSourceProxy {
