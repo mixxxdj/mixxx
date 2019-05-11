@@ -78,8 +78,8 @@ DJ505.init = function () {
 
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7], 6); //request initial state
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6); //unlock pad layers
-    DJ505.leftDeck.padSection.resetPadLEDs();
-    DJ505.rightDeck.padSection.resetPadLEDs();
+    DJ505.leftDeck.padSection.resetLEDs();
+    DJ505.rightDeck.padSection.resetLEDs();
 
     engine.beginTimer(500, function() {
         // Keep sending this message to enable performance pad LEDs
@@ -1225,51 +1225,6 @@ DJ505.SyncButton.prototype.shift = function () {
 };
 
 
-DJ505.HotcueButton = function () {
-    components.HotcueButton.apply(this, arguments);
-    this.sendShifted = true;
-    this.shiftControl = true;
-    this.shiftOffset = 8;
-};
-
-DJ505.HotcueButton.prototype = Object.create(components.HotcueButton.prototype);
-
-DJ505.HotcueButton.prototype.connect = function () {
-    var deck = script.deckFromGroup(this.group);
-    components.HotcueButton.prototype.connect.call(this);
-};
-
-DJ505.HotcueButton.prototype.unshift = function () {
-    this.inKey = 'hotcue_' + this.number + '_activate';
-    this.input = function (channel, control, value, status, group) {
-        components.HotcueButton.prototype.input.apply(this, arguments);
-    };
-};
-
-DJ505.HotcueButton.prototype.shift = function ()  {
-    this.input = function (channel, control, value, status, group) {
-        if (!value) {
-            return;
-        }
-        script.triggerControl(this.group, 'hotcue_' + this.number + '_clear');
-        if (engine.getValue(this.group, 'play')) {
-            script.triggerControl(this.group, 'hotcue_' + this.number + '_set');
-        }
-    };
-};
-
-DJ505.DeckButton = function () {
-    components.Button.apply(this, arguments);
-};
-
-DJ505.DeckButton.prototype = Object.create(components.Button.prototype);
-
-DJ505.DeckButton.prototype.connect = function () {
-    var deck = script.deckFromGroup(this.group);
-    this.midi = [0x94 + deck - 1, this.cc];
-    components.Button.prototype.connect.apply(this, arguments);
-};
-
 DJ505.SlipModeButton = function () {
     components.Button.apply(this, arguments);
     this.inKey = 'slip_enabled';
@@ -1399,113 +1354,8 @@ DJ505.KeylockButton.prototype.shift = function () {
 };
 
 
-DJ505.ParamButtons = function () {
-    components.Button.apply(this, arguments);
-    this.isSongKeyMode = false;
-    this.active = [false, false];
-};
-
-DJ505.ParamButtons.prototype = Object.create(components.Button.prototype);
-
-DJ505.ParamButtons.prototype.setLEDs = function (plusValue, minusValue) {
-    var deck = script.deckFromGroup(this.group);
-    var channel = 0x94 + deck - 1;
-    [0, 2, 4, 8, 10].forEach(
-        function (offSet) {
-            midi.sendShortMsg(channel, 0x41 + offSet, plusValue);
-            midi.sendShortMsg(channel, 0x42 + offSet, minusValue);
-        }
-    );
-};
-
-DJ505.ParamButtons.prototype.connect = function () {
-    components.Button.prototype.connect.call(this);
-    var keyConnection = engine.makeConnection(this.group, 'pitch_adjust', this.output);
-    this.connections.push(keyConnection);
-};
-
-DJ505.ParamButtons.prototype.output = function (value, group, control) {
-    if (!this.isSongKeyMode) {
-        return;
-    }
-
-    if (this.isSongKeyMode && control != 'pitch_adjust') {
-        return;
-    }
-
-    var deck = script.deckFromGroup(this.group);
-
-    // The control value returned has floating point jitter, so 0 can be
-    // 0.00…1 and 1 can be 0.99.
-    if (value < 0.5 && value > -0.5) {
-        this.setLEDs(0, 0);
-    }
-    if (value < -0.5) {
-        this.setLEDs(0x7f, 0);
-        return;
-    }
-    if (value > 0.5) {
-        this.setLEDs(0, 0x7f);
-    }
-};
-
-DJ505.ParamButtons.prototype.songKeyMode = function (toggle) {
-    this.isSongKeyMode = toggle;
-    if(toggle) {
-        this.trigger();
-    } else {
-        this.setLEDs(0, 0);
-    }
-};
-
-DJ505.ParamButtons.prototype.input = function (channel, control, value, status, group) {
-
-    var isPlus = control % 2 == 0;
-
-    this.active[isPlus ? 0 : 1] = Boolean(value);
-
-    // FIXME: This make the LEDs light up on press, but doesn’t properly
-    // connect the output controls, so the buttons won’t light when
-    // manipulated from within the GUI.
-    var deck = script.deckFromGroup(group);
-    midi.sendShortMsg(0x94 + deck - 1, control, value);
-
-    if (!value) {
-        // Work-around LED self-reset on release.
-        this.trigger();
-        return;
-    }
-
-    if (this.active.every(Boolean)) {
-        script.triggerControl(group, 'reset_key');
-        return;
-    }
-
-    if (this.isSongKeyMode) {
-        var adjust = engine.getValue(group, 'pitch_adjust');
-        var new_adjust = isPlus ? Math.min(7, adjust + 1) : Math.max(-7, adjust - 1);
-        engine.setValue(group, 'pitch_adjust', new_adjust);
-        return;
-    }
-
-    var beatjumpSize = engine.getValue(group, 'beatjump_size');
-    var beatloopSize = engine.getValue(group, 'beatloop_size');
-
-    switch (control) {
-    case 0x43:                                              // Hot-Cue mode.
-    case 0x44:
-        script.triggerControl(group, isPlus ? 'beatjump_forward' : 'beatjump_backward');
-        break;
-    case 0x4B:                                    // Hot-Cue mode (shifted).
-    case 0x4C:
-        engine.setValue(group, 'beatjump_size', isPlus ? beatjumpSize*2 : beatjumpSize/2);
-        break;
-    }
-};
-
 DJ505.PadSection = function (deck, offset) {
     // TODO: Add support for missing modes (flip, cueloop, slicer, slicerloop, pitchplay, velocitysampler)
-    // TODO: Clean this up and fix non-working shift modifier in Hotcue-Mode
     /*
      * The Performance Pad Section on the DJ-505 apparently have two basic
      * modes of operation that determines how the LEDs react to MIDI messages
@@ -1574,215 +1424,225 @@ DJ505.PadSection = function (deck, offset) {
      *   0x0F       White          0x1F       White (Dim)
      */
     components.ComponentContainer.call(this);
-
-    const MODE_HOTCUE = 0x00;
-    const MODE_FLIP = 0x02;
-    const MODE_CUELOOP = 0x03;
-    const MODE_ROLL = 0x08;
-    const MODE_LOOP = 0x0D;
-    const MODE_SLICER = 0x09;
-    const MODE_SLICERLOOP = 0x0A;
-    const MODE_TR = 0x04;
-    const MODE_TRVELOCITY = 0x06;
-    const MODE_PATTERN = 0x05;
-    const MODE_SAMPLER = 0x0B;
-    const MODE_PITCHPLAY = 0x0F;
-    const MODE_VELOCITYSAMPLER = 0x0C;
-
-    this.modes = new Array(
-        undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined,
-        undefined, undefined, undefined, undefined
-    );
-    this.modes[MODE_HOTCUE] = { // [HOT CUE]
-        state: "hotcue",
-        led_control: 0x00,
-        color: 0x0F,
-        pads: [],
-    };
-    //this.modes[MODE_FLIP] = { // [HOT CUE] (press twice)
-    //    state: "flip",
-    //    led_control: 0x00,
-    //    color: 0x02,
-    //    pads: [],
-    //};
-    //this.modes[MODE_CUELOOP] = { // [SHIFT] + [HOT CUE]
-    //    state: "cueloop",
-    //    led_control: 0x00,
-    //    color: 0x03,
-    //    pads: [],
-    //};
-    this.modes[MODE_ROLL] = { // [ROLL]
-        state: "roll",
-        led_control: 0x08,
-        color: 0x07,
-        pads: [],
-    };
-    this.modes[MODE_LOOP] = { // [ROLL] (press twice)
-        state: "loop",
-        led_control: 0x08,
-        color: 0x0E,
-        pads: [],
-    };
-    //this.modes[MODE_SLICER] = { // [SHIFT] + [ROLL]
-    //    state: "slicer",
-    //    led_control: 0x08,
-    //    color: 0x01,
-    //    pads: [],
-    //};
-    //this.modes[MODE_SLICERLOOP] = { // [SHIFT] + [ROLL] (press twice)
-    //    state: "slicerloop",
-    //    led_control: 0x08,
-    //    color: 0x03,
-    //    pads: [],
-    //};
-    this.modes[MODE_TR] = { // [TR]
-        state: "tr",
-    };
-    this.modes[MODE_TRVELOCITY] = { // [TR] (press twice)
-        state: "trvelocity",
-    };
-    this.modes[MODE_PATTERN] = { // [SHIFT] + [TR]
-        state: "pattern",
-    };
-    this.modes[MODE_SAMPLER] = { // [SAMPLER]
-        state: "sampler",
-        led_control: 0x0B,
-        color: 0x06,
-        pads: [],
-    };
-    //this.modes[MODE_PITCHPLAY] = { // [SAMPLER] (press twice)
-    //    state: "pitchplay",
-    //    led_control: 0x0B,
-    //    color: 0x0E,
-    //    pads: [],
-    //};
-    //this.modes[MODE_VELOCITYSAMPLER] = { // [SHIFT] + [SAMPLER]
-    //    state: "velocitysampler",
-    //    led_control: 0x0B,
-    //    color: 0x08,
-    //    pads: [],
-    //};
-
-    for (var i = 1; i <= 8; i++) {
-        this.modes[MODE_HOTCUE].pads[i] = new DJ505.HotcueButton({
-            midi: [0x94 + offset, 0x14 + i - 1],
-            number: i,
-            group: deck.currentDeck,
-            on: i,
-            off: this.modes[MODE_HOTCUE].color + 0x10,
-        });
-        this.modes[MODE_SAMPLER].pads[i] = new components.SamplerButton({
-            midi: [0x94 + offset, 0x14 + i - 1],
-            group: '[Sampler' + i + ']',
-            inKey: 'start',
-            outKey: 'track_loaded',
-            sendShifted: false,
-            shiftControl: true,
-            shiftOffset: 8,
-            number: i,
-            outConnect: false,
-            on: this.modes[MODE_SAMPLER].color,
-            off: this.modes[MODE_SAMPLER].color + 0x10,
-        });
-        this.modes[MODE_ROLL].pads[i] = new components.Button({
-            midi: [0x94 + offset, 0x14 + i - 1],
-            sendShifted: false,
-            shiftControl: true,
-            shiftOffset: 8,
-            number: i,
-            group: deck.currentDeck,
-            outKey: 'beatloop_' + (0.03125 * Math.pow(2, i-1)) + '_enabled',
-            inKey: 'beatlooproll_' + (0.03125 * Math.pow(2, i-1)) + '_activate',
-            outConnect: false,
-            on: this.modes[MODE_ROLL].color,
-            off: this.modes[MODE_ROLL].color + 0x10,
-        });
-        this.modes[MODE_LOOP].pads[i] = new components.Button({
-            midi: [0x94 + offset, 0x14 + i -1],
-            sendShifted: false,
-            shiftControl: true,
-            shiftOffset: 8,
-            number: i,
-            group: deck.currentDeck,
-            outKey: 'beatloop_' + (0.03125 * Math.pow(2, i-1)) + '_enabled',
-            inKey: 'beatloop_' + (0.03125 * Math.pow(2, i-1)) + '_activate',
-            outConnect: false,
-            on: this.modes[MODE_LOOP].color,
-            off: this.modes[MODE_LOOP].color + 0x10,
-        });
+    this.modes = {
+        // This need to be an object so that a recursive reconnectComponents
+        // call won't influence all modes at once
+        "hotcue": new DJ505.HotcueMode(deck, offset),
+        "roll": new DJ505.RollMode(deck, offset),
+        "loop": new DJ505.LoopMode(deck, offset),
+        "sampler": new DJ505.SamplerMode(deck, offset),
     }
+    this.offset = offset;
 
-    this.paramPlusMinus = new DJ505.ParamButtons();
-
-    this.padMode = MODE_HOTCUE;
-
-    // Set LEDs
-    midi.sendShortMsg(0x94 + offset, MODE_HOTCUE, this.modes[MODE_HOTCUE].color);
-    midi.sendShortMsg(0x94 + offset, MODE_ROLL, 0x00);
-    midi.sendShortMsg(0x94 + offset, MODE_SAMPLER, 0x00);
+    // Start in Hotcue Mode and disable other LEDs
+    this.setPadMode(0x00);
+    midi.sendShortMsg(0x94 + offset, this.modes["roll"].ledControl, 0x00);
+    midi.sendShortMsg(0x94 + offset, this.modes["sampler"].ledControl, 0x00);
 };
 
 DJ505.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
 
-DJ505.PadSection.prototype.resetPadLEDs = function() {
-    var mode = this.modes[this.padMode];
-    if (mode && mode.pads) {
-        for (var i = 1; i <= 8; i++) {
-            mode.pads[i].trigger();
+DJ505.PadSection.prototype.resetLEDs = function() {
+    var mode = this.controlToPadMode(this.padMode);
+    if (mode) {
+        mode.forEachComponent(function(component) {
+            component.trigger();
+        });
+    } else {
+        for (var i = 0; i <= 7; i++) {
+            midi.sendShortMsg(0x94 + this.offset, 0x14 + i, 0x00);
         }
     }
 };
 
-DJ505.PadSection.prototype.setPadMode = function (channel, control, value, status, group) {
+DJ505.PadSection.prototype.controlToPadMode = function (control) {
+    var mode;
+    switch(control) {
+    case 0x00:  // Hot Cue Mode
+        mode = this.modes["hotcue"];
+        break;
+    //case 0x02:  // Flip Mode
+    //    mode = this.modes["flip"];
+    //    break;
+    //case 0x03:  // Cue Loop Mode
+    //    mode = this.modes["cueloop"];
+    //    break;
+    case 0x04:  // TR Mode
+    case 0x05:  // Pattern Mode
+    case 0x06:  // TR Velocity Mode
+        // All of these are hardcoded in hardware
+        mode = null;
+        break;
+    case 0x08:  // Roll Mode
+        mode = this.modes["roll"];
+        break;
+    //case 0x09:
+    //    mode = this.modes["slicer"];
+    //    break;
+    //case 0x0A:
+    //    mode = this.modes["slicerloop"];
+    //    break;
+    case 0x0B:
+        mode = this.modes["sampler"];
+        break;
+    //case 0x0C:
+    //    mode = this.modes["velocitysampler"];
+    //    break;
+    case 0x0D:
+        mode = this.modes["loop"];
+        break;
+    //case 0x0F:
+    //    mode = this.modes["pitchplay"];
+    //    break;
+    }
+
+    return mode;
+};
+
+DJ505.PadSection.prototype.padModeButtonPressed = function (channel, control, value, status, group) {
+    this.setPadMode(control);
+};
+
+DJ505.PadSection.prototype.paramButtonPressed = function (channel, control, value, status, group) {
+    var mode = this.controlToPadMode(this.padMode);
+    if (mode && mode.paramPlusButton && mode.paramMinusButton) {
+        if (control & 1) {
+            mode.paramPlusButton.input(channel, control, value, status, group);
+        } else {
+            mode.paramMinusButton.input(channel, control, value, status, group);
+        }
+    }
+};
+
+DJ505.PadSection.prototype.setPadMode = function (control) {
     if (this.padMode == control) {
         return;
     }
 
-    var new_mode = this.modes[control];
-    if (!new_mode) {
+    var mode = this.controlToPadMode(control);
+    if (mode === undefined) {
         return;
     }
 
-    var i;
     // Disable previous mode's LED
-    var old_mode = this.modes[this.padMode];
-    if (old_mode) {
-        if (old_mode.led_control !== undefined) {
-            midi.sendShortMsg(status, old_mode.led_control, 0x00);
-        }
-        if (old_mode.pads) {
-            for (i = 1; i <= 8; i++) {
-                old_mode.pads[i].disconnect();
-            }
-        }
-    }
-
-    // Set new mode's LED
-    if (new_mode.led_control !== undefined) {
-        midi.sendShortMsg(status, new_mode.led_control, new_mode.color);
-    }
-    if (new_mode.pads) {
-        for (i = 1; i <= 8; i++) {
-            new_mode.pads[i].connect();
-            new_mode.pads[i].trigger();
-        }
-    } else {
-        for (i = 1; i <= 8; i++) {
-            midi.sendShortMsg(status, 0x14 + i - 1, 0x00);
-        }
+    var previous_mode = this.controlToPadMode(this.padMode);
+    if (previous_mode) {
+        midi.sendShortMsg(0x94 + this.offset, previous_mode.ledControl, 0x00);
+        previous_mode.forEachComponent(function (component) {
+            component.disconnect();
+        });
     }
 
     this.padMode = control;
+    if (mode) {
+        // Set new mode's LED
+        midi.sendShortMsg(0x94 + this.offset, mode.ledControl, mode.color);
+        mode.forEachComponent(function (component) {
+            component.connect();
+            component.trigger();
+        });
+    } else {
+        this.resetLEDs();
+    }
 };
 
 DJ505.PadSection.prototype.padPressed = function (channel, control, value, status, group) {
-    var i = control - ((control > 0x1B) ? 0x1B : 0x13);
-    var mode = this.modes[this.padMode];
-    if (!mode || !mode.pads) {
-        return;
+    var i = control - ((control >= 0x1C) ? 0x1C : 0x14);
+    var mode = this.controlToPadMode(this.padMode);
+    if (mode) {
+        mode.pads[i].input(channel, control, value, status, group);
     }
-
-    mode.pads[i].input(channel, control, value, status, group);
 };
+
+DJ505.PadSection.prototype.forEachComponent = function (operation, recursive) {
+    components.ComponentContainer.prototype.forEachComponent.apply(this, arguments);
+    var mode = this.controlToPadMode(this.padMode);
+    if (mode) {
+        mode.forEachComponent(operation, recursive);
+    }
+};
+
+DJ505.HotcueMode = function (deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = 0x00;
+    this.color = 0x0F;
+    this.pads = [];
+    for (var i = 0; i <= 7; i++) {
+        this.pads[i] = new components.HotcueButton({
+            midi: [0x94 + offset, 0x14 + i],
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 8,
+            number: i + 1,
+            group: deck.currentDeck,
+            on: i + 1,
+            off: this.color + 0x10,
+            outConnect: false,
+        });
+    }
+};
+DJ505.HotcueMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+DJ505.RollMode = function (deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = 0x08;
+    this.color = 0x07;
+    this.pads = [];
+    for (var i = 0; i <= 7; i++) {
+        this.pads[i] = new components.Button({
+            midi: [0x94 + offset, 0x14 + i],
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 8,
+            group: deck.currentDeck,
+            outKey: "beatloop_" + (0.03125 * Math.pow(2, i)) + "_enabled",
+            inKey: "beatlooproll_" + (0.03125 * Math.pow(2, i)) + "_activate",
+            outConnect: false,
+            on: this.color,
+            off: this.color + 0x10,
+        });
+    }
+};
+DJ505.RollMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+DJ505.LoopMode = function (deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = 0x08;
+    this.color = 0x0E;
+    this.pads = [];
+    for (var i = 0; i <= 7; i++) {
+        this.pads[i] = new components.Button({
+            midi: [0x94 + offset, 0x14 + i],
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 8,
+            group: deck.currentDeck,
+            outKey: "beatloop_" + (0.03125 * Math.pow(2, i)) + "_enabled",
+            inKey: "beatloop_" + (0.03125 * Math.pow(2, i)) + "_toggle",
+            outConnect: false,
+            on: this.color,
+            off: this.color + 0x10,
+        });
+    }
+};
+DJ505.LoopMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+DJ505.SamplerMode = function (deck, offset) {
+    components.ComponentContainer.call(this);
+    this.ledControl = 0x0B;
+    this.color = 0x06;
+    this.pads = [];
+    for (var i = 0; i <= 7; i++) {
+        this.pads[i] = new components.SamplerButton({
+            midi: [0x94 + offset, 0x14 + i],
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 8,
+            number: i + 1,
+            outConnect: false,
+            on: this.color,
+            off: this.color + 0x10,
+        });
+    }
+};
+DJ505.SamplerMode.prototype = Object.create(components.ComponentContainer.prototype);

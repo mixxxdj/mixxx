@@ -117,7 +117,7 @@
             <!-- Deck 1, Pad-state buttons (Hot-cue mode, loop mode, sampler mode) -->
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - HOT CUE</description>
                 <status>0x94</status>
                 <midino>0x00</midino><!-- [HOT CUE] -->
@@ -127,7 +127,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - FLIP</description>
                 <status>0x94</status>
                 <midino>0x02</midino><!-- [HOT CUE] (press twice) -->
@@ -137,7 +137,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - CUE LOOP</description>
                 <status>0x94</status>
                 <midino>0x03</midino><!-- [SHIFT] + [HOT CUE] -->
@@ -147,7 +147,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - ROLL</description>
                 <status>0x94</status>
                 <midino>0x08</midino><!-- [ROLL] -->
@@ -157,7 +157,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - LOOP</description>
                 <status>0x94</status>
                 <midino>0x0D</midino><!-- [ROLL] (press twice) -->
@@ -167,7 +167,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - SLICER</description>
                 <status>0x94</status>
                 <midino>0x09</midino><!-- [SHIFT] + [ROLL] -->
@@ -177,7 +177,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - SLICER LOOP</description>
                 <status>0x94</status>
                 <midino>0x0A</midino><!-- [SHIFT] + [ROLL] (press twice) -->
@@ -187,7 +187,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - TR</description>
                 <status>0x94</status>
                 <midino>0x04</midino><!-- [TR] -->
@@ -197,7 +197,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - TR VELOCITY</description>
                 <status>0x94</status>
                 <midino>0x06</midino><!-- [TR] (press twice) -->
@@ -207,7 +207,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - PATTERN</description>
                 <status>0x94</status>
                 <midino>0x05</midino><!-- [SHIFT] + [TR] -->
@@ -217,7 +217,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - SAMPLER</description>
                 <status>0x94</status>
                 <midino>0x0B</midino><!-- [SAMPLER] -->
@@ -227,7 +227,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - PITCH PLAY</description>
                 <status>0x94</status>
                 <midino>0x0F</midino><!-- [SAMPLER] (press twice) -->
@@ -237,7 +237,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 1 PADS - VELOCITY</description>
                 <status>0x94</status>
                 <midino>0x0C</midino><!-- [SHIFT] + [SAMPLER] -->
@@ -655,7 +655,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.leftDeck.padSection.paramButtonPressed</key>
                 <description>DECK 1 PARAMETER 1 MINUS</description>
                 <status>0x94</status>
                 <midino>0x28</midino>
@@ -665,7 +665,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.leftDeck.padSection.paramButtonPressed</key>
                 <description>DECK 1 PARAMETER 1 PLUS</description>
                 <status>0x94</status>
                 <midino>0x29</midino>
@@ -675,7 +675,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.leftDeck.padSection.paramButtonPressed</key>
                 <description>DECK 1 PARAMETER 2 MINUS</description>
                 <status>0x94</status>
                 <midino>0x2A</midino>
@@ -685,7 +685,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.leftDeck.padSection.paramButtonPressed</key>
                 <description>DECK 1 PARAMETER 2 PLUS</description>
                 <status>0x94</status>
                 <midino>0x2B</midino>
@@ -827,7 +827,7 @@
             <!-- Deck 3, Pad-state buttons (Hot-cue mode, loop mode, sampler mode) -->
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - HOT CUE</description>
                 <status>0x96</status>
                 <midino>0x00</midino><!-- [HOT CUE] -->
@@ -837,7 +837,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - FLIP</description>
                 <status>0x96</status>
                 <midino>0x02</midino><!-- [HOT CUE] (press twice) -->
@@ -847,7 +847,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - CUE LOOP</description>
                 <status>0x96</status>
                 <midino>0x03</midino><!-- [SHIFT] + [HOT CUE] -->
@@ -857,7 +857,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - ROLL</description>
                 <status>0x96</status>
                 <midino>0x08</midino><!-- [ROLL] -->
@@ -867,7 +867,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - LOOP</description>
                 <status>0x96</status>
                 <midino>0x0D</midino><!-- [ROLL] (press twice) -->
@@ -877,7 +877,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - SLICER</description>
                 <status>0x96</status>
                 <midino>0x09</midino><!-- [SHIFT] + [ROLL] -->
@@ -887,7 +887,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - SLICER LOOP</description>
                 <status>0x96</status>
                 <midino>0x0A</midino><!-- [SHIFT] + [ROLL] (press twice) -->
@@ -897,7 +897,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - TR</description>
                 <status>0x96</status>
                 <midino>0x04</midino><!-- [TR] -->
@@ -907,7 +907,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - TR VELOCITY</description>
                 <status>0x96</status>
                 <midino>0x06</midino><!-- [TR] (press twice) -->
@@ -917,7 +917,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - PATTERN</description>
                 <status>0x96</status>
                 <midino>0x05</midino><!-- [SHIFT] + [TR] -->
@@ -927,7 +927,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - SAMPLER</description>
                 <status>0x96</status>
                 <midino>0x0B</midino><!-- [SAMPLER] -->
@@ -937,7 +937,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - PITCH PLAY</description>
                 <status>0x96</status>
                 <midino>0x0F</midino><!-- [SAMPLER] (press twice) -->
@@ -947,7 +947,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.setPadMode</key>
+                <key>DJ505.leftDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 3 PADS - VELOCITY</description>
                 <status>0x96</status>
                 <midino>0x0C</midino><!-- [SHIFT] + [SAMPLER] -->
@@ -1365,7 +1365,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.leftDeck.padSection.paramButtonPressed</key>
                 <description>DECK 3 PARAMETER 1 MINUS</description>
                 <status>0x96</status>
                 <midino>0x28</midino>
@@ -1375,7 +1375,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.leftDeck.padSection.paramButtonPressed</key>
                 <description>DECK 3 PARAMETER 1 PLUS</description>
                 <status>0x96</status>
                 <midino>0x29</midino>
@@ -1385,7 +1385,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.leftDeck.padSection.paramButtonPressed</key>
                 <description>DECK 3 PARAMETER 2 MINUS</description>
                 <status>0x96</status>
                 <midino>0x2A</midino>
@@ -1395,7 +1395,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>DJ505.leftDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.leftDeck.padSection.paramButtonPressed</key>
                 <description>DECK 3 PARAMETER 2 PLUS</description>
                 <status>0x96</status>
                 <midino>0x2B</midino>
@@ -1537,7 +1537,7 @@
             <!-- Deck 2, Pad-state buttons (Hot-cue mode, loop mode, sampler mode) -->
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - HOT CUE</description>
                 <status>0x95</status>
                 <midino>0x00</midino><!-- [HOT CUE] -->
@@ -1547,7 +1547,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - FLIP</description>
                 <status>0x95</status>
                 <midino>0x02</midino><!-- [HOT CUE] (press twice) -->
@@ -1557,7 +1557,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - CUE LOOP</description>
                 <status>0x95</status>
                 <midino>0x03</midino><!-- [SHIFT] + [HOT CUE] -->
@@ -1567,7 +1567,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - ROLL</description>
                 <status>0x95</status>
                 <midino>0x08</midino><!-- [ROLL] -->
@@ -1577,7 +1577,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - LOOP</description>
                 <status>0x95</status>
                 <midino>0x0D</midino><!-- [ROLL] (press twice) -->
@@ -1587,7 +1587,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - SLICER</description>
                 <status>0x95</status>
                 <midino>0x09</midino><!-- [SHIFT] + [ROLL] -->
@@ -1597,7 +1597,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - SLICER LOOP</description>
                 <status>0x95</status>
                 <midino>0x0A</midino><!-- [SHIFT] + [ROLL] (press twice) -->
@@ -1607,7 +1607,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - TR</description>
                 <status>0x95</status>
                 <midino>0x04</midino><!-- [TR] -->
@@ -1617,7 +1617,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - TR VELOCITY</description>
                 <status>0x95</status>
                 <midino>0x06</midino><!-- [TR] (press twice) -->
@@ -1627,7 +1627,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - PATTERN</description>
                 <status>0x95</status>
                 <midino>0x05</midino><!-- [SHIFT] + [TR] -->
@@ -1637,7 +1637,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - SAMPLER</description>
                 <status>0x95</status>
                 <midino>0x0B</midino><!-- [SAMPLER] -->
@@ -1647,7 +1647,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - PITCH PLAY</description>
                 <status>0x95</status>
                 <midino>0x0F</midino><!-- [SAMPLER] (press twice) -->
@@ -1657,7 +1657,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 2 PADS - VELOCITY</description>
                 <status>0x95</status>
                 <midino>0x0C</midino><!-- [SHIFT] + [SAMPLER] -->
@@ -2075,7 +2075,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.rightDeck.padSection.paramButtonPressed</key>
                 <description>DECK 2 PARAMETER 1 MINUS</description>
                 <status>0x95</status>
                 <midino>0x28</midino>
@@ -2085,7 +2085,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.rightDeck.padSection.paramButtonPressed</key>
                 <description>DECK 2 PARAMETER 1 PLUS</description>
                 <status>0x95</status>
                 <midino>0x29</midino>
@@ -2095,7 +2095,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.rightDeck.padSection.paramButtonPressed</key>
                 <description>DECK 2 PARAMETER 2 MINUS</description>
                 <status>0x95</status>
                 <midino>0x2A</midino>
@@ -2105,7 +2105,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.rightDeck.padSection.paramButtonPressed</key>
                 <description>DECK 2 PARAMETER 2 PLUS</description>
                 <status>0x95</status>
                 <midino>0x2B</midino>
@@ -2247,7 +2247,7 @@
             <!-- Deck 4, Pad-state buttons (Hot-cue mode, loop mode, sampler mode) -->
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - HOT CUE</description>
                 <status>0x97</status>
                 <midino>0x00</midino><!-- [HOT CUE] -->
@@ -2257,7 +2257,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - FLIP</description>
                 <status>0x97</status>
                 <midino>0x02</midino><!-- [HOT CUE] (press twice) -->
@@ -2267,7 +2267,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - CUE LOOP</description>
                 <status>0x97</status>
                 <midino>0x03</midino><!-- [SHIFT] + [HOT CUE] -->
@@ -2277,7 +2277,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - ROLL</description>
                 <status>0x97</status>
                 <midino>0x08</midino><!-- [ROLL] -->
@@ -2287,7 +2287,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - LOOP</description>
                 <status>0x97</status>
                 <midino>0x0D</midino><!-- [ROLL] (press twice) -->
@@ -2297,7 +2297,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - SLICER</description>
                 <status>0x97</status>
                 <midino>0x09</midino><!-- [SHIFT] + [ROLL] -->
@@ -2307,7 +2307,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - SLICER LOOP</description>
                 <status>0x97</status>
                 <midino>0x0A</midino><!-- [SHIFT] + [ROLL] (press twice) -->
@@ -2317,7 +2317,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - TR</description>
                 <status>0x97</status>
                 <midino>0x04</midino><!-- [TR] -->
@@ -2327,7 +2327,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - TR VELOCITY</description>
                 <status>0x97</status>
                 <midino>0x06</midino><!-- [TR] (press twice) -->
@@ -2337,7 +2337,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - PATTERN</description>
                 <status>0x97</status>
                 <midino>0x05</midino><!-- [SHIFT] + [TR] -->
@@ -2347,7 +2347,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - SAMPLER</description>
                 <status>0x97</status>
                 <midino>0x0B</midino><!-- [SAMPLER] -->
@@ -2357,7 +2357,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - PITCH PLAY</description>
                 <status>0x97</status>
                 <midino>0x0F</midino><!-- [SAMPLER] (press twice) -->
@@ -2367,7 +2367,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.setPadMode</key>
+                <key>DJ505.rightDeck.padSection.padModeButtonPressed</key>
                 <description>DECK 4 PADS - VELOCITY</description>
                 <status>0x97</status>
                 <midino>0x0C</midino><!-- [SHIFT] + [SAMPLER] -->
@@ -2785,7 +2785,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.rightDeck.padSection.paramButtonPressed</key>
                 <description>DECK 4 PARAMETER 1 MINUS</description>
                 <status>0x97</status>
                 <midino>0x28</midino>
@@ -2795,7 +2795,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.rightDeck.padSection.paramButtonPressed</key>
                 <description>DECK 4 PARAMETER 1 PLUS</description>
                 <status>0x97</status>
                 <midino>0x29</midino>
@@ -2805,7 +2805,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.rightDeck.padSection.paramButtonPressed</key>
                 <description>DECK 4 PARAMETER 2 MINUS</description>
                 <status>0x97</status>
                 <midino>0x2A</midino>
@@ -2815,7 +2815,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>DJ505.rightDeck.padSection.paramPlusMinus.input</key>
+                <key>DJ505.rightDeck.padSection.paramButtonPressed</key>
                 <description>DECK 4 PARAMETER 2 PLUS</description>
                 <status>0x97</status>
                 <midino>0x2B</midino>
