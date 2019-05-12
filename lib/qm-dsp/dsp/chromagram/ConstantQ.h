@@ -21,7 +21,7 @@
 #include "maths/MathUtilities.h"
 
 struct CQConfig{
-    unsigned int FS;   // samplerate
+    double FS;   // samplerate
     double min;        // minimum frequency
     double max;        // maximum frequency
     unsigned int BPO;  // bins per octave
@@ -58,7 +58,7 @@ private:
     void deInitialise();
 	
     double* m_CQdata;
-    unsigned int m_FS;
+    double m_FS;
     double m_FMin;
     double m_FMax;
     double m_dQ;

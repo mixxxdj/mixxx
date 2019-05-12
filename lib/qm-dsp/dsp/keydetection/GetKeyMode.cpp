@@ -60,8 +60,7 @@ GetKeyMode::GetKeyMode( int sampleRate, float tuningFrequency,
         
     // Chromagram configuration parameters
     m_ChromaConfig.normalise = MathUtilities::NormaliseUnitMax;
-    m_ChromaConfig.FS = lrint(sampleRate/(double)m_DecimationFactor);
-    if (m_ChromaConfig.FS < 1) m_ChromaConfig.FS = 1;
+    m_ChromaConfig.FS = sampleRate/(double)m_DecimationFactor;
 
     // Set C3 (= MIDI #48) as our base:
     // This implies that key = 1 => Cmaj, key = 12 => Bmaj, key = 13 => Cmin, etc.

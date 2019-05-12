@@ -44,7 +44,7 @@ int Chromagram::initialise( ChromaConfig Config )
 
     // Populate CQ config structure with parameters
     // inherited from the Chroma config
-    ConstantQConfig.FS	 = Config.FS;
+    ConstantQConfig.FS = Config.FS;
     ConstantQConfig.min = m_FMin;
     ConstantQConfig.max = m_FMax;
     ConstantQConfig.BPO = m_BPO;

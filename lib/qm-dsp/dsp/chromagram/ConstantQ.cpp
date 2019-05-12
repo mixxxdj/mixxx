@@ -125,8 +125,9 @@ void ConstantQ::sparsekernel()
             hammingWindowIm[u] = 0;
         }
         
-	// Computing a hamming window
-	const unsigned hammingLength = (int) ceil( m_dQ * m_FS / ( m_FMin * pow(2,((double)(k))/(double)m_BPO)));
+        // Computing a hamming window
+        const unsigned hammingLength = (int) ceil(
+                m_dQ * m_FS / (m_FMin * pow(2, (double)k / (double)m_BPO)));
 
         unsigned origin = m_FFTLength/2 - hammingLength/2;
 
