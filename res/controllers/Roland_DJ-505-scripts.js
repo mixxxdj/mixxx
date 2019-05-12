@@ -161,9 +161,9 @@ DJ505.crossfader.setReverse = function (channel, control, value, status, group) 
 
 DJ505.setChannelInput = function (channel, control, value, status, group) {
     // TODO: Add support for PHONO setting
-    channel_number = (channel == 0x00) ? 1 : 2;
-    auxgroup = '[Auxiliary' + channel_number + ']';
-    channelgroup = '[Channel' + channel_number + ']';
+    var channel_number = (channel == 0x00) ? 1 : 2;
+    var auxgroup = '[Auxiliary' + channel_number + ']';
+    var channelgroup = '[Channel' + channel_number + ']';
     switch(value) {
         case 0x00:  // PC
             engine.setValue(auxgroup, 'mute' , 1);
