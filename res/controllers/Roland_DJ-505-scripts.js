@@ -312,7 +312,33 @@ DJ505.Deck = function (deckNumbers, offset) {
     // ========================== PERFORMANCE PADS ==============================
 
     this.padSection = new DJ505.PadSection(this, offset);
-    this.keylock = new DJ505.KeylockButton(this.padSection.paramPlusMinus);
+    this.keylock = new components.Button({
+        midi: [0x90 + offset, 0x0D],
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 1,
+        group: this.currentDeck,
+        outKey: "keylock",
+        currentRangeIndex: (DJ505.tempoRange.indexOf(engine.getValue(this.group, "rateRange"))) ? DJ505.tempoRange.indexOf(engine.getValue(this.group, "rateRange")) : 0,
+        unshift: function () {
+            this.inKey = "keylock";
+            this.input = components.Button.prototype.input;
+            this.type = components.Button.prototype.types.toggle;
+        },
+        shift: function () {
+            this.inKey = "rateRange";
+            this.type = undefined;
+            this.input = function (channel, control, value, status, group) {
+                if (this.isPress(channel, control, value, status)) {
+                    this.currentRangeIndex++;
+                    if (this.currentRangeIndex >= DJ505.tempoRange.length) {
+                        this.currentRangeIndex = 0;
+                    }
+                    this.inSetValue(DJ505.tempoRange[this.currentRangeIndex]);
+                }
+            };
+        },
+    });
 
     // ============================= TRANSPORT ==================================
 
@@ -1268,89 +1294,6 @@ DJ505.SlipModeButton.prototype.input = function (channel, control, value, status
         },
         true
     );
-};
-
-
-DJ505.KeylockButton = function (paramButtons) {
-    components.Button.call(this, {
-        sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: 2,
-        outKey: 'keylock',
-        currentRangeIndex: 0,
-        doubleTapTimeout: 500,
-        paramPlusMinus: paramButtons
-    });
-};
-
-DJ505.KeylockButton.prototype = Object.create(components.Button.prototype);
-
-DJ505.KeylockButton.prototype.unshift = function () {
-    if (this.deck) {
-        this.midi = [0x90 + this.deck - 1, 0x0D];
-        this.trigger();
-    }
-    this.input = function (channel, control, value, status, group) {
-        if (value) {                                            // Button press.
-
-            this.longPressTimer = engine.beginTimer(
-                this.longPressTimeout,
-                function () {
-                    this.paramPlusMinus.songKeyMode(true);
-                    this.is_held = true;
-                },
-                true
-            );
-
-            return;
-        }                                               // Else: Button release.
-
-        // The DJ-505 disables the keylock LED when the button is pressed
-        // shifted. Restore the LED when shift is released.
-        this.trigger();
-
-        if (this.longPressTimer) {
-            engine.stopTimer(this.longPressTimer);
-            this.longPressTimer = null;
-        }
-
-        if (this.is_held) {                               // Release after hold.
-            this.paramPlusMinus.songKeyMode(false);
-            this.is_held = false;
-            return;
-        }                                      // Else: release after short tap.
-
-        script.toggleControl(this.group, this.outKey);
-    };
-    this.inKey = 'keylock';
-};
-
-DJ505.KeylockButton.prototype.connect = function () {
-    this.deck = script.deckFromGroup(this.group);
-    components.Button.prototype.connect.call(this);
-    // components.Component automatically unshifts upon component instanciation.
-    // However, we need to trigger side-effects upon unshifting (button LED
-    // issue). Hence, we need to unshift again after we are connected.
-    this.unshift();
-};
-
-DJ505.KeylockButton.prototype.shift = function () {
-    this.midi = [0x90 + this.deck - 1, 0x0E];
-    this.send(0);
-    this.inKey = 'rateRange';
-    this.type = undefined;
-    this.input = function (channel, control, value, status, group) {
-        if (this.isPress(channel, control, value, status)) {
-            this.send(0x7f);
-            this.currentRangeIndex++;
-            if (this.currentRangeIndex >= DJ505.tempoRange.length) {
-                this.currentRangeIndex = 0;
-            }
-            this.inSetValue(DJ505.tempoRange[this.currentRangeIndex]);
-            return;
-        }
-        this.send(0);
-    };
 };
 
 
