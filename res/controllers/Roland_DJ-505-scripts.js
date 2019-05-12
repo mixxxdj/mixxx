@@ -297,7 +297,7 @@ DJ505.Deck = function (deckNumbers, offset) {
     });
     this.reloopExit = new components.Button({
         midi: [0x94 + offset, 0x33],
-        key: "reloop_andstop",
+        key: "reloop_exit",
     });
     this.loopHalve = new components.Button({
         midi: [0x94 + offset, 0x34],
