@@ -728,8 +728,8 @@ DJ505.SyncButton.prototype = Object.create(components.SyncButton.prototype);
 
 DJ505.SyncButton.prototype.connect = function () {
     this.connections = [
-        engine.makeConnection(this.group, 'sync_enabled', this.output),
-        engine.makeConnection(this.group, 'quantize', this.output)
+        engine.makeConnection(this.group, "sync_enabled", this.output),
+        engine.makeConnection(this.group, "quantize", this.output)
     ];
     this.deck = script.deckFromGroup(this.group);
     this.midi_enable = [0x90 + this.deck - 1, 0x02];
@@ -750,25 +750,25 @@ DJ505.SyncButton.prototype.output = function (value, group, control) {
 };
 
 DJ505.SyncButton.prototype.unshift = function () {
-    this.inKey = 'sync_enabled';
-    this.outKey = 'sync_enabled';
+    this.inKey = "sync_enabled";
+    this.outKey = "sync_enabled";
     this.trigger();
     this.input = function (channel, control, value, status, group) {
         if (this.isPress(channel, control, value, status)) {
             if (this.isDoubleTap) {                               // Double tap.
-                var fileBPM = engine.getValue(this.group, 'file_bpm');
-                engine.setValue(this.group, 'bpm', fileBPM);
+                var fileBPM = engine.getValue(this.group, "file_bpm");
+                engine.setValue(this.group, "bpm", fileBPM);
                 return;
             }                                               // Else: Single tap.
 
-            var syncEnabled = engine.getValue(this.group, 'sync_enabled');
+            var syncEnabled = engine.getValue(this.group, "sync_enabled");
 
             if (!syncEnabled) {                // Single tap when sync disabled.
-                engine.setValue(this.group, 'beatsync', 1);
+                engine.setValue(this.group, "beatsync", 1);
                 this.longPressTimer = engine.beginTimer(
                     this.longPressTimeout,
                     function () {
-                        engine.setValue(this.group, 'sync_enabled', 1);
+                        engine.setValue(this.group, "sync_enabled", 1);
                         this.longPressTimer = null;
                     },
                     true
@@ -783,7 +783,7 @@ DJ505.SyncButton.prototype.unshift = function () {
                 return;
             }                                          // Else: Sync is enabled.
 
-            engine.setValue(this.group, 'sync_enabled', 0);
+            engine.setValue(this.group, "sync_enabled", 0);
             return;
         }                                            // Else: On button release.
 
@@ -799,8 +799,8 @@ DJ505.SyncButton.prototype.unshift = function () {
 
 
 DJ505.SyncButton.prototype.shift = function () {
-    this.outKey = 'quantize';
-    this.inKey = 'quantize';
+    this.outKey = "quantize";
+    this.inKey = "quantize";
     this.trigger();
     this.input = function (channel, control, value, status, group) {
         if (value) {
