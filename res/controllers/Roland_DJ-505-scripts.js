@@ -184,15 +184,14 @@ DJ505.setChannelInput = function (channel, control, value, status, group) {
 
 DJ505.Deck = function (deckNumbers, offset) {
     components.Deck.call(this, deckNumbers);
-    channel = offset+1;
 
     this.loadTrack = new components.Button({
         midi: [0x9F, 0x02 + offset],
         unshift: function () {
-            this.inKey = 'LoadSelectedTrack';
+            this.inKey = "LoadSelectedTrack";
         },
         shift: function () {
-            this.inKey = 'eject';
+            this.inKey = "eject";
         },
     });
 
@@ -203,17 +202,17 @@ DJ505.Deck = function (deckNumbers, offset) {
         group: this.currentDeck,
         midi: [0xB0 + offset, 0x09],
         connect: function () {
-            engine.softTakeover(this.group, 'pitch', true);
-            engine.softTakeover(this.group, 'rate', true);
+            engine.softTakeover(this.group, "pitch", true);
+            engine.softTakeover(this.group, "rate", true);
             components.Pot.prototype.connect.apply(this, arguments);
         },
         unshift: function () {
-            this.inKey = 'rate';
+            this.inKey = "rate";
             this.inSetParameter = components.Pot.prototype.inSetParameter;
-            engine.softTakeoverIgnoreNextValue(this.group, 'pitch');
+            engine.softTakeoverIgnoreNextValue(this.group, "pitch");
         },
         shift: function () {
-            this.inKey = 'pitch';
+            this.inKey = "pitch";
             this.inSetParameter = function (value) {
                 // Scale to interval ]-7…7[; invert direction as per controller
                 // labeling.
@@ -221,14 +220,14 @@ DJ505.Deck = function (deckNumbers, offset) {
                 value *= -1;
                 components.Pot.prototype.inSetValue.call(this, value);
             };
-            engine.softTakeoverIgnoreNextValue(this.group, 'rate');
+            engine.softTakeoverIgnoreNextValue(this.group, "rate");
         }
     });
 
 
     // ============================= JOG WHEELS =================================
     this.wheelTouch = function (channel, control, value, status, group) {
-      if (value === 0x7F && !this.isShifted) {
+        if (value === 0x7F && !this.isShifted) {
             var alpha = 1.0/8;
             var beta = alpha/32;
             engine.scratchEnable(script.deckFromGroup(this.currentDeck), 512, 45, alpha, beta);
@@ -244,18 +243,18 @@ DJ505.Deck = function (deckNumbers, offset) {
             engine.scratchTick(deck, newValue); // Scratch!
         } else if (this.isShifted) {
             // Strip search.
-            var oldPos = engine.getValue(this.currentDeck, 'playposition');
+            var oldPos = engine.getValue(this.currentDeck, "playposition");
             // Scale to interval [0,1].
             newValue = newValue / 0xff;
             // Since ‘playposition’ is normalized to unity, we need to scale by
             // song duration in order for the jog wheel to cover the same amount
             // of time given a constant turning angle.
-            var duration = engine.getValue(this.currentDeck, 'duration');
+            var duration = engine.getValue(this.currentDeck, "duration");
             newValue = newValue / duration;
             var newPos = Math.max(0, oldPos + newValue * DJ505.stripSearchScaling);
-            engine.setValue(this.currentDeck, 'playposition', newPos);
+            engine.setValue(this.currentDeck, "playposition", newPos);
         } else {
-            engine.setValue(this.currentDeck, 'jog', newValue); // Pitch bend
+            engine.setValue(this.currentDeck, "jog", newValue); // Pitch bend
         }
     };
 
@@ -264,41 +263,41 @@ DJ505.Deck = function (deckNumbers, offset) {
 
     this.loopActive = new components.Button({
         midi: [0x94 + offset, 0x32],
-        inKey: 'reloop_toggle',
-        outKey: 'loop_enabled',
+        inKey: "reloop_toggle",
+        outKey: "loop_enabled",
     });
     this.reloopExit = new components.Button({
         midi: [0x94 + offset, 0x33],
-        key: 'reloop_andstop',
+        key: "reloop_andstop",
     });
     this.loopHalve = new components.Button({
         midi: [0x94 + offset, 0x34],
-        key: 'loop_halve',
+        key: "loop_halve",
     });
     this.loopDouble = new components.Button({
         midi: [0x94 + offset, 0x35],
-        key: 'loop_double',
+        key: "loop_double",
     });
     this.loopShiftBackward = new components.Button({
         midi: [0x94 + offset, 0x36],
-        key: 'beatjump_backward',
+        key: "beatjump_backward",
     });
     this.loopShiftForward = new components.Button({
         midi: [0x94 + offset, 0x37],
-        key: 'beatjump_forward',
+        key: "beatjump_forward",
     });
     this.loopIn = new components.Button({
         midi: [0x94 + offset, 0x38],
-        key: 'loop_in',
+        key: "loop_in",
     });
     this.loopOut = new components.Button({
         midi: [0x94 + offset, 0x39],
-        key: 'loop_out',
+        key: "loop_out",
     });
     this.autoLoop = new components.Button({
         midi: [0x94 + offset, 0x40],
-        inKey: 'beatloop_activate',
-        outKey: 'loop_enabled',
+        inKey: "beatloop_activate",
+        outKey: "loop_enabled",
         input: function (channel, control, value, status, group) {
             components.Button.prototype.input.call(this, channel, control, value, status, group);
             if (value) {
@@ -353,7 +352,7 @@ DJ505.Deck = function (deckNumbers, offset) {
             if (value) {
                 return;
             }
-            var state = engine.getValue(group, 'cue_indicator');
+            var state = engine.getValue(group, "cue_indicator");
             if (state) {
                 this.trigger();
             }
@@ -365,9 +364,9 @@ DJ505.Deck = function (deckNumbers, offset) {
         sendShifted: true,
         shiftChannel: true,
         shiftOffset: 2,
-        outKey: 'play_indicator',
+        outKey: "play_indicator",
         unshift: function () {
-            this.inKey = 'play';
+            this.inKey = "play";
             this.input = function (channel, control, value, status, group) {
 
                 if (value) {                                    // Button press.
@@ -380,7 +379,7 @@ DJ505.Deck = function (deckNumbers, offset) {
                     return;
                 }                                       // Else: Button release.
 
-                var isPlaying = engine.getValue(group, 'play');
+                var isPlaying = engine.getValue(group, "play");
 
                 // Normalize ‘isPlaying’ – we consider the braking state
                 // equivalent to being stopped, so that pressing play again can
@@ -404,7 +403,7 @@ DJ505.Deck = function (deckNumbers, offset) {
                 }                            // Else: Release after short press.
 
                 this.isBraking = false;
-                script.toggleControl(group, 'play', !isPlaying);
+                script.toggleControl(group, "play", !isPlaying);
 
                 if (this.longPressTimer) {
                     engine.stopTimer(this.longPressTimer);
@@ -413,7 +412,7 @@ DJ505.Deck = function (deckNumbers, offset) {
             };
         },
         shift: function () {
-            this.inKey = 'reverse';
+            this.inKey = "reverse";
             this.input = function (channel, control, value, status, group) {
                 components.Button.prototype.input.apply(this, arguments);
                 if(!value) {
@@ -428,24 +427,24 @@ DJ505.Deck = function (deckNumbers, offset) {
 
     // =============================== MIXER ====================================
     this.pregain = new components.Pot({
-            group: this.currentDeck,
-            midi: [0xB0 + offset, 0x16],
-            inKey: 'pregain',
+        group: this.currentDeck,
+        midi: [0xB0 + offset, 0x16],
+        inKey: "pregain",
     });
 
     this.eqKnob = [];
     for (var k = 1; k <= 3; k++) {
         this.eqKnob[k] = new components.Pot({
             midi: [0xB0 + offset, 0x20 - k],
-            group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
-            inKey: 'parameter' + k,
+            group: "[EqualizerRack1_" + this.currentDeck + "_Effect1]",
+            inKey: "parameter" + k,
         });
     }
 
     this.filter = new components.Pot({
         midi: [0xB0 + offset, 0x1A],
-        group: '[QuickEffectRack1_' + this.currentDeck + ']',
-        inKey: 'super1',
+        group: "[QuickEffectRack1_" + this.currentDeck + "]",
+        inKey: "super1",
     });
 
     this.pfl = new components.Button({
@@ -454,32 +453,32 @@ DJ505.Deck = function (deckNumbers, offset) {
         shiftOffset: 2,
         midi: [0x90 + offset, 0x1B],
         type: components.Button.prototype.types.toggle,
-        inKey: 'pfl',
-        outKey: 'pfl',
+        inKey: "pfl",
+        outKey: "pfl",
     });
 
     this.tapBPM = new components.Button({
         input: function (channel, control, value, status, group) {
-        if (value == 127) {
-                script.triggerControl(group, 'beats_translate_curpos');
+            if (value == 127) {
+                script.triggerControl(group, "beats_translate_curpos");
                 bpm.tapButton(script.deckFromGroup(group));
                 this.longPressTimer = engine.beginTimer(
                     this.longPressTimeout,
                     function () {
-                        script.triggerControl(group, 'beats_translate_match_alignment');
+                        script.triggerControl(group, "beats_translate_match_alignment");
                     },
                     true
                 );
             } else {
                 engine.stopTimer(this.longPressTimer);
-        }
+            }
         }
     });
 
     this.volume = new components.Pot({
         group: this.currentDeck,
         midi: [0xB0 + offset, 0x1C],
-        inKey: 'volume',
+        inKey: "volume",
     });
 
     this.setDeck = new components.Button({
@@ -489,7 +488,7 @@ DJ505.Deck = function (deckNumbers, offset) {
             var currentDeck = script.deckFromGroup(this.deck.currentDeck);
             var otherDeck = currentDeck == deckNumbers[0] ? deckNumbers[1] : deckNumbers[0];
 
-            otherDeck = '[Channel' + otherDeck + ']';
+            otherDeck = "[Channel" + otherDeck + "]";
 
             if (value) {                                        // Button press.
                 this.longPressTimer = engine.beginTimer(
@@ -651,32 +650,32 @@ DJ505.Sampler = function() {
             // Volume has to be re-set because it could have been modified by
             // the Performance Pads in Velocity Sampler mode
             engine.setValue(group, "volume", engine.getValue("[Auxiliary3]", "volume"));
-            engine.setValue(group, 'cue_gotoandplay', 1);
+            engine.setValue(group, "cue_gotoandplay", 1);
         }
     };
 
     this.levelKnob = new components.Pot({
-        group: '[Auxiliary3]',
-        inKey: 'volume',
+        group: "[Auxiliary3]",
+        inKey: "volume",
         input: function (channel, control, value, status, group) {
             components.Pot.prototype.input.apply(this, arguments);
             var volume = this.inGetParameter();
             for (var i = 1; i <= 8; i++) {
-                engine.setValue('[Sampler' + i + ']', this.inKey, volume);
+                engine.setValue("[Sampler" + i + "]", this.inKey, volume);
             }
         },
     });
 
     this.cueButton = new components.Button({
-        group: '[Auxiliary3]',
-        key: 'pfl',
+        group: "[Auxiliary3]",
+        key: "pfl",
         type: components.Button.prototype.types.toggle,
         midi: [0x9F, 0x1D],
         input: function (channel, control, value, status, group) {
             components.Button.prototype.input.apply(this, arguments);
             var pfl = this.inGetValue();
             for (var i = 1; i <= 8; i++) {
-                engine.setValue('[Sampler' + i + ']', this.inKey, pfl);
+                engine.setValue("[Sampler" + i + "]", this.inKey, pfl);
             }
         },
     });
