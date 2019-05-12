@@ -66,6 +66,15 @@ DJ505.init = function () {
         }
         DJ505.effectUnit[i].enableOnChannelButtons.addButton("Auxiliary3");
         DJ505.effectUnit[i].enableOnChannelButtons.Auxiliary3.midi = [0x98 + i, 0x09];
+        DJ505.effectUnit[i].enableOnChannelButtons.Auxiliary3.input = function (channel, control, value, status, group) {
+            components.Button.prototype.input.apply(this, arguments);
+            if (this.isPress(channel, control, value, status)) {
+                var enabled = this.inGetValue();
+                for(var j = 1; j <= 8; j++) {
+                    engine.setValue(this.group, "group_[Sampler" + j + "]_enable", enabled);
+                }
+            }
+        };
         DJ505.effectUnit[i].init();
     }
 
