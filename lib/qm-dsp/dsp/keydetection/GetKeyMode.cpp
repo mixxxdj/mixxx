@@ -63,10 +63,11 @@ GetKeyMode::GetKeyMode( int sampleRate, float tuningFrequency,
     m_ChromaConfig.FS = lrint(sampleRate/(double)m_DecimationFactor);
     if (m_ChromaConfig.FS < 1) m_ChromaConfig.FS = 1;
 
-    // Set C (= MIDI #12) as our base :
+    // Set C3 (= MIDI #48) as our base:
     // This implies that key = 1 => Cmaj, key = 12 => Bmaj, key = 13 => Cmin, etc.
     m_ChromaConfig.min = Pitch::getFrequencyForPitch
         (48, 0, tuningFrequency);
+    // C7 (= MIDI #96) is the exclusive maximum key:
     m_ChromaConfig.max = Pitch::getFrequencyForPitch
         (96, 0, tuningFrequency);
 
