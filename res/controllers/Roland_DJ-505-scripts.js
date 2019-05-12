@@ -27,7 +27,7 @@ DJ505.autoShowFourDecks = false;
 DJ505.init = function () {
 
     DJ505.shiftButton = function (channel, control, value, status, group) {
-        DJ505.deck.concat(DJ505.effectUnit, DJ505.sampler).forEach(
+        DJ505.deck.concat(DJ505.effectUnit, [DJ505.sampler]).forEach(
             value ? function (module) { module.shift(); } : function (module) { module.unshift(); }
         );
     };
