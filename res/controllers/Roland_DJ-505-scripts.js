@@ -70,7 +70,7 @@ DJ505.init = function () {
             components.Button.prototype.input.apply(this, arguments);
             if (this.isPress(channel, control, value, status)) {
                 var enabled = this.inGetValue();
-                for(var j = 1; j <= 8; j++) {
+                for(var j = 1; j <= 16; j++) {
                     engine.setValue(this.group, "group_[Sampler" + j + "]_enable", enabled);
                 }
             }
@@ -669,7 +669,7 @@ DJ505.Sampler = function() {
         input: function (channel, control, value, status, group) {
             components.Pot.prototype.input.apply(this, arguments);
             var volume = this.inGetParameter();
-            for (var i = 1; i <= 8; i++) {
+            for (var i = 1; i <= 16; i++) {
                 engine.setValue("[Sampler" + i + "]", this.inKey, volume);
             }
         },
@@ -683,7 +683,7 @@ DJ505.Sampler = function() {
         input: function (channel, control, value, status, group) {
             components.Button.prototype.input.apply(this, arguments);
             var pfl = this.inGetValue();
-            for (var i = 1; i <= 8; i++) {
+            for (var i = 1; i <= 16; i++) {
                 engine.setValue("[Sampler" + i + "]", this.inKey, pfl);
             }
         },
