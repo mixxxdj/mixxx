@@ -54,26 +54,26 @@ DJ505.init = function () {
         DJ505.effectUnit[i].dryWetKnob.midi = [0xB8 + i, 0x03];
         DJ505.effectUnit[i].dryWetKnob.input = function (channel, control, value, status, group) {
             if (value === 1) {
-               // 0.05 is an example. Adjust that value to whatever works well for your controller.
-               this.inSetParameter(this.inGetParameter() + 0.05);
+                // 0.05 is an example. Adjust that value to whatever works well for your controller.
+                this.inSetParameter(this.inGetParameter() + 0.05);
             } else if (value === 127) {
-               this.inSetParameter(this.inGetParameter() - 0.05);
+                this.inSetParameter(this.inGetParameter() - 0.05);
             }
         };
         for(var j = 1; j <= 4; j++) {
-            DJ505.effectUnit[i].enableOnChannelButtons.addButton('Channel' + j);
-            DJ505.effectUnit[i].enableOnChannelButtons['Channel' + j].midi = [0x98 + i, 0x04 + j];
+            DJ505.effectUnit[i].enableOnChannelButtons.addButton("Channel" + j);
+            DJ505.effectUnit[i].enableOnChannelButtons["Channel" + j].midi = [0x98 + i, 0x04 + j];
         }
-        DJ505.effectUnit[i].enableOnChannelButtons.addButton('Auxiliary3');
+        DJ505.effectUnit[i].enableOnChannelButtons.addButton("Auxiliary3");
         DJ505.effectUnit[i].enableOnChannelButtons.Auxiliary3.midi = [0x98 + i, 0x09];
         DJ505.effectUnit[i].init();
     }
 
-    engine.makeConnection('[Channel3]', 'track_loaded', DJ505.autoShowDecks);
-    engine.makeConnection('[Channel4]', 'track_loaded', DJ505.autoShowDecks);
+    engine.makeConnection("[Channel3]", "track_loaded", DJ505.autoShowDecks);
+    engine.makeConnection("[Channel4]", "track_loaded", DJ505.autoShowDecks);
 
-    if (engine.getValue('[Master]', 'num_samplers') < 16) {
-        engine.setValue('[Master]', 'num_samplers', 16);
+    if (engine.getValue("[Master]", "num_samplers") < 16) {
+        engine.setValue("[Master]", "num_samplers", 16);
     }
 
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7], 6); //request initial state
@@ -86,8 +86,8 @@ DJ505.init = function () {
         midi.sendShortMsg(0xBF, 0x64, 0x00);
     });
 
-    DJ505.leftDeck.setCurrentDeck('[Channel1]');
-    DJ505.rightDeck.setCurrentDeck('[Channel2]');
+    DJ505.leftDeck.setCurrentDeck("[Channel1]");
+    DJ505.rightDeck.setCurrentDeck("[Channel2]");
 
 };
 
