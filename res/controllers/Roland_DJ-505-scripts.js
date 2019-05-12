@@ -939,7 +939,7 @@ DJ505.PadSection = function (deck, offset) {
         "sampler": new DJ505.SamplerMode(deck, offset),
         "velocitysampler": new DJ505.VelocitySamplerMode(deck, offset),
         "pitchplay": new DJ505.PitchPlayMode(deck, offset),
-    }
+    };
     this.offset = offset;
 
     // Start in Hotcue Mode and disable other LEDs
