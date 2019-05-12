@@ -815,8 +815,8 @@ DJ505.SyncButton.prototype.shift = function () {
 
 DJ505.SlipModeButton = function () {
     components.Button.apply(this, arguments);
-    this.inKey = 'slip_enabled';
-    this.outKey = 'slip_enabled';
+    this.inKey = "slip_enabled";
+    this.outKey = "slip_enabled";
     this.doubleTapTimeout = 500;
 };
 
