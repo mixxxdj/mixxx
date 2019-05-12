@@ -41,7 +41,7 @@ DJ505.init = function () {
     DJ505.effectUnit = [];
     for(var i = 0; i <= 1; i++) {
         DJ505.effectUnit[i] = new components.EffectUnit([i + 1, i + 3]);
-        DJ505.effectUnit[i].sendShifted = false;
+        DJ505.effectUnit[i].sendShifted = true;
         DJ505.effectUnit[i].shiftOffset = 0x0B;
         DJ505.effectUnit[i].shiftControl = true;
         DJ505.effectUnit[i].enableButtons[1].midi = [0x98 + i, 0x00];
