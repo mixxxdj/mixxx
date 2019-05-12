@@ -92,11 +92,11 @@ DJ505.init = function () {
 };
 
 DJ505.autoShowDecks = function (value, group, control) {
-    var any_loaded = engine.getValue('[Channel3]', 'track_loaded') || engine.getValue('[Channel4]', 'track_loaded');
+    var any_loaded = engine.getValue("[Channel3]", "track_loaded") || engine.getValue("[Channel4]", "track_loaded");
     if (!DJ505.autoShowFourDecks) {
         return;
     }
-    engine.setValue('[Master]', 'show_4decks', any_loaded);
+    engine.setValue("[Master]", "show_4decks", any_loaded);
 };
 
 DJ505.shutdown = function () {
