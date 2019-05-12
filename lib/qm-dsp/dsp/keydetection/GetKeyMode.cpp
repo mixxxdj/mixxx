@@ -185,7 +185,7 @@ int GetKeyMode::process(double *PCMData)
     MathUtilities::circShift( m_ChrPointer, m_BPO, 2);
 /*
     std::cout << "raw chroma: ";
-    for (int ii = 0; ii < m_BPO; ++ii) {
+    for (unsigned int ii = 0; ii < m_BPO; ++ii) {
       if (ii % (m_BPO/12) == 0) std::cout << "\n";
         std::cout << m_ChrPointer[ii] << " ";
     }
