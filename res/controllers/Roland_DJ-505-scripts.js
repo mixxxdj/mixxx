@@ -1088,6 +1088,9 @@ DJ505.Sampler = function() {
 
     this.customSamplePlayback = function (channel, control, value, status, group) {
         if (value) {
+            // Volume has to be re-set because it could have been modified by
+            // the Performance Pads in Velocity Sampler mode
+            engine.setValue(group, "volume", engine.getValue("[Auxiliary3]", "volume"));
             engine.setValue(group, 'cue_gotoandplay', 1);
         }
     };
