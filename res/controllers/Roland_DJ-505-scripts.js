@@ -1433,6 +1433,7 @@ DJ505.PadSection = function (deck, offset) {
         "loop": new DJ505.LoopMode(deck, offset),
         "sampler": new DJ505.SamplerMode(deck, offset),
         "velocitysampler": new DJ505.VelocitySamplerMode(deck, offset),
+        "pitchplay": new DJ505.PitchPlayMode(deck, offset),
     }
     this.offset = offset;
 
@@ -1493,9 +1494,9 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     case 0x0D:
         mode = this.modes["loop"];
         break;
-    //case 0x0F:
-    //    mode = this.modes["pitchplay"];
-    //    break;
+    case 0x0F:
+        mode = this.modes["pitchplay"];
+        break;
     }
 
     return mode;
@@ -1786,3 +1787,123 @@ DJ505.VelocitySamplerMode = function (deck, offset) {
     }
 };
 DJ505.VelocitySamplerMode.prototype = Object.create(components.ComponentContainer.prototype);
+
+DJ505.PitchPlayMode = function (deck, offset) {
+    const RANGE_UP = 0;
+    const RANGE_MID = 1;
+    const RANGE_DOWN = 2;
+
+    components.ComponentContainer.call(this);
+    this.ledControl = 0x0B;
+    this.color = 0x0E;
+    this.pads = [];
+    this.cuepoint = 1;
+    this.range = RANGE_MID;
+    for (var i = 0; i <= 7; i++) {
+        this.pads[i] = new components.Button({
+            midi: [0x94 + offset, 0x14 + i],
+            sendShifted: true,
+            shiftControl: true,
+            shiftOffset: 8,
+            group: deck.currentDeck,
+            mode: this,
+            number: i + 1,
+            outConnect: false,
+            on: this.number + 0x10,
+            off: 0x00,
+            unshift: function() {
+                this.outKey = "key";
+                this.output = function (value, group, control) {
+                    var color = this.mode.color + 0x10;
+                    if ((this.mode.range == RANGE_UP && this.number == 5) ||
+                        (this.mode.range == RANGE_MID && this.number == 1) ||
+                        (this.mode.range == RANGE_DOWN && this.number == 4)) {
+                        color = 0x0F;
+                    }
+                    this.send(color);
+                };
+                this.input = function (channel, control, value, status, group) {
+                    if (value > 0) {
+                        var fileKey = engine.getValue(group, "file_key");
+                        var keyModifier;
+                        switch(this.mode.range) {
+                        case RANGE_UP:
+                            keyModifier = this.number + ((this.number <= 4) ? 4 : -5);
+                            break;
+                        case RANGE_MID:
+                            keyModifier = this.number - ((this.number <= 4) ? 1 : 9);
+                            break;
+                        case RANGE_DOWN:
+                            keyModifier = this.number - ((this.number <= 4) ? 4 : 12);
+                        }
+                        engine.setValue(this.group, "key", fileKey + keyModifier);
+                        engine.setValue(this.group, "hotcue_" + this.mode.cuepoint + "_activate", value);
+                    }
+                };
+                this.disconnect();
+                this.connect();
+                this.trigger();
+            },
+            shift: function() {
+                this.outKey = "hotcue_" + this.number + "_enabled";
+                this.output = function (value, group, control) {
+                    if (value) {
+                        this.send((value && this.mode.cuepoint === this.number) ? this.number : (this.number + 0x10));
+                    } else {
+                        this.send(0x00);
+                    }
+                };
+                this.input = function (channel, control, value, status, group) {
+                    if (value > 0 && this.mode.cuepoint != this.number && engine.getValue(this.group, "hotcue_" + this.number + "_enabled")) {
+                        var previous_cuepoint = this.mode.cuepoint;
+                        this.mode.cuepoint = this.number;
+                        this.mode.pads[previous_cuepoint - 1].trigger();
+                        this.send(this.number);
+                    }
+                };
+                this.disconnect();
+                this.connect();
+                this.trigger();
+            },
+        });
+    }
+    this.paramMinusButton = new components.Button({
+        midi: [0x94 + offset, 0x28],
+        mode: this,
+        input: function (channel, control, value, status, group) {
+            if (value) {
+                if (this.mode.range == RANGE_UP) {
+                    this.mode.range = RANGE_MID;
+                } else if (this.mode.range == RANGE_MID) {
+                    this.mode.range = RANGE_DOWN;
+                } else {
+                    this.mode.range = RANGE_UP;
+                }
+                this.mode.forEachComponent(function (component) {
+                    component.trigger();
+                });
+            }
+            this.send(value);
+        },
+    });
+    this.paramPlusButton = new components.Button({
+        midi: [0x94 + offset, 0x29],
+        mode: this,
+        input: function (channel, control, value, status, group) {
+            if (value) {
+                if (this.mode.range == RANGE_UP) {
+                    this.mode.range = RANGE_DOWN;
+                } else if (this.mode.range == RANGE_MID) {
+                    this.mode.range = RANGE_UP;
+                } else {
+                    this.mode.range = RANGE_MID;
+                }
+                this.mode.forEachComponent(function (component) {
+                    component.trigger();
+                });
+            }
+            this.send(value);
+        },
+    });
+};
+DJ505.PitchPlayMode.prototype = Object.create(components.ComponentContainer.prototype);
