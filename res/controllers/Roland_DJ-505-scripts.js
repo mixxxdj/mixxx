@@ -123,8 +123,8 @@ DJ505.browseEncoder = new components.Encoder({
 
 DJ505.crossfader = new components.Pot({
     midi: [0xBF, 0x08],
-    group: '[Master]',
-    inKey: 'crossfader',
+    group: "[Master]",
+    inKey: "crossfader",
     input: function () {
         // We need a weird max. for the crossfader to make it cut cleanly.
         // However, components.js resets max. to 0x3fff when the first value is
@@ -156,7 +156,7 @@ DJ505.crossfader.setCurve = function (channel, control, value, status, group) {
 
 DJ505.crossfader.setReverse = function (channel, control, value, status, group) {
     // 0x00 is ON, 0x01 is OFF
-    engine.setValue('[Mixer Profile]', 'xFaderReverse', (value == 0x00) ? 1 : 0);
+    engine.setValue("[Mixer Profile]", "xFaderReverse", (value == 0x00) ? 1 : 0);
 };
 
 DJ505.setChannelInput = function (channel, control, value, status, group) {
