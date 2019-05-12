@@ -162,23 +162,23 @@ DJ505.crossfader.setReverse = function (channel, control, value, status, group) 
 DJ505.setChannelInput = function (channel, control, value, status, group) {
     // TODO: Add support for PHONO setting
     var channel_number = (channel == 0x00) ? 1 : 2;
-    var auxgroup = '[Auxiliary' + channel_number + ']';
-    var channelgroup = '[Channel' + channel_number + ']';
+    var auxgroup = "[Auxiliary" + channel_number + "]";
+    var channelgroup = "[Channel" + channel_number + "]";
     switch(value) {
-        case 0x00:  // PC
-            engine.setValue(auxgroup, 'mute' , 1);
-            engine.setValue(channelgroup, 'mute', 0);
-            break;
-        case 0x01:  // LINE
-            engine.setValue(auxgroup, 'master' , 0);
-            engine.setValue(auxgroup, 'orientation' , channel_number ? 0 : 2);
-            engine.setValue(channelgroup, 'mute', 1);
-            engine.setValue(auxgroup, 'mute' , 0);
-            break;
-        case 0x02:  // PHONO
-            engine.setValue(channelgroup, 'mute', 0);
-            engine.setValue(auxgroup, 'mute' , 0);
-            break;
+    case 0x00:  // PC
+        engine.setValue(auxgroup, "mute" , 1);
+        engine.setValue(channelgroup, "mute", 0);
+        break;
+    case 0x01:  // LINE
+        engine.setValue(auxgroup, "master" , 0);
+        engine.setValue(auxgroup, "orientation" , channel_number ? 0 : 2);
+        engine.setValue(channelgroup, "mute", 1);
+        engine.setValue(auxgroup, "mute" , 0);
+        break;
+    case 0x02:  // PHONO
+        engine.setValue(channelgroup, "mute", 0);
+        engine.setValue(auxgroup, "mute" , 0);
+        break;
     }
 };
 
