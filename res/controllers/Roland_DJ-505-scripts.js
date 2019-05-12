@@ -452,7 +452,39 @@ DJ505.Deck = function (deckNumbers, offset) {
         }
     });
 
-    this.sync = new DJ505.SyncButton({group: this.currentDeck});
+    this.sync = new components.Button({
+        midi: [0x90 + offset, 0x02],
+        group: this.currentDeck,
+        outKey: "sync_enabled",
+        output: function (value, group, control) {
+            midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, 0x7F);
+        },
+        unshift: function () {
+            this.input = function (channel, control, value, status, group) {
+                if (this.isPress(channel, control, value, status)) {
+                    script.triggerControl(this.group, "beatsync", 1);
+                    if (engine.getValue(this.group, "sync_enabled") === 0) {
+                        this.longPressTimer = engine.beginTimer(this.longPressTimeout, function () {
+                            engine.setValue(this.group, "sync_enabled", 1);
+                            this.longPressTimer = 0;
+                        }, true);
+                    }
+                } else {
+                    if (this.longPressTimer !== 0) {
+                        engine.stopTimer(this.longPressTimer);
+                        this.longPressTimer = 0;
+                    }
+                }
+            };
+        },
+        shift: function () {
+            this.input = function (channel, control, value, status, group) {
+                if (value) {
+                    engine.setValue(this.group, "sync_enabled", 0);
+                }
+            }
+        },
+    });
 
     // =============================== MIXER ====================================
     this.pregain = new components.Pot({
@@ -716,131 +748,6 @@ DJ505.Sampler.prototype = Object.create(components.ComponentContainer.prototype)
 ////////////////////////
 // Custom components. //
 ////////////////////////
-DJ505.FlashingButton = function () {
-    components.Button.call(this);
-    this.flashFreq = 50;
-};
-
-DJ505.FlashingButton.prototype = Object.create(components.Button.prototype);
-
-DJ505.FlashingButton.prototype.flash = function (cycles) {
-    if (cycles == 0) {
-        // Reset to correct value after flashing phase ends.
-        this.trigger();
-        return;
-    }
-
-    if (cycles === undefined) {
-        cycles = 10;
-    }
-
-    var value = cycles % 2 == 0 ? 0x7f : 0;
-    this.send(value);
-
-    engine.beginTimer(
-        this.flashFreq,
-        function () {
-            var value = value ? 0 : 0x7f;
-            this.send(value);
-            this.flash(cycles - 1);
-        },
-        true
-    );
-};
-
-DJ505.SyncButton = function (options) {
-    components.SyncButton.call(this, options);
-    this.doubleTapTimeout = 500;
-};
-
-DJ505.SyncButton.prototype = Object.create(components.SyncButton.prototype);
-
-DJ505.SyncButton.prototype.connect = function () {
-    this.connections = [
-        engine.makeConnection(this.group, "sync_enabled", this.output),
-        engine.makeConnection(this.group, "quantize", this.output)
-    ];
-    this.deck = script.deckFromGroup(this.group);
-    this.midi_enable = [0x90 + this.deck - 1, 0x02];
-    this.midi_disable = [0x90 + this.deck - 1, 0x03];
-};
-
-DJ505.SyncButton.prototype.send = function (value) {
-    var midi_ = value ? this.midi_enable : this.midi_disable;
-    midi.sendShortMsg(midi_[0], midi_[1], 0x7f);
-};
-
-DJ505.SyncButton.prototype.output = function (value, group, control) {
-    // Multiplex between several keys without forcing a reconnect.
-    if (control != this.outKey) {
-        return;
-    }
-    this.send(value);
-};
-
-DJ505.SyncButton.prototype.unshift = function () {
-    this.inKey = "sync_enabled";
-    this.outKey = "sync_enabled";
-    this.trigger();
-    this.input = function (channel, control, value, status, group) {
-        if (this.isPress(channel, control, value, status)) {
-            if (this.isDoubleTap) {                               // Double tap.
-                var fileBPM = engine.getValue(this.group, "file_bpm");
-                engine.setValue(this.group, "bpm", fileBPM);
-                return;
-            }                                               // Else: Single tap.
-
-            var syncEnabled = engine.getValue(this.group, "sync_enabled");
-
-            if (!syncEnabled) {                // Single tap when sync disabled.
-                engine.setValue(this.group, "beatsync", 1);
-                this.longPressTimer = engine.beginTimer(
-                    this.longPressTimeout,
-                    function () {
-                        engine.setValue(this.group, "sync_enabled", 1);
-                        this.longPressTimer = null;
-                    },
-                    true
-                );
-                // For the next call.
-                this.isDoubleTap = true;
-                this.doubleTapTimer = engine.beginTimer(
-                    this.doubleTapTimeout,
-                    function () { this.isDoubleTap = false; },
-                    true
-                );
-                return;
-            }                                          // Else: Sync is enabled.
-
-            engine.setValue(this.group, "sync_enabled", 0);
-            return;
-        }                                            // Else: On button release.
-
-        if (this.longPressTimer) {
-            engine.stopTimer(this.longPressTimer);
-            this.longPressTimer = null;
-        }
-
-        // Work-around button LED disabling itself on release.
-        this.trigger();
-    };
-};
-
-
-DJ505.SyncButton.prototype.shift = function () {
-    this.outKey = "quantize";
-    this.inKey = "quantize";
-    this.trigger();
-    this.input = function (channel, control, value, status, group) {
-        if (value) {
-            this.inToggle();
-        } else {
-            // Work-around LED self-disable issue.
-            this.trigger();
-        }
-    };
-};
-
 
 DJ505.SlipModeButton = function () {
     components.Button.apply(this, arguments);
