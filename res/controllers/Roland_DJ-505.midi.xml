@@ -3403,7 +3403,7 @@
             </control>
             <control>
                 <group>[Library]</group>
-                <key>DJ505.browseEncoder.input</key>
+                <key>DJ505.backButton.input</key>
                 <description>BACK</description>
                 <status>0x9F</status>
                 <midino>0x07</midino>
@@ -3413,7 +3413,7 @@
             </control>
             <control>
                 <group>[Library]</group>
-                <key>DJ505.browseEncoder.input</key>
+                <key>DJ505.backButton.input</key>
                 <description>SONG</description>
                 <status>0x9F</status>
                 <midino>0x12</midino>
@@ -3423,7 +3423,7 @@
             </control>
             <control>
                 <group>[Library]</group>
-                <key>DJ505.browseEncoder.input</key>
+                <key>DJ505.addPrepareButton.input</key>
                 <description>ADD PREPARE</description>
                 <status>0x9F</status>
                 <midino>0x1B</midino>
@@ -3433,7 +3433,7 @@
             </control>
             <control>
                 <group>[Library]</group>
-                <key>DJ505.browseEncoder.input</key>
+                <key>DJ505.addPrepareButton.input</key>
                 <description>ARTIST</description>
                 <status>0x9F</status>
                 <midino>0x14</midino>

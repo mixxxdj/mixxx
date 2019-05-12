@@ -130,6 +130,26 @@ DJ505.browseEncoder = new components.Encoder({
     }
 });
 
+DJ505.backButton = new components.Button({
+    // TODO: Map the BACK/SONG button
+    midi: [0x9F, 0x07],
+    shiftOffset: 11,
+    sendShifted: true,
+    shiftControl: true,
+    type: undefined,
+});
+
+DJ505.addPrepareButton = new components.Button({
+    // TODO: Map the ARTIST button
+    midi: [0x9F, 0x1B],
+    shiftOffset: -7,
+    sendShifted: true,
+    shiftControl: true,
+    group: "[Master]",
+    key: "maximize_library",
+    type: components.Button.prototype.types.toggle,
+});
+
 DJ505.crossfader = new components.Pot({
     midi: [0xBF, 0x08],
     group: "[Master]",
