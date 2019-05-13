@@ -144,6 +144,10 @@ void ConstantQ::sparsekernel()
 	    hammingWindowIm[ origin + i ] = absol*imag;
 	}
 
+	/* This code splits the hanning widow and moves it to the beginning
+	   and the end, creating an epty gap in the middle. 
+	   Is disables, because it results in wrong results,
+	   when tested with sin waves centered on a bin frequency.
         for (unsigned i = 0; i < m_FFTLength/2; ++i) {
             double temp = hammingWindowRe[i];
             hammingWindowRe[i] = hammingWindowRe[i + m_FFTLength/2];
@@ -152,6 +156,7 @@ void ConstantQ::sparsekernel()
             hammingWindowIm[i] = hammingWindowIm[i + m_FFTLength/2];
             hammingWindowIm[i + m_FFTLength/2] = temp;
         }
+	*/
     
 	//do fft of hammingWindow
 	m_FFT.process( 0, hammingWindowRe, hammingWindowIm, transfHammingWindowRe, transfHammingWindowIm );
