@@ -125,15 +125,18 @@ void ConstantQ::sparsekernel()
             hammingWindowIm[u] = 0;
         }
         
+        const double samplesPerCycle =
+                m_FS / (m_FMin * pow(2, (double)k / (double)m_BPO));
+
         // Computing a hamming window
         const unsigned hammingLength = (int) ceil(
-                m_dQ * m_FS / (m_FMin * pow(2, (double)k / (double)m_BPO)));
+                m_dQ * samplesPerCycle);
 
         unsigned origin = m_FFTLength/2 - hammingLength/2;
 
 	for (unsigned i=0; i<hammingLength; i++) 
 	{
-	    const double angle = 2*PI*m_dQ*i/hammingLength;
+	    const double angle = 2*PI*i/samplesPerCycle;
 	    const double real = cos(angle);
 	    const double imag = sin(angle);
 	    const double absol = hamming(hammingLength, i)/hammingLength;
