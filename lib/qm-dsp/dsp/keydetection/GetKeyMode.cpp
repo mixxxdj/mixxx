@@ -268,8 +268,10 @@ int GetKeyMode::process(double *PCMData)
     // m_Keys[1] is C center  1 / 3 + 1 = 1
     // m_Keys[4] is D center  4 / 3 + 1 = 2
     // '+ 1' because we number keys 1-24, not 0-23.
-    key = MathUtilities::getMax( m_Keys, 2* m_BPO, &dummy ) / 3 + 1;
+    int maxBin = MathUtilities::getMax( m_Keys, 2* m_BPO, &dummy );
+    key = maxBin / 3 + 1;
 
+//    std::cout << "fractional key pre-sorting: " << (maxBin + 2) / 3.0 << std::endl;
 //    std::cout << "key pre-sorting: " << key << std::endl;
 
 
