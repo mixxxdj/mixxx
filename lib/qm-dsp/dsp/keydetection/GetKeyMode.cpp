@@ -177,12 +177,11 @@ int GetKeyMode::process(double *PCMData)
 
     m_ChrPointer = m_Chroma->process( m_DecimatedBuffer );		
 
-	
-    // Move bins such that the centre of the base note is in the
-    // middle of its three bins :
-    // Added 21.11.07 by Chris Sutton based on debugging with Katy
-    // Noland + comparison with Matlab equivalent.
-    MathUtilities::circShift( m_ChrPointer, m_BPO, 1);
+    // The Cromagram has the center of C at bin 0, while the major
+    // and minor profiles have the center of C at 1. We want to have
+    // the correlation for C result also at 1.
+    // To achieve this we have to shift two times:
+    MathUtilities::circShift( m_ChrPointer, m_BPO, 2);
 /*
     std::cout << "raw chroma: ";
     for (int ii = 0; ii < m_BPO; ++ii) {
@@ -266,8 +265,10 @@ int GetKeyMode::process(double *PCMData)
   std::cout << std::endl;
 */
     double dummy;
-    // '1 +' because we number keys 1-24, not 0-23.
-    key = 1 + (int)ceil( (double)MathUtilities::getMax( m_Keys, 2* m_BPO, &dummy )/3 );
+    // m_Keys[1] is C center  1 / 3 + 1 = 1
+    // m_Keys[4] is D center  4 / 3 + 1 = 2
+    // '+ 1' because we number keys 1-24, not 0-23.
+    key = MathUtilities::getMax( m_Keys, 2* m_BPO, &dummy ) / 3 + 1;
 
 //    std::cout << "key pre-sorting: " << key << std::endl;
 
