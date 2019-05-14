@@ -56,6 +56,8 @@ DJ505.stripSearchScaling = 50;
 DJ505.tempoRange = [0.08, 0.16, 0.5];
 DJ505.autoFocusEffects = false;
 DJ505.autoShowFourDecks = false;
+DJ505.lineGroups = ["Auxiliary1", "Auxiliary2"];  // LINE/PHONO input
+DJ505.trsGroup = "Auxiliary3";  // TR-S input
 
 
 ///////////
@@ -150,19 +152,19 @@ DJ505.init = function () {
             components.Button.prototype.input.apply(this, arguments);
             if (this.isPress(channel, control, value, status)) {
                 var enabled = this.inGetValue();
-                engine.setValue(this.group, "group_[Auxiliary1]_enable", enabled);
+                engine.setValue(this.group, "group_[" + DJ505.lineGroups[0] + "]_enable", enabled);
             }
         };
         DJ505.effectUnit[i].enableOnChannelButtons.Channel2.input = function (channel, control, value, status, group) {
             components.Button.prototype.input.apply(this, arguments);
             if (this.isPress(channel, control, value, status)) {
                 var enabled = this.inGetValue();
-                engine.setValue(this.group, "group_[Auxiliary2]_enable", enabled);
+                engine.setValue(this.group, "group_[" + DJ505.lineGroups[1] + "]_enable", enabled);
             }
         };
-        DJ505.effectUnit[i].enableOnChannelButtons.addButton("Auxiliary3");
-        DJ505.effectUnit[i].enableOnChannelButtons.Auxiliary3.midi = [0x98 + i, 0x09];
-        DJ505.effectUnit[i].enableOnChannelButtons.Auxiliary3.input = function (channel, control, value, status, group) {
+        DJ505.effectUnit[i].enableOnChannelButtons.addButton(DJ505.trsGroup);
+        DJ505.effectUnit[i].enableOnChannelButtons[DJ505.trsGroup].midi = [0x98 + i, 0x09];
+        DJ505.effectUnit[i].enableOnChannelButtons[DJ505.trsGroup].input = function (channel, control, value, status, group) {
             components.Button.prototype.input.apply(this, arguments);
             if (this.isPress(channel, control, value, status)) {
                 var enabled = this.inGetValue();
@@ -170,6 +172,9 @@ DJ505.init = function () {
                     engine.setValue(this.group, "group_[Sampler" + j + "]_enable", enabled);
                 }
             }
+        };
+        DJ505.effectUnit[i].enableOnTrsButton = function (channel, control, value, status, group) {
+            this.enableOnChannelButtons[DJ505.trsGroup].input(channel, control, value, status, group);
         };
         DJ505.effectUnit[i].init();
     }
@@ -289,9 +294,9 @@ DJ505.crossfader.setReverse = function (channel, control, value, status, group) 
 
 DJ505.setChannelInput = function (channel, control, value, status, group) {
     // TODO: Add support for PHONO setting
-    var channel_number = (channel == 0x00) ? 1 : 2;
-    var auxgroup = "[Auxiliary" + channel_number + "]";
-    var channelgroup = "[Channel" + channel_number + "]";
+    var number = (channel == 0x00) ? 0 : 1;
+    var auxgroup = "[" + this.lineGroups[number] + "]";
+    var channelgroup = "[Channel" + (number + 1) + "]";
     switch(value) {
     case 0x00:  // PC
         engine.setValue(auxgroup, "mute" , 1);
@@ -299,7 +304,7 @@ DJ505.setChannelInput = function (channel, control, value, status, group) {
         break;
     case 0x01:  // LINE
         engine.setValue(auxgroup, "master" , 0);
-        engine.setValue(auxgroup, "orientation" , channel_number ? 0 : 2);
+        engine.setValue(auxgroup, "orientation" , number ? 0 : 2);
         engine.setValue(channelgroup, "mute", 1);
         engine.setValue(auxgroup, "mute" , 0);
         break;
@@ -732,13 +737,13 @@ DJ505.Sampler = function() {
         if (value) {
             // Volume has to be re-set because it could have been modified by
             // the Performance Pads in Velocity Sampler mode
-            engine.setValue(group, "volume", engine.getValue("[Auxiliary3]", "volume"));
+            engine.setValue(group, "volume", engine.getValue(DJ505.trsGroup, "volume"));
             engine.setValue(group, "cue_gotoandplay", 1);
         }
     };
 
     this.levelKnob = new components.Pot({
-        group: "[Auxiliary3]",
+        group: DJ505.trsGroup,
         inKey: "volume",
         input: function (channel, control, value, status, group) {
             components.Pot.prototype.input.apply(this, arguments);
@@ -750,7 +755,7 @@ DJ505.Sampler = function() {
     });
 
     this.cueButton = new components.Button({
-        group: "[Auxiliary3]",
+        group: DJ505.trsGroup,
         key: "pfl",
         type: components.Button.prototype.types.toggle,
         midi: [0x9F, 0x1D],
