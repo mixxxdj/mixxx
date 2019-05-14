@@ -30,72 +30,71 @@ class EncoderFfmpegResample;
 
 namespace {
 
-  // Because 3.1 changed API how to access thigs in AVStream
-  // we'll separate this logic in own wrapper class
-  class AVStreamWrapper {
-    public:
-        virtual AVMediaType getMediaTypeOfStream(AVStream* pStream) = 0;
-        virtual AVCodec* findDecoderForStream(AVStream* pStream) = 0;
-        virtual SINT getChannelCountOfStream(AVStream* pStream) = 0;
-        virtual SINT getSampleRateOfStream(AVStream* pStream) = 0;
-        virtual AVSampleFormat getSampleFormatOfStream(AVStream* pStream) = 0;
-  };
+// Because 3.1 changed API how to access thigs in AVStream
+// we'll separate this logic in own wrapper class
+class AVStreamWrapper {
+  public:
+    virtual AVMediaType getMediaTypeOfStream(AVStream* pStream) = 0;
+    virtual AVCodec* findDecoderForStream(AVStream* pStream) = 0;
+    virtual SINT getChannelCountOfStream(AVStream* pStream) = 0;
+    virtual SINT getSampleRateOfStream(AVStream* pStream) = 0;
+    virtual AVSampleFormat getSampleFormatOfStream(AVStream* pStream) = 0;
+};
 
-  // Implement classes for version before 3.1 and after that
+// Implement classes for version before 3.1 and after that
 #if AVSTREAM_FROM_API_VERSION_3_1
-  // This is after version 3.1
-  class AVStreamWrapperImpl : public AVStreamWrapper {
-    public:
-        AVMediaType getMediaTypeOfStream(AVStream* pStream) {
-             return pStream->codecpar->codec_type;
-        }
+// This is after version 3.1
+class AVStreamWrapperImpl : public AVStreamWrapper {
+  public:
+    AVMediaType getMediaTypeOfStream(AVStream* pStream) {
+        return pStream->codecpar->codec_type;
+    }
 
-        AVCodec* findDecoderForStream(AVStream* pStream) {
-            return avcodec_find_decoder(pStream->codecpar->codec_id);
-        }
+    AVCodec* findDecoderForStream(AVStream* pStream) {
+        return avcodec_find_decoder(pStream->codecpar->codec_id);
+    }
 
-        SINT getChannelCountOfStream(AVStream* pStream) {
-            return pStream->codecpar->channels;
-        }
+    SINT getChannelCountOfStream(AVStream* pStream) {
+        return pStream->codecpar->channels;
+    }
 
-        SINT getSampleRateOfStream(AVStream* pStream) {
-            return pStream->codecpar->sample_rate;
-        }
+    SINT getSampleRateOfStream(AVStream* pStream) {
+        return pStream->codecpar->sample_rate;
+    }
 
-        AVSampleFormat getSampleFormatOfStream(AVStream* pStream) {
-            return (AVSampleFormat)pStream->codecpar->format;
-        }
-  };
+    AVSampleFormat getSampleFormatOfStream(AVStream* pStream) {
+        return (AVSampleFormat)pStream->codecpar->format;
+    }
+};
 #else
-  class AVStreamWrapperImpl : public AVStreamWrapper {
-    public:
-        AVMediaType getMediaTypeOfStream(AVStream* pStream) {
-             return pStream->codec->codec_type;
-        }
+class AVStreamWrapperImpl : public AVStreamWrapper {
+  public:
+    AVMediaType getMediaTypeOfStream(AVStream* pStream) {
+        return pStream->codec->codec_type;
+    }
 
-        AVCodec* findDecoderForStream(AVStream* pStream) {
-            return avcodec_find_decoder(pStream->codec->codec_id);
-        }
+    AVCodec* findDecoderForStream(AVStream* pStream) {
+        return avcodec_find_decoder(pStream->codec->codec_id);
+    }
 
-        SINT getChannelCountOfStream(AVStream* pStream) {
-            return pStream->codec->channels;
-        }
+    SINT getChannelCountOfStream(AVStream* pStream) {
+        return pStream->codec->channels;
+    }
 
-        SINT getSampleRateOfStream(AVStream* pStream) {
-            return pStream->codec->sample_rate;
-        }
+    SINT getSampleRateOfStream(AVStream* pStream) {
+        return pStream->codec->sample_rate;
+    }
 
-        AVSampleFormat getSampleFormatOfStream(AVStream* pStream) {
-            return pStream->codec->sample_fmt;
-        }
-  };
+    AVSampleFormat getSampleFormatOfStream(AVStream* pStream) {
+        return pStream->codec->sample_fmt;
+    }
+};
 #endif
 
-  //AVStreamWrapperImpl *m_pAVStreamWrapper = new AVStreamWrapperImpl();
-  AVStreamWrapperImpl m_pAVStreamWrapper;
+//AVStreamWrapperImpl *m_pAVStreamWrapper = new AVStreamWrapperImpl();
+AVStreamWrapperImpl m_pAVStreamWrapper;
 
-}
-
+} // namespace
 
 namespace mixxx {
 
@@ -108,10 +107,10 @@ struct ffmpegLocationObject {
 struct ffmpegCacheObject {
     SINT startFrame;
     SINT length;
-    quint8 *bytes;
+    quint8* bytes;
 };
 
-class SoundSourceFFmpeg: public SoundSource {
+class SoundSourceFFmpeg : public SoundSource {
   public:
     explicit SoundSourceFFmpeg(const QUrl& url);
     ~SoundSourceFFmpeg() override;
@@ -141,13 +140,13 @@ class SoundSourceFFmpeg: public SoundSource {
     // or implicitly by the destructor. The wrapper can only be
     // moved, copying is disabled.
     class ClosableInputAVFormatContextPtr final {
-    public:
+      public:
         explicit ClosableInputAVFormatContextPtr(AVFormatContext* pClosableInputFormatContext = nullptr)
-            : m_pClosableInputFormatContext(pClosableInputFormatContext) {
+                : m_pClosableInputFormatContext(pClosableInputFormatContext) {
         }
         explicit ClosableInputAVFormatContextPtr(const ClosableInputAVFormatContextPtr&) = delete;
         explicit ClosableInputAVFormatContextPtr(ClosableInputAVFormatContextPtr&& that)
-            : m_pClosableInputFormatContext(that.m_pClosableInputFormatContext) {
+                : m_pClosableInputFormatContext(that.m_pClosableInputFormatContext) {
             that.m_pClosableInputFormatContext = nullptr;
         }
         ~ClosableInputAVFormatContextPtr() {
@@ -165,28 +164,32 @@ class SoundSourceFFmpeg: public SoundSource {
         ClosableInputAVFormatContextPtr& operator=(const ClosableInputAVFormatContextPtr&) = delete;
         ClosableInputAVFormatContextPtr& operator=(ClosableInputAVFormatContextPtr&& that) = delete;
 
-        AVFormatContext* operator->() { return m_pClosableInputFormatContext; }
-        operator AVFormatContext*() { return m_pClosableInputFormatContext; }
+        AVFormatContext* operator->() {
+            return m_pClosableInputFormatContext;
+        }
+        operator AVFormatContext*() {
+            return m_pClosableInputFormatContext;
+        }
 
-    private:
+      private:
         AVFormatContext* m_pClosableInputFormatContext;
     };
     ClosableInputAVFormatContextPtr m_pInputFormatContext;
 
-    static OpenResult openAudioStream(AVCodecContext* pCodecContext, AVCodec *pDecoder);
+    static OpenResult openAudioStream(AVCodecContext* pCodecContext, AVCodec* pDecoder);
 
     // Takes ownership of an opened (audio) stream and ensures that
     // the corresponding AVStream is closed, either explicitly or
     // implicitly by the destructor. The wrapper can only be moved,
     // copying is disabled.
     class ClosableAVStreamPtr final {
-    public:
+      public:
         explicit ClosableAVStreamPtr(AVStream* pClosableStream = nullptr)
-            : m_pClosableStream(pClosableStream) {
+                : m_pClosableStream(pClosableStream) {
         }
         explicit ClosableAVStreamPtr(const ClosableAVStreamPtr&) = delete;
         explicit ClosableAVStreamPtr(ClosableAVStreamPtr&& that)
-            : m_pClosableStream(that.m_pClosableStream) {
+                : m_pClosableStream(that.m_pClosableStream) {
             that.m_pClosableStream = nullptr;
         }
         ~ClosableAVStreamPtr() {
@@ -203,14 +206,17 @@ class SoundSourceFFmpeg: public SoundSource {
         ClosableAVStreamPtr& operator=(const ClosableAVStreamPtr&) = delete;
         ClosableAVStreamPtr& operator=(ClosableAVStreamPtr&& that) = delete;
 
-        AVStream* operator->() { return m_pClosableStream; }
-        operator AVStream*() { return m_pClosableStream; }
+        AVStream* operator->() {
+            return m_pClosableStream;
+        }
+        operator AVStream*() {
+            return m_pClosableStream;
+        }
 
-    private:
+      private:
         AVStream* m_pClosableStream;
     };
     ClosableAVStreamPtr m_pAudioStream;
-
 
 #if AVSTREAM_FROM_API_VERSION_3_1
     // Takes ownership of an opened (audio) codec context and ensures that
@@ -221,13 +227,13 @@ class SoundSourceFFmpeg: public SoundSource {
     // This is prior new API changes made in FFMmpeg 3.1
     // before that we can use AVStream->codec to access AVCodecContext
     class ClosableAVCodecContextPtr final {
-    public:
+      public:
         explicit ClosableAVCodecContextPtr(AVCodecContext* pClosableContext = nullptr)
-            : m_pClosableContext(pClosableContext) {
+                : m_pClosableContext(pClosableContext) {
         }
         explicit ClosableAVCodecContextPtr(const ClosableAVCodecContextPtr&) = delete;
         explicit ClosableAVCodecContextPtr(ClosableAVCodecContextPtr&& that)
-            : m_pClosableContext(that.m_pClosableContext) {
+                : m_pClosableContext(that.m_pClosableContext) {
             that.m_pClosableContext = nullptr;
         }
         ~ClosableAVCodecContextPtr() {
@@ -244,10 +250,14 @@ class SoundSourceFFmpeg: public SoundSource {
         ClosableAVCodecContextPtr& operator=(const ClosableAVCodecContextPtr&) = delete;
         ClosableAVCodecContextPtr& operator=(ClosableAVCodecContextPtr&& that) = delete;
 
-        AVCodecContext* operator->() { return m_pClosableContext; }
-        operator AVCodecContext*() { return m_pClosableContext; }
+        AVCodecContext* operator->() {
+            return m_pClosableContext;
+        }
+        operator AVCodecContext*() {
+            return m_pClosableContext;
+        }
 
-    private:
+      private:
         AVCodecContext* m_pClosableContext;
     };
     ClosableAVCodecContextPtr m_pAudioContext;
@@ -263,15 +273,15 @@ class SoundSourceFFmpeg: public SoundSource {
     SINT m_lCacheStartFrame;
     SINT m_lCacheEndFrame;
     SINT m_lCacheLastPos;
-    QVector<struct ffmpegCacheObject  *> m_SCache;
-    QVector<struct ffmpegLocationObject  *> m_SJumpPoints;
+    QVector<struct ffmpegCacheObject*> m_SCache;
+    QVector<struct ffmpegLocationObject*> m_SJumpPoints;
     SINT m_lLastStoredPos;
     SINT m_lStoreCount;
     SINT m_lStoredSeekPoint;
-    struct ffmpegLocationObject *m_SStoredJumpPoint;
+    struct ffmpegLocationObject* m_SStoredJumpPoint;
 };
 
-class SoundSourceProviderFFmpeg: public SoundSourceProvider {
+class SoundSourceProviderFFmpeg : public SoundSourceProvider {
   public:
     SoundSourceProviderFFmpeg();
 
