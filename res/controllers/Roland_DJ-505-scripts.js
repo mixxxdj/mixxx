@@ -4,7 +4,6 @@
 /* global engine                                                      */
 /* global script                                                      */
 /* global midi                                                        */
-/* global bpm                                                         */
 /* global components                                                  */
 ////////////////////////////////////////////////////////////////////////
 
@@ -655,11 +654,9 @@ DJ505.Sampler = function() {
             midi.sendShortMsg(0xEA, bpm_value & 0x7f, (bpm_value >> 7) & 0x7f);
             this.syncDeck = deck;
         }
-        print(this.syncDeck);
     };
 
     this.bpmKnobTurned = function (channel, control, value, status, group) {
-        print(this.syncDeck);
         if (this.syncDeck >= 0) {
             var bpm = ((value << 7) | control) / 10;
             engine.setValue("[Channel" + (this.syncDeck + 1) + "]", "bpm", bpm);
@@ -756,7 +753,7 @@ DJ505.SlipModeButton.prototype.unshift = function () {
             },
             true
         );
-    }
+    };
     this.inKey = "slip_enabled";
     this.outKey = "slip_enabled";
     this.type = components.Button.prototype.types.push;
@@ -926,7 +923,7 @@ DJ505.PadSection.prototype.paramButtonPressed = function (channel, control, valu
 };
 
 DJ505.PadSection.prototype.setPadMode = function (control) {
-    if (this.padMode == control) {
+    if (this.padMode === control) {
         return;
     }
 
