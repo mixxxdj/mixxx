@@ -144,9 +144,9 @@ void ConstantQ::sparsekernel()
 	    hammingWindowIm[ origin + i ] = absol*imag;
 	}
 
-	/* This code splits the hanning widow and moves it to the beginning
-	   and the end, creating an epty gap in the middle. 
-	   Is disables, because it results in wrong results,
+	/* This code splits the hanning window and moves it to the beginning
+	   and the end, creating an empty gap in the middle.
+	   It is disabled, because it results in wrong results,
 	   when tested with sin waves centered on a bin frequency.
         for (unsigned i = 0; i < m_FFTLength/2; ++i) {
             double temp = hammingWindowRe[i];
@@ -303,7 +303,7 @@ void ConstantQ::initialise( CQConfig Config )
 
     // Work out Q value for Filter bank
     m_dQ = 1/(pow(2,(1/(double)m_BPO))-1);
-    // No. of constant Q bins, extended to a full cotave
+    // No. of constant Q bins, extended to a full octave
     m_uK = m_BPO * (unsigned int)ceil(log(m_FMax/m_FMin)/log(2.0));
 
 //    std::cerr << "ConstantQ::initialise: rate = " << m_FS << ", fmin = " << m_FMin << ", fmax = " << m_FMax << ", bpo = " << m_BPO << ", K = " << m_uK << ", Q = " << m_dQ << std::endl;
