@@ -408,10 +408,10 @@ DJ505.Deck = function (deckNumbers, offset) {
     // ============================= TRANSPORT ==================================
 
     this.cue = new components.CueButton({
-        midi: [0x90 + offset, 0x1],
+        midi: [0x90 + offset, 0x01],
         sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: 2,
+        shiftControl: true,
+        shiftOffset: 4,
         reverseRollOnShift: false,
         input: function (channel, control, value, status, group) {
             components.CueButton.prototype.input.call(this, channel, control, value, status, group);
@@ -426,10 +426,10 @@ DJ505.Deck = function (deckNumbers, offset) {
     });
 
     this.play = new components.PlayButton({
-        midi: [0x90 + offset, 0],
+        midi: [0x90 + offset, 0x00],
         sendShifted: true,
-        shiftChannel: true,
-        shiftOffset: 2,
+        shiftControl: true,
+        shiftOffset: 4,
     });
 
     this.sync = new components.Button({
