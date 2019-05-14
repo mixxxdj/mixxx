@@ -25,6 +25,7 @@ DJ505.autoShowFourDecks = false;
 ///////////
 
 DJ505.init = function () {
+    var i, j;
 
     DJ505.shiftButton = function (channel, control, value, status, group) {
         DJ505.deck.concat(DJ505.effectUnit, [DJ505.sampler]).forEach(
@@ -32,14 +33,57 @@ DJ505.init = function () {
         );
     };
 
-    DJ505.leftDeck = new DJ505.Deck([1,3], 0);
-    DJ505.rightDeck = new DJ505.Deck([2,4], 1);
-    DJ505.deck = [DJ505.leftDeck, DJ505.rightDeck];
+    DJ505.deck = [];
+    for (i = 0; i < 4; i++) {
+        DJ505.deck[i] = new DJ505.Deck(i + 1, i);
+        DJ505.deck[i].setCurrentDeck("[Channel" + (i + 1) + "]");
+    }
+
+
+    DJ505.leftLoadTrackButton = new components.Button({
+        group: "[Channel1]",
+        midi: [0x9F, 0x02],
+        unshift: function () {
+            this.inKey = "LoadSelectedTrack";
+        },
+        shift: function () {
+            this.inKey = "eject";
+        },
+        input: function (channel, control, value, status, group) {
+            this.send(this.isPress(channel, control, value, status) ? this.on : this.off);
+            components.Button.prototype.input.apply(this, arguments);
+        },
+    });
+    DJ505.deck3Button = new DJ505.DeckToggleButton({
+        midi: [0x90, 0x08],
+        decks: [1, 3],
+        loadTrackButton: DJ505.leftLoadTrackButton,
+    });
+
+    DJ505.rightLoadTrackButton = new components.Button({
+        group: "[Channel2]",
+        midi: [0x9F, 0x02],
+        unshift: function () {
+            this.inKey = "LoadSelectedTrack";
+        },
+        shift: function () {
+            this.inKey = "eject";
+        },
+        input: function (channel, control, value, status, group) {
+            this.send(this.isPress(channel, control, value, status) ? this.on : this.off);
+            components.Button.prototype.input.apply(this, arguments);
+        },
+    });
+    DJ505.deck4Button = new DJ505.DeckToggleButton({
+        midi: [0x91, 0x08],
+        decks: [2, 4],
+        loadTrackButton: DJ505.rightLoadTrackButton,
+    });
 
     DJ505.sampler = new DJ505.Sampler();
 
     DJ505.effectUnit = [];
-    for(var i = 0; i <= 1; i++) {
+    for(i = 0; i <= 1; i++) {
         DJ505.effectUnit[i] = new components.EffectUnit([i + 1, i + 3]);
         DJ505.effectUnit[i].sendShifted = true;
         DJ505.effectUnit[i].shiftOffset = 0x0B;
@@ -60,7 +104,7 @@ DJ505.init = function () {
                 this.inSetParameter(this.inGetParameter() - 0.05);
             }
         };
-        for(var j = 1; j <= 4; j++) {
+        for(j = 1; j <= 4; j++) {
             DJ505.effectUnit[i].enableOnChannelButtons.addButton("Channel" + j);
             DJ505.effectUnit[i].enableOnChannelButtons["Channel" + j].midi = [0x98 + i, 0x04 + j];
         }
@@ -87,17 +131,16 @@ DJ505.init = function () {
 
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7], 6); //request initial state
     midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6); //unlock pad layers
-    DJ505.leftDeck.padSection.resetLEDs();
-    DJ505.rightDeck.padSection.resetLEDs();
-
     engine.beginTimer(500, function() {
         // Keep sending this message to enable performance pad LEDs
         midi.sendShortMsg(0xBF, 0x64, 0x00);
     });
 
-    DJ505.leftDeck.setCurrentDeck("[Channel1]");
-    DJ505.rightDeck.setCurrentDeck("[Channel2]");
-
+    DJ505.deck3Button.trigger();
+    DJ505.deck4Button.trigger();
+    for (i = 0; i < 4; i++) {
+        DJ505.deck[i].reconnectComponents();
+    }
 };
 
 DJ505.autoShowDecks = function (value, group, control) {
@@ -110,6 +153,7 @@ DJ505.autoShowDecks = function (value, group, control) {
 
 DJ505.shutdown = function () {
 };
+
 
 DJ505.browseEncoder = new components.Encoder({
     input: function (channel, control, value, status, group) {
@@ -214,21 +258,10 @@ DJ505.setChannelInput = function (channel, control, value, status, group) {
 DJ505.Deck = function (deckNumbers, offset) {
     components.Deck.call(this, deckNumbers);
 
-    this.loadTrack = new components.Button({
-        midi: [0x9F, 0x02 + offset],
-        unshift: function () {
-            this.inKey = "LoadSelectedTrack";
-        },
-        shift: function () {
-            this.inKey = "eject";
-        },
-    });
-
     this.slipModeButton = new DJ505.SlipModeButton();
 
     engine.setValue(this.currentDeck, "rate_dir", -1);
     this.tempoFader = new components.Pot({
-        group: this.currentDeck,
         midi: [0xB0 + offset, 0x09],
         connect: function () {
             engine.softTakeover(this.group, "pitch", true);
@@ -345,7 +378,6 @@ DJ505.Deck = function (deckNumbers, offset) {
         sendShifted: true,
         shiftControl: true,
         shiftOffset: 1,
-        group: this.currentDeck,
         outKey: "keylock",
         currentRangeIndex: (DJ505.tempoRange.indexOf(engine.getValue(this.group, "rateRange"))) ? DJ505.tempoRange.indexOf(engine.getValue(this.group, "rateRange")) : 0,
         unshift: function () {
@@ -388,73 +420,15 @@ DJ505.Deck = function (deckNumbers, offset) {
         }
     });
 
-    this.play = new components.Button({
+    this.play = new components.PlayButton({
         midi: [0x90 + offset, 0],
         sendShifted: true,
         shiftChannel: true,
         shiftOffset: 2,
-        outKey: "play_indicator",
-        unshift: function () {
-            this.inKey = "play";
-            this.input = function (channel, control, value, status, group) {
-
-                if (value) {                                    // Button press.
-                    this.longPressStart = new Date();
-                    this.longPressTimer = engine.beginTimer(
-                        this.longPressTimeout,
-                        function () { this.longPressed = true; },
-                        true
-                    );
-                    return;
-                }                                       // Else: Button release.
-
-                var isPlaying = engine.getValue(group, "play");
-
-                // Normalize ‘isPlaying’ – we consider the braking state
-                // equivalent to being stopped, so that pressing play again can
-                // trigger a soft-startup even before the brake is complete.
-                if (this.isBraking !== undefined) {
-                    isPlaying = isPlaying && !this.isBraking;
-                }
-
-                if (this.longPressed) {             // Release after long press.
-                    var deck = script.deckFromGroup(group);
-                    var pressDuration = new Date() - this.longPressStart;
-                    if (isPlaying && !this.isBraking) {
-                        engine.brake(deck, true, 1000 / pressDuration);
-                        this.isBraking = true;
-                    } else {
-                        engine.softStart(deck, true, 1000 / pressDuration);
-                        this.isBraking = false;
-                    }
-                    this.longPressed = false;
-                    return;
-                }                            // Else: Release after short press.
-
-                this.isBraking = false;
-                script.toggleControl(group, "play", !isPlaying);
-
-                if (this.longPressTimer) {
-                    engine.stopTimer(this.longPressTimer);
-                    this.longPressTimer = null;
-                }
-            };
-        },
-        shift: function () {
-            this.inKey = "reverse";
-            this.input = function (channel, control, value, status, group) {
-                components.Button.prototype.input.apply(this, arguments);
-                if(!value) {
-                    this.trigger();
-                }
-
-            };
-        }
     });
 
     this.sync = new components.Button({
         midi: [0x90 + offset, 0x02],
-        group: this.currentDeck,
         outKey: "sync_enabled",
         output: function (value, group, control) {
             midi.sendShortMsg(this.midi[0], value ? 0x02 : 0x03, 0x7F);
@@ -482,13 +456,12 @@ DJ505.Deck = function (deckNumbers, offset) {
                 if (value) {
                     engine.setValue(this.group, "sync_enabled", 0);
                 }
-            }
+            };
         },
     });
 
     // =============================== MIXER ====================================
     this.pregain = new components.Pot({
-        group: this.currentDeck,
         midi: [0xB0 + offset, 0x16],
         inKey: "pregain",
     });
@@ -537,55 +510,51 @@ DJ505.Deck = function (deckNumbers, offset) {
     });
 
     this.volume = new components.Pot({
-        group: this.currentDeck,
         midi: [0xB0 + offset, 0x1C],
         inKey: "volume",
-    });
-
-    this.setDeck = new components.Button({
-        midi: [0x90 + offset, 0x08],
-        deck: this,
-        input: function (channel, control, value, status, group) {
-            var currentDeck = script.deckFromGroup(this.deck.currentDeck);
-            var otherDeck = currentDeck == deckNumbers[0] ? deckNumbers[1] : deckNumbers[0];
-
-            otherDeck = "[Channel" + otherDeck + "]";
-
-            if (value) {                                        // Button press.
-                this.longPressTimer = engine.beginTimer(
-                    this.longPressTimeout,
-                    function () { this.isLongPressed = true; },
-                    true
-                );
-                this.deck.setCurrentDeck(otherDeck);
-                return;
-            }                                           // Else: Button release.
-
-            if (this.longPressTimer) {
-                engine.stopTimer(this.longPressTimer);
-                this.longPressTimer = null;
-            }
-
-            // Since we are in the release phase, currentDeck still reflects the
-            // switched decks. So if we are now using deck 1/3, we were
-            // originally using deck 2/4 and vice versa.
-            var deckWasVanilla = currentDeck == deckNumbers[1];
-
-            if (this.isLongPressed) {                     // Release long press.
-                this.isLongPressed = false;
-                // Return to the original state.
-                this.send(deckWasVanilla ? 0 : 0x7f);
-                this.deck.setCurrentDeck(otherDeck);
-                return;
-            }                                      // Else: Release short press.
-
-            // Invert the deck state.
-            this.send(deckWasVanilla ? 0x7f : 0);
-        }
     });
 };
 
 DJ505.Deck.prototype = Object.create(components.Deck.prototype);
+
+
+DJ505.DeckToggleButton = function(options) {
+    this.secondaryDeck = false;
+    components.Button.call(this, options);
+};
+DJ505.DeckToggleButton.prototype = Object.create(components.Button.prototype);
+DJ505.DeckToggleButton.prototype.input = function (channel, control, value, status, group) {
+    if (this.isPress(channel, control, value, status)) {
+        // Button was pressed
+        this.longPressTimer = engine.beginTimer(
+            this.longPressTimeout,
+            function () { this.isLongPressed = true; },
+            true
+        );
+        this.secondaryDeck = !this.secondaryDeck;
+    } else if (this.isLongPressed) {
+        // Button was released after long press
+        this.isLongPressed = false;
+        this.secondaryDeck = !this.secondaryDeck;
+    } else {
+        // Button was released after short press
+        engine.stopTimer(this.longPressTimer);
+        this.longPressTimer = null;
+        return;
+    }
+
+    this.trigger();
+};
+DJ505.DeckToggleButton.prototype.trigger = function () {
+    this.send(this.secondaryDeck ? this.on : this.off);
+    var new_group = "[Channel" + (this.secondaryDeck ? this.decks[1] : this.decks[0]) + "]";
+    if (this.loadTrackButton.group != new_group) {
+        this.loadTrackButton.group = new_group;
+        this.loadTrackButton.disconnect();
+        this.loadTrackButton.connect();
+        this.loadTrackButton.trigger();
+    }
+};
 
 
 //////////////////////////////
