@@ -1104,6 +1104,7 @@ class MixxxCore(Feature):
                    "src/waveform/renderers/waveformrendererrgb.cpp",
                    "src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp",
                    "src/waveform/renderers/qtwaveformrenderersimplesignal.cpp",
+                   "src/waveform/renderers/qtvsynctestrenderer.cpp",
 
                    "src/waveform/renderers/waveformsignalcolors.cpp",
 
@@ -1123,8 +1124,11 @@ class MixxxCore(Feature):
                    "src/waveform/widgets/softwarewaveformwidget.cpp",
                    "src/waveform/widgets/hsvwaveformwidget.cpp",
                    "src/waveform/widgets/rgbwaveformwidget.cpp",
+                   "src/waveform/widgets/qthsvwaveformwidget.cpp",
+                   "src/waveform/widgets/qtrgbwaveformwidget.cpp",
                    "src/waveform/widgets/qtwaveformwidget.cpp",
                    "src/waveform/widgets/qtsimplewaveformwidget.cpp",
+                   "src/waveform/widgets/qtvsynctestwidget.cpp",
                    "src/waveform/widgets/glwaveformwidget.cpp",
                    "src/waveform/widgets/glsimplewaveformwidget.cpp",
                    "src/waveform/widgets/glvsynctestwidget.cpp",

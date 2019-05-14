@@ -17,6 +17,8 @@
 #include "waveform/widgets/softwarewaveformwidget.h"
 #include "waveform/widgets/hsvwaveformwidget.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
+#include "waveform/widgets/qthsvwaveformwidget.h"
+#include "waveform/widgets/qtrgbwaveformwidget.h"
 #include "waveform/widgets/glrgbwaveformwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
 #include "waveform/widgets/glsimplewaveformwidget.h"
@@ -24,6 +26,7 @@
 #include "waveform/widgets/qtsimplewaveformwidget.h"
 #include "waveform/widgets/glslwaveformwidget.h"
 #include "waveform/widgets/glvsynctestwidget.h"
+#include "waveform/widgets/qtvsynctestwidget.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/guitick.h"
@@ -793,6 +796,27 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = GLRGBWaveformWidget::useOpenGLShaders();
             developerOnly = GLRGBWaveformWidget::developerOnly();
             break;
+        case WaveformWidgetType::QtVSyncTest:
+            widgetName = QtVSyncTestWidget::getWaveformWidgetName();
+            useOpenGl = QtVSyncTestWidget::useOpenGl();
+            useOpenGles =  QtVSyncTestWidget::useOpenGles();
+            useOpenGLShaders = QtVSyncTestWidget::useOpenGLShaders();
+            developerOnly = QtVSyncTestWidget::developerOnly();
+            break;
+        case WaveformWidgetType::QtHSVWaveform:
+            widgetName = QtHSVWaveformWidget::getWaveformWidgetName();
+            useOpenGl = QtHSVWaveformWidget::useOpenGl();
+            useOpenGles = QtHSVWaveformWidget::useOpenGles();
+            useOpenGLShaders = QtHSVWaveformWidget::useOpenGLShaders();
+            developerOnly = QtHSVWaveformWidget::developerOnly();
+            break;
+        case WaveformWidgetType::QtRGBWaveform:
+            widgetName = QtRGBWaveformWidget::getWaveformWidgetName();
+            useOpenGl = QtRGBWaveformWidget::useOpenGl();
+            useOpenGles = QtRGBWaveformWidget::useOpenGles();
+            useOpenGLShaders = QtRGBWaveformWidget::useOpenGLShaders();
+            developerOnly = QtRGBWaveformWidget::developerOnly();
+            break;
         default:
             DEBUG_ASSERT(!"Unexpected WaveformWidgetType");
             continue;
@@ -886,6 +910,15 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             break;
         case WaveformWidgetType::GLVSyncTest:
             widget = new GLVSyncTestWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtVSyncTest:
+            widget = new QtVSyncTestWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtHSVWaveform:
+            widget = new QtHSVWaveformWidget(viewer->getGroup(), viewer);
+            break;
+        case WaveformWidgetType::QtRGBWaveform:
+            widget = new QtRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
         default:
         //case WaveformWidgetType::SoftwareSimpleWaveform: TODO: (vrince)
