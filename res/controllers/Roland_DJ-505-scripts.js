@@ -384,7 +384,7 @@ DJ505.Deck = function (deckNumbers, offset) {
         shiftControl: true,
         shiftOffset: 1,
         outKey: "keylock",
-        currentRangeIndex: (DJ505.tempoRange.indexOf(engine.getValue(this.group, "rateRange"))) ? DJ505.tempoRange.indexOf(engine.getValue(this.group, "rateRange")) : 0,
+        currentRangeIndex: (DJ505.tempoRange.indexOf(engine.getValue("[Channel" + deckNumbers + "]", "rateRange"))) ? DJ505.tempoRange.indexOf(engine.getValue("[Channel" + deckNumbers + "]", "rateRange")) : 0,
         unshift: function () {
             this.inKey = "keylock";
             this.input = components.Button.prototype.input;
