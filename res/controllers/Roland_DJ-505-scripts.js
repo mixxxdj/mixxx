@@ -360,6 +360,11 @@ DJ505.Deck = function (deckNumbers, offset) {
         midi: [0x94 + offset, 0x39],
         key: "loop_out",
     });
+    this.slotSelect = new components.Button({
+        midi: [0x94 + offset, 0x3B],
+        key: "quantize",
+        type: components.Button.prototype.types.toggle,
+    });
     this.autoLoop = new components.Button({
         midi: [0x94 + offset, 0x40],
         inKey: "beatloop_activate",

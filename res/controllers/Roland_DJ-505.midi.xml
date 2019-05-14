@@ -489,7 +489,6 @@
                     <script-binding/>
                 </options>
             </control>
-            <!--
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.deck[0].slotSelect.input</key>
@@ -500,7 +499,6 @@
                     <script-binding/>
                 </options>
             </control>
-            -->
             <control>
                 <group>[Channel1]</group>
                 <key>DJ505.deck[0].autoLoop.input</key>
@@ -1199,7 +1197,6 @@
                     <script-binding/>
                 </options>
             </control>
-            <!--
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.deck[2].slotSelect.input</key>
@@ -1210,7 +1207,6 @@
                     <script-binding/>
                 </options>
             </control>
-            -->
             <control>
                 <group>[Channel3]</group>
                 <key>DJ505.deck[2].autoLoop.input</key>
@@ -1909,7 +1905,6 @@
                     <script-binding/>
                 </options>
             </control>
-            <!--
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.deck[1].slotSelect.input</key>
@@ -1920,7 +1915,6 @@
                     <script-binding/>
                 </options>
             </control>
-            -->
             <control>
                 <group>[Channel2]</group>
                 <key>DJ505.deck[1].autoLoop.input</key>
@@ -2619,7 +2613,6 @@
                     <script-binding/>
                 </options>
             </control>
-            <!--
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.deck[3].slotSelect.input</key>
@@ -2630,7 +2623,6 @@
                     <script-binding/>
                 </options>
             </control>
-            -->
             <control>
                 <group>[Channel4]</group>
                 <key>DJ505.deck[3].autoLoop.input</key>
