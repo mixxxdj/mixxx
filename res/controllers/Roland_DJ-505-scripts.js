@@ -369,13 +369,6 @@ DJ505.Deck = function (deckNumbers, offset) {
         midi: [0x94 + offset, 0x40],
         inKey: "beatloop_activate",
         outKey: "loop_enabled",
-        input: function (channel, control, value, status, group) {
-            components.Button.prototype.input.call(this, channel, control, value, status, group);
-            if (value) {
-                return;
-            }
-            this.trigger();
-        },
     });
 
 
