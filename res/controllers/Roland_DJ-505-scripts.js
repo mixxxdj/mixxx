@@ -498,9 +498,9 @@ DJ505.Deck = function (deckNumbers, offset) {
 
     this.tapBPM = new components.Button({
         input: function (channel, control, value, status, group) {
-            if (value == 127) {
+            if (this.isPress(channel, control, value, status, group)) {
                 script.triggerControl(group, "beats_translate_curpos");
-                bpm.tapButton(script.deckFromGroup(group));
+                script.triggerControl(group, "bpm_tap", 1);
                 this.longPressTimer = engine.beginTimer(
                     this.longPressTimeout,
                     function () {
