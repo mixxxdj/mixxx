@@ -114,7 +114,7 @@ GetKeyMode::GetKeyMode( int sampleRate, float tuningFrequency,
     for( unsigned int i = 0; i < m_BPO; i++ )
     {
         m_MajProfileNorm[i] = MajProfile[i] - mMaj;
-        m_MinProfileNorm[i] = MajProfile[i] - mMin;
+        m_MinProfileNorm[i] = MinProfile[i] - mMin;
     }
 
     m_MedianFilterBuffer = new int[ m_MedianWinsize ];
@@ -149,22 +149,20 @@ GetKeyMode::~GetKeyMode()
     delete[] m_keyStrengths;
 }
 
-double GetKeyMode::krumCorr(double *pData, const double *pProfileNorm, unsigned int length)
+double GetKeyMode::krumCorr(const double *pDataNorm, const double *pProfileNorm, unsigned int length)
 {
     double retVal= 0.0;
     
     double num = 0;
     double den = 0;
-    double meanData = MathUtilities::mean( pData, length );
-    
     double sum1 = 0;
     double sum2 = 0;
     
     for( unsigned int i = 0; i <length; i++ )
     {
-        num += ( pData[i] - meanData ) * pProfileNorm[i];
+        num += pDataNorm[i] * pProfileNorm[i];
 
-        sum1 += ( (pData[i]-meanData) * (pData[i]-meanData) );
+        sum1 += ( pDataNorm[i] * pDataNorm[i] );
         sum2 += ( pProfileNorm[i] * pProfileNorm[i] );
     }
 	
@@ -231,11 +229,18 @@ int GetKeyMode::process(double *PCMData)
         m_MeanHPCP[k] = mnVal/(double)m_ChromaBufferFilling;
     }
 
+    // Normalize for zero average
+    double mHPCP = MathUtilities::mean( m_MeanHPCP, m_BPO );
+    for( k = 0; k < m_BPO; k++ )
+    {
+        m_MeanHPCP[k] -= mHPCP;
+    }
+
 
     for( k = 0; k < m_BPO; k++ )
     {
         m_MajCorr[k] = krumCorr( m_MeanHPCP, m_MajProfileNorm, m_BPO );
-        m_MinCorr[k] = krumCorr( m_MeanHPCP, m_MajProfileNorm, m_BPO );
+        m_MinCorr[k] = krumCorr( m_MeanHPCP, m_MinProfileNorm, m_BPO );
 
         MathUtilities::circShift( m_MajProfileNorm, m_BPO, 1 );
         MathUtilities::circShift( m_MinProfileNorm, m_BPO, 1 );
