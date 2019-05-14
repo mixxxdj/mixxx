@@ -23,13 +23,13 @@
 #include <cstdlib>
 
 // Chords profile
-static double MajProfile[36] = 
+static const double MajProfile[36] =
 { 0.0384, 0.0629, 0.0258, 0.0121, 0.0146, 0.0106, 0.0364, 0.0610, 0.0267,
   0.0126, 0.0121, 0.0086, 0.0364, 0.0623, 0.0279, 0.0275, 0.0414, 0.0186, 
   0.0173, 0.0248, 0.0145, 0.0364, 0.0631, 0.0262, 0.0129, 0.0150, 0.0098,
   0.0312, 0.0521, 0.0235, 0.0129, 0.0142, 0.0095, 0.0289, 0.0478, 0.0239};
 
-static double MinProfile[36] =
+static const double MinProfile[36] =
 { 0.0375, 0.0682, 0.0299, 0.0119, 0.0138, 0.0093, 0.0296, 0.0543, 0.0257,
   0.0292, 0.0519, 0.0246, 0.0159, 0.0234, 0.0135, 0.0291, 0.0544, 0.0248,
   0.0137, 0.0176, 0.0104, 0.0352, 0.0670, 0.0302, 0.0222, 0.0349, 0.0164,
@@ -70,7 +70,8 @@ GetKeyMode::GetKeyMode( int sampleRate, float tuningFrequency,
     m_ChromaConfig.max = Pitch::getFrequencyForPitch
         (96, 0, tuningFrequency);
 
-    m_ChromaConfig.BPO = 36;
+    m_BPO = sizeof(MajProfile) / sizeof(MajProfile[0]);
+    m_ChromaConfig.BPO = m_BPO;
     m_ChromaConfig.CQThresh = 0.0054;
 
     // Chromagram inst.
@@ -80,7 +81,6 @@ GetKeyMode::GetKeyMode( int sampleRate, float tuningFrequency,
     m_ChromaFrameSize = m_Chroma->getFrameSize();
     // override hopsize for this application
     m_ChromaHopSize = m_ChromaFrameSize;
-    m_BPO = m_ChromaConfig.BPO;
 
 //    std::cerr << "chroma frame size = " << m_ChromaFrameSize << ", decimation factor = " << m_DecimationFactor << " therefore block size = " << getBlockSize() << std::endl;
 
@@ -105,6 +105,18 @@ GetKeyMode::GetKeyMode( int sampleRate, float tuningFrequency,
     m_MinCorr = new double[m_BPO];
     m_Keys  = new double[2*m_BPO];
     
+    m_MajProfileNorm = new double[m_BPO];
+    m_MinProfileNorm = new double[m_BPO];
+
+    double mMaj = MathUtilities::mean( MajProfile, m_BPO );
+    double mMin = MathUtilities::mean( MinProfile, m_BPO );
+
+    for( unsigned int i = 0; i < m_BPO; i++ )
+    {
+        m_MajProfileNorm[i] = MajProfile[i] - mMaj;
+        m_MinProfileNorm[i] = MajProfile[i] - mMin;
+    }
+
     m_MedianFilterBuffer = new int[ m_MedianWinsize ];
     memset( m_MedianFilterBuffer, 0, sizeof(int)*m_MedianWinsize);
     
@@ -129,30 +141,31 @@ GetKeyMode::~GetKeyMode()
     delete [] m_MajCorr;
     delete [] m_MinCorr;
     delete [] m_Keys;
+    delete [] m_MajProfileNorm;
+    delete [] m_MinProfileNorm;
     delete [] m_MedianFilterBuffer;
     delete [] m_SortedBuffer;
 
     delete[] m_keyStrengths;
 }
 
-double GetKeyMode::krumCorr(double *pData1, double *pData2, unsigned int length)
+double GetKeyMode::krumCorr(double *pData, const double *pProfileNorm, unsigned int length)
 {
     double retVal= 0.0;
     
     double num = 0;
     double den = 0;
-    double mX = MathUtilities::mean( pData1, length );
-    double mY = MathUtilities::mean( pData2, length );
+    double meanData = MathUtilities::mean( pData, length );
     
     double sum1 = 0;
     double sum2 = 0;
     
     for( unsigned int i = 0; i <length; i++ )
     {
-        num += ( pData1[i] - mX ) * ( pData2[i] - mY );
+        num += ( pData[i] - meanData ) * pProfileNorm[i];
 
-        sum1 += ( (pData1[i]-mX) * (pData1[i]-mX) );
-        sum2 += ( (pData2[i]-mY) * (pData2[i]-mY) );
+        sum1 += ( (pData[i]-meanData) * (pData[i]-meanData) );
+        sum2 += ( pProfileNorm[i] * pProfileNorm[i] );
     }
 	
     den = sqrt(sum1 * sum2);
@@ -221,11 +234,11 @@ int GetKeyMode::process(double *PCMData)
 
     for( k = 0; k < m_BPO; k++ )
     {
-        m_MajCorr[k] = krumCorr( m_MeanHPCP, MajProfile, m_BPO );
-        m_MinCorr[k] = krumCorr( m_MeanHPCP, MinProfile, m_BPO );
+        m_MajCorr[k] = krumCorr( m_MeanHPCP, m_MajProfileNorm, m_BPO );
+        m_MinCorr[k] = krumCorr( m_MeanHPCP, m_MajProfileNorm, m_BPO );
 
-        MathUtilities::circShift( MajProfile, m_BPO, 1 );
-        MathUtilities::circShift( MinProfile, m_BPO, 1 );
+        MathUtilities::circShift( m_MajProfileNorm, m_BPO, 1 );
+        MathUtilities::circShift( m_MinProfileNorm, m_BPO, 1 );
     }
 	
     for( k = 0; k < m_BPO; k++ )
