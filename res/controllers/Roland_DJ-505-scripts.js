@@ -54,7 +54,6 @@ var DJ505 = {};
 
 DJ505.stripSearchScaling = 50;
 DJ505.tempoRange = [0.08, 0.16, 0.5];
-DJ505.autoFocusEffects = false;
 DJ505.autoShowFourDecks = false;
 DJ505.lineGroups = ["Auxiliary1", "Auxiliary2"];  // LINE/PHONO input
 DJ505.trsGroup = "Auxiliary3";  // TR-S input
