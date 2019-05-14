@@ -7,6 +7,45 @@
 /* global components                                                  */
 ////////////////////////////////////////////////////////////////////////
 
+/*
+ * The Roland DJ-505 controller has two basic modes:
+ *
+ * 1. Standalone mode
+ *
+ * When the DJ-505 is not connected to a computer (or no SysEx/Keep-Alive
+ * messages are sent [see below]), the controller is put into standalone mode.
+ *
+ * In this mode, the controller's LEDs automatically react on button presses.
+ * Releasing a button will switches off the button LED, so a MIDI message
+ * needs to be send afterwards to switch it on again.
+ * The performance pads LEDs also indicate different modes, but the colors are
+ * different from the modes described in the Owner's Manual. It does not seem
+ * to be possible to illuminate individual pads.
+ *
+ * he built-in TR-S drum machine works in standalone mode and its output level
+ * is controlled by the TR/SAMPLER LEVEL knob.
+ *
+ *
+ * 2. Serato mode
+ *
+ * When the DJ-505 receives a SysEx message, the controller is put in "Serato"
+ * mode.  However, in order to keep the DJ-505 in this mode, it seems to be
+ * necessary to regularily send a "keep-alive" MIDI message (0xBF 0x64 0x00).
+ * Otherwise the device will switch back to "Standalone mode" after
+ * approximately 1.5 seconds.
+ *
+ * In Serato mode, the all LEDs have to be illuminated by sending MIDI
+ * messages: Pressing a button does not switch the LED on and releasing it does
+ * not switch it off. The performance pad LEDs can all be set individually
+ * (including the mode buttons).
+ *
+ * The TR-S output is not connected to the master out. Instead, it is connected
+ * to one of input channels of the controller's audio interface. Hence, the
+ * TR/SAMPLER LEVEL knob does not control the output volume of TR-S, and
+ * works as a generic MIDI control instead.
+ *
+ */
+
 var DJ505 = {};
 
 /////////////////
@@ -128,13 +167,16 @@ DJ505.init = function () {
         engine.setValue("[Master]", "num_samplers", 16);
     }
 
-    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7], 6); //request initial state
-    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6); //unlock pad layers
+    // Send Serato SysEx messages to request initial state and unlock pads
+    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x00, 0xF7], 6);
+    midi.sendSysexMsg([0xF0, 0x00, 0x20, 0x7F, 0x01, 0xF7], 6);
+
+    // Send "keep-alive" message to keep controller in Serato mode
     engine.beginTimer(500, function() {
-        // Keep sending this message to enable performance pad LEDs
         midi.sendShortMsg(0xBF, 0x64, 0x00);
     });
 
+    // Reset LEDs
     DJ505.deck3Button.trigger();
     DJ505.deck4Button.trigger();
     for (i = 0; i < 4; i++) {
@@ -564,38 +606,30 @@ DJ505.DeckToggleButton.prototype.trigger = function () {
 //////////////////////////////
 
 DJ505.Sampler = function() {
-    // TODO: Improve sync so that we don't need to use the NUDGE button for
-    // beatmatching.
-    // TODO: Add support for custom samples
+    // TODO: Improve phase sync (workaround: use NUDGE button for beatmatching)
     /*
-     * Like the performance pads, the built-in TR-S drum machine 505 has two
-     * modes of operation.
+     * The TR-S section behaves differently depending on whether the controller
+     * is in Standalone or Serato mode:
      *
-     * - Standalone mode:
-     *   When the DJ-505 is not connected to a computer (or no SysEx/Keep-Alive
-     *   messages are sent), the controller's TR-S works with the SERATO SAMPLER
-     *   and SYNC functionality disabled. Also, it's not possible to apply FX
-     *   to the TR-S output signal. The TR/SAMPLER LEVEL knob can be used to adjust
-     *   the volume of the output. It's possible to set the BPM in the range
-     *   5.0 to 800.0 BPM by sending this MIDI message:
+     * 1. Standalone mode
      *
-     *       sendShortMsg(0xEA, Math.round(bpm*10) & 0x7f, (Math.round(bpm*10) >> 7) & 0x7f);
+     * When the controller is in standlone mode, the controller's TR-S works
+     * with the SERATO SAMPLER and SYNC functionality disabled. Also, it's not
+     * possible to apply FX to the TR-S output signal. The TR/SAMPLER LEVEL
+     * knob can be used to adjust the volume of the output.
      *
-     * - Serato mode:
-     *   When the DJ-505 receives a SysEx message, the TR-S is put in "Serato"
-     *   mode. In this mode, the BPM can also be set by sending MIDI clock
-     *   messages (0xF8). The sampler can be started by sending one MIDI
-     *   message per bar (0xBA 0x02 XX). In this mode, the TR-S is not directly
-     *   connected to the master out. Instead, the sound is played on channels
-     *   7-8 so that the signal can be router through the FX section.
-     *   However, in order to keep the DJ-505 in "Serato mode", it seems to be
-     *   necessary to regularily send a certain "keep-alive" MIDI message (0xBF
-     *   0x64 0x00). Otherwise the device will switch back to "Standalone mode"
-     *   after approximately 1.5 seconds.
+     *
+     * 2. Serato mode
+     *
+     * In this mode, the BPM can be set by sending MIDI clock
+     * messages (0xF8). The sampler can be started by sending one MIDI
+     * message per bar (0xBA 0x02 XX). The TR-S is not directly connected to
+     * the master out. Instead, the sound is played on channels 7-8 so that the
+     * signal can be routed through the FX section.
      *
      * The SERATO SAMPLER features 8 instruments (S1 - S8) that can be to play
      * samples from Serato's sampler banks. If the device is in Serato mode and
-     * the sampler instruments are programmed using the TRS pads, two MIDI
+     * the sampler instruments are programmed using the TR-S pads, two MIDI
      * messages are sent by the DJ-505 when the sampler step is reached:
      *
      *   9F 2X YY
@@ -606,6 +640,11 @@ DJ505.Sampler = function() {
      *
      * When the TR-S starts playback, the MIDI start message (0xFA) is sent by the
      * device. When the playback stops, the device sends the stop message (0xFC).
+     *
+     * In both modes, it is possible to set the BPM in the range 5.0 to 800.0
+     * BPM by sending this MIDI message:
+     *
+     *   sendShortMsg(0xEA, Math.round(bpm*10) & 0x7f, (Math.round(bpm*10) >> 7) & 0x7f);
      *
      */
     components.ComponentContainer.call(this);
@@ -771,32 +810,27 @@ DJ505.SlipModeButton.prototype.shift = function () {
 
 
 DJ505.PadSection = function (deck, offset) {
-    // TODO: Add support for missing modes (flip, cueloop, slicer, slicerloop, pitchplay, velocitysampler)
+    // TODO: Add support for missing modes (flip, slicer, slicerloop)
     /*
      * The Performance Pad Section on the DJ-505 apparently have two basic
      * modes of operation that determines how the LEDs react to MIDI messages
      * and button presses.
      *
-     * - Standalone mode:
-     *   When the DJ-505 is not connected to a computer (or no SysEx/Keep-Alive
-     *   messages are sent [see below]), the controller's performance pads
-     *   allow setting various "modes" using the mode buttons and the shift
-     *   modifier. Pressing the mode buttons will change their LED color (and
-     *   makes the performance pads barely lit in that color, too). However,
-     *   it the Mode colors differ from that in the Owner's manual. Also, it
-     *   does not seem to be possible to actually illuminate the performance
-     *   pad LEDs - neither by pressing the button nor by sending MIDI messages
-     *   to the device.
+     * 1. Standalone mode
      *
-     * - Serato mode:
-     *   When the DJ-505 receives a SysEx message, the performance pads are put
-     *   in "Serato" mode. In this mode, the pressing Pad mode buttons will not
-     *   change their color. Instead, all LEDs have to be controlled by sending
-     *   MIDI messages. Unlike the Standalone mode, it is also possible to
-     *   control the pad LEDs.  However, in order to keep the DJ-505 in "Serato
-     *   mode", it seems to be necessary to regularily send a certain
-     *   "keep-alive" MIDI message (0xBF 0x64 0x00). Otherwise the device will
-     *   switch back to "Standalone mode" after approximately 1.5 seconds.
+     * The controller's performance pads allow setting various "modes" using
+     * the mode buttons and the shift modifier. Pressing the mode buttons will
+     * change their LED color (and makes the performance pads barely lit in
+     * that color, too). However, the mode colors differ from that in the
+     * Owner's manual. Also, it does not seem to be possible to actually
+     * illuminate the performance pad LEDs - neither by pressing the button nor
+     * by sending MIDI messages to the device.
+     *
+     * 2. Serato mode
+     *
+     * In this mode, pressing the pad mode buttons will not change their color.
+     * Instead, all LEDs have to be controlled by sending MIDI messages. Unlike
+     * in Standalone mode, it is also possible to illuminate the pad LEDs.
      *
      * The following table gives an overview over the different performance pad
      * modes. The values in the "Serato LED" and "Serato Mode" columns have
@@ -829,7 +863,7 @@ DJ505.PadSection = function (deck, offset) {
      *   0x04       Yellow         0x14       Yellow (Dim)
      *   0x05       Applegreen     0x15       Applegreen (Dim)
      *   0x06       Magenta        0x16       Magenta (Dim)
-     *   0x07       Light Blue     0x17       Light Blue (Dim)
+     *   0x07       Celeste        0x17       Celeste (Dim)
      *   0x08       Purple         0x18       Purple (Dim)
      *   0x09       Apricot        0x19       Apricot (Dim)
      *   0x0A       Coral          0x1A       Coral (Dim)
