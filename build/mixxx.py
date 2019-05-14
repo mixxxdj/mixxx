@@ -211,17 +211,18 @@ class MixxxBuild(object):
         self.compiler_is_gcc = 'gcc' in self.env['CC']
         self.compiler_is_clang = 'clang' in self.env['CC']
 
-        # Determine the major compiler version
-        if self.compiler_is_gcc or self.compiler_is_clang:
+        # Determine the major compiler version (only GCC)
+        if self.compiler_is_gcc:
+            self.gcc_major_version = None
             import subprocess
             process = subprocess.Popen([self.env['CC'], '-dumpversion'], stdout=subprocess.PIPE)
             (stdout, stderr) = process.communicate()
-            compiler_dump_version = stdout
+            gcc_version = stdout
             # If match is None we don't know the version.
-            if not compiler_dump_version is None:
-                version_split = compiler_dump_version.split('.')
+            if not gcc_version is None:
+                version_split = gcc_version.split('.')
                 if version_split:
-                    self.compiler_major_version = int(version_split[0])
+                    self.gcc_major_version = int(version_split[0])
 
         self.virtualize_build_dir()
 
