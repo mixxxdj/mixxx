@@ -991,6 +991,18 @@ DJ505.HotcueMode = function (deck, offset) {
             outConnect: false,
         });
     }
+    this.paramMinusButton = new components.Button({
+        midi: [0x94 + offset, 0x28],
+        mode: this,
+        outKey: "beats_translate_earlier",
+        inKey: "beats_translate_earlier",
+    });
+    this.paramPlusButton = new components.Button({
+        midi: [0x94 + offset, 0x29],
+        mode: this,
+        outKey: "beats_translate_later",
+        inKey: "beats_translate_later",
+    });
 };
 DJ505.HotcueMode.prototype = Object.create(components.ComponentContainer.prototype);
 
