@@ -866,19 +866,6 @@ DJ505.PadSection = function (deck, offset) {
 
 DJ505.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
 
-DJ505.PadSection.prototype.resetLEDs = function() {
-    var mode = this.controlToPadMode(this.padMode);
-    if (mode) {
-        mode.forEachComponent(function(component) {
-            component.trigger();
-        });
-    } else {
-        for (var i = 0; i <= 7; i++) {
-            midi.sendShortMsg(0x94 + this.offset, 0x14 + i, 0x00);
-        }
-    }
-};
-
 DJ505.PadSection.prototype.controlToPadMode = function (control) {
     var mode;
     switch(control) {
@@ -965,8 +952,6 @@ DJ505.PadSection.prototype.setPadMode = function (control) {
             component.connect();
             component.trigger();
         });
-    } else {
-        this.resetLEDs();
     }
 };
 
