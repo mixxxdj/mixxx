@@ -149,7 +149,8 @@ GetKeyMode::~GetKeyMode()
     delete[] m_keyStrengths;
 }
 
-double GetKeyMode::krumCorr(const double *pDataNorm, const double *pProfileNorm, unsigned int length)
+double GetKeyMode::krumCorr(
+        const double *pDataNorm, const double *pProfileNorm, int shiftProfile, unsigned int length)
 {
     double retVal= 0.0;
     
@@ -160,10 +161,12 @@ double GetKeyMode::krumCorr(const double *pDataNorm, const double *pProfileNorm,
     
     for( unsigned int i = 0; i <length; i++ )
     {
-        num += pDataNorm[i] * pProfileNorm[i];
+        int k = (i - shiftProfile + length) % length;
+
+        num += pDataNorm[i] * pProfileNorm[k];
 
         sum1 += ( pDataNorm[i] * pDataNorm[i] );
-        sum2 += ( pProfileNorm[i] * pProfileNorm[i] );
+        sum2 += ( pProfileNorm[k] * pProfileNorm[k] );
     }
 	
     den = sqrt(sum1 * sum2);
@@ -188,11 +191,6 @@ int GetKeyMode::process(double *PCMData)
 
     m_ChrPointer = m_Chroma->process( m_DecimatedBuffer );		
 
-    // The Cromagram has the center of C at bin 0, while the major
-    // and minor profiles have the center of C at 1. We want to have
-    // the correlation for C result also at 1.
-    // To achieve this we have to shift two times:
-    MathUtilities::circShift( m_ChrPointer, m_BPO, 2);
 /*
     std::cout << "raw chroma: ";
     for (int ii = 0; ii < m_BPO; ++ii) {
@@ -239,11 +237,12 @@ int GetKeyMode::process(double *PCMData)
 
     for( k = 0; k < m_BPO; k++ )
     {
-        m_MajCorr[k] = krumCorr( m_MeanHPCP, m_MajProfileNorm, m_BPO );
-        m_MinCorr[k] = krumCorr( m_MeanHPCP, m_MinProfileNorm, m_BPO );
-
-        MathUtilities::circShift( m_MajProfileNorm, m_BPO, 1 );
-        MathUtilities::circShift( m_MinProfileNorm, m_BPO, 1 );
+        // The Cromagram has the center of C at bin 0, while the major
+        // and minor profiles have the center of C at 1. We want to have
+        // the correlation for C result also at 1.
+        // To achieve this we have to shift two times:
+        m_MajCorr[k] = krumCorr( m_MeanHPCP, m_MajProfileNorm, (int)k - 2, m_BPO );
+        m_MinCorr[k] = krumCorr( m_MeanHPCP, m_MinProfileNorm, (int)k - 2, m_BPO );
     }
 	
     for( k = 0; k < m_BPO; k++ )

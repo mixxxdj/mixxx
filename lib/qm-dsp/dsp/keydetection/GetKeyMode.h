@@ -27,7 +27,8 @@ public:
 
 	int process( double* PCMData );
 
-	double krumCorr( const double *pDataNorm, const double *pProfileNorm, unsigned int length );
+	double krumCorr(
+	        const double *pDataNorm, const double *pProfileNorm, int shiftProfile, unsigned int length );
 
 	unsigned int getBlockSize() { return m_ChromaFrameSize*m_DecimationFactor; }
 	unsigned int getHopSize() { return m_ChromaHopSize*m_DecimationFactor; }
