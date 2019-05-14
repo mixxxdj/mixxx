@@ -51,7 +51,6 @@ GetKeyMode::GetKeyMode( int sampleRate, float tuningFrequency,
     m_MeanHPCP(0),
     m_MajCorr(0),
     m_MinCorr(0),
-    m_Keys(0),
     m_MedianFilterBuffer(0),
     m_SortedBuffer(0),
     m_keyStrengths(0)
@@ -103,7 +102,6 @@ GetKeyMode::GetKeyMode( int sampleRate, float tuningFrequency,
     
     m_MajCorr = new double[m_BPO];
     m_MinCorr = new double[m_BPO];
-    m_Keys  = new double[2*m_BPO];
     
     m_MajProfileNorm = new double[m_BPO];
     m_MinProfileNorm = new double[m_BPO];
@@ -140,7 +138,6 @@ GetKeyMode::~GetKeyMode()
     delete [] m_MeanHPCP;
     delete [] m_MajCorr;
     delete [] m_MinCorr;
-    delete [] m_Keys;
     delete [] m_MajProfileNorm;
     delete [] m_MinProfileNorm;
     delete [] m_MedianFilterBuffer;
@@ -245,26 +242,6 @@ int GetKeyMode::process(double *PCMData)
         m_MinCorr[k] = krumCorr( m_MeanHPCP, m_MinProfileNorm, (int)k - 2, m_BPO );
     }
 	
-    for( k = 0; k < m_BPO; k++ )
-    {
-        m_Keys[k] = m_MajCorr[k];
-        m_Keys[k+m_BPO] = m_MinCorr[k];
-    }
-
-    for (k = 0; k < 24; ++k) {
-        m_keyStrengths[k] = 0;
-    }
-
-    for( k = 0; k < m_BPO*2; k++ )
-    {
-        int idx = k / (m_BPO/12);
-        int rem = k % (m_BPO/12);
-        if (rem == 0 || m_Keys[k] > m_keyStrengths[idx]) {
-            m_keyStrengths[idx] = m_Keys[k];
-        }
-
-//        m_keyStrengths[k/(m_BPO/12)] += m_Keys[k];
-    }
 
 /*
   std::cout << "raw keys: ";
@@ -281,11 +258,18 @@ int GetKeyMode::process(double *PCMData)
   }
   std::cout << std::endl;
 */
-    double dummy;
     // m_Keys[1] is C center  1 / 3 + 1 = 1
     // m_Keys[4] is D center  4 / 3 + 1 = 2
     // '+ 1' because we number keys 1-24, not 0-23.
-    key = MathUtilities::getMax( m_Keys, 2* m_BPO, &dummy ) / 3 + 1;
+    double maxMaj;
+    int maxMajBin = MathUtilities::getMax( m_MajCorr, m_BPO, &maxMaj );
+    double maxMin;
+    int maxMinBin = MathUtilities::getMax( m_MinCorr, m_BPO, &maxMin );
+    if (maxMaj > maxMin) {
+        key = maxMajBin / 3 + 1;
+    } else {
+        key = (maxMinBin + m_BPO) / 3 + 1;
+    }
 
 //    std::cout << "key pre-sorting: " << key << std::endl;
 
@@ -342,4 +326,32 @@ int GetKeyMode::process(double *PCMData)
 bool GetKeyMode::isModeMinor( int key )
 { 
     return (key > 12);
+}
+
+double* GetKeyMode::getKeyStrengths() {
+    unsigned int k;
+
+    for (k = 0; k < 24; ++k) {
+        m_keyStrengths[k] = 0;
+    }
+
+    for( k = 0; k < m_BPO; k++ )
+    {
+        int idx = k / (m_BPO/12);
+        int rem = k % (m_BPO/12);
+        if (rem == 0 || m_MajCorr[k] > m_keyStrengths[idx]) {
+            m_keyStrengths[idx] = m_MajCorr[k];
+        }
+    }
+
+    for( k = 0; k < m_BPO; k++ )
+    {
+        int idx = (k + m_BPO) / (m_BPO/12);
+        int rem = k % (m_BPO/12);
+        if (rem == 0 || m_MinCorr[k] > m_keyStrengths[idx]) {
+            m_keyStrengths[idx] = m_MinCorr[k];
+        }
+    }
+
+    return m_keyStrengths;
 }
