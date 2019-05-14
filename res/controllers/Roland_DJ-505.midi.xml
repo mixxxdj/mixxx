@@ -3674,7 +3674,7 @@
                 <key>DJ505.sampler.customSamplePlayback</key>
                 <description>SERATO SAMPLER S7 PLAYBACK</description>
                 <status>0x9F</status>
-                <midino>0x27</midino>
+                <midino>0x2E</midino>
                 <options>
                     <script-binding/>
                 </options>
@@ -3684,7 +3684,7 @@
                 <key>DJ505.sampler.customSamplePlayback</key>
                 <description>SERATO SAMPLER S8 PLAYBACK</description>
                 <status>0x9F</status>
-                <midino>0x28</midino>
+                <midino>0x2F</midino>
                 <options>
                     <script-binding/>
                 </options>
