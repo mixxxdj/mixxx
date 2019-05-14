@@ -258,7 +258,12 @@ DJ505.setChannelInput = function (channel, control, value, status, group) {
 DJ505.Deck = function (deckNumbers, offset) {
     components.Deck.call(this, deckNumbers);
 
-    this.slipModeButton = new DJ505.SlipModeButton();
+    this.slipModeButton = new DJ505.SlipModeButton({
+        midi: [0x90 + offset, 0xF],
+        shiftOffset: -8,
+        shiftControl: true,
+        sendShifted: true,
+    });
 
     engine.setValue(this.currentDeck, "rate_dir", -1);
     this.tempoFader = new components.Pot({
@@ -718,49 +723,55 @@ DJ505.Sampler.prototype = Object.create(components.ComponentContainer.prototype)
 // Custom components. //
 ////////////////////////
 
-DJ505.SlipModeButton = function () {
+DJ505.SlipModeButton = function (options) {
     components.Button.apply(this, arguments);
+    this.doubleTapTimeout = 500;
+
+    components.Button.call(this, options);
+};
+DJ505.SlipModeButton.prototype = Object.create(components.Button.prototype);
+DJ505.SlipModeButton.prototype.unshift = function () {
+    this.input = function (channel, control, value, status, group) {
+        if (value) {                                                // Button press.
+            this.inSetValue(true);
+            return;
+        }                                                   // Else: button release.
+
+        if (!this.doubleTapped) {
+            this.inSetValue(false);
+        }
+
+        this.doubleTapped = true;
+
+        if (this.doubleTapTimer) {
+            engine.stopTimer(this.doubleTapTimer);
+            this.doubleTapTimer = null;
+        }
+
+        this.doubleTapTimer = engine.beginTimer(
+            this.doubleTapTimeout,
+            function () {
+                this.doubleTapped = false;
+                this.doubleTapTimer = null;
+            },
+            true
+        );
+    }
     this.inKey = "slip_enabled";
     this.outKey = "slip_enabled";
-    this.doubleTapTimeout = 500;
-};
-
-DJ505.SlipModeButton.prototype = Object.create(components.Button.prototype);
-
-DJ505.SlipModeButton.prototype.connect = function () {
-    var deck = script.deckFromGroup(this.group);
-    this.midi = [0x90 + deck - 1, 0xF];
-    components.Button.prototype.connect.call(this);
-};
-
-DJ505.SlipModeButton.prototype.input = function (channel, control, value, status, group) {
-    if (value) {                                                // Button press.
-        this.inSetValue(true);
-        return;
-    }                                                   // Else: button release.
-
-    if (!this.doubleTapped) {
-        this.inSetValue(false);
-    }
-
-    // Work-around LED disabling itself on release.
+    this.type = components.Button.prototype.types.push;
+    this.disconnect();
+    this.connect();
     this.trigger();
-
-    this.doubleTapped = true;
-
-    if (this.doubleTapTimer) {
-        engine.stopTimer(this.doubleTapTimer);
-        this.doubleTapTimer = null;
-    }
-
-    this.doubleTapTimer = engine.beginTimer(
-        this.doubleTapTimeout,
-        function () {
-            this.doubleTapped = false;
-            this.doubleTapTimer = null;
-        },
-        true
-    );
+};
+DJ505.SlipModeButton.prototype.shift = function () {
+    this.input = components.Button.prototype.input;
+    this.inKey = "vinylcontrol_enabled";
+    this.outKey = "vinylcontrol_enabled";
+    this.type = components.Button.prototype.types.toggle;
+    this.disconnect();
+    this.connect();
+    this.trigger();
 };
 
 
