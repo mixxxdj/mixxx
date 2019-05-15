@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
     <MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.2"> 
 	<info>
-		<name>MIDI Mapping for Pioneer DDJ-400</name>
+		<name>Pioneer DDJ-400</name>
 		<author>Marc Linde</author>
 		<description>This is a Midi Mapping for the Pioneer DDJ-400</description>
         <wiki>TBD</wiki>
