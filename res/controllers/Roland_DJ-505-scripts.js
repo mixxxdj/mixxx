@@ -44,6 +44,16 @@
  * TR/SAMPLER LEVEL knob does not control the output volume of TR-S, and
  * works as a generic MIDI control instead.
  *
+ *
+ * Other quirks and issues of the Roland DJ-505:
+ * - The controller does not send the current value of the crossfader when it
+ *   receives the SysEx message. This also happens when it's used with Serato,
+ *   so Mixxx tries to work around the issue by using "soft takeover" to avoid
+ *   sudden volume changes when the crossfader is first used.
+ * - It does not seem to be possible to toggle the LEDs of the BACK and the ADD
+ *   PREPARE buttons. Again, this can be reproduced in Serato, so it looks like
+ *   a firmware problem and cannot be worked around.
+ *
  */
 
 var DJ505 = {};
