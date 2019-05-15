@@ -5,6 +5,8 @@
 #include <QAtomicPointer>
 #include <QStringList>
 #include <QApplication>
+#include <QWindow>
+#include <QWidget>
 
 #include <QLocale>
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
@@ -54,5 +56,23 @@ template <typename T>
 void qAsConst(const T &&) = delete;
 
 #endif
+
+
+inline qreal getDevicePixelRatioF(const QWidget* widget) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    return widget->devicePixelRatioF();
+#endif
+
+    // Crawl up to the window and return qreal value
+    QWindow* window = widget->window()->windowHandle();
+    if (window) {
+        return window->devicePixelRatio();
+    }
+
+    // return integer value as last resort
+    return widget->devicePixelRatio();
+}
+
+
 
 #endif /* COMPATABILITY_H */
