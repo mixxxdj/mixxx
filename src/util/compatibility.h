@@ -1,6 +1,9 @@
 #ifndef COMPATABILITY_H
 #define COMPATABILITY_H
 
+#include <QWindow>
+#include <QWidget>
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)
 
 // this adds const to non-const objects (like std::as_const)
@@ -54,5 +57,21 @@ struct QOverload : QConstOverload<Args...>, QNonConstOverload<Args...>
 };
 
 #endif
+
+
+inline qreal getDevicePixelRatioF(const QWidget* widget) {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
+    return widget->devicePixelRatioF();
+#endif
+
+    // Crawl up to the window and return qreal value
+    QWindow* window = widget->window()->windowHandle();
+    if (window) {
+        return window->devicePixelRatio();
+    }
+
+    // return integer value as last resort
+    return widget->devicePixelRatio();
+}
 
 #endif /* COMPATABILITY_H */
