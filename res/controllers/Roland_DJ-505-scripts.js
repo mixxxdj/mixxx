@@ -302,6 +302,7 @@ DJ505.Deck = function (deckNumbers, offset) {
 
     engine.setValue(this.currentDeck, "rate_dir", -1);
     this.tempoFader = new components.Pot({
+        group: "[Channel" + deckNumbers + "]",
         midi: [0xB0 + offset, 0x09],
         connect: function () {
             engine.softTakeover(this.group, "pitch", true);
@@ -501,6 +502,7 @@ DJ505.Deck = function (deckNumbers, offset) {
     // =============================== MIXER ====================================
     this.pregain = new components.Pot({
         midi: [0xB0 + offset, 0x16],
+        group: "[Channel" + deckNumbers + "]",
         inKey: "pregain",
     });
 
@@ -549,6 +551,7 @@ DJ505.Deck = function (deckNumbers, offset) {
 
     this.volume = new components.Pot({
         midi: [0xB0 + offset, 0x1C],
+        group: "[Channel" + deckNumbers + "]",
         inKey: "volume",
     });
 };
