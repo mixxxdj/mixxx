@@ -802,6 +802,41 @@ DJ505.SlipModeButton.prototype.shift = function () {
     this.trigger();
 };
 
+DJ505.PadMode = {
+    HOTCUE: 0x00,
+    FLIP: 0x02,
+    CUELOOP: 0x03,
+    TR: 0x04,
+    PATTERN: 0x05,
+    TRVELOCITY: 0x06,
+    ROLL: 0x08,
+    SLICER: 0x09,
+    SLICERLOOP: 0x0A,
+    SAMPLER: 0x0B,
+    VELOCITYSAMPLER: 0x0C,
+    LOOP: 0x0D,
+    PITCHPLAY: 0x0F,
+};
+
+DJ505.PadColor = {
+    OFF:          0x00,
+    RED:          0x01,
+    ORANGE:       0x02,
+    BLUE:         0x03,
+    YELLOW:       0x04,
+    APPLEGREEN:   0x05,
+    MAGENTA:      0x06,
+    CELESTE:      0x07,
+    PURPLE:       0x08,
+    APRICOT:      0x09,
+    CORAL:        0x0A,
+    AZURE:        0x0B,
+    TURQUOISE:    0x0C,
+    AQUAMARINE:   0x0C,
+    GREEN:        0x0E,
+    WHITE:        0x0F,
+    DIM_MODIFIER: 0x10,
+};
 
 DJ505.PadSection = function (deck, offset) {
     // TODO: Add support for missing modes (flip, slicer, slicerloop)
@@ -882,9 +917,9 @@ DJ505.PadSection = function (deck, offset) {
     this.offset = offset;
 
     // Start in Hotcue Mode and disable other LEDs
-    this.setPadMode(0x00);
-    midi.sendShortMsg(0x94 + offset, this.modes["roll"].ledControl, 0x00);
-    midi.sendShortMsg(0x94 + offset, this.modes["sampler"].ledControl, 0x00);
+    this.setPadMode(DJ505.PadMode.HOTCUE);
+    midi.sendShortMsg(0x94 + offset, this.modes["roll"].ledControl, DJ505.PadColor.OFF);
+    midi.sendShortMsg(0x94 + offset, this.modes["sampler"].ledControl, DJ505.PadColor.OFF);
 };
 
 DJ505.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
@@ -892,40 +927,40 @@ DJ505.PadSection.prototype = Object.create(components.ComponentContainer.prototy
 DJ505.PadSection.prototype.controlToPadMode = function (control) {
     var mode;
     switch(control) {
-    case 0x00:  // Hot Cue Mode
+    case DJ505.PadMode.HOTCUE:
         mode = this.modes["hotcue"];
         break;
-    //case 0x02:  // Flip Mode
+    //case DJ505.PadMode.FLIP:
     //    mode = this.modes["flip"];
     //    break;
-    case 0x03:  // Cue Loop Mode
+    case DJ505.PadMode.CUELOOP:
         mode = this.modes["cueloop"];
         break;
-    case 0x04:  // TR Mode
-    case 0x05:  // Pattern Mode
-    case 0x06:  // TR Velocity Mode
+    case DJ505.PadMode.TR:
+    case DJ505.PadMode.PATTERN:
+    case DJ505.PadMode.TRVELOCITY:
         // All of these are hardcoded in hardware
         mode = null;
         break;
-    case 0x08:  // Roll Mode
+    case DJ505.PadMode.ROLL:
         mode = this.modes["roll"];
         break;
-    //case 0x09:
+    //case DJ505.PadMode.SLICER:
     //    mode = this.modes["slicer"];
     //    break;
-    //case 0x0A:
+    //case DJ505.PadMode.SLICERLOOP:
     //    mode = this.modes["slicerloop"];
     //    break;
-    case 0x0B:
+    case DJ505.PadMode.SAMPLER:
         mode = this.modes["sampler"];
         break;
-    case 0x0C:
+    case DJ505.PadMode.VELOCITYSAMPLER:
         mode = this.modes["velocitysampler"];
         break;
-    case 0x0D:
+    case DJ505.PadMode.LOOP:
         mode = this.modes["loop"];
         break;
-    case 0x0F:
+    case DJ505.PadMode.PITCHPLAY:
         mode = this.modes["pitchplay"];
         break;
     }
@@ -996,8 +1031,8 @@ DJ505.PadSection.prototype.forEachComponent = function (operation, recursive) {
 
 DJ505.HotcueMode = function (deck, offset) {
     components.ComponentContainer.call(this);
-    this.ledControl = 0x00;
-    this.color = 0x0F;
+    this.ledControl = DJ505.PadMode.HOTCUE;
+    this.color = DJ505.PadColor.WHITE;
     this.pads = [];
     for (var i = 0; i <= 7; i++) {
         this.pads[i] = new components.HotcueButton({
@@ -1008,7 +1043,7 @@ DJ505.HotcueMode = function (deck, offset) {
             number: i + 1,
             group: deck.currentDeck,
             on: i + 1,
-            off: this.color + 0x10,
+            off: this.color + DJ505.PadColor.DIM_MODIFIER,
             outConnect: false,
         });
     }
@@ -1029,8 +1064,8 @@ DJ505.HotcueMode.prototype = Object.create(components.ComponentContainer.prototy
 
 DJ505.CueLoopMode = function (deck, offset) {
     components.ComponentContainer.call(this);
-    this.ledControl = 0x00;
-    this.color = 0x03;
+    this.ledControl = DJ505.PadMode.HOTCUE;
+    this.color = DJ505.PadColor.BLUE;
     this.pads = [];
     for (var i = 0; i <= 7; i++) {
         this.pads[i] = new components.Button({
@@ -1042,7 +1077,7 @@ DJ505.CueLoopMode = function (deck, offset) {
             group: deck.currentDeck,
             outKey: "hotcue_" + (i + 1) + "_enabled",
             on: i + 1,
-            off: this.color + 0x10,
+            off: this.color + DJ505.PadColor.DIM_MODIFIER,
             outConnect: false,
             unshift: function() {
                 this.input = function (channel, control, value, status, group) {
@@ -1103,8 +1138,8 @@ DJ505.CueLoopMode.prototype = Object.create(components.ComponentContainer.protot
 
 DJ505.RollMode = function (deck, offset) {
     components.ComponentContainer.call(this);
-    this.ledControl = 0x08;
-    this.color = 0x07;
+    this.ledControl = DJ505.PadMode.ROLL;
+    this.color = DJ505.PadColor.CELESTE;
     this.pads = [];
     this.loopSize = 0.03125;
 
@@ -1121,7 +1156,7 @@ DJ505.RollMode = function (deck, offset) {
             inKey: "beatlooproll_" + loopSize + "_activate",
             outConnect: false,
             on: this.color,
-            off: this.color + ((loopSize == 4) ? 0x01 : 0x10),
+            off: (loopSize == 4) ? DJ505.PadColor.APPLEGREEN : (this.color + DJ505.PadColor.DIM_MODIFIER),
         });
     }
     this.paramMinusButton = new components.Button({
@@ -1161,15 +1196,15 @@ DJ505.RollMode.prototype.setLoopSize = function (loopSize) {
         padLoopSize = (this.loopSize * Math.pow(2, i));
         this.pads[i].inKey = "beatlooproll_" + padLoopSize + "_activate";
         this.pads[i].outKey = "beatloop_" + padLoopSize + "_enabled";
-        this.pads[i].off = this.color + ((padLoopSize == 4) ? 0x01 : 0x10);
+        this.pads[i].off = (padLoopSize == 4) ? DJ505.PadColor.APPLEGREEN : (this.color + DJ505.PadColor.DIM_MODIFIER);
     }
     this.reconnectComponents();
 };
 
 DJ505.LoopMode = function (deck, offset) {
     components.ComponentContainer.call(this);
-    this.ledControl = 0x08;
-    this.color = 0x0E;
+    this.ledControl = DJ505.PadMode.ROLL;
+    this.color = DJ505.PadColor.GREEN;
     this.pads = [];
     for (var i = 0; i <= 7; i++) {
         this.pads[i] = new components.Button({
@@ -1182,7 +1217,7 @@ DJ505.LoopMode = function (deck, offset) {
             inKey: "beatloop_" + (0.03125 * Math.pow(2, i)) + "_toggle",
             outConnect: false,
             on: this.color,
-            off: this.color + 0x10,
+            off: this.color + DJ505.PadColor.DIM_MODIFIER,
         });
     }
 };
@@ -1190,8 +1225,8 @@ DJ505.LoopMode.prototype = Object.create(components.ComponentContainer.prototype
 
 DJ505.SamplerMode = function (deck, offset) {
     components.ComponentContainer.call(this);
-    this.ledControl = 0x0B;
-    this.color = 0x06;
+    this.ledControl = DJ505.PadMode.SAMPLER;
+    this.color = DJ505.PadColor.MAGENTA;
     this.pads = [];
     for (var i = 0; i <= 7; i++) {
         this.pads[i] = new components.SamplerButton({
@@ -1202,7 +1237,7 @@ DJ505.SamplerMode = function (deck, offset) {
             number: i + 1,
             outConnect: false,
             on: this.color,
-            off: this.color + 0x10,
+            off: this.color + DJ505.PadColor.DIM_MODIFIER,
         });
     }
 };
@@ -1210,8 +1245,8 @@ DJ505.SamplerMode.prototype = Object.create(components.ComponentContainer.protot
 
 DJ505.VelocitySamplerMode = function (deck, offset) {
     components.ComponentContainer.call(this);
-    this.ledControl = 0x0B;
-    this.color = 0x08;
+    this.ledControl = DJ505.PadMode.SAMPLER;
+    this.color = DJ505.PadColor.PURPLE;
     this.pads = [];
     for (var i = 0; i <= 7; i++) {
         this.pads[i] = new components.SamplerButton({
@@ -1222,7 +1257,7 @@ DJ505.VelocitySamplerMode = function (deck, offset) {
             number: i + 1,
             outConnect: false,
             on: this.color,
-            off: this.color + 0x10,
+            off: this.color + DJ505.PadColor.DIM_MODIFIER,
             volumeByVelocity: true,
         });
     }
@@ -1235,8 +1270,8 @@ DJ505.PitchPlayMode = function (deck, offset) {
     const RANGE_DOWN = 2;
 
     components.ComponentContainer.call(this);
-    this.ledControl = 0x0B;
-    this.color = 0x0E;
+    this.ledControl = DJ505.PadMode.SAMPLER;
+    this.color = DJ505.PadColor.GREEN;
     this.pads = [];
     this.cuepoint = 1;
     this.range = RANGE_MID;
@@ -1250,16 +1285,16 @@ DJ505.PitchPlayMode = function (deck, offset) {
             mode: this,
             number: i + 1,
             outConnect: false,
-            on: this.number + 0x10,
-            off: 0x00,
+            on: this.number + DJ505.PadColor.DIM_MODIFIER,
+            off: DJ505.PadColor.OFF,
             unshift: function() {
                 this.outKey = "key";
                 this.output = function (value, group, control) {
-                    var color = this.mode.color + 0x10;
+                    var color = this.mode.color + DJ505.PadColor.DIM_MODIFIER;
                     if ((this.mode.range == RANGE_UP && this.number == 5) ||
                         (this.mode.range == RANGE_MID && this.number == 1) ||
                         (this.mode.range == RANGE_DOWN && this.number == 4)) {
-                        color = 0x0F;
+                        color = DJ505.PadColor.WHITE;
                     }
                     this.send(color);
                 };
@@ -1289,9 +1324,9 @@ DJ505.PitchPlayMode = function (deck, offset) {
                 this.outKey = "hotcue_" + this.number + "_enabled";
                 this.output = function (value, group, control) {
                     if (value) {
-                        this.send((value && this.mode.cuepoint === this.number) ? this.number : (this.number + 0x10));
+                        this.send((value && this.mode.cuepoint === this.number) ? this.number : (this.number + DJ505.PadColor.DIM_MODIFIER));
                     } else {
-                        this.send(0x00);
+                        this.send(DJ505.PadColor.OFF);
                     }
                 };
                 this.input = function (channel, control, value, status, group) {
