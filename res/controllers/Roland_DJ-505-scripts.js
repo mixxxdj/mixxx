@@ -55,7 +55,7 @@ var DJ505 = {};
 DJ505.stripSearchScaling = 50;
 DJ505.tempoRange = [0.08, 0.16, 0.5];
 DJ505.autoShowFourDecks = false;
-DJ505.trsGroup = "Auxiliary3";  // TR-S input
+DJ505.trsGroup = "Auxiliary1";  // TR-S input
 
 
 ///////////
