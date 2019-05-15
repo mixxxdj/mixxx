@@ -301,7 +301,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     Q_UNUSED(e);
 }
 
-void WSpinny::render() {
+void WSpinny::render(VSyncThread* vSyncThread) {
     if (!isValid() || !isVisible()) {
         return;
     }
@@ -311,10 +311,11 @@ void WSpinny::render() {
         return;
     }
 
-    if (!m_pVisualPlayPos.isNull()) {
-        m_pVisualPlayPos->getPlaySlipAt(0,
-                                        &m_dAngleCurrentPlaypos,
-                                        &m_dGhostAngleCurrentPlaypos);
+    if (!m_pVisualPlayPos.isNull() && vSyncThread) {
+        m_pVisualPlayPos->getPlaySlipAtNextVSync(
+                vSyncThread,
+                &m_dAngleCurrentPlaypos,
+                &m_dGhostAngleCurrentPlaypos);
     }
 
     QPainter p(this);

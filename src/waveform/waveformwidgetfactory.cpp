@@ -107,7 +107,7 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_openGlesAvailable(false),
         m_openGLShaderAvailable(false),
         m_beatGridAlpha(90),
-        m_vsyncThread(NULL),
+        m_vsyncThread(nullptr),
         m_pGuiTick(nullptr),
         m_pVisualsManager(nullptr),
         m_frameCnt(0),
@@ -628,7 +628,7 @@ void WaveformWidgetFactory::render() {
 
         // WSpinnys are also double-buffered QGLWidgets, like all the waveform
         // renderers. Render all the WSpinny widgets now.
-        emit(renderSpinnies());
+        emit(renderSpinnies(m_vsyncThread));
 
         // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
         // update.
