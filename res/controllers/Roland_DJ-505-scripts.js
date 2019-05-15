@@ -554,6 +554,13 @@ DJ505.Deck = function (deckNumbers, offset) {
         group: "[Channel" + deckNumbers + "]",
         inKey: "volume",
     });
+
+    this.vuMeter = new components.Component({
+        midi: [0xB0 + offset, 0x1F],
+        group: "[Channel" + deckNumbers + "]",
+        outKey: "VuMeter",
+        max: 0x2A,
+    });
 };
 
 DJ505.Deck.prototype = Object.create(components.Deck.prototype);
