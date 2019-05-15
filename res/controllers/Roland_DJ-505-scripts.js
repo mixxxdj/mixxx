@@ -55,7 +55,6 @@ var DJ505 = {};
 DJ505.stripSearchScaling = 50;
 DJ505.tempoRange = [0.08, 0.16, 0.5];
 DJ505.autoShowFourDecks = false;
-DJ505.lineGroups = ["Auxiliary1", "Auxiliary2"];  // LINE/PHONO input
 DJ505.trsGroup = "Auxiliary3";  // TR-S input
 
 
@@ -147,20 +146,6 @@ DJ505.init = function () {
             DJ505.effectUnit[i].enableOnChannelButtons.addButton("Channel" + j);
             DJ505.effectUnit[i].enableOnChannelButtons["Channel" + j].midi = [0x98 + i, 0x04 + j];
         }
-        DJ505.effectUnit[i].enableOnChannelButtons.Channel1.input = function (channel, control, value, status, group) {
-            components.Button.prototype.input.apply(this, arguments);
-            if (this.isPress(channel, control, value, status)) {
-                var enabled = this.inGetValue();
-                engine.setValue(this.group, "group_[" + DJ505.lineGroups[0] + "]_enable", enabled);
-            }
-        };
-        DJ505.effectUnit[i].enableOnChannelButtons.Channel2.input = function (channel, control, value, status, group) {
-            components.Button.prototype.input.apply(this, arguments);
-            if (this.isPress(channel, control, value, status)) {
-                var enabled = this.inGetValue();
-                engine.setValue(this.group, "group_[" + DJ505.lineGroups[1] + "]_enable", enabled);
-            }
-        };
         DJ505.effectUnit[i].enableOnChannelButtons.addButton(DJ505.trsGroup);
         DJ505.effectUnit[i].enableOnChannelButtons[DJ505.trsGroup].midi = [0x98 + i, 0x09];
         DJ505.effectUnit[i].enableOnChannelButtons[DJ505.trsGroup].input = function (channel, control, value, status, group) {
@@ -292,24 +277,15 @@ DJ505.crossfader.setReverse = function (channel, control, value, status, group) 
 };
 
 DJ505.setChannelInput = function (channel, control, value, status, group) {
-    // TODO: Add support for PHONO setting
     var number = (channel == 0x00) ? 0 : 1;
-    var auxgroup = "[" + this.lineGroups[number] + "]";
     var channelgroup = "[Channel" + (number + 1) + "]";
     switch(value) {
     case 0x00:  // PC
-        engine.setValue(auxgroup, "mute" , 1);
-        engine.setValue(channelgroup, "mute", 0);
+        engine.setValue(channelgroup, "passthrough", 0);
         break;
     case 0x01:  // LINE
-        engine.setValue(auxgroup, "master" , 0);
-        engine.setValue(auxgroup, "orientation" , number ? 0 : 2);
-        engine.setValue(channelgroup, "mute", 1);
-        engine.setValue(auxgroup, "mute" , 0);
-        break;
     case 0x02:  // PHONO
-        engine.setValue(channelgroup, "mute", 0);
-        engine.setValue(auxgroup, "mute" , 0);
+        engine.setValue(channelgroup, "passthrough", 1);
         break;
     }
 };
