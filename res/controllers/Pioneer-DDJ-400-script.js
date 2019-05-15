@@ -1,4 +1,4 @@
-// Pioneer-DDJ-400_script.js
+// Pioneer-DDJ-400-script.js
 //
 // ****************************************************************************
 // * Mixxx mapping script file for the Pioneer DDJ-400.

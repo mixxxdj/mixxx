@@ -2,7 +2,7 @@
     <MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.2"> 
 	<info>
 		<name>Pioneer DDJ-400</name>
-		<author>Marc Linde</author>
+		<author>Warker</author>
 		<description>This is a Midi Mapping for the Pioneer DDJ-400</description>
         <wiki>TBD</wiki>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12113</forums>
@@ -11,7 +11,7 @@
 		<scriptfiles>
             <file filename="lodash.mixxx.js"/>
 			<file filename="midi-components-0.0.js"/>
-			<file functionprefix="PioneerDDJ400" filename="Pioneer-DDJ-400_script.js"/>
+			<file functionprefix="PioneerDDJ400" filename="Pioneer-DDJ-400-script.js"/>
 		</scriptfiles>
 		<controls>
 		
