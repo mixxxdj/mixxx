@@ -34,7 +34,7 @@ class SoundSourceSndFile final : public SoundSource {
     SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderSndFile: public SoundSourceProvider {
+class SoundSourceProviderSndFile : public SoundSourceProvider {
   public:
     QString getName() const override;
 

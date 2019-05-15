@@ -113,11 +113,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     WaveformWidgetType::Type autoChooseWidgetType() const;
 
-    // Returns the devicePixelRatio for the current window. This is the scaling
-    // factor between screen pixels and "device independent pixels". For
-    // example, on macOS with a retina display the ratio is 2.
-    static float getDevicePixelRatio();
-
   signals:
     void waveformUpdateTick();
     void waveformMeasured(float frameRate, int droppedFrames);

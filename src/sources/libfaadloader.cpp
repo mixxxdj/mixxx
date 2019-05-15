@@ -41,8 +41,6 @@ LibFaadLoader::LibFaadLoader()
     return;
 #endif
 
-
-
     for (const auto& libname : libnames) {
         m_pLibrary.reset();
         m_pLibrary = std::make_unique<QLibrary>(libname, 0);
@@ -74,15 +72,14 @@ LibFaadLoader::LibFaadLoader()
     m_neAACDecGetErrorMessage = reinterpret_cast<NeAACDecGetErrorMessage_t>(
             m_pLibrary->resolve("NeAACDecGetErrorMessage"));
 
-    if (    !m_neAACDecOpen ||
+    if (!m_neAACDecOpen ||
             !m_neAACDecGetCurrentConfiguration ||
             !m_neAACDecSetConfiguration ||
             !m_neAACDecInit2 ||
             !m_neAACDecClose ||
             !m_neAACDecPostSeekReset ||
             !m_neAACDecDecode2 ||
-            !m_neAACDecGetErrorMessage
-    ) {
+            !m_neAACDecGetErrorMessage) {
         kLogger.debug() << "NeAACDecOpen:" << m_neAACDecOpen;
         kLogger.debug() << "NeAACDecGetCurrentConfiguration:" << m_neAACDecGetCurrentConfiguration;
         kLogger.debug() << "NeAACDecSetConfiguration:" << m_neAACDecSetConfiguration;
