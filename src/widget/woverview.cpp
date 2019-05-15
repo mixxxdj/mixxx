@@ -39,6 +39,7 @@ WOverview::WOverview(const char *pGroup, UserSettingsPointer pConfig, QWidget* p
         m_pixmapDone(false),
         m_waveformPeak(-1.0),
         m_diffGain(0),
+        m_devicePixelRatio(1.0),
         m_group(pGroup),
         m_pConfig(pConfig),
         m_endOfTrack(false),
@@ -331,7 +332,8 @@ void WOverview::paintEvent(QPaintEvent * /*unused*/) {
                     // Rotate pixmap
                     croppedImage = croppedImage.transformed(QTransform(0, 1, 1, 0, 0, 0));
                 }
-                m_waveformImageScaled = croppedImage.scaled(size(), Qt::IgnoreAspectRatio,
+                m_waveformImageScaled = croppedImage.scaled(size() * m_devicePixelRatio,
+                                                            Qt::IgnoreAspectRatio,
                                                             Qt::SmoothTransformation);
                 m_diffGain = diffGain;
             }
@@ -575,6 +577,8 @@ void WOverview::resizeEvent(QResizeEvent * /*unused*/) {
     // space.
     m_a = (length() - 1) / (one - zero);
     m_b = zero * m_a;
+
+    m_devicePixelRatio = getDevicePixelRatioF(this);
 
     m_waveformImageScaled = QImage();
     m_diffGain = 0;

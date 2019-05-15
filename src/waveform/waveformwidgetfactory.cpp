@@ -468,8 +468,6 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
     m_skipRender = true;
     //qDebug() << "recreate start";
 
-    const float devicePixelRatio = getDevicePixelRatio();
-
     //re-create/setup all waveform widgets
     for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
         WaveformWidgetHolder& holder = m_waveformWidgetHolders[i];
@@ -489,7 +487,7 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         // resize() doesn't seem to get called on the widget. I think Qt skips
         // it since the size didn't change.
         //viewer->resize(viewer->size());
-        widget->resize(viewer->width(), viewer->height(), devicePixelRatio);
+        widget->resize(viewer->width(), viewer->height());
         widget->setTrack(pTrack);
         widget->getWidget()->show();
         viewer->update();
@@ -932,14 +930,4 @@ void WaveformWidgetFactory::startVSync(GuiTick* pGuiTick) {
 
 void WaveformWidgetFactory::getAvailableVSyncTypes(QList<QPair<int, QString > >* pList) {
     m_vsyncThread->getAvailableVSyncTypes(pList);
-}
-
-// static
-float WaveformWidgetFactory::getDevicePixelRatio() {
-    float devicePixelRatio = 1.0;
-    QWindow* pWindow = QGuiApplication::focusWindow();
-    if (pWindow != nullptr) {
-        devicePixelRatio = pWindow->devicePixelRatio();
-    }
-    return devicePixelRatio;
 }

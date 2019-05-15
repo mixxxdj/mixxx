@@ -77,7 +77,7 @@ class WaveformWidgetRenderer {
 
     int beatGridAlpha() const { return m_alphaBeatGrid; }
 
-    virtual void resize(int width, int height, float devicePixelRatio);
+    void resize(int width, int height, float devicePixelRatio);
     int getHeight() const { return m_height;}
     int getWidth() const { return m_width;}
     float getDevicePixelRatio() const { return m_devicePixelRatio; }
