@@ -938,8 +938,8 @@ DJ505.PadSection = function (deck, offset) {
 
     // Start in Hotcue Mode and disable other LEDs
     this.setPadMode(DJ505.PadMode.HOTCUE);
-    midi.sendShortMsg(0x94 + offset, this.modes["roll"].ledControl, DJ505.PadColor.OFF);
-    midi.sendShortMsg(0x94 + offset, this.modes["sampler"].ledControl, DJ505.PadColor.OFF);
+    midi.sendShortMsg(0x94 + offset, this.modes.roll.ledControl, DJ505.PadColor.OFF);
+    midi.sendShortMsg(0x94 + offset, this.modes.sampler.ledControl, DJ505.PadColor.OFF);
 };
 
 DJ505.PadSection.prototype = Object.create(components.ComponentContainer.prototype);
@@ -948,13 +948,13 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
     var mode;
     switch(control) {
     case DJ505.PadMode.HOTCUE:
-        mode = this.modes["hotcue"];
+        mode = this.modes.hotcue;
         break;
     //case DJ505.PadMode.FLIP:
-    //    mode = this.modes["flip"];
+    //    mode = this.modes.flip;
     //    break;
     case DJ505.PadMode.CUELOOP:
-        mode = this.modes["cueloop"];
+        mode = this.modes.cueloop;
         break;
     case DJ505.PadMode.TR:
     case DJ505.PadMode.PATTERN:
@@ -963,25 +963,25 @@ DJ505.PadSection.prototype.controlToPadMode = function (control) {
         mode = null;
         break;
     case DJ505.PadMode.ROLL:
-        mode = this.modes["roll"];
+        mode = this.modes.roll;
         break;
     //case DJ505.PadMode.SLICER:
-    //    mode = this.modes["slicer"];
+    //    mode = this.modes.slicer;
     //    break;
     //case DJ505.PadMode.SLICERLOOP:
-    //    mode = this.modes["slicerloop"];
+    //    mode = this.modes.slicerloop;
     //    break;
     case DJ505.PadMode.SAMPLER:
-        mode = this.modes["sampler"];
+        mode = this.modes.sampler;
         break;
     case DJ505.PadMode.VELOCITYSAMPLER:
-        mode = this.modes["velocitysampler"];
+        mode = this.modes.velocitysampler;
         break;
     case DJ505.PadMode.LOOP:
-        mode = this.modes["loop"];
+        mode = this.modes.loop;
         break;
     case DJ505.PadMode.PITCHPLAY:
-        mode = this.modes["pitchplay"];
+        mode = this.modes.pitchplay;
         break;
     }
 
