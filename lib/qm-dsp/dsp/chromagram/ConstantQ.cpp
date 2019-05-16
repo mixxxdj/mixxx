@@ -125,14 +125,18 @@ void ConstantQ::sparsekernel()
             hammingWindowIm[u] = 0;
         }
         
-	// Computing a hamming window
-	const unsigned hammingLength = (int) ceil( m_dQ * m_FS / ( m_FMin * pow(2,((double)(k))/(double)m_BPO)));
+        const double samplesPerCycle =
+                m_FS / (m_FMin * pow(2, (double)k / (double)m_BPO));
+
+        // Computing a hamming window
+        const unsigned hammingLength = (int) ceil(
+                m_dQ * samplesPerCycle);
 
         unsigned origin = m_FFTLength/2 - hammingLength/2;
 
 	for (unsigned i=0; i<hammingLength; i++) 
 	{
-	    const double angle = 2*PI*m_dQ*i/hammingLength;
+	    const double angle = 2*PI*i/samplesPerCycle;
 	    const double real = cos(angle);
 	    const double imag = sin(angle);
 	    const double absol = hamming(hammingLength, i)/hammingLength;
@@ -140,6 +144,10 @@ void ConstantQ::sparsekernel()
 	    hammingWindowIm[ origin + i ] = absol*imag;
 	}
 
+	/* This code splits the hanning window and moves it to the beginning
+	   and the end, creating an empty gap in the middle.
+	   It is disabled, because it results in wrong results,
+	   when tested with sin waves centered on a bin frequency.
         for (unsigned i = 0; i < m_FFTLength/2; ++i) {
             double temp = hammingWindowRe[i];
             hammingWindowRe[i] = hammingWindowRe[i + m_FFTLength/2];
@@ -148,6 +156,7 @@ void ConstantQ::sparsekernel()
             hammingWindowIm[i] = hammingWindowIm[i + m_FFTLength/2];
             hammingWindowIm[i + m_FFTLength/2] = temp;
         }
+	*/
     
 	//do fft of hammingWindow
 	m_FFT.process( 0, hammingWindowRe, hammingWindowIm, transfHammingWindowRe, transfHammingWindowIm );
@@ -292,8 +301,10 @@ void ConstantQ::initialise( CQConfig Config )
     m_BPO = Config.BPO;		// bins per octave
     m_CQThresh = Config.CQThresh;// ConstantQ threshold for kernel generation
 
-    m_dQ = 1/(pow(2,(1/(double)m_BPO))-1);	// Work out Q value for Filter bank
-    m_uK = (unsigned int) ceil(m_BPO * log(m_FMax/m_FMin)/log(2.0));	// No. of constant Q bins
+    // Work out Q value for Filter bank
+    m_dQ = 1/(pow(2,(1/(double)m_BPO))-1);
+    // No. of constant Q bins, extended to a full octave
+    m_uK = m_BPO * (unsigned int)ceil(log(m_FMax/m_FMin)/log(2.0));
 
 //    std::cerr << "ConstantQ::initialise: rate = " << m_FS << ", fmin = " << m_FMin << ", fmax = " << m_FMax << ", bpo = " << m_BPO << ", K = " << m_uK << ", Q = " << m_dQ << std::endl;
 

@@ -33,8 +33,8 @@ int Chromagram::initialise( ChromaConfig Config )
     m_BPO  = Config.BPO;		// bins per octave
     m_normalise = Config.normalise;     // if frame normalisation is required
 
-    // No. of constant Q bins
-    m_uK = ( unsigned int ) ceil( m_BPO * log(m_FMax/m_FMin)/log(2.0));	
+    // No. of constant Q bins, extended to a full octave
+    m_uK = m_BPO * (unsigned int)ceil(log(m_FMax/m_FMin)/log(2.0));
 
     // Create array for chroma result
     m_chromadata = new double[ m_BPO ];
@@ -44,7 +44,7 @@ int Chromagram::initialise( ChromaConfig Config )
 
     // Populate CQ config structure with parameters
     // inherited from the Chroma config
-    ConstantQConfig.FS	 = Config.FS;
+    ConstantQConfig.FS = Config.FS;
     ConstantQConfig.min = m_FMin;
     ConstantQConfig.max = m_FMax;
     ConstantQConfig.BPO = m_BPO;
@@ -134,7 +134,7 @@ double* Chromagram::process( const double *data )
         m_windowbuf = new double[m_frameSize];
     }
 
-    for (int i = 0; i < m_frameSize; ++i) {
+    for (unsigned int i = 0; i < m_frameSize; ++i) {
         m_windowbuf[i] = data[i];
     }
     m_window->cut(m_windowbuf);
@@ -155,20 +155,18 @@ double* Chromagram::process( const double *real, const double *imag )
     // initialise chromadata to 0
     for (unsigned i = 0; i < m_BPO; i++) m_chromadata[i] = 0;
 
-    double cmax = 0.0;
-    double cval = 0;
     // Calculate ConstantQ frame
     m_ConstantQ->process( real, imag, m_CQRe, m_CQIm );
 	
     // add each octave of cq data into Chromagram
-    const unsigned octaves = (int)floor(double( m_uK/m_BPO))-1;
-    for (unsigned octave = 0; octave <= octaves; octave++) 
+    const unsigned octaves = m_uK / m_BPO;
+    for (unsigned octave = 0; octave < octaves; octave++)
     {
-	unsigned firstBin = octave*m_BPO;
-	for (unsigned i = 0; i < m_BPO; i++) 
-	{
-	    m_chromadata[i] += kabs( m_CQRe[ firstBin + i ], m_CQIm[ firstBin + i ]);
-	}
+        unsigned firstBin = octave * m_BPO;
+        for (unsigned i = 0; i < m_BPO; i++)
+        {
+            m_chromadata[i] += kabs( m_CQRe[ firstBin + i ], m_CQIm[ firstBin + i ]);
+        }
     }
 
     MathUtilities::normalise(m_chromadata, m_BPO, m_normalise);

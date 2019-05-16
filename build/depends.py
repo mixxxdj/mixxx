@@ -1363,11 +1363,11 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='-Wall')
             build.env.Append(CCFLAGS='-Wextra')
 
-            if build.compiler_is_gcc and build.compiler_major_version >= 9:
+            if build.compiler_is_gcc and build.gcc_major_version >= 9:
                 # Avoid many warnings from GCC 9 about implicitly defined copy assignment
                 # operators that are deprecated for classes with a user-provided copy
                 # constructor. This affects both Qt 5.12 and Mixxx.
-                build.env.Append(CCFLAGS='-Wno-deprecated-copy')
+                build.env.Append(CXXFLAGS='-Wno-deprecated-copy')
 
             if build.compiler_is_clang:
                 # Quiet down Clang warnings about inconsistent use of override
