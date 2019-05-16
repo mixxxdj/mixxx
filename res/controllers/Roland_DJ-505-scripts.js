@@ -211,7 +211,7 @@ DJ505.shutdown = function () {
 
 DJ505.browseEncoder = new components.Encoder({
     input: function (channel, control, value, status, group) {
-        var isShifted = control % 2 != 0;
+        var isShifted = (control % 2) !== 0;
         switch (status) {
         case 0xBF: // Rotate.
             if (value === 127) {
@@ -283,11 +283,11 @@ DJ505.crossfader.setCurve = function (channel, control, value, status, group) {
 
 DJ505.crossfader.setReverse = function (channel, control, value, status, group) {
     // 0x00 is ON, 0x01 is OFF
-    engine.setValue("[Mixer Profile]", "xFaderReverse", (value == 0x00) ? 1 : 0);
+    engine.setValue("[Mixer Profile]", "xFaderReverse", (value === 0x00) ? 1 : 0);
 };
 
 DJ505.setChannelInput = function (channel, control, value, status, group) {
-    var number = (channel == 0x00) ? 0 : 1;
+    var number = (channel === 0x00) ? 0 : 1;
     var channelgroup = "[Channel" + (number + 1) + "]";
     switch(value) {
     case 0x00:  // PC
@@ -606,7 +606,7 @@ DJ505.DeckToggleButton.prototype.input = function (channel, control, value, stat
 DJ505.DeckToggleButton.prototype.trigger = function () {
     this.send(this.secondaryDeck ? this.on : this.off);
     var new_group = "[Channel" + (this.secondaryDeck ? this.decks[1] : this.decks[0]) + "]";
-    if (this.loadTrackButton.group != new_group) {
+    if (this.loadTrackButton.group !== new_group) {
         this.loadTrackButton.group = new_group;
         this.loadTrackButton.disconnect();
         this.loadTrackButton.connect();
@@ -684,10 +684,10 @@ DJ505.Sampler = function() {
     };
 
     this.syncButtonPressed = function (channel, control, value, status, group) {
-        if (value != 0x7f) {
+        if (value !== 0x7f) {
             return;
         }
-        var isShifted = (control == 0x55);
+        var isShifted = (control === 0x55);
         if (isShifted || this.syncDeck >= 0) {
             this.syncDeck = -1;
         } else {
@@ -715,13 +715,13 @@ DJ505.Sampler = function() {
     };
 
     this.startStopButtonPressed = function (channel, control, value, status, group) {
-        if (status == 0xFA) {
+        if (status === 0xFA) {
             this.playbackCounter = 1;
             this.playbackTimer = engine.beginTimer(500, function() {
                 midi.sendShortMsg(0xBA, 0x02, this.playbackCounter);
                 this.playbackCounter = (this.playbackCounter % 4) + 1;
             });
-        } else if (status == 0xFC) {
+        } else if (status === 0xFC) {
             if (this.playbackTimer) {
                 engine.stopTimer(this.playbackTimer);
             }
@@ -1117,7 +1117,7 @@ DJ505.CueLoopMode = function (deck, offset) {
                         // disable loop if currently enabled
                         if (engine.getValue(group, "loop_enabled")) {
                             script.triggerControl(group, "reloop_toggle", 1);
-                            if (enabled && engine.getValue(group, "loop_start_position") == startpos && engine.getValue(group, "loop_end_position") == endpos) {
+                            if (enabled && engine.getValue(group, "loop_start_position") === startpos && engine.getValue(group, "loop_end_position") === endpos) {
                                 return;
                             }
                         }
@@ -1142,7 +1142,7 @@ DJ505.CueLoopMode = function (deck, offset) {
                             var loopsamples = loopseconds * engine.getValue(group, "track_samplerate") * 2;
                             var endpos = startpos + loopsamples;
 
-                            if (engine.getValue(group, "loop_enabled") && engine.getValue(group, "loop_start_position") == startpos && engine.getValue(group, "loop_end_position") == endpos) {
+                            if (engine.getValue(group, "loop_enabled") && engine.getValue(group, "loop_start_position") === startpos && engine.getValue(group, "loop_end_position") === endpos) {
                                 engine.setValue(group, "reloop_toggle", 1);
                             } else {
                                 script.triggerControl(group, "hotcue_" + this.number + "_clear");
@@ -1176,7 +1176,7 @@ DJ505.RollMode = function (deck, offset) {
             inKey: "beatlooproll_" + loopSize + "_activate",
             outConnect: false,
             on: this.color,
-            off: (loopSize == 4) ? DJ505.PadColor.APPLEGREEN : (this.color + DJ505.PadColor.DIM_MODIFIER),
+            off: (loopSize === 4) ? DJ505.PadColor.APPLEGREEN : (this.color + DJ505.PadColor.DIM_MODIFIER),
         });
     }
     this.paramMinusButton = new components.Button({
@@ -1184,7 +1184,7 @@ DJ505.RollMode = function (deck, offset) {
         mode: this,
         input: function (channel, control, value, status, group) {
             if (value) {
-                if (this.mode.loopSize == 0.03125) {
+                if (this.mode.loopSize === 0.03125) {
                     this.mode.setLoopSize(0.25);
                 } else {
                     this.mode.setLoopSize(this.mode.loopSize / 2);
@@ -1198,7 +1198,7 @@ DJ505.RollMode = function (deck, offset) {
         mode: this,
         input: function (channel, control, value, status, group) {
             if (value) {
-                if (this.mode.loopSize == 0.25) {
+                if (this.mode.loopSize === 0.25) {
                     this.mode.setLoopSize(0.03125);
                 } else {
                     this.mode.setLoopSize(this.mode.loopSize * 2);
@@ -1216,7 +1216,7 @@ DJ505.RollMode.prototype.setLoopSize = function (loopSize) {
         padLoopSize = (this.loopSize * Math.pow(2, i));
         this.pads[i].inKey = "beatlooproll_" + padLoopSize + "_activate";
         this.pads[i].outKey = "beatloop_" + padLoopSize + "_enabled";
-        this.pads[i].off = (padLoopSize == 4) ? DJ505.PadColor.APPLEGREEN : (this.color + DJ505.PadColor.DIM_MODIFIER);
+        this.pads[i].off = (padLoopSize === 4) ? DJ505.PadColor.APPLEGREEN : (this.color + DJ505.PadColor.DIM_MODIFIER);
     }
     this.reconnectComponents();
 };
@@ -1311,9 +1311,9 @@ DJ505.PitchPlayMode = function (deck, offset) {
                 this.outKey = "key";
                 this.output = function (value, group, control) {
                     var color = this.mode.color + DJ505.PadColor.DIM_MODIFIER;
-                    if ((this.mode.range == RANGE_UP && this.number == 5) ||
-                        (this.mode.range == RANGE_MID && this.number == 1) ||
-                        (this.mode.range == RANGE_DOWN && this.number == 4)) {
+                    if ((this.mode.range === RANGE_UP && this.number === 5) ||
+                        (this.mode.range === RANGE_MID && this.number === 1) ||
+                        (this.mode.range === RANGE_DOWN && this.number === 4)) {
                         color = DJ505.PadColor.WHITE;
                     }
                     this.send(color);
@@ -1350,7 +1350,7 @@ DJ505.PitchPlayMode = function (deck, offset) {
                     }
                 };
                 this.input = function (channel, control, value, status, group) {
-                    if (value > 0 && this.mode.cuepoint != this.number && engine.getValue(this.group, "hotcue_" + this.number + "_enabled")) {
+                    if (value > 0 && this.mode.cuepoint !== this.number && engine.getValue(this.group, "hotcue_" + this.number + "_enabled")) {
                         var previous_cuepoint = this.mode.cuepoint;
                         this.mode.cuepoint = this.number;
                         this.mode.pads[previous_cuepoint - 1].trigger();
@@ -1368,9 +1368,9 @@ DJ505.PitchPlayMode = function (deck, offset) {
         mode: this,
         input: function (channel, control, value, status, group) {
             if (value) {
-                if (this.mode.range == RANGE_UP) {
+                if (this.mode.range === RANGE_UP) {
                     this.mode.range = RANGE_MID;
-                } else if (this.mode.range == RANGE_MID) {
+                } else if (this.mode.range === RANGE_MID) {
                     this.mode.range = RANGE_DOWN;
                 } else {
                     this.mode.range = RANGE_UP;
@@ -1387,9 +1387,9 @@ DJ505.PitchPlayMode = function (deck, offset) {
         mode: this,
         input: function (channel, control, value, status, group) {
             if (value) {
-                if (this.mode.range == RANGE_UP) {
+                if (this.mode.range === RANGE_UP) {
                     this.mode.range = RANGE_DOWN;
-                } else if (this.mode.range == RANGE_MID) {
+                } else if (this.mode.range === RANGE_MID) {
                     this.mode.range = RANGE_UP;
                 } else {
                     this.mode.range = RANGE_MID;
