@@ -21,7 +21,7 @@
 #include "ConstantQ.h"
 
 struct ChromaConfig{
-    unsigned int FS;
+    double FS;
     double min;
     double max;
     unsigned int BPO;

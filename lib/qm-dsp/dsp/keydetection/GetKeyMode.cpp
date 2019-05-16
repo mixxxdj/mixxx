@@ -60,13 +60,13 @@ GetKeyMode::GetKeyMode( int sampleRate, float tuningFrequency,
         
     // Chromagram configuration parameters
     m_ChromaConfig.normalise = MathUtilities::NormaliseUnitMax;
-    m_ChromaConfig.FS = lrint(sampleRate/(double)m_DecimationFactor);
-    if (m_ChromaConfig.FS < 1) m_ChromaConfig.FS = 1;
+    m_ChromaConfig.FS = sampleRate/(double)m_DecimationFactor;
 
-    // Set C (= MIDI #12) as our base :
+    // Set C3 (= MIDI #48) as our base:
     // This implies that key = 1 => Cmaj, key = 12 => Bmaj, key = 13 => Cmin, etc.
     m_ChromaConfig.min = Pitch::getFrequencyForPitch
         (48, 0, tuningFrequency);
+    // C7 (= MIDI #96) is the exclusive maximum key:
     m_ChromaConfig.max = Pitch::getFrequencyForPitch
         (96, 0, tuningFrequency);
 
@@ -184,7 +184,7 @@ int GetKeyMode::process(double *PCMData)
     MathUtilities::circShift( m_ChrPointer, m_BPO, 2);
 /*
     std::cout << "raw chroma: ";
-    for (int ii = 0; ii < m_BPO; ++ii) {
+    for (unsigned int ii = 0; ii < m_BPO; ++ii) {
       if (ii % (m_BPO/12) == 0) std::cout << "\n";
         std::cout << m_ChrPointer[ii] << " ";
     }
@@ -268,8 +268,10 @@ int GetKeyMode::process(double *PCMData)
     // m_Keys[1] is C center  1 / 3 + 1 = 1
     // m_Keys[4] is D center  4 / 3 + 1 = 2
     // '+ 1' because we number keys 1-24, not 0-23.
-    key = MathUtilities::getMax( m_Keys, 2* m_BPO, &dummy ) / 3 + 1;
+    int maxBin = MathUtilities::getMax( m_Keys, 2* m_BPO, &dummy );
+    key = maxBin / 3 + 1;
 
+//    std::cout << "fractional key pre-sorting: " << (maxBin + 2) / 3.0 << std::endl;
 //    std::cout << "key pre-sorting: " << key << std::endl;
 
 
