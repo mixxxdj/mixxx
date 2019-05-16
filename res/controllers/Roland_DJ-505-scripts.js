@@ -1086,72 +1086,79 @@ DJ505.CueLoopMode = function (deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.HOTCUE;
     this.color = DJ505.PadColor.BLUE;
-    this.pads = [];
-    for (var i = 0; i <= 7; i++) {
-        this.pads[i] = new components.Button({
-            midi: [0x94 + offset, 0x14 + i],
-            sendShifted: true,
-            shiftControl: true,
-            shiftOffset: 8,
-            number: i + 1,
-            group: deck.currentDeck,
-            outKey: "hotcue_" + (i + 1) + "_enabled",
-            on: i + 1,
-            off: this.color + DJ505.PadColor.DIM_MODIFIER,
-            outConnect: false,
-            unshift: function() {
-                this.input = function (channel, control, value, status, group) {
-                    if (value) {
-                        var enabled = true;
-                        if (!engine.getValue(group, "hotcue_" + this.number + "_enabled")) {
-                            // set a new cue point and loop
-                            enabled = false;
-                            script.triggerControl(group, "hotcue_" + this.number + "_activate");
+
+    this.PerformancePad = function(n) {
+        this.midi = [0x94 + offset, 0x14 + n];
+        this.number = n + 1;
+        this.on = this.number;
+        this.outKey = "hotcue_" + this.number + "_enabled";
+
+        components.Button.call(this);
+    };
+    this.PerformancePad.prototype = new components.Button({
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 8,
+        group: deck.currentDeck,
+        off: this.color + DJ505.PadColor.DIM_MODIFIER,
+        outConnect: false,
+        unshift: function() {
+            this.input = function (channel, control, value, status, group) {
+                if (value) {
+                    var enabled = true;
+                    if (!engine.getValue(group, "hotcue_" + this.number + "_enabled")) {
+                        // set a new cue point and loop
+                        enabled = false;
+                        script.triggerControl(group, "hotcue_" + this.number + "_activate");
+                    }
+                    // jump to existing cue and loop
+                    var startpos = engine.getValue(group, "hotcue_" + this.number + "_position");
+                    var loopseconds = engine.getValue(group, "beatloop_size") * (1 / (engine.getValue(group, "bpm") / 60));
+                    var loopsamples = loopseconds * engine.getValue(group, "track_samplerate") * 2;
+                    var endpos = startpos + loopsamples;
+
+                    // disable loop if currently enabled
+                    if (engine.getValue(group, "loop_enabled")) {
+                        script.triggerControl(group, "reloop_toggle", 1);
+                        if (enabled && engine.getValue(group, "loop_start_position") === startpos && engine.getValue(group, "loop_end_position") === endpos) {
+                            return;
                         }
+                    }
+                    // set start and endpoints
+                    engine.setValue(group, "loop_start_position", startpos);
+                    engine.setValue(group, "loop_end_position", endpos);
+                    // enable loop
+                    script.triggerControl(group, "reloop_toggle", 1);
+                    if (enabled) {
+                        script.triggerControl(group, "loop_in_goto", 1);
+                    }
+                }
+            };
+        },
+        shift: function() {
+            this.input = function (channel, control, value, status, group) {
+                if (value) {
+                    if (engine.getValue(group, "hotcue_" + this.number + "_enabled")) {
                         // jump to existing cue and loop
                         var startpos = engine.getValue(group, "hotcue_" + this.number + "_position");
                         var loopseconds = engine.getValue(group, "beatloop_size") * (1 / (engine.getValue(group, "bpm") / 60));
                         var loopsamples = loopseconds * engine.getValue(group, "track_samplerate") * 2;
                         var endpos = startpos + loopsamples;
 
-                        // disable loop if currently enabled
-                        if (engine.getValue(group, "loop_enabled")) {
-                            script.triggerControl(group, "reloop_toggle", 1);
-                            if (enabled && engine.getValue(group, "loop_start_position") === startpos && engine.getValue(group, "loop_end_position") === endpos) {
-                                return;
-                            }
-                        }
-                        // set start and endpoints
-                        engine.setValue(group, "loop_start_position", startpos);
-                        engine.setValue(group, "loop_end_position", endpos);
-                        // enable loop
-                        script.triggerControl(group, "reloop_toggle", 1);
-                        if (enabled) {
-                            script.triggerControl(group, "loop_in_goto", 1);
+                        if (engine.getValue(group, "loop_enabled") && engine.getValue(group, "loop_start_position") === startpos && engine.getValue(group, "loop_end_position") === endpos) {
+                            engine.setValue(group, "reloop_toggle", 1);
+                        } else {
+                            script.triggerControl(group, "hotcue_" + this.number + "_clear");
                         }
                     }
-                };
-            },
-            shift: function() {
-                this.input = function (channel, control, value, status, group) {
-                    if (value) {
-                        if (engine.getValue(group, "hotcue_" + this.number + "_enabled")) {
-                            // jump to existing cue and loop
-                            var startpos = engine.getValue(group, "hotcue_" + this.number + "_position");
-                            var loopseconds = engine.getValue(group, "beatloop_size") * (1 / (engine.getValue(group, "bpm") / 60));
-                            var loopsamples = loopseconds * engine.getValue(group, "track_samplerate") * 2;
-                            var endpos = startpos + loopsamples;
+                }
+            };
+        },
+    });
 
-                            if (engine.getValue(group, "loop_enabled") && engine.getValue(group, "loop_start_position") === startpos && engine.getValue(group, "loop_end_position") === endpos) {
-                                engine.setValue(group, "reloop_toggle", 1);
-                            } else {
-                                script.triggerControl(group, "hotcue_" + this.number + "_clear");
-                            }
-                        }
-                    }
-                };
-            },
-        });
+    this.pads = new components.ComponentContainer();
+    for (var n = 0; n <= 7; n++) {
+        this.pads[n] = new this.PerformancePad(n);
     }
 };
 DJ505.CueLoopMode.prototype = Object.create(components.ComponentContainer.prototype);
