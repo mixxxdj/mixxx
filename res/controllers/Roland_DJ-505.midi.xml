@@ -3070,7 +3070,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>DJ505.effectUnit[0].enableOnTrsButton</key>
+                <key>DJ505.effectUnit[0].enableOnTrsButton.input</key>
                 <description>FX 2 CH ASSIGN TR/SAMPLER</description>
                 <status>0x98</status>
                 <midino>0x09</midino>
@@ -3283,7 +3283,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>DJ505.effectUnit[1].enableOnTrsButton</key>
+                <key>DJ505.effectUnit[1].enableOnTrsButton.input</key>
                 <description>FX 2 CH ASSIGN TR/SAMPLER</description>
                 <status>0x99</status>
                 <midino>0x09</midino>

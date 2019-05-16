@@ -167,9 +167,7 @@ DJ505.init = function () {
                 }
             }
         };
-        DJ505.effectUnit[i].enableOnTrsButton = function (channel, control, value, status, group) {
-            this.enableOnChannelButtons[DJ505.trsGroup].input(channel, control, value, status, group);
-        };
+        DJ505.effectUnit[i].enableOnTrsButton = DJ505.effectUnit[i].enableOnChannelButtons[DJ505.trsGroup];
         DJ505.effectUnit[i].init();
     }
 
