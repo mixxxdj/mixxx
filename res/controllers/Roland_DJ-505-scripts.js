@@ -62,7 +62,7 @@ var DJ505 = {};
 // Tweakables. //
 /////////////////
 
-DJ505.stripSearchScaling = 50;
+DJ505.stripSearchScaling = 0.15;
 DJ505.tempoRange = [0.08, 0.16, 0.5];
 DJ505.autoShowFourDecks = false;
 DJ505.trsGroup = "Auxiliary1";  // TR-S input
@@ -348,22 +348,21 @@ DJ505.Deck = function (deckNumbers, offset) {
     };
 
     this.wheelTurn = function (channel, control, value, status, group) {
+        // When the jog wheel is turned in clockwise direction, value is
+        // greater than 64 (= 0x40). If it's turned in counter-clockwise
+        // direction, the value is smaller than 64.
         var newValue = value - 64;
         var deck = script.deckFromGroup(this.currentDeck);
         if (engine.isScratching(deck)) {
             engine.scratchTick(deck, newValue); // Scratch!
         } else if (this.isShifted) {
-            // Strip search.
             var oldPos = engine.getValue(this.currentDeck, "playposition");
-            // Scale to interval [0,1].
-            newValue = newValue / 0xff;
             // Since ‘playposition’ is normalized to unity, we need to scale by
             // song duration in order for the jog wheel to cover the same amount
             // of time given a constant turning angle.
             var duration = engine.getValue(this.currentDeck, "duration");
-            newValue = newValue / duration;
-            var newPos = Math.max(0, oldPos + newValue * DJ505.stripSearchScaling);
-            engine.setValue(this.currentDeck, "playposition", newPos);
+            var newPos = Math.max(0, oldPos + (newValue * DJ505.stripSearchScaling / duration));
+            engine.setValue(this.currentDeck, "playposition", newPos); // Strip search
         } else {
             engine.setValue(this.currentDeck, "jog", newValue); // Pitch bend
         }
