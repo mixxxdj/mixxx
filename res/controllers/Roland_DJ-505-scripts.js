@@ -1294,14 +1294,16 @@ DJ505.VelocitySamplerMode.prototype = Object.create(components.ComponentContaine
 DJ505.PitchPlayMode = function (deck, offset) {
     components.ComponentContainer.call(this);
 
-    const RANGE_UP = 0;
-    const RANGE_MID = 1;
-    const RANGE_DOWN = 2;
+    var PitchPlayRange = {
+        UP: 0,
+        MID: 1,
+        DOWN: 2,
+    };
 
     this.ledControl = DJ505.PadMode.SAMPLER;
     this.color = DJ505.PadColor.GREEN;
     this.cuepoint = 1;
-    this.range = RANGE_MID;
+    this.range = PitchPlayRange.MID;
 
     this.PerformancePad = function(n) {
         this.midi = [0x94 + offset, 0x14 + n];
@@ -1322,9 +1324,9 @@ DJ505.PitchPlayMode = function (deck, offset) {
             this.outKey = "key";
             this.output = function (value, group, control) {
                 var color = this.mode.color + DJ505.PadColor.DIM_MODIFIER;
-                if ((this.mode.range === RANGE_UP && this.number === 5) ||
-                    (this.mode.range === RANGE_MID && this.number === 1) ||
-                    (this.mode.range === RANGE_DOWN && this.number === 4)) {
+                if ((this.mode.range === PitchPlayRange.UP && this.number === 5) ||
+                    (this.mode.range === PitchPlayRange.MID && this.number === 1) ||
+                    (this.mode.range === PitchPlayRange.DOWN && this.number === 4)) {
                     color = DJ505.PadColor.WHITE;
                 }
                 this.send(color);
@@ -1334,13 +1336,13 @@ DJ505.PitchPlayMode = function (deck, offset) {
                     var fileKey = engine.getValue(group, "file_key");
                     var keyModifier;
                     switch(this.mode.range) {
-                    case RANGE_UP:
+                    case PitchPlayRange.UP:
                         keyModifier = this.number + ((this.number <= 4) ? 4 : -5);
                         break;
-                    case RANGE_MID:
+                    case PitchPlayRange.MID:
                         keyModifier = this.number - ((this.number <= 4) ? 1 : 9);
                         break;
-                    case RANGE_DOWN:
+                    case PitchPlayRange.DOWN:
                         keyModifier = this.number - ((this.number <= 4) ? 4 : 12);
                     }
                     engine.setValue(this.group, "key", fileKey + keyModifier);
@@ -1384,12 +1386,12 @@ DJ505.PitchPlayMode = function (deck, offset) {
         mode: this,
         input: function (channel, control, value, status, group) {
             if (value) {
-                if (this.mode.range === RANGE_UP) {
-                    this.mode.range = RANGE_MID;
-                } else if (this.mode.range === RANGE_MID) {
-                    this.mode.range = RANGE_DOWN;
+                if (this.mode.range === PitchPlayRange.UP) {
+                    this.mode.range = PitchPlayRange.MID;
+                } else if (this.mode.range === PitchPlayRange.MID) {
+                    this.mode.range = PitchPlayRange.DOWN;
                 } else {
-                    this.mode.range = RANGE_UP;
+                    this.mode.range = PitchPlayRange.UP;
                 }
                 this.mode.forEachComponent(function (component) {
                     component.trigger();
@@ -1403,12 +1405,12 @@ DJ505.PitchPlayMode = function (deck, offset) {
         mode: this,
         input: function (channel, control, value, status, group) {
             if (value) {
-                if (this.mode.range === RANGE_UP) {
-                    this.mode.range = RANGE_DOWN;
-                } else if (this.mode.range === RANGE_MID) {
-                    this.mode.range = RANGE_UP;
+                if (this.mode.range === PitchPlayRange.UP) {
+                    this.mode.range = PitchPlayRange.DOWN;
+                } else if (this.mode.range === PitchPlayRange.MID) {
+                    this.mode.range = PitchPlayRange.UP;
                 } else {
-                    this.mode.range = RANGE_MID;
+                    this.mode.range = PitchPlayRange.MID;
                 }
                 this.mode.forEachComponent(function (component) {
                     component.trigger();
