@@ -1285,84 +1285,93 @@ DJ505.VelocitySamplerMode = function (deck, offset) {
 DJ505.VelocitySamplerMode.prototype = Object.create(components.ComponentContainer.prototype);
 
 DJ505.PitchPlayMode = function (deck, offset) {
+    components.ComponentContainer.call(this);
+
     const RANGE_UP = 0;
     const RANGE_MID = 1;
     const RANGE_DOWN = 2;
 
-    components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.SAMPLER;
     this.color = DJ505.PadColor.GREEN;
-    this.pads = [];
     this.cuepoint = 1;
     this.range = RANGE_MID;
-    for (var i = 0; i <= 7; i++) {
-        this.pads[i] = new components.Button({
-            midi: [0x94 + offset, 0x14 + i],
-            sendShifted: true,
-            shiftControl: true,
-            shiftOffset: 8,
-            group: deck.currentDeck,
-            mode: this,
-            number: i + 1,
-            outConnect: false,
-            on: this.number + DJ505.PadColor.DIM_MODIFIER,
-            off: DJ505.PadColor.OFF,
-            unshift: function() {
-                this.outKey = "key";
-                this.output = function (value, group, control) {
-                    var color = this.mode.color + DJ505.PadColor.DIM_MODIFIER;
-                    if ((this.mode.range === RANGE_UP && this.number === 5) ||
-                        (this.mode.range === RANGE_MID && this.number === 1) ||
-                        (this.mode.range === RANGE_DOWN && this.number === 4)) {
-                        color = DJ505.PadColor.WHITE;
+
+    this.PerformancePad = function(n) {
+        this.midi = [0x94 + offset, 0x14 + n];
+        this.number = n + 1;
+        this.on = this.number + DJ505.PadColor.DIM_MODIFIER;
+
+        components.Button.call(this);
+    };
+    this.PerformancePad.prototype = new components.Button({
+        sendShifted: true,
+        shiftControl: true,
+        shiftOffset: 8,
+        group: deck.currentDeck,
+        mode: this,
+        outConnect: false,
+        off: DJ505.PadColor.OFF,
+        unshift: function() {
+            this.outKey = "key";
+            this.output = function (value, group, control) {
+                var color = this.mode.color + DJ505.PadColor.DIM_MODIFIER;
+                if ((this.mode.range === RANGE_UP && this.number === 5) ||
+                    (this.mode.range === RANGE_MID && this.number === 1) ||
+                    (this.mode.range === RANGE_DOWN && this.number === 4)) {
+                    color = DJ505.PadColor.WHITE;
+                }
+                this.send(color);
+            };
+            this.input = function (channel, control, value, status, group) {
+                if (value > 0) {
+                    var fileKey = engine.getValue(group, "file_key");
+                    var keyModifier;
+                    switch(this.mode.range) {
+                    case RANGE_UP:
+                        keyModifier = this.number + ((this.number <= 4) ? 4 : -5);
+                        break;
+                    case RANGE_MID:
+                        keyModifier = this.number - ((this.number <= 4) ? 1 : 9);
+                        break;
+                    case RANGE_DOWN:
+                        keyModifier = this.number - ((this.number <= 4) ? 4 : 12);
                     }
-                    this.send(color);
-                };
-                this.input = function (channel, control, value, status, group) {
-                    if (value > 0) {
-                        var fileKey = engine.getValue(group, "file_key");
-                        var keyModifier;
-                        switch(this.mode.range) {
-                        case RANGE_UP:
-                            keyModifier = this.number + ((this.number <= 4) ? 4 : -5);
-                            break;
-                        case RANGE_MID:
-                            keyModifier = this.number - ((this.number <= 4) ? 1 : 9);
-                            break;
-                        case RANGE_DOWN:
-                            keyModifier = this.number - ((this.number <= 4) ? 4 : 12);
-                        }
-                        engine.setValue(this.group, "key", fileKey + keyModifier);
-                        engine.setValue(this.group, "hotcue_" + this.mode.cuepoint + "_activate", value);
-                    }
-                };
-                this.disconnect();
-                this.connect();
-                this.trigger();
-            },
-            shift: function() {
-                this.outKey = "hotcue_" + this.number + "_enabled";
-                this.output = function (value, group, control) {
-                    if (value) {
-                        this.send((value && this.mode.cuepoint === this.number) ? this.number : (this.number + DJ505.PadColor.DIM_MODIFIER));
-                    } else {
-                        this.send(DJ505.PadColor.OFF);
-                    }
-                };
-                this.input = function (channel, control, value, status, group) {
-                    if (value > 0 && this.mode.cuepoint !== this.number && engine.getValue(this.group, "hotcue_" + this.number + "_enabled")) {
-                        var previous_cuepoint = this.mode.cuepoint;
-                        this.mode.cuepoint = this.number;
-                        this.mode.pads[previous_cuepoint - 1].trigger();
-                        this.send(this.number);
-                    }
-                };
-                this.disconnect();
-                this.connect();
-                this.trigger();
-            },
-        });
+                    engine.setValue(this.group, "key", fileKey + keyModifier);
+                    engine.setValue(this.group, "hotcue_" + this.mode.cuepoint + "_activate", value);
+                }
+            };
+            this.disconnect();
+            this.connect();
+            this.trigger();
+        },
+        shift: function() {
+            this.outKey = "hotcue_" + this.number + "_enabled";
+            this.output = function (value, group, control) {
+                if (value) {
+                    this.send((value && this.mode.cuepoint === this.number) ? this.number : (this.number + DJ505.PadColor.DIM_MODIFIER));
+                } else {
+                    this.send(DJ505.PadColor.OFF);
+                }
+            };
+            this.input = function (channel, control, value, status, group) {
+                if (value > 0 && this.mode.cuepoint !== this.number && engine.getValue(this.group, "hotcue_" + this.number + "_enabled")) {
+                    var previous_cuepoint = this.mode.cuepoint;
+                    this.mode.cuepoint = this.number;
+                    this.mode.pads[previous_cuepoint - 1].trigger();
+                    this.send(this.number);
+                }
+            };
+            this.disconnect();
+            this.connect();
+            this.trigger();
+        },
+    });
+
+    this.pads = new components.ComponentContainer();
+    for (var n = 0; n <= 7; n++) {
+        this.pads[n] = new this.PerformancePad(n);
     }
+
     this.paramMinusButton = new components.Button({
         midi: [0x94 + offset, 0x28],
         mode: this,
