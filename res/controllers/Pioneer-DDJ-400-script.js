@@ -23,16 +23,15 @@
                 * Beatjump mode
                 * Hot Cue Mode (including loops)
                 * Loop Section: Loop in / Out + Adjust, Call, Double, Half
+                * Effect Section (Beat FX left + Right - select the Effect Slot (not Effect BPM))
 
             Partially:
                 * PAD FX (only slots A-H, Q-P)
+                * Effect Section (without Beat FX left + Right - no equivalent function found)
                 
-            Not working:
-                * Effect Section (Left, right, fx select, level/depth)
+            Not working/implemented:
+                * Channel & Crossfader Start
                 * Output (lights)
-
-            TODO:
-                * revive github account :)
 
             Changelog: 
 
@@ -51,6 +50,12 @@
                 * added support for saving and playing loops on Hot Cue Pads
                 * added support for loop in + out adjust (while looping press and hold in or out + jog wheel to adjust the loop poit position)
                 * fixed a bug in Tempo Range switch (Beat Sync + shift)
+             
+            Version 0.3 - 18.05.2019:
+                * added Effect Section funtions
+                    - Beat FX left and right selects the Effect Slot in FX3
+                    - Shift + Beat FX On/Off disables all Effect Slots
+
 */ 
 
 //TODO: Functions that could be implemented to the script:
@@ -84,7 +89,10 @@ PioneerDDJ400.hotcueLoopPoints = {
     '[Channel1]' : [],
     '[Channel2]' : []
 };
-    
+ 
+// Beat FX 
+PioneerDDJ400.beatFxEffect = 0;
+PioneerDDJ400.beatFXEffectSlots = 3;
 
 // Modes
 const mode = {
@@ -123,6 +131,8 @@ PioneerDDJ400.init = function() {
     engine.setValue('[Channel2]', 'rateRange', PioneerDDJ400.tempoRanges[1]);
     // Todo: set Mode on start!
 
+
+    engine.setValue('[EffectRack1_EffectUnit3]', 'show_focus', 1);
 };
 
 
@@ -394,6 +404,53 @@ PioneerDDJ400.loopoutPressed = function(channel, control, value, status, group){
 
     if(loopEnabled == 0 && value > 0){
         engine.setValue(group, 'loop_out', 1);
+    }
+};
+
+PioneerDDJ400.beatFxLevelDepthRotate = function(channel, control, value, status, group){
+    // which bit we want to use? MSB 0x02 or LSB 0x22
+    const newVal = value == 0 ? 0 : (value / 0x7F);
+    const effectOn = engine.getValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'enabled');
+    
+    if(effectOn == 0){
+        engine.setValue('[EffectRack1_EffectUnit3]', 'mix', newVal);
+    }
+    else{
+        engine.setValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'meta', newVal);
+    }
+};
+
+PioneerDDJ400.beatFxSelectPressed = function(channel, control, value, status, group){
+    engine.setValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'next_effect', value);
+};
+
+PioneerDDJ400.beatFxSelectShiftPressed = function(channel, control, value, status, group){
+    engine.setValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'prev_effect', value);
+};
+
+PioneerDDJ400.beatFxLeftPressed = function(channel, control, value, status, group){
+    if(this.beatFxEffect == 0) return; // dont cycle
+    this.beatFxEffect = (this.beatFxEffect - (value & 0x1) ) % this.beatFXEffectSlots; 
+    engine.setValue(group, 'focused_effect', this.beatFxEffect+1);
+};
+
+PioneerDDJ400.beatFxRightPressed = function(channel, control, value, status, group){
+    if(this.beatFxEffect >= this.beatFXEffectSlots-1) return; // dont cycle
+    PioneerDDJ400.beatFxEffect = (this.beatFxEffect + (value & 0x1) ) % this.beatFXEffectSlots; 
+    engine.setValue(group, 'focused_effect', this.beatFxEffect+1);
+};
+
+PioneerDDJ400.beatFxOnOffPressed = function(channel, control, value, status, group){
+    if(value == 0) return; // ignore release
+    const lastVal = engine.getValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'enabled')
+    engine.setValue('[EffectRack1_EffectUnit3_Effect'+(this.beatFxEffect+1)+']', 'enabled', !lastVal);
+    engine.setValue(group, 'focused_effect', this.beatFxEffect+1);
+};
+
+PioneerDDJ400.beatFxOnOffShiftPressed = function(channel, control, value, status, group){
+    if(value == 0) return; // ignore release
+    for(var i = 0; i < this.beatFXEffectSlots; i++){
+        engine.setValue('[EffectRack1_EffectUnit3_Effect'+(i+1)+']', 'enabled', 0);
     }
 };
 

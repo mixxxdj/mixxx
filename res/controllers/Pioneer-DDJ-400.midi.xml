@@ -1037,20 +1037,22 @@
                 </options>
             </control>
 
-			<!-- TODO .. BEAT FX
-			<control>
-                <description>BEAT LEFT - press - decrease Beatfraction for Beat FX</description>
-                <group></group>
-                <key></key>
+            <!-- BEAT FX SECTION START -->
+			
+            <control>
+                <description>BEAT LEFT - press - select the FX Slot to the left </description>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>PioneerDDJ400.beatFxLeftPressed</key>
                 <status>0x94</status>
                 <midino>0x4A</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
+            <!--
 			<control>
                 <description>BEAT LEFT +SHIFT - press - BPM auto mode for FX on</description>
-                <group></group>
+                <group>[EffectRack1_EffectUnit3]</group>
                 <key></key>
                 <status>0x94</status>
                 <midino>0x66</midino>
@@ -1058,20 +1060,21 @@
                     <Normal/>
                 </options>
             </control>
-
+            -->
 			<control>
-                <description>BEAT RIGHT - press - increase Beatfraction for Beat FX</description>
-                <group></group>
-                <key></key>
+                <description>BEAT RIGHT - press - select the FX Slot to the right</description>
+                <group>[EffectRack1_EffectUnit3]</group>
+                <key>PioneerDDJ400.beatFxRightPressed</key>
                 <status>0x94</status>
                 <midino>0x4B</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
+            <!--
 			<control>
                 <description>BEAT RIGHT +SHIFT - press - BPM TAP mode for FX on</description>
-                <group></group>
+                <group>[EffectRack1_EffectUnit3]</group>
                 <key></key>
                 <status>0x94</status>
                 <midino>0x6B</midino>
@@ -1079,32 +1082,32 @@
                     <Normal/>
                 </options>
             </control>
-			
+			-->
 
 			<control>
-                <description>BEAT FX SELECT - press - next FX</description>
-                <group>[EffectRack1_EffectUnit1_Effect1]</group> 
-                <key>next_effect</key> 
+                <description>BEAT FX SELECT - press - next FX in the selected Slot</description>
+                <group>[EffectRack1_EffectUnit3]</group> 
+                <key>PioneerDDJ400.beatFxSelectPressed</key> 
                 <status>0x94</status>
                 <midino>0x63</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
 			<control>
-                <description>BEAT FX SELECT +SHIFT - press - prev FX</description>
-                <group>[EffectRack1_EffectUnit1_Effect1]</group> 
-                <key>prev_effect</key> 
+                <description>BEAT FX SELECT +SHIFT - press - prev FX in the selected Slot</description>
+                <group>[EffectRack1_EffectUnit3]</group> 
+                <key>PioneerDDJ400.beatFxSelectShiftPressed</key> 
                 <status>0x94</status>
                 <midino>0x64</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
 
 			<control>
                 <description>BEAT FX CH SELECT CH1 - slide - Select FX on DECK 1</description>
-                <group>[EffectRack1_EffectUnit1]</group> 
+                <group>[EffectRack1_EffectUnit3]</group> 
                 <key>group_[Channel1]_enable</key>
                 <status>0x94</status>
                 <midino>0x10</midino>
@@ -1114,7 +1117,7 @@
             </control>
 			<control>
                 <description>BEAT FX CH SELECT CH2 - slide - Select FX on DECK 2</description>
-                <group>[EffectRack1_EffectUnit1]</group> 
+                <group>[EffectRack1_EffectUnit3]</group> 
                 <key>group_[Channel2]_enable</key>
                 <status>0x94</status>
                 <midino>0x11</midino>
@@ -1124,7 +1127,7 @@
             </control>
 			<control>
                 <description>BEAT FX CH SELECT MASTER - slide - Select FX on Master</description>
-                <group>[EffectRack1_EffectUnit1]</group> 
+                <group>[EffectRack1_EffectUnit3]</group> 
                 <key>group_[Master]_enable</key>
                 <status>0x94</status>
                 <midino>0x12</midino>
@@ -1132,30 +1135,53 @@
                     <Normal/>
                 </options>
             </control>
-
+ <!--
 			<control>
-                <description>BEAT FX LEVEL/DEPTH - rotate - Adjust FX Level and BEAT FX Depth</description>
-				<group>[EffectRack1_EffectUnit1_Effect1]</group>
-                <key>meta</key>
+                <description>BEAT FX LEVEL/DEPTH - rotate (LSB) - Adjust FX Level and BEAT FX Depth</description>
+				<group>[EffectRack1_EffectUnit3_Effect1]</group>
+                <key>PioneerDDJ400.beatFXLevelDepthRotate</key>
                 <status>0xB4</status>
                 <midino>0x22</midino>
                 <options>
-                    <fourteen-bit-lsb/>
+                    <Script-Binding/>
+                </options>
+            </control>
+-->
+
+            <control>
+                <description>BEAT FX LEVEL/DEPTH - rotate (MSB) - Adjust FX Level (mix) and BEAT FX Depth (meta) in the selected slot</description>
+				<group>[EffectRack1_EffectUnit3]</group>
+                <key>PioneerDDJ400.beatFxLevelDepthRotate</key>
+                <status>0xB4</status>
+                <midino>0x02</midino>
+                <options>
+                    <Script-Binding/>
                 </options>
             </control>
 
 			<control>
-                <description>BEAT FX ON/OFF - press - Toggle FX</description>
-                <group>???</group> 
-                <key>???</key>
+                <description>BEAT FX ON/OFF - press - Toggle FX in the selected Slot</description>
+                <group>[EffectRack1_EffectUnit3]</group> 
+                <key>PioneerDDJ400.beatFxOnOffPressed</key>
                 <status>0x94</status>
                 <midino>0x47</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>BEAT FX ON/OFF +SHift - press - Disable all enabled Beat FX Slots</description>
+                <group>[EffectRack1_EffectUnit3]</group> 
+                <key>PioneerDDJ400.beatFxOnOffShiftPressed</key>
+                <status>0x94</status>
+                <midino>0x43</midino>
+                <options>
+                    <Script-Binding/>
                 </options>
             </control>
 
-			-->
+			
+            <!-- BEAT FX SECTION END-->
 
             <!-- EFFECT Section END -->
 
@@ -3310,14 +3336,14 @@
 				PAD 6 PADFX2 MODE Ch1 9755 *Shift 9855 Ch2 9955 *Shift 9A55
 				PAD 7 PADFX2 MODE Ch1 9756 *Shift 9856 Ch2 9956 *Shift 9A56
 				PAD 8 PADFX2 MODE Ch1 9757 *Shift 9857 Ch2 9957 *Shift 9A57
-				*PAD 1 KEYSHIFT MODE Ch1 9770 Shift 9870 Ch2 9970 Shift 9A70
-				*PAD 2 KEYSHIFT MODE Ch1 9771 Shift 9871 Ch2 9971 Shift 9A71
-				*PAD 3 KEYSHIFT MODE Ch1 9772 Shift 9872 Ch2 9972 Shift 9A72
-				*PAD 4 KEYSHIFT MODE Ch1 9773 Shift 9873 Ch2 9973 Shift 9A73
-				*PAD 5 KEYSHIFT MODE Ch1 9774 Shift 9874 Ch2 9974 Shift 9A74
-				*PAD 6 KEYSHIFT MODE Ch1 9775 Shift 9875 Ch2 9975 Shift 9A75
-				*PAD 7 KEYSHIFT MODE Ch1 9776 Shift 9876 Ch2 9976 Shift 9A76
-				*PAD 8 KEYSHIFT MODE Ch1 9777 Shift 9877 Ch2 9977 Shift 9A77
+				PAD 1 KEYSHIFT MODE Ch1 9770 Shift 9870 Ch2 9970 Shift 9A70
+				PAD 2 KEYSHIFT MODE Ch1 9771 Shift 9871 Ch2 9971 Shift 9A71
+				PAD 3 KEYSHIFT MODE Ch1 9772 Shift 9872 Ch2 9972 Shift 9A72
+				PAD 4 KEYSHIFT MODE Ch1 9773 Shift 9873 Ch2 9973 Shift 9A73
+				PAD 5 KEYSHIFT MODE Ch1 9774 Shift 9874 Ch2 9974 Shift 9A74
+				PAD 6 KEYSHIFT MODE Ch1 9775 Shift 9875 Ch2 9975 Shift 9A75
+				PAD 7 KEYSHIFT MODE Ch1 9776 Shift 9876 Ch2 9976 Shift 9A76
+				PAD 8 KEYSHIFT MODE Ch1 9777 Shift 9877 Ch2 9977 Shift 9A77
 				HOT CUE Ch1 901B Shift 9069 Ch2 911B Shift 9169
 				BEATLOOP Ch1 906D Shift 901E Ch2 916D Shift 911E
 				BEATJUMP Ch1 9020 Shift 906B Ch2 9120 Shift 916B
