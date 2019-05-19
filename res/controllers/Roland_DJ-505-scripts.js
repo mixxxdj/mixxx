@@ -1373,9 +1373,11 @@ DJ505.PitchPlayMode = function (deck, offset) {
                     engine.setValue(this.group, "hotcue_" + this.mode.cuepoint + "_activate", value);
                 }
             };
-            this.disconnect();
-            this.connect();
-            this.trigger();
+            if (this.connections[0] !== undefined) {
+                this.disconnect();
+                this.connect();
+                this.trigger();
+            }
         },
         shift: function() {
             this.outKey = "hotcue_" + this.number + "_enabled";
@@ -1394,9 +1396,11 @@ DJ505.PitchPlayMode = function (deck, offset) {
                     this.send(this.number);
                 }
             };
-            this.disconnect();
-            this.connect();
-            this.trigger();
+            if (this.connections[0] !== undefined) {
+                this.disconnect();
+                this.connect();
+                this.trigger();
+            }
         },
     });
 
