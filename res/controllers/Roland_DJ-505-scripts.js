@@ -865,6 +865,18 @@ DJ505.PadColor = {
     DIM_MODIFIER: 0x10,
 };
 
+DJ505.PadColorMap = [
+    DJ505.PadColor.OFF,
+    DJ505.PadColor.RED,
+    DJ505.PadColor.GREEN,
+    DJ505.PadColor.BLUE,
+    DJ505.PadColor.YELLOW,
+    DJ505.PadColor.CELESTE,
+    DJ505.PadColor.PURPLE,
+    DJ505.PadColor.APRICOT,
+    DJ505.PadColor.WHITE,
+];
+
 DJ505.PadSection = function (deck, offset) {
     // TODO: Add support for missing modes (flip, slicer, slicerloop)
     /*
@@ -1060,6 +1072,8 @@ DJ505.HotcueMode = function (deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.HOTCUE;
     this.color = DJ505.PadColor.WHITE;
+
+    var hotcueColors = [this.color].concat(DJ505.PadColorMap.slice(1));
     this.pads = [];
     for (var i = 0; i <= 7; i++) {
         this.pads[i] = new components.HotcueButton({
@@ -1069,8 +1083,9 @@ DJ505.HotcueMode = function (deck, offset) {
             shiftOffset: 8,
             number: i + 1,
             group: deck.currentDeck,
-            on: i + 1,
+            on: this.color,
             off: this.color + DJ505.PadColor.DIM_MODIFIER,
+            colors: hotcueColors,
             outConnect: false,
         });
     }
@@ -1094,10 +1109,10 @@ DJ505.CueLoopMode = function (deck, offset) {
     this.ledControl = DJ505.PadMode.HOTCUE;
     this.color = DJ505.PadColor.BLUE;
 
+    var cueloopColors = [this.color].concat(DJ505.PadColorMap.slice(1));
     this.PerformancePad = function(n) {
         this.midi = [0x94 + offset, 0x14 + n];
         this.number = n + 1;
-        this.on = this.number;
         this.outKey = "hotcue_" + this.number + "_enabled";
 
         components.Button.call(this);
@@ -1107,7 +1122,9 @@ DJ505.CueLoopMode = function (deck, offset) {
         shiftControl: true,
         shiftOffset: 8,
         group: deck.currentDeck,
+        on: this.color,
         off: this.color + DJ505.PadColor.DIM_MODIFIER,
+        colors: cueloopColors,
         outConnect: false,
         unshift: function() {
             this.input = function (channel, control, value, status, group) {
