@@ -1325,12 +1325,14 @@ DJ505.PitchPlayMode = function (deck, offset) {
     this.color = DJ505.PadColor.GREEN;
     this.cuepoint = 1;
     this.range = PitchPlayRange.MID;
+    var pitchplayColors = [this.color].concat(DJ505.PadColorMap.slice(1));
 
     this.PerformancePad = function(n) {
         this.midi = [0x94 + offset, 0x14 + n];
         this.number = n + 1;
-        this.on = this.number + DJ505.PadColor.DIM_MODIFIER;
-
+        this.on = this.color + DJ505.PadColor.DIM_MODIFIER;
+        this.colors = pitchplayColors;
+        this.colorIdKey = 'hotcue_' + this.number + '_color_id';
         components.Button.call(this);
     };
     this.PerformancePad.prototype = new components.Button({
@@ -1341,6 +1343,11 @@ DJ505.PitchPlayMode = function (deck, offset) {
         mode: this,
         outConnect: false,
         off: DJ505.PadColor.OFF,
+        outputColor: function(id, dim) {
+            // For colored hotcues (shifted only)
+            var color = this.colors[id];
+            this.send((this.mode.cuepoint === this.number) ? color : (color + DJ505.PadColor.DIM_MODIFIER));
+        },
         unshift: function() {
             this.outKey = "key";
             this.output = function (value, group, control) {
@@ -1370,6 +1377,14 @@ DJ505.PitchPlayMode = function (deck, offset) {
                     engine.setValue(this.group, "hotcue_" + this.mode.cuepoint + "_activate", value);
                 }
             };
+            this.connect = function() {
+                components.Button.prototype.connect.call(this); // call parent connect
+
+                if (this.connections[1] !== undefined) {
+                    // Necessary, since trigger() apparently also triggers disconnected connections
+                    this.connections.pop();
+                }
+            };
             if (this.connections[0] !== undefined) {
                 this.disconnect();
                 this.connect();
@@ -1379,8 +1394,9 @@ DJ505.PitchPlayMode = function (deck, offset) {
         shift: function() {
             this.outKey = "hotcue_" + this.number + "_enabled";
             this.output = function (value, group, control) {
-                if (value) {
-                    this.send((value && this.mode.cuepoint === this.number) ? this.number : (this.number + DJ505.PadColor.DIM_MODIFIER));
+                var outval = this.outValueScale(value);
+                if (this.colorIdKey !== undefined && outval !== this.off) {
+                    this.outputColor(engine.getValue(this.group, this.colorIdKey));
                 } else {
                     this.send(DJ505.PadColor.OFF);
                 }
@@ -1390,7 +1406,17 @@ DJ505.PitchPlayMode = function (deck, offset) {
                     var previous_cuepoint = this.mode.cuepoint;
                     this.mode.cuepoint = this.number;
                     this.mode.pads[previous_cuepoint - 1].trigger();
-                    this.send(this.number);
+                    this.outputColor(engine.getValue(this.group, this.colorIdKey));
+                }
+            };
+            this.connect = function() {
+                components.Button.prototype.connect.call(this); // call parent connect
+                if (undefined !== this.group && this.colorIdKey !== undefined) {
+                    this.connections[1] = engine.makeConnection(this.group, this.colorIdKey, function (id) {
+                        if (engine.getValue(this.group, this.outKey)) {
+                            this.outputColor(id);
+                        }
+                    });
                 }
             };
             if (this.connections[0] !== undefined) {
