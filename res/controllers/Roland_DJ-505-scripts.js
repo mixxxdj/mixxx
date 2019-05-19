@@ -1071,7 +1071,7 @@ DJ505.HotcueMode = function (deck, offset) {
     this.color = DJ505.PadColor.WHITE;
 
     var hotcueColors = [this.color].concat(DJ505.PadColorMap.slice(1));
-    this.pads = [];
+    this.pads = new components.ComponentContainer();
     for (var i = 0; i <= 7; i++) {
         this.pads[i] = new components.HotcueButton({
             midi: [0x94 + offset, 0x14 + i],
@@ -1188,7 +1188,7 @@ DJ505.RollMode = function (deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.ROLL;
     this.color = DJ505.PadColor.CELESTE;
-    this.pads = [];
+    this.pads = new components.ComponentContainer();
     this.loopSize = 0.03125;
 
     var loopSize;
@@ -1253,7 +1253,7 @@ DJ505.LoopMode = function (deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.ROLL;
     this.color = DJ505.PadColor.GREEN;
-    this.pads = [];
+    this.pads = new components.ComponentContainer();
     for (var i = 0; i <= 7; i++) {
         this.pads[i] = new components.Button({
             midi: [0x94 + offset, 0x14 + i],
@@ -1275,7 +1275,7 @@ DJ505.SamplerMode = function (deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.SAMPLER;
     this.color = DJ505.PadColor.MAGENTA;
-    this.pads = [];
+    this.pads = new components.ComponentContainer();
     for (var i = 0; i <= 7; i++) {
         this.pads[i] = new components.SamplerButton({
             midi: [0x94 + offset, 0x14 + i],
@@ -1295,7 +1295,7 @@ DJ505.VelocitySamplerMode = function (deck, offset) {
     components.ComponentContainer.call(this);
     this.ledControl = DJ505.PadMode.SAMPLER;
     this.color = DJ505.PadColor.PURPLE;
-    this.pads = [];
+    this.pads = new components.ComponentContainer();
     for (var i = 0; i <= 7; i++) {
         this.pads[i] = new components.SamplerButton({
             midi: [0x94 + offset, 0x14 + i],
