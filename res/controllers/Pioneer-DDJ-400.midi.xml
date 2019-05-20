@@ -3361,15 +3361,72 @@
 				* = not implemented (yet?)
 			-->
 
+            // PLAY
 			<output>
 				<group>[Channel1]</group>
 				<key>play</key>
-				<status>0x7F</status>  <!-- First byte sent to device -->
-				<midino>0x08</midino>  <!-- Second byte -->
-				<on>0x01</on>  <!-- Third byte. If not specified, 0x7F is used. -->
-				<off>0x00</off> <!-- Alternate third byte. 0x00 is the default. If set to 0xFF, nothing is sent.-->
-				<maximum>0.99</maximum>  <!-- Optional upper value, above which the 'off' value is sent. 1.0 is the default. -->
-				<minimum>0.9</minimum>   <!-- Lower value, below which the 'off' value is sent -->
+				<status>0x90</status>  <!-- First byte sent to device -->
+				<midino>0x0B</midino>  <!-- Second byte -->
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>play</key>
+				<status>0x91</status>  <!-- First byte sent to device -->
+				<midino>0x0B</midino>  <!-- Second byte -->
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>play</key>
+				<status>0x90</status>  <!-- First byte sent to device -->
+				<midino>0x47</midino>  <!-- Second byte -->
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>play</key>
+				<status>0x91</status>  <!-- First byte sent to device -->
+				<midino>0x47</midino>  <!-- Second byte -->
+			</output>
+
+            // CUE
+            <output>
+				<group>[Channel1]</group>
+				<key>pfl</key>
+				<status>0x90</status>
+				<midino>0x0C</midino>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>pfl</key>
+				<status>0x91</status>
+				<midino>0x0C</midino>
+			</output>
+
+            // CUE + Shift 
+            <output>
+				<group>[Channel1]</group>
+				<key>start_play</key>
+				<status>0x90</status> 
+				<midino>0x47</midino> 
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>start_play</key>
+				<status>0x91</status>
+				<midino>0x47</midino>
+			</output>
+
+            // LOADED (load illumination)
+            <output>
+				<group>[Channel1]</group>
+				<key>LoadSelectedTrack</key>
+				<status>0x9F</status>
+				<midino>0x00</midino>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>LoadSelectedTrack</key>
+				<status>0x9F</status>
+				<midino>0x01</midino>
 			</output>
 		</outputs>
 	</controller>
