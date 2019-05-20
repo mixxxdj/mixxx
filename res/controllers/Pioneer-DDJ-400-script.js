@@ -28,10 +28,11 @@
             Partially:
                 * PAD FX (only slots A-H, Q-P)
                 * Effect Section (without Beat FX left + Right - no equivalent function found)
-                
+                * Output (lights)
+
             Not working/implemented:
                 * Channel & Crossfader Start
-                * Output (lights)
+                
 
             Changelog: 
 
@@ -55,6 +56,10 @@
                 * added Effect Section funtions
                     - Beat FX left and right selects the Effect Slot in FX3
                     - Shift + Beat FX On/Off disables all Effect Slots
+            
+            version 0.4:
+                * added Cue/Loop left and richt to navigate thru Loop / hotcue points
+                * initial support for some LEDs (VuMeter, Play, Cue, Loop in/out, sync)
 
 */ 
 
@@ -73,6 +78,7 @@ PioneerDDJ400.beta = PioneerDDJ400.alpha/32;
 PioneerDDJ400.highspeedScale = 2;
 PioneerDDJ400.bendScale = 0.5;
 
+PioneerDDJ400.pointJumpSpace = 0.005; // amount in percent of the Song we can jump back to previous Cue or loop point
 
 PioneerDDJ400.tempoRanges = [ 0.06, 0.10, 0.16, 0.25 ]; // WIDE = 25%?
 
@@ -130,10 +136,15 @@ PioneerDDJ400.init = function() {
     // init tempo Range to 10% (default = 6%)
     engine.setValue('[Channel1]', 'rateRange', PioneerDDJ400.tempoRanges[1]);
     engine.setValue('[Channel2]', 'rateRange', PioneerDDJ400.tempoRanges[1]);
-    // Todo: set Mode on start!
-
-
+    
+    // enable effect fous on FX3 for Effect Section 
     engine.setValue('[EffectRack1_EffectUnit3]', 'show_focus', 1);
+
+    // Connect the VU-Meter LEDS
+    engine.connectControl('[Channel1]','VuMeter','PioneerDDJ400.vuMeterUpdate');
+    engine.connectControl('[Channel2]','VuMeter','PioneerDDJ400.vuMeterUpdate');
+    midi.sendShortMsg(0xB0, 0x02, 0); // reset vumeter
+    midi.sendShortMsg(0xB1, 0x02, 0); // reset vumeter
 };
 
 
@@ -205,6 +216,23 @@ PioneerDDJ400.cycleTempoRange = function(channel, control, value, status, group)
     engine.setValue(group, 'rateRange', this.tempoRanges[idx]);
 };
 
+
+function sortAsc(a, b){
+    return a > b ? 1 : b > a ? -1 : 0; 
+}
+
+PioneerDDJ400.initCuePointsAndLoops = function(group){
+    var points = [];
+    for(var padNum = 1; padNum <= 8; padNum++){
+        points.push( engine.getValue(group, 'hotcue_'+padNum+'_position'));
+    }
+    points.push( engine.getValue(group, 'cue_point'));
+    points.push( engine.getValue(group, 'loop_start_position'));
+    points.push( engine.getValue(group, 'loop_end_position'));
+    points.sort(sortAsc); // sort asc
+    return points;
+};
+
 PioneerDDJ400.cueLoopCallLeft = function(channel, control, value, status, group){
     if(value == 0) return; // ignore release
     const loop_on = engine.getValue(group, 'loop_enabled');
@@ -214,7 +242,22 @@ PioneerDDJ400.cueLoopCallLeft = function(channel, control, value, status, group)
         engine.setValue(group, 'loop_scale', 0.5);
     }
     else{
-        engine.setValue(group, 'loop_in_goto', 1);
+        const currentPosition = engine.getValue(group, 'playposition') - this.pointJumpSpace;
+        const trackSamples = engine.getValue(group, 'track_samples');
+        const points = this.initCuePointsAndLoops(group);
+        print('currPos: '+ currentPosition);
+        print('trackSamples: '+ trackSamples);
+        print('points: '+ points);
+        var newPosition = currentPosition;
+        for(var i = 1; i <= points.length; i++){
+            if(i == points.length || points[i] >= currentPosition * trackSamples){
+                newPosition = points[i-1] / trackSamples;
+                break;
+            }
+        }
+        print('newPos: '+ newPosition);
+        //engine.setValue(group, 'loop_in_goto', 1);
+        engine.setValue(group, 'playposition', newPosition);
     }
 };
 
@@ -226,7 +269,22 @@ PioneerDDJ400.cueLoopCallRight = function(channel, control, value, status, group
         engine.setValue(group, 'loop_scale', 2.0);
     }
     else{
-        engine.setValue(group, 'loop_out_goto', 1);
+        const currentPosition = engine.getValue(group, 'playposition');
+        const trackSamples = engine.getValue(group, 'track_samples');
+        const points = this.initCuePointsAndLoops(group);
+        print('currPos: '+ currentPosition);
+        print('trackSamples: '+ trackSamples);
+        print('points: '+ points);
+        var newPosition = currentPosition;
+        for(var i = 0; i < points.length; i++){
+            if(points[i] > currentPosition * trackSamples){
+                newPosition = points[i] / trackSamples;
+                break;
+            }
+        }
+        print('newPos: '+ newPosition);
+        engine.setValue(group, 'playposition', newPosition);
+        //engine.setValue(group, 'loop_out_goto', 1);
     }
 };
 
@@ -457,6 +515,22 @@ PioneerDDJ400.beatFxOnOffShiftPressed = function(channel, control, value, status
     }
 };
 
-PioneerDDJ400.shutdown = function() {
 
+PioneerDDJ400.vuMeterUpdate = function(value, group, control){
+    const newVal = value * 150;
+    switch(group){
+        case '[Channel1]':
+            midi.sendShortMsg(0xB0, 0x02, newVal);
+            break;
+
+        case '[Channel2]':
+            midi.sendShortMsg(0xB1, 0x02, newVal);
+            break;
+    }
+    
+};
+
+PioneerDDJ400.shutdown = function() {
+    midi.sendShortMsg(0xB0, 0x02, 0); // reset vumeter
+    midi.sendShortMsg(0xB1, 0x02, 0); // reset vumeter
 };

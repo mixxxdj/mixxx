@@ -3270,15 +3270,19 @@
 		<outputs>
 
 			<!-- 
-				Play/Pause Ch1 900B Shift 9047 Ch2 910B Shift 9147
+				TEST:
+                Play/Pause Ch1 900B Shift 9047 Ch2 910B Shift 9147
 				Cue Ch1 900C Shift 9048 Ch2 910C Shift 9148
 				BEAT SYNC Ch1 9058 Shift 9060 Ch2 9158 Shift 9160
 				LOOP IN Ch1 9010 Shift 904C Ch2 9110 Shift 914C
 				LOOP OUT 9011 Shift 904E Ch2 9111 Shift 914E
 				RELOOP Ch1 904D Shift 9050 Ch2 914D Shift 9150
-				CH CUE Ch1 9054 Shift 9068 Ch2 9154 Shift 9168
-				Master Cue 9663 Shift 9678
+                CH CUE Ch1 9054 Shift 9068 Ch2 9154 Shift 9168
 				VuLevel Ch1 B002 Ch2 B102
+				
+
+                OPEN:
+				*Master Cue 9663 Shift 9678
 				BEAT FX 9447 Shift 9443
 				PAD 1 HOT CUE MODE Ch1 9700 Shift 9800 Ch2 9900 Shift 9A00
 				PAD 2 HOT CUE MODE Ch1 9701 Shift 9801 Ch2 9901 Shift 9A01
@@ -3364,58 +3368,197 @@
             // PLAY
 			<output>
 				<group>[Channel1]</group>
-				<key>play</key>
+				<key>play_indicator</key>
 				<status>0x90</status>  <!-- First byte sent to device -->
 				<midino>0x0B</midino>  <!-- Second byte -->
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
 			</output>
             <output>
 				<group>[Channel2]</group>
-				<key>play</key>
+				<key>play_indicator</key>
 				<status>0x91</status>  <!-- First byte sent to device -->
 				<midino>0x0B</midino>  <!-- Second byte -->
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
 			</output>
             <output>
 				<group>[Channel1]</group>
-				<key>play</key>
+				<key>play_indicator</key>
 				<status>0x90</status>  <!-- First byte sent to device -->
 				<midino>0x47</midino>  <!-- Second byte -->
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
 			</output>
             <output>
 				<group>[Channel2]</group>
-				<key>play</key>
+				<key>play_indicator</key>
 				<status>0x91</status>  <!-- First byte sent to device -->
 				<midino>0x47</midino>  <!-- Second byte -->
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
 			</output>
 
             // CUE
             <output>
 				<group>[Channel1]</group>
-				<key>pfl</key>
+				<key>cue_indicator</key>
 				<status>0x90</status>
 				<midino>0x0C</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
 			</output>
             <output>
 				<group>[Channel2]</group>
-				<key>pfl</key>
+				<key>cue_indicator</key>
 				<status>0x91</status>
 				<midino>0x0C</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
 			</output>
 
             // CUE + Shift 
             <output>
 				<group>[Channel1]</group>
-				<key>start_play</key>
+				<key>cue_indicator</key>
 				<status>0x90</status> 
 				<midino>0x47</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
 			</output>
             <output>
 				<group>[Channel2]</group>
-				<key>start_play</key>
+				<key>cue_indicator</key>
 				<status>0x91</status>
 				<midino>0x47</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            
+            //BEAT SYNC Ch1 9058 Shift 9060 Ch2 9158 Shift 9160
+			<output>
+				<group>[Channel1]</group>
+				<key>sync_enabled</key>
+				<status>0x90</status>
+				<midino>0x58</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>sync_enabled</key>
+				<status>0x91</status>
+				<midino>0x58</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output> 
+            <output>
+				<group>[Channel1]</group>
+				<key>sync_master</key>
+				<status>0x90</status> 
+				<midino>0x60</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>sync_master</key>
+				<status>0x91</status>
+				<midino>0x60</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+
+            // LOOP IN Ch1 9010 Ch2 9110
+		    <output>
+				<group>[Channel1]</group>
+				<key>loop_in</key>
+				<status>0x90</status>
+				<midino>0x10</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>loop_in</key>
+				<status>0x91</status>
+				<midino>0x10</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+
+            // LOOP OUT 9011 Ch2 9111
+            <output>
+				<group>[Channel1]</group>
+				<key>loop_out</key>
+				<status>0x90</status> 
+				<midino>0x11</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>loop_out</key>
+				<status>0x91</status>
+				<midino>0x11</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+
+            // RELOOP Ch1 904D Shift 9050 Ch2 914D Shift 9150
+            <output>
+				<group>[Channel1]</group>
+				<key>reloop_toggle</key>
+				<status>0x90</status> 
+				<midino>0x4D</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>reloop_toggle</key>
+				<status>0x91</status>
+				<midino>0x4D</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel1]</group>
+				<key>loop_enabled</key>
+				<status>0x90</status> 
+				<midino>0x50</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>loop_enabled</key>
+				<status>0x91</status>
+				<midino>0x50</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+
+            // CH CUE Ch1 9054 Ch2 9154
+			<output>
+				<group>[Channel1]</group>
+				<key>pfl</key>
+				<status>0x90</status> 
+				<midino>0x54</midino> 
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
+			</output>
+            <output>
+				<group>[Channel2]</group>
+				<key>pfl</key>
+				<status>0x91</status>
+				<midino>0x54</midino>
+                <on>0x7F</on>
+                <minimum>0.5</minimum>
 			</output>
 
             // LOADED (load illumination)
+            <!-- 
             <output>
 				<group>[Channel1]</group>
 				<key>LoadSelectedTrack</key>
@@ -3428,6 +3571,7 @@
 				<status>0x9F</status>
 				<midino>0x01</midino>
 			</output>
+            -->
 		</outputs>
 	</controller>
 </MixxxMIDIPreset>
